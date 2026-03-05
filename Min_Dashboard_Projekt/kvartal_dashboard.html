@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Min Kvartals-Dashboard</title>
+    <style>
+        /* Grundläggande design */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 20px;
+        }
+
+        /* Design för kontrollpanelen (rullistan) */
+        .kontrollpanel {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Modern rullista (Dropdown) */
+        select {
+            appearance: none; /* Tar bort webbläsarens tråkiga standard-pil */
+            background-color: #007BFF; /* Snygg blå färg (ändra gärna!) */
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px 40px 12px 20px;
+            border: none;
+            border-radius: 8px; /* Rundade hörn */
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+            
+            /* Skapar en egen, vit pil till höger */
+            background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23FFFFFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+            background-repeat: no-repeat;
+            background-position: right 15px top 50%;
+            background-size: 12px auto;
+        }
+
+        /* Färg när man håller musen över knappen */
+        select:hover {
+            background-color: #0056b3; 
+        }
+
+        /* Tar bort fula ramar när man klickar */
+        select:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.4);
+        }
+
+        /* --- MAGIN FÖR RESPONSIVITET (CSS GRID) --- */
+        .diagram-rutnat {
+            display: grid;
+            gap: 20px; /* Mellanrum mellan diagrammen */
+            
+            /* Standard: 1 kolumn (för mobiler och små skärmar) */
+            grid-template-columns: 1fr; 
+        }
+
+        /* När skärmen är bredare än 800px: Byt till 2 kolumner */
+        @media (min-width: 800px) {
+            .diagram-rutnat {
+                grid-template-columns: 1fr 1fr; 
+            }
+        }
+
+        /* Design för dina iframes */
+        iframe {
+            width: 100%;
+            height: 400px; /* Justera höjden på dina diagram här */
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="kontrollpanel">
+        <label for="kvartal-valjare"><strong>Välj vilket kvartal du vill visa:</strong></label>
+        <select id="kvartal-valjare" onchange="uppdateraDiagram()">
+            <option value="2025-Q4">Kvartal 4, 2025</option>
+            <option value="2025-Q3">Kvartal 3, 2025</option>
+            <option value="2025-Q2">Kvartal 2, 2025</option>
+            <option value="2025-Q1">Kvartal 1, 2025</option>
+            <option value="2024-Q4">Kvartal 4, 2024</option>
+            <option value="2024-Q3">Kvartal 3, 2024</option>
+            <option value="2024-Q2">Kvartal 2, 2024</option>
+            <option value="2024-Q1">Kvartal 1, 2024</option>
+        </select>
+    </div>
+
+    <div class="diagram-rutnat">
+        <iframe id="diagram1" src="diagram1_2025-Q4.html"></iframe>
+        <iframe id="diagram2" src="diagram2_2025-Q4.html"></iframe>
+        <iframe id="diagram3" src="diagram3_2025-Q4.html"></iframe>
+        <iframe id="diagram4" src="diagram4_2025-Q4.html"></iframe>
+    </div>
+
+    <script>
+        function uppdateraDiagram() {
+            // Hämta det kvartal som användaren just nu har valt i rullistan (t.ex. "2023-Q4")
+            var valtKvartal = document.getElementById("kvartal-valjare").value;
+
+            // Byt ut "src" (källan) på alla fyra iframes till de nya filnamnen
+            document.getElementById("diagram1").src = "diagram1_" + valtKvartal + ".html";
+            document.getElementById("diagram2").src = "diagram2_" + valtKvartal + ".html";
+            document.getElementById("diagram3").src = "diagram3_" + valtKvartal + ".html";
+            document.getElementById("diagram4").src = "diagram4_" + valtKvartal + ".html";
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="author" content="Jimmy Lindahl, Analys & Utredning, Linköpings kommun">
+    <meta name="description" content="Dashboard och interaktivt BI-system för kvartalsuppföljning av kommungemensamma indikatorer i Linköpings kommun.">
+    <meta name="keywords" content="Linköping, Statistik, Data, Fakta, Kvartal, Kvartalsuppföljning, Dashboard, BI, Befolkning, Sysselsättning, Bostadsbyggande, Arbetslöshet">
+    
+    <title>Kvartalsuppföljning - Kommunjämförelser</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-blue: #005596;
+            --primary-dark: #003d6b;
+            --bg-color: #f4f7f6;
+            
+            --theme-befolkning: #005596;      
+            --theme-sysselsattning: #009E73;  
+            --theme-bostader: #E69F00;        
+            --theme-arbetsloshet: #6f42c1;    
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            color: #333;
+            overflow-x: hidden; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Polerad Header med Gradient och Skuggor */
+        .header-bar {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+            color: white;
+            padding: 15px 30px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .logga-titel-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logotyp {
+            height: 45px; 
+            object-fit: contain;
+            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        .header-title {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .header-btn {
+            color: white;
+            text-decoration: none;
+            background-color: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .header-btn:hover { 
+            background-color: white; 
+            color: var(--primary-blue); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Grön accentfärg specifikt för Månadsbarometern-knappen för att skilja den lite */
+        .btn-manadsbarometer:hover {
+            color: #009E73;
+        }
+
+        .content-wrapper {
+            max-width: 1500px;
+            margin: 0 auto;
+            padding: 0 15px;
+            width: 100%;
+            flex-grow: 1;
+        }
+
+        .dashboard-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 25px 0; 
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Förbättrade KPI-kort */
+        .kpi-kort {
+            background: white;
+            padding: 15px 20px; 
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            text-align: center;
+            flex: 1;
+            min-width: 220px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .kpi-kort:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        .kpi-befolkning { border-top: 5px solid var(--theme-befolkning); }
+        .kpi-sysselsatta { border-top: 5px solid var(--theme-sysselsattning); }
+        
+        .kpi-kort h3 { 
+            margin: 0 0 8px 0; 
+            font-size: 0.85rem; 
+            color: #6c757d; 
+            text-transform: uppercase; 
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .kpi-siffra { 
+            font-size: 2.2rem; 
+            font-weight: bold; 
+            color: #2c3e50; 
+            margin: 0; 
+        }
+
+        .kontroll-panel-wrapper {
+            flex: 2;
+            min-width: 320px;
+        }
+
+        .kontroll-panel {
+            background: white;
+            padding: 15px 20px; 
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; 
+            gap: 12px;
+            border-top: 4px solid #ced4da;
+        }
+
+        .kontroll-panel select {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            background-color: var(--primary-blue);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+            transition: background-color 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            font-size: 0.95rem;
+        }
+
+        .kontroll-panel select:hover, .kontroll-panel select:focus { 
+            background-color: var(--primary-dark); 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        #master-kvartal { background-color: #6c757d; }
+        #master-kvartal:hover { background-color: #5a6268; }
+
+        #master-index { background-color: #1e293b; }
+        #master-index:hover { background-color: #0f172a; }
+
+        /* Förbättrade Iframes */
+        .iframe-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px 20px 10px 20px; 
+            height: 520px; 
+            margin-bottom: 25px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #f0f0f0;
+        }
+
+        .iframe-container:hover { 
+            transform: translateY(-2px); 
+        }
+
+        .box-befolkning { border-top: 5px solid var(--theme-befolkning); box-shadow: 0 6px 20px rgba(0, 85, 150, 0.06); }
+        .box-befolkning:hover { box-shadow: 0 8px 25px rgba(0, 85, 150, 0.12); }
+
+        .box-sysselsattning { border-top: 5px solid var(--theme-sysselsattning); box-shadow: 0 6px 20px rgba(0, 158, 115, 0.06); }
+        .box-sysselsattning:hover { box-shadow: 0 8px 25px rgba(0, 158, 115, 0.12); }
+
+        .box-bostader { border-top: 5px solid var(--theme-bostader); box-shadow: 0 6px 20px rgba(230, 159, 0, 0.06); }
+        .box-bostader:hover { box-shadow: 0 8px 25px rgba(230, 159, 0, 0.12); }
+
+        .box-arbetsloshet { border-top: 5px solid var(--theme-arbetsloshet); box-shadow: 0 6px 20px rgba(111, 66, 193, 0.06); }
+        .box-arbetsloshet:hover { box-shadow: 0 8px 25px rgba(111, 66, 193, 0.12); }
+
+        iframe { 
+            width: 100%; 
+            flex-grow: 1; 
+            border: none; 
+            border-radius: 4px; 
+        }
+        
+        .diagram-rad { margin-bottom: 20px; }
+
+        /* Sidfot */
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #888;
+            font-size: 0.9rem;
+            border-top: 1px solid #e0e0e0;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="logga-titel-container">
+            <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" class="logotyp" onerror="this.style.display='none'">
+            <h1 class="header-title">Kvartalsuppföljning för Linköping & Kommunjämförelser</h1>
+        </div>
+        <div class="nav-links">
+            <a href="manadsbarometern.html" class="header-btn btn-manadsbarometer"><span>📈</span> Månadsbarometern</a>
+            <a href="anvandarmanual.html" class="header-btn"><span>📖</span> Användarguide</a>
+            <a href="index.html" class="header-btn"><span>🏠</span> Startmeny</a>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <div class="dashboard-header-row">
+            
+            <div class="kpi-kort kpi-befolkning">
+                <h3>Befolkning (Senaste Kvartal)</h3>
+                <p class="kpi-siffra" id="kpi-befolkning">Laddar...</p>
+            </div>
+
+            <div class="kontroll-panel-wrapper">
+                <div class="kontroll-panel">
+                    <select id="master-berakning" onchange="skickaTillDiagrammen()">
+                        <option value="_Kvartal">Aktuellt kvartal</option>
+                        <option value="_R12" selected>Rullande 12 månader</option>
+                    </select>
+                    
+                    <select id="master-graftyp" onchange="skickaTillDiagrammen()">
+                        <option value="linje">Utveckling över tid (Linje)</option>
+                        <option value="stapel">Jämför specifikt kvartal (Stapel)</option>
+                    </select>
+                    
+                    <select id="master-kvartal" onchange="skickaTillDiagrammen()" style="display: none;">
+                        <option value="1">Kvartal 1</option>
+                        <option value="2">Kvartal 2</option>
+                        <option value="3">Kvartal 3</option>
+                        <option value="4">Kvartal 4</option>
+                    </select>
+                    
+                    <select id="master-tid" onchange="skickaTillDiagrammen()">
+                        <option value="alla">Visa alla år</option>
+                        <option value="10">Senaste 10 åren</option>
+                        <option value="5" selected>Senaste 5 åren</option>
+                    </select>
+
+                    <select id="master-index" onchange="skickaTillDiagrammen()">
+                        <option value="absolut">Absoluta tal</option>
+                        <option value="index">Visa som Index (Basår=100)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="kpi-kort kpi-sysselsatta">
+                <h3>Sysselsatta (Senaste Kvartal)</h3>
+                <p class="kpi-siffra" id="kpi-sysselsatta">Laddar...</p>
+            </div>
+
+        </div>
+
+        <div class="diagram-rad">
+            <div class="row">
+                <div class="col-xl-6"><div class="iframe-container box-befolkning"><iframe id="iframe1" src="diagram_px1.html" title="Befolkningsförändring"></iframe></div></div>
+                <div class="col-xl-6"><div class="iframe-container box-sysselsattning"><iframe id="iframe2" src="diagram_px2.html" title="Sysselsättning"></iframe></div></div>
+                <div class="col-xl-6"><div class="iframe-container box-bostader"><iframe id="iframe3" src="diagram_px3.html" title="Bostadsbyggande"></iframe></div></div>
+                <div class="col-xl-6"><div class="iframe-container box-arbetsloshet"><iframe id="iframe4" src="diagram_px4.html" title="Arbetslöshet"></iframe></div></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Utvecklad av Analys & Utredning, Linköpings kommun • Data uppdateras kvartalsvis via SCB och lokal datainsamling
+    </div>
+
+    <script>
+        function formateraSiffra(siffra) { return Number(siffra).toLocaleString('sv-SE'); }
+
+        function hamtaSenasteVarde(filnamn, kolumnnamn, elementId) {
+            fetch(filnamn)
+                .then(response => {
+                    if (!response.ok) throw new Error("Kunde inte ladda " + filnamn);
+                    return response.arrayBuffer();
+                })
+                .then(buffer => {
+                    let decoder = new TextDecoder("utf-8");
+                    let text = decoder.decode(buffer);
+                    
+                    if (text.includes("") || text.includes("Ã")) { 
+                        decoder = new TextDecoder("windows-1252"); 
+                        text = decoder.decode(buffer); 
+                    }
+                    text = text.trim().replace(/^\uFEFF/i, '');
+
+                    Papa.parse(text, {
+                        header: true, skipEmptyLines: true, delimiter: ";", transformHeader: h => h.trim(),
+                        complete: function(results) {
+                            let data = results.data;
+                            let senasteVarde = "Saknas";
+                            
+                            for (let i = data.length - 1; i >= 0; i--) {
+                                let val = data[i][kolumnnamn];
+                                if (val !== undefined && val.trim() !== "" && val.trim() !== ".." && val.trim() !== "-") {
+                                    senasteVarde = formateraSiffra(val.replace(/\s/g, '').replace(',', '.'));
+                                    break;
+                                }
+                            }
+                            document.getElementById(elementId).innerText = senasteVarde;
+                        }
+                    });
+                })
+                .catch(err => { 
+                    console.error("Master-fil fel vid hämtning av KPI:", err);
+                    document.getElementById(elementId).innerText = "Fel"; 
+                });
+        }
+
+        window.addEventListener('load', () => {
+            hamtaSenasteVarde("Data_Diagram_PX1.csv", "Befolkning_Kvartal", "kpi-befolkning");
+            hamtaSenasteVarde("Data_Diagram_PX2.csv", "Sysselsatta_Kvartal", "kpi-sysselsatta");
+        });
+
+        function skickaTillDiagrammen() {
+            const berakning = document.getElementById("master-berakning").value;
+            const grafTyp = document.getElementById("master-graftyp").value;
+            const kvartal = document.getElementById("master-kvartal").value;
+            const tid = document.getElementById("master-tid").value;
+            const visaIndex = document.getElementById("master-index").value === "index";
+
+            const kvartalSelect = document.getElementById("master-kvartal");
+            if (grafTyp === "stapel") {
+                kvartalSelect.style.display = "inline-block";
+            } else {
+                kvartalSelect.style.display = "none";
+            }
+
+            for (let i = 1; i <= 4; i++) {
+                const iframe = document.getElementById("iframe" + i);
+                if (iframe && iframe.contentWindow && typeof iframe.contentWindow.uppdateraFranMaster === "function") {
+                    iframe.contentWindow.uppdateraFranMaster(berakning, grafTyp, kvartal, tid, visaIndex);
+                }
+            }
+        }
+        
+        window.addEventListener('load', () => { 
+            setTimeout(skickaTillDiagrammen, 600); 
+        });
+    </script>
+</body>
+</html>

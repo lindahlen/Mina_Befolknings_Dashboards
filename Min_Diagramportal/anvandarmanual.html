@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Användarguide - Dashboard för Kommunjämförelser</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #005596;
+            --primary-dark: #003d6b;
+            --bg-color: #f4f7f6;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            color: #333;
+        }
+
+        /* Matchar den nya, polerade dashboarden */
+        .header-bar {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+            color: white;
+            padding: 15px 30px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .logga-titel-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logotyp {
+            height: 45px; 
+            object-fit: contain;
+            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        .header-title {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            background-color: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        
+        .back-btn:hover { 
+            background-color: white; 
+            color: var(--primary-blue); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Innehålls-yta */
+        .manual-container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: white;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+        .manual-container h2 {
+            color: var(--primary-blue);
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            font-weight: bold;
+        }
+
+        .manual-container h2:first-child {
+            margin-top: 0;
+        }
+
+        .manual-container h3 {
+            color: #495057;
+            margin-top: 25px;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .manual-container p, .manual-container li {
+            line-height: 1.7;
+            color: #555;
+            font-size: 1.05rem;
+        }
+
+        .info-box {
+            background-color: #f0f7ff;
+            border-left: 5px solid var(--primary-blue);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* Färgförklaringar */
+        .farg-boll {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            margin-right: 10px;
+            vertical-align: middle;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .bg-gron { background-color: #009E73; }
+        .bg-orange { background-color: #D55E00; }
+        .bg-gra { background-color: #6c757d; }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="logga-titel-container">
+            <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" class="logotyp" onerror="this.style.display='none'">
+            <h1 class="header-title">Användarguide</h1>
+        </div>
+        <a href="dashboard_px.html" class="back-btn">← Tillbaka till Dashboard</a>
+    </div>
+
+    <div class="manual-container">
+        <h2>Välkommen till systemet för Kommunjämförelser</h2>
+        <p>Denna dashboard är utvecklad för att ge en snabb, djupgående och interaktiv överblick av kvartalsuppföljningen gällande befolkning, sysselsättning, bostadsbyggande och arbetslöshet i Linköpings kommun.</p>
+
+        <div class="info-box">
+            <strong>💡 Snabbtips: Interaktiva grafer!</strong> Alla diagram är klickbara. Klicka på grafernas punkter eller staplar för att göra en "drill-down" och direkt se underliggande detaljer och branschfördelningar för den specifika datan.
+        </div>
+
+        <h2>Huvudmenyn (Toppanelen)</h2>
+        <p>Högst upp på sidan hittar du den centrala kontrollpanelen. De val du gör här styr automatiskt alla fyra diagrammen samtidigt, vilket gör det enkelt att byta perspektiv.</p>
+        <ul>
+            <li><strong>Rullande 12 månader / Aktuellt kvartal:</strong> Välj om du vill se det enskilda kvartalets värde (kan vara mycket säsongsberoende), eller en utjämnad trend över de senaste fyra kvartalen.</li>
+            <li><strong>Linje / Stapel:</strong> Linjediagram passar bäst för att se utveckling över tid, medan stapeldiagram är idealiska för att jämföra ett enskilt, specifikt kvartal år för år.</li>
+            <li><strong>Tidsperiod:</strong> Välj hur många år bakåt i tiden du vill att graferna ska visa (t.ex. senaste 5 åren eller all tillgänglig historik).</li>
+            <li><strong>Indexering:</strong> Genom att välja "Visa som Index (Basår=100)" sätts startvärdet i graferna automatiskt till 100. Detta är ett oerhört kraftfullt verktyg för att jämföra den <em>procentuella</em> utvecklingen och tillväxttakten mellan Linköping och andra kommuner av olika storlek.</li>
+        </ul>
+
+        <h2>Färgkoder och Trendindikatorer</h2>
+        <p>Över varje diagram finns en informationsruta som visar det senaste kvartalets utfall jämfört med uppsatta mål, historiska snitt och prognoser. Färgerna och symbolerna hjälper dig att snabbt tolka resultatet:</p>
+        <ul style="list-style: none; padding-left: 0;">
+            <li style="margin-bottom: 10px;"><span class="farg-boll bg-gron"></span><strong>Grön:</strong> Utfallet är bättre än, eller uppfyller, prognosen/målet.</li>
+            <li style="margin-bottom: 10px;"><span class="farg-boll bg-orange"></span><strong>Orange:</strong> Utfallet är sämre än prognosen/målet och avviker mer än det tillåtna tröskelvärdet.</li>
+            <li style="margin-bottom: 10px;"><span class="farg-boll bg-gra"></span><strong>Grå:</strong> Utfallet ligger inom den definierade felmarginalen (tröskelvärdet) och bedöms vara i fas. Används även som standard när ett specifikt mål saknas för perioden.</li>
+        </ul>
+        <p>Inuti den färgade bollen visas även en <strong>pil (↑, ↓, →)</strong>. Pilen indikerar riktningen på trenden jämfört med <em>samma kvartal föregående år</em>. En pil åt höger innebär en stabil utveckling utan betydande statistiska avvikelser.</p>
+
+        <h2>Om Diagrammen och Drill-down (Djupdykning)</h2>
+        <p>Genom att klicka på datan i diagrammen kan du borra dig ner (drill-down) och se vad som driver utvecklingen. Här är en beskrivning av de fyra områdena och vad du kan klicka fram:</p>
+        
+        <h3>1. Befolkningsutveckling (Blått diagram)</h3>
+        <p><strong>Fokus:</strong> Demografiska förändringar och flyttmönster.</p>
+        <p><strong>Drill-down:</strong> Klickar du på den totala befolkningsutvecklingen bryts trenden omedelbart ner i två tydliga staplar: <em>Födelseöverskott</em> (födda minus döda) och <em>Flyttningsnetto</em> (inflyttade minus utflyttade), färgkodade i rött eller grönt beroende på om de bidrar positivt eller negativt till tillväxten.</p>
+
+        <h3>2. Sysselsättning (Grönt diagram)</h3>
+        <p><strong>Fokus:</strong> Arbetsmarknad och näringslivets struktur.</p>
+        <p><strong>Drill-down:</strong> Systemet anpassar sig smart efter vad du tittar på. Klickar du på totalt antal sysselsatta får du fram ett detaljerat <em>cirkeldiagram</em> över fördelningen på branscher. Klickar du däremot på Sysselsättningsgrad visas ett <em>nytt linjediagram över tid</em> för undergrupperna (Inrikes/Utrikes födda), där y-axeln automatiskt beskärs för att ge en perfekt zoomad vy över utvecklingen.</p>
+
+        <h3>3. Bostadsbyggande (Orange diagram)</h3>
+        <p><strong>Fokus:</strong> Byggtakt och bostadsförsörjning.</p>
+        <p><strong>Drill-down:</strong> Klickar du på graferna för Påbörjade eller Färdigställda bostäder visas ett <em>cirkeldiagram</em> som tydligt illustrerar den exakta fördelningen mellan <em>Småhus</em> och <em>Flerbostadshus</em> för den aktuella perioden, både i absoluta tal och i procent.</p>
+
+        <h3>4. Arbetslöshet (Lila diagram)</h3>
+        <p><strong>Fokus:</strong> Utanförskap och arbetsförmedlingens statistik.</p>
+        <p><strong>Drill-down:</strong> Eftersom det är viktigt att följa trenden för utsatta grupper över tid, öppnar ett klick på arbetslöshetsindikatorerna (t.ex. Långtidsarbetslösa) ett <em>nytt linjediagram</em>. Detta diagram behåller tidsaxeln och visar hur arbetslösheten för specifika undergrupper (ungdomar, inrikes/utrikes födda, svag konkurrensförmåga) har utvecklats parallellt.</p>
+
+        <h2>Jämför med andra kommuner & Ladda ner data</h2>
+        <p><strong>Jämförelser:</strong> I varje enskilt diagram finns en rullista uppe till vänster. Här kan du välja att jämföra Linköpings utveckling med till exempel Riket, Uppsala, eller snittet av de 12 största kommunerna. Om <em>Indexering</em> är aktiverat visas jämförelsen på samma axel, annars används dubbla axlar för att bibehålla proportionerna.</p>
+        <p><strong>Dataexport:</strong> Under varje graf finns en knapp märkt "📥 Ladda ner data (.csv)". Klickar du på denna laddas exakt den data som visas i grafen ned till din dator, redo att öppnas direkt i Excel för vidare bearbetning.</p>
+    </div>
+
+</body>
+</html>

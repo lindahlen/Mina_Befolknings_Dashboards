@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="author" content="DITT FÖR- OCH EFTERNAMN, DIN AVDELNING">
+    <meta name="description" content="Ett interaktivt BI-system och dashboard för kvartalsuppföljning av kommungemensamma indikatorer såsom befolkning, sysselsättning, bostäder och arbetslöshet.">
+    <meta name="keywords" content="BI, Dashboard, Kvartalsuppföljning, Statistik, SCB, Befolkningsutveckling, Arbetsmarknad, Bostadsbyggande, Prognoser">
+    
+    <title>Diagram 11</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        /* FINJUSTERADE MARGINALER FÖR PERFEKT BALANS UTAN SCROLL */
+        body { font-family: Arial, sans-serif; margin: 0; padding: 12px 15px; display: flex; flex-direction: column; align-items: center; background-color: white;}
+        .top-rad { display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 10px; }
+        
+        select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background-color: #f8f9fa; cursor: pointer; font-weight: bold; }
+        
+        .trend-ruta { padding: 8px 15px; border-radius: 6px; background-color: #f4f7f6; border: 1px solid #ddd; font-size: 15px; font-weight: bold; display: none; align-items: center; }
+        
+        /* Färgklasser för texten och bollen */
+        .trend-bra { color: #009E73; display: flex; align-items: center; }     
+        .trend-dalig { color: #D55E00; display: flex; align-items: center; }   
+        .trend-neutral { color: #868e96; display: flex; align-items: center; } 
+        
+        .pil-boll {
+            display: inline-flex; justify-content: center; align-items: center;
+            width: 28px; height: 28px; border-radius: 50%; color: white;
+            font-size: 20px; font-weight: 900; -webkit-text-stroke: 1.5px white; margin-right: 10px;
+        }
+
+        .trend-bra .pil-boll { background-color: #009E73; }    
+        .trend-dalig .pil-boll { background-color: #D55E00; }  
+        .trend-neutral .pil-boll { background-color: #868e96; } 
+
+        /* PERFEKT HÖJD: Fyller ut rutan snyggt men undviker scrollist */
+        .canvas-container { width: 100%; height: 343px; }
+        #felmeddelande { color: #dc3545; font-weight: bold; text-align: center; margin-bottom: 10px; font-size: 14px; }
+        
+        /* Design för nedladdningsknappen - Diskret grå */
+        .nedladdning-btn {
+            padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid #ccc; 
+            background: #f8f9fa; border-radius: 4px; font-weight: bold; color: #6c757d;
+            transition: background 0.2s, color 0.2s; display: inline-block;
+        }
+        .nedladdning-btn:hover { background: #e2e6ea; color: #495057; }
+        
+        /* Ser till att bottenraden fäster snyggt i underkant */
+        .botten-rad { width: 100%; text-align: right; margin-top: 10px; margin-bottom: 0; }
+    </style>
+</head>
+<body>
+
+    <div id="felmeddelande"></div>
+
+    <div class="top-rad">
+         <select id="indikator" onchange="uppdateraDiagram()">
+            <option value="Inskrivna_arbetslösa">Antal inskrivna arbetslösa</option>
+            <option value="Inrikes_födda_arbetslösa">Antal inrikes födda arbetslösa</option>
+            <option value="Utrikes_födda_arbetslösa">Antal utrikes födda arbetslösa</option>
+            <option value="Ungdomar_arbetslösa">Antal ungdomar 18-24 år arbetslösa</option>
+            <option value="Långtidsarbetslösa">Antal långtidsarbetslösa</option>
+            <option value="Inskrivna_arbetslösa_%">Andel inskrivna arbetslösa</option>
+            <option value="Inrikes_födda_arbetslösa_%">Andel inrikes födda arbetslösa</option>
+            <option value="Utrikes_födda_arbetslösa_%">Andel utrikes födda arbetslösa</option>
+            <option value="Ungdomar_arbetslösa_%">Andel ungdomar 18-24 år arbetslösa</option>
+            <option value="Långtidsarbetslösa_%">Andel långtidsarbetslösa</option>
+        </select>
+
+        <div id="trend-ruta" class="trend-ruta">
+            <span id="avvikelse-text">Laddar...</span>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="mittDiagram"></canvas>
+    </div>
+
+    <div class="botten-rad">
+        <button class="nedladdning-btn" onclick="laddaNerCSV()">📥 Ladda ner data (.csv)</button>
+    </div>
+
+    <script>
+        const csvFilnamn = "Data_Diagram14.csv"; 
+
+        // ==========================================
+        // 🎨 FÄRGER FÖR GRAFEN OCH LINJEN (DIAGRAM 14 - Arbetslöshet / Elegant Lila)
+        // ==========================================
+        const FARG_BRA = '#009E73';             
+        const FARG_DALIG = '#D55E00';           
+        const FARG_NEUTRAL_PUNKT = '#CED4DA';        
+        const FARG_NEUTRAL_STAPEL = '#868e96';       
+        
+        // Unika färger för detta diagram (används vid Aktuellt Kvartal)
+        const FARG_AKTUELLT_LINJE_PUNKT = '#452080'; 
+        const FARG_LINJE = 'rgba(111, 66, 193, 0.4)';
+        // ==========================================
+
+        let globalBerakning = "_R12"; 
+        let globalGrafTyp = "linje";
+        let globalKvartal = "1";
+        let csvData = [];
+        let myChart = null;
+        let dataForNedladdning = ""; 
+
+        fetch(csvFilnamn)
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                let decoder = new TextDecoder("utf-8");
+                let text = decoder.decode(buffer);
+                if (text.includes("")) { decoder = new TextDecoder("windows-1252"); text = decoder.decode(buffer); }
+                text = text.trim().replace(/^\uFEFF/i, '');
+
+                Papa.parse(text, {
+                    header: true, skipEmptyLines: true, delimiter: ";", transformHeader: function(h) { return h.trim(); },
+                    complete: function(results) {
+                        csvData = results.data;
+                        if(csvData.length === 0) { document.getElementById("felmeddelande").innerText = "Filen är tom."; } 
+                        else { uppdateraDiagram(); }
+                    }
+                });
+            })
+            .catch(error => { document.getElementById("felmeddelande").innerText = "Hittade inte filen: " + csvFilnamn; });
+
+        window.uppdateraFranMaster = function(berakning, grafTyp, kvartal) {
+            globalBerakning = berakning; globalGrafTyp = grafTyp; globalKvartal = kvartal;
+            uppdateraDiagram(); 
+        };
+
+        function tvattaSiffra(val) {
+            if (val === undefined || val === null) return null;
+            let str = val.toString().trim();
+            if (str === ".." || str === "" || str === "-") return null;
+            str = str.replace(',', '.').replace(/\s/g, ''); 
+            let siffra = parseFloat(str);
+            return isNaN(siffra) ? null : siffra;
+        }
+
+        function beraknaTroskel(troskelRaw, jamforelseVarde) {
+            if (!troskelRaw) return 0;
+            let rawStr = troskelRaw.toString().trim();
+            if (rawStr.includes("%")) {
+                let proc = parseFloat(rawStr.replace("%", "").replace(",", ".")) / 100;
+                return isNaN(proc) ? 0 : Math.abs(jamforelseVarde * proc);
+            }
+            let absVarde = parseFloat(rawStr.replace(",", "."));
+            return isNaN(absVarde) ? 0 : absVarde;
+        }
+
+        window.laddaNerCSV = function() {
+            if (!dataForNedladdning) return;
+            let encodedUri = encodeURI(dataForNedladdning);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Export_${document.getElementById("indikator").value}${globalBerakning}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        };
+
+        function uppdateraDiagram() {
+            if (csvData.length === 0) return;
+
+            const indikator = document.getElementById("indikator").value;
+            const kolumnNamn = indikator + globalBerakning; 
+            const prognosKolumnNamn = indikator + "_Prognos"; 
+            const polaritetKolumn = indikator + "_Polaritet";
+            const troskelKolumn = indikator + "_Troskel";
+            const rubrikText = document.getElementById("indikator").options[document.getElementById("indikator").selectedIndex].text;
+
+            const arKolumn = Object.keys(csvData[0])[0]; 
+            const kvartalKolumn = Object.keys(csvData[0])[1]; 
+
+            let etiketter = [], varden = [], prognosVarden = [], punktFarger = []; 
+            let arLista = [], kvartalLista = [];
+
+            dataForNedladdning = "data:text/csv;charset=utf-8,\uFEFF";
+            dataForNedladdning += globalBerakning === "_R12" ? "Tidpunkt;Utfall;Prognos\n" : "Tidpunkt;Utfall\n";
+
+            csvData.forEach(rad => {
+                let taMedRad = false;
+                if (globalGrafTyp === "linje" && rad[arKolumn] && rad[kvartalKolumn]) { taMedRad = true; } 
+                else if (globalGrafTyp !== "linje" && rad[arKolumn] && parseInt(rad[kvartalKolumn]) === parseInt(globalKvartal)) { taMedRad = true; }
+
+                if (taMedRad) {
+                    let tidpunkt = globalGrafTyp === "linje" ? (rad[arKolumn] + " Q" + parseInt(rad[kvartalKolumn])) : rad[arKolumn];
+                    etiketter.push(tidpunkt);
+                    arLista.push(parseInt(rad[arKolumn]));
+                    kvartalLista.push(parseInt(rad[kvartalKolumn]));
+
+                    let varde = tvattaSiffra(rad[kolumnNamn]);
+                    let prognos = globalBerakning === "_R12" ? tvattaSiffra(rad[prognosKolumnNamn]) : null;
+                    
+                    varden.push(varde);
+                    prognosVarden.push(prognos);
+
+                    let drawColor = FARG_NEUTRAL_PUNKT;
+
+                    if (globalGrafTyp === "stapel") {
+                        let vardeForFarg = (globalBerakning === "_R12") ? varde : tvattaSiffra(rad[indikator + "_R12"]);
+                        let prognosForFarg = tvattaSiffra(rad[prognosKolumnNamn]);
+
+                        if (vardeForFarg !== null && prognosForFarg !== null) {
+                            let diff = vardeForFarg - prognosForFarg;
+                            let polaritet = rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög";
+                            let troskelAbsolut = beraknaTroskel(rad[troskelKolumn], prognosForFarg);
+
+                            if (Math.abs(diff) <= troskelAbsolut) {
+                                drawColor = FARG_NEUTRAL_STAPEL; 
+                            } else {
+                                let arBra = (polaritet === "låg") ? (diff < 0) : (diff > 0);
+                                drawColor = arBra ? FARG_BRA : FARG_DALIG;
+                            }
+                        } else {
+                            drawColor = FARG_NEUTRAL_STAPEL;
+                        }
+                    } else {
+                        if (globalBerakning === "_R12") {
+                            if (varde !== null && prognos !== null) {
+                                let diff = varde - prognos;
+                                let polaritet = rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög";
+                                let troskelAbsolut = beraknaTroskel(rad[troskelKolumn], prognos);
+
+                                if (Math.abs(diff) <= troskelAbsolut) {
+                                    drawColor = FARG_NEUTRAL_PUNKT; 
+                                } else {
+                                    let arBra = (polaritet === "låg") ? (diff < 0) : (diff > 0);
+                                    drawColor = arBra ? FARG_BRA : FARG_DALIG;
+                                }
+                            } else {
+                                drawColor = FARG_NEUTRAL_PUNKT; 
+                            }
+                        } else {
+                            // Här används temafärgen för Aktuellt Kvartal Linje!
+                            drawColor = FARG_AKTUELLT_LINJE_PUNKT;
+                        }
+                    }
+
+                    punktFarger.push(drawColor);
+
+                    let csvVarde = varde !== null ? varde : "";
+                    let csvPrognos = prognos !== null ? prognos : "";
+                    dataForNedladdning += globalBerakning === "_R12" ? `${tidpunkt};${csvVarde};${csvPrognos}\n` : `${tidpunkt};${csvVarde}\n`;
+                }
+            });
+
+            let trendRuta = document.getElementById("trend-ruta");
+            trendRuta.style.display = "block"; 
+            
+            let lastIndex = -1;
+            for(let i = varden.length - 1; i >= 0; i--) {
+                if(varden[i] !== null) { lastIndex = i; break; }
+            }
+
+            if (lastIndex !== -1) {
+                let lastVal = varden[lastIndex];
+                let lastPrognos = prognosVarden[lastIndex];
+                
+                let aktuellRad = csvData[csvData.length - 1]; 
+                
+                let prevVal = null;
+                let targetAr, targetKvartal;
+                
+                if (globalBerakning === "_R12" || globalGrafTyp === "stapel") {
+                    targetAr = arLista[lastIndex] - 1; 
+                    targetKvartal = kvartalLista[lastIndex];
+                } else {
+                    targetAr = kvartalLista[lastIndex] === 1 ? arLista[lastIndex] - 1 : arLista[lastIndex];
+                    targetKvartal = kvartalLista[lastIndex] === 1 ? 4 : kvartalLista[lastIndex] - 1;
+                }
+
+                for(let i = lastIndex - 1; i >= 0; i--) {
+                    if (arLista[i] === targetAr && kvartalLista[i] === targetKvartal && varden[i] !== null) {
+                        prevVal = varden[i];
+                        break;
+                    }
+                }
+
+                let trendPil = "→";
+                if (prevVal !== null) {
+                    let diffTrend = lastVal - prevVal;
+                    let trendTroskel = (globalBerakning === "_R12") ? beraknaTroskel(aktuellRad[troskelKolumn], prevVal) : 0; 
+                    
+                    if (Math.abs(diffTrend) <= trendTroskel) { trendPil = "→"; } 
+                    else if (diffTrend > 0) { trendPil = "↑"; } 
+                    else { trendPil = "↓"; }
+                }
+
+                if (globalBerakning === "_R12" && lastPrognos !== null) {
+                    let diffPrognos = lastVal - lastPrognos;
+                    let polaritet = aktuellRad[polaritetKolumn] ? aktuellRad[polaritetKolumn].toString().trim().toLowerCase() : "hög";
+                    let troskelAbsolut = beraknaTroskel(aktuellRad[troskelKolumn], lastPrognos);
+
+                    let textKlass = "trend-neutral";
+                    if (Math.abs(diffPrognos) > troskelAbsolut) {
+                        let arBra = (polaritet === "låg") ? (diffPrognos < 0) : (diffPrognos > 0);
+                        textKlass = arBra ? "trend-bra" : "trend-dalig";
+                    }
+
+                    let diffText = Math.abs(diffPrognos).toLocaleString('sv-SE');
+                    let overUnderText = diffPrognos >= 0 ? "över" : "under";
+                    let extrainfo = Math.abs(diffPrognos) <= troskelAbsolut ? " (Inom mål)" : "";
+
+                    document.getElementById("avvikelse-text").innerHTML = 
+                        `<span class="${textKlass}"><span class="pil-boll">${trendPil}</span> Ligger ${diffText} ${overUnderText} prognos ${extrainfo}</span>`;
+                } else {
+                    let formateratVarde = lastVal.toLocaleString('sv-SE');
+                    document.getElementById("avvikelse-text").innerHTML = 
+                        `<span class="trend-neutral"><span class="pil-boll">${trendPil}</span> ${formateratVarde}</span>`;
+                }
+
+            } else {
+                document.getElementById("avvikelse-text").innerHTML = "<span class='trend-neutral'><span class='pil-boll'>?</span> Saknar data</span>";
+            }
+
+            if (myChart != null) myChart.destroy();
+
+            let datasetsArray = [{
+                label: rubrikText + " (Utfall)",
+                data: varden,
+                backgroundColor: globalGrafTyp === 'linje' ? 'transparent' : punktFarger,
+                borderColor: globalGrafTyp === 'linje' ? FARG_LINJE : punktFarger,
+                pointBackgroundColor: punktFarger, 
+                pointBorderColor: punktFarger, 
+                pointRadius: 6, 
+                borderWidth: 2,
+                tension: 0.1
+            }];
+
+            if (globalGrafTyp === "linje" && globalBerakning === "_R12") {
+                datasetsArray.push({
+                    label: "Prognos",
+                    data: prognosVarden,
+                    backgroundColor: 'transparent',
+                    borderColor: '#6c757d', 
+                    borderDash: [5, 5], 
+                    pointRadius: 0, 
+                    borderWidth: 2,
+                    tension: 0.1
+                });
+            }
+
+            const ctx = document.getElementById('mittDiagram').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: globalGrafTyp === 'linje' ? 'line' : 'bar',
+                data: { labels: etiketter, datasets: datasetsArray },
+                options: { responsive: true, maintainAspectRatio: false, spanGaps: false }
+            });
+        }
+    </script>
+</body>
+</html>

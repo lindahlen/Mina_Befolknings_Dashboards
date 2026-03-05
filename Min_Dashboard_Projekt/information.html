@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Om datan - Kvartalsuppföljning</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; line-height: 1.6; }
+        .toppmeny { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        h1 { margin: 0; font-size: 1.8em; color: #2c3e50; }
+        .tillbaka-knapp { text-decoration: none; background-color: #007BFF; color: white; padding: 10px 15px; border-radius: 6px; font-weight: bold; transition: background 0.2s; }
+        .tillbaka-knapp:hover { background-color: #0056b3; }
+        .innehall { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .intro-text { font-size: 1.1em; color: #555; margin-bottom: 30px; }
+        
+        .info-kort { background-color: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); margin-bottom: 25px; border-left: 5px solid #ccc; }
+        .info-kort h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #f4f7f6; padding-bottom: 10px; }
+        .info-kort h3 { color: #007BFF; margin-bottom: 5px; }
+        
+        /* Exempel-boll för förklaringen */
+        .exempel-boll {
+            display: inline-flex; justify-content: center; align-items: center;
+            width: 24px; height: 24px; border-radius: 50%; background-color: #004a99; color: white;
+            font-size: 16px; font-weight: bold; margin-right: 5px; vertical-align: middle;
+        }
+
+        .kort-metod { border-left-color: #6c757d; }
+        .kort-befolkning { border-left-color: #007BFF; }
+        .kort-arbetsmarknad { border-left-color: #20c997; }
+        .kort-bostader { border-left-color: #FF851B; }
+        .kort-arbetsloshet { border-left-color: #6f42c1; }
+    </style>
+</head>
+<body>
+
+    <header class="toppmeny">
+        <h1>ℹ️ Om datan i Kvartalsuppföljningen</h1>
+        <a href="dashboard.html" class="tillbaka-knapp">⬅ Tillbaka till Dashboard</a>
+    </header>
+
+    <div class="innehall">
+        
+        <p class="intro-text">
+            Här hittar du bakgrundsinformation, definitioner och läsanvisningar för att på bästa sätt kunna tolka diagrammen i kvartalsuppföljningen. All data hämtas löpande från SCB och andra nationella register.
+        </p>
+
+        <div class="info-kort kort-metod">
+            <h2>Så läser du dashboarden</h2>
+            
+            <h3>Aktuellt Kvartal vs. Rullande 12 månader</h3>
+            <p>I menyn kan du välja mellan två olika sätt att beräkna och visa datan:</p>
+            <ul>
+                <li><strong>Aktuellt Kvartal:</strong> Visar den exakta siffran för just de tre månaderna som ingår i ett kvartal (t.ex. hur många som flyttade in under Q3). Detta är bra för att se plötsliga händelser, men kan påverkas kraftigt av säsongsvariationer (exempelvis studiestarter på hösten eller lägre byggtakt på vintern).</li>
+                <li><strong>Rullande 12 mån (R12):</strong> Visar summan eller snittet av det aktuella kvartalet <em>plus de tre föregående kvartalen</em> (ett helt år bakåt i tiden). Detta jämnar ut säsongsvariationerna och ger en mycket tydligare och mer rättvisande bild av den långsiktiga trenden.</li>
+                <br>
+                <li><em>Sammanfattningsvis visar aktuellt kvartal de uppgifter som gäller för respektive kvartal medan rullande 12 innebär en summering för det som har hänt under de senaste tolv månaderna (de fyra senaste kvartalen).</em> 
+                <br>
+                <em>Utveckling över tid visar den löpande utvecklingen kvartal för kvartal, medan jämför kvartal visar situationen jämfört med motsvarande kvartal tidigare år. Det finns i sin tur sedan möjlighet att välja vilket kvartal (1 till 4) som uppgifterna ska avse.</em>
+            </li>
+            </ul>
+
+            <h3 style="margin-top: 20px;">Vad betyder trendpilarna?</h3>
+            <p>Högst upp till höger i varje diagram visas det senast uppmätta värdet tillsammans med en färgad boll och en pil <span class="exempel-boll">↑</span>.</p>
+            <p>Pilens riktning anpassas automatiskt beroende på vilken beräkning du har valt:</p>
+            <ul>
+                <li>När du tittar på <strong>Aktuellt Kvartal som "Utveckling över tid" (linjediagram)</strong> jämförs siffran med <em>närmast föregående kvartal</em> (t.ex. Q3 jämförs med Q2). Detta ger en snabb indikation på den omedelbara riktningen.</li>
+                <li>När du tittar på <strong>Rullande 12 månader</strong>, ELLER när du väljer <strong>"Jämför kvartal" (stapeldiagram)</strong>, jämförs siffran istället med <em>samma kvartal föregående år</em>. Detta filtrerar bort säsongsvariationer och ger den mest pålitliga bilden av hur vi ligger till långsiktigt.</li>
+            </ul>
+        </div>
+
+        <div class="info-kort kort-befolkning">
+            <h2>Diagram 1: Befolkningsutveckling</h2>
+            <p><strong>Källa:</strong> SCB (Statistiska centralbyrån).</p>
+            <p><strong>Att tänka på:</strong> Här visas information om den totala befolkningsutvecklingen i Linköpings kommun. Uppgifter finns vid sidan om befolkningsutvecklingen, även om antalet levande födda barn, antalet avlidna, samt antalet in- och utflyttade personer per kvartal. Dessutom visas information om den totala folkmängden i kommunen. 
+            <br><br>
+            Det finns en stark säsongsvariation när det gäller befolkningens utveckling under året. Under kvartal 2 har kommunen alltid en omfattande utflyttning, vilket sedan kompenseras av en stor inflyttning under kvartal 3 i samband med terminsstart för universitetsstudenterna. Ett sätt att jämna ut dessa säsongsvariationer är att studera årstakten för utvecklingen i form av rullande 12 månader.</p>
+        </div>
+
+        <div class="info-kort kort-arbetsmarknad">
+            <h2>Diagram 2: Sysselsättning och Arbetsmarknad</h2>
+            <p><strong>Källa:</strong> SCB.</p>
+            <p><strong>Att tänka på:</strong> Uppgifterna avser dagbefolkningen, dvs. de som har sin arbetsplats i kommunen. Uppgifterna är genomgående preliminära och här redovisade revideras inte i efterhand. 
+            <br>
+            Vid sidan om det totala antalet sysselsatta redovisas även uppgifter för ett antal centrala näringsgrenar.</p>
+        </div>
+
+        <div class="info-kort kort-bostader">
+            <h2>Diagram 3: Bostadsbyggande</h2>
+            <p><strong>Källa:</strong> SCB.</p>
+            <p><strong>Att tänka på:</strong> Påbörjade bostäder avser de bostäder som har börjat att byggas under respektive kvartal och färdigställda bostäder avser bostäder som är färdiga för inflyttning. Uppgifterna för det senaste kvartalet är preliminära och kan komma att revideras. 
+            <br><br>
+            Samtliga uppgifter avser bostäder i <strong>nybyggda hus</strong>. Nettotillskott av bostäder i samband med ombyggnation av hus ingår inte i de redovisade uppgifterna.</p>
+        </div>
+
+        <div class="info-kort kort-arbetsloshet">
+            <h2>Diagram 4: Arbetslöshet</h2>
+            <p><strong>Källa:</strong> Arbetsförmedlingen.</p>
+            <p><strong>Att tänka på:</strong> Här visas information om både antalet inskrivna arbetslösa och uppgifter den relativa arbetslösheten (procent). Uppgifterna 2020 och 2021 avser åldern 16-64 år medan uppgifterna 2022-2025 avser åldern 16-65 år. Från och med 2026 avses åldern 16-66 år. Långtidsarbetslöshet avser personer som har varit inskrivna arbetslösa i minst 12 månader. 
+            <br><br>
+            <em>Kvartal 1</em> representeras av mars månad, <em>kvartal 2</em> av maj månad, <em>kvartal 3</em> av augusti månad och <em>kvartal 4</em> av oktober månad. Att det inte är en jämn fördelning i avstånd mellan månaderna beror på en ambition att minska effekten av säsongsvariation, under sommaren samt vid årsskiftet ökar arbetslösheten säsongsmässigt. Mars månad används ofta för att beskriva arbetslösheten under våren och oktober månad för att göra detsamma under hösten.
+            </p>
+        </div>
+
+    </div>
+
+</body>
+</html>

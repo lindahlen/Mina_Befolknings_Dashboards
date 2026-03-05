@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagram 1 - Befolkning med Drill-down</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 10px 15px; display: flex; flex-direction: column; align-items: center; background-color: white;}
+        .top-rad { display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 8px; }
+        .kontroller-vanster { display: flex; gap: 10px; align-items: center; }
+        select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background-color: #f8f9fa; cursor: pointer; font-weight: bold; }
+        .toggle-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background-color: #f8f9fa; cursor: pointer; font-weight: bold; color: #495057; display: flex; align-items: center; gap: 5px; transition: all 0.2s; }
+        .toggle-btn.active { background-color: #495057; color: white; border-color: #343a40; }
+        .trend-ruta { padding: 8px 15px; border-radius: 6px; background-color: #f4f7f6; border: 1px solid #ddd; font-size: 15px; font-weight: bold; display: none; align-items: center; }
+        
+        .trend-bra { color: #009E73; display: flex; align-items: center; }     
+        .trend-dalig { color: #D55E00; display: flex; align-items: center; }   
+        .trend-neutral { color: #6c757d; display: flex; align-items: center; } 
+        
+        .pil-boll { display: inline-flex; justify-content: center; align-items: center; width: 28px; height: 28px; border-radius: 50%; color: white; font-size: 20px; font-weight: 900; -webkit-text-stroke: 1.5px white; margin-right: 10px; }
+        .trend-bra .pil-boll { background-color: #009E73; }    
+        .trend-dalig .pil-boll { background-color: #D55E00; }  
+        .trend-neutral .pil-boll { background-color: #6c757d; } 
+                /* Låser bredden på huvudrullistan så den inte blir för bred */
+        select#indikator {
+            max-width: 200px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        /* Låser bredden på jämförelserullistan så den inte puttar bort trendbollen */
+        select#compareRegion {
+            max-width: 180px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        
+        .canvas-container { width: 100%; height: 320px; position: relative; }
+        #main-view { transition: opacity 0.3s ease; }
+        #drilldown-view { transition: opacity 0.3s ease; display: none; background: #f8fbff; border-radius: 8px; border: 1px solid #e0ecf8; padding: 15px; box-sizing: border-box;}
+        
+        #felmeddelande { color: #dc3545; font-weight: bold; text-align: center; margin-bottom: 8px; font-size: 14px; }
+        
+        .botten-rad { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 15px; }
+        .botten-info { font-size: 12px; color: #6c757d; font-style: italic; }
+        .nedladdning-btn { margin-left: auto; padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid #ccc; background: #f8f9fa; border-radius: 4px; font-weight: bold; color: #6c757d; transition: background 0.2s, color 0.2s; display: inline-block; }
+        .nedladdning-btn:hover { background: #e2e6ea; color: #495057; }
+        
+        .tillbaka-btn { background-color: #005596; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .tillbaka-btn:hover { background-color: #003d6b; }
+    </style>
+</head>
+<body>
+    <div id="felmeddelande"></div>
+    <div class="top-rad" id="topp-kontroller">
+        <div class="kontroller-vanster">
+            <select id="indikator" onchange="uppdateraDiagram()">
+                <option value="Befolkningsförändring">Befolkningsförändring</option>
+                <option value="Födda_barn">Födda barn</option>
+                <option value="Döda">Döda</option>
+                <option value="Inflyttning">Inflyttning</option>
+                <option value="Utflyttning">Utflyttning</option>
+                <option value="Befolkning">Befolkning totalt</option>
+            </select>
+            <select id="compareRegion" onchange="toggleCompareRegion()" class="toggle-btn" style="background-color: #f8f9fa; color: #495057;" title="Välj kommun eller grupp för att jämföra med Linköping">
+                <option value="none">Ingen jämförelse</option>
+                <option value="Riket">Riket</option>
+                <option value="0180">Stockholm</option>
+                <option value="0380">Uppsala</option>
+                <option value="0581">Norrköping</option>
+                <option value="0680">Jönköping</option>
+                <option value="1280">Malmö</option>
+                <option value="1281">Lund</option>
+                <option value="1283">Helsingborg</option>
+                <option value="1480">Göteborg</option>
+                <option value="1880">Örebro</option>
+                <option value="1980">Västerås</option>
+                <option value="2480">Umeå</option>
+                <option value="05">Östergötlands län</option>
+                <option value="2700">Plus 12 (Sveriges 12 största kommuner)</option>
+                <option value="2701">Plus 11 (12 största kommunerna, exkl Linköping)</option>
+                <option value="2703">Plus 9 (Sveriges kommuner i storleksordning 4 till 12)</option>
+                <option value="2707">Plus 5 (Linköping, Norrköping, Jönköping, Västerås, Örebro)</option>
+                <option value="2709">Plus 4 (Norrköping, Jönköping, Västerås, Örebro)</option>
+                <option value="3105">Länet, exkl Linköping</option>
+            </select>
+        </div>
+        <div id="trend-ruta" class="trend-ruta"><span id="avvikelse-text">Laddar...</span></div>
+    </div>
+    
+    <div class="canvas-container" id="main-view"><canvas id="mittDiagram"></canvas></div>
+
+    <div class="canvas-container" id="drilldown-view">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 id="drilldown-titel" style="margin: 0; color: #005596; font-size: 16px;">Komponenter för [Tid]</h3>
+            <button class="tillbaka-btn" onclick="stangDrilldown()">🔙 Tillbaka till trenden</button>
+        </div>
+        <div style="height: 260px; width: 100%;"><canvas id="drilldownDiagram"></canvas></div>
+    </div>
+    
+    <div class="botten-rad" id="botten-rad">
+        <div id="botten-info" class="botten-info"></div>
+        <button class="nedladdning-btn" onclick="laddaNerCSV()">📥 Ladda ner data (.csv)</button>
+    </div>
+
+    <script>
+        const csvFilnamn = "Data_Diagram_PX1.csv"; 
+
+        const FARG_BRA = '#009E73'; const FARG_DALIG = '#D55E00';           
+        const FARG_NEUTRAL_PUNKT = '#CED4DA'; const FARG_NEUTRAL_TEXT_STAPEL = '#6c757d'; 
+        const FARG_RIKET = '#495057';
+
+        const FARG_STAPEL = 'rgba(0, 123, 255, 0.6)'; const FARG_STAPEL_KANT = 'rgba(0, 123, 255, 1)';   
+        const FARG_LINJE = 'rgba(0, 123, 255, 1)'; const FARG_PUNKTER = '#004a99'; 
+
+        const FARG_DD_KATEGORI_1 = 'rgba(54, 162, 235, 0.7)';
+        const FARG_DD_KATEGORI_2 = 'rgba(255, 206, 86, 0.7)';
+        const FARG_DD_KATEGORI_3 = 'rgba(153, 102, 255, 0.7)';
+
+        let globalBerakning = "_R12"; let globalGrafTyp = "linje"; let globalKvartal = "1"; 
+        let selectedCompareRegion = "none"; let globalTid = "5"; 
+        let globalVisaIndex = false; 
+        
+        let csvData = []; let myChart = null; let drillChart = null;
+        let dataForNedladdning = ""; let sparadeRaderForDrilldown = [];
+
+        fetch(csvFilnamn).then(r => r.arrayBuffer()).then(b => {
+            let decoder = new TextDecoder("utf-8"); let text = decoder.decode(b);
+            if (text.includes("\uFFFD")) { decoder = new TextDecoder("windows-1252"); text = decoder.decode(b); }
+            text = text.trim().replace(/^\uFEFF/i, '');
+            Papa.parse(text, { header: true, skipEmptyLines: true, delimiter: ";", transformHeader: h => h.trim(),
+                complete: function(res) { csvData = res.data; csvData.length === 0 ? document.getElementById("felmeddelande").innerText = "Filen är tom." : uppdateraDiagram(); }
+            });
+        }).catch(e => { document.getElementById("felmeddelande").innerText = "Hittade inte filen: " + csvFilnamn; });
+
+        window.uppdateraFranMaster = function(berakning, grafTyp, kvartal, tid, visaIndex) { 
+            globalBerakning = berakning; globalGrafTyp = grafTyp; globalKvartal = kvartal; 
+            if(tid) globalTid = tid; 
+            if(visaIndex !== undefined) globalVisaIndex = visaIndex;
+            uppdateraDiagram(); stangDrilldown(); 
+        };
+        
+        window.toggleCompareRegion = function() { 
+            selectedCompareRegion = document.getElementById("compareRegion").value; 
+            if (selectedCompareRegion !== "none") {
+                document.getElementById("compareRegion").style.backgroundColor = "#495057";
+                document.getElementById("compareRegion").style.color = "white";
+            } else {
+                document.getElementById("compareRegion").style.backgroundColor = "#f8f9fa";
+                document.getElementById("compareRegion").style.color = "#495057";
+            }
+            uppdateraDiagram(); 
+        };
+
+        function tvattaSiffra(val) { if (val === undefined || val === null) return null; let str = val.toString().trim(); if (str === ".." || str === "" || str === "-") return null; let siffra = parseFloat(str.replace(',', '.').replace(/\s/g, '')); return isNaN(siffra) ? null : siffra; }
+        function beraknaTroskel(troskelRaw, jamforelseVarde) { if (!troskelRaw) return 0; let rawStr = troskelRaw.toString().trim(); if (rawStr.includes("%")) return (isNaN(parseFloat(rawStr.replace("%", "").replace(",", "."))) ? 0 : Math.abs(jamforelseVarde * (parseFloat(rawStr.replace("%", "").replace(",", ".")) / 100))); return isNaN(parseFloat(rawStr.replace(",", "."))) ? 0 : parseFloat(rawStr.replace(",", ".")); }
+        window.laddaNerCSV = function() { if (!dataForNedladdning) return; const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), dataForNedladdning], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.setAttribute("href", URL.createObjectURL(blob)); link.setAttribute("download", `Export_${document.getElementById("indikator").value}${globalBerakning}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link); };
+
+        window.stangDrilldown = function() {
+            document.getElementById("drilldown-view").style.display = "none";
+            document.getElementById("main-view").style.display = "block";
+            document.getElementById("topp-kontroller").style.display = "flex";
+            document.getElementById("botten-rad").style.display = "flex"; // Visar bottenraden igen
+        };
+
+        function visaDrilldown(index, tidpunktEtikett, valdIndikator) {
+            let rad = sparadeRaderForDrilldown[index];
+            if (!rad) return;
+            document.getElementById("main-view").style.display = "none";
+            document.getElementById("topp-kontroller").style.display = "none";
+            document.getElementById("botten-rad").style.display = "none"; // Döljer bottenraden
+            document.getElementById("drilldown-view").style.display = "block";
+            
+            let ddLabels = []; let ddData = []; let ddColors = [];
+            
+            if (valdIndikator === "Befolkningsförändring") {
+                document.getElementById("drilldown-titel").innerText = "Komponenter för Befolkningsförändring: " + tidpunktEtikett + " (" + (globalBerakning === "_R12" ? "Rullande 12 mån" : "Kvartalet") + ")";
+                ddLabels = ['Födda', 'Döda', 'Inflyttade', 'Utflyttade'];
+                ddData = [ tvattaSiffra(rad["Födda_barn" + globalBerakning]), tvattaSiffra(rad["Döda" + globalBerakning]), tvattaSiffra(rad["Inflyttning" + globalBerakning]), tvattaSiffra(rad["Utflyttning" + globalBerakning]) ];
+                ddColors = [FARG_BRA, FARG_DALIG, FARG_BRA, FARG_DALIG];
+            } else if (valdIndikator === "Inflyttning") {
+                document.getElementById("drilldown-titel").innerText = "Inflyttning från: " + tidpunktEtikett + " (" + (globalBerakning === "_R12" ? "Rullande 12 mån" : "Kvartalet") + ")";
+                ddLabels = ['Eget län', 'Annat län', 'Utlandet'];
+                ddData = [ tvattaSiffra(rad["Inflyttning_från_eget_län" + globalBerakning]), tvattaSiffra(rad["Inflyttning_från_annat_län" + globalBerakning]), tvattaSiffra(rad["Invandring" + globalBerakning]) ];
+                ddColors = [FARG_DD_KATEGORI_1, FARG_DD_KATEGORI_2, FARG_DD_KATEGORI_3];
+            } else if (valdIndikator === "Utflyttning") {
+                document.getElementById("drilldown-titel").innerText = "Utflyttning till: " + tidpunktEtikett + " (" + (globalBerakning === "_R12" ? "Rullande 12 mån" : "Kvartalet") + ")";
+                ddLabels = ['Eget län', 'Annat län', 'Utlandet'];
+                ddData = [ tvattaSiffra(rad["Utflyttning_till_eget_län" + globalBerakning]), tvattaSiffra(rad["Utflyttning_till_annat_län" + globalBerakning]), tvattaSiffra(rad["Utvandring" + globalBerakning]) ];
+                ddColors = [FARG_DD_KATEGORI_1, FARG_DD_KATEGORI_2, FARG_DD_KATEGORI_3];
+            } else if (valdIndikator === "Befolkning") {
+                document.getElementById("drilldown-titel").innerText = "Drivkrafter för utvecklingen: " + tidpunktEtikett + " (" + (globalBerakning === "_R12" ? "Rullande 12 mån" : "Kvartalet") + ")";
+                ddLabels = ['Födelseöverskott (Födda - Döda)', 'Flyttningsnetto (Inflytt - Utflytt)'];
+                
+                let fodda = tvattaSiffra(rad["Födda_barn" + globalBerakning]) || 0;
+                let doda = tvattaSiffra(rad["Döda" + globalBerakning]) || 0;
+                let inflytt = tvattaSiffra(rad["Inflyttning" + globalBerakning]) || 0;
+                let utflytt = tvattaSiffra(rad["Utflyttning" + globalBerakning]) || 0;
+                
+                let fodelseOverskott = fodda - doda;
+                let flyttningsNetto = inflytt - utflytt;
+                
+                ddData = [fodelseOverskott, flyttningsNetto];
+                
+                // Dynamisk färg: Grön för positivt tillskott, Orange för negativt
+                ddColors = [
+                    fodelseOverskott >= 0 ? FARG_BRA : FARG_DALIG,
+                    flyttningsNetto >= 0 ? FARG_BRA : FARG_DALIG
+                ];
+            }
+
+            if (drillChart != null) drillChart.destroy();
+            const ctxD = document.getElementById('drilldownDiagram').getContext('2d');
+            drillChart = new Chart(ctxD, { type: 'bar', data: { labels: ddLabels, datasets: [{ label: 'Antal', data: ddData, backgroundColor: ddColors, borderWidth: 1 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return " " + c.raw.toLocaleString('sv-SE') + " (Absoluta tal)"; } } } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function uppdateraDiagram() {
+            if (csvData.length === 0) return;
+            const indikator = document.getElementById("indikator").value; 
+            const kolumnNamn = indikator + globalBerakning; const prognosKolumnNamn = indikator + "_Prognos"; const polaritetKolumn = indikator + "_Polaritet"; const troskelKolumn = indikator + "_Troskel"; 
+            
+            let compareKolumnNamn = ""; let compareLabel = "";
+            if (selectedCompareRegion !== "none") {
+                compareKolumnNamn = indikator + globalBerakning + "_" + selectedCompareRegion;
+                let selectEl = document.getElementById("compareRegion");
+                compareLabel = selectEl.options[selectEl.selectedIndex].text;
+            }
+
+            const rubrikText = document.getElementById("indikator").options[document.getElementById("indikator").selectedIndex].text;
+            const arKolumn = Object.keys(csvData[0])[0]; const kvartalKolumn = Object.keys(csvData[0])[1]; 
+            
+            let etiketter = [], varden = [], prognosVarden = [], compareVarden = [], pFargerBG = [], pFargerBorder = [], arLista = [], kvartalLista = [];
+            sparadeRaderForDrilldown = []; 
+
+            dataForNedladdning = globalBerakning === "_R12" ? "Tidpunkt;Utfall;Prognos" : "Tidpunkt;Utfall"; 
+            if (selectedCompareRegion !== "none") dataForNedladdning += ";" + compareLabel; 
+            dataForNedladdning += "\n";
+
+            let maxAr = Math.max(...csvData.map(rad => parseInt(rad[arKolumn])).filter(n => !isNaN(n)));
+
+            const tillatnaDrilldown = ["Befolkningsförändring", "Inflyttning", "Utflyttning", "Befolkning"];
+            const harDrilldown = tillatnaDrilldown.includes(indikator);
+
+            csvData.forEach(rad => {
+                let taMedRad = (globalGrafTyp === "linje" && rad[arKolumn] && rad[kvartalKolumn]) || (globalGrafTyp !== "linje" && rad[arKolumn] && parseInt(rad[kvartalKolumn]) === parseInt(globalKvartal));
+                
+                let radAr = parseInt(rad[arKolumn]);
+                if (globalTid !== "alla" && radAr < (maxAr - parseInt(globalTid) + 1)) { taMedRad = false; }
+
+                if (taMedRad) {
+                    let tidpunkt = globalGrafTyp === "linje" ? (rad[arKolumn] + " Q" + parseInt(rad[kvartalKolumn])) : rad[arKolumn];
+                    etiketter.push(tidpunkt); arLista.push(parseInt(rad[arKolumn])); kvartalLista.push(parseInt(rad[kvartalKolumn]));
+                    sparadeRaderForDrilldown.push(rad); 
+                    
+                    let varde = tvattaSiffra(rad[kolumnNamn]); 
+                    let prognos = globalBerakning === "_R12" ? tvattaSiffra(rad[prognosKolumnNamn]) : null; 
+                    let compVal = selectedCompareRegion !== "none" ? tvattaSiffra(rad[compareKolumnNamn]) : null;
+
+                    varden.push(varde); prognosVarden.push(prognos); compareVarden.push(compVal);
+                    
+                    let drawBG = FARG_NEUTRAL_PUNKT, drawBorder = FARG_NEUTRAL_PUNKT;
+                    if (globalGrafTyp === "stapel") {
+                        let vFarg = (globalBerakning === "_R12") ? varde : tvattaSiffra(rad[indikator + "_R12"]); let pFarg = tvattaSiffra(rad[prognosKolumnNamn]);
+                        if (vFarg !== null && pFarg !== null) { let diff = vFarg - pFarg; let tr = beraknaTroskel(rad[troskelKolumn], pFarg); 
+                            if (Math.abs(diff) <= tr) { drawBG = FARG_NEUTRAL_TEXT_STAPEL; drawBorder = FARG_NEUTRAL_TEXT_STAPEL; } else { let c = ((rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diff < 0) : (diff > 0)) ? FARG_BRA : FARG_DALIG; drawBG = c; drawBorder = c; }
+                        } else { drawBG = FARG_STAPEL; drawBorder = FARG_STAPEL_KANT; }
+                    } else {
+                        if (globalBerakning === "_R12") {
+                            if (varde !== null && prognos !== null) { let diff = varde - prognos; let tr = beraknaTroskel(rad[troskelKolumn], prognos);
+                                if (Math.abs(diff) <= tr) { drawBG = FARG_NEUTRAL_PUNKT; drawBorder = FARG_NEUTRAL_PUNKT; } else { let c = ((rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diff < 0) : (diff > 0)) ? FARG_BRA : FARG_DALIG; drawBG = c; drawBorder = c; }
+                            } else { drawBG = FARG_PUNKTER; drawBorder = FARG_PUNKTER; }
+                        } else { drawBG = FARG_PUNKTER; drawBorder = FARG_PUNKTER; }
+                    }
+                    pFargerBG.push(drawBG); pFargerBorder.push(drawBorder);
+                    
+                    dataForNedladdning += (globalBerakning === "_R12" ? `${tidpunkt};${varde!==null?varde:""};${prognos!==null?prognos:""}` : `${tidpunkt};${varde!==null?varde:""}`) + (selectedCompareRegion !== "none" ? `;${compVal!==null?compVal:""}\n` : "\n");
+                }
+            });
+
+            document.getElementById("trend-ruta").style.display = "block"; let lastIndex = varden.findLastIndex(v => v !== null);
+            if (lastIndex !== -1) {
+                let lastVal = varden[lastIndex], lastPrognos = prognosVarden[lastIndex], aktuellRad = csvData[csvData.length - 1];
+                let targetAr = (globalBerakning === "_R12" || globalGrafTyp === "stapel") ? arLista[lastIndex] - 1 : (kvartalLista[lastIndex] === 1 ? arLista[lastIndex] - 1 : arLista[lastIndex]); let targetKvartal = (globalBerakning === "_R12" || globalGrafTyp === "stapel") ? kvartalLista[lastIndex] : (kvartalLista[lastIndex] === 1 ? 4 : kvartalLista[lastIndex] - 1);
+                let prevVal = null; for(let i = lastIndex - 1; i >= 0; i--) { if (arLista[i] === targetAr && kvartalLista[i] === targetKvartal && varden[i] !== null) { prevVal = varden[i]; break; } }
+                let trendPil = "→"; if (prevVal !== null) { let diffTrend = lastVal - prevVal; let tr = (globalBerakning === "_R12") ? beraknaTroskel(aktuellRad[troskelKolumn], prevVal) : 0; trendPil = Math.abs(diffTrend) <= tr ? "→" : (diffTrend > 0 ? "↑" : "↓"); }
+                if (globalBerakning === "_R12" && lastPrognos !== null) {
+                    let diffPrognos = lastVal - lastPrognos; let tr = beraknaTroskel(aktuellRad[troskelKolumn], lastPrognos); let textKlass = "trend-neutral";
+                    if (Math.abs(diffPrognos) > tr) textKlass = ((aktuellRad[polaritetKolumn] ? aktuellRad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diffPrognos < 0) : (diffPrognos > 0)) ? "trend-bra" : "trend-dalig";
+                    let isProcent = indikator.includes("%") || indikator.toLowerCase().includes("andel");
+                    let diffText = Math.abs(diffPrognos).toLocaleString('sv-SE', isProcent ? {minimumFractionDigits: 1, maximumFractionDigits: 1} : {maximumFractionDigits: 0});
+                    document.getElementById("avvikelse-text").innerHTML = `<span class="${textKlass}"><span class="pil-boll">${trendPil}</span> Ligger ${diffText} ${diffPrognos >= 0 ? "över" : "under"} prognos ${Math.abs(diffPrognos) <= tr ? " (Inom mål)" : ""}</span>`;
+                } else document.getElementById("avvikelse-text").innerHTML = `<span class="trend-neutral"><span class="pil-boll">${trendPil}</span> ${lastVal.toLocaleString('sv-SE')}</span>`;
+            } else document.getElementById("avvikelse-text").innerHTML = "<span class='trend-neutral'><span class='pil-boll'>?</span> Saknar data</span>";
+
+            let chartVarden = [...varden];
+            let chartPrognos = [...prognosVarden];
+            let chartCompare = [...compareVarden];
+
+            if (globalVisaIndex) {
+                let baseVarde = chartVarden.find(v => v !== null && v !== 0);
+                let baseCompare = chartCompare.find(v => v !== null && v !== 0);
+
+                if (baseVarde) {
+                    chartVarden = chartVarden.map(v => v !== null ? parseFloat(((v / baseVarde) * 100).toFixed(1)) : null);
+                    chartPrognos = chartPrognos.map(v => v !== null ? parseFloat(((v / baseVarde) * 100).toFixed(1)) : null);
+                }
+                if (baseCompare) {
+                    chartCompare = chartCompare.map(v => v !== null ? parseFloat(((v / baseCompare) * 100).toFixed(1)) : null);
+                }
+            }
+
+            let bottenInfoElement = document.getElementById("botten-info");
+            let compareDataFinns = chartCompare.some(v => v !== null);
+            let punktRadie = 5; if (globalTid === "10") punktRadie = 3; if (globalTid === "alla") punktRadie = 1; 
+
+            if (myChart != null) myChart.destroy();
+            let ds = [{ 
+                label: rubrikText + (globalVisaIndex ? " (Index)" : " (Utfall)"), 
+                data: chartVarden, 
+                backgroundColor: globalGrafTyp === 'linje' ? 'transparent' : pFargerBG, 
+                borderColor: globalGrafTyp === 'linje' ? FARG_LINJE : pFargerBorder, 
+                pointBackgroundColor: pFargerBG, pointBorderColor: pFargerBorder, 
+                pointRadius: (globalGrafTyp === 'linje' ? punktRadie : 0), pointHoverRadius: punktRadie + 2, 
+                borderWidth: 2, tension: 0.1, yAxisID: 'y' 
+            }];
+            
+            if (globalGrafTyp === "linje" && globalBerakning === "_R12" && selectedCompareRegion === "none") {
+                ds.push({ label: "Prognos", data: chartPrognos, backgroundColor: 'transparent', borderColor: '#6c757d', borderDash: [5, 5], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y' });
+            }
+            
+            let startaPaNoll = (globalGrafTyp === "stapel") && !globalVisaIndex;
+            let scalesConfig = { x: { grid: { display: false } }, y: { type: 'linear', display: true, position: 'left', beginAtZero: startaPaNoll } };
+
+            if (selectedCompareRegion !== "none" && compareDataFinns) {
+                if (globalVisaIndex) {
+                    bottenInfoElement.innerHTML = `<em>* Båda linjerna visas som Index (Startvärde = 100) och delar samma axel.</em>`;
+                    ds.push({ label: compareLabel, data: chartCompare, backgroundColor: 'transparent', borderColor: FARG_RIKET, borderDash: [2, 2], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y' });
+                } else {
+                    bottenInfoElement.innerHTML = `<em>* Jämförelsevärden (${compareLabel}) visas på den högra axeln</em>`;
+                    scalesConfig.y1 = { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: FARG_RIKET }, beginAtZero: startaPaNoll };
+
+                    let arForandringIndikator = indikator.toLowerCase().includes("förändring");
+                    let hasNegative = varden.some(v => v !== null && v < 0) || (selectedCompareRegion === "none" && prognosVarden.some(v => v !== null && v < 0)) || compareVarden.some(v => v !== null && v < 0);
+
+                    if (arForandringIndikator && hasNegative) {
+                        function snyggMax(val) { if (val === 0) return 10; let mag = Math.pow(10, Math.floor(Math.log10(val)) - 1); if (mag === 0) mag = 1; return Math.ceil((val * 1.1) / mag) * mag; }
+                        let allaVardenL = varden.filter(v => v !== null).map(Math.abs);
+                        if (selectedCompareRegion === "none") { allaVardenL = allaVardenL.concat(prognosVarden.filter(v => v !== null).map(Math.abs)); }
+                        let maxL = Math.max(0, ...allaVardenL);
+                        let maxR = Math.max(0, ...compareVarden.filter(v => v !== null).map(Math.abs));
+                        let symMaxL = snyggMax(maxL); let symMaxR = snyggMax(maxR);
+                        scalesConfig.y.min = -symMaxL; scalesConfig.y.max = symMaxL; scalesConfig.y1.min = -symMaxR; scalesConfig.y1.max = symMaxR;
+                    }
+                    ds.push({ label: compareLabel, data: chartCompare, backgroundColor: 'transparent', borderColor: FARG_RIKET, borderDash: [2, 2], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y1' });
+                }
+            } else { 
+                bottenInfoElement.innerHTML = globalVisaIndex ? "<em>* Visas som Index (Startvärde = 100).</em>" : ""; 
+            }
+
+            myChart = new Chart(document.getElementById('mittDiagram').getContext('2d'), { 
+                type: globalGrafTyp === 'linje' ? 'line' : 'bar', 
+                data: { labels: etiketter, datasets: ds }, 
+                options: { 
+                    responsive: true, maintainAspectRatio: false, spanGaps: false, 
+                    plugins: { 
+                        legend: { position: 'bottom' },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) {
+                                        label += context.parsed.y.toLocaleString('sv-SE');
+                                        if (globalVisaIndex) { label += ' (Index)'; }
+                                    }
+                                    return label;
+                                },
+                                afterLabel: function(context) {
+                                    if (harDrilldown) { return "\n💡 Klicka för att se detaljer (Absoluta tal)"; }
+                                    return null;
+                                }
+                            }
+                        }
+                    }, 
+                    scales: scalesConfig,
+                    onHover: (event, chartElement) => {
+                        if (harDrilldown) { event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default'; } 
+                        else { event.native.target.style.cursor = 'default'; }
+                    },
+                    onClick: (event, activeEls) => {
+                        if (harDrilldown && activeEls.length > 0) { visaDrilldown(activeEls[0].index, etiketter[activeEls[0].index], indikator); }
+                    }
+                } 
+            });
+        }
+    </script>
+</body>
+</html>

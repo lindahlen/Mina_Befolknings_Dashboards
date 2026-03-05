@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik om utbildningsnivå i Linköping</title>
+ <style>
+        /* Grundinställningar med maxbredd och centrering */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0 auto; /* auto centrerar sidan på stora skärmar */
+            max-width: 1000px; /* Sidan blir aldrig bredare än så här */
+            padding: 20px; 
+            background-color: #f4f4f9; 
+        }
+        
+        /* Meny */
+        nav { background-color: #333; padding: 15px; border-radius: 5px; margin-bottom: 30px; }
+        nav a { color: white; text-decoration: none; margin-right: 20px; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .map-portal-link { color: #4CAF50; }
+        
+        /* Sektioner och kommentarer */
+        .sektion { background: white; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .kommentar { font-style: italic; color: #555; margin-bottom: 10px; padding: 10px; background-color: #eef; border-left: 4px solid #0066cc; }
+        
+        /* Responsiva iframes */
+        iframe {
+            max-width: 100%; /* Säkerställer att iframen inte svämmar över sin box på mobiler */
+            border: none; /* Tar bort den fula standardramen */
+            border-radius: 4px; /* Mjukare hörn */
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html">Månadsstatistik</a>
+        <a href="sida2.html">Befolkning</a>
+        <a href="sida7.html">Arbetslöshet</a>
+        <a href="sida3.html">Sysselsättning</a>
+        <a href="sida5.html">Större kommuner</a>
+        
+        <a href="https://lindahlen.github.io/linkoping-aikarta/" class="map-portal-link" >
+            🌍 Till min Kartportal
+        </a>
+    </nav>
+
+    <h1>Utbildningsnivå</h1>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Utbildningsmivå för befolkningen i åldern 16-74 år efter kön i Linköping samt i jämförelsekommuner.
+        </div>
+        <!-- Embed code for 18/1 Utbildningsnivå efter ålder i större kommuner -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65a93bff71a80f1de831b625&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Utbildningsnivå efter kön och ålder.
+        </div>
+        <!-- Embed code for 27/9 Utbildningsnivå efter kön och ålder -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=651415c3cedb1b08d8736470&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+ <div class="sektion">
+        <div class="kommentar">
+            Utbildningsnivå för befolkningen i åldern 20-64 år efter stadsdel.
+        </div>
+        <!-- Embed code for 27/9 Utbildningsnivå utveckling i stadsdelar -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65142e3ecedb1b08d8736483&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Utbildningsnivå för befolkningen i åldern 20-64 år efter kön och stadsdel.
+        </div>
+        <!-- Embed code for 27/9 Utbildningsnivå i stadsdelar (karta) -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=651431f4cedb1b08d8736488&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 870px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Utbildningsmivå för befolkningen i åldern 20-64 år efter kön i Linköping samt i jämförelsekommuner.
+        </div>
+        <!-- Embed code for 18/1 Utbildningsnivå i åldern 20-64 år i större kommuner -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65a941f971a80f1de831b62a&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+</body>
+</html>

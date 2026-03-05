@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Om datan - Experiment</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; line-height: 1.6; }
+        .toppmeny { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #ffc107; }
+        h1 { margin: 0; font-size: 1.8em; color: #2c3e50; }
+        .tillbaka-knapp { text-decoration: none; background-color: #007BFF; color: white; padding: 10px 15px; border-radius: 6px; font-weight: bold; transition: background 0.2s; }
+        .tillbaka-knapp:hover { background-color: #0056b3; }
+        .innehall { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .intro-text { font-size: 1.1em; color: #555; margin-bottom: 30px; }
+        
+        .info-kort { background-color: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); margin-bottom: 25px; border-left: 5px solid #ccc; }
+        .info-kort h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #f4f7f6; padding-bottom: 10px; }
+        .info-kort h3 { color: #007BFF; margin-bottom: 5px; }
+        
+        /* Den nya tillgänglighetsanpassade färgpaletten för förklaringarna */
+        .farg-forklaring { display: flex; align-items: center; margin-bottom: 10px; }
+        .cirkel { width: 16px; height: 16px; border-radius: 50%; display: inline-block; margin-right: 10px; }
+        .cirkel-bra { background-color: #009E73; }     /* Blågrön (Teal) */
+        .cirkel-dalig { background-color: #D55E00; }   /* Orange/Röd (Vermilion) */
+        .cirkel-neutral { background-color: #868e96; } /* Grå */
+
+        /* Färgkodade kanter för de specifika diagrammen */
+        .kort-allmant { border-left-color: #ffc107; }
+        .kort-befolkning { border-left-color: #007BFF; }
+        .kort-arbetsmarknad { border-left-color: #20c997; }
+        .kort-bostader { border-left-color: #FF851B; }
+        .kort-arbetsloshet { border-left-color: #6f42c1; }
+    </style>
+</head>
+<body>
+
+    <header class="toppmeny">
+        <h1>ℹ️ Om datan (Experimentmiljön)</h1>
+        <a href="dashboard_experiment.html" class="tillbaka-knapp">⬅ Tillbaka till Experiment-Dashboard</a>
+    </header>
+
+    <div class="innehall">
+        <p class="intro-text">
+            Detta är en test- och utvecklingsmiljö för kvartalsuppföljningen. Här prövar vi att jämföra det faktiska utfallet med våra uppsatta mål och prognoser, samt att mäta trenden över tid.
+        </p>
+
+        <div class="info-kort kort-allmant">
+            <h2>Så fungerar färgerna i diagrammen</h2>
+            <p>I diagrammen visas prognosen som en grå, streckad linje. Färgerna på diagrammens punkter (och bollarna högst upp) ändras dynamiskt för att snabbt och tydligt visa hur vi ligger till:</p>
+            
+            <div class="farg-forklaring">
+                <span class="cirkel cirkel-bra"></span> <strong>Blågrön:</strong> Utfallet är bättre än prognos/mål (med hänsyn till tröskelvärdet).
+            </div>
+            <div class="farg-forklaring">
+                <span class="cirkel cirkel-dalig"></span> <strong>Orange/Röd:</strong> Utfallet är sämre än prognos/mål.
+            </div>
+            <div class="farg-forklaring">
+                <span class="cirkel cirkel-neutral"></span> <strong>Grå:</strong> Utfallet ligger inom den acceptabla felmarginalen (målet anses uppnått), alternativt saknas prognosdata för kvartalet.
+            </div>
+
+            <h3 style="margin-top:20px;">Vad betyder bollarna och pilarna?</h3>
+            <p>Rutan högst upp i diagrammet visar differensen mellan det allra senaste kvartalet och motsvarande prognos. <strong>Pilen inuti bollen (↑/↓/→)</strong> visar hur trenden ser ut jämfört med <em>samma kvartal föregående år</em>. En sidåtriktad pil innebär att läget är stabilt och inom ramarna för naturlig variation.</p>
+        </div>
+
+        <div class="info-kort kort-befolkning">
+            <h2>Diagram 1: Befolkningsutveckling</h2>
+            <p><strong>Källa:</strong> SCB (Statistiska centralbyrån) samt interna mål.</p>
+            <p><strong>Läsanvisning:</strong> Här följer vi upp hur befolkningstillväxten står sig mot våra uppsatta mål. Observera att tröskelvärdet för vad som anses vara en neutral avvikelse är satt till [X] personer.</p>
+        </div>
+
+        <div class="info-kort kort-arbetsmarknad">
+            <h2>Diagram 2: Sysselsättning</h2>
+            <p><strong>Källa:</strong> SCB samt interna mål.</p>
+            <p><strong>Läsanvisning:</strong> Fyll i relevant bakgrundsinformation kring hur sysselsättningsmålen beräknas här...</p>
+        </div>
+
+        <div class="info-kort kort-bostader">
+            <h2>Diagram 3: Bostadsbyggande</h2>
+            <p><strong>Källa:</strong> Bygglovsenheten / SCB.</p>
+            <p><strong>Läsanvisning:</strong> Förtydliga hur prognoserna för påbörjade och färdigställda bostäder tas fram, samt om avvikelser beror på konjunktur eller lokala faktorer...</p>
+        </div>
+
+        <div class="info-kort kort-arbetsloshet">
+            <h2>Diagram 4: Arbetslöshet</h2>
+            <p><strong>Källa:</strong> Arbetsförmedlingen.</p>
+            <p><strong>Läsanvisning:</strong> Här är "Låg" polaritet applicerad, vilket betyder att ett värde <em>under</em> mållinjen markeras som positivt (blågrönt). Tröskelvärdet är angivet i procentenheter...</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

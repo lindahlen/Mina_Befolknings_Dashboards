@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Befolkningspyramider för Linköping</title>
+ <style>
+        /* Grundinställningar med maxbredd och centrering */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0 auto; /* auto centrerar sidan på stora skärmar */
+            max-width: 1000px; /* Sidan blir aldrig bredare än så här */
+            padding: 20px; 
+            background-color: #f4f4f9; 
+        }
+        
+        /* Meny */
+        nav { background-color: #333; padding: 15px; border-radius: 5px; margin-bottom: 30px; }
+        nav a { color: white; text-decoration: none; margin-right: 20px; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .map-portal-link { color: #4CAF50; }
+        
+        /* Sektioner och kommentarer */
+        .sektion { background: white; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .kommentar { font-style: italic; color: #555; margin-bottom: 10px; padding: 10px; background-color: #eef; border-left: 4px solid #0066cc; }
+        
+        /* Responsiva iframes */
+        iframe {
+            max-width: 100%; /* Säkerställer att iframen inte svämmar över sin box på mobiler */
+            border: none; /* Tar bort den fula standardramen */
+            border-radius: 4px; /* Mjukare hörn */
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html">Månadsstatistik</a>
+        <a href="sida2.html">Befolkning</a>
+        <a href="sida6.html">Befolkningsprognos</a>
+        <a href="sida12.html">Befolkningsförändringar</a>
+        <a href="sida5.html">Större kommuner</a>
+        
+        <a href="https://lindahlen.github.io/linkoping-aikarta/" class="map-portal-link" >
+            🌍 Till min Kartportal
+        </a>
+    </nav>
+
+    <h1>Befolkningspyramider</h1>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Befolkningspyramid för Linköping efter kön och ålder.
+        </div>
+        <!-- Embed code for 5/10 Befolkningspyramid procent för kommunen -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=651edb39cedb1b08d8736651&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Historisk befolkningspyramid för Linköping efter kön och ålder.
+        </div>
+        <!-- Embed code for 9/10 Befolkningspyramid med historisk utveckling -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65240e1a99cb7536a8eda3c3&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Befolkningspyramid för kommunens befolkningsprognos.
+        </div>
+        <!-- Embed code for 13/10 Befolkningsprognos som befolkningspyramid -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=652906466feac033f8d2f9ba&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Befolkningspyramid för kommunens delområdesprognos.
+        </div>
+        <!-- Embed code for 10/12 Befolkningspyramid procent stadsdelars befolkningsprognos -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=67585b76b1ac791b74298b6c&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+</body>
+</html>

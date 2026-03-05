@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagram 1</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 15px; display: flex; flex-direction: column; align-items: center; background-color: white;}
+        
+        /* Flexbox för att få rullistan till vänster och rutan till höger */
+        .top-rad { display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 10px; }
+        
+        select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background-color: #f8f9fa; cursor: pointer; font-weight: bold; }
+        
+        /* Design för rutan högst upp */
+        .trend-ruta { padding: 8px 15px; border-radius: 6px; background-color: #f4f7f6; border: 1px solid #ddd; font-size: 15px; font-weight: bold; display: none; align-items: center; }
+        
+        /* Design för den runda bollen (Färgen sätts dynamiskt i koden) */
+        .pil-boll {
+            display: inline-flex; justify-content: center; align-items: center;
+            width: 28px; height: 28px; border-radius: 50%; color: white;
+            font-size: 20px; font-weight: 900; -webkit-text-stroke: 1.5px white; margin-right: 10px;
+        }
+
+        .canvas-container { width: 100%; height: 350px; }
+        #felmeddelande { color: #dc3545; font-weight: bold; text-align: center; margin-bottom: 10px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div id="felmeddelande"></div>
+
+    <div class="top-rad">
+        <select id="indikator" onchange="uppdateraDiagram()">
+            <option value="Inskrivna_arbetslösa">Antal inskrivna arbetslösa</option>
+            <option value="Inrikes_födda_arbetslösa">Antal inrikes födda arbetslösa</option>
+            <option value="Utrikes_födda_arbetslösa">Antal utrikes födda arbetslösa</option>
+            <option value="Ungdomar_arbetslösa">Antal ungdomar 18-24 år arbetslösa</option>
+            <option value="Långtidsarbetslösa">Antal långtidsarbetslösa</option>
+            <option value="Inskrivna_arbetslösa_%">Andel inskrivna arbetslösa</option>
+            <option value="Inrikes_födda_arbetslösa_%">Andel inrikes födda arbetslösa</option>
+            <option value="Utrikes_födda_arbetslösa_%">Andel utrikes födda arbetslösa</option>
+            <option value="Ungdomar_arbetslösa_%">Andel ungdomar 18-24 år arbetslösa</option>
+            <option value="Långtidsarbetslösa_%">Andel långtidsarbetslösa</option>
+        </select>
+
+        <div id="trend-ruta" class="trend-ruta">
+            <span id="aktuellt-varde-text">Laddar...</span>
+        </div>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="mittDiagram"></canvas>
+    </div>
+
+    <script>
+        // ==========================================
+        // 🎨 INSTÄLLNINGAR FÖR FÄRGER OCH FIL
+        // ==========================================
+        const csvFilnamn = "Data_Diagram4.csv"; 
+
+        // Färginställningar (Här är den blå paletten för 4: Arbetslöshet (Elegant Lila))
+        const FARG_STAPEL = 'rgba(111, 66, 193, 0.6)';      
+        const FARG_STAPEL_KANT = 'rgba(111, 66, 193, 1)';   
+        const FARG_LINJE = 'rgba(111, 66, 193, 1)';         
+        const FARG_PUNKTER = '#452080'; // Denna färg används nu även för bollen och texten!
+        // ==========================================
+
+        let globalBerakning = "_Kvartal";
+        let globalGrafTyp = "linje";
+        let globalKvartal = "1";
+        let csvData = [];
+        let myChart = null;
+
+        fetch(csvFilnamn)
+            .then(response => response.arrayBuffer())
+            .then(buffer => {
+                let decoder = new TextDecoder("utf-8");
+                let text = decoder.decode(buffer);
+                if (text.includes("")) { decoder = new TextDecoder("windows-1252"); text = decoder.decode(buffer); }
+                text = text.trim().replace(/^\uFEFF/i, '');
+
+                Papa.parse(text, {
+                    header: true, skipEmptyLines: true, delimiter: ";", transformHeader: function(h) { return h.trim(); },
+                    complete: function(results) {
+                        csvData = results.data;
+                        if(csvData.length === 0) { document.getElementById("felmeddelande").innerText = "Filen är tom."; } 
+                        else { uppdateraDiagram(); }
+                    }
+                });
+            })
+            .catch(error => { document.getElementById("felmeddelande").innerText = "Hittade inte filen: " + csvFilnamn; });
+
+        window.uppdateraFranMaster = function(berakning, grafTyp, kvartal) {
+            globalBerakning = berakning; globalGrafTyp = grafTyp; globalKvartal = kvartal;
+            uppdateraDiagram(); 
+        };
+
+        function tvattaSiffra(val) {
+            if (val === undefined || val === null) return null;
+            let str = val.toString().trim();
+            if (str === ".." || str === "" || str === "-") return null;
+            str = str.replace(',', '.').replace(/\s/g, ''); 
+            let siffra = parseFloat(str);
+            return isNaN(siffra) ? null : siffra;
+        }
+
+        function uppdateraDiagram() {
+            if (csvData.length === 0) return;
+
+            const indikator = document.getElementById("indikator").value;
+            const kolumnNamn = indikator + globalBerakning; 
+            const rubrikText = document.getElementById("indikator").options[document.getElementById("indikator").selectedIndex].text;
+
+            const arKolumn = Object.keys(csvData[0])[0]; 
+            const kvartalKolumn = Object.keys(csvData[0])[1]; 
+
+            let etiketter = [], varden = [], arLista = [], kvartalLista = [];
+
+            // 1. Läs in all data
+            csvData.forEach(rad => {
+                let taMedRad = false;
+                if (globalGrafTyp === "linje" && rad[arKolumn] && rad[kvartalKolumn]) { taMedRad = true; } 
+                else if (globalGrafTyp !== "linje" && rad[arKolumn] && parseInt(rad[kvartalKolumn]) === parseInt(globalKvartal)) { taMedRad = true; }
+
+                if (taMedRad) {
+                    etiketter.push(globalGrafTyp === "linje" ? (rad[arKolumn] + " Q" + parseInt(rad[kvartalKolumn])) : rad[arKolumn]);
+                    arLista.push(parseInt(rad[arKolumn]));
+                    kvartalLista.push(parseInt(rad[kvartalKolumn]));
+                    varden.push(tvattaSiffra(rad[kolumnNamn]));
+                }
+            });
+
+            if (varden.length === 0 || varden.every(v => v === null)) {
+                document.getElementById("felmeddelande").innerText = "Hittar inte kolumnen: " + kolumnNamn;
+                document.getElementById("trend-ruta").style.display = "none";
+            } else {
+                document.getElementById("felmeddelande").innerText = ""; 
+                document.getElementById("trend-ruta").style.display = "block";
+            }
+
+            // ========================================================
+            // 📊 LOGIK FÖR TRENDRUTAN (SIFFRAN OCH PILEN)
+            // ========================================================
+            let lastIndex = -1;
+            for(let i = varden.length - 1; i >= 0; i--) {
+                if(varden[i] !== null) { lastIndex = i; break; }
+            }
+
+            if (lastIndex !== -1) {
+                let lastVal = varden[lastIndex];
+                let lastAr = arLista[lastIndex];
+                let lastKvartal = kvartalLista[lastIndex];
+                let prevVal = null;
+
+                // Vilket kvartal ska vi jämföra med?
+                let targetAr, targetKvartal;
+                
+                // NY SMART LOGIK:
+                if (globalBerakning === "_R12" || globalGrafTyp === "stapel") {
+                    // För Rullande 12 ELLER när vi valt "Jämför kvartal" (Stapel): Backa ett helt år
+                    targetAr = lastAr - 1;
+                    targetKvartal = lastKvartal;
+                } else {
+                    // Endast för Aktuellt Kvartal i Utveckling över tid (Linje): Backa till närmast föregående kvartal
+                    targetAr = lastKvartal === 1 ? lastAr - 1 : lastAr;
+                    targetKvartal = lastKvartal === 1 ? 4 : lastKvartal - 1;
+                }
+
+                // Leta upp det historiska värdet
+                for(let i = lastIndex - 1; i >= 0; i--) {
+                    if (arLista[i] === targetAr && kvartalLista[i] === targetKvartal && varden[i] !== null) {
+                        prevVal = varden[i];
+                        break;
+                    }
+                }
+
+                // Sätt rätt pil
+                let trendPil = "→";
+                if (prevVal !== null) {
+                    if (lastVal > prevVal) trendPil = "↑";
+                    else if (lastVal < prevVal) trendPil = "↓";
+                }
+
+                let formateratVarde = lastVal.toLocaleString('sv-SE');
+                
+                // Skriv ut siffran och bollen (färgas automatiskt med diagrammets FARG_PUNKTER)
+                document.getElementById("aktuellt-varde-text").innerHTML = 
+                    `<span style="color: ${FARG_PUNKTER}; display: flex; align-items: center;">
+                        <span class="pil-boll" style="background-color: ${FARG_PUNKTER};">${trendPil}</span> 
+                        ${formateratVarde}
+                    </span>`;
+            } else {
+                document.getElementById("aktuellt-varde-text").innerHTML = "Saknar data";
+            }
+
+            // ========================================================
+            // RITA DIAGRAMMET
+            // ========================================================
+            if (myChart != null) myChart.destroy();
+
+            const ctx = document.getElementById('mittDiagram').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: globalGrafTyp === 'linje' ? 'line' : 'bar',
+                data: {
+                    labels: etiketter,
+                    datasets: [{
+                        label: rubrikText,
+                        data: varden,
+                        backgroundColor: globalGrafTyp === 'linje' ? 'transparent' : FARG_STAPEL,
+                        borderColor: globalGrafTyp === 'linje' ? FARG_LINJE : FARG_STAPEL_KANT,
+                        pointBackgroundColor: FARG_PUNKTER,
+                        pointBorderColor: FARG_PUNKTER,
+                        borderWidth: 2,
+                        tension: 0.1
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, spanGaps: false }
+            });
+        }
+    </script>
+</body>
+</html>

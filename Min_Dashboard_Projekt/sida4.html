@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik om bostäder och hushåll i Linköping</title>
+ <style>
+        /* Grundinställningar med maxbredd och centrering */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0 auto; /* auto centrerar sidan på stora skärmar */
+            max-width: 1000px; /* Sidan blir aldrig bredare än så här */
+            padding: 20px; 
+            background-color: #f4f4f9; 
+        }
+        
+        /* Meny */
+        nav { background-color: #333; padding: 15px; border-radius: 5px; margin-bottom: 30px; }
+        nav a { color: white; text-decoration: none; margin-right: 20px; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .map-portal-link { color: #4CAF50; }
+        
+        /* Sektioner och kommentarer */
+        .sektion { background: white; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .kommentar { font-style: italic; color: #555; margin-bottom: 10px; padding: 10px; background-color: #eef; border-left: 4px solid #0066cc; }
+        
+        /* Responsiva iframes */
+        iframe {
+            max-width: 100%; /* Säkerställer att iframen inte svämmar över sin box på mobiler */
+            border: none; /* Tar bort den fula standardramen */
+            border-radius: 4px; /* Mjukare hörn */
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html">Månadsstatistik</a>
+        <a href="sida2.html">Befolkning</a>
+        <a href="sida3.html">Sysselsättning</a>
+        <a href="sida8.html">Nybyggnation</a>
+        <a href="sida5.html">Större kommuner</a>
+        
+        <a href="https://lindahlen.github.io/linkoping-aikarta/" class="map-portal-link" >
+            🌍 Till min Kartportal
+        </a>
+    </nav>
+
+    <h1>Bostäder och hushåll</h1>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Bostäder i Linköping efter hustyp och byggnadsår.
+        </div>
+        <!-- Embed code for 29/9 Bostäder efter hustyp och byggnadsår -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65169461cedb1b08d87364df&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Bostäder i Linköping efter upplåtelseform.
+        </div>
+        <!-- Embed code for 29/9 Bostäder efter hustyp och upplåtelseform -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65166ce7cedb1b08d87364c1&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Utveckling av antalet hushåll i Linköpings kommun.
+        </div>
+        <!-- Embed code for 22/9 Hushåll utveckling -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=650d852985401428882c4092&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Genomsnittlig bostadsarea per hushåll efter stadsdel/tätort.
+        </div>
+        <!-- Embed code for 20/11 Genomsnittlig bostadsarea för hushåll i stadsdelar -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=655b7d176837ff2c0417413d&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Boende per bostadshushåll efter bostadens storlek.
+        </div>
+        <!-- Embed code for 25/9 Boende per bostadshushåll efter bostadsarea -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65119ae645339e3220075e81&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Hushåll och boende i hushåll efter upplåtelseform och personernas ålder.
+        </div>
+        <!-- Embed code for 13/12 Hushåll efter ålder och upplåtelseform -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=675c337ab1ac791b74298bb8&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Hushåll respektive boende i hushåll efter upplåtelseform och personernas ålder.
+        </div>
+        <!-- Embed code for 13/12 Antal hushåll och boende i ettårsklasser -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=675c0cfab1ac791b74298bb3&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+</body>
+</html>

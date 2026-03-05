@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagram 22 - Sysselsättning</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 10px 15px; display: flex; flex-direction: column; align-items: center; background-color: white;}
+        .top-rad { display: flex; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 8px; }
+        .kontroller-vanster { display: flex; gap: 10px; align-items: center; }
+        select { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background-color: #f8f9fa; cursor: pointer; font-weight: bold; }
+        .toggle-btn { padding: 8px 12px; border-radius: 6px; border: 1px solid #ccc; background-color: #f8f9fa; cursor: pointer; font-weight: bold; color: #495057; display: flex; align-items: center; gap: 5px; transition: all 0.2s; }
+        .toggle-btn.active { background-color: #495057; color: white; border-color: #343a40; }
+        .trend-ruta { padding: 8px 15px; border-radius: 6px; background-color: #f4f7f6; border: 1px solid #ddd; font-size: 15px; font-weight: bold; display: none; align-items: center; }
+        
+        .trend-bra { color: #009E73; display: flex; align-items: center; }     
+        .trend-dalig { color: #D55E00; display: flex; align-items: center; }   
+        /* UPPDATERAD: Mörkare grå för text och ikon för bättre läsbarhet */
+        .trend-neutral { color: #6c757d; display: flex; align-items: center; } 
+        
+        .pil-boll { display: inline-flex; justify-content: center; align-items: center; width: 28px; height: 28px; border-radius: 50%; color: white; font-size: 20px; font-weight: 900; -webkit-text-stroke: 1.5px white; margin-right: 10px; }
+        .trend-bra .pil-boll { background-color: #009E73; }    
+        .trend-dalig .pil-boll { background-color: #D55E00; }  
+        /* UPPDATERAD: Mörkare grå för bollen */
+        .trend-neutral .pil-boll { background-color: #6c757d; } 
+        
+        .canvas-container { width: 100%; height: 343px; }
+        #felmeddelande { color: #dc3545; font-weight: bold; text-align: center; margin-bottom: 8px; font-size: 14px; }
+        
+        .botten-rad { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+        .botten-info { font-size: 12px; color: #6c757d; font-style: italic; }
+        .nedladdning-btn { margin-left: auto; padding: 6px 12px; font-size: 13px; cursor: pointer; border: 1px solid #ccc; background: #f8f9fa; border-radius: 4px; font-weight: bold; color: #6c757d; transition: background 0.2s, color 0.2s; display: inline-block; }
+        .nedladdning-btn:hover { background: #e2e6ea; color: #495057; }
+    </style>
+</head>
+<body>
+    <div id="felmeddelande"></div>
+    <div class="top-rad">
+        <div class="kontroller-vanster">
+            <select id="indikator" onchange="uppdateraDiagram()">
+                <option value="Sysselsatta">Totalt antal sysselsatta</option>
+                <option value="Tillverkning">Tillverkningsindustri</option>
+                <option value="Handel">Handel</option>
+                <option value="IKT">IKT och Kommunikation</option>
+                <option value="Utbildning">Utbildning</option>
+                <option value="Vård_Omsorg">Vård och Omsorg</option>
+                <option value="Offentlig_förvaltning">Offentlig förvaltning</option>
+            </select>
+            <button id="toggleRiket" class="toggle-btn" onclick="toggleRiket()"><span id="riket-ikon">☐</span> Jämför Riket</button>
+        </div>
+        <div id="trend-ruta" class="trend-ruta"><span id="avvikelse-text">Laddar...</span></div>
+    </div>
+    <div class="canvas-container"><canvas id="mittDiagram"></canvas></div>
+    
+    <div class="botten-rad">
+        <div id="botten-info" class="botten-info"></div>
+        <button class="nedladdning-btn" onclick="laddaNerCSV()">📥 Ladda ner data (.csv)</button>
+    </div>
+
+    <script>
+        const csvFilnamn = "Data_Diagram22.csv"; 
+
+        const FARG_BRA = '#009E73'; const FARG_DALIG = '#D55E00'; 
+        const FARG_NEUTRAL_PUNKT = '#CED4DA'; 
+        const FARG_NEUTRAL_TEXT_STAPEL = '#6c757d'; 
+        const FARG_RIKET = '#495057';
+
+        // Tema: SMARAGDGRÖN
+        const FARG_STAPEL = 'rgba(32, 201, 151, 0.6)';      
+        const FARG_STAPEL_KANT = 'rgba(32, 201, 151, 1)';   
+        const FARG_LINJE = 'rgba(32, 201, 151, 1)';         
+        const FARG_PUNKTER = '#128260'; 
+
+        let globalBerakning = "_R12"; let globalGrafTyp = "linje"; let globalKvartal = "1"; let visaRiket = false;
+        let csvData = []; let myChart = null; let dataForNedladdning = ""; 
+
+        fetch(csvFilnamn).then(r => r.arrayBuffer()).then(b => {
+            let decoder = new TextDecoder("utf-8"); let text = decoder.decode(b);
+            if (text.includes("")) { decoder = new TextDecoder("windows-1252"); text = decoder.decode(b); }
+            text = text.trim().replace(/^\uFEFF/i, '');
+            Papa.parse(text, { header: true, skipEmptyLines: true, delimiter: ";", transformHeader: h => h.trim(),
+                complete: function(r) { csvData = r.data; csvData.length === 0 ? document.getElementById("felmeddelande").innerText = "Filen är tom." : uppdateraDiagram(); }
+            });
+        }).catch(e => { document.getElementById("felmeddelande").innerText = "Hittade inte filen: " + csvFilnamn; });
+
+        window.uppdateraFranMaster = function(berakning, grafTyp, kvartal) { globalBerakning = berakning; globalGrafTyp = grafTyp; globalKvartal = kvartal; uppdateraDiagram(); };
+        window.toggleRiket = function() { visaRiket = !visaRiket; document.getElementById("toggleRiket").classList.toggle("active", visaRiket); document.getElementById("riket-ikon").innerText = visaRiket ? "☑" : "☐"; uppdateraDiagram(); };
+        function tvattaSiffra(val) { if (val === undefined || val === null) return null; let str = val.toString().trim(); if (str === ".." || str === "" || str === "-") return null; let siffra = parseFloat(str.replace(',', '.').replace(/\s/g, '')); return isNaN(siffra) ? null : siffra; }
+        function beraknaTroskel(troskelRaw, jamforelseVarde) { if (!troskelRaw) return 0; let rawStr = troskelRaw.toString().trim(); if (rawStr.includes("%")) return (isNaN(parseFloat(rawStr.replace("%", "").replace(",", "."))) ? 0 : Math.abs(jamforelseVarde * (parseFloat(rawStr.replace("%", "").replace(",", ".")) / 100))); return isNaN(parseFloat(rawStr.replace(",", "."))) ? 0 : parseFloat(rawStr.replace(",", ".")); }
+        window.laddaNerCSV = function() { if (!dataForNedladdning) return; const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), dataForNedladdning], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement("a"); link.setAttribute("href", URL.createObjectURL(blob)); link.setAttribute("download", `Export_${document.getElementById("indikator").value}${globalBerakning}.csv`); document.body.appendChild(link); link.click(); document.body.removeChild(link); };
+
+        function uppdateraDiagram() {
+            if (csvData.length === 0) return;
+            const indikator = document.getElementById("indikator").value; const kolumnNamn = indikator + globalBerakning; const prognosKolumnNamn = indikator + "_Prognos"; const polaritetKolumn = indikator + "_Polaritet"; const troskelKolumn = indikator + "_Troskel"; const riketKolumnNamn = indikator + globalBerakning + "_Riket";
+            const rubrikText = document.getElementById("indikator").options[document.getElementById("indikator").selectedIndex].text;
+            const arKolumn = Object.keys(csvData[0])[0]; const kvartalKolumn = Object.keys(csvData[0])[1]; 
+            let etiketter = [], varden = [], prognosVarden = [], riketVarden = [], pFargerBG = [], pFargerBorder = [], arLista = [], kvartalLista = [];
+
+            dataForNedladdning = globalBerakning === "_R12" ? "Tidpunkt;Utfall;Prognos" : "Tidpunkt;Utfall"; if (visaRiket) dataForNedladdning += ";Riket"; dataForNedladdning += "\n";
+
+            csvData.forEach(rad => {
+                let taMedRad = (globalGrafTyp === "linje" && rad[arKolumn] && rad[kvartalKolumn]) || (globalGrafTyp !== "linje" && rad[arKolumn] && parseInt(rad[kvartalKolumn]) === parseInt(globalKvartal));
+                if (taMedRad) {
+                    let tidpunkt = globalGrafTyp === "linje" ? (rad[arKolumn] + " Q" + parseInt(rad[kvartalKolumn])) : rad[arKolumn];
+                    etiketter.push(tidpunkt); arLista.push(parseInt(rad[arKolumn])); kvartalLista.push(parseInt(rad[kvartalKolumn]));
+                    let varde = tvattaSiffra(rad[kolumnNamn]); let prognos = globalBerakning === "_R12" ? tvattaSiffra(rad[prognosKolumnNamn]) : null; let riket = tvattaSiffra(rad[riketKolumnNamn]);
+                    varden.push(varde); prognosVarden.push(prognos); riketVarden.push(riket);
+                    
+                    let drawBG = FARG_NEUTRAL_PUNKT, drawBorder = FARG_NEUTRAL_PUNKT;
+                    if (globalGrafTyp === "stapel") {
+                        let vFarg = (globalBerakning === "_R12") ? varde : tvattaSiffra(rad[indikator + "_R12"]); let pFarg = tvattaSiffra(rad[prognosKolumnNamn]);
+                        if (vFarg !== null && pFarg !== null) { let diff = vFarg - pFarg; let tr = beraknaTroskel(rad[troskelKolumn], pFarg); 
+                            if (Math.abs(diff) <= tr) { drawBG = FARG_NEUTRAL_TEXT_STAPEL; drawBorder = FARG_NEUTRAL_TEXT_STAPEL; } else { let c = ((rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diff < 0) : (diff > 0)) ? FARG_BRA : FARG_DALIG; drawBG = c; drawBorder = c; }
+                        } else { drawBG = FARG_STAPEL; drawBorder = FARG_STAPEL_KANT; }
+                    } else {
+                        if (globalBerakning === "_R12") {
+                            if (varde !== null && prognos !== null) { let diff = varde - prognos; let tr = beraknaTroskel(rad[troskelKolumn], prognos);
+                                if (Math.abs(diff) <= tr) { drawBG = FARG_NEUTRAL_PUNKT; drawBorder = FARG_NEUTRAL_PUNKT; } else { let c = ((rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diff < 0) : (diff > 0)) ? FARG_BRA : FARG_DALIG; drawBG = c; drawBorder = c; }
+                            } else { drawBG = FARG_PUNKTER; drawBorder = FARG_PUNKTER; }
+                        } else { drawBG = FARG_PUNKTER; drawBorder = FARG_PUNKTER; }
+                    }
+                    pFargerBG.push(drawBG); pFargerBorder.push(drawBorder);
+                    dataForNedladdning += (globalBerakning === "_R12" ? `${tidpunkt};${varde!==null?varde:""};${prognos!==null?prognos:""}` : `${tidpunkt};${varde!==null?varde:""}`) + (visaRiket ? `;${riket!==null?riket:""}\n` : "\n");
+                }
+            });
+
+            document.getElementById("trend-ruta").style.display = "block"; let lastIndex = varden.findLastIndex(v => v !== null);
+            if (lastIndex !== -1) {
+                let lastVal = varden[lastIndex], lastPrognos = prognosVarden[lastIndex], aktuellRad = csvData[csvData.length - 1];
+                let targetAr = (globalBerakning === "_R12" || globalGrafTyp === "stapel") ? arLista[lastIndex] - 1 : (kvartalLista[lastIndex] === 1 ? arLista[lastIndex] - 1 : arLista[lastIndex]); let targetKvartal = (globalBerakning === "_R12" || globalGrafTyp === "stapel") ? kvartalLista[lastIndex] : (kvartalLista[lastIndex] === 1 ? 4 : kvartalLista[lastIndex] - 1);
+                let prevVal = null; for(let i = lastIndex - 1; i >= 0; i--) { if (arLista[i] === targetAr && kvartalLista[i] === targetKvartal && varden[i] !== null) { prevVal = varden[i]; break; } }
+                let trendPil = "→"; if (prevVal !== null) { let diffTrend = lastVal - prevVal; let tr = (globalBerakning === "_R12") ? beraknaTroskel(aktuellRad[troskelKolumn], prevVal) : 0; trendPil = Math.abs(diffTrend) <= tr ? "→" : (diffTrend > 0 ? "↑" : "↓"); }
+                if (globalBerakning === "_R12" && lastPrognos !== null) {
+                    let diffPrognos = lastVal - lastPrognos; let tr = beraknaTroskel(aktuellRad[troskelKolumn], lastPrognos); let textKlass = "trend-neutral";
+                    if (Math.abs(diffPrognos) > tr) textKlass = ((aktuellRad[polaritetKolumn] ? aktuellRad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diffPrognos < 0) : (diffPrognos > 0)) ? "trend-bra" : "trend-dalig";
+                    document.getElementById("avvikelse-text").innerHTML = `<span class="${textKlass}"><span class="pil-boll">${trendPil}</span> Ligger ${Math.abs(diffPrognos).toLocaleString('sv-SE')} ${diffPrognos >= 0 ? "över" : "under"} prognos ${Math.abs(diffPrognos) <= tr ? " (Inom mål)" : ""}</span>`;
+                } else document.getElementById("avvikelse-text").innerHTML = `<span class="trend-neutral"><span class="pil-boll">${trendPil}</span> ${lastVal.toLocaleString('sv-SE')}</span>`;
+            } else document.getElementById("avvikelse-text").innerHTML = "<span class='trend-neutral'><span class='pil-boll'>?</span> Saknar data</span>";
+
+            let bottenInfoElement = document.getElementById("botten-info");
+            let riketDataFinns = riketVarden.some(v => v !== null);
+
+            if (myChart != null) myChart.destroy();
+            let ds = [{ label: rubrikText + " (Utfall)", data: varden, backgroundColor: globalGrafTyp === 'linje' ? 'transparent' : pFargerBG, borderColor: globalGrafTyp === 'linje' ? FARG_LINJE : pFargerBorder, pointBackgroundColor: pFargerBG, pointBorderColor: pFargerBorder, pointRadius: 6, borderWidth: 2, tension: 0.1, yAxisID: 'y' }];
+            if (globalGrafTyp === "linje" && globalBerakning === "_R12") ds.push({ label: "Prognos", data: prognosVarden, backgroundColor: 'transparent', borderColor: '#6c757d', borderDash: [5, 5], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y' });
+            
+            // LÖSNING 1: Stapel börjar på noll, linjer auto-skalar för att visa variationer
+            let startaPaNoll = (globalGrafTyp === "stapel");
+            
+            let scalesConfig = { 
+                x: { grid: { display: false } }, 
+                y: { type: 'linear', display: true, position: 'left', beginAtZero: startaPaNoll } 
+            };
+
+            if (visaRiket && riketDataFinns) {
+                bottenInfoElement.innerHTML = `<em>* Rikets värden visas på den högra axeln</em>`;
+                
+                scalesConfig.y1 = { 
+                    type: 'linear', display: true, position: 'right', 
+                    grid: { drawOnChartArea: false }, ticks: { color: FARG_RIKET }, 
+                    beginAtZero: startaPaNoll 
+                };
+
+                // LÖSNING 2: FIX FÖR NEGATIVA VÄRDEN (ENDAST OM ORDET "FÖRÄNDRING" FINNS)
+                let arForandringIndikator = indikator.toLowerCase().includes("förändring");
+                let hasNegative = varden.some(v => v !== null && v < 0) || 
+                                  prognosVarden.some(v => v !== null && v < 0) || 
+                                  riketVarden.some(v => v !== null && v < 0);
+
+                if (arForandringIndikator && hasNegative) {
+                    function snyggMax(val) {
+                        if (val === 0) return 10;
+                        let mag = Math.pow(10, Math.floor(Math.log10(val)) - 1);
+                        if (mag === 0) mag = 1;
+                        return Math.ceil((val * 1.1) / mag) * mag; 
+                    }
+                    
+                    let maxL = Math.max(0, ...varden.filter(v => v !== null).map(Math.abs), ...prognosVarden.filter(v => v !== null).map(Math.abs));
+                    let maxR = Math.max(0, ...riketVarden.filter(v => v !== null).map(Math.abs));
+                    
+                    let symMaxL = snyggMax(maxL);
+                    let symMaxR = snyggMax(maxR);
+
+                    scalesConfig.y.min = -symMaxL;
+                    scalesConfig.y.max = symMaxL;
+                    scalesConfig.y1.min = -symMaxR;
+                    scalesConfig.y1.max = symMaxR;
+                }
+                // ===================================================
+
+                ds.push({ label: "Riket", data: riketVarden, backgroundColor: 'transparent', borderColor: FARG_RIKET, borderDash: [2, 2], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y1' });
+            } else { bottenInfoElement.innerHTML = ""; }
+
+            myChart = new Chart(document.getElementById('mittDiagram').getContext('2d'), { 
+                type: globalGrafTyp === 'linje' ? 'line' : 'bar', 
+                data: { labels: etiketter, datasets: ds }, 
+                options: { responsive: true, maintainAspectRatio: false, spanGaps: false, plugins: { legend: { position: 'bottom' } }, scales: scalesConfig } 
+            });
+        }
+    </script>
+</body>
+</html>

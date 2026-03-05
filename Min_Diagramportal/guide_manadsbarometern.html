@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Användarguide - Månadsbarometern</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-blue: #005596;
+            --primary-dark: #003d6b;
+            --bg-color: #f4f7f6;
+            --farg-bra: #009E73;
+            --farg-dalig: #D55E00;
+            --farg-neutral: #6c757d;
+            --farg-varning: #F0E442;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav-bar {
+            background-color: #343a40;
+            color: white;
+            padding: 5px 30px;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 20px;
+        }
+        
+        .top-nav-bar a { color: #e9ecef; text-decoration: none; transition: color 0.2s; }
+        .top-nav-bar a:hover { color: white; text-decoration: underline; }
+
+        /* Header */
+        .header-bar {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+            color: white;
+            padding: 15px 30px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .logga-titel-container { display: flex; align-items: center; gap: 15px; }
+        .logotyp { height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2)); }
+        .header-title { margin: 0; font-size: 1.5rem; font-weight: 600; }
+
+        /* Navigation i Header */
+        .header-nav { display: flex; gap: 12px; align-items: center; }
+        .nav-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;
+        }
+        .nav-btn:hover { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: rgba(255, 255, 255, 0.6); }
+
+        .content-wrapper {
+            max-width: 1000px; margin: 40px auto; padding: 20px 15px; width: 100%; flex-grow: 1;
+        }
+
+        /* Kort för Innehåll */
+        .guide-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            margin-bottom: 30px;
+            border-top: 4px solid var(--primary-blue);
+        }
+
+        .guide-card h2 { color: var(--primary-blue); font-weight: bold; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-bottom: 20px; }
+        .guide-card h4 { color: var(--primary-dark); font-weight: 600; margin-top: 25px; }
+        .guide-card p, .guide-card li { font-size: 1.1rem; line-height: 1.7; color: #495057; }
+        
+        .boll-exempel { display: inline-flex; justify-content: center; align-items: center; width: 24px; height: 24px; border-radius: 50%; color: white; font-size: 16px; font-weight: 900; margin-right: 8px; -webkit-text-stroke: 1px white; }
+
+        /* Sidfot (Footer) */
+        .site-footer {
+            background-color: #343a40;
+            color: #ced4da;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.85rem;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Liten navigeringsmeny i toppen -->
+    <div class="top-nav-bar">
+        <a href="index.html">Startmeny</a>
+        <a href="dashboard_px.html">Kvartalsuppföljning</a>
+        <a href="manadsbarometern.html">Månadsbarometern</a>
+    </div>
+
+    <div class="header-bar">
+        <div class="logga-titel-container">
+            <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" class="logotyp" onerror="this.style.display='none'">
+            <h1 class="header-title">Användarguide</h1>
+        </div>
+        <div class="header-nav">
+            <a href="manadsbarometern.html" class="nav-btn">🔙 Tillbaka till Dashboard</a>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        
+        <div class="guide-card">
+            <h2>Välkommen till Månadsbarometern!</h2>
+            <p>Månadsbarometern är ett kraftfullt och interaktivt verktyg utvecklat av Analys & Utredning för att följa upp arbetsmarknadsläget och sysselsättningen i Linköpings kommun.</p>
+            <p>Denna guide hjälper dig att snabbt förstå hur du navigerar i plattformen och hur du tolkar de olika måtten, barometrarna och färgkoderna.</p>
+        </div>
+
+        <div class="guide-card">
+            <h2>1. Navigering och Vyer</h2>
+            <p>Längst upp på sidan hittar du kontrollpanelen där du väljer <strong>År</strong> och <strong>Månad</strong>. Instrumentpanelen uppdateras automatiskt när du ändrar dessa val. Som standard visas alltid den senaste månaden där en analys finns inlagd.</p>
+            
+            <h4>De tre huvudvyerna:</h4>
+            <ul>
+                <li><strong>📄 Rapport: Sysselsättning</strong> - Din "Executive Summary" för sysselsättningsläget. Visar en textanalys, en sammanfattande tabell över viktiga nyckeltal (både månad och rullande 12), en övergripande barometer samt fyra fördjupande diagram.</li>
+                <li><strong>📄 Rapport: Arbetslöshet</strong> - Motsvarande sammanfattningsvy men med fullt fokus på arbetslöshetsmått, långtidsarbetslöshet och ekonomiskt bistånd.</li>
+                <li><strong>📊 Analysvy</strong> - En utforskande vy för dig som vill borra djupare. Här kan du interagera med alla bakomliggande dataserier, växla mellan stapel- och linjediagram, samt indexera serier för att jämföra utvecklingstakter.</li>
+            </ul>
+        </div>
+
+        <div class="guide-card">
+            <h2>2. Förstå Måluppfyllelse och Färgkoder</h2>
+            <p>I Rapportvyerna hjälper färgkoderna dig att snabbt utläsa om utvecklingen går åt rätt håll. Färgen sätts utifrån det aktuella utfallet jämfört med en fastställd <strong>prognos</strong>, eller jämfört med <strong>samma period föregående år</strong>.</p>
+            
+            <h4>Statusbollar vid diagrammen:</h4>
+            <ul style="list-style: none; padding-left: 0;">
+                <li style="margin-bottom: 10px;"><span class="boll-exempel" style="background-color: var(--farg-bra);">↑</span> <strong>Grönt:</strong> Positiv utveckling. Indikatorn utvecklas bättre än prognos, eller utvecklas i rätt riktning historiskt (t.ex. att arbetslösheten sjunker).</li>
+                <li style="margin-bottom: 10px;"><span class="boll-exempel" style="background-color: var(--farg-dalig);">↓</span> <strong>Rött:</strong> Negativ utveckling. Indikatorn underpresterar jämfört med förväntan eller historik.</li>
+                <li style="margin-bottom: 10px;"><span class="boll-exempel" style="background-color: var(--farg-neutral);">→</span> <strong>Grått:</strong> Neutralt. Utvecklingen ligger i nivå med prognos, eller har inte förändrats nämnvärt sedan föregående år.</li>
+            </ul>
+
+            <h4>Barometern (Mätaren uppe till höger):</h4>
+            <p>Den halvcirkelformade barometern väger samman resultatet från de fyra underliggande diagrammen för den specifika vyn.</p>
+            <ul>
+                <li>Pekar pilen på <strong>Rött</strong>, uppnås 1 eller 0 av delmålen. Läget bedöms som kritiskt.</li>
+                <li>Pekar pilen på <strong>Gult</strong>, uppnås hälften av målen (2 st). Läget bedöms som stabilt eller neutralt.</li>
+                <li>Pekar pilen på <strong>Grönt</strong>, uppnås 3 eller 4 av målen. Läget är positivt och starkt.</li>
+            </ul>
+        </div>
+
+        <div class="guide-card">
+            <h2>3. Utskrifter och Rapportering</h2>
+            <p>Instrumentpanelen är anpassad för att se lika bra ut på papper som på skärmen.</p>
+            <p>När du trycker på <strong>Skriv ut (Ctrl + P)</strong> i din webbläsare döljs automatiskt alla knappar och rullistor. Den vy du för tillfället står i formateras då om till en snygg och professionell rapport som du direkt kan spara som PDF för att bifoga till exempelvis kommunstyrelsens sammanträden.</p>
+        </div>
+
+    </div>
+
+    <footer class="site-footer">
+        Utvecklad av Analys & Utredning, Linköpings kommun &bull; Data uppdateras månadsvis via SCB, Arbetsförmedlingen, Tillväxtanalys och Socialstyrelsen. Statistiken har bearbetats av Linköpings kommun.
+    </footer>
+
+</body>
+</html>

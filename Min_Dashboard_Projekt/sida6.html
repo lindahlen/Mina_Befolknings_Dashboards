@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Befolkningsprognos för Linköpings kommun</title>
+ <style>
+        /* Grundinställningar med maxbredd och centrering */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0 auto; /* auto centrerar sidan på stora skärmar */
+            max-width: 1000px; /* Sidan blir aldrig bredare än så här */
+            padding: 20px; 
+            background-color: #f4f4f9; 
+            .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        }
+        
+        /* Meny */
+        nav { background-color: #333; padding: 15px; border-radius: 5px; margin-bottom: 30px; }
+        nav a { color: white; text-decoration: none; margin-right: 20px; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .map-portal-link { color: #4CAF50; }
+        
+        /* Sektioner och kommentarer */
+        .sektion { background: white; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .kommentar { font-style: italic; color: #555; margin-bottom: 10px; padding: 10px; background-color: #eef; border-left: 4px solid #0066cc; }
+        
+        /* Responsiva iframes */
+        iframe {
+            max-width: 100%; /* Säkerställer att iframen inte svämmar över sin box på mobiler */
+            border: none; /* Tar bort den fula standardramen */
+            border-radius: 4px; /* Mjukare hörn */
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html">Månadsstatistik</a>
+        <a href="sida2.html">Befolkning</a>
+        <a href="sida16.html">Befolkningspyramid</a>
+        <a href="sida11.html">Kvartal</a>
+        <a href="sida8.html">Nybyggnation</a>
+        
+        
+        <a href="https://lindahlen.github.io/linkoping-aikarta/" class="map-portal-link" >
+            🌍 Till min Kartportal
+        </a>
+    </nav>
+
+    <h1>Befolkningsprognos</h1>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Befolkningsprognos med utblick för Linköpings kommun.
+        </div>
+        <!-- Embed code for 13/10 Befolkningsprognos med utblick efter kön och ålder -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=6529033e6feac033f8d2f9b6&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Befolkningsprognos efter funktionell ålder.
+        </div>
+        <!-- Embed code for 13/10 Befolkningsprognos efter funktionell ålder -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=652908036feac033f8d2f9bd&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Befolkningsprognos efter stadsdel.
+        </div>
+        <!-- Embed code for 13/10 Befolkningsprognos stadsdelar utveckling linje -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65290e106feac033f8d2f9c6&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Befolkningsprognos för stadsdelar efter funktionell ålder.
+        </div>
+        <!-- Embed code for 13/10 Befolkningsprognos för stadsdelar efter funktionell ålder -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=652916856feac033f8d2f9ce&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Jämförelse av befolkningsprognoser från olika år och verklig utfall.
+        </div>
+        <!-- Embed code for 13/11 Jämförelse av befolkningsprognoser efter ålder (linje) -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=673450b7367b931b4c86dfd5&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+            <div class="sektion">
+        <div class="kommentar">
+            Jämförelser av befolkningsprognoser från olika år efter ålder.
+        </div>
+        <!-- Embed code for 4/12 Befolkningsprognoser i ettårsklasser -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=67506f8cb1ac791b74298aec&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+        <div class="sektion">
+        <div class="kommentar">
+            Befolkningens förändringar i stadsdelar i ett längre perspektiv.
+        </div>
+        <!-- Embed code for 10/12 Befolkningsprognosens förändringar stadsdelar -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=67584265b1ac791b74298b56&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+   <div class="container">
+    			<a href="sida17.html">Antaganden befolkningsprognos</a>
+        
+    </div>
+</body>
+</html>

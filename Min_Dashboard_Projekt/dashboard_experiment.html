@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="author" content="Jimmy Lindahl, Analys & Utredning, Linköpings kommun">
+    <meta name="description" content="Ett interaktivt BI-system och dashboard för kvartalsuppföljning av kommungemensamma indikatorer såsom befolkning, sysselsättning, bostäder och arbetslöshet, inklusive jämförelser med prognoser.">
+    <meta name="keywords" content="BI, Dashboard, Data, Fakta, Kvartal, Kvartalsuppföljning, Statistik, Linköping, Befolkningsutveckling, Arbetsmarknad, Bostadsbyggande, Prognoser">
+    
+    <title>Kvartalsuppföljning för Linköpings kommun - EXPERIMENT</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
+        .toppmeny { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; border-bottom: 4px solid #ffc107; /* Gul kant för experiment */ }
+        .logga-titel-container { display: flex; align-items: center; gap: 20px; }
+        .logotyp { height: 50px; object-fit: contain; }
+        h1 { margin: 0; font-size: 1.8em; color: #2c3e50; }
+        .nav-lankar a { text-decoration: none; color: #007BFF; font-weight: bold; margin-left: 20px; padding: 8px 12px; border-radius: 4px; transition: background 0.2s; }
+        .nav-lankar a:hover { background-color: #e9ecef; color: #0056b3; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 20px auto; padding: 0 20px; gap: 20px; flex-wrap: wrap; }
+        .kpi-kort { background: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); text-align: center; flex: 1; min-width: 200px; border-left: 5px solid #007BFF; }
+        .kpi-kort h3 { margin: 0 0 5px 0; font-size: 0.9em; color: #6c757d; text-transform: uppercase; }
+        .kpi-siffra { font-size: 2em; font-weight: bold; color: #2c3e50; margin: 0; }
+        .master-kontroller { text-align: center; background-color: white; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); display: flex; justify-content: center; gap: 10px; flex: 2; min-width: 300px; }
+        select { padding: 10px 12px; border-radius: 6px; border: 1px solid #ccc; background-color: #007BFF; color: white; font-weight: bold; cursor: pointer; font-size: 14px; }
+        select:hover { background-color: #0056b3; }
+        .diagram-rutnat { display: grid; gap: 20px; grid-template-columns: 1fr; max-width: 1400px; margin: 0 auto 40px auto; padding: 0 20px; }
+        @media (min-width: 900px) { .diagram-rutnat { grid-template-columns: 1fr 1fr; } }
+        iframe { width: 100%; height: 480px; border: none; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.08); background-color: white; }
+    </style>
+</head>
+<body>
+
+    <header class="toppmeny">
+        <div class="logga-titel-container">
+            <img src="Linkopingsloggo.png" alt="Linköpings kommun" class="logotyp">
+            <h1>Kvartalsuppföljning för Linköpings kommun (EXPERIMENT)</h1>
+        </div>
+        <nav class="nav-lankar">
+            <a href="dashboard_experiment2.html">🔄 Till Experiment 2</a>
+            <a href="information_experiment.html">ℹ️ Om datan (Exp)</a>
+            <a href="dashboard.html">⬅ Till Live-versionen</a>
+        </nav>
+    </header>
+
+    <div class="dashboard-header">
+        <div class="kpi-kort" style="border-left-color: #007BFF;">
+            <h3>Befolkning (Senaste kvartal)</h3>
+            <p class="kpi-siffra" id="kpi-befolkning">Laddar...</p>
+        </div>
+
+        <div class="master-kontroller">
+            <select id="master-berakning" onchange="skickaTillDiagrammen()">
+                <option value="_Kvartal">Aktuellt kvartal</option>
+                <option value="_R12" selected>Rullande 12 mån</option>
+            </select>
+            <select id="master-graftyp" onchange="skickaTillDiagrammen()">
+                <option value="linje">Utveckling över tid</option>
+                <option value="stapel">Jämför kvartal</option>
+            </select>
+            <select id="master-kvartal" onchange="skickaTillDiagrammen()" style="display: none; background-color: #6c757d;">
+                <option value="1">Kvartal 1</option>
+                <option value="2">Kvartal 2</option>
+                <option value="3">Kvartal 3</option>
+                <option value="4">Kvartal 4</option>
+            </select>
+        </div>
+
+        <div class="kpi-kort" style="border-left-color: #20c997;">
+            <h3>Sysselsatta (Senaste kvartal)</h3>
+            <p class="kpi-siffra" id="kpi-sysselsatta">Laddar...</p>
+        </div>
+    </div>
+
+    <div class="diagram-rutnat">
+        <iframe id="iframe1" src="diagram11.html"></iframe>
+        <iframe id="iframe2" src="diagram12.html"></iframe>
+        <iframe id="iframe3" src="diagram13.html"></iframe>
+        <iframe id="iframe4" src="diagram14.html"></iframe>
+    </div>
+
+    <script>
+        function formateraSiffra(siffra) { return Number(siffra).toLocaleString('sv-SE'); }
+
+        function hamtaSenasteVarde(filnamn, kolumnnamn, elementId) {
+            fetch(filnamn)
+                .then(response => response.arrayBuffer())
+                .then(buffer => {
+                    let decoder = new TextDecoder("utf-8");
+                    let text = decoder.decode(buffer);
+                    if (text.includes("")) { decoder = new TextDecoder("windows-1252"); text = decoder.decode(buffer); }
+                    text = text.trim().replace(/^\uFEFF/i, '');
+
+                    Papa.parse(text, {
+                        header: true, skipEmptyLines: true, delimiter: ";", transformHeader: function(h) { return h.trim(); },
+                        complete: function(results) {
+                            let data = results.data;
+                            let senasteVarde = "Saknas";
+                            for (let i = data.length - 1; i >= 0; i--) {
+                                let val = data[i][kolumnnamn];
+                                if (val && val.trim() !== "" && val.trim() !== "..") {
+                                    senasteVarde = formateraSiffra(val.replace(/\s/g, '').replace(',', '.'));
+                                    break;
+                                }
+                            }
+                            document.getElementById(elementId).innerText = senasteVarde;
+                        }
+                    });
+                })
+                .catch(err => { document.getElementById(elementId).innerText = "Fel"; });
+        }
+
+        hamtaSenasteVarde("Data_Diagram11.csv", "Befolkning_Kvartal", "kpi-befolkning");
+        hamtaSenasteVarde("Data_Diagram12.csv", "Sysselsatta_Kvartal", "kpi-sysselsatta");
+
+        function skickaTillDiagrammen() {
+            const berakning = document.getElementById("master-berakning").value;
+            const grafTyp = document.getElementById("master-graftyp").value;
+            const kvartal = document.getElementById("master-kvartal").value;
+
+            if (grafTyp === "stapel") { document.getElementById("master-kvartal").style.display = "inline-block"; } 
+            else { document.getElementById("master-kvartal").style.display = "none"; }
+
+            for (let i = 1; i <= 4; i++) {
+                const iframe = document.getElementById("iframe" + i);
+                if (iframe && iframe.contentWindow && typeof iframe.contentWindow.uppdateraFranMaster === "function") {
+                    iframe.contentWindow.uppdateraFranMaster(berakning, grafTyp, kvartal);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Om datan - Experiment 2</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; line-height: 1.6; }
+        .toppmeny { background-color: #ffffff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #ffc107; }
+        h1 { margin: 0; font-size: 1.8em; color: #2c3e50; }
+        
+        .version-tag { background-color: #ffc107; color: #000; font-size: 0.5em; padding: 4px 8px; border-radius: 4px; vertical-align: middle; margin-left: 10px; font-weight: bold;}
+
+        .tillbaka-knapp { text-decoration: none; background-color: #007BFF; color: white; padding: 10px 15px; border-radius: 6px; font-weight: bold; transition: background 0.2s; }
+        .tillbaka-knapp:hover { background-color: #0056b3; }
+        .innehall { max-width: 800px; margin: 40px auto; padding: 0 20px; }
+        .intro-text { font-size: 1.1em; color: #555; margin-bottom: 30px; }
+        
+        .info-kort { background-color: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); margin-bottom: 25px; border-left: 5px solid #ccc; }
+        .info-kort h2 { margin-top: 0; color: #2c3e50; border-bottom: 2px solid #f4f7f6; padding-bottom: 10px; }
+        .info-kort h3 { color: #007BFF; margin-bottom: 5px; margin-top: 20px;}
+        
+        /* Tillgänglighetsanpassad färgpalett för utvärderingar */
+        .farg-forklaring { display: flex; align-items: center; margin-bottom: 10px; }
+        .cirkel { width: 16px; height: 16px; border-radius: 50%; display: inline-block; margin-right: 10px; flex-shrink: 0; }
+        .cirkel-bra { background-color: #009E73; }     /* Blågrön (Teal) */
+        .cirkel-dalig { background-color: #D55E00; }   /* Orange/Röd (Vermilion) */
+        .cirkel-neutral { background-color: #6c757d; } /* Grå */
+
+        /* Temafärger för Experiment 2 */
+        .cirkel-bla { background-color: #004a99; }
+        .cirkel-gron { background-color: #128260; }
+        .cirkel-orange { background-color: #b85400; }
+        .cirkel-lila { background-color: #452080; }
+        .linje-riket { width: 24px; height: 0; border-top: 3px dashed #495057; display: inline-block; margin-right: 10px; flex-shrink: 0; }
+
+        /* Färgkodade kanter för de specifika diagrammen */
+        .kort-allmant { border-left-color: #ffc107; }
+        .kort-nyheter { border-left-color: #e83e8c; } /* Rosa för att sticka ut som nyhet */
+        .kort-befolkning { border-left-color: #004a99; }
+        .kort-arbetsmarknad { border-left-color: #128260; }
+        .kort-bostader { border-left-color: #b85400; }
+        .kort-arbetsloshet { border-left-color: #452080; }
+    </style>
+</head>
+<body>
+
+    <header class="toppmeny">
+        <h1>ℹ️ Om datan <span class="version-tag">EXPERIMENT 2</span></h1>
+        <!-- Länken pekar nu rätt mot dashboard_experiment2.html -->
+        <a href="dashboard_experiment2.html" class="tillbaka-knapp">⬅ Tillbaka till Dashboard 2</a>
+    </header>
+
+    <div class="innehall">
+        <p class="intro-text">
+            Detta är en test- och utvecklingsmiljö för kvartalsuppföljningen (Version 2). Här prövar vi att jämföra det faktiska utfallet med våra uppsatta mål och prognoser, samt att mäta trenden över tid. Nytt i denna version är möjligheten att jämföra värden med Riket.
+        </p>
+
+        <!-- NY SEKTION: Finesser i Experiment 2 -->
+        <div class="info-kort kort-nyheter">
+            <h2>✨ Nyheter i Experiment 2</h2>
+            
+            <h3>Jämför med Riket (Dubbla axlar)</h3>
+            <p>I diagrammens övre del finns nu knappen <strong>"☐ Jämför Riket"</strong>. Om du klickar på denna läggs rikets utveckling till som en mörkgrå streckad linje i diagrammet.</p>
+            <div class="farg-forklaring">
+                <span class="linje-riket"></span> <strong>Riket (Snitt):</strong> Visar det nationella snittet som en referenslinje.
+            </div>
+            <p><em>Viktigt:</em> Eftersom rikets siffror ofta är miljontals gånger större än en enskild kommuns, visas rikets värden på en <strong>sekundär axel till höger</strong> i diagrammet. Läs alltid av rikets linje mot den högra axeln, och kommunens data mot den vänstra axeln.</p>
+
+            <h3>Domänspecifika Temafärger</h3>
+            <p>När vi mäter data som <em>saknar</em> ett definierat mål eller prognos (exempelvis om du väljer "Aktuellt kvartal" istället för "Rullande 12 mån"), färgas inte diagrammet i rött/grönt eftersom det inte finns något att utvärdera emot. Istället används en specifik temafärg för varje område för att underlätta navigeringen:</p>
+            <div class="farg-forklaring"><span class="cirkel cirkel-bla"></span> <strong>Klassiskt Blå:</strong> Används i diagram 1 (Befolkning).</div>
+            <div class="farg-forklaring"><span class="cirkel cirkel-gron"></span> <strong>Smaragdgrön:</strong> Används i diagram 2 (Sysselsättning).</div>
+            <div class="farg-forklaring"><span class="cirkel cirkel-orange"></span> <strong>Varm Orange:</strong> Används i diagram 3 (Bostäder).</div>
+            <div class="farg-forklaring"><span class="cirkel cirkel-lila"></span> <strong>Elegant Lila:</strong> Används i diagram 4 (Arbetslöshet).</div>
+
+            <h3>Nedladdning av data</h3>
+            <p>I botten av varje diagram finns nu en knapp för att ladda ner det aktuella diagrammets data som en CSV-fil. Filen anpassas dynamiskt och inkluderar även rikets data om denna är aktiverad i vyn.</p>
+        </div>
+
+        <div class="info-kort kort-allmant">
+            <h2>Så fungerar utvärderingsfärgerna</h2>
+            <p>När ett mål eller prognos finns tillgängligt (exempelvis vid Rullande 12 månader) visas prognosen som en grå, streckad linje. Färgerna på diagrammens punkter (och bollarna högst upp) ändras då dynamiskt för att snabbt och tydligt visa hur vi ligger till:</p>
+            
+            <div class="farg-forklaring">
+                <span class="cirkel cirkel-bra"></span> <strong>Blågrön:</strong> Utfallet är bättre än prognos/mål (med hänsyn till tröskelvärdet).
+            </div>
+            <div class="farg-forklaring">
+                <span class="cirkel cirkel-dalig"></span> <strong>Orange/Röd:</strong> Utfallet är sämre än prognos/mål.
+            </div>
+            <div class="farg-forklaring">
+                <span class="cirkel cirkel-neutral"></span> <strong>Grå:</strong> Utfallet ligger inom den acceptabla felmarginalen (målet anses uppnått).
+            </div>
+
+            <h3>Vad betyder bollarna och pilarna?</h3>
+            <p>Rutan högst upp i diagrammet visar differensen mellan det allra senaste kvartalet och motsvarande prognos. <strong>Pilen inuti bollen (↑/↓/→)</strong> visar hur trenden ser ut jämfört med <em>samma kvartal föregående år</em>. En sidåtriktad pil innebär att läget är stabilt och inom ramarna för naturlig variation.</p>
+        </div>
+
+        <div class="info-kort kort-befolkning">
+            <h2>Diagram 1: Befolkningsutveckling</h2>
+            <p><strong>Källa:</strong> SCB (Statistiska centralbyrån) samt interna mål.</p>
+            <p><strong>Läsanvisning:</strong> Här följer vi upp hur befolkningstillväxten står sig mot våra uppsatta mål. Observera att tröskelvärdet för vad som anses vara en neutral avvikelse är satt till [X] personer.</p>
+        </div>
+
+        <div class="info-kort kort-arbetsmarknad">
+            <h2>Diagram 2: Sysselsättning</h2>
+            <p><strong>Källa:</strong> SCB samt interna mål.</p>
+            <p><strong>Läsanvisning:</strong> Fyll i relevant bakgrundsinformation kring hur sysselsättningsmålen beräknas här...</p>
+        </div>
+
+        <div class="info-kort kort-bostader">
+            <h2>Diagram 3: Bostadsbyggande</h2>
+            <p><strong>Källa:</strong> Bygglovsenheten / SCB.</p>
+            <p><strong>Läsanvisning:</strong> Förtydliga hur prognoserna för påbörjade och färdigställda bostäder tas fram, samt om avvikelser beror på konjunktur eller lokala faktorer...</p>
+        </div>
+
+        <div class="info-kort kort-arbetsloshet">
+            <h2>Diagram 4: Arbetslöshet</h2>
+            <p><strong>Källa:</strong> Arbetsförmedlingen.</p>
+            <p><strong>Läsanvisning:</strong> Här är "Låg" polaritet applicerad, vilket betyder att ett värde <em>under</em> mållinjen markeras som positivt (blågrönt). Tröskelvärdet är angivet i procentenheter...</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistik om Linköping samt statistik för jämförelsekommuner</title>
+ <style>
+        /* Grundinställningar med maxbredd och centrering */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0 auto; /* auto centrerar sidan på stora skärmar */
+            max-width: 1000px; /* Sidan blir aldrig bredare än så här */
+            padding: 20px; 
+            background-color: #f4f4f9; 
+        }
+        
+        /* Meny */
+        nav { background-color: #333; padding: 15px; border-radius: 5px; margin-bottom: 30px; }
+        nav a { color: white; text-decoration: none; margin-right: 20px; font-weight: bold; }
+        nav a:hover { text-decoration: underline; }
+        .map-portal-link { color: #4CAF50; }
+        
+        /* Sektioner och kommentarer */
+        .sektion { background: white; padding: 20px; margin-bottom: 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .kommentar { font-style: italic; color: #555; margin-bottom: 10px; padding: 10px; background-color: #eef; border-left: 4px solid #0066cc; }
+        
+        /* Responsiva iframes */
+        iframe {
+            max-width: 100%; /* Säkerställer att iframen inte svämmar över sin box på mobiler */
+            border: none; /* Tar bort den fula standardramen */
+            border-radius: 4px; /* Mjukare hörn */
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="index.html">Månadsstatistik</a>
+        <a href="sida2.html">Befolkning</a>
+        <a href="sida3.html">Sysselsättning</a>
+        <a href="sida4.html">Bostäder och hushåll</a>
+        <a href="sida9.html">Kartjämförelser</a>
+        
+        <a href="https://lindahlen.github.io/linkoping-aikarta/" class="map-portal-link" >
+            🌍 Till min Kartportal
+        </a>
+    </nav>
+
+    <h1>Större kommuner</h1>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Folkmängd och befolkningsförändringar.
+        </div>
+        <!-- Embed code for 24/10 Jämförelse av befolkningens utveckling med Sveriges större kommuner -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65379b716605b5331c7382de&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Befolkningen efter härkomst.
+        </div>
+        <!-- Embed code for 1/12 Befolkning efter härkomst i större kommuner -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65699c986837ff2c04174366&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Flyttning efter ålder.
+        </div>
+        <!-- Embed code for 1/3 Flyttning efter ålder utveckling för större kommuner -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65e182242dffb10cf422521a&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Sysselsättningens utveckling.
+        </div>
+        <!-- Embed code for 1/11 Förvärvsarbetande utveckling i större kommuner -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65426f016605b5331c7385b8&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+ <div class="sektion">
+        <div class="kommentar">
+            Sysselsättningsgrad i åldern 20-64 år.
+        </div>
+        <!-- Embed code for 31/1 Förvärvsfrekvensens utveckling i större kommuner -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65b9f34271a80f1de831b70d&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Bostäder efter upplåtelseform.
+        </div>
+        <!-- Embed code for 1/11 Bostäder antal efter upplåtelseform i större kommuner -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65427cf76605b5331c7385c1&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+
+    <div class="sektion">
+        <div class="kommentar">
+            Utbildningsnivå i åldern 16-74 år.
+        </div>
+    <!-- Embed code for 18/1 Utbildningsnivå efter ålder i större kommuner -->
+<iframe src="https://statisticsstudio.com/boot/2.0.0/bootstrapper.html?c=65a93bff71a80f1de831b625&o=9462b1bd-274f-4213-9cf3-9265c35093b9" frameBorder="0" seamless="true" style="width: 100%; height: 570px;"></iframe>
+    </div>
+</body>
+</html>
