@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Linköpings Diagramportal</title>
-    <!-- Använder Bootstrap för en snabb och snygg layout -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -18,8 +17,8 @@
         .portal-header {
             background: linear-gradient(135deg, #005596, #003d6b);
             color: white;
-            padding: 80px 0 60px 0;
-            margin-bottom: 50px;
+            padding: 60px 0 40px 0;
+            margin-bottom: 40px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             position: relative;
         }
@@ -32,7 +31,6 @@
             background: linear-gradient(90deg, #009E73, #E69F00, #6f42c1);
         }
 
-        /* Diskret toppmeny för externa länkar */
         .top-nav {
             position: absolute;
             top: 15px;
@@ -51,7 +49,7 @@
 
         .hero-logga {
             filter: drop-shadow(0px 4px 6px rgba(0,0,0,0.2));
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         .card {
@@ -61,6 +59,7 @@
             box-shadow: 0 8px 24px rgba(0,0,0,0.06);
             overflow: hidden;
             background: white;
+            margin-bottom: 10px;
         }
         
         .card:hover {
@@ -68,151 +67,104 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.12);
         }
         
-        /* Kort-teman */
-        .card-primary {
-            border-top: 6px solid #005596; /* Blå */
-        }
-        .card-primary .card-title { color: #005596; font-weight: 700; font-size: 1.4rem; }
+        /* Färgprofiler för korten */
+        .card-primary { border-top: 6px solid #005596; }
+        .card-primary .card-title { color: #005596; font-weight: 700; }
 
-        .card-success {
-            border-top: 6px solid #009E73; /* Grön */
-        }
-        .card-success .card-title { color: #009E73; font-weight: 700; font-size: 1.4rem; }
+        .card-success { border-top: 6px solid #009E73; }
+        .card-success .card-title { color: #009E73; font-weight: 700; }
 
-        .card-secondary {
-            border-top: 6px solid #6c757d; /* Grå */
-            background-color: #fafbfc;
-        }
-        .card-secondary .card-title { color: #495057; font-weight: 600; font-size: 1.25rem; }
+        .card-info { border-top: 6px solid #6f42c1; } /* Lila för Månadsstatistik */
+        .card-info .card-title { color: #6f42c1; font-weight: 700; }
+
+        .card-warning { border-top: 6px solid #ffc107; }
+        .card-warning .card-title { color: #856404; font-weight: 700; }
 
         /* Knappar */
-        .btn-primary {
-            background-color: #005596;
-            border: none;
-            padding: 12px 20px;
-            font-weight: bold;
-            font-size: 1.05rem;
-            border-radius: 8px;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-        }
-        .btn-primary:hover { background-color: #003d6b; transform: scale(1.02); }
-
-        .btn-success {
-            background-color: #009E73;
-            border: none;
-            color: white;
-            padding: 12px 20px;
-            font-weight: bold;
-            font-size: 1.05rem;
-            border-radius: 8px;
-            transition: background-color 0.2s ease, transform 0.1s ease;
-        }
-        .btn-success:hover { background-color: #007a58; color: white; transform: scale(1.02); }
+        .btn-primary { background-color: #005596; border: none; padding: 12px; font-weight: bold; border-radius: 8px; }
+        .btn-success { background-color: #009E73; border: none; padding: 12px; font-weight: bold; border-radius: 8px; }
+        .btn-info { background-color: #6f42c1; border: none; color: white; padding: 12px; font-weight: bold; border-radius: 8px; }
+        .btn-info:hover { background-color: #553098; color: white; }
+        .btn-warning { background-color: #ffc107; border: none; color: #212529; padding: 12px; font-weight: bold; border-radius: 8px; }
+        .btn-warning:hover { background-color: #e0a800; color: #212529; }
         
-        .btn-outline {
-            border: 2px solid #6c757d;
-            color: #6c757d;
-            background: transparent;
-            padding: 10px 20px;
-            font-weight: bold;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-        .btn-outline:hover { background-color: #6c757d; color: white; }
+        .footer { margin-top: auto; text-align: center; padding: 25px 0; color: #888; font-size: 0.85rem; }
+        .badge-exp { font-size: 0.7rem; vertical-align: middle; margin-left: 5px; background-color: #ffc107; color: #212529; }
 
-        .footer {
-            margin-top: auto;
-            text-align: center;
-            padding: 30px 0;
-            color: #888;
-            font-size: 0.9rem;
+        /* För att säkerställa att raderna håller ihop snyggt i 2x2 */
+        .card-container {
+            max-width: 1000px;
+            margin: 0 auto;
         }
     </style>
 </head>
 <body>
 
     <div class="portal-header text-center">
-        <!-- Diskret toppmeny -->
         <div class="top-nav">
-            <a href="https://lindahlen.github.io/linkoping-aikarta/" target="_blank" rel="noopener noreferrer">📍 Till Kartportalen</a>
+            <a href="https://lindahlen.github.io/linkoping-aikarta/" target="_blank">📍 Till Kartportalen</a>
         </div>
         <div class="container">
-            <img src="Min_Diagramportal/Img/Linkopingsloggo.png" alt="Linköpings kommun" height="70" class="hero-logga" onerror="this.style.display='none'">
-            <h1 class="display-4 fw-bold">Statistik & Diagramportal</h1>
-            <p class="lead mt-3" style="opacity: 0.9;">Analys och uppföljning för Linköpings kommun</p>
+            <img src="Min_Diagramportal/Img/Linkopingsloggo.png" alt="Linköpings kommun" height="60" class="hero-logga" onerror="this.style.display='none'">
+            <h1 class="display-5 fw-bold">Statistik & Diagramportal</h1>
+            <p class="lead">Analys och uppföljning för Linköpings kommun</p>
         </div>
     </div>
 
-    <div class="container mb-5">
-        <div class="row g-4 justify-content-center align-items-stretch">
+    <div class="container mb-5 card-container">
+        <div class="row g-4 justify-content-center">
             
-            <!-- KORT 1: Kvartalsuppföljning (Huvud-dashboard) -->
-            <div class="col-md-6 col-lg-5">
+            <!-- KORT 1: Kvartalsuppföljning -->
+            <div class="col-md-6">
                 <div class="card card-primary h-100 p-4">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="mb-3">
-                            <span style="font-size: 3rem;">📊</span>
-                        </div>
-                        <h3 class="card-title mb-3">Kvartalsuppföljning</h3>
-                        <p class="card-text text-muted mb-4">
-                            Utforska kvartalsvis data gällande befolkning, arbetsmarknad och bostadsbyggande. Stödjer indexering och drill-down.
-                        </p>
+                        <div class="mb-3"><span style="font-size: 3rem;">📊</span></div>
+                        <h3 class="card-title mb-2">Kvartalsuppföljning</h3>
+                        <p class="card-text text-muted mb-4">Långsiktiga trender gällande befolkning, jobb och bostäder för Linköping.</p>
                         <div class="mt-auto">
-                            <a href="Min_Diagramportal/dashboard_px.html" class="btn btn-primary w-100 shadow-sm">Öppna Kvartalsuppföljning</a>
+                            <a href="Min_Diagramportal/dashboard_px.html" class="btn btn-primary w-100">Öppna Dashboard</a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- KORT 2: Månadsbarometern (Nytt Projekt) -->
-            <div class="col-md-6 col-lg-5">
+            <!-- KORT 2: Månadsbarometern -->
+            <div class="col-md-6">
                 <div class="card card-success h-100 p-4">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="mb-3">
-                            <span style="font-size: 3rem;">📈</span>
-                        </div>
-                        <h3 class="card-title mb-3">Månadsbarometern</h3>
-                        <p class="card-text text-muted mb-4">
-                            Månatlig uppföljning och analys av kommunens viktigaste indikatorer med tätare uppdateringsfrekvens.
-                        </p>
+                        <div class="mb-3"><span style="font-size: 3rem;">📈</span></div>
+                        <h3 class="card-title mb-2">Månadsbarometern</h3>
+                        <p class="card-text text-muted mb-4">Månatlig måluppföljning av kommunens mest kritiska indikatorer.</p>
                         <div class="mt-auto">
-                            <a href="Min_Diagramportal/manadsbarometern.html" class="btn btn-success w-100 shadow-sm">Öppna Månadsbarometern</a>
+                            <a href="Min_Diagramportal//manadsbarometern.html" class="btn btn-success w-100">Öppna Barometern</a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- KORT 3: Månadsstatistik (Äldre/Annan vy i undermapp) -->
-            <div class="col-md-6 col-lg-5">
-                <div class="card card-secondary h-100 p-4">
+            <!-- KORT 3: Basstatistik om Linköping -->
+            <div class="col-md-6">
+                <div class="card card-info h-100 p-4">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="mb-3">
-                            <span style="font-size: 2.5rem;">📅</span>
-                        </div>
-                        <h3 class="card-title mb-3">Månadsstatistik</h3>
-                        <p class="card-text text-muted mb-4">
-                            Gå till den tidigare vyn för månadsstatistik och löpande datauppföljning (placerad i projektmappen).
-                        </p>
+                        <div class="mb-3"><span style="font-size: 3rem;">📅</span></div>
+                        <h3 class="card-title mb-2">Basstatistik</h3>
+                        <p class="card-text text-muted mb-4">Detaljerad statistik om Linköping för fördjupad analys.</p>
                         <div class="mt-auto">
-                            <a href="Min_Dashboard_Projekt/index.html" class="btn btn-outline w-100">Öppna Månadsstatistik</a>
+                            <a href="Min_Dashboard_Projekt/index.html" class="btn btn-info w-100">Öppna Statistik</a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- KORT 4: Experimentarkiv -->
-            <div class="col-md-6 col-lg-5">
-                <div class="card card-secondary h-100 p-4">
+            <!-- KORT 4: Experimentportalen -->
+            <div class="col-md-6">
+                <div class="card card-warning h-100 p-4">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="mb-3">
-                            <span style="font-size: 2.5rem;">🧪</span>
-                        </div>
-                        <h3 class="card-title mb-3">Experimentarkiv</h3>
-                        <p class="card-text text-muted mb-4">
-                            Historiskt arkiv över tidigare utvecklingsmiljöer och experiment med Excel-baserad data (bl.a. Experiment 3).
-                        </p>
+                        <div class="mb-3"><span style="font-size: 3rem;">🧪</span></div>
+                        <h3 class="card-title mb-2">Experimentmiljö <span class="badge badge-exp rounded-pill">TEST</span></h3>
+                        <p class="card-text text-muted mb-4">Här utvärderar vi nya visualiseringsmetoder och testar framtida funktioner.</p>
                         <div class="mt-auto">
-                            <a href="Min_Dashboard_Projekt/dashboard_experiment3.html" class="btn btn-outline w-100">Visa historiskt arkiv</a>
+                            <a href="Min_Dashboard_Projekt/dashboard_experiment3.html" class="btn btn-warning w-100">Gå till Experiment</a>
                         </div>
                     </div>
                 </div>
@@ -223,7 +175,7 @@
 
     <div class="footer">
         <div class="container">
-            <p>© Utvecklad av Analys & Utredning, Linköpings kommun</p>
+            <p>© Utvecklad av Analys & Utredning, Linköpings kommun • Version 2.2</p>
         </div>
     </div>
 
