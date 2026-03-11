@@ -74,22 +74,37 @@
         .card-success { border-top: 6px solid #009E73; }
         .card-success .card-title { color: #009E73; font-weight: 700; }
 
-        .card-info { border-top: 6px solid #6f42c1; } /* Lila för Månadsstatistik */
+        .card-info { border-top: 6px solid #6f42c1; } /* Lila för Basstatistik */
         .card-info .card-title { color: #6f42c1; font-weight: 700; }
 
-        .card-warning { border-top: 6px solid #ffc107; }
-        .card-warning .card-title { color: #856404; font-weight: 700; }
+        .card-calc { border-top: 6px solid #e67e22; } /* Orange för Beräkningar */
+        .card-calc .card-title { color: #d35400; font-weight: 700; }
 
         /* Knappar */
         .btn-primary { background-color: #005596; border: none; padding: 12px; font-weight: bold; border-radius: 8px; }
         .btn-success { background-color: #009E73; border: none; padding: 12px; font-weight: bold; border-radius: 8px; }
         .btn-info { background-color: #6f42c1; border: none; color: white; padding: 12px; font-weight: bold; border-radius: 8px; }
         .btn-info:hover { background-color: #553098; color: white; }
-        .btn-warning { background-color: #ffc107; border: none; color: #212529; padding: 12px; font-weight: bold; border-radius: 8px; }
-        .btn-warning:hover { background-color: #e0a800; color: #212529; }
+        .btn-calc { background-color: #e67e22; border: none; color: white; padding: 12px; font-weight: bold; border-radius: 8px; }
+        .btn-calc:hover { background-color: #d35400; color: white; }
         
         .footer { margin-top: auto; text-align: center; padding: 25px 0; color: #888; font-size: 0.85rem; }
-        .badge-exp { font-size: 0.7rem; vertical-align: middle; margin-left: 5px; background-color: #ffc107; color: #212529; }
+        
+        /* Experiment-länken nere under rutorna */
+        .experiment-link {
+            display: inline-block;
+            margin-top: 30px;
+            color: #6c757d;
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.8;
+            transition: all 0.2s ease;
+        }
+        .experiment-link:hover {
+            opacity: 1;
+            color: #495057;
+            text-decoration: underline;
+        }
 
         /* För att säkerställa att raderna håller ihop snyggt i 2x2 */
         .card-container {
@@ -136,7 +151,7 @@
                         <h3 class="card-title mb-2">Månadsbarometern</h3>
                         <p class="card-text text-muted mb-4">Månatlig måluppföljning av kommunens mest kritiska indikatorer.</p>
                         <div class="mt-auto">
-                            <a href="Min_Diagramportal//manadsbarometern.html" class="btn btn-success w-100">Öppna Barometern</a>
+                            <a href="Min_Diagramportal/manadsbarometern.html" class="btn btn-success w-100">Öppna Barometern</a>
                         </div>
                     </div>
                 </div>
@@ -156,26 +171,34 @@
                 </div>
             </div>
 
-            <!-- KORT 4: Experimentportalen -->
+            <!-- KORT 4: Statistiska beräkningar (NY!) -->
             <div class="col-md-6">
-                <div class="card card-warning h-100 p-4">
+                <div class="card card-calc h-100 p-4">
                     <div class="card-body text-center d-flex flex-column">
-                        <div class="mb-3"><span style="font-size: 3rem;">🧪</span></div>
-                        <h3 class="card-title mb-2">Experimentmiljö <span class="badge badge-exp rounded-pill">TEST</span></h3>
-                        <p class="card-text text-muted mb-4">Här utvärderar vi nya visualiseringsmetoder och testar framtida funktioner.</p>
+                        <div class="mb-3"><span style="font-size: 3rem;">🧮</span></div>
+                        <h3 class="card-title mb-2">Statistiska beräkningar</h3>
+                        <p class="card-text text-muted mb-4">Verktyg och formler för att underlätta statistiska urval och beräkningar.</p>
                         <div class="mt-auto">
-                            <a href="Min_Dashboard_Projekt/dashboard_experiment3.html" class="btn btn-warning w-100">Gå till Experiment</a>
+                            <a href="Mina_Stat_Formler/index.html" class="btn btn-calc w-100">Öppna Kalkylatorer</a>
                         </div>
                     </div>
                 </div>
             </div>
 
         </div>
+
+        <!-- Diskret länk till Experimentportalen -->
+        <div class="text-center">
+            <a href="Min_Dashboard_Projekt/dashboard_experiment3.html" class="experiment-link">
+                🧪 Tillfällig experimentmiljö (TEST)
+            </a>
+        </div>
+
     </div>
 
     <div class="footer">
         <div class="container">
-            <p>© Utvecklad av Analys & Utredning, Linköpings kommun 2026 • Version 2.2</p>
+            <p>© Utvecklad av Analys & Utredning, Linköpings kommun 2026 • Version 2.3</p>
         </div>
     </div>
 

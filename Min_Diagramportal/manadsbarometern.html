@@ -33,13 +33,6 @@
             min-height: 100vh;
         }
 
-        /* Top Navigation Bar */
-        .top-nav-bar {
-            background-color: #343a40; color: white; padding: 5px 30px; font-size: 0.9rem; display: flex; justify-content: flex-end; gap: 20px;
-        }
-        .top-nav-bar a { color: #e9ecef; text-decoration: none; transition: color 0.2s; }
-        .top-nav-bar a:hover { color: white; text-decoration: underline; }
-
         /* Header */
         .header-bar {
             background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
@@ -49,7 +42,7 @@
         .logotyp { height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2)); }
         .header-title { margin: 0; font-size: 1.5rem; font-weight: 600; }
 
-        .header-nav { display: flex; gap: 12px; align-items: center; }
+        .header-nav { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
         .nav-btn {
             background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;
         }
@@ -66,7 +59,7 @@
         .time-selectors select { padding: 8px 15px; border-radius: 6px; border: 1px solid #ccc; background-color: #f8f9fa; font-weight: bold; font-size: 1rem; margin-right: 10px; cursor: pointer; }
 
         /* Toggle Knappar */
-        .view-toggle { display: flex; background-color: #e9ecef; border-radius: 8px; overflow: hidden; border: 1px solid #ced4da; flex-wrap: wrap; }
+        .view-toggle { display: flex; margin-left: auto; background-color: #e9ecef; border-radius: 8px; overflow: hidden; border: 1px solid #ced4da; flex-wrap: wrap; }
         .view-toggle button { background: none; border: none; padding: 10px 20px; font-weight: bold; color: #6c757d; cursor: pointer; transition: all 0.3s ease; }
         .view-toggle button.active { background-color: var(--primary-blue); color: white; }
         .btn-pdf { background-color: #009E73 !important; color: white !important; border-left: 1px solid #ced4da !important; }
@@ -80,8 +73,8 @@
         /* Vyer */
         #vy-sysselsattning, #vy-arbetsloshet, #analys-vy { transition: opacity 0.3s ease; }
         
-        /* Tabeller - Uppdaterad för bättre responsivitet */
-        .minitabell-rad td, .minitabell-rad th { vertical-align: middle; white-space: normal; /* Tillåter radbrytning på små skärmar */ }
+        /* Tabeller */
+        .minitabell-rad td, .minitabell-rad th { vertical-align: middle; white-space: normal; }
         .minitabell-riket td { color: #6c757d; }
         
         /* Statusbollar */
@@ -99,58 +92,84 @@
         .gauge-labels { display: flex; justify-content: space-between; width: 200px; margin: 5px auto 0; font-weight: bold; font-size: 0.8rem; color: #6c757d; }
 
         /* Analysvy Specifikt */
-        .kontroll-panel { background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-bottom: 25px; border-top: 4px solid #ced4da; }
+        .kontroll-panel { background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 25px; border-top: 4px solid #ced4da; }
         .kontroll-panel select { padding: 10px 16px; border-radius: 8px; border: 1px solid #e0e0e0; background-color: #6c757d; color: white; font-weight: bold; cursor: pointer; }
-        .iframe-container { background: white; border-radius: 12px; padding: 10px; height: 520px; margin-bottom: 25px; border: 1px solid #f0f0f0; display: flex; flex-direction: column; }
+        
+        .kpi-liten { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 8px 15px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; margin-right: auto; }
+        .kpi-liten-titel { font-size: 0.75rem; color: #6c757d; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+        .kpi-liten-varde { font-size: 1.2rem; font-weight: 900; color: var(--primary-dark); }
+
+        .iframe-container { background: white; border-radius: 12px; padding: 10px; height: 450px; margin-bottom: 25px; border: 1px solid #f0f0f0; display: flex; flex-direction: column; }
         iframe { width: 100%; flex-grow: 1; border: none; border-radius: 4px; }
+
+        /* KPI-Kort för Analysvyn */
+        .kpi-card { background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; height: 100%; border: 1px solid #f0f0f0; }
+        .kpi-title { font-size: 0.85rem; color: #6c757d; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi-value { font-size: 1.6rem; font-weight: 900; color: var(--primary-dark); margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+        .kpi-trend { font-size: 0.85rem; font-weight: bold; }
+        .kpi-trend.positive { color: var(--farg-bra); }
+        .kpi-trend.negative { color: var(--farg-dalig); }
+        .kpi-trend.neutral { color: var(--farg-neutral); }
+        
+        /* Kompakt termometer */
+        .termometer-container { width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; margin-top: 8px; overflow: hidden; display: flex; }
+        .termometer-fill { height: 100%; transition: width 0.5s ease, background-color 0.5s ease; border-radius: 4px; }
 
         /* MOBILANPASSNING (Responsivitet) */
         @media (max-width: 768px) {
-            .top-nav-bar, .header-bar { flex-direction: column; text-align: center; gap: 10px; }
+            .header-bar { flex-direction: column; text-align: center; gap: 15px; padding: 15px; }
             .header-title { font-size: 1.2rem; }
             .top-controls { flex-direction: column; align-items: stretch; }
-            .view-toggle { flex-direction: column; border-radius: 8px; }
+            .view-toggle { flex-direction: column; border-radius: 8px; margin-left: 0; }
             .view-toggle button { border-bottom: 1px solid #ced4da; border-left: none !important; }
+            .kpi-liten { margin-right: 0; margin-bottom: 10px; width: 100%; }
+            .kontroll-panel { flex-direction: column; }
             
-            .rapport-sektion { padding: 15px; } /* Mindre padding på små skärmar */
-            .analys-text { font-size: 1rem; } /* Något mindre text */
-            
-            /* Gör tabellen tajtare på mobilen men tillåt radbrytning i rubrikerna */
+            .rapport-sektion { padding: 15px; }
+            .analys-text { font-size: 1rem; }
             .minitabell-rad th, .minitabell-rad td { font-size: 0.85rem; padding: 8px 5px; }
             .status-boll { width: 26px; height: 26px; font-size: 16px; }
         }
 
         /* UTSKRIFTSVÄNLIGT LÄGE (För PDF) */
         @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                transition: none !important;
+            }
+            @page { size: A4 portrait; margin: 1cm; }
             body { background-color: white; font-size: 11pt; }
-            .top-nav-bar, .header-bar, .top-controls, .view-toggle, .site-footer { display: none !important; }
-            .content-wrapper { padding: 0; margin: 0; max-width: 100%; }
-            .rapport-sektion { box-shadow: none; border: none; padding: 5px 0; margin-bottom: 10px; }
+            .header-bar, .top-controls, .view-toggle, .site-footer { display: none !important; }
+            .content-wrapper { padding: 0 !important; margin: 0 !important; max-width: 100%; }
+            .rapport-sektion { box-shadow: none !important; border: none !important; padding: 5px 0 !important; margin-bottom: 10px !important; }
             
-            /* Tvinga Bootstrap-kolumnerna att bibehålla rutnätet vid PDF-utskrift */
-            .col-md-8 { width: 66.66% !important; float: left; }
+            .rapport-titel { font-size: 1.4rem !important; margin-bottom: 5px !important; padding-bottom: 5px !important; }
+            .analys-text { font-size: 10.5pt !important; line-height: 1.4 !important; margin-bottom: 8px !important; }
+            
+            .col-md-8 { width: 66.66% !important; float: left; padding-right: 15px !important; }
             .col-md-4 { width: 33.33% !important; float: left; }
-            .col-md-6 { width: 50% !important; float: left; padding: 0 10px; }
-            .row { display: flex; flex-wrap: wrap; width: 100%; }
+            .col-md-4 > div { padding: 8px !important; margin-bottom: 8px !important; } 
+            .col-md-6 { width: 50% !important; float: left; padding: 0 10px !important; }
+            .row { display: flex; flex-wrap: wrap; width: 100%; margin: 0 !important; }
             
-            /* Tvinga diagrammen att hålla en fast höjd så de inte växer och kraschar layouten */
-            canvas { max-height: 220px !important; width: 100% !important; }
+            .minitabell-rad th, .minitabell-rad td { padding: 5px !important; font-size: 9pt !important; white-space: normal !important; }
+            h4 { font-size: 1.1rem !important; margin-bottom: 5px !important; margin-top: 5px !important;}
             
-            /* Sidbrytning mellan de två vyerna */
-            .print-page-break { page-break-before: always; }
+            .rapport-sektion > div[style*="height: 250px"] { height: 185px !important; margin-bottom: 5px !important; }
+            canvas { max-height: 185px !important; width: 100% !important; }
             
-            /* Tvinga dolda sektioner att visas vid utskrift */
+            .rapport-sektion h5 { font-size: 0.95rem !important; margin-bottom: 5px !important; }
+            .status-boll { width: 24px !important; height: 24px !important; font-size: 15px !important; }
+            
+            .gauge-container { transform: scale(0.85); transform-origin: top center; margin-bottom: -20px !important; }
+            
+            .print-page-break { page-break-before: always; margin-top: 0 !important; padding-top: 0 !important; }
             .print-show { display: block !important; }
         }
     </style>
 </head>
 <body>
-
-    <div class="top-nav-bar">
-        <a href="index.html">Startmeny</a>
-        <a href="dashboard_px.html">Kvartalsuppföljning</a>
-        <a href="guide_manadsbarometern.html">Användarguide</a>
-    </div>
 
     <div class="header-bar">
         <div class="logga-titel-container">
@@ -160,29 +179,27 @@
         <div class="header-nav">
             <a href="guide_manadsbarometern.html" class="nav-btn">📖 Användarguide</a>
             <a href="dashboard_px.html" class="nav-btn">📊 Kvartalsuppföljning</a>
-            <a href="index.html" class="nav-btn">🏠 Startmeny</a>
+            <a href="../index.html" class="nav-btn">🏠 Startmeny</a>
         </div>
     </div>
 
     <div class="content-wrapper">
         
         <div class="top-controls">
-            <div class="time-selectors">
-                <select id="global-ar" onchange="uppdateraAllt()">
-                    <option value="2020">2020</option><option value="2021">2021</option><option value="2022">2022</option>
-                    <option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option>
+            <!-- Tidsvalen separerade så vi kan styra dem oberoende av varandra -->
+            <div class="time-selectors" id="huvud-tid-kontroller" style="display: flex;">
+                <select id="global-ar" onchange="uppdateraAllt(true)">
+                    <option value="">Laddar år...</option>
                 </select>
-                <select id="global-manad" onchange="uppdateraAllt()">
-                    <option value="1">Januari</option><option value="2">Februari</option><option value="3">Mars</option><option value="4">April</option>
-                    <option value="5">Maj</option><option value="6">Juni</option><option value="7">Juli</option><option value="8">Augusti</option>
-                    <option value="9">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">December</option>
+                <select id="global-manad" onchange="uppdateraAllt(false)">
+                    <option value="">Laddar månader...</option>
                 </select>
             </div>
             <div class="view-toggle">
                 <button id="btn-syss" class="active" onclick="bytVy('Sysselsättning')">📄 Rapport: Sysselsättning</button>
                 <button id="btn-arb" onclick="bytVy('Arbetslöshet')">📄 Rapport: Arbetslöshet</button>
                 <button id="btn-analys" onclick="bytVy('Analysvy')">📊 Analysvy</button>
-                <button class="btn-pdf" onclick="skrivUtPDF()">📄 Skapa PDF (Båda)</button>
+                <button class="btn-pdf" onclick="skrivUtPDF()">📄 Skapa PDF</button>
             </div>
         </div>
 
@@ -317,14 +334,61 @@
         <!-- ========================================== -->
         <div id="analys-vy">
             <div class="kontroll-panel">
+                <div class="kpi-liten" title="Befolkning totalt för vald månad">
+                    <div class="kpi-liten-titel">Befolkning</div>
+                    <div class="kpi-liten-varde" id="kpi-liten-befolkning">Laddar...</div>
+                </div>
+                
                 <select id="master-berakning" onchange="skickaTillDiagrammen()"><option value="_Manad">Aktuell månad</option><option value="_R12" selected>Rullande 12 månader</option></select>
                 <select id="master-graftyp" onchange="skickaTillDiagrammen()"><option value="linje">Utveckling över tid (Linje)</option><option value="stapel">Jämför specifik månad (Stapel)</option></select>
-                <select id="master-tid" onchange="skickaTillDiagrammen()"><option value="alla">Visa alla år</option><option value="10">Senaste 10 åren</option><option value="5" selected>Senaste 5 åren</option></select>
+                <select id="master-tid" onchange="skickaTillDiagrammen()">
+                    <option value="1" selected>Senaste året</option>
+                    <option value="5">Senaste 5 åren</option>
+                    <option value="alla">Visa alla år</option>
+                </select>
                 <select id="master-index" onchange="skickaTillDiagrammen()" style="background-color: #1e293b;"><option value="absolut">Absoluta tal</option><option value="index">Visa som Index (Basår=100)</option></select>
             </div>
+            
+            <!-- KPI-Rad -->
+            <div class="row mb-2" id="analys-kpi-container">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Sysselsatta (Utfall)</div>
+                        <div class="kpi-value" id="kpi-syss-val">Laddar...</div>
+                        <div id="kpi-syss-trend"></div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Arbetslösa (Utfall)</div>
+                        <div class="kpi-value" id="kpi-arb-val">Laddar...</div>
+                        <div id="kpi-arb-trend"></div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Konkurser (R12)</div>
+                        <div class="kpi-value" id="kpi-konk-val">Laddar...</div>
+                        <div id="kpi-konk-trend"></div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Arbetsmarknadsläge</div>
+                        <div class="kpi-value" id="kpi-temp-val" style="font-size: 1.3rem;">Laddar...</div>
+                        <div class="termometer-container">
+                            <div class="termometer-fill" id="kpi-temp-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DIAGRAMMEN -->
             <div class="row">
                 <div class="col-xl-6"><div class="iframe-container" style="border-top: 4px solid var(--primary-blue);"><iframe id="iframe1" src="diagram_manad_1.html"></iframe></div></div>
                 <div class="col-xl-6"><div class="iframe-container" style="border-top: 4px solid #009E73;"><iframe id="iframe2" src="diagram_manad_2.html"></iframe></div></div>
+                <div class="col-xl-6"><div class="iframe-container" style="border-top: 4px solid #E69F00;"><iframe id="iframe3" src="diagram_manad_3.html"></iframe></div></div>
+                <div class="col-xl-6"><div class="iframe-container" style="border-top: 4px solid #6f42c1;"><iframe id="iframe4" src="diagram_manad_4.html"></iframe></div></div>
             </div>
         </div>
 
@@ -346,46 +410,86 @@
         let sCharts = [null, null, null, null]; 
         let aCharts = [null, null, null, null];
 
-        // Funktion för utskrift
         function skrivUtPDF() {
-            // Visa båda vyerna tillfälligt för att rita upp Canvas-elementen
             document.getElementById('vy-sysselsattning').style.display = 'block';
             document.getElementById('vy-arbetsloshet').style.display = 'block';
             document.getElementById('analys-vy').style.display = 'none';
 
-            // Stäng av animationer temporärt så graferna ritas omedelbart
             Chart.defaults.animation = false;
 
-            // Uppdatera och rita ut ALLT
             byggRapportVy('Sysselsättning');
             byggRapportVy('Arbetslöshet');
 
-            // Vänta en millisekund för att säkerställa att DOM är uppdaterad innan utskrift startar
             setTimeout(() => {
                 window.print();
-                
-                // Återställ till normalläge
                 Chart.defaults.animation = true;
                 bytVy(aktuellVy);
             }, 500);
         }
 
-        function sattSenasteManadSomStandard() {
+        // --- Nya funktioner för att bygga tidsrullistor dynamiskt ---
+        function harGiltigText(rad) {
+            let s = rad["Sysselsättning"] ? rad["Sysselsättning"].toString().trim() : "";
+            let a = rad["Arbetslöshet"] ? rad["Arbetslöshet"].toString().trim() : "";
+            return (s !== "" && s !== "..") || (a !== "" && a !== "..");
+        }
+
+        function fyllArRullista() {
             if (texterData.length === 0) return;
-            let sistaGiltigaRad = texterData.slice().reverse().find(r => {
-                let harTid = r["År"] && r["Månad"] && !isNaN(parseInt(r["År"])) && !isNaN(parseInt(r["Månad"]));
-                let textStr = r["Sysselsättning"] ? r["Sysselsättning"].toString().trim() : "";
-                return harTid && textStr !== "" && textStr !== "..";
-            });
+            let arSet = new Set();
             
-            if (sistaGiltigaRad) {
-                let senastAr = sistaGiltigaRad["År"].toString().trim();
-                let senastManad = sistaGiltigaRad["Månad"].toString().trim();
-                let arSelect = document.getElementById("global-ar");
-                if (!Array.from(arSelect.options).some(opt => opt.value === senastAr)) {
-                    let nyOpt = document.createElement("option"); nyOpt.value = senastAr; nyOpt.text = senastAr; arSelect.add(nyOpt);
+            texterData.forEach(r => {
+                if (harGiltigText(r)) {
+                    if (r["År"] && !isNaN(parseInt(r["År"]))) {
+                        arSet.add(parseInt(r["År"]));
+                    }
                 }
-                arSelect.value = senastAr; document.getElementById("global-manad").value = senastManad;
+            });
+
+            let arSelect = document.getElementById("global-ar");
+            let nuvarandeValtAr = arSelect.value;
+            arSelect.innerHTML = "";
+            let sorteradeAr = Array.from(arSet).sort((a,b) => a - b);
+            
+            sorteradeAr.forEach(ar => {
+                let opt = document.createElement("option"); opt.value = ar; opt.text = ar; arSelect.add(opt);
+            });
+
+            if (sorteradeAr.includes(parseInt(nuvarandeValtAr))) {
+                arSelect.value = nuvarandeValtAr;
+            } else if (sorteradeAr.length > 0) {
+                arSelect.value = sorteradeAr[sorteradeAr.length - 1]; 
+            }
+        }
+
+        function fyllManadRullista(valdAr) {
+            if (texterData.length === 0) return;
+            const manadNamnLista = ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"];
+            let manadSet = new Set();
+            
+            texterData.forEach(r => {
+                if (parseInt(r["År"]) === parseInt(valdAr)) {
+                    if (harGiltigText(r)) {
+                        if (r["Månad"] && !isNaN(parseInt(r["Månad"]))) {
+                            manadSet.add(parseInt(r["Månad"]));
+                        }
+                    }
+                }
+            });
+
+            let manadSelect = document.getElementById("global-manad");
+            let nuvarandeValdManad = manadSelect.value;
+            manadSelect.innerHTML = "";
+            let sorteradeManader = Array.from(manadSet).sort((a,b) => a - b);
+            
+            sorteradeManader.forEach(m => {
+                let opt = document.createElement("option"); opt.value = m; opt.text = manadNamnLista[m-1]; manadSelect.add(opt);
+            });
+
+            if (sorteradeManader.includes(parseInt(nuvarandeValdManad))) {
+                manadSelect.value = nuvarandeValdManad;
+            } else if (sorteradeManader.length > 0) {
+                manadSelect.value = sorteradeManader[sorteradeManader.length - 1]; 
             }
         }
 
@@ -398,18 +502,30 @@
             document.getElementById('vy-sysselsattning').style.display = 'none';
             document.getElementById('vy-arbetsloshet').style.display = 'none';
             document.getElementById('analys-vy').style.display = 'none';
+            
+            let arSelect = document.getElementById('global-ar');
+            let manadSelect = document.getElementById('global-manad');
+            let grafTypAnalys = document.getElementById('master-graftyp') ? document.getElementById('master-graftyp').value : 'linje';
 
             if (vy === 'Sysselsättning') {
                 document.getElementById('btn-syss').classList.add('active');
                 document.getElementById('vy-sysselsattning').style.display = 'block';
+                arSelect.style.display = 'inline-block';
+                manadSelect.style.display = 'inline-block';
                 if (dashboardData.length > 0) byggRapportVy('Sysselsättning');
             } else if (vy === 'Arbetslöshet') {
                 document.getElementById('btn-arb').classList.add('active');
                 document.getElementById('vy-arbetsloshet').style.display = 'block';
+                arSelect.style.display = 'inline-block';
+                manadSelect.style.display = 'inline-block';
                 if (dashboardData.length > 0) byggRapportVy('Arbetslöshet');
             } else {
                 document.getElementById('btn-analys').classList.add('active');
                 document.getElementById('analys-vy').style.display = 'block';
+                
+                arSelect.style.display = 'none';
+                manadSelect.style.display = grafTypAnalys === 'stapel' ? 'inline-block' : 'none';
+                
                 skickaTillDiagrammen(); 
             }
         }
@@ -419,7 +535,12 @@
             let texterKlara = false, dataKlara = false;
 
             function initieraStartVyNardDataFinns() {
-                if (texterKlara && dataKlara) { sattSenasteManadSomStandard(); bytVy(aktuellVy); }
+                if (texterKlara && dataKlara) { 
+                    fyllArRullista(); 
+                    let arSelect = document.getElementById("global-ar");
+                    if(arSelect.value) fyllManadRullista(arSelect.value);
+                    bytVy(aktuellVy); 
+                }
             }
 
             fetch("manadsbarometern_texter.csv" + cb).then(res => { if(!res.ok) throw new Error(); return res.arrayBuffer(); })
@@ -440,7 +561,6 @@
                 });
         }
 
-        // --- Hjälpfunktioner ---
         const parseSiffra = (val) => { if (!val || val.toString().trim() === "" || val === "..") return null; let num = parseFloat(val.toString().replace(/\s/g, '').replace(',', '.')); return isNaN(num) ? null : num; };
         
         function uppdateraStatusBoll(bollId, utfallVal, historikVal, polaritet) {
@@ -462,16 +582,17 @@
             else { needle.style.transform = "rotate(60deg)"; statusText.innerHTML = `<span style="color:var(--farg-bra);">Positivt läge</span>`; }
         }
 
-        // MASTER-FUNKTION FÖR ATT BYGGA EN SPECIFIK VY (Körs för både Syss och Arb när PDF skapas)
         function byggRapportVy(vyNamn) {
             const valdAr = document.getElementById("global-ar").value;
             const valdManad = document.getElementById("global-manad").value;
-            let manadNamn = document.getElementById("global-manad").options[document.getElementById("global-manad").selectedIndex].text;
+            if (!valdAr || !valdManad) return; // Avbryt om ingen tid valts
+            
+            let manadSelect = document.getElementById("global-manad");
+            let manadNamn = manadSelect.options[manadSelect.selectedIndex].text;
             
             let suffix = vyNamn === "Sysselsättning" ? "syss" : "arb";
             let tabellNr = vyNamn === "Sysselsättning" ? "1" : "2";
 
-            // 1. Text & Rubrik
             let elRubrik = document.getElementById(`rapport-rubrik-${suffix}`);
             if(elRubrik) elRubrik.innerText = `Analys: Arbetsmarknadsläget - ${vyNamn} ${manadNamn} ${valdAr}`;
             
@@ -487,7 +608,6 @@
             let elText = document.getElementById(`rapport-text-${suffix}`);
             if(elText) elText.innerHTML = htmlInnehall;
 
-            // 2. Tabell
             let rad = dashboardData.find(r => r["År"] == valdAr && r["Månad"] == valdManad);
             let containerTabell = document.getElementById(`tabell-container-${suffix}`);
             
@@ -547,9 +667,8 @@
                 containerTabell.innerHTML = html;
             }
 
-            // 3. Grafer
-            if(vyNamn === "Sysselsättning") _ritaSyssGrafer(rad, vAr, vMan);
-            if(vyNamn === "Arbetslöshet") _ritaArbGrafer(rad, vAr, vMan);
+            if(vyNamn === "Sysselsättning") _ritaSyssGrafer(rad, parseInt(valdAr), parseInt(valdManad));
+            if(vyNamn === "Arbetslöshet") _ritaArbGrafer(rad, parseInt(valdAr), parseInt(valdManad));
         }
 
         function _ritaSyssGrafer(rad, vAr, vMan) {
@@ -557,7 +676,6 @@
             sCharts.forEach((c, i) => { if(c) { c.destroy(); sCharts[i] = null; }});
             let poangSumma = 0;
 
-            // Graf 1
             let g1Labels = [], g1Data = [];
             for (let i = 0; i <= targetIndex; i++) {
                 if (parseInt(dashboardData[i]["Månad"]) === vMan) {
@@ -576,7 +694,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { x: { display: true }, y: { beginAtZero: false } } }
             });
 
-            // Graf 2
             let sektorer = [{ key: "Sysselsatta_dagbefolkning", label: "Totalt", farg: "#005596" }, { key: "Sysselsatta_Privat_sektor", label: "Privat", farg: "#009E73" }, { key: "Sysselsatta_Offentlig_sektor", label: "Offentlig", farg: "#E69F00" }];
             let g2Labels = []; let g2Datasets = sektorer.map(s => ({ label: s.label, data: [], backgroundColor: s.farg, borderWidth: 0 }));
             let diffPrivat = null, diffOffentlig = null, totalSektorTrend = null;
@@ -613,7 +730,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom' } }, scales: { x: { display: true }, y: { beginAtZero: true } } }
             });
 
-            // Graf 3
             let g3Labels = [], g3Data = [];
             for (let i = 0; i <= targetIndex; i++) {
                 if (parseInt(dashboardData[i]["Månad"]) === vMan) {
@@ -631,7 +747,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { x: {display: true}, y: { beginAtZero: true } } }
             });
 
-            // Graf 4
             let matchDataMap = { "Utan krav på utbildning": { a: null, j: null }, "Gymnasial": { a: null, j: null }, "Eftergymnasial": { a: null, j: null } };
             Object.keys(rad).forEach(k => {
                 if(k.endsWith("_Manad") && !k.includes("Pct") && !k.startsWith("Riket_") && !k.includes("Andel") && !k.includes("%") && !k.includes("Differens")) {
@@ -663,7 +778,6 @@
             aCharts.forEach((c, i) => { if(c) { c.destroy(); aCharts[i] = null; }});
             let poangSumma = 0;
 
-            // Graf 1
             let arbKey = "Inskrivna_arbetslösa_Manad"; let arbInrikesKey = "Inrikes_födda_arbetslösa_Manad"; let arbUtrikesKey = "Utrikes_födda_arbetslösa_Manad";
             let a1Labels = [], a1DataTot = [], a1DataInrikes = [], a1DataUtrikes = [];
             for (let i = 0; i <= targetIndex; i++) {
@@ -682,7 +796,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: true, position: 'bottom'} }, scales: { y: { beginAtZero: false } } }
             });
 
-            // Graf 2
             let langKey = Object.keys(rad).find(k => k.toLowerCase().includes("långtids") && k.endsWith("_Manad") && !k.includes("Pct"));
             let a2Labels = [], a2Data = [];
             if (langKey) {
@@ -700,7 +813,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { y: { beginAtZero: false } } }
             });
 
-            // Graf 3
             let svagKey = Object.keys(rad).find(k => k.toLowerCase().includes("svag") && k.endsWith("_Manad") && !k.includes("Pct"));
             let a3Labels = [], a3Data = [];
             if (svagKey) {
@@ -718,7 +830,6 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { y: { beginAtZero: false } } }
             });
 
-            // Graf 4
             let bistandKey = Object.keys(rad).find(k => k.toLowerCase().includes("bistånd") && k.endsWith("_Manad") && !k.includes("Pct"));
             let a4Labels = [], a4Data = [];
             if (bistandKey) {
@@ -739,25 +850,95 @@
             uppdateraBarometer(poangSumma, "barometer-nal-arb", "barometer-text-arb");
         }
 
-        // 7. Skicka information till iFrames (Analysvyn)
-        function skickaTillDiagrammen() {
-            const berakning = document.getElementById("master-berakning").value; const grafTyp = document.getElementById("master-graftyp").value;
-            const tid = document.getElementById("master-tid").value; const visaIndex = document.getElementById("master-index").value === "index";
-            const manad = document.getElementById("global-manad").value;
+        function uppdateraAnalysKPIer() {
+            if (dashboardData.length === 0) return;
+            const vAr = parseInt(document.getElementById("global-ar").value);
+            const vMan = parseInt(document.getElementById("global-manad").value);
+            let targetIndex = dashboardData.findIndex(r => parseInt(r["År"]) === vAr && parseInt(r["Månad"]) === vMan);
+            if (targetIndex === -1) return;
 
-            for (let i = 1; i <= 2; i++) { 
-                const iframe = document.getElementById("iframe" + i);
-                if (iframe && iframe.contentWindow && typeof iframe.contentWindow.uppdateraFranMaster === "function") { iframe.contentWindow.uppdateraFranMaster(berakning, grafTyp, manad, tid, visaIndex); }
-            }
+            let rad = dashboardData[targetIndex];
+            let radDa = targetIndex >= 12 ? dashboardData[targetIndex - 12] : null;
+
+            const getKpiData = (key, pol) => {
+                let nu = parseSiffra(rad[key]);
+                let da = radDa ? parseSiffra(radDa[key]) : null;
+                if (nu === null) return { val: "-", trend: "", class: "neutral", diff: 0, isGood: false };
+                if (da === null) return { val: nu.toLocaleString('sv-SE'), trend: "", class: "neutral", diff: 0, isGood: false };
+                
+                let diff = nu - da;
+                let diffPct = (diff / da) * 100;
+                let isGood = (pol === 'låg') ? diff <= 0 : diff >= 0; 
+                let trendClass = diff === 0 ? "neutral" : (isGood ? "positive" : "negative");
+                let pil = diff === 0 ? "→" : (diff > 0 ? "↑" : "↓");
+                let formatDiff = Math.abs(diffPct).toLocaleString('sv-SE', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " %";
+                
+                return { val: nu.toLocaleString('sv-SE'), trend: `${pil} ${formatDiff} (1 år)`, class: trendClass, diff: diff, isGood: isGood };
+            };
+
+            let syss = getKpiData("Sysselsatta_dagbefolkning_Manad", "hög");
+            let arb = getKpiData("Inskrivna_arbetslösa_Manad", "låg");
+            let konk = getKpiData("Konkurser_R12", "låg");
+            
+            let befolkningVarde = parseSiffra(rad["Befolkning_Manad"]) || parseSiffra(rad["Befolkning_totalt_Manad"]);
+            document.getElementById("kpi-liten-befolkning").innerText = befolkningVarde !== null ? befolkningVarde.toLocaleString('sv-SE') : "-";
+
+            document.getElementById("kpi-syss-val").innerText = syss.val;
+            document.getElementById("kpi-syss-trend").innerHTML = `<span class="kpi-trend ${syss.class}">${syss.trend}</span>`;
+
+            document.getElementById("kpi-arb-val").innerText = arb.val;
+            document.getElementById("kpi-arb-trend").innerHTML = `<span class="kpi-trend ${arb.class}">${arb.trend}</span>`;
+
+            document.getElementById("kpi-konk-val").innerText = konk.val;
+            document.getElementById("kpi-konk-trend").innerHTML = `<span class="kpi-trend ${konk.class}">${konk.trend}</span>`;
+
+            let poang = 0;
+            if(syss.isGood) poang++;
+            if(arb.isGood) poang++;
+            if(konk.isGood) poang++;
+
+            let tempText = "Stabil"; let tempColor = "var(--farg-varning)"; let tempWidth = "50%";
+            if (poang >= 2) { tempText = "Positivt läge"; tempColor = "var(--farg-bra)"; tempWidth = "90%"; }
+            if (poang <= 1) { tempText = "Pressat läge"; tempColor = "var(--farg-dalig)"; tempWidth = "15%"; }
+            if (syss.val === "-" || arb.val === "-") { tempText = "Data saknas"; tempWidth = "0%"; }
+
+            document.getElementById("kpi-temp-val").innerText = tempText;
+            document.getElementById("kpi-temp-fill").style.width = tempWidth;
+            document.getElementById("kpi-temp-fill").style.backgroundColor = tempColor;
         }
 
-        // 8. Körs när man byter År eller Månad högst upp
-        function uppdateraAllt() {
+        function skickaTillDiagrammen() {
+            const berakning = document.getElementById("master-berakning").value; 
+            const grafTyp = document.getElementById("master-graftyp").value;
+            const tid = document.getElementById("master-tid").value; 
+            const visaIndex = document.getElementById("master-index").value === "index";
+            const manad = document.getElementById("global-manad").value;
+
+            let manadSelect = document.getElementById('global-manad');
+            if (aktuellVy === 'Analysvy') {
+                manadSelect.style.display = grafTyp === 'stapel' ? 'inline-block' : 'none';
+            }
+
+            for (let i = 1; i <= 4; i++) { 
+                const iframe = document.getElementById("iframe" + i);
+                if (iframe && iframe.contentWindow && typeof iframe.contentWindow.uppdateraFranMaster === "function") { 
+                    iframe.contentWindow.uppdateraFranMaster(berakning, grafTyp, manad, tid, visaIndex); 
+                }
+            }
+            
+            uppdateraAnalysKPIer();
+        }
+
+        function uppdateraAllt(andratAr = false) {
+            if (andratAr) {
+                let arSelect = document.getElementById("global-ar");
+                fyllManadRullista(arSelect.value);
+            }
+            
             if (aktuellVy === 'Sysselsättning' || aktuellVy === 'Arbetslöshet') { bytVy(aktuellVy); } 
             else { skickaTillDiagrammen(); }
         }
 
-        // Starta när sidan laddats
         window.addEventListener('load', () => { laddaAllData(); setTimeout(skickaTillDiagrammen, 600); });
     </script>
 </body>
