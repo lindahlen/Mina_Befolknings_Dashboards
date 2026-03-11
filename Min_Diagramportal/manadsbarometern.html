@@ -78,7 +78,7 @@
         .minitabell-riket td { color: #6c757d; }
         
         /* Statusbollar */
-        .status-boll { display: inline-flex; justify-content: center; align-items: center; width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 22px; font-weight: 900; -webkit-text-stroke: 1px white; flex-shrink: 0; }
+        .status-boll { display: inline-flex; justify-content: center; align-items: center; width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 22px; font-weight: 900; -webkit-text-stroke: 1px white; flex-shrink: 0; cursor: help; }
         .boll-gron { background-color: var(--farg-bra); }
         .boll-rod { background-color: var(--farg-dalig); }
         .boll-gra { background-color: var(--farg-neutral); }
@@ -186,14 +186,9 @@
     <div class="content-wrapper">
         
         <div class="top-controls">
-            <!-- Tidsvalen separerade så vi kan styra dem oberoende av varandra -->
             <div class="time-selectors" id="huvud-tid-kontroller" style="display: flex;">
-                <select id="global-ar" onchange="uppdateraAllt(true)">
-                    <option value="">Laddar år...</option>
-                </select>
-                <select id="global-manad" onchange="uppdateraAllt(false)">
-                    <option value="">Laddar månader...</option>
-                </select>
+                <select id="global-ar" onchange="uppdateraAllt(true)"></select>
+                <select id="global-manad" onchange="uppdateraAllt(false)"></select>
             </div>
             <div class="view-toggle">
                 <button id="btn-syss" class="active" onclick="bytVy('Sysselsättning')">📄 Rapport: Sysselsättning</button>
@@ -563,15 +558,38 @@
 
         const parseSiffra = (val) => { if (!val || val.toString().trim() === "" || val === "..") return null; let num = parseFloat(val.toString().replace(/\s/g, '').replace(',', '.')); return isNaN(num) ? null : num; };
         
-        function uppdateraStatusBoll(bollId, utfallVal, historikVal, polaritet) {
+        function uppdateraStatusBoll(bollId, utfallVal, historikVal, polaritet, customTooltip = null) {
             let el = document.getElementById(bollId);
             if(!el) return 0;
-            if(utfallVal === null || historikVal === null) { el.className = "status-boll boll-gra"; el.innerText = "?"; return 0; }
+            if(utfallVal === null || historikVal === null) { 
+                el.className = "status-boll boll-gra"; 
+                el.innerText = "?"; 
+                el.title = "Data saknas för jämförelse.";
+                return 0; 
+            }
+            
             let diff = utfallVal - historikVal;
-            if (diff === 0) { el.className = "status-boll boll-gra"; el.innerText = "→"; return 1; } 
+            let tolerans = Math.abs(historikVal * 0.01);
+            
+            if (Math.abs(diff) <= tolerans) { 
+                el.className = "status-boll boll-gra"; 
+                el.innerText = "→"; 
+                el.title = customTooltip || "Oförändrat (inom 1% marginal) jämfört med samma period föregående år.";
+                return 1; 
+            } 
+            
             let isGood = (polaritet.toLowerCase() === "låg") ? (diff < 0) : (diff > 0);
-            if(isGood) { el.className = "status-boll boll-gron"; el.innerText = (polaritet.toLowerCase() === "låg") ? "↓" : "↑"; return 1; } 
-            else { el.className = "status-boll boll-rod"; el.innerText = (polaritet.toLowerCase() === "låg") ? "↑" : "↓"; return 0; }
+            if(isGood) { 
+                el.className = "status-boll boll-gron"; 
+                el.innerText = (polaritet.toLowerCase() === "låg") ? "↓" : "↑"; 
+                el.title = customTooltip || "Positiv utveckling jämfört med samma period föregående år.";
+                return 1; 
+            } else { 
+                el.className = "status-boll boll-rod"; 
+                el.innerText = (polaritet.toLowerCase() === "låg") ? "↑" : "↓"; 
+                el.title = customTooltip || "Negativ utveckling jämfört med samma period föregående år.";
+                return 0; 
+            }
         }
 
         function uppdateraBarometer(poangSumma, idNal, idText) {
@@ -585,7 +603,7 @@
         function byggRapportVy(vyNamn) {
             const valdAr = document.getElementById("global-ar").value;
             const valdManad = document.getElementById("global-manad").value;
-            if (!valdAr || !valdManad) return; // Avbryt om ingen tid valts
+            if (!valdAr || !valdManad) return; 
             
             let manadSelect = document.getElementById("global-manad");
             let manadNamn = manadSelect.options[manadSelect.selectedIndex].text;
@@ -657,7 +675,13 @@
                         let color = num===0 ? "#6c757d" : (num>0 ? (pol.toLowerCase()==="låg"?"#D55E00":"#009E73") : (pol.toLowerCase()==="låg"?"#009E73":"#D55E00"));
                         return `<span style="color:${color}; font-weight:bold;">${num>0?"+":""}${num.toLocaleString('sv-SE',{minimumFractionDigits:1,maximumFractionDigits:1})} %</span>`;
                     }
-                    return num.toLocaleString('sv-SE', n.includes("%")?{minimumFractionDigits:1,maximumFractionDigits:1}:{});
+                    
+                    let visaDecimaler = true;
+                    if (n.toLowerCase().includes("bistånd") || n.toLowerCase().includes("kr/hushåll")) {
+                        visaDecimaler = false;
+                    }
+                    let formatteringsVal = visaDecimaler ? {minimumFractionDigits:1, maximumFractionDigits:1} : {minimumFractionDigits:0, maximumFractionDigits:0};
+                    return num.toLocaleString('sv-SE', formatteringsVal);
                 };
 
                 kolumner.forEach(k => { html += `<td class="text-end">${formateraVal(k.namn, k.kod, "", k.polaritet)}</td>`; });
@@ -676,6 +700,7 @@
             sCharts.forEach((c, i) => { if(c) { c.destroy(); sCharts[i] = null; }});
             let poangSumma = 0;
 
+            // S1: Sysselsatta
             let g1Labels = [], g1Data = [];
             for (let i = 0; i <= targetIndex; i++) {
                 if (parseInt(dashboardData[i]["Månad"]) === vMan) {
@@ -685,18 +710,18 @@
             }
             g1Labels = g1Labels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); g1Data = g1Data.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
             let syssUtfall = parseSiffra(rad["Sysselsatta_dagbefolkning_Manad"]);
-            let syssJamforelse = parseSiffra(rad["Sysselsatta_dagbefolkning_Prognos_Slutgiltig"]);
-            if(syssJamforelse === null && g1Data.length > 1) { syssJamforelse = g1Data[g1Data.length - 2]; }
-            poangSumma += uppdateraStatusBoll("status-graf-s1", syssUtfall, syssJamforelse, rad["Sysselsatta_dagbefolkning_Polaritet"] || "Hög");
+            let syssJamforelse = g1Data.length > 1 ? g1Data[g1Data.length - 2] : null; 
+            poangSumma += uppdateraStatusBoll("status-graf-s1", syssUtfall, syssJamforelse, rad["Sysselsatta_dagbefolkning_Polaritet"] || "Hög", "Jämförelse av antalet sysselsatta mot samma månad föregående år.");
 
             sCharts[0] = new Chart(document.getElementById('canvas-s1').getContext('2d'), {
                 type: 'line', data: { labels: g1Labels, datasets: [{ label: 'Antal', data: g1Data, borderColor: '#005596', backgroundColor: 'transparent', pointBackgroundColor: '#005596', borderWidth: 3, tension: 0.1 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { x: { display: true }, y: { beginAtZero: false } } }
             });
 
+            // S2: Sektorer
             let sektorer = [{ key: "Sysselsatta_dagbefolkning", label: "Totalt", farg: "#005596" }, { key: "Sysselsatta_Privat_sektor", label: "Privat", farg: "#009E73" }, { key: "Sysselsatta_Offentlig_sektor", label: "Offentlig", farg: "#E69F00" }];
             let g2Labels = []; let g2Datasets = sektorer.map(s => ({ label: s.label, data: [], backgroundColor: s.farg, borderWidth: 0 }));
-            let diffPrivat = null, diffOffentlig = null, totalSektorTrend = null;
+            let diffPrivat = null, diffOffentlig = null;
 
             for (let y = INSTALLNING_ANTAL_AR_SEKTOR - 1; y >= 0; y--) {
                 let inxNu = targetIndex - (y * 12); let inxDa = targetIndex - ((y + 1) * 12);
@@ -709,7 +734,6 @@
                             if (y === 0) {
                                 if (sektor.key === "Sysselsatta_Privat_sektor") diffPrivat = diff;
                                 if (sektor.key === "Sysselsatta_Offentlig_sektor") diffOffentlig = diff;
-                                if (sektor.key === "Sysselsatta_dagbefolkning") totalSektorTrend = diff;
                             }
                         } else { g2Datasets[i].data.push(null); }
                     });
@@ -719,10 +743,20 @@
             let elGraf2 = document.getElementById("status-graf-s2");
             if(elGraf2) {
                 if (diffPrivat !== null && diffOffentlig !== null) {
-                    if (diffPrivat > 0 && diffOffentlig > 0) { elGraf2.className = "status-boll boll-gron"; elGraf2.innerText = "↑"; poangSumma += 1; } 
-                    else if (diffPrivat < 0 && diffOffentlig < 0) { elGraf2.className = "status-boll boll-rod"; elGraf2.innerText = "↓"; } 
-                    else { elGraf2.className = "status-boll boll-gra"; elGraf2.innerText = "→"; poangSumma += 1; }
-                } else { elGraf2.className = "status-boll boll-gra"; elGraf2.innerText = "?"; }
+                    if (diffPrivat > 0 && diffOffentlig > 0) { 
+                        elGraf2.className = "status-boll boll-gron"; elGraf2.innerText = "↑"; poangSumma += 1; 
+                        elGraf2.title = "Positivt: Både privat och offentlig sektor har vuxit jämfört med samma månad fg. år.";
+                    } else if (diffPrivat < 0 && diffOffentlig < 0) { 
+                        elGraf2.className = "status-boll boll-rod"; elGraf2.innerText = "↓"; 
+                        elGraf2.title = "Negativt: Både privat och offentlig sektor har minskat jämfört med samma månad fg. år.";
+                    } else { 
+                        elGraf2.className = "status-boll boll-gra"; elGraf2.innerText = "→"; poangSumma += 1; 
+                        elGraf2.title = "Varierad utveckling (ex. en sektor ökar och en minskar). Bedöms som neutralt.";
+                    }
+                } else { 
+                    elGraf2.className = "status-boll boll-gra"; elGraf2.innerText = "?"; 
+                    elGraf2.title = "Data saknas för historisk jämförelse.";
+                }
             }
 
             sCharts[1] = new Chart(document.getElementById('canvas-s2').getContext('2d'), {
@@ -730,6 +764,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom' } }, scales: { x: { display: true }, y: { beginAtZero: true } } }
             });
 
+            // S3: Konkurser
             let g3Labels = [], g3Data = [];
             for (let i = 0; i <= targetIndex; i++) {
                 if (parseInt(dashboardData[i]["Månad"]) === vMan) {
@@ -740,14 +775,17 @@
             g3Labels = g3Labels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); g3Data = g3Data.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
             let konkUtfall = parseSiffra(rad["Konkurser_R12"]);
             let konkJamforelse = g3Data.length > 1 ? g3Data[g3Data.length-2] : null; 
-            poangSumma += uppdateraStatusBoll("status-graf-s3", konkUtfall, konkJamforelse, rad["Konkurser_Polaritet"] || "Låg"); 
+            poangSumma += uppdateraStatusBoll("status-graf-s3", konkUtfall, konkJamforelse, rad["Konkurser_Polaritet"] || "Låg", "Jämförelse mot samma period föregående år (Rullande 12 mån)."); 
 
             sCharts[2] = new Chart(document.getElementById('canvas-s3').getContext('2d'), {
                 type: 'line', data: { labels: g3Labels, datasets: [{ label: 'Antal R12', data: g3Data, borderColor: '#D55E00', backgroundColor: 'transparent', pointBackgroundColor: '#D55E00', pointRadius: 5, borderWidth: 3, tension: 0.1 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { x: {display: true}, y: { beginAtZero: true } } }
             });
 
+            // S4: Matchning (Smart Jämförelse av Totalt Gap)
+            let aTotalNu = 0, jTotalNu = 0;
             let matchDataMap = { "Utan krav på utbildning": { a: null, j: null }, "Gymnasial": { a: null, j: null }, "Eftergymnasial": { a: null, j: null } };
+            
             Object.keys(rad).forEach(k => {
                 if(k.endsWith("_Manad") && !k.includes("Pct") && !k.startsWith("Riket_") && !k.includes("Andel") && !k.includes("%") && !k.includes("Differens")) {
                     let kl = k.toLowerCase(); let lvl = null;
@@ -755,15 +793,57 @@
                     else if(kl.includes("eftergymnasial")) lvl = "Eftergymnasial";
                     else if(kl.includes("gymnasial")) lvl = "Gymnasial"; 
                     if(lvl) {
-                        if ((kl.includes("jobb") || kl.includes("plats") || kl.includes("efterfrågan") || kl.includes("tillgång") || kl.includes("utan_krav")) && !kl.includes("arbetslösa")) matchDataMap[lvl].j = parseSiffra(rad[k]);
-                        else if ((kl.includes("arbetslösa") || kl.includes("sökande") || kl.includes("utbud") || kl.includes("kort_utbildning")) && !kl.includes("jobb")) matchDataMap[lvl].a = parseSiffra(rad[k]);
+                        if ((kl.includes("jobb") || kl.includes("plats") || kl.includes("efterfrågan") || kl.includes("tillgång") || kl.includes("utan_krav")) && !kl.includes("arbetslösa")) {
+                            let val = parseSiffra(rad[k]); matchDataMap[lvl].j = val; if(val !== null) jTotalNu += val;
+                        }
+                        else if ((kl.includes("arbetslösa") || kl.includes("sökande") || kl.includes("utbud") || kl.includes("kort_utbildning")) && !kl.includes("jobb")) {
+                            let val = parseSiffra(rad[k]); matchDataMap[lvl].a = val; if(val !== null) aTotalNu += val;
+                        }
                     }
                 }
             });
 
-            let diffInd = "Differens_mellan_arbetslösa_och_jobbtillgång_utan_krav_på_utbildning";
-            let diffNu = parseSiffra(rad[diffInd + "_Manad"]); let diffDa = targetIndex >= 12 ? parseSiffra(dashboardData[targetIndex-12][diffInd + "_Manad"]) : null;
-            poangSumma += uppdateraStatusBoll("status-graf-s4", diffNu, diffDa, rad[diffInd + "_Polaritet"] || "Låg");
+            let aTotalDa = 0, jTotalDa = 0;
+            let validDa = false;
+            if (targetIndex >= 12) {
+                validDa = true;
+                let radDa = dashboardData[targetIndex - 12];
+                Object.keys(radDa).forEach(k => {
+                    if(k.endsWith("_Manad") && !k.includes("Pct") && !k.startsWith("Riket_") && !k.includes("Andel") && !k.includes("%") && !k.includes("Differens")) {
+                        let kl = k.toLowerCase();
+                        if ((kl.includes("utan_krav") || kl.includes("förgymnasial") || kl.includes("kort_utbildning") || kl.includes("eftergymnasial") || kl.includes("gymnasial"))) {
+                            if ((kl.includes("jobb") || kl.includes("plats") || kl.includes("efterfrågan") || kl.includes("tillgång") || kl.includes("utan_krav")) && !kl.includes("arbetslösa")) {
+                                let val = parseSiffra(radDa[k]); if(val !== null) jTotalDa += val; else validDa = false;
+                            }
+                            else if ((kl.includes("arbetslösa") || kl.includes("sökande") || kl.includes("utbud") || kl.includes("kort_utbildning")) && !kl.includes("jobb")) {
+                                let val = parseSiffra(radDa[k]); if(val !== null) aTotalDa += val; else validDa = false;
+                            }
+                        }
+                    }
+                });
+            }
+
+            let elGraf4 = document.getElementById("status-graf-s4");
+            if(elGraf4 && validDa) {
+                let diffNu = aTotalNu - jTotalNu;
+                let diffDa = aTotalDa - jTotalDa;
+                let forandring = diffNu - diffDa; 
+                let tolerans = Math.abs(diffDa * 0.01);
+                
+                if (Math.abs(forandring) <= tolerans) {
+                    elGraf4.className = "status-boll boll-gra"; elGraf4.innerText = "→"; poangSumma += 1;
+                    elGraf4.title = "Oförändrat: Obalansen (totalt antal arbetslösa minus totalt antal lediga jobb) är i nivå med fg. år.";
+                } else if (forandring < 0) {
+                    elGraf4.className = "status-boll boll-gron"; elGraf4.innerText = "↓"; poangSumma += 1;
+                    elGraf4.title = "Positivt: Obalansen (totalt antal arbetslösa minus totalt antal lediga jobb) har minskat jämfört med fg. år.";
+                } else {
+                    elGraf4.className = "status-boll boll-rod"; elGraf4.innerText = "↑";
+                    elGraf4.title = "Kritiskt: Obalansen (totalt antal arbetslösa minus totalt antal lediga jobb) har ökat jämfört med fg. år.";
+                }
+            } else if(elGraf4) {
+                elGraf4.className = "status-boll boll-gra"; elGraf4.innerText = "?";
+                elGraf4.title = "Data saknas för historisk jämförelse.";
+            }
 
             sCharts[3] = new Chart(document.getElementById('canvas-s4').getContext('2d'), {
                 type: 'bar', data: { labels: ["Utan krav på utbildning", "Gymnasial", "Eftergymnasial"], datasets: [{ label: 'Arbetslösa', data: [matchDataMap["Utan krav på utbildning"].a, matchDataMap["Gymnasial"].a, matchDataMap["Eftergymnasial"].a], backgroundColor: '#005596', borderWidth: 0 }, { label: 'Lediga jobb', data: [matchDataMap["Utan krav på utbildning"].j, matchDataMap["Gymnasial"].j, matchDataMap["Eftergymnasial"].j], backgroundColor: '#009E73', borderWidth: 0 }] },
@@ -788,8 +868,8 @@
             }
             a1Labels = a1Labels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); a1DataTot = a1DataTot.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); a1DataInrikes = a1DataInrikes.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); a1DataUtrikes = a1DataUtrikes.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
             
-            let arbUtfall = parseSiffra(rad[arbKey]); let arbPrognos = parseSiffra(rad[arbKey.replace("_Manad", "_Prognos_Slutgiltig")]);
-            poangSumma += uppdateraStatusBoll("status-graf-a1", arbUtfall, arbPrognos !== null ? arbPrognos : (a1DataTot.length > 1 ? a1DataTot[a1DataTot.length - 2] : null), rad[arbKey.replace("_Manad", "_Polaritet")] || "Låg");
+            let arbUtfall = parseSiffra(rad[arbKey]); let arbJamforelse = a1DataTot.length > 1 ? a1DataTot[a1DataTot.length - 2] : null;
+            poangSumma += uppdateraStatusBoll("status-graf-a1", arbUtfall, arbJamforelse, rad[arbKey.replace("_Manad", "_Polaritet")] || "Låg", "Jämförelse mot samma månad föregående år.");
 
             aCharts[0] = new Chart(document.getElementById('canvas-a1').getContext('2d'), {
                 type: 'line', data: { labels: a1Labels, datasets: [{ label: 'Totalt', data: a1DataTot, borderColor: '#009E73', backgroundColor: 'transparent', pointBackgroundColor: '#009E73', borderWidth: 3, tension: 0.1, pointStyle: 'circle', radius: 5 }, { label: 'Inrikes födda', data: a1DataInrikes, borderColor: '#E69F00', backgroundColor: 'transparent', pointBackgroundColor: '#E69F00', borderWidth: 3, tension: 0.1, pointStyle: 'triangle', radius: 5 }, { label: 'Utrikes födda', data: a1DataUtrikes, borderColor: '#005596', backgroundColor: 'transparent', pointBackgroundColor: '#005596', borderWidth: 3, tension: 0.1, pointStyle: 'rect', radius: 5 }] },
@@ -806,7 +886,7 @@
                     }
                 }
                 a2Labels = a2Labels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); a2Data = a2Data.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
-                poangSumma += uppdateraStatusBoll("status-graf-a2", parseSiffra(rad[langKey]), a2Data.length > 1 ? a2Data[a2Data.length - 2] : null, rad[langKey.replace("_Manad", "_Polaritet")] || "Låg");
+                poangSumma += uppdateraStatusBoll("status-graf-a2", parseSiffra(rad[langKey]), a2Data.length > 1 ? a2Data[a2Data.length - 2] : null, rad[langKey.replace("_Manad", "_Polaritet")] || "Låg", "Jämförelse mot samma månad föregående år.");
             }
             aCharts[1] = new Chart(document.getElementById('canvas-a2').getContext('2d'), {
                 type: 'line', data: { labels: a2Labels, datasets: [{ label: 'Antal', data: a2Data, borderColor: '#005596', backgroundColor: 'transparent', pointBackgroundColor: '#005596', borderWidth: 3, tension: 0.1 }] },
@@ -823,7 +903,7 @@
                     }
                 }
                 a3Labels = a3Labels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); a3Data = a3Data.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
-                poangSumma += uppdateraStatusBoll("status-graf-a3", parseSiffra(rad[svagKey]), a3Data.length > 1 ? a3Data[a3Data.length - 2] : null, rad[svagKey.replace("_Manad", "_Polaritet")] || "Låg");
+                poangSumma += uppdateraStatusBoll("status-graf-a3", parseSiffra(rad[svagKey]), a3Data.length > 1 ? a3Data[a3Data.length - 2] : null, rad[svagKey.replace("_Manad", "_Polaritet")] || "Låg", "Jämförelse mot samma månad föregående år.");
             }
             aCharts[2] = new Chart(document.getElementById('canvas-a3').getContext('2d'), {
                 type: 'line', data: { labels: a3Labels, datasets: [{ label: 'Antal', data: a3Data, borderColor: '#005596', backgroundColor: 'transparent', pointBackgroundColor: '#005596', borderWidth: 3, tension: 0.1 }] },
@@ -840,7 +920,7 @@
                     }
                 }
                 a4Labels = a4Labels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); a4Data = a4Data.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
-                poangSumma += uppdateraStatusBoll("status-graf-a4", parseSiffra(rad[bistandKey]), a4Data.length > 1 ? a4Data[a4Data.length - 2] : null, rad[bistandKey.replace("_Manad", "_Polaritet")] || "Låg");
+                poangSumma += uppdateraStatusBoll("status-graf-a4", parseSiffra(rad[bistandKey]), a4Data.length > 1 ? a4Data[a4Data.length - 2] : null, rad[bistandKey.replace("_Manad", "_Polaritet")] || "Låg", "Jämförelse mot samma månad föregående år.");
             }
             aCharts[3] = new Chart(document.getElementById('canvas-a4').getContext('2d'), {
                 type: 'bar', data: { labels: a4Labels, datasets: [{ label: 'Antal/Belopp', data: a4Data, backgroundColor: '#005596', borderWidth: 0 }] },

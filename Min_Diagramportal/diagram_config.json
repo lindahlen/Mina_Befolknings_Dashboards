@@ -166,13 +166,6 @@
             "drilldown_komponenter": [],
             "drilldown_farger": [],
             "drilldown_typ": "stapel"
-        },
-        {
-            "id": "Antal_varsel_i_länet",
-            "label": "Antal varsel i länet",
-            "drilldown_komponenter": [],
-            "drilldown_farger": [],
-            "drilldown_typ": "stapel"
         }
     ],
     "3": [
@@ -245,6 +238,13 @@
                 "Grön",
                 "Blå"
             ],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Antal_varsel_i_länet",
+            "label": "Antal varsel i länet",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
             "drilldown_typ": "stapel"
         }
     ],

@@ -7,6 +7,13 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
+        :root {
+            /* ========================================== */
+            /* ÄNDRA MAXIMAL BREDD PÅ RULLISTAN HÄR NERE  */
+            /* ========================================== */
+            --max-bredd-rullista: 200px; 
+        }
+
         body { 
             font-family: Arial, sans-serif; 
             margin: 0; 
@@ -15,32 +22,12 @@
             flex-direction: column; 
             align-items: center; 
             background-color: white;
-            height: 100vh; /* Låt body ta upp exakt iframens höjd */
+            height: 100vh;
             box-sizing: border-box;
             overflow: hidden; 
         }
-        
-        .top-rad { 
-            display: flex; 
-            flex-wrap: nowrap; 
-            justify-content: space-between; 
-            width: 100%; 
-            align-items: center; 
-            margin-bottom: 8px; 
-            gap: 10px; 
-            height: 40px; 
-            overflow: hidden; 
-            flex-shrink: 0; /* Förhindrar att toppraden krymps */
-        }
-        
-        .kontroller-vanster { 
-            display: flex; 
-            gap: 10px; 
-            align-items: center; 
-            flex-wrap: nowrap; 
-            flex: 0 1 auto; 
-            min-width: 0; 
-        }
+        .top-rad { display: flex; flex-wrap: nowrap; justify-content: space-between; width: 100%; align-items: center; margin-bottom: 8px; gap: 10px; height: 40px; overflow: hidden; flex-shrink: 0; }
+        .kontroller-vanster { display: flex; gap: 10px; align-items: center; flex-wrap: nowrap; flex: 0 1 auto; min-width: 0; }
         
         select#indikator { 
             padding: 8px 12px; 
@@ -49,45 +36,19 @@
             background-color: #f8f9fa; 
             cursor: pointer; 
             font-weight: bold; 
-            max-width: 250px;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
+            max-width: var(--max-bredd-rullista); /* Använder variabeln här */
+            text-overflow: ellipsis; 
+            white-space: nowrap; 
+            overflow: hidden; 
             flex-shrink: 1; 
         }
-        
         .toggle-btn { 
-            padding: 7px 12px; 
-            border-radius: 6px; 
-            border: 1px solid #ccc; 
-            background-color: #f8f9fa; 
-            cursor: pointer; 
-            font-weight: bold; 
-            color: #495057; 
-            display: flex; 
-            align-items: center; 
-            transition: all 0.2s; 
-            user-select: none;
-            font-size: 0.9rem;
-            white-space: nowrap; 
-            flex-shrink: 0; 
+            padding: 7px 12px; border-radius: 6px; border: 1px solid #ccc; background-color: #f8f9fa; cursor: pointer; font-weight: bold; color: #495057; display: flex; align-items: center; transition: all 0.2s; user-select: none; font-size: 0.9rem; white-space: nowrap; flex-shrink: 0; 
         }
         .toggle-btn input[type="checkbox"] { margin-right: 6px; cursor: pointer; transform: scale(1.1); }
         .toggle-btn.active { background-color: #495057; color: white; border-color: #343a40; }
         
-        .trend-ruta { 
-            padding: 6px 12px; 
-            border-radius: 6px; 
-            background-color: #f4f7f6; 
-            border: 1px solid #ddd; 
-            font-size: 13px; 
-            font-weight: bold; 
-            display: none; 
-            align-items: center; 
-            white-space: nowrap; 
-            flex-shrink: 0; 
-            margin-left: auto; 
-        }
+        .trend-ruta { padding: 6px 12px; border-radius: 6px; background-color: #f4f7f6; border: 1px solid #ddd; font-size: 13px; font-weight: bold; display: none; align-items: center; white-space: nowrap; flex-shrink: 0; margin-left: auto; }
         
         .trend-bra { color: #009E73; display: flex; align-items: center; }    
         .trend-dalig { color: #D55E00; display: flex; align-items: center; }  
@@ -98,41 +59,14 @@
         .trend-dalig .pil-boll { background-color: #D55E00; }  
         .trend-neutral .pil-boll { background-color: #6c757d; } 
         
-        /* Flexibel container som alltid tar exakt resterande plats */
-        .canvas-container { 
-            width: 100%; 
-            flex-grow: 1; 
-            min-height: 0; 
-            position: relative; 
-        } 
-        
+        .canvas-container { width: 100%; flex-grow: 1; min-height: 0; position: relative; } 
         #main-view { transition: opacity 0.3s ease; }
-        #drilldown-view { 
-            transition: opacity 0.3s ease; 
-            display: none; 
-            background: #f8fbff; 
-            border-radius: 8px; 
-            border: 1px solid #e0ecf8; 
-            padding: 10px 15px 15px 15px; 
-            box-sizing: border-box;
-        }
-        
+        #drilldown-view { transition: opacity 0.3s ease; display: none; background: #f8fbff; border-radius: 8px; border: 1px solid #e0ecf8; padding: 10px 15px 15px 15px; box-sizing: border-box;}
         #felmeddelande { color: #dc3545; font-weight: bold; text-align: center; margin-bottom: 8px; font-size: 14px; flex-shrink: 0; }
-        
-        .botten-rad { 
-            width: 100%; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-top: 5px; 
-            flex-shrink: 0; /* Förhindrar att raden trycks ut ur bild */
-            min-height: 18px;
-        }
+        .botten-rad { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-top: 5px; flex-shrink: 0; min-height: 18px;}
         .botten-info { font-size: 12px; color: #6c757d; font-style: italic; }
-        
         .tillbaka-btn { background-color: #005596; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
         .tillbaka-btn:hover { background-color: #003d6b; }
-
     </style>
 </head>
 <body>
@@ -152,7 +86,6 @@
         <canvas id="mittDiagram"></canvas>
     </div>
 
-    <!-- Ändrad till flex-direction: column dynamiskt via JS -->
     <div class="canvas-container" id="drilldown-view">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0;">
             <h3 id="drilldown-titel" style="margin: 0; color: #005596; font-size: 16px;">Laddar komponenter...</h3>
@@ -183,27 +116,16 @@
         const HUVUD_FARGER = { "1": "#005596", "2": "#009E73", "3": "#E69F00", "4": "#6f42c1" };
         const FARG_LINJE = HUVUD_FARGER[DIAGRAM_NUMMER] || '#005596'; 
         const FARG_PUNKTER = FARG_LINJE; 
-
         const FARG_STAPEL = 'rgba(0, 123, 255, 0.6)'; const FARG_STAPEL_KANT = 'rgba(0, 123, 255, 1)';   
 
-        const DRILLDOWN_FARGER = {
-            "grön": '#009E73',
-            "röd": '#D55E00',
-            "blå": 'rgba(54, 162, 235, 0.7)',
-            "gul": 'rgba(255, 206, 86, 0.7)',
-            "lila": 'rgba(153, 102, 255, 0.7)',
-            "grå": '#6c757d',
-            "orange": 'rgba(255, 159, 64, 0.7)',
-            "rosa": 'rgba(255, 99, 132, 0.7)'
-        };
+        const DRILLDOWN_FARGER = { "grön": '#009E73', "röd": '#D55E00', "blå": 'rgba(54, 162, 235, 0.7)', "gul": 'rgba(255, 206, 86, 0.7)', "lila": 'rgba(153, 102, 255, 0.7)', "grå": '#6c757d', "orange": 'rgba(255, 159, 64, 0.7)', "rosa": 'rgba(255, 99, 132, 0.7)' };
 
         let globalBerakning = "_R12"; let globalGrafTyp = "linje"; let globalManad = "1"; 
         let selectedCompareRegion = "none"; let globalTid = "5"; 
         let globalVisaIndex = false; 
         
         let csvData = []; let myChart = null; let drillChart = null;
-        let sparadeRaderForDrilldown = [];
-        let configDataGlobal = null; 
+        let sparadeRaderForDrilldown = []; let configDataGlobal = null; 
 
         const cb = "?t=" + new Date().getTime();
 
@@ -215,14 +137,14 @@
             const selectEl = document.getElementById("indikator");
             if (configData && configData[DIAGRAM_NUMMER] && configData[DIAGRAM_NUMMER].length > 0) {
                 configData[DIAGRAM_NUMMER].forEach(ind => {
-                    let opt = document.createElement("option");
-                    opt.value = ind.id;
+                    let opt = document.createElement("option"); 
+                    opt.value = ind.id; 
+                    // ÄNDRING HÄR: Använd alltid ind.id (dashboard-namnet) för rullistan, 
+                    // städa bort understreck så det ser snyggt ut.
                     opt.textContent = ind.id.replace(/_/g, ' '); 
                     selectEl.appendChild(opt);
                 });
-            } else {
-                selectEl.innerHTML = '<option value="">Laddar data...</option>';
-            }
+            } else { selectEl.innerHTML = '<option value="">Laddar data...</option>'; }
 
             let decoder = new TextDecoder("utf-8"); let text = decoder.decode(csvBuffer);
             if (text.includes("\uFFFD") || text.includes("Ã")) { decoder = new TextDecoder("windows-1252"); text = decoder.decode(csvBuffer); }
@@ -230,25 +152,19 @@
             Papa.parse(text, { header: true, skipEmptyLines: true, delimiter: ";", transformHeader: h => h.trim(),
                 complete: function(res) { 
                     csvData = res.data; 
-                    if (csvData.length === 0) {
-                        document.getElementById("felmeddelande").innerText = "Filen är tom.";
-                    } else {
-                        uppdateraDiagram(); 
-                    }
+                    if (csvData.length === 0) document.getElementById("felmeddelande").innerText = "Filen är tom."; else uppdateraDiagram(); 
                 }
             });
         }).catch(e => { document.getElementById("felmeddelande").innerText = "Kunde inte ladda data: " + e.message; });
 
         window.uppdateraFranMaster = function(berakning, grafTyp, manad, tid, visaIndex) { 
             globalBerakning = berakning; globalGrafTyp = grafTyp; globalManad = manad; 
-            if(tid) globalTid = tid; 
-            if(visaIndex !== undefined) globalVisaIndex = visaIndex;
+            if(tid) globalTid = tid; if(visaIndex !== undefined) globalVisaIndex = visaIndex;
             uppdateraDiagram(); stangDrilldown(); 
         };
         
         window.toggleCompareRegion = function() { 
-            let checkbox = document.getElementById("compareRegion");
-            let label = document.getElementById("compareLabel");
+            let checkbox = document.getElementById("compareRegion"); let label = document.getElementById("compareLabel");
             selectedCompareRegion = checkbox.checked ? "Riket" : "none"; 
             if (checkbox.checked) { label.classList.add("active"); } else { label.classList.remove("active"); }
             uppdateraDiagram(); 
@@ -267,19 +183,13 @@
         function getDrilldownConfig(valdIndikator) {
             if (!configDataGlobal || !configDataGlobal[DIAGRAM_NUMMER]) return null;
             let conf = configDataGlobal[DIAGRAM_NUMMER].find(i => i.id === valdIndikator);
-            if (conf && conf.drilldown_komponenter && conf.drilldown_komponenter.length > 0) {
-                return conf;
-            }
+            if (conf && conf.drilldown_komponenter && conf.drilldown_komponenter.length > 0) return conf;
             return null;
         }
 
-        // --- UPPDATERAD DRILL-DOWN-FUNKTION ---
         function visaDrilldown(index, tidpunktEtikett, valdIndikator) {
-            let rad = sparadeRaderForDrilldown[index];
-            if (!rad) return;
-            
-            let ddConfig = getDrilldownConfig(valdIndikator);
-            if (!ddConfig) return; 
+            let rad = sparadeRaderForDrilldown[index]; if (!rad) return;
+            let ddConfig = getDrilldownConfig(valdIndikator); if (!ddConfig) return; 
             
             document.getElementById("main-view").style.display = "none";
             document.getElementById("topp-kontroller").style.display = "none";
@@ -288,152 +198,75 @@
             document.getElementById("drilldown-view").style.flexDirection = "column";
             
             let tidsBeskrivning = globalBerakning === "_R12" ? "Rullande 12 mån" : "Månaden";
-            
             let ddTyp = "stapel"; 
-            if (ddConfig.drilldown_typ && ddConfig.drilldown_typ !== "nan" && ddConfig.drilldown_typ !== "") {
-                 ddTyp = String(ddConfig.drilldown_typ).toLowerCase().trim();
-            }
-
-            if (globalGrafTyp === "stapel" && ddTyp === "linje") {
-                ddTyp = "stapel";
-            }
+            if (ddConfig.drilldown_typ && ddConfig.drilldown_typ !== "nan" && ddConfig.drilldown_typ !== "") ddTyp = String(ddConfig.drilldown_typ).toLowerCase().trim();
+            if (globalGrafTyp === "stapel" && ddTyp === "linje") ddTyp = "stapel";
 
             let renRubrik = valdIndikator.replace(/_/g, ' ');
-
             if (drillChart != null) drillChart.destroy();
             const ctxD = document.getElementById('drilldownDiagram').getContext('2d');
 
             if (ddTyp === 'linje') {
                 document.getElementById("drilldown-titel").innerText = `Utveckling av komponenter för ${renRubrik} (${tidsBeskrivning})`;
-                
-                let datasets = [];
-                let maxValues = [];
-                let allDataPoints = [];
+                let datasets = []; let maxValues = []; let allDataPoints = [];
                 
                 ddConfig.drilldown_komponenter.forEach(komp => {
                     let kolNamn = komp + globalBerakning;
                     let dataPoints = sparadeRaderForDrilldown.map(r => tvattaSiffra(r[kolNamn])).filter(v => v !== null);
                     let maxVal = dataPoints.length > 0 ? Math.max(...dataPoints.map(Math.abs)) : 0;
-                    maxValues.push(maxVal);
-                    
-                    let dataWithNulls = sparadeRaderForDrilldown.map(r => tvattaSiffra(r[kolNamn]));
-                    allDataPoints.push(dataWithNulls);
+                    maxValues.push(maxVal); allDataPoints.push(sparadeRaderForDrilldown.map(r => tvattaSiffra(r[kolNamn])));
                 });
 
-                // Logik för dubbla axlar: Exakt 2 komponenter OCH stor skillnad (mer än eller lika med faktor 3)
                 let useDualAxis = false;
                 if (ddConfig.drilldown_komponenter.length === 2 && maxValues[0] > 0 && maxValues[1] > 0) {
                     let ratio = Math.max(maxValues[0], maxValues[1]) / Math.min(maxValues[0], maxValues[1]);
-                    if (ratio >= 3) {
-                        useDualAxis = true;
-                    }
+                    if (ratio >= 3) useDualAxis = true;
                 }
                 
                 ddConfig.drilldown_komponenter.forEach((komp, i) => {
-                    let snyggtNamn = komp.replace(/_/g, " ");
-                    let dataPoints = allDataPoints[i];
-
+                    let snyggtNamn = komp.replace(/_/g, " "); let dataPoints = allDataPoints[i];
                     let fargNamn = (ddConfig.drilldown_farger && ddConfig.drilldown_farger[i]) ? ddConfig.drilldown_farger[i].toLowerCase().trim() : "blå";
                     let fargHex = DRILLDOWN_FARGER[fargNamn] || DRILLDOWN_FARGER["blå"];
-
-                    let punktRadie = 4;
-                    if (globalTid === "5") punktRadie = 2;
-                    if (globalTid === "10" || globalTid === "alla") punktRadie = 1;
-
+                    let punktRadie = 4; if (globalTid === "5") punktRadie = 2; if (globalTid === "10" || globalTid === "alla") punktRadie = 1;
                     let yAxisId = (useDualAxis && i === 1) ? 'y1' : 'y';
 
-                    datasets.push({
-                        label: snyggtNamn,
-                        data: dataPoints,
-                        borderColor: fargHex,
-                        backgroundColor: 'transparent',
-                        pointBackgroundColor: fargHex,
-                        borderWidth: 2,
-                        tension: 0.1,
-                        pointRadius: punktRadie,
-                        yAxisID: yAxisId
-                    });
+                    datasets.push({ label: snyggtNamn, data: dataPoints, borderColor: fargHex, backgroundColor: 'transparent', pointBackgroundColor: fargHex, borderWidth: 2, tension: 0.1, pointRadius: punktRadie, yAxisID: yAxisId });
                 });
 
                 let labels = sparadeRaderForDrilldown.map(r => globalGrafTyp === "linje" ? `${r["År"]}-${String(r["Månad"]).padStart(2, '0')}` : r["År"]);
+                let scalesConfig = { x: { display: true }, y: { type: 'linear', display: true, position: 'left', beginAtZero: false } };
 
-                let scalesConfig = { 
-                    x: { display: true }, 
-                    y: { type: 'linear', display: true, position: 'left', beginAtZero: false } 
-                };
-
-                // Om dubbla axlar, skriv ut namnet på axlarna i rätt färg!
                 if (useDualAxis) {
-                    scalesConfig.y.title = {
-                        display: true,
-                        text: datasets[0].label,
-                        color: datasets[0].borderColor,
-                        font: { size: 12, weight: 'bold' }
-                    };
-                    
-                    scalesConfig.y1 = {
-                        type: 'linear',
-                        display: true,
-                        position: 'right',
-                        grid: { drawOnChartArea: false },
-                        beginAtZero: false,
-                        title: {
-                            display: true,
-                            text: datasets[1].label,
-                            color: datasets[1].borderColor,
-                            font: { size: 12, weight: 'bold' }
-                        }
-                    };
+                    scalesConfig.y.title = { display: true, text: datasets[0].label, color: datasets[0].borderColor, font: { size: 12, weight: 'bold' } };
+                    scalesConfig.y1 = { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, beginAtZero: false, title: { display: true, text: datasets[1].label, color: datasets[1].borderColor, font: { size: 12, weight: 'bold' } } };
                 }
 
                 drillChart = new Chart(ctxD, {
-                    type: 'line',
-                    data: { labels: labels, datasets: datasets },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        plugins: {
-                            legend: { display: true, position: 'bottom' },
-                            tooltip: { callbacks: { label: function(c) { return " " + c.dataset.label + ": " + c.raw.toLocaleString('sv-SE', {minimumFractionDigits: 0, maximumFractionDigits: 0}); } } }
-                        },
-                        scales: scalesConfig
-                    }
+                    type: 'line', data: { labels: labels, datasets: datasets },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom' }, tooltip: { callbacks: { label: function(c) { return " " + c.dataset.label + ": " + c.raw.toLocaleString('sv-SE', {minimumFractionDigits: 0, maximumFractionDigits: 0}); } } } }, scales: scalesConfig }
                 });
 
             } else {
                 document.getElementById("drilldown-titel").innerText = `Fördelning av ${renRubrik}: ${tidpunktEtikett} (${tidsBeskrivning})`;
-                
                 let ddLabels = []; let ddData = []; let ddColors = [];
                 
                 ddConfig.drilldown_komponenter.forEach((komp, i) => {
-                    ddLabels.push(komp.replace(/_/g, " "));
-                    ddData.push(tvattaSiffra(rad[komp + globalBerakning]));
-                    
+                    ddLabels.push(komp.replace(/_/g, " ")); ddData.push(tvattaSiffra(rad[komp + globalBerakning]));
                     let fargNamn = (ddConfig.drilldown_farger && ddConfig.drilldown_farger[i]) ? ddConfig.drilldown_farger[i].toLowerCase().trim() : "blå";
                     ddColors.push(DRILLDOWN_FARGER[fargNamn] || DRILLDOWN_FARGER["blå"]);
                 });
 
                 let chartType = ddTyp === 'cirkel' ? 'doughnut' : 'bar';
-                let chartOptions = {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: chartType === 'doughnut', position: 'right' },
-                        tooltip: { callbacks: { label: function(c) { return " " + (chartType==='doughnut'?c.label+': ':'') + c.raw.toLocaleString('sv-SE', {minimumFractionDigits: 0, maximumFractionDigits: 0}); } } }
-                    }
-                };
+                let chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: chartType === 'doughnut', position: 'right' }, tooltip: { callbacks: { label: function(c) { return " " + (chartType==='doughnut'?c.label+': ':'') + c.raw.toLocaleString('sv-SE', {minimumFractionDigits: 0, maximumFractionDigits: 0}); } } } } };
                 if(chartType === 'bar') { chartOptions.scales = { y: { beginAtZero: true } }; }
 
-                drillChart = new Chart(ctxD, {
-                    type: chartType,
-                    data: { labels: ddLabels, datasets: [{ label: 'Antal/Värde', data: ddData, backgroundColor: ddColors, borderWidth: 1 }] },
-                    options: chartOptions
-                });
+                drillChart = new Chart(ctxD, { type: chartType, data: { labels: ddLabels, datasets: [{ label: 'Antal/Värde', data: ddData, backgroundColor: ddColors, borderWidth: 1 }] }, options: chartOptions });
             }
         }
 
         function uppdateraDiagram() {
             if (csvData.length === 0) return;
-            const selectEl = document.getElementById("indikator");
-            if(selectEl.selectedIndex === -1) return; 
+            const selectEl = document.getElementById("indikator"); if(selectEl.selectedIndex === -1) return; 
             
             const indikator = selectEl.value; 
             const kolumnNamn = indikator + globalBerakning; 
@@ -445,41 +278,28 @@
             let formatOptions = (isProcent || globalVisaIndex) ? {minimumFractionDigits: 1, maximumFractionDigits: 1} : {minimumFractionDigits: 0, maximumFractionDigits: 0};
             
             let compareKolumnNamn = ""; let compareLabel = "";
-            if (selectedCompareRegion !== "none") {
-                compareKolumnNamn = selectedCompareRegion + "_" + kolumnNamn; 
-                compareLabel = "Riket";
-            }
+            if (selectedCompareRegion !== "none") { compareKolumnNamn = selectedCompareRegion + "_" + kolumnNamn; compareLabel = "Riket"; }
 
-            const rubrikText = selectEl.options[selectEl.selectedIndex].text;
-            const arKolumn = "År"; 
-            const manadKolumn = "Månad"; 
+            // För etiketten i grafen och tooltips använder vi dock det snygga namnet utan understreck
+            const rubrikText = indikator.replace(/_/g, ' ');
+            const arKolumn = "År"; const manadKolumn = "Månad"; 
             
             let allEtiketter = [], allVarden = [], allPrognosVarden = [], allCompareVarden = [], allFargerBG = [], allFargerBorder = [], allArLista = [], allManadLista = [];
             let allRader = [];
-
             const harDrilldown = getDrilldownConfig(indikator) !== null;
-
             let maxAr = Math.max(...csvData.map(rad => parseInt(rad[arKolumn])).filter(n => !isNaN(n)));
             
             csvData.forEach(rad => {
                 let taMedRad = (globalGrafTyp === "linje" && rad[arKolumn] && rad[manadKolumn]) || (globalGrafTyp !== "linje" && rad[arKolumn] && parseInt(rad[manadKolumn]) === parseInt(globalManad));
-                
-                if (globalGrafTyp === "stapel") {
-                    let radAr = parseInt(rad[arKolumn]);
-                    if (globalTid !== "alla" && radAr < (maxAr - parseInt(globalTid) + 1)) { taMedRad = false; }
-                }
+                if (globalGrafTyp === "stapel" && globalTid !== "alla" && parseInt(rad[arKolumn]) < (maxAr - parseInt(globalTid) + 1)) taMedRad = false; 
 
                 if (taMedRad) {
                     let manadStr = String(rad[manadKolumn]).padStart(2, '0');
                     let tidpunkt = globalGrafTyp === "linje" ? `${rad[arKolumn]}-${manadStr}` : rad[arKolumn];
+                    allEtiketter.push(tidpunkt); allArLista.push(parseInt(rad[arKolumn])); allManadLista.push(parseInt(rad[manadKolumn])); allRader.push(rad); 
                     
-                    allEtiketter.push(tidpunkt); allArLista.push(parseInt(rad[arKolumn])); allManadLista.push(parseInt(rad[manadKolumn]));
-                    allRader.push(rad); 
-                    
-                    let varde = tvattaSiffra(rad[kolumnNamn]); 
-                    let prognos = globalBerakning === "_R12" ? tvattaSiffra(rad[prognosKolumnNamn]) : null; 
+                    let varde = tvattaSiffra(rad[kolumnNamn]); let prognos = globalBerakning === "_R12" ? tvattaSiffra(rad[prognosKolumnNamn]) : null; 
                     let compVal = selectedCompareRegion !== "none" ? tvattaSiffra(rad[compareKolumnNamn]) : null;
-
                     allVarden.push(varde); allPrognosVarden.push(prognos); allCompareVarden.push(compVal);
                     
                     let drawBG = FARG_NEUTRAL_PUNKT, drawBorder = FARG_NEUTRAL_PUNKT;
@@ -489,39 +309,65 @@
                             if (Math.abs(diff) <= tr) { drawBG = FARG_NEUTRAL_TEXT_STAPEL; drawBorder = FARG_NEUTRAL_TEXT_STAPEL; } else { let c = ((rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diff < 0) : (diff > 0)) ? FARG_BRA : FARG_DALIG; drawBG = c; drawBorder = c; }
                         } else { drawBG = FARG_STAPEL; drawBorder = FARG_STAPEL_KANT; }
                     } else {
-                        if (globalBerakning === "_R12") {
-                            if (varde !== null && prognos !== null) { let diff = varde - prognos; let tr = beraknaTroskel(rad[troskelKolumn], prognos);
-                                if (Math.abs(diff) <= tr) { drawBG = FARG_NEUTRAL_PUNKT; drawBorder = FARG_NEUTRAL_PUNKT; } else { let c = ((rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diff < 0) : (diff > 0)) ? FARG_BRA : FARG_DALIG; drawBG = c; drawBorder = c; }
-                            } else { drawBG = FARG_PUNKTER; drawBorder = FARG_PUNKTER; }
+                        if (globalBerakning === "_R12" && varde !== null && prognos !== null) { 
+                            let diff = varde - prognos; let tr = beraknaTroskel(rad[troskelKolumn], prognos);
+                            if (Math.abs(diff) <= tr) { drawBG = FARG_NEUTRAL_PUNKT; drawBorder = FARG_NEUTRAL_PUNKT; } else { let c = ((rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diff < 0) : (diff > 0)) ? FARG_BRA : FARG_DALIG; drawBG = c; drawBorder = c; }
                         } else { drawBG = FARG_PUNKTER; drawBorder = FARG_PUNKTER; }
                     }
                     allFargerBG.push(drawBG); allFargerBorder.push(drawBorder);
                 }
             });
 
+            // --- UPPDATERAD LOGIK FÖR MÅLAVVIKELSE OCH INDEX ---
             document.getElementById("trend-ruta").style.display = "flex"; let lastIndex = allVarden.findLastIndex(v => v !== null);
             if (lastIndex !== -1) {
                 let lastVal = allVarden[lastIndex], lastPrognos = allPrognosVarden[lastIndex], aktuellRad = allRader[lastIndex];
-                
                 let targetAr = (globalBerakning === "_R12" || globalGrafTyp === "stapel") ? allArLista[lastIndex] - 1 : (allManadLista[lastIndex] === 1 ? allArLista[lastIndex] - 1 : allArLista[lastIndex]);
                 let targetManad = (globalBerakning === "_R12" || globalGrafTyp === "stapel") ? allManadLista[lastIndex] : (allManadLista[lastIndex] === 1 ? 12 : allManadLista[lastIndex] - 1);
                 
                 let prevVal = null; for(let i = lastIndex - 1; i >= 0; i--) { if (allArLista[i] === targetAr && allManadLista[i] === targetManad && allVarden[i] !== null) { prevVal = allVarden[i]; break; } }
                 
-                let trendPil = "→"; if (prevVal !== null) { let diffTrend = lastVal - prevVal; let tr = (globalBerakning === "_R12") ? beraknaTroskel(aktuellRad[troskelKolumn], prevVal) : 0; trendPil = Math.abs(diffTrend) <= tr ? "→" : (diffTrend > 0 ? "↑" : "↓"); }
+                let tr = (globalBerakning === "_R12") ? beraknaTroskel(aktuellRad[troskelKolumn], (lastPrognos !== null ? lastPrognos : prevVal)) : 0; 
+                let diffTrend = prevVal !== null ? lastVal - prevVal : 0;
+                let trendPil = Math.abs(diffTrend) <= (globalBerakning !== "_R12" ? 0 : tr) ? "→" : (diffTrend > 0 ? "↑" : "↓");
                 
                 if (globalBerakning === "_R12" && lastPrognos !== null) {
-                    let diffPrognos = lastVal - lastPrognos; let tr = beraknaTroskel(aktuellRad[troskelKolumn], lastPrognos); let textKlass = "trend-neutral";
-                    if (Math.abs(diffPrognos) > tr) textKlass = ((aktuellRad[polaritetKolumn] ? aktuellRad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diffPrognos < 0) : (diffPrognos > 0)) ? "trend-bra" : "trend-dalig";
-                    let diffText = Math.abs(diffPrognos).toLocaleString('sv-SE', formatOptions);
-                    document.getElementById("avvikelse-text").innerHTML = `<span class="${textKlass}"><span class="pil-boll">${trendPil}</span> Målavvikelse: ${diffText} ${diffPrognos >= 0 ? "över" : "under"} ${Math.abs(diffPrognos) <= tr ? " (Inom mål)" : ""}</span>`; 
-                } else document.getElementById("avvikelse-text").innerHTML = `<span class="trend-neutral"><span class="pil-boll">${trendPil}</span> ${lastVal.toLocaleString('sv-SE', formatOptions)}</span>`;
+                    let diffPrognos = lastVal - lastPrognos;
+                    let polaritet = aktuellRad[polaritetKolumn] ? aktuellRad[polaritetKolumn].toString().trim().toLowerCase() : "hög";
+
+                    if (globalVisaIndex) {
+                        let baseVarde = allVarden.find(v => v !== null && v !== 0);
+                        if (baseVarde) {
+                            let indexVal = (lastVal / baseVarde) * 100;
+                            let indexPrognos = (lastPrognos / baseVarde) * 100;
+                            let indexDiff = indexVal - indexPrognos;
+                            let indexTr = (tr / baseVarde) * 100;
+                            
+                            let textKlass = "trend-neutral";
+                            if (Math.abs(indexDiff) > indexTr) { textKlass = (polaritet === "låg" ? (indexDiff < 0) : (indexDiff > 0)) ? "trend-bra" : "trend-dalig"; }
+                            let diffText = Math.abs(indexDiff).toLocaleString('sv-SE', {minimumFractionDigits: 1, maximumFractionDigits: 1});
+                            document.getElementById("avvikelse-text").innerHTML = `<span class="${textKlass}"><span class="pil-boll">${trendPil}</span> ${diffText} enheter ${indexDiff >= 0 ? "över" : "under"} indexerat mål ${Math.abs(indexDiff) <= indexTr ? " (Inom mål)" : ""}</span>`;
+                        }
+                    } else {
+                        let textKlass = "trend-neutral";
+                        if (Math.abs(diffPrognos) > tr) textKlass = (polaritet === "låg" ? (diffPrognos < 0) : (diffPrognos > 0)) ? "trend-bra" : "trend-dalig";
+                        let isPct = indikator.includes("%") || indikator.toLowerCase().includes("andel");
+                        let diffText = Math.abs(diffPrognos).toLocaleString('sv-SE', isPct ? {minimumFractionDigits: 1, maximumFractionDigits: 1} : {maximumFractionDigits: 0});
+                        document.getElementById("avvikelse-text").innerHTML = `<span class="${textKlass}"><span class="pil-boll">${trendPil}</span> Ligger ${diffText} ${diffPrognos >= 0 ? "över" : "under"} prognos ${Math.abs(diffPrognos) <= tr ? " (Inom mål)" : ""}</span>`;
+                    }
+                } else {
+                    let visningsVarde = lastVal;
+                    if (globalVisaIndex) {
+                        let baseVarde = allVarden.find(v => v !== null && v !== 0);
+                        visningsVarde = baseVarde ? (lastVal / baseVarde) * 100 : lastVal;
+                    }
+                    let isPct = indikator.includes("%") || indikator.toLowerCase().includes("andel") || globalVisaIndex;
+                    document.getElementById("avvikelse-text").innerHTML = `<span class="trend-neutral"><span class="pil-boll">${trendPil}</span> ${visningsVarde.toLocaleString('sv-SE', isPct ? {minimumFractionDigits: 1, maximumFractionDigits: 1} : {})} ${globalVisaIndex ? " (Index)" : ""}</span>`;
+                }
             } else document.getElementById("avvikelse-text").innerHTML = "<span class='trend-neutral'><span class='pil-boll'>?</span> Saknar data</span>";
 
             let limit = allEtiketter.length;
-            if (globalTid === "1") { limit = globalGrafTyp === "linje" ? 13 : 2; } 
-            else if (globalTid === "5") { limit = globalGrafTyp === "linje" ? 61 : 5; } 
-            else if (globalTid === "10") { limit = globalGrafTyp === "linje" ? 121 : 10; }
+            if (globalTid === "1") { limit = globalGrafTyp === "linje" ? 13 : 2; } else if (globalTid === "5") { limit = globalGrafTyp === "linje" ? 61 : 5; } else if (globalTid === "10") { limit = globalGrafTyp === "linje" ? 121 : 10; }
 
             let etiketter = allEtiketter; let varden = allVarden; let prognosVarden = allPrognosVarden; let compareVarden = allCompareVarden;
             let pFargerBG = allFargerBG; let pFargerBorder = allFargerBorder; sparadeRaderForDrilldown = allRader;
@@ -539,32 +385,20 @@
                 if (baseCompare) { chartCompare = chartCompare.map(v => v !== null ? parseFloat(((v / baseCompare) * 100).toFixed(1)) : null); }
             }
 
-            let bottenInfoElement = document.getElementById("botten-info");
-            let compareDataFinns = chartCompare.some(v => v !== null);
-            
-            let punktRadie = 4; 
-            if (globalTid === "5") punktRadie = 2; 
-            if (globalTid === "10" || globalTid === "alla" || (globalGrafTyp === 'linje' && etiketter.length > 80)) punktRadie = 1;
+            let bottenInfoElement = document.getElementById("botten-info"); let compareDataFinns = chartCompare.some(v => v !== null);
+            let punktRadie = 4; if (globalTid === "5") punktRadie = 2; if (globalTid === "10" || globalTid === "alla" || (globalGrafTyp === 'linje' && etiketter.length > 80)) punktRadie = 1;
 
             if (myChart != null) myChart.destroy();
-            
-            let scalesConfig = { 
-                x: { grid: { display: false } }, 
-                y: { 
-                    type: 'linear', display: true, position: 'left', beginAtZero: (globalGrafTyp === "stapel") && !globalVisaIndex,
-                    ticks: { callback: function(value) { return value.toLocaleString('sv-SE', formatOptions); } }
-                } 
-            };
+            let startaPaNoll = (globalGrafTyp === "stapel") && !globalVisaIndex;
+            let scalesConfig = { x: { grid: { display: false } }, y: { type: 'linear', display: true, position: 'left', beginAtZero: startaPaNoll, ticks: { callback: function(value) { return value.toLocaleString('sv-SE', formatOptions); } } } };
 
             let ds = [{ 
-                label: rubrikText + (globalVisaIndex ? " (Index)" : " (Utfall)"), 
-                data: chartVarden, backgroundColor: globalGrafTyp === 'linje' ? 'transparent' : pFargerBG, borderColor: globalGrafTyp === 'linje' ? FARG_LINJE : pFargerBorder, 
-                pointBackgroundColor: pFargerBG, pointBorderColor: pFargerBorder, pointRadius: (globalGrafTyp === 'linje' ? punktRadie : 0), pointHoverRadius: punktRadie + 2, 
-                borderWidth: 2, tension: 0.1, yAxisID: 'y' 
+                label: rubrikText + (globalVisaIndex ? " (Index)" : " (Utfall)"), data: chartVarden, backgroundColor: globalGrafTyp === 'linje' ? 'transparent' : pFargerBG, borderColor: globalGrafTyp === 'linje' ? FARG_LINJE : pFargerBorder, 
+                pointBackgroundColor: pFargerBG, pointBorderColor: pFargerBorder, pointRadius: (globalGrafTyp === 'linje' ? punktRadie : 0), pointHoverRadius: punktRadie + 2, borderWidth: 2, tension: 0.1, yAxisID: 'y' 
             }];
             
             if (globalGrafTyp === "linje" && globalBerakning === "_R12" && selectedCompareRegion === "none") {
-                ds.push({ label: "Målvärde", data: chartPrognos, backgroundColor: 'transparent', borderColor: '#6c757d', borderDash: [5, 5], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y' });
+                ds.push({ label: "Målvärde/Prognos", data: chartPrognos, backgroundColor: 'transparent', borderColor: '#6c757d', borderDash: [5, 5], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y' });
             }
             
             if (selectedCompareRegion !== "none" && compareDataFinns) {
@@ -572,66 +406,67 @@
                     bottenInfoElement.innerHTML = `<em>* Båda linjerna visas som Index (Startvärde = 100) och delar samma axel.</em>`;
                     ds.push({ label: compareLabel, data: chartCompare, backgroundColor: 'transparent', borderColor: FARG_RIKET, borderDash: [2, 2], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y' });
                 } else {
-                    bottenInfoElement.innerHTML = `<em>* Jämförelsevärden (${compareLabel}) visas på den högra axeln</em>`;
+                    let maxVarde = Math.max(...varden.filter(v => v !== null));
+                    let maxCompare = Math.max(...compareVarden.filter(v => v !== null));
+                    let minVarde = Math.min(...varden.filter(v => v !== null));
+                    let minCompare = Math.min(...compareVarden.filter(v => v !== null));
                     
-                    // Skriv ut tydligt på den högra y-axeln
-                    scalesConfig.y1 = { 
-                        type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, 
-                        ticks: { color: FARG_RIKET, callback: function(value) { return value.toLocaleString('sv-SE', formatOptions); } }, 
-                        beginAtZero: (globalGrafTyp === "stapel") && !globalVisaIndex,
-                        title: { display: true, text: compareLabel, color: FARG_RIKET, font: { size: 12, weight: 'bold' } }
-                    };
+                    let useDualAxis = false;
 
-                    let arForandringIndikator = indikator.toLowerCase().includes("förändring") || indikator.toLowerCase().includes("netto") || indikator.toLowerCase().includes("överskott");
-                    let hasNegative = varden.some(v => v !== null && v < 0) || (selectedCompareRegion === "none" && prognosVarden.some(v => v !== null && v < 0)) || compareVarden.some(v => v !== null && v < 0);
-
-                    if (arForandringIndikator && hasNegative) {
-                        function snyggMax(val) { if (val === 0) return 10; let mag = Math.pow(10, Math.floor(Math.log10(val)) - 1); if (mag === 0) mag = 1; return Math.ceil((val * 1.1) / mag) * mag; }
-                        let allaVardenL = varden.filter(v => v !== null).map(Math.abs);
-                        if (selectedCompareRegion === "none") { allaVardenL = allaVardenL.concat(prognosVarden.filter(v => v !== null).map(Math.abs)); }
-                        let maxL = Math.max(0, ...allaVardenL); let maxR = Math.max(0, ...compareVarden.filter(v => v !== null).map(Math.abs));
-                        let symMaxL = snyggMax(maxL); let symMaxR = snyggMax(maxR);
-                        scalesConfig.y.min = -symMaxL; scalesConfig.y.max = symMaxL; scalesConfig.y1.min = -symMaxR; scalesConfig.y1.max = symMaxR;
+                    if (isProcent) {
+                         if (Math.abs(maxVarde - maxCompare) >= 3) {
+                             useDualAxis = true;
+                         }
+                    } else {
+                        if (maxVarde > 0 && maxCompare > 0) {
+                            let ratio = Math.max(maxVarde, maxCompare) / Math.min(maxVarde, maxCompare);
+                            if (ratio >= 3) {
+                                useDualAxis = true;
+                            }
+                        }
                     }
-                    ds.push({ label: compareLabel, data: chartCompare, backgroundColor: 'transparent', borderColor: FARG_RIKET, borderDash: [2, 2], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y1' });
+
+                    if (useDualAxis) {
+                         bottenInfoElement.innerHTML = `<em>* Jämförelsevärden (${compareLabel}) visas på den högra axeln</em>`;
+                         scalesConfig.y1 = { type: 'linear', display: true, position: 'right', grid: { drawOnChartArea: false }, ticks: { color: FARG_RIKET, callback: function(value) { return value.toLocaleString('sv-SE', formatOptions); } }, beginAtZero: startaPaNoll, title: { display: true, text: compareLabel, color: FARG_RIKET, font: { size: 12, weight: 'bold' } } };
+                         
+                         let arForandringIndikator = indikator.toLowerCase().includes("förändring") || indikator.toLowerCase().includes("netto") || indikator.toLowerCase().includes("överskott");
+                         let hasNegative = varden.some(v => v !== null && v < 0) || (selectedCompareRegion === "none" && prognosVarden.some(v => v !== null && v < 0)) || compareVarden.some(v => v !== null && v < 0);
+
+                         if (arForandringIndikator && hasNegative) {
+                             function snyggMax(val) { if (val === 0) return 10; let mag = Math.pow(10, Math.floor(Math.log10(val)) - 1); if (mag === 0) mag = 1; return Math.ceil((val * 1.1) / mag) * mag; }
+                             let allaVardenL = varden.filter(v => v !== null).map(Math.abs);
+                             if (selectedCompareRegion === "none") { allaVardenL = allaVardenL.concat(prognosVarden.filter(v => v !== null).map(Math.abs)); }
+                             let maxL = Math.max(0, ...allaVardenL); let maxR = Math.max(0, ...compareVarden.filter(v => v !== null).map(Math.abs));
+                             let symMaxL = snyggMax(maxL); let symMaxR = snyggMax(maxR);
+                             scalesConfig.y.min = -symMaxL; scalesConfig.y.max = symMaxL; scalesConfig.y1.min = -symMaxR; scalesConfig.y1.max = symMaxR;
+                         }
+                         ds.push({ label: compareLabel, data: chartCompare, backgroundColor: 'transparent', borderColor: FARG_RIKET, borderDash: [2, 2], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y1' });
+                    } else {
+                         bottenInfoElement.innerHTML = `<em>* Jämförelsevärden (${compareLabel}) visas på samma axel.</em>`;
+                         ds.push({ label: compareLabel, data: chartCompare, backgroundColor: 'transparent', borderColor: FARG_RIKET, borderDash: [2, 2], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y' });
+                    }
                 }
-            } else { 
-                bottenInfoElement.innerHTML = globalVisaIndex ? "<em>* Visas som Index (Startvärde = 100).</em>" : ""; 
-            }
+            } else { bottenInfoElement.innerHTML = globalVisaIndex ? "<em>* Visas som Index (Startvärde = 100).</em>" : ""; }
 
             myChart = new Chart(document.getElementById('mittDiagram').getContext('2d'), { 
-                type: globalGrafTyp === 'linje' ? 'line' : 'bar', 
-                data: { labels: etiketter, datasets: ds }, 
+                type: globalGrafTyp === 'linje' ? 'line' : 'bar', data: { labels: etiketter, datasets: ds }, 
                 options: { 
                     responsive: true, maintainAspectRatio: false, spanGaps: false, 
                     plugins: { 
                         legend: { position: 'bottom' },
-                        tooltip: {
-                            callbacks: {
+                        tooltip: { callbacks: {
                                 label: function(context) {
-                                    let label = context.dataset.label || '';
-                                    if (label) { label += ': '; }
-                                    if (context.parsed.y !== null) {
-                                        label += context.parsed.y.toLocaleString('sv-SE', formatOptions);
-                                        if (globalVisaIndex) { label += ' (Index)'; }
-                                    }
+                                    let label = context.dataset.label || ''; if (label) { label += ': '; }
+                                    if (context.parsed.y !== null) { label += context.parsed.y.toLocaleString('sv-SE', formatOptions); if (globalVisaIndex) { label += ' (Index)'; } }
                                     return label;
                                 },
-                                afterLabel: function(context) {
-                                    if (harDrilldown) { return "\n💡 Klicka för att se detaljer"; }
-                                    return null;
-                                }
-                            }
-                        }
+                                afterLabel: function(context) { if (harDrilldown) return "\n💡 Klicka för att se detaljer"; return null; }
+                        } }
                     }, 
                     scales: scalesConfig,
-                    onHover: (event, chartElement) => {
-                        if (harDrilldown) { event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default'; } 
-                        else { event.native.target.style.cursor = 'default'; }
-                    },
-                    onClick: (event, activeEls) => {
-                        if (harDrilldown && activeEls.length > 0) { visaDrilldown(activeEls[0].index, etiketter[activeEls[0].index], indikator); }
-                    }
+                    onHover: (event, chartElement) => { if (harDrilldown) { event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default'; } else { event.native.target.style.cursor = 'default'; } },
+                    onClick: (event, activeEls) => { if (harDrilldown && activeEls.length > 0) { visaDrilldown(activeEls[0].index, etiketter[activeEls[0].index], indikator); } }
                 } 
             });
         }
