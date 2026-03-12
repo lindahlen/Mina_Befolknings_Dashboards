@@ -64,6 +64,7 @@
                 <option value="Sysselsatta">Sysselsatta (Dagbefolkning)</option>
                 <option value="Tillverkning">Tillverkningsindustri</option>
                 <option value="Handel">Handel</option>
+                <option value="Hotell_&_Restaurang">Hotell & Restaurang</option>
                 <option value="IKT">IKT och Kommunikation</option>
                 <option value="Företagstjänster">Företagstjänster</option>
                 <option value="Utbildning">Utbildning</option>
@@ -121,7 +122,7 @@
     <script>
         const csvFilnamn = "Data_Diagram_PX2.csv"; 
 
-        const FARG_BRA = '#009E73'; const FARG_DALIG = '#D55E00';           
+        const FARG_BRA = '#009E73'; const FARG_DALIG = '#D55E00';          
         const FARG_NEUTRAL_PUNKT = '#CED4DA'; const FARG_NEUTRAL_TEXT_STAPEL = '#6c757d'; 
         const FARG_RIKET = '#495057';
 
@@ -131,7 +132,8 @@
         const FARG_LINJE = 'rgba(32, 201, 151, 1)';         
         const FARG_PUNKTER = '#128260'; 
 
-        const PIE_COLORS = [ '#128260', '#005596', '#6f42c1', '#fd7e14', '#20c997', '#e83e8c', '#ffc107', '#adb5bd' ];
+        // Uppdaterad med en extra färg (#0dcaf0) för Hotell & Restaurang (totalt 9 färger)
+        const PIE_COLORS = [ '#128260', '#005596', '#6f42c1', '#fd7e14', '#20c997', '#e83e8c', '#ffc107', '#0dcaf0', '#adb5bd' ];
 
         // =========================================================
         // DRILL-DOWN KONFIGURATION FÖR LINJEDIAGRAM 
@@ -205,7 +207,8 @@
 
         // Smart funktion som bygger antingen Pie Chart eller Line Chart beroende på vald indikator
         function visaDrilldown(valdIndikator, index, tidpunktEtikett) {
-            let isPie = ["Sysselsatta", "Tillverkning", "Handel", "IKT", "Företagstjänster", "Utbildning", "Vård_Omsorg", "Offentlig_förvaltning", "Sysselsatta_privat_sektor", "Sysselsatta_offentlig_sektor"].includes(valdIndikator);
+            // Lade till "Hotell_&_Restaurang" i isPie
+            let isPie = ["Sysselsatta", "Tillverkning", "Handel", "Hotell_&_Restaurang", "IKT", "Företagstjänster", "Utbildning", "Vård_Omsorg", "Offentlig_förvaltning", "Sysselsatta_privat_sektor", "Sysselsatta_offentlig_sektor"].includes(valdIndikator);
             let isLine = ["Pendlingsnetto", "Sysselsättningsgrad"].includes(valdIndikator);
 
             if (!isPie && !isLine) return;
@@ -237,18 +240,20 @@
                     let total = tvattaSiffra(rad["Sysselsatta" + globalBerakning]) || 0;
                     let tillv = tvattaSiffra(rad["Tillverkning" + globalBerakning]) || 0;
                     let handel = tvattaSiffra(rad["Handel" + globalBerakning]) || 0;
+                    let hotell = tvattaSiffra(rad["Hotell_&_Restaurang" + globalBerakning]) || 0; // NY BRANSCH
                     let ikt = tvattaSiffra(rad["IKT" + globalBerakning]) || 0;
                     let foretag = tvattaSiffra(rad["Företagstjänster" + globalBerakning]) || 0;
                     let utbildning = tvattaSiffra(rad["Utbildning" + globalBerakning]) || 0;
                     let vard = tvattaSiffra(rad["Vård_Omsorg" + globalBerakning]) || 0;
                     let offentlig = tvattaSiffra(rad["Offentlig_förvaltning" + globalBerakning]) || 0;
 
-                    let specificeradSumma = tillv + handel + ikt + foretag + utbildning + vard + offentlig;
+                    // Addera den nya branschen i kontrollsumman för "Övriga"
+                    let specificeradSumma = tillv + handel + hotell + ikt + foretag + utbildning + vard + offentlig;
                     let ovriga = total - specificeradSumma;
                     if (ovriga < 0) ovriga = 0;
 
-                    ddLabels = [ 'Vård & Omsorg', 'Tillverkning', 'Handel', 'Företagstjänster', 'Utbildning', 'IKT', 'Offentlig förvaltning', 'Övriga branscher' ];
-                    ddData = [vard, tillv, handel, foretag, utbildning, ikt, offentlig, ovriga];
+                    ddLabels = [ 'Vård & Omsorg', 'Tillverkning', 'Handel', 'Hotell & Restaurang', 'Företagstjänster', 'Utbildning', 'IKT', 'Offentlig förvaltning', 'Övriga branscher' ];
+                    ddData = [vard, tillv, handel, hotell, foretag, utbildning, ikt, offentlig, ovriga];
                     ddColors = PIE_COLORS;
                     totaltForProcent = total;
                 }
@@ -333,7 +338,8 @@
 
             let maxAr = Math.max(...csvData.map(rad => parseInt(rad[arKolumn])).filter(n => !isNaN(n)));
 
-            const isPie = ["Sysselsatta", "Tillverkning", "Handel", "IKT", "Företagstjänster", "Utbildning", "Vård_Omsorg", "Offentlig_förvaltning", "Sysselsatta_privat_sektor", "Sysselsatta_offentlig_sektor"].includes(indikator);
+            // Lade till "Hotell_&_Restaurang" i isPie här också
+            const isPie = ["Sysselsatta", "Tillverkning", "Handel", "Hotell_&_Restaurang", "IKT", "Företagstjänster", "Utbildning", "Vård_Omsorg", "Offentlig_förvaltning", "Sysselsatta_privat_sektor", "Sysselsatta_offentlig_sektor"].includes(indikator);
             const isLine = ["Pendlingsnetto", "Sysselsättningsgrad"].includes(indikator);
             const harDrilldown = isPie || isLine;
 
@@ -352,6 +358,15 @@
                     let varde = tvattaSiffra(rad[kolumnNamn]); 
                     let prognos = globalBerakning === "_R12" ? tvattaSiffra(rad[prognosKolumnNamn]) : null; 
                     let compVal = selectedCompareRegion !== "none" ? tvattaSiffra(rad[compareKolumnNamn]) : null;
+
+                    // NY LOGIK: Säkerhetsspärr mot uppstarts-nollor (Python-bugg skydd)
+                    if (varde !== null && prognos !== null) {
+                        // Om utfallet är hyfsat stort, men prognosen plötsligt är extremt liten (<10% av utfallet)
+                        // Eller om prognosen är exakt noll, då döljer vi prognosen för denna punkt.
+                        if (varde > 10 && (prognos === 0 || prognos < (varde * 0.1))) {
+                            prognos = null;
+                        }
+                    }
 
                     varden.push(varde); prognosVarden.push(prognos); compareVarden.push(compVal);
                     

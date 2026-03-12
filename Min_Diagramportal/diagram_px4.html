@@ -61,17 +61,30 @@
     <div class="top-rad" id="topp-kontroller">
         <div class="kontroller-vanster">
             <select id="indikator" onchange="uppdateraDiagram()">
-                <!-- Nya valen från Excel-dokumentet -->
-                <option value="Inskrivna_arbetslösa">Inskrivna arbetslösa</option>
-                <option value="Utrikes_födda_arbetslösa">Utrikes födda arbetslösa</option>
-                <option value="Inrikes_födda_arbetslösa">Inrikes födda arbetslösa</option>
-                <option value="Långtidsarbetslösa">Långtidsarbetslösa</option>
-                <option value="Inskrivna_arbetslösa_svag_konkurrensförmåga">Inskrivna arbetslösa (svag konkurrensförmåga)</option>
-                <option value="Inskrivna_arbetslösa_%">Inskrivna arbetslösa (%)</option>
-                <option value="Ungdomar_arbetslösa_%">Ungdomar arbetslösa (%)</option>
-                <option value="Utrikes_födda_arbetslösa_%">Utrikes födda arbetslösa (%)</option>
-                <option value="Inrikes_födda_arbetslösa_%">Inrikes födda arbetslösa (%)</option>
-                <option value="Långtidsarbetslösa_av_inskrivna_arbetslösa_%">Långtidsarbetslösa av inskrivna (%)</option>
+                
+                <!-- KATEGORI 1: Arbetslöshet -->
+                <optgroup label="Arbetslöshet">
+                    <option value="Inskrivna_arbetslösa">Inskrivna arbetslösa</option>
+                    <option value="Utrikes_födda_arbetslösa">Utrikes födda arbetslösa</option>
+                    <option value="Inrikes_födda_arbetslösa">Inrikes födda arbetslösa</option>
+                    <option value="Långtidsarbetslösa">Långtidsarbetslösa</option>
+                    <option value="Inskrivna_arbetslösa_svag_konkurrensförmåga">Inskrivna arbetslösa (svag konkurrensförmåga)</option>
+                    <option value="Inskrivna_arbetslösa_%">Inskrivna arbetslösa (%)</option>
+                    <option value="Ungdomar_arbetslösa_%">Ungdomar arbetslösa (%)</option>
+                    <option value="Utrikes_födda_arbetslösa_%">Utrikes födda arbetslösa (%)</option>
+                    <option value="Inrikes_födda_arbetslösa_%">Inrikes födda arbetslösa (%)</option>
+                    <option value="Långtidsarbetslösa_av_inskrivna_arbetslösa_%">Långtidsarbetslösa av inskrivna (%)</option>            
+                </optgroup>
+                
+                <!-- KATEGORI 2: Ekonomiskt Bistånd (NY!) -->
+                <optgroup label="Ekonomiskt bistånd">
+                    <option value="Hushåll_med_ekonomisk_bistånd">Hushåll med ekonomiskt bistånd</option>
+                    <option value="Belopp_per_hushåll_(kr)">Belopp per hushåll (kr)</option>
+                    <option value="Biståndsmottagare">Biståndsmottagare</option>
+                    <option value="Arbetslösa_biståndsmottagare">Arbetslösa biståndsmottagare</option>
+                    <option value="Arbetslösa_biståndsmottagare_%">Arbetslösa biståndsmottagare (%)</option> 
+                </optgroup>
+
             </select>
             <select id="compareRegion" onchange="toggleCompareRegion()" class="toggle-btn" style="background-color: #f8f9fa; color: #495057;" title="Välj kommun eller grupp för att jämföra med Linköping">
                 <option value="none">Ingen jämförelse</option>
@@ -106,7 +119,6 @@
             <h3 id="drilldown-titel" style="margin: 0; color: #6f42c1; font-size: 16px;">Utveckling för undergrupper</h3>
             <button class="tillbaka-btn" onclick="stangDrilldown()">🔙 Tillbaka till huvudtrend</button>
         </div>
-        <!-- Linjediagram behöver hela bredden, ingen extra centrerings-div här -->
         <div style="height: 260px; width: 100%;"><canvas id="drilldownDiagram"></canvas></div>
     </div>
     
@@ -118,7 +130,7 @@
     <script>
         const csvFilnamn = "Data_Diagram_PX4.csv"; 
 
-        const FARG_BRA = '#009E73'; const FARG_DALIG = '#D55E00';           
+        const FARG_BRA = '#009E73'; const FARG_DALIG = '#D55E00';          
         const FARG_NEUTRAL_PUNKT = '#CED4DA'; const FARG_NEUTRAL_TEXT_STAPEL = '#6c757d'; 
         const FARG_RIKET = '#495057';
 
@@ -196,7 +208,7 @@
             if (val === undefined || val === null) return null; 
             let str = val.toString().trim(); 
             if (str === ".." || str === "") return null; 
-            if (str === "-") return 0; // Tolkar bindestreck som noll
+            if (str === "-" || str === "–" || str === "—" || str === "−") return 0; // Uppdaterad med alla typer av streck
             let siffra = parseFloat(str.replace(',', '.').replace(/\s/g, '')); 
             return isNaN(siffra) ? null : siffra; 
         }
