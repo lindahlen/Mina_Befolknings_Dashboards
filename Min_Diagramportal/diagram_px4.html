@@ -361,13 +361,26 @@
                 let targetAr = (globalBerakning === "_R12" || globalGrafTyp === "stapel") ? arLista[lastIndex] - 1 : (kvartalLista[lastIndex] === 1 ? arLista[lastIndex] - 1 : arLista[lastIndex]); let targetKvartal = (globalBerakning === "_R12" || globalGrafTyp === "stapel") ? kvartalLista[lastIndex] : (kvartalLista[lastIndex] === 1 ? 4 : kvartalLista[lastIndex] - 1);
                 let prevVal = null; for(let i = lastIndex - 1; i >= 0; i--) { if (arLista[i] === targetAr && kvartalLista[i] === targetKvartal && varden[i] !== null) { prevVal = varden[i]; break; } }
                 let trendPil = "→"; if (prevVal !== null) { let diffTrend = lastVal - prevVal; let tr = (globalBerakning === "_R12") ? beraknaTroskel(aktuellRad[troskelKolumn], prevVal) : 0; trendPil = Math.abs(diffTrend) <= tr ? "→" : (diffTrend > 0 ? "↑" : "↓"); }
-                if (globalBerakning === "_R12" && lastPrognos !== null) {
+                let isProcent = indikator.includes("%") || indikator.toLowerCase().includes("andel");
+                
+                if (globalVisaIndex) {
+                    // Om Index är valt, räkna ut och visa Index-värdet istället för absoluta tal!
+                    let baseVarde = varden.find(v => v !== null && v !== 0);
+                    let indexVarde = baseVarde ? ((lastVal / baseVarde) * 100) : 0;
+                    document.getElementById("avvikelse-text").innerHTML = `<span class="trend-neutral"><span class="pil-boll">${trendPil}</span> Index: ${indexVarde.toLocaleString('sv-SE', {minimumFractionDigits: 1, maximumFractionDigits: 1})}</span>`;
+                
+                } else if (globalBerakning === "_R12" && lastPrognos !== null) {
+                    // Om vi kollar absoluta tal och en prognos finns
                     let diffPrognos = lastVal - lastPrognos; let tr = beraknaTroskel(aktuellRad[troskelKolumn], lastPrognos); let textKlass = "trend-neutral";
                     if (Math.abs(diffPrognos) > tr) textKlass = ((aktuellRad[polaritetKolumn] ? aktuellRad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diffPrognos < 0) : (diffPrognos > 0)) ? "trend-bra" : "trend-dalig";
-                    let isProcent = indikator.includes("%") || indikator.toLowerCase().includes("andel");
                     let diffText = Math.abs(diffPrognos).toLocaleString('sv-SE', isProcent ? {minimumFractionDigits: 1, maximumFractionDigits: 1} : {maximumFractionDigits: 0});
                     document.getElementById("avvikelse-text").innerHTML = `<span class="${textKlass}"><span class="pil-boll">${trendPil}</span> Ligger ${diffText} ${diffPrognos >= 0 ? "över" : "under"} prognos ${Math.abs(diffPrognos) <= tr ? " (Inom mål)" : ""}</span>`;
-                } else document.getElementById("avvikelse-text").innerHTML = `<span class="trend-neutral"><span class="pil-boll">${trendPil}</span> ${lastVal.toLocaleString('sv-SE')}</span>`;
+                
+                } else {
+                    // Reservläge (t.ex. Kvartalsvy). Formattera snyggt så vi slipper råa R12-decimaler!
+                    let formateratVal = lastVal.toLocaleString('sv-SE', isProcent ? {minimumFractionDigits: 1, maximumFractionDigits: 1} : {maximumFractionDigits: 0});
+                    document.getElementById("avvikelse-text").innerHTML = `<span class="trend-neutral"><span class="pil-boll">${trendPil}</span> ${formateratVal}</span>`;
+                }
             } else document.getElementById("avvikelse-text").innerHTML = "<span class='trend-neutral'><span class='pil-boll'>?</span> Saknar data</span>";
 
             let chartVarden = [...varden];
@@ -402,8 +415,8 @@
                 borderWidth: 2, tension: 0.1, yAxisID: 'y' 
             }];
             
-            if (globalGrafTyp === "linje" && globalBerakning === "_R12" && selectedCompareRegion === "none") {
-                ds.push({ label: "Prognos", data: chartPrognos, backgroundColor: 'transparent', borderColor: '#6c757d', borderDash: [5, 5], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y' });
+            if (globalGrafTyp === "linje" && globalBerakning === "_R12" && selectedCompareRegion === "none" && !globalVisaIndex) {
+    ds.push({ label: "Prognos", data: chartPrognos, backgroundColor: 'transparent', borderColor: '#6c757d', borderDash: [5, 5], pointRadius: 0, borderWidth: 2, tension: 0.1, yAxisID: 'y' });
             }
             
             let startaPaNoll = (globalGrafTyp === "stapel") && !globalVisaIndex;
