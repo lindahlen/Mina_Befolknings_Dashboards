@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Metadata för sökmotorer och dokumentation -->
+    <meta name="author" content="Jimmy Lindahl, Analys & Utredning, Linköpings kommun">
+    <meta name="description" content="Interaktiv kalkylator för att simulera och analysera Linköpings konkurrenskraftsindex.">
+    <meta name="robots" content="index, follow">
+    
+    <title>Indexkalkylator: Konkurrenskraft</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        :root {
+            --primary-orange: #d35400;
+            --primary-dark: #a04000;
+            --bg-color: #f4f7f6;
+        }
+
+        body { background-color: var(--bg-color); font-family: 'Segoe UI', Arial, sans-serif; height: 100vh; margin: 0; display: flex; flex-direction: column; overflow: hidden; }
+        .header-bar { background: linear-gradient(135deg, var(--primary-orange), var(--primary-dark)); color: white; padding: 15px 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;}
+        
+        .logga-titel-container { display: flex; align-items: center; gap: 15px; }
+        .logotyp { height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2)); }
+
+        .tillbaka-btn { color: white; text-decoration: none; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 6px; font-weight: 500; transition: all 0.2s ease; margin-left: 10px; display: inline-flex; align-items: center; gap: 8px;}
+        .tillbaka-btn:hover { background: white; color: var(--primary-orange); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        
+        .main-container { display: flex; gap: 20px; padding: 15px 20px; max-width: 1600px; margin: 0 auto; flex-grow: 1; overflow: hidden; width: 100%; }
+        
+        .control-panel { flex: 1; min-width: 380px; max-width: 450px; background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; }
+        .chart-panel { flex: 2; min-width: 600px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column; overflow-y: auto;}
+        
+        .settings-group { background: #fff3e0; padding: 10px 15px; border-radius: 8px; margin-bottom: 12px; border: 1px solid #ffe0b2; flex-shrink: 0; }
+        .settings-group label { margin-bottom: 3px; font-size: 0.85rem; }
+        .settings-group select { padding: 4px 8px; font-size: 0.85rem; }
+        .settings-group h5 { font-size: 1rem; margin-bottom: 10px !important; }
+
+        #indicators-list { overflow-y: auto; flex-grow: 1; padding-right: 10px; margin-bottom: 15px; border-bottom: 1px solid #eee; }
+        #indicators-list::-webkit-scrollbar { width: 6px; }
+        #indicators-list::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
+        
+        .indicator-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; transition: opacity 0.3s; }
+        .indicator-row.inactive { opacity: 0.5; }
+        .indicator-row:last-child { border-bottom: none; }
+        .indicator-name { flex: 2; font-size: 0.85rem; font-weight: 500; display: flex; align-items: center; gap: 8px;}
+        .indicator-weight { flex: 1; display: flex; align-items: center; gap: 10px; }
+        
+        input[type="range"] { width: 80px; accent-color: var(--primary-orange); }
+        .weight-val { font-weight: bold; width: 32px; text-align: right; color: var(--primary-orange); font-size: 0.85rem;}
+        
+        .sum-box { padding: 10px; border-radius: 8px; font-weight: bold; text-align: center; border: 2px solid transparent; transition: all 0.3s ease; flex-shrink: 0; font-size: 0.9rem;}
+        .sum-warning { color: #d32f2f; font-size: 0.8rem; text-align: center; margin-top: 5px; display: none; flex-shrink: 0; }
+
+        .chart-container { position: relative; height: 500px; width: 100%; margin-top: 5px;}
+        
+        .loading { text-align: center; padding: 50px; font-size: 1.2rem; color: #666; font-style: italic; }
+
+        .region-chip { display: inline-block; background-color: #e9ecef; color: #495057; padding: 4px 12px; border-radius: 16px; font-size: 0.85rem; font-weight: bold; border: 1px solid #ced4da; margin-right: 5px; margin-bottom: 5px; }
+        .region-chip .remove-btn { margin-left: 6px; cursor: pointer; color: #dc3545; font-weight: bold; }
+        .region-chip .remove-btn:hover { color: #a71d2a; }
+
+        .time-filter-container { display: flex; gap: 15px; align-items: center; background-color: #f8f9fa; padding: 10px 15px; border-radius: 8px; border: 1px solid #dee2e6; margin-bottom: 15px;}
+        .time-filter-container label { margin-bottom: 0; font-size: 0.9rem; font-weight: 600; color: #495057; }
+        .time-filter-container select { padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9rem; }
+
+        /* NYA STILAR FÖR TABELL OCH VERKTYG */
+        .table-container { display: none; overflow-x: auto; width: 100%; max-height: 500px; margin-top: 15px; border-radius: 8px; border: 1px solid #dee2e6; }
+        .heatmap-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: white; }
+        .heatmap-table th, .heatmap-table td { border: 1px solid #dee2e6; padding: 8px; text-align: center; white-space: nowrap; }
+        .heatmap-table th { background-color: #f8f9fa; font-weight: bold; position: sticky; top: 0; z-index: 1; box-shadow: 0 1px 0 #dee2e6; }
+        .heatmap-table td { transition: filter 0.2s; font-weight: 500; color: #212529; }
+        .heatmap-table td:hover { filter: brightness(0.9); }
+        
+        .view-btn { padding: 4px 10px; border: 1px solid #ced4da; background: white; cursor: pointer; font-size: 0.8rem; font-weight: bold; color: #495057; transition: all 0.2s; }
+        .view-btn:first-child { border-top-left-radius: 4px; border-bottom-left-radius: 4px; }
+        .view-btn:last-child { border-top-right-radius: 4px; border-bottom-right-radius: 4px; }
+        .view-btn:not(:last-child) { border-right: none; }
+        .view-btn:hover { background: #f8f9fa; }
+        .view-btn.active { background: var(--primary-dark); color: white; border-color: var(--primary-dark); z-index: 2; position: relative; }
+        
+        .action-btn-sm { padding: 4px 8px; font-size: 0.75rem; cursor: pointer; border: 1px solid #ced4da; background: #f8f9fa; border-radius: 4px; color: #495057; font-weight: bold; transition: all 0.2s; display: flex; align-items: center; gap: 4px; }
+        .action-btn-sm:hover { background: #e2e6ea; }
+
+        .kategori-header {
+            padding: 5px 10px; 
+            margin: 10px 0 5px 0; 
+            border-bottom: 2px solid #f0f0f0; 
+            font-size: 0.8rem; 
+            font-weight: bold; 
+            color: var(--primary-orange);
+        }
+        .status-header {
+            background-color: #e9ecef; 
+            padding: 6px 12px; 
+            margin: 15px 0 8px 0; 
+            border-radius: 4px; 
+            font-size: 0.75rem; 
+            font-weight: bold; 
+            color: #495057; 
+            letter-spacing: 1px;
+        }
+        .status-header:first-child { margin-top: 0; }
+
+        @media (max-width: 992px) {
+            body { height: auto; overflow: auto; display: block; }
+            .header-bar { flex-direction: column; text-align: center; gap: 15px; padding: 15px; }
+            .logga-titel-container { flex-direction: column; gap: 10px; }
+            .main-container { flex-direction: column; padding: 10px; overflow: visible; }
+            .control-panel { min-width: 100%; max-width: 100%; flex: none; max-height: none; }
+            #indicators-list { max-height: 400px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 8px; }
+            .chart-panel { min-width: 100%; flex: none; overflow: visible; padding: 15px 10px; }
+            .chart-container { height: 350px; }
+            .d-flex.gap-2.flex-wrap.justify-content-end { justify-content: center !important; margin-top: 10px; }
+            .time-filter-container { flex-direction: column; align-items: stretch; }
+            .time-filter-container label { margin-left: 0 !important; margin-top: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="logga-titel-container">
+            <img src="../Img/Linkopingsloggo.png" alt="Linköpings kommun" class="logotyp" onerror="this.style.display='none'">
+            <h2 style="margin: 0; font-weight: 600;">📊 Indexkalkylator: Konkurrenskraft</h2>
+        </div>
+        <div>
+            <a href="anvandarmanual_konkurrens.html" class="tillbaka-btn" target="_blank" title="Läs om hur du använder verktyget och indikatorerna">📖 Användarguide</a>
+            <a href="../index.html" class="tillbaka-btn" title="Återvänd till portalens startmeny">🏠 Startmeny</a>
+        </div>
+    </div>
+
+    <div class="main-container" id="app-container" style="display: none;">
+        
+        <!-- VÄNSTERPANEL: Reglage -->
+        <div class="control-panel">
+            <div class="settings-group">
+                <h5 style="color: var(--primary-orange);">Mätmetod & Inställningar</h5>
+                
+                <div class="d-flex gap-2 mb-2">
+                    <div style="flex: 1;">
+                        <label class="form-label font-weight-bold">Beräkningslogik</label>
+                        <select class="form-select" id="calc-method" onchange="recalculateIndex()">
+                            <option value="basar">Utveckling över tid</option>
+                            <option value="riket">Jämför mot Riket</option>
+                        </select>
+                    </div>
+                    <div style="flex: 1;" id="basar-container">
+                        <label class="form-label font-weight-bold">Välj Basår</label>
+                        <select class="form-select" id="base-year" onchange="recalculateIndex()">
+                            <!-- Fylls dynamiskt -->
+                        </select>
+                    </div>
+                </div>
+
+                <label class="form-label font-weight-bold">Förinställt Index (Mall)</label>
+                <select class="form-select" id="preset-weights" onchange="applyPreset()">
+                    <option value="Standardvikt_kombination">Index: Kombination</option>
+                    <option value="Standardvikt_sysselsättning" selected>Index: Sysselsättning</option>
+                    <option value="Standardvikt_befolkning">Index: Befolkning</option>
+                    <option value="Standardvikt_relativ_styrka">Index: Relativ styrka</option>
+                    <option value="nollstall">Eget skapat index (Börja från noll)</option>
+                </select>
+            </div>
+
+            <!-- Verktygslåda för snabbval -->
+            <div class="mb-2 p-2 rounded" style="background-color: #f8f9fa; border: 1px solid #e9ecef; flex-shrink: 0;">
+                <div class="d-flex flex-wrap gap-1 justify-content-center mb-2">
+                    <button class="action-btn-sm" onclick="applyPreset()" title="Återställ till mallens originalvikter">🔄 Återställ</button>
+                    <button class="action-btn-sm" onclick="clearAllWeights()" title="Dra ner alla valda reglage till noll">🗑️ Nollställ</button>
+                    <button class="action-btn-sm" onclick="distributeEvenly()" title="Dela upp 1.00 jämnt på alla ibockade">⚖️ Fördela jämnt</button>
+                </div>
+                <!-- Spara & Ladda flyttade till en egen rad med förtydligad text -->
+                <div class="d-flex flex-wrap gap-1 justify-content-center pt-2" style="border-top: 1px dashed #ced4da;">
+                    <button class="action-btn-sm" onclick="sparaIndex()" id="btn-spara" title="Spara dina nuvarande reglage lokalt">💾 Spara nuvarande reglage</button>
+                    <button class="action-btn-sm" onclick="laddaIndex()" id="btn-ladda" title="Ladda ditt sparade index">📂 Ladda sparade</button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; flex-shrink: 0;">
+                <div class="form-check form-switch" style="font-size: 0.8rem; margin-bottom: 0;">
+                    <input class="form-check-input" type="checkbox" id="auto-balance">
+                    <label class="form-check-label text-muted" for="auto-balance" title="Fördelar automatiskt vikten jämnt när du klickar.">Auto-fördela jämnt</label>
+                </div>
+                <div class="form-check form-switch" style="font-size: 0.8rem; margin-bottom: 0;">
+                    <input class="form-check-input" type="checkbox" id="show-all-ind" onchange="applyPreset()">
+                    <label class="form-check-label text-muted" for="show-all-ind">Visa alla</label>
+                </div>
+            </div>
+            
+            <div id="indicators-list">
+                <!-- Javascript fyller denna lista -->
+            </div>
+
+            <div id="weight-sum-box" class="sum-box">
+                Summa vald vikt: <span id="weight-sum-val">0.00</span>
+                <button id="normalize-btn" class="btn btn-sm btn-outline-success mt-2 w-100" style="display:none; padding: 2px;" onclick="normalizeWeights()">⚖️ Balansera till 1.00</button>
+            </div>
+            <div id="weight-warning" class="sum-warning">
+                ⚠️ Vikten måste vara exakt 1.00
+            </div>
+        </div>
+
+        <!-- HÖGERPANEL: Graf -->
+        <div class="chart-panel">
+            <!-- HEADER OCH VERKTYG SEPARERADE FRÅN VALDA REGIONER -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 10px;">
+                <h4 style="margin: 0; font-size: 1.2rem;">Resultat: Sammanvägt Index</h4>
+                
+                <div class="d-flex gap-2 flex-wrap justify-content-end align-items-center">
+                    <div class="btn-group me-1" style="display: flex;">
+                        <button type="button" id="vy-linje" class="view-btn active" onclick="bytVy('linje')" title="Standard linjediagram">📈 Linje</button>
+                        <button type="button" id="vy-tabell" class="view-btn" onclick="bytVy('tabell')" title="Färgkodad datatabell över alla år">▦ Tabell</button>
+                    </div>
+                    
+                    <button class="action-btn-sm me-1" onclick="laddaNerCSV()" title="Ladda ner datan i diagrammet som en Excel-kompatibel fil">📥 Spara CSV</button>
+
+                    <button id="extrapolate-btn" class="action-btn-sm" style="color: #0d6efd; border-color: #0d6efd;" onclick="toggleExtrapolation()" title="Projicera trenden 5 år framåt">
+                        🚀 Extrapolera
+                    </button>
+                    <button class="action-btn-sm" style="color: #dc3545; border-color: #dc3545;" onclick="resetRegions()" title="Återställ till standardvy">
+                        🔄 Återställ
+                    </button>
+                    <div class="dropdown">
+                        <button class="action-btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            ➕ Jämför kommun
+                        </button>
+                        <ul class="dropdown-menu p-2" id="region-dropdown" style="max-height: 400px; overflow-y: auto; width: 280px; font-size: 0.85rem;">
+                            <!-- Fylls med JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VALDA REGIONER LIGGER NU HÄR UNDER SÅ KNAPPARNA INTE HOPPAR -->
+            <div id="active-regions-container" style="margin-bottom: 15px; min-height: 34px;"></div>
+
+            <div class="time-filter-container">
+                <label for="filter-start-year">Visa graf från år:</label>
+                <select id="filter-start-year" onchange="recalculateIndex()">
+                    <!-- Fylls dynamiskt -->
+                </select>
+                
+                <label for="filter-end-year" style="margin-left: 15px;">Till år:</label>
+                <select id="filter-end-year" onchange="recalculateIndex()">
+                    <!-- Fylls dynamiskt -->
+                </select>
+            </div>
+            
+            <div class="chart-container" id="chart-wrapper">
+                <canvas id="indexChart"></canvas>
+            </div>
+
+            <div class="table-container" id="table-wrapper">
+                <div id="heatmap-container"></div>
+            </div>
+            
+            <div style="margin-top: 15px; font-size: 0.8rem; color: #666; line-height: 1.4;">
+                <strong>Hur fungerar matten?</strong> Skriptet normaliserar varje indikator baserat på vald logik (ex: <i>Värde / Basår * 100</i>). Om polariteten är Låg (t.ex. arbetslöshet) inverteras kvoten. Om data saknas för en region hålls det del-indexet konstant (100) för att inte straffa regionen orättvist. Slutligen multipliceras alla valda indikatorers index med sin respektive vikt och summeras.
+            </div>
+        </div>
+
+    </div>
+    <div id="loading-msg" class="loading">Laddar data och bygger kalkylatorn...</div>
+
+    <script>
+        // ==========================================
+        // ⚙️ STANDARDINSTÄLLNINGAR FÖR TIDSFILTREN
+        // ==========================================
+        const DEFAULT_BASE_YEAR = 2010;  
+        const DEFAULT_START_YEAR = 2010; 
+        // ==========================================
+
+        let rawData = [];
+        let indicatorsConfig = [];
+        let myChart = null;
+        let defaultRegions = ['Linköping', 'Riket', 'Tolv största'];
+        let activeRegions = [...defaultRegions]; 
+        let allRegions = [];
+        let sortedRegions = []; 
+        let allYears = [];
+        
+        let showExtrapolation = false;
+        let previousStartYear = null; 
+        
+        let aktuellVy = 'linje'; 
+        let globalChartLabels = [];
+        let globalChartDatasets = [];
+
+        window.addEventListener('load', () => {
+            Promise.all([
+                fetch('konkurrens_vikter.csv').then(res => {
+                    if (!res.ok) throw new Error("Hittade inte vikter.csv");
+                    return res.text();
+                }),
+                fetch('konkurrens_data.csv').then(res => {
+                    if (!res.ok) throw new Error("Hittade inte data.csv");
+                    return res.text();
+                })
+            ]).then(([vikterText, dataText]) => {
+                
+                Papa.parse(vikterText.trim().replace(/^\uFEFF/i, ''), {
+                    header: true, delimiter: ";", skipEmptyLines: true,
+                    transformHeader: function(h) { return h.replace(/^\uFEFF/i, '').trim(); },
+                    complete: function(res) {
+                        indicatorsConfig = res.data.filter(row => row.Indikator !== 'Summa' && row.Indikator !== 'Totalt');
+                    }
+                });
+
+                Papa.parse(dataText.trim().replace(/^\uFEFF/i, ''), {
+                    header: true, delimiter: ";", skipEmptyLines: true,
+                    transformHeader: function(h) { return h.replace(/^\uFEFF/i, '').trim(); },
+                    complete: function(res) {
+                        rawData = res.data;
+                        
+                        allRegions = [...new Set(rawData.map(d => d.Kommun))].filter(Boolean);
+                        allRegions = allRegions.filter(r => r !== "Sex till tolv minus");
+                        sortRegions(); 
+                        
+                        allYears = [...new Set(rawData.map(d => parseInt(d.År)))].filter(y => !isNaN(y)).sort();
+                        populateTimeFilterDropdowns(); 
+                        
+                        document.getElementById('loading-msg').style.display = 'none';
+                        document.getElementById('app-container').style.display = 'flex';
+                        
+                        buildRegionDropdown();
+                        applyPreset(); 
+                    }
+                });
+            }).catch(err => {
+                document.getElementById('loading-msg').innerHTML = "Kunde inte hitta datafilerna! <br><br>Se till att 'konkurrens_vikter.csv' och 'konkurrens_data.csv' ligger i samma mapp som denna HTML-fil.";
+                console.error(err);
+            });
+        });
+
+        // ----------------------------------------------------
+        // VERKTYGS-FUNKTIONER FÖR SNABBVAL OCH VYER
+        // ----------------------------------------------------
+        
+        function bytVy(nyVy) {
+            aktuellVy = nyVy;
+            document.getElementById('vy-linje').classList.remove('active');
+            document.getElementById('vy-tabell').classList.remove('active');
+            document.getElementById('vy-' + nyVy).classList.add('active');
+            
+            if (nyVy === 'tabell') {
+                document.getElementById('chart-wrapper').style.display = 'none';
+                document.getElementById('table-wrapper').style.display = 'block';
+            } else {
+                document.getElementById('chart-wrapper').style.display = 'block';
+                document.getElementById('table-wrapper').style.display = 'none';
+            }
+            recalculateIndex(); 
+        }
+
+        function sparaIndex() {
+            let sparatData = {
+                metod: document.getElementById('calc-method').value,
+                basar: document.getElementById('base-year').value,
+                regioner: activeRegions,
+                vikter: []
+            };
+            
+            indicatorsConfig.forEach((ind, index) => {
+                let w = parseFloat(document.getElementById(`weight_${index}`).value);
+                if (w > 0) {
+                    sparatData.vikter.push({ id: index, weight: w });
+                }
+            });
+            
+            localStorage.setItem('linkoping_konkurrens_index', JSON.stringify(sparatData));
+            
+            let btn = document.getElementById('btn-spara');
+            let oldText = btn.innerHTML;
+            btn.innerHTML = "✅ Sparat!";
+            btn.style.backgroundColor = "#d4edda";
+            setTimeout(() => { btn.innerHTML = oldText; btn.style.backgroundColor = ""; }, 2000);
+        }
+
+        function laddaIndex() {
+            let json = localStorage.getItem('linkoping_konkurrens_index');
+            if (!json) {
+                let btn = document.getElementById('btn-ladda');
+                let oldText = btn.innerHTML;
+                btn.innerHTML = "❌ Inget sparat!";
+                btn.style.backgroundColor = "#f8d7da";
+                setTimeout(() => { btn.innerHTML = oldText; btn.style.backgroundColor = ""; }, 2000);
+                return;
+            }
+            
+            let sparatData = JSON.parse(json);
+            document.getElementById('calc-method').value = sparatData.metod;
+            document.getElementById('base-year').value = sparatData.basar;
+            activeRegions = sparatData.regioner;
+            
+            document.getElementById('preset-weights').value = "nollstall";
+            applyPreset(); 
+            
+            clearAllWeights(); 
+            sparatData.vikter.forEach(v => {
+                let slider = document.getElementById(`weight_${v.id}`);
+                if (slider) {
+                    slider.value = v.weight;
+                    updateWeightLabel(v.id, false);
+                }
+            });
+            
+            buildRegionDropdown();
+            recalculateIndex();
+            
+            let btn = document.getElementById('btn-ladda');
+            let oldText = btn.innerHTML;
+            btn.innerHTML = "✅ Laddat!";
+            btn.style.backgroundColor = "#d4edda";
+            setTimeout(() => { btn.innerHTML = oldText; btn.style.backgroundColor = ""; }, 2000);
+        }
+
+        function laddaNerCSV() {
+            if (globalChartLabels.length === 0 || globalChartDatasets.length === 0) return;
+            
+            let csvContent = "\uFEFFÅr"; 
+            globalChartDatasets.forEach(ds => {
+                csvContent += ";" + ds.label;
+            });
+            csvContent += "\n";
+            
+            globalChartLabels.forEach((ar, i) => {
+                let rad = [ar];
+                globalChartDatasets.forEach(ds => {
+                    let val = ds.data[i];
+                    if (val !== null && val !== undefined) {
+                        rad.push(val.toString().replace('.', ','));
+                    } else {
+                        rad.push("");
+                    }
+                });
+                csvContent += rad.join(";") + "\n";
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' }); 
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement("a"); 
+            link.setAttribute("href", url); 
+            link.setAttribute("download", `Konkurrenskraftsindex_Export.csv`); 
+            document.body.appendChild(link); 
+            link.click(); 
+            document.body.removeChild(link);
+        }
+
+        function clearAllWeights() {
+            indicatorsConfig.forEach((ind, index) => {
+                if (ind._status !== 4) { 
+                    document.getElementById(`weight_${index}`).value = 0;
+                    document.getElementById(`chk_${index}`).checked = false;
+                    updateWeightLabel(index, false); 
+                }
+            });
+            recalculateIndex();
+        }
+
+        function distributeEvenly() {
+            let activeIndices = [];
+            indicatorsConfig.forEach((ind, index) => {
+                if (ind._status !== 4 && document.getElementById(`chk_${index}`).checked) {
+                    activeIndices.push(index);
+                }
+            });
+
+            if (activeIndices.length === 0) {
+                recalculateIndex();
+                return;
+            }
+
+            let equalWeight = 1.0 / activeIndices.length;
+            let remainder = 1.0;
+
+            activeIndices.forEach((idx, i) => {
+                let w = parseFloat(equalWeight.toFixed(2));
+                if (i === activeIndices.length - 1) {
+                    w = parseFloat(remainder.toFixed(2));
+                }
+                remainder -= w;
+                document.getElementById(`weight_${idx}`).value = w;
+                updateWeightLabel(idx, false);
+            });
+
+            recalculateIndex();
+        }
+
+        function selectAllAndDistribute() {
+            indicatorsConfig.forEach((ind, index) => {
+                if (ind._status !== 4) { 
+                    document.getElementById(`chk_${index}`).checked = true;
+                    document.getElementById(`weight_${index}`).value = 0.01;
+                }
+            });
+            distributeEvenly();
+        }
+
+        function toggleExtrapolation() {
+            showExtrapolation = !showExtrapolation;
+            let btn = document.getElementById('extrapolate-btn');
+            let startYearSelect = document.getElementById('filter-start-year');
+            let baseYearSelect = document.getElementById('base-year');
+
+            if(showExtrapolation) {
+                btn.style.backgroundColor = '#0d6efd';
+                btn.style.color = 'white';
+                btn.innerHTML = '🚀 Dölj Extrapolering';
+
+                previousStartYear = startYearSelect.value;
+                if (Array.from(startYearSelect.options).some(opt => opt.value === baseYearSelect.value)) {
+                    startYearSelect.value = baseYearSelect.value;
+                }
+
+            } else {
+                btn.style.backgroundColor = 'transparent';
+                btn.style.color = '#0d6efd';
+                btn.innerHTML = '🚀 Extrapolera';
+
+                if (previousStartYear !== null) {
+                    startYearSelect.value = previousStartYear;
+                    previousStartYear = null;
+                }
+            }
+            recalculateIndex();
+        }
+
+        function sortRegions() {
+            let singleKommuner = [];
+            let specialGroups = [];
+            let lanet = "";
+            let riket = "";
+
+            const definedGroupOrder = [
+                "Tolv största",
+                "Tre största",
+                "Fyra stora",
+                "Fem till tolv",
+                "Sex till tolv",
+                "Sex till tolv minus tio",
+                "Tolv största minus fem"
+            ];
+
+            allRegions.forEach(reg => {
+                let rLower = reg.toLowerCase();
+                if (rLower === 'riket' || rLower === 'sverige') { riket = reg; } 
+                else if (rLower === 'östergötlands län' || (rLower.includes('län') && !rLower.includes('exkl'))) { lanet = reg; } 
+                else if (definedGroupOrder.includes(reg) || rLower.includes('exkl') || rLower.includes('minus') || rLower.includes('lkpg')) { specialGroups.push(reg); } 
+                else { singleKommuner.push(reg); }
+            });
+
+            singleKommuner.sort();
+
+            specialGroups.sort((a, b) => {
+                let idxA = definedGroupOrder.indexOf(a);
+                let idxB = definedGroupOrder.indexOf(b);
+                if (idxA === -1) idxA = 999;
+                if (idxB === -1) idxB = 999;
+                if (idxA !== idxB) return idxA - idxB;
+                return a.localeCompare(b);
+            });
+
+            sortedRegions = [...singleKommuner];
+            if (lanet) sortedRegions.push(lanet);
+            if (riket) sortedRegions.push(riket);
+            sortedRegions = sortedRegions.concat(specialGroups);
+        }
+
+        function getLongName(regionName) {
+            const names = {
+                "Tre största": "Storstäder (3)",
+                "Fyra stora": "Storstäder (4)",
+                "Fem till tolv": "Större kommun (5-12)", 
+                "Sex till tolv": "Större k:n exkl Lkpg",
+                "Sex till tolv minus tio": "Större k:n exkl Lkpg-Nkpg",
+                "Tolv största minus fem": "Tolv största exkl Lkpg",
+                "Lkpg-Nkpg": "Linköping-Norrköping"
+            };
+            return names[regionName] || regionName;
+        }
+
+        function getShortName(regionName) {
+            if (regionName === "Linköping") return "Linköping";
+            if (regionName === "Norrköping") return "Norrköping";
+
+            const names = {
+                "Tolv största minus fem": "Tolv största exkl Lkpg",
+                "Sex till tolv minus tio": "Sex till tolv exkl Lkpg-Nkpg",
+                "Sex till tolv": "Sex till tolv exkl Lkpg",
+                "Lkpg-Nkpg": "Lkpg-Nkpg"
+            };
+            
+            let short = names[regionName] || regionName;
+            short = short.replace(/Linköping/g, "Lkpg");
+            short = short.replace(/Norrköping/g, "Nkpg");
+            short = short.replace(/ exklusive /g, " exkl ");
+            short = short.replace(/Större kommuner/g, "Större k:n");
+            return short;
+        }
+
+        function populateTimeFilterDropdowns() {
+            let baseYearSelect = document.getElementById('base-year');
+            let startYearSelect = document.getElementById('filter-start-year');
+            let endYearSelect = document.getElementById('filter-end-year');
+            
+            baseYearSelect.innerHTML = '';
+            startYearSelect.innerHTML = '';
+            endYearSelect.innerHTML = '';
+
+            const allowedBaseYears = [2000, 2010, 2015, 2020, 2025];
+            
+            allowedBaseYears.forEach(year => {
+                if (allYears.includes(year)) {
+                    let baseOpt = document.createElement('option');
+                    baseOpt.value = year;
+                    baseOpt.text = year;
+                    if (year === DEFAULT_BASE_YEAR) baseOpt.selected = true; 
+                    baseYearSelect.appendChild(baseOpt);
+                }
+            });
+
+            if (!allowedBaseYears.includes(DEFAULT_BASE_YEAR) || !allYears.includes(DEFAULT_BASE_YEAR)) {
+                if (baseYearSelect.options.length > 0) baseYearSelect.options[0].selected = true;
+            }
+
+            allYears.forEach((year, index) => {
+                let startOpt = document.createElement('option');
+                startOpt.value = year;
+                startOpt.text = year;
+                if (year === DEFAULT_START_YEAR) startOpt.selected = true; 
+                startYearSelect.appendChild(startOpt);
+
+                let endOpt = document.createElement('option');
+                endOpt.value = year;
+                endOpt.text = year;
+                if (index === allYears.length - 1) endOpt.selected = true; 
+                endYearSelect.appendChild(endOpt);
+            });
+            
+            if (!allYears.includes(DEFAULT_START_YEAR) && startYearSelect.options.length > 0) {
+                startYearSelect.options[0].selected = true;
+            }
+        }
+
+        // ========================================================
+        // HÄMTA SYMBOL FÖR KATEGORI
+        // ========================================================
+        function getCategorySymbol(kategori) {
+            if (!kategori) return "";
+            let k = kategori.trim().toLowerCase();
+            if (k.includes("tillväxt") || k.includes("dynamik")) return "📈";
+            if (k.includes("volym") || k.includes("kapacitet")) return "🏢";
+            if (k.includes("struktur") || k.includes("kvalitet")) return "💎";
+            if (k.includes("ekonomi") || k.includes("välfärd")) return "💰";
+            if (k.includes("balans") || k.includes("jämvikt")) return "⚖️";
+            return "📌"; 
+        }
+
+        // ========================================================
+        // UPPDATERAD: DRIVER HELA GRUPPERINGEN OCH LIST-BYGGET
+        // Platt lista för "Valda", Grupperat för "Komplement"
+        // ========================================================
+        function buildControlPanel() {
+            const listDiv = document.getElementById('indicators-list');
+            listDiv.innerHTML = '';
+
+            let currentStatus = -1;
+            let currentKategori = "";
+            let presetCol = document.getElementById('preset-weights').value;
+
+            indicatorsConfig.forEach((ind, index) => {
+                const polIcon = ind.Polaritet === 'Låg' ? '📉' : '📈';
+                let isHidden = (ind._status === 4);
+                
+                if (!isHidden) {
+                    if (ind._status !== currentStatus) {
+                        currentStatus = ind._status;
+                        let statusName = currentStatus === 1 ? "✅ VALDA I MALLEN" : "➕ TILLGÄNGLIGA KOMPLEMENT";
+                        if (presetCol === "nollstall") statusName = "VÄLJ BLAND TILLGÄNGLIGA INDIKATORER";
+                        
+                        listDiv.insertAdjacentHTML('beforeend', `<div class="status-header">${statusName}</div>`);
+                        currentKategori = ""; // Nollställ för det nya blocket
+                    }
+
+                    let karaktar = ind.Karaktär && ind.Karaktär.trim() !== "" ? ind.Karaktär.trim() : "Övriga indikatorer";
+                    let sym = getCategorySymbol(karaktar);
+
+                    // Rendera Rubrik för Kategori ENDAST om det är komplement ELLER "Börja från noll" är valt
+                    if ((ind._status !== 1 || presetCol === "nollstall") && karaktar !== currentKategori) {
+                        currentKategori = karaktar;
+                        listDiv.insertAdjacentHTML('beforeend', `<div class="kategori-header">${sym} ${currentKategori}</div>`);
+                    }
+
+                    let displayStyle = isHidden ? 'none' : 'flex';
+                    let inactiveClass = (ind._tempWeight > 0) ? '' : 'inactive';
+
+                    // Litet diskret tecken efter namnet för de som ligger i den platta listan
+                    let displayKlartext = ind.Klartext;
+                    if (ind._status === 1 && presetCol !== "nollstall") {
+                        displayKlartext = `${ind.Klartext} <span title="${karaktar}" style="font-size:0.85em; opacity:0.8; margin-left:3px;">${sym}</span>`;
+                    }
+
+                    const html = `
+                        <div class="indicator-row ${inactiveClass}" id="row_${index}" style="display: ${displayStyle};">
+                            <div class="indicator-name">
+                                <input class="form-check-input" type="checkbox" id="chk_${index}" onchange="handleCheckboxChange(${index})">
+                                <label class="form-check-label" for="chk_${index}" title="Polaritet: ${ind.Polaritet}">
+                                    ${polIcon} ${displayKlartext}
+                                </label>
+                            </div>
+                            <div class="indicator-weight">
+                                <input type="range" id="weight_${index}" min="0" max="1" step="0.01" value="0" oninput="handleSliderChange(${index})">
+                                <span class="weight-val" id="val_${index}">0.00</span>
+                            </div>
+                        </div>
+                    `;
+                    listDiv.insertAdjacentHTML('beforeend', html);
+                }
+            });
+        }
+
+        function handleSliderChange(index) {
+            updateWeightLabel(index, false);
+            recalculateIndex(); 
+        }
+
+        function handleCheckboxChange(index) {
+            const chk = document.getElementById(`chk_${index}`);
+            const slider = document.getElementById(`weight_${index}`);
+
+            if (!chk.checked) {
+                slider.value = 0;
+            } else if (slider.value === "0" || slider.value == 0) {
+                slider.value = 0.05; 
+            }
+            updateWeightLabel(index, false);
+
+            if (document.getElementById('auto-balance').checked) {
+                distributeEvenly(); 
+            } else {
+                recalculateIndex();
+            }
+        }
+
+        function updateWeightLabel(index, triggerRecalc = true) {
+            const val = document.getElementById(`weight_${index}`).value;
+            const chk = document.getElementById(`chk_${index}`);
+            const row = document.getElementById(`row_${index}`);
+            
+            if (document.getElementById(`val_${index}`)) {
+                document.getElementById(`val_${index}`).innerText = parseFloat(val).toFixed(2);
+            }
+            
+            if (val > 0) {
+                if(chk) chk.checked = true;
+                if(row) row.classList.remove('inactive');
+            } else {
+                if(chk) chk.checked = false;
+                if(row) row.classList.add('inactive');
+            }
+
+            if(triggerRecalc) recalculateIndex();
+        }
+
+        function buildRegionDropdown() {
+            const dropdown = document.getElementById('region-dropdown');
+            dropdown.innerHTML = '';
+            
+            let passedKommuner = false;
+
+            sortedRegions.forEach(region => {
+                if (!passedKommuner && (region.toLowerCase().includes('län') || region.toLowerCase() === 'riket' || region.includes('stora') || region.includes('exkl') || region.includes('Lkpg'))) {
+                    let divider = document.createElement('li');
+                    divider.innerHTML = `<hr class="dropdown-divider">`;
+                    dropdown.appendChild(divider);
+                    passedKommuner = true;
+                }
+
+                let isChecked = activeRegions.includes(region) ? 'checked' : '';
+                let displayName = getLongName(region);
+
+                let li = document.createElement('li');
+                li.innerHTML = `
+                    <label class="dropdown-item" style="cursor: pointer;" onclick="event.stopPropagation()">
+                        <input type="checkbox" class="form-check-input me-2" value="${region}" id="cb_reg_${region}" ${isChecked} onchange="toggleRegion('${region}')">
+                        ${displayName}
+                    </label>
+                `;
+                dropdown.appendChild(li);
+            });
+            renderActiveRegionChips();
+        }
+
+        function renderActiveRegionChips() {
+            const container = document.getElementById('active-regions-container');
+            container.innerHTML = '';
+            
+            activeRegions.forEach(region => {
+                let extraStyle = "";
+                if (region === "Linköping") extraStyle = "background-color: #ffe0b2; color: #d35400; border-color: #d35400;";
+                if (region === "Riket") extraStyle = "background-color: #e2e3e5; color: #495057; border-color: #adb5bd;";
+                
+                let shortName = getShortName(region);
+
+                let chip = `<div class="region-chip" style="${extraStyle}">
+                                ${shortName} <span class="remove-btn" onclick="toggleRegion('${region}')">×</span>
+                            </div>`;
+                container.insertAdjacentHTML('beforeend', chip);
+            });
+        }
+
+        function toggleRegion(region) {
+            if (activeRegions.includes(region)) {
+                activeRegions = activeRegions.filter(r => r !== region);
+                let cb = document.getElementById(`cb_reg_${region}`);
+                if(cb) cb.checked = false;
+            } else {
+                activeRegions.push(region);
+                let cb = document.getElementById(`cb_reg_${region}`);
+                if(cb) cb.checked = true;
+            }
+            renderActiveRegionChips();
+            recalculateIndex();
+        }
+
+        function resetRegions() {
+            activeRegions = [...defaultRegions];
+            buildRegionDropdown(); 
+            recalculateIndex();
+        }
+
+        function applyPreset() {
+            const presetCol = document.getElementById('preset-weights').value;
+            const showAll = document.getElementById('show-all-ind').checked;
+            const calcMethodSelect = document.getElementById('calc-method');
+
+            // NY LOGIK FÖR AUTO-BYTE AV BERÄKNINGSLOGIK
+            if (presetCol === "Standardvikt_relativ_styrka") {
+                calcMethodSelect.value = "riket";
+            } else {
+                calcMethodSelect.value = "basar";
+            }
+            document.getElementById('basar-container').style.display = calcMethodSelect.value === 'basar' ? 'block' : 'none';
+            
+            indicatorsConfig.forEach((ind, idx) => {
+                ind.originalIndex = ind.originalIndex ?? idx; 
+
+                let visibilityRef = presetCol === "nollstall" ? "Standardvikt_kombination" : presetCol;
+                let weightRaw = ind[visibilityRef];
+                let valStr = weightRaw !== undefined ? weightRaw.toString().trim().toUpperCase() : "";
+                
+                if (valStr === "Z") {
+                    ind._status = showAll ? 3 : 4; 
+                    ind._tempWeight = 0;
+                } else if (presetCol === "nollstall") {
+                    ind._status = 2; 
+                    ind._tempWeight = 0; 
+                } else {
+                    if (valStr === ".." || valStr === "") {
+                        ind._status = showAll ? 3 : 4; 
+                        ind._tempWeight = 0;
+                    } else if (valStr === "X") {
+                        ind._status = 2; 
+                        ind._tempWeight = 0;
+                    } else {
+                        let w = parseFloat(valStr.replace(',', '.'));
+                        ind._tempWeight = isNaN(w) ? 0 : w;
+                        ind._status = ind._tempWeight > 0 ? 1 : 2; 
+                    }
+                }
+            });
+
+            const categoryOrder = {
+                "Tillväxt och Dynamik": 1,
+                "Volym och Kapacitet": 2,
+                "Struktur och Kvalitet": 3,
+                "Ekonomi och Välfärd": 4,
+                "Balans och Jämvikt": 5
+            };
+
+            indicatorsConfig.sort((a, b) => {
+                if (a._status !== b._status) return a._status - b._status;
+                
+                // Om de har status 1 (Valda i mall) och vi INTE bygger från noll, 
+                // sortera dem i deras ursprungliga Excelfil-ordning (ingen kategorisering).
+                if (a._status === 1 && presetCol !== "nollstall") {
+                    return a.originalIndex - b.originalIndex;
+                }
+                
+                let karA = a.Karaktär && a.Karaktär.trim() !== "" ? a.Karaktär.trim() : "Övriga indikatorer";
+                let karB = b.Karaktär && b.Karaktär.trim() !== "" ? b.Karaktär.trim() : "Övriga indikatorer";
+                
+                let orderA = categoryOrder[karA] || 99;
+                let orderB = categoryOrder[karB] || 99;
+                
+                if (orderA !== orderB) return orderA - orderB;
+                if (karA !== karB) return karA.localeCompare(karB);
+                
+                return a.originalIndex - b.originalIndex;
+            });
+
+            buildControlPanel();
+
+            indicatorsConfig.forEach((ind, index) => {
+                const chk = document.getElementById(`chk_${index}`);
+                const slider = document.getElementById(`weight_${index}`);
+                
+                if (slider && chk) {
+                    slider.value = ind._tempWeight;
+                    chk.checked = ind._tempWeight > 0;
+                    if (document.getElementById(`val_${index}`)) {
+                        document.getElementById(`val_${index}`).innerText = ind._tempWeight.toFixed(2);
+                    }
+                }
+            });
+
+            recalculateIndex();
+        }
+
+        function normalizeWeights() {
+            let activeIndices = [];
+            let currentSum = 0;
+
+            indicatorsConfig.forEach((ind, index) => {
+                const chk = document.getElementById(`chk_${index}`);
+                if (chk && chk.checked) {
+                    activeIndices.push(index);
+                    currentSum += parseFloat(document.getElementById(`weight_${index}`).value);
+                }
+            });
+
+            if (activeIndices.length === 0) return; 
+
+            let newWeights = {};
+            let newSum = 0;
+
+            if (currentSum === 0) {
+                let equalWeight = 1.0 / activeIndices.length;
+                activeIndices.forEach(idx => {
+                    let w = parseFloat(equalWeight.toFixed(2));
+                    newWeights[idx] = w;
+                    newSum += w;
+                });
+            } else {
+                activeIndices.forEach(idx => {
+                    let oldW = parseFloat(document.getElementById(`weight_${idx}`).value);
+                    let w = parseFloat((oldW / currentSum).toFixed(2));
+                    newWeights[idx] = w;
+                    newSum += w;
+                });
+            }
+
+            let diff = parseFloat((1.00 - newSum).toFixed(2));
+            if (diff !== 0 && activeIndices.length > 0) {
+                let maxIdx = activeIndices[0];
+                activeIndices.forEach(idx => {
+                    if (newWeights[idx] > newWeights[maxIdx]) {
+                        maxIdx = idx;
+                    }
+                });
+                newWeights[maxIdx] = parseFloat((newWeights[maxIdx] + diff).toFixed(2));
+            }
+
+            activeIndices.forEach(idx => {
+                let slider = document.getElementById(`weight_${idx}`);
+                slider.value = newWeights[idx];
+                updateWeightLabel(idx, false);
+            });
+
+            recalculateIndex();
+        }
+
+        function recalculateIndex() {
+            const method = document.getElementById('calc-method').value;
+            const baseYear = parseInt(document.getElementById('base-year').value);
+            
+            const startYear = parseInt(document.getElementById('filter-start-year').value);
+            const endYear = parseInt(document.getElementById('filter-end-year').value);
+            
+            let sumOfWeights = 0;
+            let activeConfigs = [];
+
+            indicatorsConfig.forEach((ind, index) => {
+                const chk = document.getElementById(`chk_${index}`);
+                const slider = document.getElementById(`weight_${index}`);
+                if (chk && slider && chk.checked) {
+                    let weight = parseFloat(slider.value);
+                    if (weight > 0) {
+                        activeConfigs.push({ indName: ind.Indikator, weight: weight, polarity: ind.Polaritet });
+                        sumOfWeights += weight;
+                    }
+                }
+            });
+
+            let sumBox = document.getElementById('weight-sum-box');
+            let sumValDisplay = document.getElementById('weight-sum-val');
+            let warningMsg = document.getElementById('weight-warning');
+            let normalizeBtn = document.getElementById('normalize-btn'); 
+            
+            sumValDisplay.innerText = sumOfWeights.toFixed(2);
+
+            if (Math.abs(sumOfWeights - 1.0) > 0.001 && sumOfWeights >= 0 && activeConfigs.length > 0) {
+                sumBox.style.backgroundColor = '#ffebee';
+                sumBox.style.color = '#c62828';
+                sumBox.style.borderColor = '#ef9a9a';
+                warningMsg.style.display = 'block';
+                normalizeBtn.style.display = 'block'; 
+            } else {
+                sumBox.style.backgroundColor = '#e8f5e9';
+                sumBox.style.color = '#2e7d32';
+                sumBox.style.borderColor = '#a5d6a7';
+                warningMsg.style.display = 'none';
+                normalizeBtn.style.display = 'none'; 
+            }
+
+            if (sumOfWeights === 0 || activeRegions.length === 0) {
+                drawChart([], []); return; 
+            }
+
+            let chartYears = allYears.filter(y => y >= startYear && y <= endYear);
+            let chartLabels = chartYears.map(y => y.toString());
+
+            if (showExtrapolation && chartYears.length > 0) {
+                let lastY = chartYears[chartYears.length - 1];
+                for (let i = 1; i <= 5; i++) {
+                    chartLabels.push((lastY + i) + " (Proj)");
+                }
+            }
+
+            let datasets = [];
+            const colors = { 'Linköping': '#d35400', 'Riket': '#495057', 'Uppsala': '#005596', 'Tre största': '#009E73', 'Tolv största': '#6f42c1', 'Östergötlands län': '#e83e8c', 'Stockholm': '#17a2b8', 'Norrköping': '#fd7e14' };
+            const pointStyles = ['circle', 'triangle', 'rectRounded', 'rectRot', 'star', 'cross', 'dash'];
+
+            activeRegions.forEach((region, index) => {
+                let histData = [];
+                let validPoints = []; 
+                
+                chartYears.forEach(year => {
+                    let yearTotalScore = 0;
+                    let validIndicatorsCount = 0;
+
+                    activeConfigs.forEach(conf => {
+                        let valObj = rawData.find(d => d.Kommun === region && d.År == year && d.Indikator === conf.indName);
+                        let val = valObj ? parseFloat(valObj.Värde) : null;
+
+                        // ==============================================================
+                        // KÄRNLOGIK FÖR INDEX: KONSTANTHÅLLNING AV SAKNAD DATA
+                        // ==============================================================
+                        let indScore = null;
+
+                        if (val !== null && !isNaN(val)) {
+                            if (method === 'basar') {
+                                let baseObj = rawData.find(d => d.Kommun === region && d.År == baseYear && d.Indikator === conf.indName);
+                                let baseVal = baseObj ? parseFloat(baseObj.Värde) : null;
+
+                                if (baseVal !== null && baseVal !== 0) {
+                                    if (conf.polarity === 'Låg') {
+                                        indScore = val !== 0 ? (baseVal / val) * 100 : 100; 
+                                    } else {
+                                        indScore = (val / baseVal) * 100;
+                                    }
+                                }
+                            } 
+                            else if (method === 'riket') {
+                                let riketObj = rawData.find(d => d.Kommun === 'Riket' && d.År == year && d.Indikator === conf.indName);
+                                let riketVal = riketObj ? parseFloat(riketObj.Värde) : null;
+
+                                if (riketVal !== null && riketVal !== 0) {
+                                    if (conf.polarity === 'Låg') {
+                                        indScore = val !== 0 ? (riketVal / val) * 100 : 100; 
+                                    } else {
+                                        indScore = (val / riketVal) * 100;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (indScore === null) {
+                            indScore = 100;
+                        }
+
+                        yearTotalScore += (indScore * conf.weight);
+                        validIndicatorsCount++;
+                    });
+
+                    if (validIndicatorsCount > 0) {
+                        let val = yearTotalScore / sumOfWeights;
+                        histData.push(val);
+                        validPoints.push({x: year, y: val});
+                    } else {
+                        histData.push(null);
+                    }
+                });
+
+                let projData = [];
+                if (showExtrapolation) {
+                    let trendPoints = validPoints.slice(-5);
+                    
+                    if (trendPoints.length >= 2) {
+                        let startX = trendPoints[0].x; 
+                        let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+                        let n = trendPoints.length;
+                        
+                        trendPoints.forEach(p => {
+                            let nx = p.x - startX;
+                            sumX += nx;
+                            sumY += p.y;
+                            sumXY += nx * p.y;
+                            sumXX += nx * nx;
+                        });
+                        
+                        let denominator = (n * sumXX - sumX * sumX);
+                        let slope = denominator === 0 ? 0 : (n * sumXY - sumX * sumY) / denominator;
+                        let intercept = (sumY - slope * sumX) / n;
+
+                        let lastY = chartYears[chartYears.length - 1];
+                        for (let i = 1; i <= 5; i++) {
+                            let projYear = lastY + i;
+                            let nx = projYear - startX;
+                            let projVal = slope * nx + intercept;
+                            projData.push(projVal);
+                        }
+                    } else {
+                        let fallback = validPoints.length > 0 ? validPoints[validPoints.length - 1].y : null;
+                        for (let i = 0; i < 5; i++) projData.push(fallback);
+                    }
+                }
+
+                let regionData = histData.concat(projData);
+                let pStyle = pointStyles[index % pointStyles.length];
+                let legendName = getLongName(region);
+
+                datasets.push({
+                    label: legendName,
+                    data: regionData,
+                    borderColor: colors[region] || 'hsl(' + Math.floor(Math.random()*360) + ', 70%, 50%)',
+                    backgroundColor: (colors[region] || 'hsl(' + Math.floor(Math.random()*360) + ', 70%, 50%)').replace(')', ', 0.6)').replace('hsl', 'hsla'),
+                    borderWidth: region === 'Linköping' ? 4 : 2,
+                    borderDash: region === 'Riket' && !showExtrapolation ? [5, 5] : [],
+                    tension: 0.1,
+                    pointStyle: pStyle,
+                    pointRadius: pStyle === 'circle' ? 3 : 5, 
+                    pointHoverRadius: 8,
+                    showLine: true, 
+                    segment: {
+                        borderDash: ctx => {
+                            if (region === 'Riket') return [5, 5];
+                            if (showExtrapolation && ctx.p1DataIndex >= chartYears.length) return [5, 5];
+                            return undefined;
+                        }
+                    }
+                });
+            });
+
+            // Spara data globalt för CSV och vyer
+            globalChartLabels = chartLabels;
+            globalChartDatasets = datasets;
+
+            if (aktuellVy === 'tabell') {
+                ritaHeatmap(chartLabels, datasets);
+            } else {
+                drawChart(chartLabels, datasets);
+            }
+        }
+
+        function ritaHeatmap(labels, datasets) {
+            let container = document.getElementById('heatmap-container');
+            
+            let minVal = Infinity;
+            let maxVal = -Infinity;
+            datasets.forEach(ds => {
+                ds.data.forEach(val => {
+                    if (val !== null && val !== undefined) {
+                        if (val < minVal) minVal = val;
+                        if (val > maxVal) maxVal = val;
+                    }
+                });
+            });
+
+            if (minVal === Infinity) { container.innerHTML = "<p class='p-4 text-center'>Inget data att visa</p>"; return; }
+
+            let html = '<table class="heatmap-table"><thead><tr><th>Region</th>';
+            labels.forEach(lbl => html += `<th>${lbl}</th>`);
+            html += '</tr></thead><tbody>';
+
+            datasets.forEach(ds => {
+                html += `<tr><td style="text-align: left; font-weight: bold; border-left: 4px solid ${ds.borderColor}; background: white;">${ds.label}</td>`;
+                ds.data.forEach(val => {
+                    if (val !== null && val !== undefined) {
+                        let norm = (val - minVal) / (maxVal - minVal);
+                        if (maxVal === minVal) norm = 0.5; 
+                        
+                        let r, g, b;
+                        if (norm < 0.5) {
+                            let n2 = norm / 0.5;
+                            r = Math.round(248 + (255 - 248) * n2);
+                            g = Math.round(215 + (243 - 215) * n2);
+                            b = Math.round(218 + (205 - 218) * n2);
+                        } else {
+                            let n2 = (norm - 0.5) / 0.5;
+                            r = Math.round(255 + (212 - 255) * n2);
+                            g = Math.round(243 + (237 - 243) * n2);
+                            b = Math.round(205 + (218 - 205) * n2);
+                        }
+                        
+                        let bgColor = `rgb(${r},${g},${b})`;
+                        html += `<td style="background-color: ${bgColor};" title="${val.toFixed(2)}">${val.toFixed(1)}</td>`;
+                    } else {
+                        html += '<td style="background-color: #f8f9fa; color: #adb5bd;">-</td>';
+                    }
+                });
+                html += '</tr>';
+            });
+            html += '</tbody></table>';
+            
+            container.innerHTML = html;
+        }
+
+        function drawChart(labels, datasets) {
+            const ctx = document.getElementById('indexChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            
+            myChart = new Chart(ctx, {
+                type: 'line', 
+                data: { labels: labels, datasets: datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false, spanGaps: true,
+                    plugins: { 
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                usePointStyle: true, 
+                                padding: 20
+                            }
+                        },
+                        tooltip: { 
+                            usePointStyle: true,
+                            callbacks: { 
+                                label: function(c) { return c.dataset.label + ': ' + c.parsed.y.toFixed(1); } 
+                            } 
+                        }
+                    },
+                    scales: {
+                        x: { grid: { display: false } },
+                        y: { display: true, title: { display: true, text: 'Indexpoäng' } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

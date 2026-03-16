@@ -341,7 +341,12 @@
                     <option value="5">Senaste 5 åren</option>
                     <option value="alla">Visa alla år</option>
                 </select>
-                <select id="master-index" onchange="skickaTillDiagrammen()" style="background-color: #1e293b;"><option value="absolut">Absoluta tal</option><option value="index">Visa som Index (Basår=100)</option></select>
+                <!-- UPPATERAD MASTER-INDEX RULLISTA MED 3 VAL -->
+                <select id="master-index" onchange="skickaTillDiagrammen()" style="background-color: #1e293b;">
+                    <option value="absolut">Absoluta tal</option>
+                    <option value="index">Visa som Index (Basår=100)</option>
+                    <option value="procent_12m">Årlig förändring (%)</option>
+                </select>
             </div>
             
             <!-- KPI-Rad -->
@@ -991,7 +996,7 @@
             const berakning = document.getElementById("master-berakning").value; 
             const grafTyp = document.getElementById("master-graftyp").value;
             const tid = document.getElementById("master-tid").value; 
-            const visaIndex = document.getElementById("master-index").value === "index";
+            const visningsTyp = document.getElementById("master-index").value; // NY: Hämta det nya valet
             const manad = document.getElementById("global-manad").value;
 
             let manadSelect = document.getElementById('global-manad');
@@ -1002,7 +1007,7 @@
             for (let i = 1; i <= 4; i++) { 
                 const iframe = document.getElementById("iframe" + i);
                 if (iframe && iframe.contentWindow && typeof iframe.contentWindow.uppdateraFranMaster === "function") { 
-                    iframe.contentWindow.uppdateraFranMaster(berakning, grafTyp, manad, tid, visaIndex); 
+                    iframe.contentWindow.uppdateraFranMaster(berakning, grafTyp, manad, tid, visningsTyp); 
                 }
             }
             

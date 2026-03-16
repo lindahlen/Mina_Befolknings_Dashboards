@@ -1,0 +1,38 @@
+﻿Klartext;Indikator;Standardvikt_kombination;Standardvikt_sysselsättning;Standardvikt_befolkning;Standardvikt_relativ_styrka;Polaritet;Karaktär;Beskrivning
+Folkmängd 0+ år, antal;Folkmängd;0.05;..;0.25;..;Hög;Volym och kapacitet;Hela kommunens, eller kommungruppens folkmängd. Från 0 år eller äldre,
+Folkmängd 0-19 år, antal;Ung_bef;..;..;0.1;..;Hög;Volym och kapacitet;Antalet personer i åldern 0-19 år.
+Folkmängd 30-59 år, antal;Vuxen_bef;0.15;..;0.2;..;Hög;Volym och kapacitet;Antalet personer i åldern 30-59 år.
+Befolkning i åldern 30-59 år, andel av hela bef (%);Vuxen_bef (Beräkning Folkmängd);..;..;..;0.1;Hög;Struktur och kvalitet;Hur hög andel (%) av befolkningen som är i åldern 30-59 år av hela befolkningen.
+Inflyttning annat län, antal;Inflyttning_annat_län;0.1;..;0.2;..;Hög;Volym och kapacitet;Inflyttning från annat län
+Inflyttning annat län 30-59 år, antal;Inflytt_annat_län_30-59;0.05;..;0.2;..;Hög;Volym och kapacitet;Inflyttning av personer i åldern 30-59 år från annat län
+Inflyttning eget län, antal;Inflytt_eget_län;X;..;X;..;Hög;Volym och kapacitet;Inflyttning från annat län
+Utflyttning annat län, antal;Utflyttning_annat_län;X;..;X;..;Låg;Volym och kapacitet;Utflyttning till annat län. [inverterat värde]
+Utflyttning annat län 30-59 år, antal;Utflytt_annat_län_30-59;X;..;X;..;Låg;Volym och kapacitet;Utflyttning av personer i åldern 30-59 år till annat län. [inverterat värde]
+Nettoflyttning annat län, antal;Nettoflyttning (Beräknad Inflyttning_annat_län-Utflyttning_annat_län);X;..;X;X;Hög;Balans och jämvikt;Nettoflyttning i relation med annat län i Sverige
+Nettoflyttning annat län 30-59 år, antal;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);X;..;X;X;Hög;Balans och jämvikt;Nettoflyttning för personer i åldern 30-59 år i relation med annat län i Sverige
+Nettoflyttning inom länet;Nettoflytt_inom_länet;X;..;X;X;Hög;Balans och jämvikt;Nettoflyttning i relation med övriga kommuner inom det egna länet.
+Inflyttningsandel eget län av inrikes inflyttning;Inflyttningsandel (Beräknad Inflytt_eget_län-Inflyttning_annat_län+Inflytt_eget_län);..;..;X;X;Låg;Balans och jämvikt;Andel av den totala inrikes inflyttningen som kommer från eget län. [inverterat värde]
+Sysselsättning 15-74 år, antal;Sysselsatta;0.25;0.3;..;..;Hög;Volym och kapacitet;Sysselsatta i åldern 15-74 år med arbetsplats i kommunen eller kommungruppen (Dagbefolkningen).
+KIBS 15-74 år, antal;KIBS;0.05;0.1;..;..;Hög;Volym och kapacitet;Sysselsatta inom Kunskapsintensiva tjänstenäringar (KIBS) i åldern 15-74 år. Utgår från SNI-bokstav J och SNI-bokstav M. De SNI-koder som ofta ingår i KIBS är 62-63 och 69-74.
+KIBS 15-74 år, andel av sysselsatta (%);KIBS (beräkning Sysselsatta);..;..;..;0.08;Hög;Struktur och kvalitet;Andel (%) sysselsatta inom KIBS av samtliga sysselsatta i kommunen eller kommungruppen.
+Inpendling över kommungräns 15-74 år, antal;Inpendling;0.1;0.2;..;..;Hög;Volym och kapacitet;Inpendling över kommungräns av personer i åldern 15-74 år.
+Utpendling över kommungräns 15-74 år, antal;Utpendling;X;X;..;..;Låg;Volym och kapacitet;Utpendling över kommungräns av personer i åldern 15-74 år. [inverterat värde]
+Inpendling över kommungräns 15-74 år, andel av dagbef (%);Inpendling (beräkning Sysselsatta);..;..;..;0.05;Hög;Balans och jämvikt;Andel inpendlande i åldern 15-74 år av samtliga sysselsatta i dagbefolkningen i respektive kommun eller kommungrupp.
+Nettopendling, antal;Nettopendling (Beräknad Inpendling-Utpendling);X;X;..;X;Hög;Balans och jämvikt;Nettopendling över kommungräns, dvs. skillnaden mellan in- och utpendling.
+Sysselsättning 15-74 år, förändring per år (%);Sysselsatta (beräknad förändring);..;X;..;0.15;Hög;Tillväxt och dynamik;Visar den procentuella förändringen av andelen sysselsatta i åldern 15-74 år per år
+Sysselsättningsgrad (%), 20-64 år;Sysselsättningsgrad;X;X;..;0.2;Hög;Struktur och kvalitet;Sysselsättningsgrad (%) för personer i åldern 20-64 år.
+Balanserad sysselsättningsgrad mellan könen (%);Syssgrad_kvinnor-män;..;..;..;0.02;Låg;Balans och jämvikt;Balanserad sysselsättningsgrad mellan könen visar i procent hur stor skillnaden i sysselsättningsgrad är mellan män och kvinnor. [inverterat värde]
+Nyföretagande per 1000 invånare;Nyföretagande;X;X;..;X;Hög;Tillväxt och dynamik;Nyföretagande per 1000 invånare
+Nettoinkomst 20-64 år, median (tkr);Nettoinkomst_median;0.1;0.1;..;0.05;Hög;Ekonomi och välfärd;Nettoinkomst 20-64 år, median (tkr)
+Nettoinkomst, summerad;Nettoinkomst_belopp_summa;Z;..;..;..;Hög;Ekonomi och välfärd;
+Förvärvsinkomst 20-64 år, median (tkr);Förvärvsinkomst_median;..;..;..;0.05;Hög;Ekonomi och välfärd;Förvärvsinkomst 20-64 år, median (tkr)
+BRP per capita (tkr);BRP;0.1;0.15;..;0.1;Hög;Ekonomi och välfärd;Bruttoregionprodukten (BRP) per capita (tkr)
+Lång eftergymnasial utb 20-64 år, antal;Lång_eftergymnasial_antal;..;..;0.05;..;Hög;Volym och kapacitet;Lång eftergymnasial utbildning för personer i åldern 20-64 år. Avser antal med minst tre års högskole-/universitetsutbildning inklusive forskarutbildning.
+Lång eftergymnasial utb 20-64 år, andel;Lång_eftergymnasial_procent;0.05;0.15;..;0.1;Hög;Struktur och kvalitet;Andel personer i åldern 20-64 år med lång eftergymnasial utbildning. Avser minst tre års högskole-/universitetsutbildning inklusive forskarutbildning.
+Arbetslöshet 16-65 år (% av arbetskraften);Arbetslöshet;..;..;..;0.06;Låg;Ekonomi och välfärd;Andel inskrivna arbetslösa i åldern 16-65 år som procent av arbetskraften. [inverterat värde]
+Långtidsarbetslöshet 16-65 år (% av arbetskraften);Långtidsarbetslöshet;..;..;..;0.04;Låg;Ekonomi och välfärd;Andel långtidsarbetslösa i åldern 16-65 år som procent av arbetskraften. [inverterat värde]
+Bostadsbyggande per 1000 invånare;Bostadsbyggande;..;..;..;X;Hög;Volym och kapacitet;Antal nybyggda bostäder i nybyggda hus per 1000 invånare
+Bostäder;Bostäder;..;..;..;X;Hög;Volym och kapacitet;Antal bostäder i respektive kommun eller kommungrupp.
+Bostadspriser;Bostadspriser;Z;..;..;..;Hög;Balans och jämvikt;
+Befolkningsförändring per år (%);Folkmängd (beräknad förändring);..;..;X;..;Hög;Tillväxt och dynamik;Visar den procentuella förändringen av folkmängden per år
+Totalt;Totalt;1;1;1;1.0000000000000002;Hög;;
