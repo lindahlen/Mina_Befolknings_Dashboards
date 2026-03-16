@@ -10,7 +10,7 @@ Utflyttning annat län, antal;Utflyttning_annat_län;X;..;X;..;Låg;Volym och ka
 Utflyttning annat län 30-59 år, antal;Utflytt_annat_län_30-59;X;..;X;..;Låg;Volym och kapacitet;Utflyttning av personer i åldern 30-59 år till annat län. [inverterat värde]
 Nettoflyttning annat län, antal;Nettoflyttning (Beräknad Inflyttning_annat_län-Utflyttning_annat_län);X;..;X;X;Hög;Balans och jämvikt;Nettoflyttning i relation med annat län i Sverige
 Nettoflyttning annat län 30-59 år, antal;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);X;..;X;X;Hög;Balans och jämvikt;Nettoflyttning för personer i åldern 30-59 år i relation med annat län i Sverige
-Nettoflyttning inom länet;Nettoflytt_inom_länet;X;..;X;X;Hög;Balans och jämvikt;Nettoflyttning i relation med övriga kommuner inom det egna länet.
+Nettoflyttning inom länet;Nettoflytt_eget_län;X;..;X;X;Hög;Balans och jämvikt;Nettoflyttning i relation med övriga kommuner inom det egna länet.
 Inflyttningsandel eget län av inrikes inflyttning;Inflyttningsandel (Beräknad Inflytt_eget_län-Inflyttning_annat_län+Inflytt_eget_län);..;..;X;X;Låg;Balans och jämvikt;Andel av den totala inrikes inflyttningen som kommer från eget län. [inverterat värde]
 Sysselsättning 15-74 år, antal;Sysselsatta;0.25;0.3;..;..;Hög;Volym och kapacitet;Sysselsatta i åldern 15-74 år med arbetsplats i kommunen eller kommungruppen (Dagbefolkningen).
 KIBS 15-74 år, antal;KIBS;0.05;0.1;..;..;Hög;Volym och kapacitet;Sysselsatta inom Kunskapsintensiva tjänstenäringar (KIBS) i åldern 15-74 år. Utgår från SNI-bokstav J och SNI-bokstav M. De SNI-koder som ofta ingår i KIBS är 62-63 och 69-74.

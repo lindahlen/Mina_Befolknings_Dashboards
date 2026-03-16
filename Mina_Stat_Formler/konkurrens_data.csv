@@ -2844,7 +2844,7 @@ Länet exkl Linköping;2021;Folkmängd;304177.0
 Länet exkl Linköping;2022;Folkmängd;305239.0
 Länet exkl Linköping;2023;Folkmängd;304894.0
 Länet exkl Linköping;2024;Folkmängd;304411.0
-Länet exkl Linköping;2025;Folkmängd;303816.0
+Länet exkl Linköping;2025;Folkmängd;303813.0
 Länet exkl Norrköping;2000;Folkmängd;289146.0
 Länet exkl Norrköping;2001;Folkmängd;289467.0
 Länet exkl Norrköping;2002;Folkmängd;290135.0
@@ -2870,7 +2870,7 @@ Länet exkl Norrköping;2021;Folkmängd;325246.0
 Länet exkl Norrköping;2022;Folkmängd;326792.0
 Länet exkl Norrköping;2023;Folkmängd;327135.0
 Länet exkl Norrköping;2024;Folkmängd;327466.0
-Länet exkl Norrköping;2025;Folkmängd;327627.0
+Länet exkl Norrköping;2025;Folkmängd;327624.0
 Malmö;2000;Folkmängd;259579.0
 Malmö;2001;Folkmängd;262397.0
 Malmö;2002;Folkmängd;265481.0
@@ -3234,7 +3234,7 @@ Västerås;2025;Folkmängd;161240.0
 Östergötlands län;2022;Folkmängd;471912.0
 Östergötlands län;2023;Folkmängd;472298.0
 Östergötlands län;2024;Folkmängd;472446.0
-Östergötlands län;2025;Folkmängd;472529.0
+Östergötlands län;2025;Folkmängd;472526.0
 Fem till tolv;2000;Förvärvsinkomst_median;185.5875
 Fem till tolv;2001;Förvärvsinkomst_median;193.8125
 Fem till tolv;2002;Förvärvsinkomst_median;201.525
@@ -4074,7 +4074,7 @@ Länet exkl Linköping;2021;Inflytt_annat_län_30-59;1164.0
 Länet exkl Linköping;2022;Inflytt_annat_län_30-59;1242.0
 Länet exkl Linköping;2023;Inflytt_annat_län_30-59;1126.0
 Länet exkl Linköping;2024;Inflytt_annat_län_30-59;1028.0
-Länet exkl Linköping;2025;Inflytt_annat_län_30-59;-1092.0
+Länet exkl Linköping;2025;Inflytt_annat_län_30-59;1028.0
 Länet exkl Norrköping;2002;Inflytt_annat_län_30-59;761.0
 Länet exkl Norrköping;2003;Inflytt_annat_län_30-59;759.0
 Länet exkl Norrköping;2004;Inflytt_annat_län_30-59;786.0
@@ -4098,7 +4098,7 @@ Länet exkl Norrköping;2021;Inflytt_annat_län_30-59;1210.0
 Länet exkl Norrköping;2022;Inflytt_annat_län_30-59;1268.0
 Länet exkl Norrköping;2023;Inflytt_annat_län_30-59;1196.0
 Länet exkl Norrköping;2024;Inflytt_annat_län_30-59;1092.0
-Länet exkl Norrköping;2025;Inflytt_annat_län_30-59;-1028.0
+Länet exkl Norrköping;2025;Inflytt_annat_län_30-59;1092.0
 Malmö;2002;Inflytt_annat_län_30-59;1198.0
 Malmö;2003;Inflytt_annat_län_30-59;1205.0
 Malmö;2004;Inflytt_annat_län_30-59;1168.0
@@ -4959,7 +4959,6 @@ Västerås;2025;Inflytt_eget_län;1491.0
 Örebro;2023;Inflytt_eget_län;2440.0
 Örebro;2024;Inflytt_eget_län;2297.0
 Örebro;2025;Inflytt_eget_län;2297.0
-Östergötlands län;2025;Inflytt_eget_län;0.0
 Fem till tolv;2000;Inflyttning_annat_län;27629.0
 Fem till tolv;2001;Inflyttning_annat_län;27467.0
 Fem till tolv;2002;Inflyttning_annat_län;27335.0
@@ -10094,6 +10093,7 @@ Västerås;2025;Nettoinkomst_median;314.2
 Östergötlands län;2023;Nettoinkomst_median;284.3
 Östergötlands län;2024;Nettoinkomst_median;298.5
 Östergötlands län;2025;Nettoinkomst_median;298.5
+Fem till tolv;2010;Nyföretagande;908.125
 Fem till tolv;2011;Nyföretagande;908.125
 Fem till tolv;2012;Nyföretagande;888.5
 Fem till tolv;2013;Nyföretagande;897.5
@@ -10109,6 +10109,7 @@ Fem till tolv;2022;Nyföretagande;940.25
 Fem till tolv;2023;Nyföretagande;834.75
 Fem till tolv;2024;Nyföretagande;910.375
 Fem till tolv;2025;Nyföretagande;910.375
+Fyra stora;2010;Nyföretagande;5342.0
 Fyra stora;2011;Nyföretagande;5342.0
 Fyra stora;2012;Nyföretagande;4920.25
 Fyra stora;2013;Nyföretagande;4925.25
@@ -10124,6 +10125,7 @@ Fyra stora;2022;Nyföretagande;5050.0
 Fyra stora;2023;Nyföretagande;4516.5
 Fyra stora;2024;Nyföretagande;4828.75
 Fyra stora;2025;Nyföretagande;4828.75
+Göteborg;2010;Nyföretagande;4860.0
 Göteborg;2011;Nyföretagande;4860.0
 Göteborg;2012;Nyföretagande;4345.0
 Göteborg;2013;Nyföretagande;4577.0
@@ -10139,6 +10141,7 @@ Göteborg;2022;Nyföretagande;4871.0
 Göteborg;2023;Nyföretagande;4451.0
 Göteborg;2024;Nyföretagande;4850.0
 Göteborg;2025;Nyföretagande;4850.0
+Helsingborg;2010;Nyföretagande;1106.0
 Helsingborg;2011;Nyföretagande;1106.0
 Helsingborg;2012;Nyföretagande;1081.0
 Helsingborg;2013;Nyföretagande;1057.0
@@ -10154,6 +10157,7 @@ Helsingborg;2022;Nyföretagande;1096.0
 Helsingborg;2023;Nyföretagande;1006.0
 Helsingborg;2024;Nyföretagande;1118.0
 Helsingborg;2025;Nyföretagande;1118.0
+Jönköping;2010;Nyföretagande;802.0
 Jönköping;2011;Nyföretagande;802.0
 Jönköping;2012;Nyföretagande;771.0
 Jönköping;2013;Nyföretagande;760.0
@@ -10169,6 +10173,7 @@ Jönköping;2022;Nyföretagande;912.0
 Jönköping;2023;Nyföretagande;798.0
 Jönköping;2024;Nyföretagande;955.0
 Jönköping;2025;Nyföretagande;955.0
+Linköping;2010;Nyföretagande;921.0
 Linköping;2011;Nyföretagande;921.0
 Linköping;2012;Nyföretagande;932.0
 Linköping;2013;Nyföretagande;974.0
@@ -10184,6 +10189,7 @@ Linköping;2022;Nyföretagande;939.0
 Linköping;2023;Nyföretagande;919.0
 Linköping;2024;Nyföretagande;941.0
 Linköping;2025;Nyföretagande;941.0
+Lkpg-Nkpg;2010;Nyföretagande;855.5
 Lkpg-Nkpg;2011;Nyföretagande;855.5
 Lkpg-Nkpg;2012;Nyföretagande;855.0
 Lkpg-Nkpg;2013;Nyföretagande;850.0
@@ -10199,6 +10205,7 @@ Lkpg-Nkpg;2022;Nyföretagande;891.0
 Lkpg-Nkpg;2023;Nyföretagande;851.0
 Lkpg-Nkpg;2024;Nyföretagande;867.0
 Lkpg-Nkpg;2025;Nyföretagande;867.0
+Lund;2010;Nyföretagande;1023.0
 Lund;2011;Nyföretagande;1023.0
 Lund;2012;Nyföretagande;951.0
 Lund;2013;Nyföretagande;1074.0
@@ -10214,6 +10221,7 @@ Lund;2022;Nyföretagande;895.0
 Lund;2023;Nyföretagande;733.0
 Lund;2024;Nyföretagande;806.0
 Lund;2025;Nyföretagande;806.0
+Länet exkl Linköping;2010;Nyföretagande;1367.3333333333333
 Länet exkl Linköping;2011;Nyföretagande;1367.3333333333333
 Länet exkl Linköping;2012;Nyföretagande;1342.0
 Länet exkl Linköping;2013;Nyföretagande;1305.3333333333333
@@ -10229,6 +10237,7 @@ Länet exkl Linköping;2022;Nyföretagande;1417.0
 Länet exkl Linköping;2023;Nyföretagande;1329.6666666666667
 Länet exkl Linköping;2024;Nyföretagande;1369.3333333333333
 Länet exkl Linköping;2025;Nyföretagande;1369.3333333333333
+Länet exkl Norrköping;2010;Nyföretagande;1454.6666666666667
 Länet exkl Norrköping;2011;Nyföretagande;1454.6666666666667
 Länet exkl Norrköping;2012;Nyföretagande;1444.6666666666667
 Länet exkl Norrköping;2013;Nyföretagande;1470.6666666666667
@@ -10244,6 +10253,7 @@ Länet exkl Norrköping;2022;Nyföretagande;1481.0
 Länet exkl Norrköping;2023;Nyföretagande;1420.3333333333333
 Länet exkl Norrköping;2024;Nyföretagande;1468.0
 Länet exkl Norrköping;2025;Nyföretagande;1468.0
+Malmö;2010;Nyföretagande;3067.0
 Malmö;2011;Nyföretagande;3067.0
 Malmö;2012;Nyföretagande;2809.0
 Malmö;2013;Nyföretagande;2903.0
@@ -10259,6 +10269,7 @@ Malmö;2022;Nyföretagande;3153.0
 Malmö;2023;Nyföretagande;2826.0
 Malmö;2024;Nyföretagande;3045.0
 Malmö;2025;Nyföretagande;3045.0
+Norrköping;2010;Nyföretagande;790.0
 Norrköping;2011;Nyföretagande;790.0
 Norrköping;2012;Nyföretagande;778.0
 Norrköping;2013;Nyföretagande;726.0
@@ -10274,6 +10285,7 @@ Norrköping;2022;Nyföretagande;843.0
 Norrköping;2023;Nyföretagande;783.0
 Norrköping;2024;Nyföretagande;793.0
 Norrköping;2025;Nyföretagande;793.0
+Riket;2010;Nyföretagande;73579.0
 Riket;2011;Nyföretagande;73579.0
 Riket;2012;Nyföretagande;69114.0
 Riket;2013;Nyföretagande;69155.0
@@ -10289,6 +10301,7 @@ Riket;2022;Nyföretagande;73182.0
 Riket;2023;Nyföretagande;65077.0
 Riket;2024;Nyföretagande;70628.0
 Riket;2025;Nyföretagande;70628.0
+Sex till tolv;2010;Nyföretagande;906.2857142857144
 Sex till tolv;2011;Nyföretagande;906.2857142857144
 Sex till tolv;2012;Nyföretagande;882.2857142857143
 Sex till tolv;2013;Nyföretagande;886.5714285714286
@@ -10304,6 +10317,7 @@ Sex till tolv;2022;Nyföretagande;940.4285714285714
 Sex till tolv;2023;Nyföretagande;822.7142857142857
 Sex till tolv;2024;Nyföretagande;906.0
 Sex till tolv;2025;Nyföretagande;906.0
+Sex till tolv minus tio;2010;Nyföretagande;925.6666666666666
 Sex till tolv minus tio;2011;Nyföretagande;925.6666666666666
 Sex till tolv minus tio;2012;Nyföretagande;899.6666666666666
 Sex till tolv minus tio;2013;Nyföretagande;913.3333333333334
@@ -10319,6 +10333,7 @@ Sex till tolv minus tio;2022;Nyföretagande;956.6666666666666
 Sex till tolv minus tio;2023;Nyföretagande;829.3333333333334
 Sex till tolv minus tio;2024;Nyföretagande;924.8333333333334
 Sex till tolv minus tio;2025;Nyföretagande;924.8333333333334
+Stockholm;2010;Nyföretagande;11822.0
 Stockholm;2011;Nyföretagande;11822.0
 Stockholm;2012;Nyföretagande;10881.0
 Stockholm;2013;Nyföretagande;10560.0
@@ -10334,6 +10349,7 @@ Stockholm;2022;Nyföretagande;10566.0
 Stockholm;2023;Nyföretagande;9284.0
 Stockholm;2024;Nyföretagande;9934.0
 Stockholm;2025;Nyföretagande;9934.0
+Tolv största;2010;Nyföretagande;2386.083333333333
 Tolv största;2011;Nyföretagande;2386.083333333333
 Tolv största;2012;Nyföretagande;2232.4166666666665
 Tolv största;2013;Nyföretagande;2240.083333333333
@@ -10349,6 +10365,7 @@ Tolv största;2022;Nyföretagande;2310.1666666666665
 Tolv största;2023;Nyföretagande;2062.0
 Tolv största;2024;Nyföretagande;2216.5
 Tolv största;2025;Nyföretagande;2216.5
+Tolv största minus fem;2010;Nyföretagande;2519.2727272727275
 Tolv största minus fem;2011;Nyföretagande;2519.2727272727275
 Tolv största minus fem;2012;Nyföretagande;2350.6363636363635
 Tolv största minus fem;2013;Nyföretagande;2355.181818181818
@@ -10364,6 +10381,7 @@ Tolv största minus fem;2022;Nyföretagande;2434.818181818182
 Tolv största minus fem;2023;Nyföretagande;2165.909090909091
 Tolv största minus fem;2024;Nyföretagande;2332.454545454545
 Tolv största minus fem;2025;Nyföretagande;2332.454545454545
+Tre största;2010;Nyföretagande;6583.0
 Tre största;2011;Nyföretagande;6583.0
 Tre största;2012;Nyföretagande;6011.666666666667
 Tre största;2013;Nyföretagande;6013.333333333333
@@ -10379,6 +10397,7 @@ Tre största;2022;Nyföretagande;6196.666666666667
 Tre största;2023;Nyföretagande;5520.333333333333
 Tre största;2024;Nyföretagande;5943.0
 Tre största;2025;Nyföretagande;5943.0
+Umeå;2010;Nyföretagande;819.0
 Umeå;2011;Nyföretagande;819.0
 Umeå;2012;Nyföretagande;776.0
 Umeå;2013;Nyföretagande;790.0
@@ -10394,6 +10413,7 @@ Umeå;2022;Nyföretagande;743.0
 Umeå;2023;Nyföretagande;627.0
 Umeå;2024;Nyföretagande;709.0
 Umeå;2025;Nyföretagande;709.0
+Uppsala;2010;Nyföretagande;1619.0
 Uppsala;2011;Nyföretagande;1619.0
 Uppsala;2012;Nyföretagande;1646.0
 Uppsala;2013;Nyföretagande;1661.0
@@ -10409,6 +10429,7 @@ Uppsala;2022;Nyföretagande;1610.0
 Uppsala;2023;Nyföretagande;1505.0
 Uppsala;2024;Nyföretagande;1486.0
 Uppsala;2025;Nyföretagande;1486.0
+Västerås;2010;Nyföretagande;894.0
 Västerås;2011;Nyföretagande;894.0
 Västerås;2012;Nyföretagande;891.0
 Västerås;2013;Nyföretagande;877.0
@@ -10424,6 +10445,7 @@ Västerås;2022;Nyföretagande;1047.0
 Västerås;2023;Nyföretagande;884.0
 Västerås;2024;Nyföretagande;969.0
 Västerås;2025;Nyföretagande;969.0
+Örebro;2010;Nyföretagande;910.0
 Örebro;2011;Nyföretagande;910.0
 Örebro;2012;Nyföretagande;928.0
 Örebro;2013;Nyföretagande;922.0
@@ -10439,6 +10461,7 @@ Västerås;2025;Nyföretagande;969.0
 Örebro;2023;Nyföretagande;928.0
 Örebro;2024;Nyföretagande;992.0
 Örebro;2025;Nyföretagande;992.0
+Östergötlands län;2010;Nyföretagande;2522.0
 Östergötlands län;2011;Nyföretagande;2522.0
 Östergötlands län;2012;Nyföretagande;2470.0
 Östergötlands län;2013;Nyföretagande;2464.0
@@ -13165,7 +13188,7 @@ Länet exkl Linköping;2021;Utflytt_annat_län_30-59;1105.0
 Länet exkl Linköping;2022;Utflytt_annat_län_30-59;1100.0
 Länet exkl Linköping;2023;Utflytt_annat_län_30-59;1066.0
 Länet exkl Linköping;2024;Utflytt_annat_län_30-59;1137.0
-Länet exkl Linköping;2025;Utflytt_annat_län_30-59;-1304.0
+Länet exkl Linköping;2025;Utflytt_annat_län_30-59;1137.0
 Länet exkl Norrköping;2002;Utflytt_annat_län_30-59;860.0
 Länet exkl Norrköping;2003;Utflytt_annat_län_30-59;874.0
 Länet exkl Norrköping;2004;Utflytt_annat_län_30-59;827.0
@@ -13189,7 +13212,7 @@ Länet exkl Norrköping;2021;Utflytt_annat_län_30-59;1429.0
 Länet exkl Norrköping;2022;Utflytt_annat_län_30-59;1426.0
 Länet exkl Norrköping;2023;Utflytt_annat_län_30-59;1352.0
 Länet exkl Norrköping;2024;Utflytt_annat_län_30-59;1304.0
-Länet exkl Norrköping;2025;Utflytt_annat_län_30-59;-1137.0
+Länet exkl Norrköping;2025;Utflytt_annat_län_30-59;1304.0
 Malmö;2002;Utflytt_annat_län_30-59;1088.0
 Malmö;2003;Utflytt_annat_län_30-59;1099.0
 Malmö;2004;Utflytt_annat_län_30-59;1142.0
@@ -15531,7 +15554,7 @@ Länet exkl Linköping;2021;Vuxen_bef (Beräkning Folkmängd);37.483767674742005
 Länet exkl Linköping;2022;Vuxen_bef (Beräkning Folkmängd);37.73633120276242
 Länet exkl Linköping;2023;Vuxen_bef (Beräkning Folkmängd);37.90628874297297
 Länet exkl Linköping;2024;Vuxen_bef (Beräkning Folkmängd);37.8366747587965
-Länet exkl Linköping;2025;Vuxen_bef (Beräkning Folkmängd);37.67741001132264
+Länet exkl Linköping;2025;Vuxen_bef (Beräkning Folkmängd);37.67778205672568
 Länet exkl Norrköping;2000;Vuxen_bef (Beräkning Folkmängd);39.86498170474432
 Länet exkl Norrköping;2001;Vuxen_bef (Beräkning Folkmängd);40.024251469079374
 Länet exkl Norrköping;2002;Vuxen_bef (Beräkning Folkmängd);39.96656728764196
@@ -15557,7 +15580,7 @@ Länet exkl Norrköping;2021;Vuxen_bef (Beräkning Folkmängd);37.04057851595407
 Länet exkl Norrköping;2022;Vuxen_bef (Beräkning Folkmängd);37.28396043966804
 Länet exkl Norrköping;2023;Vuxen_bef (Beräkning Folkmängd);37.39557063597597
 Länet exkl Norrköping;2024;Vuxen_bef (Beräkning Folkmängd);37.30952220993935
-Länet exkl Norrköping;2025;Vuxen_bef (Beräkning Folkmängd);37.117514734744084
+Länet exkl Norrköping;2025;Vuxen_bef (Beräkning Folkmängd);37.11785461382561
 Malmö;2000;Vuxen_bef (Beräkning Folkmängd);39.643422618932966
 Malmö;2001;Vuxen_bef (Beräkning Folkmängd);39.82781815340877
 Malmö;2002;Vuxen_bef (Beräkning Folkmängd);39.74484049706005
@@ -15921,7 +15944,7 @@ Västerås;2025;Vuxen_bef (Beräkning Folkmängd);39.51562887620938
 Östergötlands län;2022;Vuxen_bef (Beräkning Folkmängd);37.731610978317995
 Östergötlands län;2023;Vuxen_bef (Beräkning Folkmängd);37.86740574806584
 Östergötlands län;2024;Vuxen_bef (Beräkning Folkmängd);37.78654068401468
-Östergötlands län;2025;Vuxen_bef (Beräkning Folkmängd);37.63366904465123
+Östergötlands län;2025;Vuxen_bef (Beräkning Folkmängd);37.633907975434155
 Fem till tolv;2000;Nettoflyttning (Beräknad Inflyttning_annat_län-Utflyttning_annat_län);1417.0
 Fem till tolv;2001;Nettoflyttning (Beräknad Inflyttning_annat_län-Utflyttning_annat_län);2846.0
 Fem till tolv;2002;Nettoflyttning (Beräknad Inflyttning_annat_län-Utflyttning_annat_län);2350.0
@@ -16735,7 +16758,7 @@ Länet exkl Linköping;2021;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-U
 Länet exkl Linköping;2022;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);142.0
 Länet exkl Linköping;2023;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);60.0
 Länet exkl Linköping;2024;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);-109.0
-Länet exkl Linköping;2025;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);212.0
+Länet exkl Linköping;2025;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);-109.0
 Länet exkl Norrköping;2002;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);-99.0
 Länet exkl Norrköping;2003;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);-115.0
 Länet exkl Norrköping;2004;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);-41.0
@@ -16759,7 +16782,7 @@ Länet exkl Norrköping;2021;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-
 Länet exkl Norrköping;2022;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);-158.0
 Länet exkl Norrköping;2023;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);-156.0
 Länet exkl Norrköping;2024;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);-212.0
-Länet exkl Norrköping;2025;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);109.0
+Länet exkl Norrköping;2025;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);-212.0
 Malmö;2002;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);110.0
 Malmö;2003;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);106.0
 Malmö;2004;Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);26.0
@@ -19500,7 +19523,7 @@ Länet exkl Linköping;2021;Folkmängd (beräknad förändring);0.54042083413212
 Länet exkl Linköping;2022;Folkmängd (beräknad förändring);0.34913882377693994
 Länet exkl Linköping;2023;Folkmängd (beräknad förändring);-0.11302618603782344
 Länet exkl Linköping;2024;Folkmängd (beräknad förändring);-0.15841571168996316
-Länet exkl Linköping;2025;Folkmängd (beräknad förändring);-0.19545942820725637
+Länet exkl Linköping;2025;Folkmängd (beräknad förändring);-0.19644493792930762
 Länet exkl Norrköping;2001;Folkmängd (beräknad förändring);0.11101657985930213
 Länet exkl Norrköping;2002;Folkmängd (beräknad förändring);0.23076896502882693
 Länet exkl Norrköping;2003;Folkmängd (beräknad förändring);0.2726317059299932
@@ -19525,7 +19548,7 @@ Länet exkl Norrköping;2021;Folkmängd (beräknad förändring);0.4838111715274
 Länet exkl Norrköping;2022;Folkmängd (beräknad förändring);0.47533251754057204
 Länet exkl Norrköping;2023;Folkmängd (beräknad förändring);0.10495972973634249
 Länet exkl Norrköping;2024;Folkmängd (beräknad förändring);0.1011814694239277
-Länet exkl Norrköping;2025;Folkmängd (beräknad förändring);0.04916540953869841
+Länet exkl Norrköping;2025;Folkmängd (beräknad förändring);0.048249283895129835
 Malmö;2001;Folkmängd (beräknad förändring);1.0856039972416909
 Malmö;2002;Folkmängd (beräknad förändring);1.1753183153770719
 Malmö;2003;Folkmängd (beräknad förändring);0.6365803955838745
@@ -19875,7 +19898,7 @@ Västerås;2025;Folkmängd (beräknad förändring);0.3772551265609936
 Östergötlands län;2022;Folkmängd (beräknad förändring);0.4700832864953153
 Östergötlands län;2023;Folkmängd (beräknad förändring);0.0817949109156002
 Östergötlands län;2024;Folkmängd (beräknad förändring);0.031336147940486114
-Östergötlands län;2025;Folkmängd (beräknad förändring);0.017568145354185383
+Östergötlands län;2025;Folkmängd (beräknad förändring);0.016933152148612685
 Fem till tolv;2000;Inflyttningsandel (Beräknad Inflytt_eget_län-Inflyttning_annat_län+Inflytt_eget_län);36.40464955691104
 Fem till tolv;2001;Inflyttningsandel (Beräknad Inflytt_eget_län-Inflyttning_annat_län+Inflytt_eget_län);35.85623876135541
 Fem till tolv;2002;Inflyttningsandel (Beräknad Inflytt_eget_län-Inflyttning_annat_län+Inflytt_eget_län);35.475875743555854
@@ -20448,4 +20471,3 @@ Västerås;2025;Inflyttningsandel (Beräknad Inflytt_eget_län-Inflyttning_annat
 Örebro;2023;Inflyttningsandel (Beräknad Inflytt_eget_län-Inflyttning_annat_län+Inflytt_eget_län);30.61480552070264
 Örebro;2024;Inflyttningsandel (Beräknad Inflytt_eget_län-Inflyttning_annat_län+Inflytt_eget_län);29.30220691414721
 Örebro;2025;Inflyttningsandel (Beräknad Inflytt_eget_län-Inflyttning_annat_län+Inflytt_eget_län);29.30220691414721
-Östergötlands län;2025;Inflyttningsandel (Beräknad Inflytt_eget_län-Inflyttning_annat_län+Inflytt_eget_län);0.0
