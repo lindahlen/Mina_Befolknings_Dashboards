@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Min Smarta Dashboard</title>
+    <style>
+        /* Grundläggande design */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 20px;
+        }
+
+        /* Design för kontrollpanelen (rullistan) */
+        .kontrollpanel {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        select {
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+
+        /* --- MAGIN FÖR RESPONSIVITET (CSS GRID) --- */
+        .diagram-rutnat {
+            display: grid;
+            gap: 20px; /* Mellanrum mellan diagrammen */
+            
+            /* Standard: 1 kolumn (för mobiler och små skärmar) */
+            grid-template-columns: 1fr; 
+        }
+
+        /* När skärmen är bredare än 800px: Byt till 2 kolumner */
+        @media (min-width: 800px) {
+            .diagram-rutnat {
+                grid-template-columns: 1fr 1fr; 
+            }
+        }
+
+        /* Design för dina iframes */
+        iframe {
+            width: 100%;
+            height: 400px; /* Justera höjden på dina diagram här */
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="kontrollpanel">
+        <label for="ar-valjare"><strong>Välj vilket år du vill visa:</strong></label>
+        <select id="ar-valjare" onchange="uppdateraDiagram()">
+            <option value="2024">År 2024</option>
+            <option value="2023">År 2023</option>
+            <option value="2022">År 2022</option>
+        </select>
+    </div>
+
+    <div class="diagram-rutnat">
+        <iframe id="diagram1" src="diagram1_2024.html"></iframe>
+        <iframe id="diagram2" src="diagram2_2024.html"></iframe>
+        <iframe id="diagram3" src="diagram3_2024.html"></iframe>
+        <iframe id="diagram4" src="diagram4_2024.html"></iframe>
+    </div>
+
+    <script>
+        function uppdateraDiagram() {
+            // Hämta det år som användaren just nu har valt i rullistan
+            var valtAr = document.getElementById("ar-valjare").value;
+
+            // Byt ut "src" (källan) på alla fyra iframes till de nya filnamnen
+            document.getElementById("diagram1").src = "diagram1_" + valtAr + ".html";
+            document.getElementById("diagram2").src = "diagram2_" + valtAr + ".html";
+            document.getElementById("diagram3").src = "diagram3_" + valtAr + ".html";
+            document.getElementById("diagram4").src = "diagram4_" + valtAr + ".html";
+        }
+    </script>
+
+</body>
+</html>

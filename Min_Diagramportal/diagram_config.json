@@ -266,7 +266,8 @@
             "id": "Ej_självförsörjande_20-64_år",
             "label": "Ej självförsörjande 20-64 år",
             "drilldown_komponenter": [
-                "Ej_självförsörjande_inrikes_födda_20-64_år"
+                "Ej_självförsörjande_inrikes_födda_20-64_år",
+                "Ej_självförsörjande_utrikes_födda_20-64_år"
             ],
             "drilldown_farger": [
                 "Grön",
@@ -284,6 +285,13 @@
         {
             "id": "Svag_konkurrensförmåga_av_samtliga_inskrivna_%",
             "label": "Svag konkurrensförmåga \nav inskrivna (%)",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Långtidarbetslösa_svag_konkurrensförmåga_av_inskrivna_%",
+            "label": "Långtidarbetslösa svag konkurrensförmåga av inskrivna %",
             "drilldown_komponenter": [],
             "drilldown_farger": [],
             "drilldown_typ": "stapel"
