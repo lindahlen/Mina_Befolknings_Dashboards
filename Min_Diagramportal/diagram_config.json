@@ -292,8 +292,12 @@
         {
             "id": "Långtidarbetslösa_svag_konkurrensförmåga_av_inskrivna_%",
             "label": "Långtidarbetslösa svag konkurrensförmåga av inskrivna %",
-            "drilldown_komponenter": [],
-            "drilldown_farger": [],
+            "drilldown_komponenter": [
+                "Inskrivna_långtidsarbetslösa_svag_konkurrensförmåga"
+            ],
+            "drilldown_farger": [
+                "Rosa"
+            ],
             "drilldown_typ": "stapel"
         },
         {
