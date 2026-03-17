@@ -183,13 +183,20 @@
         <p>Du kan ladda färdiga indexstrukturer från "Förinställt Index"-rullistan. Du kan också välja <em>"Eget skapat index (Börja från noll)"</em> för att börja med ett tomt papper.</p>
         <p>När du bygger ett eget index grupperas indikatorerna logiskt för att underlätta ditt arbete (t.ex. <em>Tillväxt och Dynamik</em> eller <em>Ekonomi och Välfärd</em>). Ett litet tecken (t.ex. 💰 eller 📈) bredvid namnet visar vilken kategori indikatorn tillhör.</p>
 
+        <h3>Finjustera vikterna (Dragreglagen) 🎯</h3>
+        <p>Att ställa in exakta hundradelar med muspekaren kan ibland vara svårt och tidskrävande. Därför finns två smarta genvägar inbyggda i kalkylatorn:</p>
+        <ul>
+            <li><strong>Skriv in ett exakt värde:</strong> Klicka på den färgade siffran till höger om dragreglaget. Det är en dold textruta! Skriv in ditt önskade värde (t.ex. 0.04) på tangentbordet och tryck Enter eller klicka utanför rutan.</li>
+            <li><strong>Använd piltangenterna:</strong> Klicka en gång på själva "pluppen" på dragreglaget så att den markeras. Därefter kan du trycka på <em>Vänster</em> och <em>Höger piltangent</em> på ditt tangentbord för att stega exakt 0.01 åt gången. Detta är perfekt om du vill grovinställa med musen och sedan finjustera den sista hundradelen.</li>
+        </ul>
+
         <h3>Verktyg för anpassning</h3>
         <ul>
             <li><strong>🔄 Återställ:</strong> Kastar alla ändringar du gjort och laddar om den ursprungliga mallen från styrfilen.</li>
             <li><strong>🗑️ Nollställ:</strong> Drar ner alla reglage till noll.</li>
             <li><strong>⚖️ Fördela jämnt:</strong> Tar 1.00 och delar det matematiskt exakt mellan de reglage som är aktiverade (>0).</li>
-            <li><strong>✅ Välj alla:</strong> Slår automatiskt på alla tillgängliga indikatorer i listan och ger dem samma vikt.</li>
-            <li><strong>💾 Spara / 📂 Ladda:</strong> Spara din unika index-viktning lokalt i din webbläsare så du kan komma tillbaka och fortsätta analysera exakt samma index vid ett senare tillfälle.</li>
+            <li><strong>💾 Spara nuvarande reglage:</strong> Spara din unika index-viktning lokalt i din webbläsare så du kan komma tillbaka och fortsätta analysera exakt samma index vid ett senare tillfälle.</li>
+            <li><strong>📂 Ladda sparade:</strong> Ladda fram det index du tidigare har sparat i din webbläsare.</li>
             <li><strong>Auto-fördela jämnt:</strong> En "smart switch". När denna är påslagen räknar systemet om hela indexet automatiskt och fördelar om till 1.00 varje gång du bockar i eller bockar ur en indikator.</li>
         </ul>
 
@@ -205,11 +212,15 @@
         </ul>
 
         <h3>Extrapolering (Framtidsprognos)</h3>
-        <p>Genom att klicka på knappen <strong>🚀 Extrapolera (+5 år)</strong> utför systemet en matematisk regressionsanalys (Ordinary Least Squares) baserat på de <em>fem senaste giltiga historiska åren</em> i det valda indexet. Den trenden dras sedan ut ytterligare fem år in i framtiden och ritas som en streckad linje.</p>
+        <p>Genom att klicka på knappen <strong>🚀 Extrapolera</strong> utför systemet en matematisk regressionsanalys (Ordinary Least Squares) baserat på de <em>fem senaste giltiga historiska åren</em> i det valda indexet. Den trenden dras sedan ut ytterligare fem år in i framtiden och ritas som en streckad linje.</p>
 
         <div class="alert-box">
+            <h4 style="margin-top: 0; margin-bottom: 10px; color: #495057;">Matematik och Felhantering</h4>
             <strong>🛡️ Hur hanteras saknad data (Krockkudden)?</strong><br>
-            Ibland saknas statistik för ett enskilt år, särskilt för mindre kommuner. Om systemet inte kan räkna ut ett indexvärde för en av dina valda indikatorer ett specifikt år (eller om riket-värdet saknas vid en relativ jämförelse), så hålls det del-indexet <strong>neutralt på exakt 100</strong>. Detta fungerar som en matematisk "krockkudde" för att säkerställa att en kommun inte tappar poäng eller straffas bara för att SCB saknar data det året.
+            Ibland saknas statistik för ett enskilt år, särskilt för mindre kommuner. Om systemet inte kan räkna ut ett indexvärde för en indikator ett specifikt år (eller om riket-värdet saknas), så hålls det del-indexet <strong>neutralt på exakt 100</strong>. Detta fungerar som en matematisk "krockkudde" för att säkerställa att en kommun inte straffas bara för att SCB saknar data det året.
+            <br><br>
+            <strong>🔄 Symmetrisk invertering (Låg polaritet)</strong><br>
+            När en indikator är inställd på <em>Låg polaritet</em> (t.ex. arbetslöshet) använder systemet <em>symmetrisk invertering</em> (Index = 200 - Direktkvot). Detta skiljer sig från traditionell division (Basår/Värde) och förhindrar att indexet blir extremt volatilt eller exploderar uppåt när värden rör sig nära noll. Utvecklingen blir istället stabil, proportionerlig och linjär över tid, precis som man önskar i en seriös analys.
         </div>
 
         <h2>Tillgängliga Indikatorer</h2>

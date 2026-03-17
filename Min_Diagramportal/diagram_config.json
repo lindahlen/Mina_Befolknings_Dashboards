@@ -205,7 +205,7 @@
             "drilldown_farger": [
                 "Rosa"
             ],
-            "drilldown_typ": "stapel"
+            "drilldown_typ": "linje"
         },
         {
             "id": "Långtidsarbetslösa",
