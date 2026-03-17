@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Linköpings kommun">
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="Användarguide för Linköpings kommuns demografiska prognoskalkylator.">
+    
+    <title>Användarguide - Prognoskalkylator</title>
+    
+    <!-- Tailwind CSS för styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome för ikoner -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; }
+        .content-section { background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); padding: 2rem; margin-bottom: 2rem; }
+        h2 { color: #0284c7; font-weight: 700; font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #e0f2fe; padding-bottom: 0.5rem; }
+        h3 { color: #334155; font-weight: 600; font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        p { margin-bottom: 1rem; line-height: 1.6; color: #475569; }
+        ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: #475569; }
+        li { margin-bottom: 0.5rem; line-height: 1.6; }
+        .highlight { background-color: #f0fdfa; border-left: 4px solid #14b8a6; padding: 1rem; margin: 1rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Toppmeny -->
+    <div class="bg-gray-100 border-b border-gray-200">
+        <div class="container mx-auto px-4 py-2 flex justify-between items-center text-sm">
+            <a href="prognoskalkylator.html" class="text-gray-600 hover:text-sky-700 transition flex items-center font-medium">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Tillbaka till Kalkylatorn
+            </a>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="bg-sky-800 text-white shadow-md">
+        <div class="container mx-auto px-4 py-8">
+            <h1 class="text-3xl font-bold mb-2"><i class="fa-solid fa-book-open mr-3"></i>Användarguide: Prognoskalkylator</h1>
+            <p class="text-sky-200 text-lg">En guide för scenariomodellering och demografisk analys i Linköpings kommun.</p>
+        </div>
+    </header>
+
+    <!-- Innehåll -->
+    <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8 flex-grow">
+        
+        <!-- Meny (Innehållsförteckning) -->
+        <aside class="w-full md:w-1/4">
+            <div class="bg-white rounded-lg shadow-sm p-5 sticky top-8">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 mt-0 border-b pb-2">Innehåll</h3>
+                <nav class="flex flex-col gap-2 text-sm text-sky-700 font-medium">
+                    <a href="#intro" class="hover:text-sky-500 transition">1. Introduktion</a>
+                    <a href="#scenarier" class="hover:text-sky-500 transition">2. Simulering & Scenarier</a>
+                    <a href="#nyckeltal" class="hover:text-sky-500 transition">3. Nyckeltal & Indikatorer</a>
+                    <a href="#pyramid" class="hover:text-sky-500 transition">4. Befolkningspyramid & Animering</a>
+                    <a href="#diagram" class="hover:text-sky-500 transition">5. Utvecklingsdiagram & Analys</a>
+                    <a href="#export" class="hover:text-sky-500 transition">6. Dataexport (CSV)</a>
+                    <a href="#styrfil" class="hover:text-sky-500 transition">7. Excel-styrfilen (Förvaltning)</a>
+                    <a href="#publicering" class="hover:text-sky-500 transition">8. Publicering (GitHub Pages)</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Guide-sektioner -->
+        <main class="w-full md:w-3/4">
+            
+            <div id="intro" class="content-section mt-0">
+                <h2>1. Introduktion</h2>
+                <p>Prognoskalkylatorn är ett interaktivt verktyg utvecklat för att visualisera historisk befolkningsstatistik och skapa dynamiska framtidsscenarier 10 år framåt i tiden. Verktyget arbetar helt lokalt i din webbläsare baserat på de inlästa JSON-filerna. <strong>Observera att detta inte är Linköpings kommuns officiella befolkningsprognos, utan ett verktyg för att testa olika scenarier.</strong></p>
+                <div class="highlight">
+                    <strong>Tips:</strong> Om kalkylatorn visar rött i rutan "Databas & Status" saknas filerna <code>kalkylator_basdata.json</code> eller <code>styrfil_config.json</code> i samma mapp. Kör Python-skriptet för att generera dessa.
+                </div>
+            </div>
+
+            <div id="scenarier" class="content-section">
+                <h2>2. Simulering & Scenarier</h2>
+                <p>På skärmens vänstra sida styr du hur Linköpings framtid ska utveckla sig. Du kan göra detta på två sätt:</p>
+                
+                <h3>Snabbscenarier</h3>
+                <p>Genom att klicka på knapparna <strong>Hög tillväxt</strong>, <strong>Låg tillväxt</strong> eller <strong>Stagnerande</strong> appliceras förutbestämda antaganden blixtsnabbt. Dessa nivåer definieras i den bakomliggande Excel-styrfilen. När du klickar körs simuleringen automatiskt.</p>
+                
+                <h3>Manuella reglage</h3>
+                <ul>
+                    <li><strong>Fruktsamhet (TFR):</strong> Total fertilitetsnivå. Historiskt snitt för Linköping är förvalt.</li>
+                    <li><strong>Dödlighet:</strong> Relativ förändring i dödsrisker. Till exempel innebär -10% att dödligheten i varje åldersgrupp minskar (ökad livslängd).</li>
+                    <li><strong>Flyttningsantaganden:</strong> Du kan välja att styra dessa som en <em>procentuell förändring</em> jämfört med det historiska snittet, eller som ett <em>absolut antal personer</em> (+/- per år). Du kan styra inrikes och utrikes flöden, in och ut, helt separat från varandra för att t.ex. simulera ett minskat flyktingmottagande utan att påverka studentinflyttningen.</li>
+                </ul>
+
+                <h3>Jämför scenarier</h3>
+                <p>När du har kört en simulering kan du klicka på <strong>Jämför (Spara)</strong>. Det låser fast din nuvarande prognos i bakgrunden. Du kan därefter ändra reglagen och köra en <em>ny</em> simulering. Graferna visar då båda scenarierna samtidigt (den sparade som streckad linje) för enkel utvärdering.</p>
+            </div>
+
+            <div id="nyckeltal" class="content-section">
+                <h2>3. Nyckeltal & Indikatorer</h2>
+                <p>Rutan med nyckeltal ger en snabb överblick av det valda året i "Granska år"-rullistan.</p>
+                <ul>
+                    <li><strong>Befolkning, Födda, Döda, Nettoflyttning:</strong> Visar de exakta siffrorna för det valda året.</li>
+                    <li><strong>Försörjningskvot:</strong> Ett strategiskt mått som visar hur många personer i "icke-arbetsför" ålder (0-19 år och 65+ år) som teoretiskt behöver försörjas per 100 personer i arbetsför ålder (20-64 år).</li>
+                    <li><strong>Bostadsbehov:</strong> Visar antalet faktiskt byggda bostäder för historiska år (om datan laddats in). För prognosår omvandlas befolkningstillväxten från föregående år till ett teoretiskt bostadsbehov, baserat på den antagna hushållsstorleken från Excel-styrfilen (ex. 2,2 personer/hushåll).</li>
+                </ul>
+            </div>
+
+            <div id="pyramid" class="content-section">
+                <h2>4. Befolkningspyramid & Animering</h2>
+                <p>Pyramiden ger en visuell bild av åldersstrukturen uppdelat på män och kvinnor.</p>
+                <ul>
+                    <li><strong>Följ födelseår:</strong> Genom att skriva in ett årtal (t.ex. <code>1990</code>) i rutan överst, markeras alla personer födda det året med en gul signalfärg. Du kan ange flera år separerade med kommatecken (ex. <code>1945, 1990</code>).</li>
+                    <li><strong>Spela-knappen (Animering):</strong> Genom att klicka på <em>Spela</em> animeras pyramiden kronologiskt år för år. Kombinerat med "Följ födelseår" kan du se hur specifika generationer rör sig genom åldrarna och livet.</li>
+                    <li><strong>Jämförelseläge:</strong> Om du har sparat en prognos för jämförelse och tittar på ett framtida år, ritas den sparade prognosen ut som en ihålig, streckad linje ovanpå den färglagda aktuella prognosen.</li>
+                </ul>
+            </div>
+
+            <div id="diagram" class="content-section">
+                <h2>5. Utvecklingsdiagram & Analys</h2>
+                <p>Det stora trenddiagrammet längst ner har flera avancerade analyslägen. Du navigerar det via rullistorna ovanför diagrammet.</p>
+                
+                <h3>Drill-down (Åldersgrupper)</h3>
+                <p>När "Total Folkmängd" är valt kan du använda rullistan intill för att byta från att visa totalsiffran till att rita ut linjer för specifika åldersgrupper (t.ex. dina egna "Skolgrupper" eller "Omsorgsgrupper" från Excel-filen). Diagrammet byter då till "index-läge".</p>
+
+                <h3>Indexering (Bas = 100)</h3>
+                <p>Vid Drill-down analys dyker en liten kryssruta för "Index" upp. Om den är ikryssad sätts det sista kända historiska året till 100, och linjerna visar tillväxttakten relativt gruppens startstorlek. Kryssar du ur rutan visas istället faktiska antal personer i varje grupp.</p>
+
+                <h3>Tidsperiod (Startår)</h3>
+                <p>Med rullistan "Från..." kan du klippa bort äldre historik och zooma in grafen på exempelvis de senaste 15 åren för att få en mer relevant vy över nutidstrenderna.</p>
+            </div>
+
+            <div id="export" class="content-section">
+                <h2>6. Dataexport (CSV)</h2>
+                <p>Kalkylatorn erbjuder två sätt att exportera data till Excel för vidare analys eller presentation:</p>
+                <ul>
+                    <li><strong>Tabellvy (Befolkningstabell):</strong> Finns vid pyramiden. Visar åldersuppdelning för ett enskilt år. Ladda ner datan exakt så som du valt att gruppera den i menyn (1-år, 5-år eller egen styrfilsgruppering).</li>
+                    <li><strong>Tabellvy (Förändringar):</strong> Finns vid utvecklingsdiagrammet. Visar aggregerade förändringar år för år. Vid nedladdning sparas även parametrarna för ditt valda scenario i toppen av Excel-filen!</li>
+                </ul>
+            </div>
+
+            <div id="styrfil" class="content-section">
+                <h2>7. Excel-styrfilen (Förvaltning)</h2>
+                <p>Hjärnan bakom många av valen i kalkylatorn är filen <code>styrfil_prognoskalkylator.xlsx</code>. Genom att uppdatera denna och sedan köra Python-skriptet uppdateras kalkylatorn automatiskt utan att någon programmering krävs.</p>
+                
+                <p>Den förväntar sig följande fyra flikar:</p>
+                <ul class="mb-4">
+                    <li><strong>Åldersgrupper:</strong> Kolumn A måste heta <code>Ålder</code> (0-100). Övriga kolumner blir valbara grupperingsalternativ i webbappen. Skriv rubriker intill de åldrar som ska slås samman, lämna tomt om åldern inte ska ingå.</li>
+                    <li><strong>Tillväxt:</strong> Här definieras de tre snabbscenarierna. Raderna ska vara <em>Fruktsamhet, Dödlighet, Inrikes inflyttning, Inrikes utflyttning, Utrikes invandring, Utrikes utvandring</em>. Kolumnerna ska heta <em>Hög tillväxt, Låg tillväxt, Stagnerande</em>.</li>
+                    <li><strong>Färdigställda_bostäder:</strong> Kräver kolumnerna <code>År</code> och <code>Färdigställda_bostäder</code> för att visa historiskt utfall i KPI-boxen.</li>
+                    <li><strong>Hushållsstorlek:</strong> Kräver kolumnerna <code>Prognosår</code> och <code>Hushållsstorlek</code>. Bestämmer hur många invånare som krävs för att skapa behov av en ny bostad i prognosen.</li>
+                </ul>
+                <p>Om filen eller specifika flikar saknas använder kalkylatorn inbyggda standardvärden.</p>
+            </div>
+
+            <div id="publicering" class="content-section mb-10">
+                <h2>8. Publicering (GitHub Pages)</h2>
+                <p>För att publicera kalkylatorn så att andra kan använda den via en webblänk (t.ex. på GitHub Pages eller ett intranät), behöver du säkerställa att rätt filer laddas upp till ditt repository.</p>
+
+                <h3>Filer för webbgränssnittet (Måste laddas upp):</h3>
+                <p>Dessa filer krävs för att webbsidan och interaktionen ska fungera online:</p>
+                <ul>
+                    <li><code>index.html</code> (Din startmeny)</li>
+                    <li><code>prognoskalkylator.html</code> (Själva kalkylatorn)</li>
+                    <li><code>anvandarguide_prognos.html</code> (Denna guide)</li>
+                    <li><code>kalkylator_basdata.json</code> (Databasen, som genererats av Python-skriptet)</li>
+                    <li><code>styrfil_config.json</code> (Dina konfigurationer, genererad av Python-skriptet)</li>
+                </ul>
+
+                <h3>Filer för förvaltning (Valfritt att publicera):</h3>
+                <p>För att du eller dina kollegor ska kunna uppdatera kalkylatorn med ny SCB-data i framtiden är det god praxis (versionshantering) att även ladda upp "motorn" i projektet:</p>
+                <ul>
+                    <li><code>historisk_data_inlasning.py</code> (Python-skriptet som rensar datan)</li>
+                    <li><code>styrfil_prognoskalkylator.xlsx</code> (Din inställningsfil)</li>
+                    <li>Eventuella rådatafiler (.csv/.px) från SCB om de inte hämtas via API.</li>
+                    <li><code>README.md</code> (Rekommenderas varmt för att förklara hur projektet fungerar för andra utvecklare).</li>
+                </ul>
+                <div class="highlight">
+                    <strong>Tänk på:</strong> Själva webbläsaren kan inte köra Python eller läsa Excel-filer direkt. Dessa filer används enbart av dig lokalt på din dator för att "bygga" nya JSON-filer. Webbsidan på GitHub läser sedan endast av JSON-filerna.
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 border-t border-gray-200 mt-auto py-5">
+        <div class="container mx-auto px-4 text-center text-sm font-medium text-gray-500">
+            &copy; Utvecklad av Analys & Utredning, Linköpings kommun
+        </div>
+    </footer>
+
+</body>
+</html>

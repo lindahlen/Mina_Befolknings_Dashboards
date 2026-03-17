@@ -1,0 +1,850 @@
+{
+  "age_groups": [
+    {
+      "Ålder": 0,
+      "Funktionell ålder": "0 år",
+      "Förkoleålder": "0 år",
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 1,
+      "Funktionell ålder": "1-3 år",
+      "Förkoleålder": "1-3 år",
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 2,
+      "Funktionell ålder": "1-3 år",
+      "Förkoleålder": "1-3 år",
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 3,
+      "Funktionell ålder": "1-3 år",
+      "Förkoleålder": "1-3 år",
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 4,
+      "Funktionell ålder": "4-5 år",
+      "Förkoleålder": "4-5 år",
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 5,
+      "Funktionell ålder": "4-5 år",
+      "Förkoleålder": "4-5 år",
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 6,
+      "Funktionell ålder": "6-9 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": "6-9 år",
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 7,
+      "Funktionell ålder": "6-9 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": "6-9 år",
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 8,
+      "Funktionell ålder": "6-9 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": "6-9 år",
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 9,
+      "Funktionell ålder": "6-9 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": "6-9 år",
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 10,
+      "Funktionell ålder": "10-12 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": "10-12 år",
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 11,
+      "Funktionell ålder": "10-12 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": "10-12 år",
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 12,
+      "Funktionell ålder": "10-12 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": "10-12 år",
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 13,
+      "Funktionell ålder": "13-15 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": "13-15 år",
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 14,
+      "Funktionell ålder": "13-15 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": "13-15 år",
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 15,
+      "Funktionell ålder": "13-15 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": "13-15 år",
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 16,
+      "Funktionell ålder": "16-18 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 17,
+      "Funktionell ålder": "16-18 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 18,
+      "Funktionell ålder": "16-18 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 19,
+      "Funktionell ålder": "19-24 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "0-19 år"
+    },
+    {
+      "Ålder": 20,
+      "Funktionell ålder": "19-24 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 21,
+      "Funktionell ålder": "19-24 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 22,
+      "Funktionell ålder": "19-24 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 23,
+      "Funktionell ålder": "19-24 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 24,
+      "Funktionell ålder": "19-24 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 25,
+      "Funktionell ålder": "25-34 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 26,
+      "Funktionell ålder": "25-34 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 27,
+      "Funktionell ålder": "25-34 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 28,
+      "Funktionell ålder": "25-34 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 29,
+      "Funktionell ålder": "25-34 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 30,
+      "Funktionell ålder": "25-34 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 31,
+      "Funktionell ålder": "25-34 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 32,
+      "Funktionell ålder": "25-34 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 33,
+      "Funktionell ålder": "25-34 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 34,
+      "Funktionell ålder": "25-34 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 35,
+      "Funktionell ålder": "35-44 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 36,
+      "Funktionell ålder": "35-44 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 37,
+      "Funktionell ålder": "35-44 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 38,
+      "Funktionell ålder": "35-44 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 39,
+      "Funktionell ålder": "35-44 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 40,
+      "Funktionell ålder": "35-44 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 41,
+      "Funktionell ålder": "35-44 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 42,
+      "Funktionell ålder": "35-44 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 43,
+      "Funktionell ålder": "35-44 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 44,
+      "Funktionell ålder": "35-44 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 45,
+      "Funktionell ålder": "45-54 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 46,
+      "Funktionell ålder": "45-54 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 47,
+      "Funktionell ålder": "45-54 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 48,
+      "Funktionell ålder": "45-54 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 49,
+      "Funktionell ålder": "45-54 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 50,
+      "Funktionell ålder": "45-54 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 51,
+      "Funktionell ålder": "45-54 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 52,
+      "Funktionell ålder": "45-54 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 53,
+      "Funktionell ålder": "45-54 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 54,
+      "Funktionell ålder": "45-54 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 55,
+      "Funktionell ålder": "55-64 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 56,
+      "Funktionell ålder": "55-64 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 57,
+      "Funktionell ålder": "55-64 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 58,
+      "Funktionell ålder": "55-64 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 59,
+      "Funktionell ålder": "55-64 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 60,
+      "Funktionell ålder": "55-64 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 61,
+      "Funktionell ålder": "55-64 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 62,
+      "Funktionell ålder": "55-64 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 63,
+      "Funktionell ålder": "55-64 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 64,
+      "Funktionell ålder": "55-64 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": NaN,
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 65,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "65-74 år",
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 66,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "65-74 år",
+      "SKR ålder": "20-66 år"
+    },
+    {
+      "Ålder": 67,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "65-74 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 68,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "65-74 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 69,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "65-74 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 70,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "65-74 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 71,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "65-74 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 72,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "65-74 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 73,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "65-74 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 74,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "65-74 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 75,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "75-84 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 76,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "75-84 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 77,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "75-84 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 78,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "75-84 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 79,
+      "Funktionell ålder": "65-79 år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "75-84 år",
+      "SKR ålder": "67-79 år"
+    },
+    {
+      "Ålder": 80,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "75-84 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 81,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "75-84 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 82,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "75-84 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 83,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "75-84 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 84,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "75-84 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 85,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "85-94 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 86,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "85-94 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 87,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "85-94 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 88,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "85-94 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 89,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "85-94 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 90,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "85-94 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 91,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "85-94 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 92,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "85-94 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 93,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "85-94 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 94,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "85-94 år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 95,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "95+ år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 96,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "95+ år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 97,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "95+ år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 98,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "95+ år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 99,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "95+ år",
+      "SKR ålder": "80+ år"
+    },
+    {
+      "Ålder": 100,
+      "Funktionell ålder": "80+ år",
+      "Förkoleålder": NaN,
+      "Grundskoleålder": NaN,
+      "Pensionsåldrar": "95+ år",
+      "SKR ålder": "80+ år"
+    }
+  ],
+  "household_sizes": {
+    "2026": 2.04,
+    "2027": 2.02,
+    "2028": 2.0,
+    "2029": 1.99,
+    "2030": 1.99,
+    "2031": 1.98,
+    "2032": 1.97,
+    "2033": 1.97,
+    "2034": 1.96,
+    "2035": 1.96
+  },
+  "scenarios": {
+    "high": {
+      "tfr": 1.95,
+      "mort": -10.0,
+      "inIn": 10.0,
+      "inUt": -5.0,
+      "utIn": 20.0,
+      "utUt": -10.0
+    },
+    "low": {
+      "tfr": 1.35,
+      "mort": 5.0,
+      "inIn": -10.0,
+      "inUt": 10.0,
+      "utIn": -20.0,
+      "utUt": 15.0
+    },
+    "stagnant": {
+      "tfr": 1.5,
+      "mort": 0.0,
+      "inIn": 0.0,
+      "inUt": 0.0,
+      "utIn": 0.0,
+      "utUt": 0.0
+    }
+  }
+}
