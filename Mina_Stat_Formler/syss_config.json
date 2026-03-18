@@ -1,0 +1,1055 @@
+{
+  "Flyttningar": [
+    {
+      "Prognosår": 2025,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    },
+    {
+      "Prognosår": 2026,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    },
+    {
+      "Prognosår": 2027,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    },
+    {
+      "Prognosår": 2028,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    },
+    {
+      "Prognosår": 2029,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    },
+    {
+      "Prognosår": 2030,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    },
+    {
+      "Prognosår": 2031,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    },
+    {
+      "Prognosår": 2032,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    },
+    {
+      "Prognosår": 2033,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    },
+    {
+      "Prognosår": 2034,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    },
+    {
+      "Prognosår": 2035,
+      "Riket_16-18_år": 10,
+      "Riket_19-24_år": 10,
+      "Riket_25-29_år": 10,
+      "Riket_30-34_år": 10,
+      "Riket_35-39_år": 10,
+      "Riket_40-44_år": 10,
+      "Riket_45-49_år": 10
+    }
+  ],
+  "Flyttåldrar": [
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2025,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2026,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2027,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2028,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2029,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2030,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2031,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2032,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2033,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2034,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2035,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2025,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2026,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2027,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2028,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2029,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2030,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2031,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2032,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2033,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2034,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2035,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    }
+  ],
+  "Universitet": [
+    {
+      "År": 2000,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2001,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2002,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2003,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2004,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2005,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2006,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2007,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2008,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2009,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2010,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2011,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2012,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2013,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2014,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2015,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2016,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2017,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2018,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2019,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2020,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2021,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2022,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2023,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2024,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2025,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2026,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2027,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2028,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2029,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2030,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2031,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2032,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2033,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2034,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    },
+    {
+      "År": 2035,
+      "Examinerade studenter": 8000,
+      "Civilingenjörer": 3000,
+      "Civilekonomer": 2000,
+      "Datatekniker": 500,
+      "Övriga": 2500,
+      "Kvar_ingenjörer": 30,
+      "Kvar_ekonomer": 25,
+      "Kvar_tekniker": 35,
+      "Kvar_övriga": 20
+    }
+  ],
+  "Distans": [
+    {
+      "Prognosår": 2025,
+      "Distansarbete": 30
+    },
+    {
+      "Prognosår": 2026,
+      "Distansarbete": 30
+    },
+    {
+      "Prognosår": 2027,
+      "Distansarbete": 30
+    },
+    {
+      "Prognosår": 2028,
+      "Distansarbete": 30
+    },
+    {
+      "Prognosår": 2029,
+      "Distansarbete": 30
+    },
+    {
+      "Prognosår": 2030,
+      "Distansarbete": 30
+    },
+    {
+      "Prognosår": 2031,
+      "Distansarbete": 30
+    },
+    {
+      "Prognosår": 2032,
+      "Distansarbete": 30
+    },
+    {
+      "Prognosår": 2033,
+      "Distansarbete": 30
+    },
+    {
+      "Prognosår": 2034,
+      "Distansarbete": 30
+    },
+    {
+      "Prognosår": 2035,
+      "Distansarbete": 30
+    }
+  ],
+  "Branschkvalitet": [
+    {
+      "Prognosår": 2025,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    },
+    {
+      "Prognosår": 2026,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    },
+    {
+      "Prognosår": 2027,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    },
+    {
+      "Prognosår": 2028,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    },
+    {
+      "Prognosår": 2029,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    },
+    {
+      "Prognosår": 2030,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    },
+    {
+      "Prognosår": 2031,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    },
+    {
+      "Prognosår": 2032,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    },
+    {
+      "Prognosår": 2033,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    },
+    {
+      "Prognosår": 2034,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    },
+    {
+      "Prognosår": 2035,
+      "Branschstyrka_transportmedel": 10,
+      "Branschstyrka_datateknik": 10
+    }
+  ],
+  "Matchning": [
+    {
+      "Prognosår": 2025,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2026,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2027,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2028,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2029,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2030,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2031,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2032,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2033,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2034,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2035,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    }
+  ],
+  "Behov": [
+    {
+      "Prognosår": 2025,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    },
+    {
+      "Prognosår": 2026,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    },
+    {
+      "Prognosår": 2027,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    },
+    {
+      "Prognosår": 2028,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    },
+    {
+      "Prognosår": 2029,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    },
+    {
+      "Prognosår": 2030,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    },
+    {
+      "Prognosår": 2031,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    },
+    {
+      "Prognosår": 2032,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    },
+    {
+      "Prognosår": 2033,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    },
+    {
+      "Prognosår": 2034,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    },
+    {
+      "Prognosår": 2035,
+      "Behov_transportmedel": 10,
+      "Behov_datateknik": 10
+    }
+  ],
+  "Dummy": [
+    {
+      "Prognosår": 2025,
+      "Typ": "Ja"
+    },
+    {
+      "Prognosår": 2026,
+      "Typ": "Ja"
+    },
+    {
+      "Prognosår": 2027,
+      "Typ": "Ja"
+    },
+    {
+      "Prognosår": 2028,
+      "Typ": "Ja"
+    },
+    {
+      "Prognosår": 2029,
+      "Typ": "Ja"
+    },
+    {
+      "Prognosår": 2030,
+      "Typ": "Nej"
+    },
+    {
+      "Prognosår": 2031,
+      "Typ": "Nej"
+    },
+    {
+      "Prognosår": 2032,
+      "Typ": "Nej"
+    },
+    {
+      "Prognosår": 2033,
+      "Typ": "Nej"
+    },
+    {
+      "Prognosår": 2034,
+      "Typ": "Nej"
+    },
+    {
+      "Prognosår": 2035,
+      "Typ": "Nej"
+    }
+  ]
+}

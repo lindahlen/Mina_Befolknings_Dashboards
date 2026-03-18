@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Analys & Utredning, Linköpings kommun">
+    <title>Sysselsättningskalkylator - Linköpings kommun</title>
+    
+    <!-- Tailwind CSS för styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Chart.js för grafer -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- FontAwesome för ikoner -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; }
+        .card { background-color: white; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 1.5rem; }
+        .slider-container { margin-bottom: 1.2rem; }
+        input[type=range] { width: 100%; accent-color: #0ea5e9; } 
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-slate-800 text-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div class="flex items-center gap-4">
+                <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" class="h-12 w-auto hidden sm:block" onerror="this.style.display='none'">
+                <div>
+                    <h1 class="text-2xl font-bold"><i class="fa-solid fa-briefcase mr-2"></i> Sysselsättningskalkylator: Linköping</h1>
+                    <div class="text-sm font-medium text-slate-300 mt-1">Arbetskraftsutbud, Efterfrågan & Kompetensgap</div>
+                </div>
+            </div>
+            <div class="flex gap-2 self-end md:self-center">
+                <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center border border-slate-600">
+                    <i class="fa-solid fa-arrow-left mr-1.5"></i> Startmeny
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Huvudinnehåll -->
+    <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-6 flex-grow">
+        
+        <!-- Vänster kolumn: Kontrollpanel -->
+        <aside class="w-full md:w-1/3 flex flex-col gap-6">
+            
+            <div class="card border-t-4 border-slate-600">
+                <h2 class="text-lg font-bold mb-4">1. Datamotor & Kopplingar</h2>
+                <div id="dataStatus" class="p-3 bg-slate-50 rounded border border-slate-200 text-sm font-medium text-amber-600">
+                    <i class="fa-solid fa-spinner fa-spin"></i> Ansluter till basdatabaser...
+                </div>
+            </div>
+
+            <!-- Scenariokontroller -->
+            <div class="card opacity-50 pointer-events-none transition-opacity duration-300" id="scenarioPanel">
+                <h2 class="text-lg font-bold mb-4">2. Scenariomodellering (10 år)</h2>
+                <p class="text-xs text-gray-500 mb-4">Dra i reglagen för att styra framtidens arbetsmarknad i Linköping.</p>
+                
+                <div class="slider-container">
+                    <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700">
+                        <span>Lokal Jobbtillväxt (Totalt över 10 år)</span>
+                        <span id="jobGrowthVal" class="text-slate-600 font-bold">+0%</span>
+                    </label>
+                    <input type="range" id="jobGrowthSlider" min="-10" max="30" step="1" value="0" oninput="document.getElementById('jobGrowthVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
+                </div>
+
+                <div class="slider-container">
+                    <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700">
+                        <span>Sysselsättningsgrad (Förändring)</span>
+                        <span id="syssGradVal" class="text-slate-600 font-bold">Oförändrad</span>
+                    </label>
+                    <input type="range" id="syssGradSlider" min="-5" max="5" step="0.5" value="0" oninput="document.getElementById('syssGradVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enheter'">
+                </div>
+
+                <div class="slider-container">
+                    <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Andel examinerade studenter från LiU som stannar kvar och jobbar i kommunen.">
+                        <span>Kvarstannandegrad (Studenter)</span>
+                        <span id="studentVal" class="text-slate-600 font-bold">Baslinje</span>
+                    </label>
+                    <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="document.getElementById('studentVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enheter'">
+                </div>
+
+                <div class="flex gap-2 mt-5">
+                    <button id="simBtn" onclick="runSimulation()" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-3 rounded transition flex items-center justify-center shadow-md text-sm">
+                        <i class="fa-solid fa-gears mr-2"></i> Kör / Uppdatera
+                    </button>
+                    <button onclick="resetSimulation()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-3 rounded transition flex items-center justify-center shadow-sm text-sm">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Nollställ
+                    </button>
+                </div>
+            </div>
+            
+        </aside>
+
+        <!-- Höger kolumn: Grafer och Nyckeltal -->
+        <main class="w-full md:w-2/3 flex flex-col gap-6">
+            
+            <!-- Nyckeltal (KPI) -->
+            <div class="flex flex-col gap-3">
+                <div class="flex justify-between items-end">
+                    <h2 class="text-xl font-bold text-gray-800">Nyckeltal</h2>
+                    <!-- Rullista för Nyckeltal -->
+                    <select id="yearSelect" class="border border-gray-300 rounded p-1 text-sm bg-white font-medium shadow-sm" onchange="updateKPIs()" title="Välj år för att uppdatera nyckeltalen nedan">
+                        <option value="">Laddar...</option>
+                    </select>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="kpiContainer">
+                    <div class="card text-center p-3 border-b-4 border-sky-500">
+                        <div class="text-xs text-gray-500 font-medium">Utbud (Nattbefolkning)</div>
+                        <div class="text-xl font-bold text-gray-800" id="kpiUtbud">-</div>
+                    </div>
+                    <div class="card text-center p-3 border-b-4 border-emerald-500">
+                        <div class="text-xs text-gray-500 font-medium">Efterfrågan (Jobb/Dag)</div>
+                        <div class="text-xl font-bold text-gray-800" id="kpiEfterfragan">-</div>
+                    </div>
+                    <div class="card text-center p-3 border-b-4 border-indigo-500" title="Inpendlare minus Utpendlare (Positivt = Fler inpendlare)">
+                        <div class="text-xs text-gray-500 font-medium">Pendlingsnetto (Gap)</div>
+                        <div class="text-xl font-bold text-gray-800" id="kpiPendling">-</div>
+                    </div>
+                    <div class="card text-center p-3 border-b-4 border-amber-500" title="Beräknad genomsnittlig sysselsättningsgrad 16-74 år">
+                        <div class="text-xs text-gray-500 font-medium">Sysselsättningsgrad</div>
+                        <div class="text-xl font-bold text-gray-800" id="kpiSyssGrad">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Historisk trend & Förändringar -->
+            <div class="card flex-grow flex flex-col mt-2">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold" id="trendTitle">Utbud vs Efterfrågan</h2>
+                    <!-- Rullista för Startår i Grafen -->
+                    <select id="startYearSelect" class="border border-gray-300 rounded p-1 text-sm bg-white font-medium" onchange="updateDashboard()" title="Välj startår för grafen">
+                        <option value="">Laddar...</option>
+                    </select>
+                </div>
+                <p class="text-sm text-gray-600 mb-4">Grafen visar hur många arbetstillfällen (grönt) som finns i Linköping i relation till hur många kommuninvånare som befinner sig i sysselsättning (blått). Gapet dem emellan utgör det lokala rekryteringsbehovet (pendlingsnettot).</p>
+                <div class="relative h-80 w-full mb-2 flex-grow">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Globala variabler
+        let syssBasdata = {};
+        let syssConfig = {};
+        let popData = []; 
+        
+        let histDataStore = {}; // Lagrar historik per år
+        let progDataStore = {}; // Lagrar prognos per år
+        
+        let trendChartInstance = null;
+        let allYears = [];
+        let baseYear = 0; // Det faktiska basåret vi simulerar utifrån
+
+        const formatNumber = (num, decimals = 0) => Number(num).toLocaleString('sv-SE', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+
+        async function fetchJSON(url) {
+            const res = await fetch(url);
+            if (!res.ok) return null; 
+            let text = await res.text(); 
+            // Städa bort eventuella skadade NaN-värden från Python
+            text = text.replace(/:\s*NaN/g, ': null');
+            try {
+                return JSON.parse(text); 
+            } catch (e) {
+                throw new Error(`Ogiltigt dataformat i ${url.split('?')[0]}. Felkod: ${e.message}`);
+            }
+        }
+
+        // 1. LADDNING AV DATA
+        window.addEventListener('DOMContentLoaded', () => {
+            const cb = '?v=' + new Date().getTime(); 
+            
+            Promise.all([
+                fetchJSON('syss_basdata.json' + cb),
+                fetchJSON('syss_config.json' + cb),
+                fetchJSON('kalkylator_basdata.json' + cb).catch(() => null)
+            ]).then(([sBas, sConf, pBas]) => {
+                const statusDiv = document.getElementById('dataStatus');
+                if (!sBas) {
+                    statusDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Hittade inte "syss_basdata.json".';
+                    statusDiv.className = "p-3 bg-red-50 rounded border border-red-100 text-sm font-medium text-red-600";
+                    return;
+                }
+
+                syssBasdata = sBas;
+                syssConfig = sConf || {};
+                popData = pBas || [];
+
+                let popStatus = popData.length > 0 ? "Befolkning kopplad." : "VARNING: Saknar befolkningsdata!";
+                statusDiv.innerHTML = `<i class="fa-solid fa-circle-check"></i> System redo! Syss-flikar inlästa. <b>${popStatus}</b>`;
+                statusDiv.className = "p-3 bg-green-50 rounded border border-green-100 text-sm font-medium text-green-600";
+                
+                document.getElementById('scenarioPanel').classList.remove('opacity-50', 'pointer-events-none');
+
+                extractHistoricalData();
+                updateDashboard();
+            }).catch(error => {
+                const statusDiv = document.getElementById('dataStatus');
+                statusDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <b>Krasch:</b> ${error.message}`;
+                statusDiv.className = "p-3 bg-red-50 rounded border border-red-100 text-sm font-medium text-red-600";
+            });
+        });
+
+        // 2. EXTRAHERA HISTORIK
+        function extractHistoricalData() {
+            const dfSektor = syssBasdata['Syss_sektor'] || [];
+            const dfNatt = syssBasdata['Natt_ålder'] || [];
+            const dfSyssGrad = syssBasdata['Syssgrad'] || [];
+            
+            // Hitta alla år från alla relevanta flikar (Pansarsäker sökning)
+            let years = new Set();
+            dfSektor.forEach(r => { if(r['År']) years.add(parseInt(r['År'])); });
+            dfNatt.forEach(r => { if(r['År']) years.add(parseInt(r['År'])); });
+            dfSyssGrad.forEach(r => { if(r['År']) years.add(parseInt(r['År'])); });
+            
+            const sortedYears = Array.from(years).filter(y => !isNaN(y)).sort((a,b)=>a-b);
+            if (sortedYears.length === 0) return;
+
+            histDataStore = {};
+            sortedYears.forEach(y => {
+                let dagTotalt = 0;
+                dfSektor.filter(r => r['År'] == y).forEach(r => {
+                    if (r['Totalt'] !== null && r['Totalt'] !== undefined) dagTotalt += parseFloat(r['Totalt'] || 0);
+                });
+                
+                let nattTotalt = 0;
+                dfNatt.filter(r => r['År'] == y && r['Kön'] === 'Totalt').forEach(r => {
+                    if (r['Totalt 16-74 år'] !== null && r['Totalt 16-74 år'] !== undefined) nattTotalt += parseFloat(r['Totalt 16-74 år'] || 0);
+                });
+                if(nattTotalt === 0) {
+                    dfNatt.filter(r => r['År'] == y && (r['Kön'] === 'Män' || r['Kön'] === 'Kvinnor')).forEach(r => {
+                        if (r['Totalt 16-74 år'] !== null && r['Totalt 16-74 år'] !== undefined) nattTotalt += parseFloat(r['Totalt 16-74 år'] || 0);
+                    });
+                }
+
+                let pop16_74 = 0;
+                if(popData.length > 0) {
+                    popData.filter(r => String(r.tid) === String(y) && !String(r.ålder).includes('Totalt')).forEach(r => {
+                        const match = String(r.ålder).match(/\d+/);
+                        if (match) {
+                            const age = parseInt(match[0]);
+                            if(age >= 16 && age <= 74) pop16_74 += (r.Befolkning || 0);
+                        }
+                    });
+                }
+                
+                // Om vi saknar bakomliggande demografi för året, uppskatta befolkningen
+                if(pop16_74 === 0 && nattTotalt > 0) pop16_74 = nattTotalt / 0.70; 
+
+                let rate = null;
+                if (pop16_74 > 0 && nattTotalt > 0) {
+                    rate = (nattTotalt / pop16_74) * 100;
+                }
+
+                histDataStore[y] = { 
+                    demand: dagTotalt > 0 ? dagTotalt : null, 
+                    supply: nattTotalt > 0 ? nattTotalt : null, 
+                    pop: pop16_74 > 0 ? pop16_74 : null,
+                    rate: rate
+                };
+            });
+
+            // Smart basårs-sökning: Sätt baseYear till det sista året som FAKTISKT har både utbud och efterfrågan.
+            baseYear = sortedYears[sortedYears.length - 1];
+            for (let i = sortedYears.length - 1; i >= 0; i--) {
+                let y = sortedYears[i];
+                if (histDataStore[y].demand !== null && histDataStore[y].supply !== null) {
+                    baseYear = y;
+                    break;
+                }
+            }
+        }
+
+        // 3. KÖR MODELL (SIMULERING)
+        function runSimulation() {
+            const btn = document.getElementById('simBtn');
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Beräknar...';
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            setTimeout(() => {
+                const jobGrowthPct = parseFloat(document.getElementById('jobGrowthSlider').value); // Totalt % över 10 år
+                const syssGradChange = parseFloat(document.getElementById('syssGradSlider').value); // %-enheter över 10 år
+                const studentChange = parseFloat(document.getElementById('studentSlider').value); // Implementeras i nästa modul!
+
+                const base = histDataStore[baseYear];
+                progDataStore = {};
+
+                for (let i = 1; i <= 10; i++) {
+                    const forecastYear = baseYear + i;
+                    
+                    // 1. Beräkna framtida Efterfrågan (Jobb/Dagbefolkning)
+                    const demandGrowthFactor = 1 + ((jobGrowthPct / 100) * (i / 10));
+                    const futureDemand = base.demand * demandGrowthFactor;
+
+                    // 2. Beräkna framtida Demografi (16-74 år)
+                    let futurePop = 0;
+                    if(popData.length > 0) {
+                        popData.filter(r => String(r.tid).includes(forecastYear) && !String(r.ålder).includes('Totalt')).forEach(r => {
+                            const match = String(r.ålder).match(/\d+/);
+                            if (match) {
+                                const age = parseInt(match[0]);
+                                if(age >= 16 && age <= 74) futurePop += (r.Befolkning || 0);
+                            }
+                        });
+                    }
+                    if(futurePop === 0) futurePop = base.pop; // Flat om prognos saknas
+
+                    // 3. Beräkna framtida Sysselsättningsgrad och Utbud
+                    const targetRate = base.rate + syssGradChange;
+                    const futureRate = base.rate + ((targetRate - base.rate) * (i / 10));
+                    const futureSupply = futurePop * (futureRate / 100);
+
+                    progDataStore[forecastYear] = {
+                        demand: futureDemand,
+                        supply: futureSupply,
+                        pop: futurePop,
+                        rate: futureRate
+                    };
+                }
+
+                updateDashboard();
+
+                btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Simulering Klar!';
+                btn.classList.replace('bg-slate-700', 'bg-green-600');
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fa-solid fa-gears mr-2"></i> Kör / Uppdatera';
+                    btn.classList.replace('bg-green-600', 'bg-slate-700');
+                    btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                }, 2000);
+
+            }, 200);
+        }
+
+        // 4. NOLLSTÄLLNING
+        function resetSimulation() {
+            // Nollställ sliders
+            document.getElementById('jobGrowthSlider').value = 0;
+            document.getElementById('jobGrowthVal').innerText = '+0%';
+            document.getElementById('syssGradSlider').value = 0;
+            document.getElementById('syssGradVal').innerText = 'Oförändrad';
+            document.getElementById('studentSlider').value = 0;
+            document.getElementById('studentVal').innerText = 'Baslinje';
+
+            // Rensa framtidsdata
+            progDataStore = {}; 
+
+            // Återställ knapp
+            const btn = document.getElementById('simBtn');
+            btn.innerHTML = '<i class="fa-solid fa-gears mr-2"></i> Kör / Uppdatera';
+            btn.className = "flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-3 rounded transition flex items-center justify-center shadow-md text-sm";
+
+            // Rita om
+            updateDashboard();
+        }
+
+        // 5. UPPDATERA DASHBOARD (Graf och Rullista)
+        function updateDashboard() {
+            const histYears = Object.keys(histDataStore).map(Number).sort((a,b)=>a-b);
+            const progYears = Object.keys(progDataStore).map(Number).sort((a,b)=>a-b);
+            allYears = [...histYears, ...progYears];
+
+            // --- Rullista för KPI (Årtal) ---
+            const yearSelect = document.getElementById('yearSelect');
+            const currVal = yearSelect.value;
+            yearSelect.innerHTML = '';
+            
+            if (allYears.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = ""; opt.textContent = "Data saknas";
+                yearSelect.appendChild(opt);
+            } else {
+                [...allYears].reverse().forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y; 
+                    opt.textContent = progYears.includes(y) ? y + " (Prognos)" : y;
+                    if(progYears.includes(y)) opt.className = "text-sky-700 font-bold bg-sky-50";
+                    yearSelect.appendChild(opt);
+                });
+                
+                if (currVal && allYears.includes(parseInt(currVal))) {
+                    yearSelect.value = currVal;
+                } else {
+                    yearSelect.value = allYears[allYears.length - 1]; 
+                }
+            }
+
+            // --- Rullista för Graf (Startår) ---
+            const startYearSelect = document.getElementById('startYearSelect');
+            const currStart = startYearSelect.value;
+            
+            // Tvinga alltid ombyggnation av rullistan för att undvika frys-buggen
+            startYearSelect.innerHTML = ''; 
+            if (histYears.length === 0) {
+                const opt = document.createElement('option');
+                opt.value = ""; opt.textContent = "Data saknas";
+                startYearSelect.appendChild(opt);
+            } else {
+                histYears.forEach(y => {
+                    const opt = document.createElement('option');
+                    opt.value = y; opt.textContent = 'Från ' + y;
+                    startYearSelect.appendChild(opt);
+                });
+                if (currStart && histYears.includes(parseInt(currStart))) {
+                    startYearSelect.value = currStart;
+                } else {
+                    startYearSelect.value = histYears[0];
+                }
+            }
+
+            const graphStartYear = parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0);
+
+            // Titel
+            document.getElementById('trendTitle').innerText = progYears.length > 0 ? "Utbud vs Efterfrågan (Prognos)" : "Utbud vs Efterfrågan (Historisk Baslinje)";
+
+            // Bygg dataset för Chart.js baserat på valt startår
+            let labels = [];
+            let hDemand = [], hSupply = [];
+            let pDemand = [], pSupply = [];
+
+            allYears.forEach(y => {
+                if (y >= graphStartYear) {
+                    labels.push(y);
+                    
+                    if (histDataStore[y]) {
+                        hDemand.push(histDataStore[y].demand);
+                        hSupply.push(histDataStore[y].supply);
+                        pDemand.push(y === baseYear ? histDataStore[y].demand : null); 
+                        pSupply.push(y === baseYear ? histDataStore[y].supply : null); 
+                    } else if (progDataStore[y]) {
+                        hDemand.push(null);
+                        hSupply.push(null);
+                        pDemand.push(progDataStore[y].demand);
+                        pSupply.push(progDataStore[y].supply);
+                    }
+                }
+            });
+
+            drawChart(labels, hDemand, hSupply, pDemand, pSupply);
+            updateKPIs();
+        }
+
+        // 6. UPPDATERA KPI:er
+        function updateKPIs() {
+            const yearStr = document.getElementById('yearSelect').value;
+            if(!yearStr) return;
+            const y = parseInt(yearStr);
+
+            let d = histDataStore[y] || progDataStore[y];
+            if (!d) return;
+
+            document.getElementById('kpiEfterfragan').innerText = d.demand !== null ? formatNumber(d.demand) : 'Data saknas';
+            document.getElementById('kpiUtbud').innerText = d.supply !== null ? formatNumber(d.supply) : 'Data saknas';
+            
+            if (d.demand !== null && d.supply !== null) {
+                const netto = d.demand - d.supply;
+                document.getElementById('kpiPendling').innerText = (netto > 0 ? '+' : '') + formatNumber(netto);
+                document.getElementById('kpiPendling').className = "text-xl font-bold " + (netto > 0 ? "text-indigo-600" : "text-red-600");
+            } else {
+                document.getElementById('kpiPendling').innerText = 'Data saknas';
+                document.getElementById('kpiPendling').className = "text-xl font-bold text-gray-400";
+            }
+            
+            document.getElementById('kpiSyssGrad').innerText = d.rate !== null ? formatNumber(d.rate, 1) + '%' : 'Data saknas';
+        }
+
+        // 7. RITA GRAF MED HISTORIK OCH PROGNOS
+        function drawChart(labels, hDemand, hSupply, pDemand, pSupply) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (trendChartInstance) trendChartInstance.destroy();
+
+            const hasProg = pDemand.some(v => v !== null && labels[pDemand.indexOf(v)] !== baseYear);
+
+            let datasets = [
+                {
+                    label: 'Efterfrågan (Jobb) - Historik',
+                    data: hDemand,
+                    borderColor: '#10b981', backgroundColor: 'transparent',
+                    borderWidth: 3, pointStyle: 'rect',
+                    spanGaps: true 
+                },
+                {
+                    label: 'Utbud (Arbetskraft) - Historik',
+                    data: hSupply,
+                    borderColor: '#0ea5e9', backgroundColor: 'transparent',
+                    borderWidth: 3, pointStyle: 'circle',
+                    spanGaps: true
+                }
+            ];
+
+            if (hasProg) {
+                datasets.push({
+                    label: 'Efterfrågan (Jobb) - Prognos',
+                    data: pDemand,
+                    borderColor: '#10b981', backgroundColor: 'transparent',
+                    borderWidth: 3, borderDash: [5, 5], pointStyle: 'rect'
+                });
+                datasets.push({
+                    label: 'Utbud (Arbetskraft) - Prognos',
+                    data: pSupply,
+                    borderColor: '#0ea5e9', backgroundColor: 'transparent',
+                    borderWidth: 3, borderDash: [5, 5], pointStyle: 'circle'
+                });
+            }
+
+            trendChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: { labels: labels, datasets: datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: { y: { ticks: { callback: val => formatNumber(val) } } },
+                    plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw) } } }
+                }
+            });
+        }
+
+    </script>
+</body>
+</html>
