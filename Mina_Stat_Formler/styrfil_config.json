@@ -4,809 +4,1112 @@
       "Ålder": 0,
       "Funktionell ålder": "0 år",
       "Förkoleålder": "0 år",
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 1,
       "Funktionell ålder": "1-3 år",
       "Förkoleålder": "1-3 år",
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 2,
       "Funktionell ålder": "1-3 år",
       "Förkoleålder": "1-3 år",
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 3,
       "Funktionell ålder": "1-3 år",
       "Förkoleålder": "1-3 år",
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 4,
       "Funktionell ålder": "4-5 år",
       "Förkoleålder": "4-5 år",
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 5,
       "Funktionell ålder": "4-5 år",
       "Förkoleålder": "4-5 år",
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 6,
       "Funktionell ålder": "6-9 år",
-      "Förkoleålder": NaN,
+      "Förkoleålder": "",
       "Grundskoleålder": "6-9 år",
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 7,
       "Funktionell ålder": "6-9 år",
-      "Förkoleålder": NaN,
+      "Förkoleålder": "",
       "Grundskoleålder": "6-9 år",
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 8,
       "Funktionell ålder": "6-9 år",
-      "Förkoleålder": NaN,
+      "Förkoleålder": "",
       "Grundskoleålder": "6-9 år",
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 9,
       "Funktionell ålder": "6-9 år",
-      "Förkoleålder": NaN,
+      "Förkoleålder": "",
       "Grundskoleålder": "6-9 år",
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 10,
       "Funktionell ålder": "10-12 år",
-      "Förkoleålder": NaN,
+      "Förkoleålder": "",
       "Grundskoleålder": "10-12 år",
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 11,
       "Funktionell ålder": "10-12 år",
-      "Förkoleålder": NaN,
+      "Förkoleålder": "",
       "Grundskoleålder": "10-12 år",
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 12,
       "Funktionell ålder": "10-12 år",
-      "Förkoleålder": NaN,
+      "Förkoleålder": "",
       "Grundskoleålder": "10-12 år",
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 13,
       "Funktionell ålder": "13-15 år",
-      "Förkoleålder": NaN,
+      "Förkoleålder": "",
       "Grundskoleålder": "13-15 år",
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 14,
       "Funktionell ålder": "13-15 år",
-      "Förkoleålder": NaN,
+      "Förkoleålder": "",
       "Grundskoleålder": "13-15 år",
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 15,
       "Funktionell ålder": "13-15 år",
-      "Förkoleålder": NaN,
+      "Förkoleålder": "",
       "Grundskoleålder": "13-15 år",
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "15-19 år",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 16,
       "Funktionell ålder": "16-18 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "15-19 år",
+      "Flyttningsåldrar": "16-18 år"
     },
     {
       "Ålder": 17,
       "Funktionell ålder": "16-18 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "15-19 år",
+      "Flyttningsåldrar": "16-18 år"
     },
     {
       "Ålder": 18,
       "Funktionell ålder": "16-18 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "15-19 år",
+      "Flyttningsåldrar": "16-18 år"
     },
     {
       "Ålder": 19,
       "Funktionell ålder": "19-24 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "0-19 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "0-19 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "15-19 år",
+      "Flyttningsåldrar": "19-24 år"
     },
     {
       "Ålder": 20,
       "Funktionell ålder": "19-24 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "20-24 år",
+      "Flyttningsåldrar": "19-24 år"
     },
     {
       "Ålder": 21,
       "Funktionell ålder": "19-24 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "20-24 år",
+      "Flyttningsåldrar": "19-24 år"
     },
     {
       "Ålder": 22,
       "Funktionell ålder": "19-24 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "20-24 år",
+      "Flyttningsåldrar": "19-24 år"
     },
     {
       "Ålder": 23,
       "Funktionell ålder": "19-24 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "20-24 år",
+      "Flyttningsåldrar": "19-24 år"
     },
     {
       "Ålder": 24,
       "Funktionell ålder": "19-24 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "20-24 år",
+      "Flyttningsåldrar": "19-24 år"
     },
     {
       "Ålder": 25,
       "Funktionell ålder": "25-34 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "25-29 år",
+      "Flyttningsåldrar": "25-29 år"
     },
     {
       "Ålder": 26,
       "Funktionell ålder": "25-34 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "25-29 år",
+      "Flyttningsåldrar": "25-29 år"
     },
     {
       "Ålder": 27,
       "Funktionell ålder": "25-34 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "25-29 år",
+      "Flyttningsåldrar": "25-29 år"
     },
     {
       "Ålder": 28,
       "Funktionell ålder": "25-34 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "25-29 år",
+      "Flyttningsåldrar": "25-29 år"
     },
     {
       "Ålder": 29,
       "Funktionell ålder": "25-34 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "25-29 år",
+      "Flyttningsåldrar": "25-29 år"
     },
     {
       "Ålder": 30,
       "Funktionell ålder": "25-34 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "30-34 år",
+      "Flyttningsåldrar": "30-34 år"
     },
     {
       "Ålder": 31,
       "Funktionell ålder": "25-34 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "30-34 år",
+      "Flyttningsåldrar": "30-34 år"
     },
     {
       "Ålder": 32,
       "Funktionell ålder": "25-34 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "30-34 år",
+      "Flyttningsåldrar": "30-34 år"
     },
     {
       "Ålder": 33,
       "Funktionell ålder": "25-34 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "30-34 år",
+      "Flyttningsåldrar": "30-34 år"
     },
     {
       "Ålder": 34,
       "Funktionell ålder": "25-34 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "30-34 år",
+      "Flyttningsåldrar": "30-34 år"
     },
     {
       "Ålder": 35,
       "Funktionell ålder": "35-44 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "35-39 år",
+      "Flyttningsåldrar": "35-44 år"
     },
     {
       "Ålder": 36,
       "Funktionell ålder": "35-44 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "35-39 år",
+      "Flyttningsåldrar": "35-44 år"
     },
     {
       "Ålder": 37,
       "Funktionell ålder": "35-44 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "35-39 år",
+      "Flyttningsåldrar": "35-44 år"
     },
     {
       "Ålder": 38,
       "Funktionell ålder": "35-44 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "35-39 år",
+      "Flyttningsåldrar": "35-44 år"
     },
     {
       "Ålder": 39,
       "Funktionell ålder": "35-44 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "35-39 år",
+      "Flyttningsåldrar": "35-44 år"
     },
     {
       "Ålder": 40,
       "Funktionell ålder": "35-44 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "40-49 år",
+      "Flyttningsåldrar": "35-44 år"
     },
     {
       "Ålder": 41,
       "Funktionell ålder": "35-44 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "40-49 år",
+      "Flyttningsåldrar": "35-44 år"
     },
     {
       "Ålder": 42,
       "Funktionell ålder": "35-44 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "40-49 år",
+      "Flyttningsåldrar": "35-44 år"
     },
     {
       "Ålder": 43,
       "Funktionell ålder": "35-44 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "40-49 år",
+      "Flyttningsåldrar": "35-44 år"
     },
     {
       "Ålder": 44,
       "Funktionell ålder": "35-44 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "40-49 år",
+      "Flyttningsåldrar": "35-44 år"
     },
     {
       "Ålder": 45,
       "Funktionell ålder": "45-54 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "40-49 år",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 46,
       "Funktionell ålder": "45-54 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "40-49 år",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 47,
       "Funktionell ålder": "45-54 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "40-49 år",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 48,
       "Funktionell ålder": "45-54 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "40-49 år",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 49,
       "Funktionell ålder": "45-54 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "40-49 år",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 50,
       "Funktionell ålder": "45-54 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 51,
       "Funktionell ålder": "45-54 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 52,
       "Funktionell ålder": "45-54 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 53,
       "Funktionell ålder": "45-54 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 54,
       "Funktionell ålder": "45-54 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 55,
       "Funktionell ålder": "55-64 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 56,
       "Funktionell ålder": "55-64 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 57,
       "Funktionell ålder": "55-64 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 58,
       "Funktionell ålder": "55-64 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 59,
       "Funktionell ålder": "55-64 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "0-59 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 60,
       "Funktionell ålder": "55-64 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "60-64 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 61,
       "Funktionell ålder": "55-64 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "60-64 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 62,
       "Funktionell ålder": "55-64 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "60-64 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 63,
       "Funktionell ålder": "55-64 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "60-64 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 64,
       "Funktionell ålder": "55-64 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
-      "Pensionsåldrar": NaN,
-      "SKR ålder": "20-66 år"
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
+      "Pensionsåldrar": "",
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "60-64 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 65,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "65-74 år",
-      "SKR ålder": "20-66 år"
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "65-74 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 66,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "65-74 år",
-      "SKR ålder": "20-66 år"
+      "SKR ålder": "20-66 år",
+      "Omsorgsåldrar": "65-74 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 67,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "65-74 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "65-74 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 68,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "65-74 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "65-74 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 69,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "65-74 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "65-74 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 70,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "65-74 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "65-74 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 71,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "65-74 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "65-74 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 72,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "65-74 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "65-74 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 73,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "65-74 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "65-74 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 74,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "65-74 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "65-74 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 75,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "75-84 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "75-79 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 76,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "75-84 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "75-79 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 77,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "75-84 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "75-79 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 78,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "75-84 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "75-79 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 79,
       "Funktionell ålder": "65-79 år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "75-84 år",
-      "SKR ålder": "67-79 år"
+      "SKR ålder": "67-79 år",
+      "Omsorgsåldrar": "75-79 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 80,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "75-84 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "80-84 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 81,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "75-84 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "80-84 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 82,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "75-84 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "80-84 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 83,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "75-84 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "80-84 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 84,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "75-84 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "80-84 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 85,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "85-94 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "85-89 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 86,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "85-94 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "85-89 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 87,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "85-94 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "85-89 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 88,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "85-94 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "85-89 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 89,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "85-94 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "85-89 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 90,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "85-94 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "90-94 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 91,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "85-94 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "90-94 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 92,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "85-94 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "90-94 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 93,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "85-94 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "90-94 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 94,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "85-94 år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "90-94 år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 95,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "95+ år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "95+ år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 96,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "95+ år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "95+ år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 97,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "95+ år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "95+ år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 98,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "95+ år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "95+ år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 99,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "95+ år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "95+ år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     },
     {
       "Ålder": 100,
       "Funktionell ålder": "80+ år",
-      "Förkoleålder": NaN,
-      "Grundskoleålder": NaN,
+      "Förkoleålder": "",
+      "Grundskoleålder": "",
       "Pensionsåldrar": "95+ år",
-      "SKR ålder": "80+ år"
+      "SKR ålder": "80+ år",
+      "Omsorgsåldrar": "95+ år",
+      "Fruktsamhetsåldrar": "",
+      "Flyttningsåldrar": ""
     }
   ],
   "household_sizes": {
@@ -821,7 +1124,27 @@
     "2034": 1.96,
     "2035": 1.96
   },
+  "fruktsamhet_variabel": {
+    "2026": 1.38,
+    "2027": 1.38,
+    "2028": 1.4,
+    "2029": 1.4,
+    "2030": 1.42,
+    "2031": 1.44,
+    "2032": 1.46,
+    "2033": 1.48,
+    "2034": 1.5,
+    "2035": 1.5
+  },
   "scenarios": {
+    "base": {
+      "tfr": "Fruktsam",
+      "mort": -1.0,
+      "inIn": 2.0,
+      "inUt": -1.0,
+      "utIn": 1.0,
+      "utUt": 0.0
+    },
     "high": {
       "tfr": 1.95,
       "mort": -10.0,
