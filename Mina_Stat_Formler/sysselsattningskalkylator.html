@@ -103,8 +103,7 @@
             <div class="flex flex-col gap-3">
                 <div class="flex justify-between items-end">
                     <h2 class="text-xl font-bold text-gray-800">Nyckeltal</h2>
-                    <!-- Rullista för Nyckeltal -->
-                    <select id="yearSelect" class="border border-gray-300 rounded p-1 text-sm bg-white font-medium shadow-sm" onchange="updateKPIs()" title="Välj år för att uppdatera nyckeltalen nedan">
+                    <select id="yearSelect" class="border border-gray-300 rounded p-1 text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="handleYearChange()" title="Välj år för att uppdatera nyckeltalen nedan">
                         <option value="">Laddar...</option>
                     </select>
                 </div>
@@ -115,14 +114,14 @@
                         <div class="text-xl font-bold text-gray-800" id="kpiUtbud">-</div>
                     </div>
                     <div class="card text-center p-3 border-b-4 border-emerald-500">
-                        <div class="text-xs text-gray-500 font-medium">Efterfrågan (Jobb/Dag)</div>
+                        <div class="text-xs text-gray-500 font-medium">Efterfrågan (Dagbefolkning)</div>
                         <div class="text-xl font-bold text-gray-800" id="kpiEfterfragan">-</div>
                     </div>
-                    <div class="card text-center p-3 border-b-4 border-indigo-500" title="Inpendlare minus Utpendlare (Positivt = Fler inpendlare)">
+                    <div class="card text-center p-3 border-b-4 border-indigo-500" title="Efterfrågan minus Utbud (Nettopendling)">
                         <div class="text-xs text-gray-500 font-medium">Pendlingsnetto (Gap)</div>
                         <div class="text-xl font-bold text-gray-800" id="kpiPendling">-</div>
                     </div>
-                    <div class="card text-center p-3 border-b-4 border-amber-500" title="Beräknad genomsnittlig sysselsättningsgrad 16-74 år">
+                    <div class="card text-center p-3 border-b-4 border-amber-500" title="Beräknad genomsnittlig sysselsättningsgrad 20-64 år">
                         <div class="text-xs text-gray-500 font-medium">Sysselsättningsgrad</div>
                         <div class="text-xl font-bold text-gray-800" id="kpiSyssGrad">-</div>
                     </div>
@@ -131,14 +130,25 @@
 
             <!-- Historisk trend & Förändringar -->
             <div class="card flex-grow flex flex-col mt-2">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 gap-3">
                     <h2 class="text-lg font-bold" id="trendTitle">Utbud vs Efterfrågan</h2>
-                    <!-- Rullista för Startår i Grafen -->
-                    <select id="startYearSelect" class="border border-gray-300 rounded p-1 text-sm bg-white font-medium" onchange="updateDashboard()" title="Välj startår för grafen">
-                        <option value="">Laddar...</option>
-                    </select>
+                    
+                    <div class="flex items-center shadow-sm rounded-md border border-gray-300 bg-white">
+                        <!-- Rullista för Startår (Trend) -->
+                        <select id="startYearSelect" class="p-1.5 text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 transition-colors bg-white rounded-l" onchange="updateDashboard(true)" title="Välj startår för grafen">
+                            <option value="">Laddar...</option>
+                        </select>
+                        
+                        <!-- Rullista för Val av Diagramtyp -->
+                        <select id="chartType" class="p-1.5 text-sm bg-slate-50 outline-none focus:bg-sky-100 transition-colors font-semibold text-gray-700 rounded-r" onchange="updateDashboard(true)" title="Välj diagramtyp">
+                            <option value="utbud_efterfragan">Utbud vs Efterfrågan (Trend)</option>
+                            <option value="utb_match">Utbildningsmatchning (Valt år)</option>
+                        </select>
+                    </div>
                 </div>
-                <p class="text-sm text-gray-600 mb-4">Grafen visar hur många arbetstillfällen (grönt) som finns i Linköping i relation till hur många kommuninvånare som befinner sig i sysselsättning (blått). Gapet dem emellan utgör det lokala rekryteringsbehovet (pendlingsnettot).</p>
+                
+                <p id="chartDescription" class="text-sm text-gray-600 mb-4">Grafen visar hur många arbetstillfällen (grönt) som finns i Linköping i relation till hur många kommuninvånare som befinner sig i sysselsättning (blått). Gapet dem emellan utgör det lokala pendlingsnettot.</p>
+                
                 <div class="relative h-80 w-full mb-2 flex-grow">
                     <canvas id="trendChart"></canvas>
                 </div>
@@ -153,20 +163,31 @@
         let syssConfig = {};
         let popData = []; 
         
-        let histDataStore = {}; // Lagrar historik per år
-        let progDataStore = {}; // Lagrar prognos per år
+        let histDataStore = {}; 
+        let progDataStore = {}; 
         
         let trendChartInstance = null;
         let allYears = [];
-        let baseYear = 0; // Det faktiska basåret vi simulerar utifrån
+        let histYearsGlobal = [];
+        let baseYear = 0; 
+        
+        // Formatering
+        const formatNumber = (num, decimals = 0) => {
+            if (num === null || num === undefined || isNaN(num)) return '-';
+            return Number(num).toLocaleString('sv-SE', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+        };
 
-        const formatNumber = (num, decimals = 0) => Number(num).toLocaleString('sv-SE', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+        function extractYear(row) {
+            if (row['År'] !== undefined) return parseInt(row['År']);
+            if (row['år'] !== undefined) return parseInt(row['år']);
+            if (row['ÅR'] !== undefined) return parseInt(row['ÅR']);
+            return null;
+        }
 
         async function fetchJSON(url) {
             const res = await fetch(url);
             if (!res.ok) return null; 
             let text = await res.text(); 
-            // Städa bort eventuella skadade NaN-värden från Python
             text = text.replace(/:\s*NaN/g, ': null');
             try {
                 return JSON.parse(text); 
@@ -202,7 +223,8 @@
                 document.getElementById('scenarioPanel').classList.remove('opacity-50', 'pointer-events-none');
 
                 extractHistoricalData();
-                updateDashboard();
+                buildDropdowns(); 
+                updateDashboard(false); 
             }).catch(error => {
                 const statusDiv = document.getElementById('dataStatus');
                 statusDiv.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <b>Krasch:</b> ${error.message}`;
@@ -212,39 +234,62 @@
 
         // 2. EXTRAHERA HISTORIK
         function extractHistoricalData() {
+            const dfTillagg = syssBasdata['Syss_tillägg'] || syssBasdata['Syss_tillagg'] || [];
             const dfSektor = syssBasdata['Syss_sektor'] || [];
-            const dfNatt = syssBasdata['Natt_ålder'] || [];
+            const dfNatt = syssBasdata['Natt_ålder'] || syssBasdata['Natt_alder'] || [];
             const dfSyssGrad = syssBasdata['Syssgrad'] || [];
             
-            // Hitta alla år från alla relevanta flikar (Pansarsäker sökning)
             let years = new Set();
-            dfSektor.forEach(r => { if(r['År']) years.add(parseInt(r['År'])); });
-            dfNatt.forEach(r => { if(r['År']) years.add(parseInt(r['År'])); });
-            dfSyssGrad.forEach(r => { if(r['År']) years.add(parseInt(r['År'])); });
+            dfTillagg.forEach(r => { let y = extractYear(r); if(y) years.add(y); });
+            dfSektor.forEach(r => { let y = extractYear(r); if(y) years.add(y); });
+            dfNatt.forEach(r => { let y = extractYear(r); if(y) years.add(y); });
+            dfSyssGrad.forEach(r => { let y = extractYear(r); if(y) years.add(y); });
             
             const sortedYears = Array.from(years).filter(y => !isNaN(y)).sort((a,b)=>a-b);
             if (sortedYears.length === 0) return;
 
+            histYearsGlobal = sortedYears; // Spara för framtida bruk
             histDataStore = {};
+            
             sortedYears.forEach(y => {
-                let dagTotalt = 0;
-                dfSektor.filter(r => r['År'] == y).forEach(r => {
-                    if (r['Totalt'] !== null && r['Totalt'] !== undefined) dagTotalt += parseFloat(r['Totalt'] || 0);
-                });
-                
-                let nattTotalt = 0;
-                dfNatt.filter(r => r['År'] == y && r['Kön'] === 'Totalt').forEach(r => {
-                    if (r['Totalt 16-74 år'] !== null && r['Totalt 16-74 år'] !== undefined) nattTotalt += parseFloat(r['Totalt 16-74 år'] || 0);
-                });
-                if(nattTotalt === 0) {
-                    dfNatt.filter(r => r['År'] == y && (r['Kön'] === 'Män' || r['Kön'] === 'Kvinnor')).forEach(r => {
-                        if (r['Totalt 16-74 år'] !== null && r['Totalt 16-74 år'] !== undefined) nattTotalt += parseFloat(r['Totalt 16-74 år'] || 0);
+                let dagTotalt = null;
+                const dagRow = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase() === 'dagbefolkning');
+                if (dagRow && dagRow['Totalt'] != null) {
+                    dagTotalt = parseFloat(dagRow['Totalt']);
+                } else {
+                    let dSum = 0, found = false;
+                    dfSektor.filter(r => extractYear(r) == y).forEach(r => {
+                        if (r['Totalt'] != null) { dSum += parseFloat(r['Totalt']); found = true; }
                     });
+                    if (found) dagTotalt = dSum;
+                }
+
+                let nattTotalt = null;
+                const nattRow = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase() === 'nattbefolkning');
+                if (nattRow && nattRow['Totalt'] != null) {
+                    nattTotalt = parseFloat(nattRow['Totalt']);
+                } else {
+                    let nSum = 0, found = false;
+                    dfNatt.filter(r => extractYear(r) == y && r['Kön'] === 'Totalt').forEach(r => {
+                        if (r['Totalt 16-74 år'] != null) { nSum += parseFloat(r['Totalt 16-74 år']); found = true; }
+                    });
+                    if(!found) {
+                        dfNatt.filter(r => extractYear(r) == y && (r['Kön'] === 'Män' || r['Kön'] === 'Kvinnor')).forEach(r => {
+                            if (r['Totalt 16-74 år'] != null) { nSum += parseFloat(r['Totalt 16-74 år']); found = true; }
+                        });
+                    }
+                    if (found) nattTotalt = nSum;
+                }
+
+                let faktiskRate = null;
+                const syssGradRow = dfSyssGrad.find(r => extractYear(r) == y && r['Kön'] === 'Totalt');
+                if (syssGradRow && syssGradRow['Totalt 20-64 år'] != null) {
+                    faktiskRate = parseFloat(syssGradRow['Totalt 20-64 år']);
                 }
 
                 let pop16_74 = 0;
                 if(popData.length > 0) {
-                    popData.filter(r => String(r.tid) === String(y) && !String(r.ålder).includes('Totalt')).forEach(r => {
+                    popData.filter(r => String(r.tid).includes(String(y)) && !String(r.ålder).includes('Totalt')).forEach(r => {
                         const match = String(r.ålder).match(/\d+/);
                         if (match) {
                             const age = parseInt(match[0]);
@@ -253,43 +298,93 @@
                     });
                 }
                 
-                // Om vi saknar bakomliggande demografi för året, uppskatta befolkningen
                 if(pop16_74 === 0 && nattTotalt > 0) pop16_74 = nattTotalt / 0.70; 
-
-                let rate = null;
-                if (pop16_74 > 0 && nattTotalt > 0) {
-                    rate = (nattTotalt / pop16_74) * 100;
-                }
+                let motorRate = null;
+                if (pop16_74 > 0 && nattTotalt > 0) motorRate = (nattTotalt / pop16_74) * 100;
 
                 histDataStore[y] = { 
-                    demand: dagTotalt > 0 ? dagTotalt : null, 
-                    supply: nattTotalt > 0 ? nattTotalt : null, 
+                    demand: dagTotalt, 
+                    supply: nattTotalt, 
                     pop: pop16_74 > 0 ? pop16_74 : null,
-                    rate: rate
+                    rate: motorRate,
+                    displayRate: faktiskRate || motorRate
                 };
             });
 
-            // Smart basårs-sökning: Sätt baseYear till det sista året som FAKTISKT har både utbud och efterfrågan.
+            // Basår
             baseYear = sortedYears[sortedYears.length - 1];
             for (let i = sortedYears.length - 1; i >= 0; i--) {
                 let y = sortedYears[i];
-                if (histDataStore[y].demand !== null && histDataStore[y].supply !== null) {
+                if (histDataStore[y].demand != null && histDataStore[y].supply != null) {
                     baseYear = y;
                     break;
                 }
             }
         }
 
-        // 3. KÖR MODELL (SIMULERING)
+        // 3. BYGG RULLISTOR (En gång och robust)
+        function buildDropdowns() {
+            const progYears = Object.keys(progDataStore).map(Number).sort((a,b)=>a-b);
+            allYears = [...histYearsGlobal, ...progYears];
+
+            // 1. Rullista för KPI (Årtal)
+            const yearSelect = document.getElementById('yearSelect');
+            const prevYearVal = yearSelect.value;
+            
+            // Töm helt med ren JS
+            while (yearSelect.firstChild) { yearSelect.removeChild(yearSelect.firstChild); }
+            
+            if (allYears.length === 0) {
+                let opt = new Option("Data saknas", "");
+                yearSelect.add(opt);
+            } else {
+                [...allYears].reverse().forEach(y => {
+                    let text = progYears.includes(y) ? y + " (Prognos)" : y.toString();
+                    let opt = new Option(text, y);
+                    if(progYears.includes(y)) opt.className = "text-sky-700 font-bold bg-sky-50";
+                    yearSelect.add(opt);
+                });
+                if (prevYearVal && allYears.includes(parseInt(prevYearVal))) {
+                    yearSelect.value = prevYearVal;
+                } else {
+                    yearSelect.value = allYears[allYears.length - 1]; 
+                }
+            }
+
+            // 2. Rullista för Startår (Graf)
+            const startYearSelect = document.getElementById('startYearSelect');
+            const prevStartVal = startYearSelect.value;
+            
+            while (startYearSelect.firstChild) { startYearSelect.removeChild(startYearSelect.firstChild); }
+
+            if (histYearsGlobal.length === 0) {
+                startYearSelect.add(new Option("Data saknas", ""));
+            } else {
+                [...histYearsGlobal].reverse().forEach(y => {
+                    startYearSelect.add(new Option('Från ' + y, y));
+                });
+
+                // Tvinga inzoomning till de senaste 11 åren (10 år bakåt) som standard
+                const zoomIndex = Math.max(0, histYearsGlobal.length - 11);
+                const defaultZoomYear = histYearsGlobal[zoomIndex];
+                
+                if (prevStartVal && histYearsGlobal.includes(parseInt(prevStartVal))) {
+                    startYearSelect.value = prevStartVal;
+                } else {
+                    startYearSelect.value = defaultZoomYear; 
+                }
+            }
+        }
+
+        // 4. KÖR MODELL (SIMULERING)
         function runSimulation() {
             const btn = document.getElementById('simBtn');
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Beräknar...';
             btn.classList.add('opacity-75', 'cursor-not-allowed');
 
             setTimeout(() => {
-                const jobGrowthPct = parseFloat(document.getElementById('jobGrowthSlider').value); // Totalt % över 10 år
-                const syssGradChange = parseFloat(document.getElementById('syssGradSlider').value); // %-enheter över 10 år
-                const studentChange = parseFloat(document.getElementById('studentSlider').value); // Implementeras i nästa modul!
+                const jobGrowthPct = parseFloat(document.getElementById('jobGrowthSlider').value); 
+                const syssGradChange = parseFloat(document.getElementById('syssGradSlider').value);
 
                 const base = histDataStore[baseYear];
                 progDataStore = {};
@@ -297,11 +392,9 @@
                 for (let i = 1; i <= 10; i++) {
                     const forecastYear = baseYear + i;
                     
-                    // 1. Beräkna framtida Efterfrågan (Jobb/Dagbefolkning)
                     const demandGrowthFactor = 1 + ((jobGrowthPct / 100) * (i / 10));
                     const futureDemand = base.demand * demandGrowthFactor;
 
-                    // 2. Beräkna framtida Demografi (16-74 år)
                     let futurePop = 0;
                     if(popData.length > 0) {
                         popData.filter(r => String(r.tid).includes(forecastYear) && !String(r.ålder).includes('Totalt')).forEach(r => {
@@ -312,22 +405,28 @@
                             }
                         });
                     }
-                    if(futurePop === 0) futurePop = base.pop; // Flat om prognos saknas
+                    if(futurePop === 0) futurePop = base.pop;
 
-                    // 3. Beräkna framtida Sysselsättningsgrad och Utbud
                     const targetRate = base.rate + syssGradChange;
                     const futureRate = base.rate + ((targetRate - base.rate) * (i / 10));
                     const futureSupply = futurePop * (futureRate / 100);
+                    
+                    const displayTarget = base.displayRate + syssGradChange;
+                    const futureDisplayRate = base.displayRate + ((displayTarget - base.displayRate) * (i / 10));
 
                     progDataStore[forecastYear] = {
                         demand: futureDemand,
                         supply: futureSupply,
                         pop: futurePop,
-                        rate: futureRate
+                        rate: futureRate,
+                        displayRate: futureDisplayRate
                     };
                 }
 
-                updateDashboard();
+                buildDropdowns(); 
+                
+                document.getElementById('chartType').value = 'utbud_efterfragan';
+                updateDashboard(false); 
 
                 btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Simulering Klar!';
                 btn.classList.replace('bg-slate-700', 'bg-green-600');
@@ -340,9 +439,8 @@
             }, 200);
         }
 
-        // 4. NOLLSTÄLLNING
+        // 5. NOLLSTÄLLNING
         function resetSimulation() {
-            // Nollställ sliders
             document.getElementById('jobGrowthSlider').value = 0;
             document.getElementById('jobGrowthVal').innerText = '+0%';
             document.getElementById('syssGradSlider').value = 0;
@@ -350,105 +448,75 @@
             document.getElementById('studentSlider').value = 0;
             document.getElementById('studentVal').innerText = 'Baslinje';
 
-            // Rensa framtidsdata
             progDataStore = {}; 
+            buildDropdowns();
 
-            // Återställ knapp
             const btn = document.getElementById('simBtn');
             btn.innerHTML = '<i class="fa-solid fa-gears mr-2"></i> Kör / Uppdatera';
             btn.className = "flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-3 rounded transition flex items-center justify-center shadow-md text-sm";
 
-            // Rita om
-            updateDashboard();
+            updateDashboard(false);
         }
 
-        // 5. UPPDATERA DASHBOARD (Graf och Rullista)
-        function updateDashboard() {
-            const histYears = Object.keys(histDataStore).map(Number).sort((a,b)=>a-b);
-            const progYears = Object.keys(progDataStore).map(Number).sort((a,b)=>a-b);
-            allYears = [...histYears, ...progYears];
-
-            // --- Rullista för KPI (Årtal) ---
-            const yearSelect = document.getElementById('yearSelect');
-            const currVal = yearSelect.value;
-            yearSelect.innerHTML = '';
-            
-            if (allYears.length === 0) {
-                const opt = document.createElement('option');
-                opt.value = ""; opt.textContent = "Data saknas";
-                yearSelect.appendChild(opt);
-            } else {
-                [...allYears].reverse().forEach(y => {
-                    const opt = document.createElement('option');
-                    opt.value = y; 
-                    opt.textContent = progYears.includes(y) ? y + " (Prognos)" : y;
-                    if(progYears.includes(y)) opt.className = "text-sky-700 font-bold bg-sky-50";
-                    yearSelect.appendChild(opt);
-                });
-                
-                if (currVal && allYears.includes(parseInt(currVal))) {
-                    yearSelect.value = currVal;
-                } else {
-                    yearSelect.value = allYears[allYears.length - 1]; 
-                }
-            }
-
-            // --- Rullista för Graf (Startår) ---
-            const startYearSelect = document.getElementById('startYearSelect');
-            const currStart = startYearSelect.value;
-            
-            // Tvinga alltid ombyggnation av rullistan för att undvika frys-buggen
-            startYearSelect.innerHTML = ''; 
-            if (histYears.length === 0) {
-                const opt = document.createElement('option');
-                opt.value = ""; opt.textContent = "Data saknas";
-                startYearSelect.appendChild(opt);
-            } else {
-                histYears.forEach(y => {
-                    const opt = document.createElement('option');
-                    opt.value = y; opt.textContent = 'Från ' + y;
-                    startYearSelect.appendChild(opt);
-                });
-                if (currStart && histYears.includes(parseInt(currStart))) {
-                    startYearSelect.value = currStart;
-                } else {
-                    startYearSelect.value = histYears[0];
-                }
-            }
-
-            const graphStartYear = parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0);
-
-            // Titel
-            document.getElementById('trendTitle').innerText = progYears.length > 0 ? "Utbud vs Efterfrågan (Prognos)" : "Utbud vs Efterfrågan (Historisk Baslinje)";
-
-            // Bygg dataset för Chart.js baserat på valt startår
-            let labels = [];
-            let hDemand = [], hSupply = [];
-            let pDemand = [], pSupply = [];
-
-            allYears.forEach(y => {
-                if (y >= graphStartYear) {
-                    labels.push(y);
-                    
-                    if (histDataStore[y]) {
-                        hDemand.push(histDataStore[y].demand);
-                        hSupply.push(histDataStore[y].supply);
-                        pDemand.push(y === baseYear ? histDataStore[y].demand : null); 
-                        pSupply.push(y === baseYear ? histDataStore[y].supply : null); 
-                    } else if (progDataStore[y]) {
-                        hDemand.push(null);
-                        hSupply.push(null);
-                        pDemand.push(progDataStore[y].demand);
-                        pSupply.push(progDataStore[y].supply);
-                    }
-                }
-            });
-
-            drawChart(labels, hDemand, hSupply, pDemand, pSupply);
+        function handleYearChange() {
             updateKPIs();
+            const chartType = document.getElementById('chartType').value;
+            if (chartType === 'utb_match') {
+                updateDashboard(true);
+            }
         }
 
-        // 6. UPPDATERA KPI:er
+        // 6. UPPDATERA DASHBOARD
+        function updateDashboard(calledFromDropdown = true) {
+            const chartType = document.getElementById('chartType').value;
+            const startYearSelect = document.getElementById('startYearSelect');
+            const desc = document.getElementById('chartDescription');
+            const title = document.getElementById('trendTitle');
+            
+            if (chartType === 'utbud_efterfragan') {
+                // VISA TRENDGRAFEN
+                startYearSelect.style.display = 'inline-block';
+                const progYears = Object.keys(progDataStore).map(Number);
+                title.innerText = progYears.length > 0 ? "Utbud vs Efterfrågan (Prognos)" : "Utbud vs Efterfrågan (Historisk Baslinje)";
+                desc.innerText = "Grafen visar hur många arbetstillfällen (grönt) som finns i Linköping i relation till hur många kommuninvånare som befinner sig i sysselsättning (blått). Gapet dem emellan utgör det lokala pendlingsnettot.";
+
+                const graphStartYear = parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0);
+
+                let labels = [], hDemand = [], hSupply = [], pDemand = [], pSupply = [];
+
+                allYears.forEach(y => {
+                    if (y >= graphStartYear) {
+                        labels.push(y);
+                        if (histDataStore[y]) {
+                            hDemand.push(histDataStore[y].demand);
+                            hSupply.push(histDataStore[y].supply);
+                            pDemand.push(y === baseYear ? histDataStore[y].demand : null); 
+                            pSupply.push(y === baseYear ? histDataStore[y].supply : null); 
+                        } else if (progDataStore[y]) {
+                            hDemand.push(null);
+                            hSupply.push(null);
+                            pDemand.push(progDataStore[y].demand);
+                            pSupply.push(progDataStore[y].supply);
+                        }
+                    }
+                });
+
+                drawLineChart(labels, hDemand, hSupply, pDemand, pSupply);
+
+            } else if (chartType === 'utb_match') {
+                // VISA UTBILDNINGSMATCHNING
+                startYearSelect.style.display = 'none'; 
+                const selectedYear = document.getElementById('yearSelect').value;
+                title.innerText = `Utbildningsmatchning (År ${selectedYear})`;
+                desc.innerHTML = `Staplarna visar kraven från företagen i Linköping <b>(Efterfrågan)</b> ställt mot vad invånarna har för utbildning <b>(Utbud)</b>. Den röda linjen visar <b>Kompetensgapet</b>: Hamnar linjen under nollstrecket tvingas vi importera denna kompetens (inpendling).`;
+                
+                drawUtbMatchChart(parseInt(selectedYear));
+            }
+
+            if (!calledFromDropdown) updateKPIs();
+        }
+
+        // 7. UPPDATERA KPI:er
         function updateKPIs() {
             const yearStr = document.getElementById('yearSelect').value;
             if(!yearStr) return;
@@ -457,10 +525,10 @@
             let d = histDataStore[y] || progDataStore[y];
             if (!d) return;
 
-            document.getElementById('kpiEfterfragan').innerText = d.demand !== null ? formatNumber(d.demand) : 'Data saknas';
-            document.getElementById('kpiUtbud').innerText = d.supply !== null ? formatNumber(d.supply) : 'Data saknas';
+            document.getElementById('kpiEfterfragan').innerText = d.demand != null ? formatNumber(d.demand) : 'Data saknas';
+            document.getElementById('kpiUtbud').innerText = d.supply != null ? formatNumber(d.supply) : 'Data saknas';
             
-            if (d.demand !== null && d.supply !== null) {
+            if (d.demand != null && d.supply != null) {
                 const netto = d.demand - d.supply;
                 document.getElementById('kpiPendling').innerText = (netto > 0 ? '+' : '') + formatNumber(netto);
                 document.getElementById('kpiPendling').className = "text-xl font-bold " + (netto > 0 ? "text-indigo-600" : "text-red-600");
@@ -469,11 +537,11 @@
                 document.getElementById('kpiPendling').className = "text-xl font-bold text-gray-400";
             }
             
-            document.getElementById('kpiSyssGrad').innerText = d.rate !== null ? formatNumber(d.rate, 1) + '%' : 'Data saknas';
+            document.getElementById('kpiSyssGrad').innerText = d.displayRate != null ? formatNumber(d.displayRate, 1) + '%' : 'Data saknas';
         }
 
-        // 7. RITA GRAF MED HISTORIK OCH PROGNOS
-        function drawChart(labels, hDemand, hSupply, pDemand, pSupply) {
+        // 8. RITA GRAF (Linjediagram Trend)
+        function drawLineChart(labels, hDemand, hSupply, pDemand, pSupply) {
             const ctx = document.getElementById('trendChart').getContext('2d');
             if (trendChartInstance) trendChartInstance.destroy();
 
@@ -481,32 +549,28 @@
 
             let datasets = [
                 {
-                    label: 'Efterfrågan (Jobb) - Historik',
+                    label: 'Efterfrågan (Dagbefolkning/Jobb)',
                     data: hDemand,
                     borderColor: '#10b981', backgroundColor: 'transparent',
-                    borderWidth: 3, pointStyle: 'rect',
-                    spanGaps: true 
+                    borderWidth: 3, pointStyle: 'rect', spanGaps: true 
                 },
                 {
-                    label: 'Utbud (Arbetskraft) - Historik',
+                    label: 'Utbud (Nattbefolkning/Arbetskraft)',
                     data: hSupply,
                     borderColor: '#0ea5e9', backgroundColor: 'transparent',
-                    borderWidth: 3, pointStyle: 'circle',
-                    spanGaps: true
+                    borderWidth: 3, pointStyle: 'circle', spanGaps: true
                 }
             ];
 
             if (hasProg) {
                 datasets.push({
-                    label: 'Efterfrågan (Jobb) - Prognos',
-                    data: pDemand,
-                    borderColor: '#10b981', backgroundColor: 'transparent',
+                    label: 'Efterfrågan (Prognos)',
+                    data: pDemand, borderColor: '#10b981', backgroundColor: 'transparent',
                     borderWidth: 3, borderDash: [5, 5], pointStyle: 'rect'
                 });
                 datasets.push({
-                    label: 'Utbud (Arbetskraft) - Prognos',
-                    data: pSupply,
-                    borderColor: '#0ea5e9', backgroundColor: 'transparent',
+                    label: 'Utbud (Prognos)',
+                    data: pSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent',
                     borderWidth: 3, borderDash: [5, 5], pointStyle: 'circle'
                 });
             }
@@ -523,6 +587,103 @@
             });
         }
 
+        // 9. RITA GRAF (Stapel- och Linjediagram Utbildningsmatchning)
+        function drawUtbMatchChart(year) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (trendChartInstance) trendChartInstance.destroy();
+
+            const dfDagUtb = syssBasdata['Syss_utbnivå'] || syssBasdata['Syss_utbniva'] || [];
+            const dfNattUtb = syssBasdata['Natt_utbnivå'] || syssBasdata['Natt_utbniva'] || [];
+
+            const levels = ['Förgymnasial', 'Gymnasial', 'Eftergymnasial', 'Okänd'];
+            let dagData = { 'Förgymnasial': 0, 'Gymnasial': 0, 'Eftergymnasial': 0, 'Okänd': 0 };
+            let nattData = { 'Förgymnasial': 0, 'Gymnasial': 0, 'Eftergymnasial': 0, 'Okänd': 0 };
+
+            const mapLevel = (levelStr) => {
+                let l = String(levelStr).toLowerCase();
+                if (l.includes('förgymnasial')) return 'Förgymnasial';
+                if (l.includes('eftergymnasial') || l.includes('forskar')) return 'Eftergymnasial';
+                if (l.includes('gymnasial')) return 'Gymnasial';
+                return 'Okänd';
+            };
+
+            // Beräkna Dagbefolkning (Efterfrågan)
+            let foundDag = false;
+            dfDagUtb.filter(r => extractYear(r) == year && r['Kön'] === 'Totalt').forEach(r => {
+                let cat = mapLevel(r['Utbildningsnivå']);
+                if (r['Samtliga'] != null) { dagData[cat] += parseFloat(r['Samtliga']); foundDag = true; }
+            });
+            if (!foundDag) {
+                 dfDagUtb.filter(r => extractYear(r) == year && (r['Kön'] === 'Män' || r['Kön'] === 'Kvinnor')).forEach(r => {
+                    let cat = mapLevel(r['Utbildningsnivå']);
+                    if (r['Samtliga'] != null) dagData[cat] += parseFloat(r['Samtliga']);
+                });
+            }
+
+            // Beräkna Nattbefolkning (Utbud)
+            let foundNatt = false;
+            dfNattUtb.filter(r => extractYear(r) == year && r['Kön'] === 'Totalt').forEach(r => {
+                let cat = mapLevel(r['Utbildningsnivå']);
+                if (r['Samtliga'] != null) { nattData[cat] += parseFloat(r['Samtliga']); foundNatt = true; }
+            });
+            if (!foundNatt) {
+                 dfNattUtb.filter(r => extractYear(r) == year && (r['Kön'] === 'Män' || r['Kön'] === 'Kvinnor')).forEach(r => {
+                    let cat = mapLevel(r['Utbildningsnivå']);
+                    if (r['Samtliga'] != null) nattData[cat] += parseFloat(r['Samtliga']);
+                });
+            }
+            
+            // Beräkna gapet (Utbud minus Efterfrågan)
+            let netData = {};
+            levels.forEach(l => {
+                netData[l] = nattData[l] - dagData[l];
+            });
+
+            trendChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: levels,
+                    datasets: [
+                        {
+                            type: 'line',
+                            label: 'Kompetensgap (Inpendlingsbehov vid minus)',
+                            data: levels.map(l => netData[l]),
+                            borderColor: '#ef4444', 
+                            backgroundColor: '#ef4444',
+                            borderWidth: 3,
+                            pointRadius: 5,
+                            fill: false,
+                            order: 1 // Ritas överst
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Efterfrågan/Jobb (Dag)',
+                            data: levels.map(l => dagData[l]),
+                            backgroundColor: '#10b981',
+                            order: 2
+                        },
+                        {
+                            type: 'bar',
+                            label: 'Utbud/Arbetskraft (Natt)',
+                            data: levels.map(l => nattData[l]),
+                            backgroundColor: '#0ea5e9',
+                            order: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    interaction: { mode: 'index', intersect: false },
+                    scales: { 
+                        y: { 
+                            ticks: { callback: val => formatNumber(val) },
+                            title: { display: true, text: 'Antal personer' }
+                        } 
+                    },
+                    plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw) } } }
+                }
+            });
+        }
     </script>
 </body>
 </html>

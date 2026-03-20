@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Analys & Utredning, Linköpings kommun">
+    <meta name="description" content="Befolkningsbarometern - interaktiv dashboard för uppföljning av demografi och flyttningar i Linköpings kommun.">
+    <meta name="robots" content="index, follow">
+    <title>Befolkningsbarometern - Linköpings kommun</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            /* Nytt lila tema för Befolkningsbarometern för att särskilja från Månadsbarometern */
+            --primary-color: #5a2e8c; 
+            --primary-dark: #3b1d5e;
+            --bg-color: #f4f7f6;
+            --farg-bra: #009E73;
+            --farg-dalig: #D55E00;
+            --farg-neutral: #6c757d;
+            --farg-varning: #F0E442;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            color: #333;
+            overflow-x: hidden; 
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header-bar {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .logga-titel-container { display: flex; align-items: center; gap: 15px; }
+        .logotyp { height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2)); }
+        .header-title { margin: 0; font-size: 1.5rem; font-weight: 600; }
+
+        .header-nav { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; justify-content: center; }
+        .nav-btn {
+            background-color: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); color: white; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;
+        }
+        .nav-btn:hover { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: rgba(255, 255, 255, 0.6); }
+
+        .content-wrapper { max-width: 1500px; margin: 0 auto; padding: 20px 15px; width: 100%; flex-grow: 1; }
+
+        .site-footer { background-color: #343a40; color: #ced4da; text-align: center; padding: 15px; font-size: 0.85rem; margin-top: auto; }
+
+        /* Kontroller */
+        .top-controls {
+            background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; border-top: 4px solid var(--primary-color);
+        }
+        .time-selectors select { padding: 8px 15px; border-radius: 6px; border: 1px solid #ccc; background-color: #f8f9fa; font-weight: bold; font-size: 1rem; margin-right: 10px; cursor: pointer; }
+
+        /* Toggle Knappar */
+        .view-toggle { display: flex; margin-left: auto; background-color: #e9ecef; border-radius: 8px; overflow: hidden; border: 1px solid #ced4da; flex-wrap: wrap; }
+        .view-toggle button { background: none; border: none; padding: 10px 20px; font-weight: bold; color: #6c757d; cursor: pointer; transition: all 0.3s ease; }
+        .view-toggle button.active { background-color: var(--primary-color); color: white; }
+        .btn-pdf { background-color: #009E73 !important; color: white !important; border-left: 1px solid #ced4da !important; }
+        .btn-pdf:hover { background-color: #007d5b !important; }
+
+        /* Rapportvy Specifikt */
+        .rapport-sektion { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); margin-bottom: 20px; }
+        .rapport-titel { color: var(--primary-color); border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-bottom: 20px; }
+        .analys-text { font-size: 1.1rem; line-height: 1.6; color: #495057; }
+
+        /* Vyer */
+        #vy-befolkning, #vy-flyttning, #analys-vy { transition: opacity 0.3s ease; }
+        
+        /* Tabeller */
+        .minitabell-rad td, .minitabell-rad th { vertical-align: middle; white-space: normal; }
+        .minitabell-riket td { color: #6c757d; }
+        
+        /* Statusbollar */
+        .status-boll { display: inline-flex; justify-content: center; align-items: center; width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 22px; font-weight: 900; -webkit-text-stroke: 1px white; flex-shrink: 0; cursor: help; }
+        .boll-gron { background-color: var(--farg-bra); }
+        .boll-rod { background-color: var(--farg-dalig); }
+        .boll-gra { background-color: var(--farg-neutral); }
+
+        /* Barometer / Gauge */
+        .gauge-container { position: relative; width: 200px; height: 100px; margin: 0 auto; overflow: hidden; }
+        .gauge-background { position: absolute; top: 0; left: 0; width: 200px; height: 200px; border-radius: 50%; background: conic-gradient(from -90deg, var(--farg-dalig) 0deg 60deg, var(--farg-varning) 60deg 120deg, var(--farg-bra) 120deg 180deg, transparent 180deg 360deg); }
+        .gauge-center { position: absolute; top: 30px; left: 30px; width: 140px; height: 140px; background-color: #f8fbff; border-radius: 50%; }
+        .gauge-needle { position: absolute; bottom: 0; left: 50%; width: 4px; height: 90px; background-color: #333; transform-origin: bottom center; transform: rotate(-90deg); transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1); border-radius: 2px; }
+        .gauge-needle::after { content: ''; position: absolute; bottom: -8px; left: -6px; width: 16px; height: 16px; background-color: #333; border-radius: 50%; }
+        .gauge-labels { display: flex; justify-content: space-between; width: 200px; margin: 5px auto 0; font-weight: bold; font-size: 0.8rem; color: #6c757d; }
+
+        /* Analysvy Specifikt */
+        .kontroll-panel { background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 25px; border-top: 4px solid #ced4da; }
+        .kontroll-panel select { padding: 10px 16px; border-radius: 8px; border: 1px solid #e0e0e0; background-color: #6c757d; color: white; font-weight: bold; cursor: pointer; }
+        
+        .kpi-liten { background-color: #f8f9fa; border: 1px solid #e9ecef; padding: 8px 15px; border-radius: 8px; text-align: center; display: flex; flex-direction: column; justify-content: center; margin-right: auto; }
+        .kpi-liten-titel { font-size: 0.75rem; color: #6c757d; font-weight: bold; text-transform: uppercase; margin-bottom: 2px; }
+        .kpi-liten-varde { font-size: 1.2rem; font-weight: 900; color: var(--primary-dark); }
+
+        .iframe-container { background: white; border-radius: 12px; padding: 10px; height: 450px; margin-bottom: 25px; border: 1px solid #f0f0f0; display: flex; flex-direction: column; }
+        iframe { width: 100%; flex-grow: 1; border: none; border-radius: 4px; }
+
+        /* KPI-Kort för Analysvyn */
+        .kpi-card { background: white; padding: 15px 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.04); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; height: 100%; border: 1px solid #f0f0f0; }
+        .kpi-title { font-size: 0.85rem; color: #6c757d; font-weight: bold; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .kpi-value { font-size: 1.6rem; font-weight: 900; color: var(--primary-dark); margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+        .kpi-trend { font-size: 0.85rem; font-weight: bold; }
+        .kpi-trend.positive { color: var(--farg-bra); }
+        .kpi-trend.negative { color: var(--farg-dalig); }
+        .kpi-trend.neutral { color: var(--farg-neutral); }
+        
+        /* Kompakt termometer */
+        .termometer-container { width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; margin-top: 8px; overflow: hidden; display: flex; }
+        .termometer-fill { height: 100%; transition: width 0.5s ease, background-color 0.5s ease; border-radius: 4px; }
+
+        /* MOBILANPASSNING (Responsivitet) */
+        @media (max-width: 768px) {
+            .header-bar { flex-direction: column; text-align: center; gap: 15px; padding: 15px; }
+            .header-title { font-size: 1.2rem; }
+            .top-controls { flex-direction: column; align-items: stretch; }
+            .view-toggle { flex-direction: column; border-radius: 8px; margin-left: 0; }
+            .view-toggle button { border-bottom: 1px solid #ced4da; border-left: none !important; }
+            .kpi-liten { margin-right: 0; margin-bottom: 10px; width: 100%; }
+            .kontroll-panel { flex-direction: column; }
+            
+            .rapport-sektion { padding: 15px; }
+            .analys-text { font-size: 1rem; }
+            .minitabell-rad th, .minitabell-rad td { font-size: 0.85rem; padding: 8px 5px; }
+            .status-boll { width: 26px; height: 26px; font-size: 16px; }
+        }
+
+        /* UTSKRIFTSVÄNLIGT LÄGE (För PDF) */
+        @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; transition: none !important; }
+            @page { size: A4 portrait; margin: 1cm; }
+            body { background-color: white; font-size: 11pt; }
+            .header-bar, .top-controls, .view-toggle, .site-footer { display: none !important; }
+            .content-wrapper { padding: 0 !important; margin: 0 !important; max-width: 100%; }
+            .rapport-sektion { box-shadow: none !important; border: none !important; padding: 5px 0 !important; margin-bottom: 10px !important; }
+            .rapport-titel { font-size: 1.4rem !important; margin-bottom: 5px !important; padding-bottom: 5px !important; }
+            .analys-text { font-size: 10.5pt !important; line-height: 1.4 !important; margin-bottom: 8px !important; }
+            .col-md-8 { width: 66.66% !important; float: left; padding-right: 15px !important; }
+            .col-md-4 { width: 33.33% !important; float: left; }
+            .col-md-4 > div { padding: 8px !important; margin-bottom: 8px !important; } 
+            .col-md-6 { width: 50% !important; float: left; padding: 0 10px !important; }
+            .row { display: flex; flex-wrap: wrap; width: 100%; margin: 0 !important; }
+            .minitabell-rad th, .minitabell-rad td { padding: 5px !important; font-size: 9pt !important; white-space: normal !important; }
+            h4 { font-size: 1.1rem !important; margin-bottom: 5px !important; margin-top: 5px !important;}
+            .rapport-sektion > div[style*="height: 250px"] { height: 185px !important; margin-bottom: 5px !important; }
+            canvas { max-height: 185px !important; width: 100% !important; }
+            .rapport-sektion h5 { font-size: 0.95rem !important; margin-bottom: 5px !important; }
+            .status-boll { width: 24px !important; height: 24px !important; font-size: 15px !important; }
+            .gauge-container { transform: scale(0.85); transform-origin: top center; margin-bottom: -20px !important; }
+            .print-page-break { page-break-before: always; margin-top: 0 !important; padding-top: 0 !important; }
+            .print-show { display: block !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="logga-titel-container">
+            <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" class="logotyp" onerror="this.style.display='none'">
+            <h1 class="header-title">Befolkningsbarometern</h1>
+        </div>
+        <div class="header-nav">
+            <a href="guide_befolkningsbarometern.html" class="nav-btn">📖 Användarguide</a>
+            <a href="manadsbarometern.html" class="nav-btn" style="background-color: #005596; border-color: #003d6b;">💼 Månadsbarometern</a>
+            <a href="../index.html" class="nav-btn">🏠 Startmeny</a>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        
+        <div class="top-controls">
+            <div class="time-selectors" id="huvud-tid-kontroller" style="display: flex;">
+                <select id="global-ar" onchange="uppdateraAllt(true)"></select>
+                <select id="global-manad" onchange="uppdateraAllt(false)"></select>
+            </div>
+            <div class="view-toggle">
+                <button id="btn-befolkning" class="active" onclick="bytVy('Befolkning')">📄 Rapport: Folkmängd</button>
+                <button id="btn-flyttning" onclick="bytVy('Flyttning')">📄 Rapport: Flyttningar</button>
+                <button id="btn-analys" onclick="bytVy('Analysvy')">📊 Analysvy</button>
+                <button class="btn-pdf" onclick="skrivUtPDF()">📄 Skapa PDF</button>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VY 1: BEFOLKNING                           -->
+        <!-- ========================================== -->
+        <div id="vy-befolkning" class="print-show">
+            <div class="rapport-sektion">
+                <h2 class="rapport-titel" id="rapport-rubrik-bef">Laddar...</h2>
+                <div class="row align-items-center">
+                    <div class="col-md-8"><div class="analys-text" id="rapport-text-bef">Laddar analys från datafil...</div></div>
+                    <div class="col-md-4">
+                        <div style="background: #f8fbff; border: 1px solid #e0ecf8; border-radius: 8px; padding: 15px; text-align: center;">
+                            <h5 style="color: var(--primary-color); font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Befolkningsutveckling</h5>
+                            <div class="gauge-container">
+                                <div class="gauge-background"></div><div class="gauge-center"></div><div class="gauge-needle" id="barometer-nal-bef"></div>
+                            </div>
+                            <div class="gauge-labels"><span>Pressat</span><span>OK</span><span>Bra</span></div>
+                            <p id="barometer-text-bef" style="margin-top: 10px; font-weight: bold; color: #495057; font-size: 0.9rem;">Analys av underliggande mål...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row"><div class="col-md-12"><div class="rapport-sektion" id="tabell-container-bef"></div></div></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="rapport-sektion" style="height: 100%; position:relative;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h5 style="margin:0; font-weight:bold; color: var(--primary-dark); font-size:1rem;">Folkmängd (Total utveckling)</h5>
+                            <div class="status-boll" id="status-graf-b1">?</div>
+                        </div>
+                        <div style="height: 250px; width: 100%;"><canvas id="canvas-b1"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="rapport-sektion" style="height: 100%; position:relative;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h5 style="margin:0; font-weight:bold; color: var(--primary-dark); font-size:1rem;">Befolkningsförändring (R12)</h5>
+                            <div class="status-boll" id="status-graf-b2">?</div>
+                        </div>
+                        <div style="height: 250px; width: 100%;"><canvas id="canvas-b2"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="rapport-sektion" style="height: 100%; position:relative;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h5 style="margin:0; font-weight:bold; color: var(--primary-dark); font-size:1rem;">Födda (R12)</h5>
+                            <div class="status-boll" id="status-graf-b3">?</div>
+                        </div>
+                        <div style="height: 250px; width: 100%;"><canvas id="canvas-b3"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="rapport-sektion" style="height: 100%; position:relative;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h5 style="margin:0; font-weight:bold; color: var(--primary-dark); font-size:1rem;">Döda (R12)</h5>
+                            <div class="status-boll" id="status-graf-b4">?</div>
+                        </div>
+                        <div style="height: 250px; width: 100%;"><canvas id="canvas-b4"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VY 2: FLYTTNINGAR                          -->
+        <!-- ========================================== -->
+        <div id="vy-flyttning" class="print-show print-page-break" style="display:none;">
+            <div class="rapport-sektion">
+                <h2 class="rapport-titel" id="rapport-rubrik-fly">Laddar...</h2>
+                <div class="row align-items-center">
+                    <div class="col-md-8"><div class="analys-text" id="rapport-text-fly">Laddar analys från datafil...</div></div>
+                    <div class="col-md-4">
+                        <div style="background: #f8fbff; border: 1px solid #e0ecf8; border-radius: 8px; padding: 15px; text-align: center;">
+                            <h5 style="color: var(--primary-color); font-size: 1rem; font-weight: bold; margin-bottom: 15px;">Måluppfyllelse Flyttningar</h5>
+                            <div class="gauge-container">
+                                <div class="gauge-background"></div><div class="gauge-center"></div><div class="gauge-needle" id="barometer-nal-fly"></div>
+                            </div>
+                            <div class="gauge-labels"><span>Pressat</span><span>OK</span><span>Bra</span></div>
+                            <p id="barometer-text-fly" style="margin-top: 10px; font-weight: bold; color: #495057; font-size: 0.9rem;">Analys av underliggande mål...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row"><div class="col-md-12"><div class="rapport-sektion" id="tabell-container-fly"></div></div></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="rapport-sektion" style="height: 100%; position:relative;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h5 style="margin:0; font-weight:bold; color: var(--primary-dark); font-size:1rem;">In- och utflyttning (Totalt 5 år R12)</h5>
+                            <div class="status-boll" id="status-graf-f1">?</div>
+                        </div>
+                        <div style="height: 250px; width: 100%;"><canvas id="canvas-f1"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="rapport-sektion" style="height: 100%; position:relative;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h5 style="margin:0; font-weight:bold; color: var(--primary-dark); font-size:1rem;">In- och utflyttning (Trend 11 år R12)</h5>
+                            <div class="status-boll" id="status-graf-f2">?</div>
+                        </div>
+                        <div style="height: 250px; width: 100%;"><canvas id="canvas-f2"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="rapport-sektion" style="height: 100%; position:relative;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h5 id="titel-f3" style="margin:0; font-weight:bold; color: var(--primary-dark); font-size:1rem;">Inrikes flyttningar (Trend 11 år R12)</h5>
+                            <div style="display:flex; gap: 10px; align-items:center;">
+                                <button id="btn-back-f3" class="tillbaka-btn" style="display:none; padding: 3px 8px; font-size: 0.8rem;" onclick="resetDrilldownF3()">🔙 Tillbaka</button>
+                                <div class="status-boll" id="status-graf-f3">?</div>
+                            </div>
+                        </div>
+                        <div style="height: 250px; width: 100%;"><canvas id="canvas-f3"></canvas></div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="rapport-sektion" style="height: 100%; position:relative;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
+                            <h5 style="margin:0; font-weight:bold; color: var(--primary-dark); font-size:1rem;">Utrikes flyttningar (Trend 11 år R12)</h5>
+                            <div class="status-boll" id="status-graf-f4">?</div>
+                        </div>
+                        <div style="height: 250px; width: 100%;"><canvas id="canvas-f4"></canvas></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- VY 3: ANALYSVY                             -->
+        <!-- ========================================== -->
+        <div id="analys-vy">
+            <div class="kontroll-panel">
+                <div class="kpi-liten" title="Befolkning totalt för vald månad">
+                    <div class="kpi-liten-titel">Folkmängd</div>
+                    <div class="kpi-liten-varde" id="kpi-liten-befolkning">Laddar...</div>
+                </div>
+                
+                <select id="master-berakning" onchange="skickaTillDiagrammen()"><option value="_Manad">Aktuell månad</option><option value="_R12" selected>Rullande 12 månader</option></select>
+                <select id="master-graftyp" onchange="skickaTillDiagrammen()"><option value="linje">Utveckling över tid (Linje)</option><option value="stapel">Jämför specifik månad (Stapel)</option></select>
+                <select id="master-tid" onchange="skickaTillDiagrammen()">
+                    <option value="1" selected>Senaste året</option>
+                    <option value="5">Senaste 5 åren</option>
+                    <option value="alla">Visa alla år</option>
+                </select>
+                <select id="master-index" onchange="skickaTillDiagrammen()" style="background-color: #3b1d5e;">
+                    <option value="absolut">Absoluta tal</option>
+                    <option value="index">Visa som Index (Basår=100)</option>
+                    <option value="procent_12m">Årlig förändring (%)</option>
+                </select>
+                
+                <!-- NY: Toggla Prognos centralt -->
+                <label style="display: flex; align-items: center; background-color: white; border: 1px solid #ced4da; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; color: #495057; margin-bottom: 0;">
+                    <input type="checkbox" id="master-prognos" onchange="skickaTillDiagrammen()" style="margin-right: 8px; transform: scale(1.2);">
+                    Visa Prognos
+                </label>
+            </div>
+            
+            <!-- KPI-Rad -->
+            <div class="row mb-2" id="analys-kpi-container">
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Inflyttade (R12)</div>
+                        <div class="kpi-value" id="kpi-in-val">Laddar...</div>
+                        <div id="kpi-in-trend"></div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Utflyttade (R12)</div>
+                        <div class="kpi-value" id="kpi-ut-val">Laddar...</div>
+                        <div id="kpi-ut-trend"></div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Födelsenetto (R12)</div>
+                        <div class="kpi-value" id="kpi-fodda-val">Laddar...</div>
+                        <div id="kpi-fodda-trend"></div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6 mb-3">
+                    <div class="kpi-card">
+                        <div class="kpi-title">Befolkningsutveckling</div>
+                        <div class="kpi-value" id="kpi-temp-val" style="font-size: 1.3rem;">Laddar...</div>
+                        <div class="termometer-container">
+                            <div class="termometer-fill" id="kpi-temp-fill" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DIAGRAMMEN -->
+            <div class="row">
+                <div class="col-xl-6"><div class="iframe-container" style="border-top: 4px solid var(--primary-color);"><iframe id="iframe1" src="diagram_befolkning_1.html"></iframe></div></div>
+                <div class="col-xl-6"><div class="iframe-container" style="border-top: 4px solid #009E73;"><iframe id="iframe2" src="diagram_befolkning_2.html"></iframe></div></div>
+                <div class="col-xl-6"><div class="iframe-container" style="border-top: 4px solid #E69F00;"><iframe id="iframe3" src="diagram_befolkning_3.html"></iframe></div></div>
+                <div class="col-xl-6"><div class="iframe-container" style="border-top: 4px solid #6f42c1;"><iframe id="iframe4" src="diagram_befolkning_4.html"></iframe></div></div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="site-footer">
+        Utvecklad av Analys & Utredning, Linköpings kommun &bull; Data uppdateras via SCB. Statistiken har bearbetats av Linköpings kommun.
+    </footer>
+
+    <script>
+        // --- MANUELLA INSTÄLLNINGAR FÖR SYSTEMET ---
+        const INSTALLNING_ANTAL_AR_LINJEDIAGRAM = 11; 
+        const INSTALLNING_ANTAL_AR_STAPELDIAGRAM = 5;
+
+        // Texter för Barometern (Mätaren uppe till höger)
+        const BAROMETER_TEXT_ROD = "Pressat läge";
+        const BAROMETER_TEXT_GUL = "Neutralt läge";
+        const BAROMETER_TEXT_GRON = "Positivt läge";
+        // -------------------------------------------
+
+        let texterData = [];
+        let dashboardData = [];
+        let aktuellVy = 'Befolkning'; 
+        let bCharts = [null, null, null, null]; 
+        let fCharts = [null, null, null, null];
+
+        function skrivUtPDF() {
+            document.getElementById('vy-befolkning').style.display = 'block';
+            document.getElementById('vy-flyttning').style.display = 'block';
+            document.getElementById('analys-vy').style.display = 'none';
+
+            Chart.defaults.animation = false;
+            byggRapportVy('Befolkning');
+            byggRapportVy('Flyttning');
+
+            setTimeout(() => {
+                window.print();
+                Chart.defaults.animation = true;
+                bytVy(aktuellVy);
+            }, 500);
+        }
+
+        // --- NYA SÄKERHETSFUNKTIONER FÖR RULLISTORNA ---
+        
+        function arVald(rf) {
+            if (!rf) return false;
+            let v = rf.toString().toUpperCase().trim();
+            // Tillåter enbart exakta matchningar för att undvika felskrivningar eller smyg-kod
+            return v === "A" || v === "F" || v === "A, F" || v === "F, A" || v === "A,F" || v === "F,A";
+        }
+
+        function harRiktigData(ar, man) {
+            if (dashboardData.length === 0) return true; // Fallback
+            let rad = dashboardData.find(r => {
+                let aKey = r["År"] !== undefined ? "År" : (r["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = r["Månad"] !== undefined ? "Månad" : (r["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                return parseInt(r[aKey]) === parseInt(ar) && parseInt(r[mKey]) === parseInt(man);
+            });
+            if (!rad) return false;
+            
+            // Säkerställer att det FAKTISKT finns en befolkning (så den inte väljer framtida tomma månader)
+            let pop = parseSiffra(rad["Totalt (Hela folkmängden)_Manad"]);
+            return pop !== null && pop > 0;
+        }
+
+        // Baseras nu på exakt "A" eller "F" PLUS att det faktiskt finns riktig folkmängd > 0
+        function fyllArRullista() {
+            if (texterData.length === 0) return;
+            let arSet = new Set();
+            texterData.forEach(r => {
+                let aKey = r["År"] !== undefined ? "År" : (r["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = r["Månad"] !== undefined ? "Månad" : (r["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                
+                if (arVald(r["Robot_Fakta"]) && harRiktigData(r[aKey], r[mKey])) {
+                    if (r[aKey] && !isNaN(parseInt(r[aKey]))) {
+                        arSet.add(parseInt(r[aKey]));
+                    }
+                }
+            });
+
+            let arSelect = document.getElementById("global-ar");
+            let nuvarandeValtAr = arSelect.value;
+            arSelect.innerHTML = "";
+            let sorteradeAr = Array.from(arSet).sort((a,b) => a - b);
+            
+            sorteradeAr.forEach(ar => {
+                let opt = document.createElement("option"); opt.value = ar; opt.text = ar; arSelect.add(opt);
+            });
+
+            if (sorteradeAr.includes(parseInt(nuvarandeValtAr))) {
+                arSelect.value = nuvarandeValtAr;
+            } else if (sorteradeAr.length > 0) {
+                arSelect.value = sorteradeAr[sorteradeAr.length - 1]; 
+            }
+        }
+
+        // Baseras nu på exakt "A" eller "F" PLUS att det faktiskt finns riktig folkmängd > 0
+        function fyllManadRullista(valdAr) {
+            if (texterData.length === 0) return;
+            const manadNamnLista = ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"];
+            let manadSet = new Set();
+            
+            texterData.forEach(r => {
+                let aKey = r["År"] !== undefined ? "År" : (r["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = r["Månad"] !== undefined ? "Månad" : (r["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                
+                if (parseInt(r[aKey]) === parseInt(valdAr) && arVald(r["Robot_Fakta"]) && harRiktigData(r[aKey], r[mKey])) {
+                    if (r[mKey] && !isNaN(parseInt(r[mKey]))) {
+                        manadSet.add(parseInt(r[mKey]));
+                    }
+                }
+            });
+
+            let manadSelect = document.getElementById("global-manad");
+            let nuvarandeValdManad = manadSelect.value;
+            manadSelect.innerHTML = "";
+            let sorteradeManader = Array.from(manadSet).sort((a,b) => a - b);
+            
+            sorteradeManader.forEach(m => {
+                let opt = document.createElement("option"); opt.value = m; opt.text = manadNamnLista[m-1]; manadSelect.add(opt);
+            });
+
+            if (sorteradeManader.includes(parseInt(nuvarandeValdManad))) {
+                manadSelect.value = nuvarandeValdManad;
+            } else if (sorteradeManader.length > 0) {
+                manadSelect.value = sorteradeManader[sorteradeManader.length - 1]; 
+            }
+        }
+
+        function bytVy(vy) {
+            aktuellVy = vy;
+            document.getElementById('btn-befolkning').classList.remove('active');
+            document.getElementById('btn-flyttning').classList.remove('active');
+            document.getElementById('btn-analys').classList.remove('active');
+            
+            document.getElementById('vy-befolkning').style.display = 'none';
+            document.getElementById('vy-flyttning').style.display = 'none';
+            document.getElementById('analys-vy').style.display = 'none';
+            
+            let arSelect = document.getElementById('global-ar');
+            let manadSelect = document.getElementById('global-manad');
+            let grafTypAnalys = document.getElementById('master-graftyp') ? document.getElementById('master-graftyp').value : 'linje';
+
+            if (vy === 'Befolkning') {
+                document.getElementById('btn-befolkning').classList.add('active');
+                document.getElementById('vy-befolkning').style.display = 'block';
+                arSelect.style.display = 'inline-block';
+                manadSelect.style.display = 'inline-block';
+                if (dashboardData.length > 0) byggRapportVy('Befolkning');
+            } else if (vy === 'Flyttning') {
+                document.getElementById('btn-flyttning').classList.add('active');
+                document.getElementById('vy-flyttning').style.display = 'block';
+                arSelect.style.display = 'inline-block';
+                manadSelect.style.display = 'inline-block';
+                if (dashboardData.length > 0) byggRapportVy('Flyttning');
+            } else {
+                document.getElementById('btn-analys').classList.add('active');
+                document.getElementById('analys-vy').style.display = 'block';
+                arSelect.style.display = 'none';
+                manadSelect.style.display = grafTypAnalys === 'stapel' ? 'inline-block' : 'none';
+                skickaTillDiagrammen(); 
+            }
+        }
+
+        function laddaAllData() {
+            const cb = "?t=" + new Date().getTime(); 
+            let texterKlara = false, dataKlara = false;
+
+            function initieraStartVyNardDataFinns() {
+                if (texterKlara && dataKlara) { 
+                    fyllArRullista(); 
+                    let arSelect = document.getElementById("global-ar");
+                    if(arSelect.value) fyllManadRullista(arSelect.value);
+                    bytVy(aktuellVy); 
+                }
+            }
+
+            fetch("befolkning_texter.csv" + cb).then(res => { if(!res.ok) throw new Error(); return res.arrayBuffer(); })
+                .then(buffer => {
+                    let decoder = new TextDecoder("utf-8"); let text = decoder.decode(buffer);
+                    if (text.includes("\uFFFD") || text.includes("Ã")) { decoder = new TextDecoder("windows-1252"); text = decoder.decode(buffer); }
+                    text = text.trim().replace(/^\uFEFF/i, '');
+                    Papa.parse(text, { header: true, skipEmptyLines: true, delimiter: ";", transformHeader: h => h.trim(),
+                        complete: function(results) { texterData = results.data; texterKlara = true; initieraStartVyNardDataFinns(); }
+                    });
+                }).catch(err => { texterKlara = true; initieraStartVyNardDataFinns(); });
+
+            fetch("befolkning_data.csv" + cb).then(res => { if(!res.ok) throw new Error(); return res.arrayBuffer(); })
+                .then(buffer => {
+                    let decoder = new TextDecoder("utf-8"); let text = decoder.decode(buffer);
+                    if (text.includes("\uFFFD") || text.includes("Ã")) { decoder = new TextDecoder("windows-1252"); text = decoder.decode(buffer); }
+                    text = text.trim().replace(/^\uFEFF/i, '');
+                    Papa.parse(text, { header: true, skipEmptyLines: true, delimiter: ";", transformHeader: h => h.trim(),
+                        complete: function(results) { dashboardData = results.data; dataKlara = true; initieraStartVyNardDataFinns(); }
+                    });
+                }).catch(err => { 
+                    document.getElementById("tabell-container-bef").innerHTML = `<div class="alert alert-danger">Kunde inte ladda data. Kontrollera befolkning_data.csv</div>`; 
+                    dataKlara = true; initieraStartVyNardDataFinns();
+                });
+        }
+
+        const parseSiffra = (val) => { if (!val || val.toString().trim() === "" || val === "..") return null; let num = parseFloat(val.toString().replace(/\s/g, '').replace(',', '.')); return isNaN(num) ? null : num; };
+        
+        function uppdateraStatusBoll(bollId, utfallVal, historikVal, polaritet, customTooltip = null) {
+            let el = document.getElementById(bollId);
+            if(!el) return 0;
+            if(utfallVal === null || historikVal === null) { 
+                el.className = "status-boll boll-gra"; el.innerText = "?"; el.title = "Data saknas för jämförelse."; return 0; 
+            }
+            
+            let diff = utfallVal - historikVal;
+            let tolerans = Math.abs(historikVal * 0.01);
+            if (historikVal === 0) tolerans = 0; // Undvik division med noll
+            
+            if (Math.abs(diff) <= tolerans) { 
+                el.className = "status-boll boll-gra"; el.innerText = "→"; el.title = customTooltip || "Oförändrat (inom 1% marginal) jämfört med samma period föregående år."; return 1; 
+            } 
+            
+            let isGood = (polaritet && polaritet.toLowerCase() === "låg") ? (diff < 0) : (diff > 0);
+            if(isGood) { 
+                el.className = "status-boll boll-gron"; el.innerText = (polaritet && polaritet.toLowerCase() === "låg") ? "↓" : "↑"; el.title = customTooltip || "Positiv utveckling."; return 1; 
+            } else { 
+                el.className = "status-boll boll-rod"; el.innerText = (polaritet && polaritet.toLowerCase() === "låg") ? "↑" : "↓"; el.title = customTooltip || "Negativ utveckling."; return 0; 
+            }
+        }
+
+        function uppdateraBarometer(poangSumma, idNal, idText) {
+            let needle = document.getElementById(idNal); let statusText = document.getElementById(idText);
+            if(!needle || !statusText) return;
+            if (poangSumma <= 1) { 
+                needle.style.transform = "rotate(-60deg)"; 
+                statusText.innerHTML = `<span style="color:var(--farg-dalig);">${BAROMETER_TEXT_ROD}</span>`; 
+            } else if (poangSumma === 2) { 
+                needle.style.transform = "rotate(0deg)"; 
+                statusText.innerHTML = `<span style="color:#d4a017;">${BAROMETER_TEXT_GUL}</span>`; 
+            } else { 
+                needle.style.transform = "rotate(60deg)"; 
+                statusText.innerHTML = `<span style="color:var(--farg-bra);">${BAROMETER_TEXT_GRON}</span>`; 
+            }
+        }
+
+        function byggRapportVy(vyNamn) {
+            const valdAr = document.getElementById("global-ar").value;
+            const valdManad = document.getElementById("global-manad").value;
+            if (!valdAr || !valdManad) return; 
+            
+            let manadSelect = document.getElementById("global-manad");
+            let manadNamn = manadSelect.selectedIndex >= 0 ? manadSelect.options[manadSelect.selectedIndex].text : "";
+            
+            let suffix = vyNamn === "Befolkning" ? "bef" : "fly";
+            let tabellNr = vyNamn === "Befolkning" ? "1" : "2";
+
+            let elRubrik = document.getElementById(`rapport-rubrik-${suffix}`);
+            if(elRubrik) elRubrik.innerText = `Analys: Demografi - ${vyNamn} ${manadNamn} ${valdAr}`;
+            
+            let htmlInnehall = ""; let harText = false;
+            texterData.forEach(r => {
+                let aKey = r["År"] !== undefined ? "År" : (r["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = r["Månad"] !== undefined ? "Månad" : (r["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                if(r[aKey] == valdAr && r[mKey] == valdManad && r["Rapportvy"] === vyNamn) {
+                    let textAttVisa = r["Färdig_Analystext"];
+                    if (r["Robot_Fakta"] && r["Robot_Fakta"].trim().toUpperCase() === "A") textAttVisa = r["Autogenererad_Fakta"];
+                    if (textAttVisa && textAttVisa.trim() !== "") {
+                        harText = true; htmlInnehall += `<p>${textAttVisa.replace(/\\n/g, '<br>').replace(/\n/g, '<br>')}</p>`;
+                    }
+                }
+            });
+            if(!harText) { htmlInnehall = `<p style="color: #888; font-style: italic;">Ingen analys inlagd för ${vyNamn} under ${manadNamn} ${valdAr}.</p>`; }
+            let elText = document.getElementById(`rapport-text-${suffix}`);
+            if(elText) elText.innerHTML = htmlInnehall;
+
+            let rad = dashboardData.find(r => {
+                let aKey = r["År"] !== undefined ? "År" : (r["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = r["Månad"] !== undefined ? "Månad" : (r["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                return r[aKey] == valdAr && r[mKey] == valdManad;
+            });
+            let containerTabell = document.getElementById(`tabell-container-${suffix}`);
+            
+            let targetIndex = dashboardData.indexOf(rad);
+            let radDa = targetIndex >= 12 ? dashboardData[targetIndex - 12] : null;
+            
+            if (!rad) { 
+                if(containerTabell) containerTabell.innerHTML = `<div class="alert alert-warning">Siffror saknas för vald månad.</div>`; 
+                return; 
+            }
+
+            let kolumner = [];
+            for (let key in rad) {
+                let val = rad[key];
+                if (key.endsWith("_Minitabell") && val && val.toString().trim() !== "" && val.toString().trim().toLowerCase() !== "nej") {
+                    let dashNamn = key.replace("_Minitabell", ""); let strVal = val.toString().trim();
+                    let tNr = "1"; let koder = ["0", "1", "12"];
+                    if (strVal.includes("_")) { let p = strVal.split("_"); tNr = p[0]; koder = p[1].split(","); } 
+                    else if (!isNaN(parseInt(strVal.charAt(0)))) { tNr = strVal; }
+
+                    if (tNr === tabellNr) {
+                        koder.forEach(kod => {
+                            kolumner.push({ namn: dashNamn, kod: kod.trim().toLowerCase(), sort: parseFloat(rad[`${dashNamn}_Minitabell_Sort`])||999, polaritet: rad[`${dashNamn}_Polaritet`]||"Hög" });
+                        });
+                    }
+                }
+            }
+
+            if (kolumner.length === 0 && containerTabell) {
+                containerTabell.innerHTML = `<div class="alert alert-secondary" style="font-size: 0.9rem;">Här visas nyckeltalstabellen (Aktiveras via styrfilens Minitabell-kolumn).</div>`;
+            } else if (containerTabell) {
+                kolumner.sort((a, b) => a.sort - b.sort);
+                let html = `<div class="table-responsive"><table class="table table-bordered align-middle minitabell-rad" style="background: white; margin-bottom: 0;"><thead class="table-light"><tr>`;
+                
+                let indicatorUsageCount = {};
+                kolumner.forEach(kol => {
+                    let snyggtNamn = kol.namn.replace(/_/g, " "); 
+                    let isRiket = kol.kod.startsWith('r');
+                    let cleanKod = isRiket ? kol.kod.substring(1) : kol.kod;
+                    
+                    let sx = "";
+                    if (cleanKod === "0") sx = (rad[`${kol.namn}_Absolut_R12`]==="R12") ? "(R12)" : "(Utfall)";
+                    else if (cleanKod === "m") sx = "(Månad)";
+                    else if (cleanKod === "y") sx = "(R12)";
+                    else if (cleanKod === "1") sx = "(1 mån %)";
+                    else if (cleanKod === "12") sx = "(1 år %)";
+                    else if (cleanKod === "y12") sx = "(1 år % R12)"; 
+                    
+                    if (isRiket) sx = "Riket " + sx;
+
+                    let altRubrik = rad[`${kol.namn}_Alternativ_rubrik`];
+                    let hInnehall = "";
+                    if (altRubrik && altRubrik.toString().trim() !== "" && altRubrik.toString().trim() !== "NaN") {
+                        indicatorUsageCount[kol.namn] = (indicatorUsageCount[kol.namn] || 0) + 1;
+                        let delar = altRubrik.toString().split('|');
+                        let aktuellRubrik = delar[Math.min(indicatorUsageCount[kol.namn] - 1, delar.length - 1)].trim();
+                        
+                        let parts = aktuellRubrik.split(/\n|\\n/);
+                        let mainTitle = parts[0];
+                        if (parts.length > 1) {
+                            let subTitle = parts.slice(1).join('<br>');
+                            hInnehall = `${mainTitle}<br><span style="font-size:0.8rem; color:#6c757d; font-weight:normal;">${subTitle}</span>`;
+                        } else {
+                            hInnehall = `${mainTitle}`;
+                        }
+                    } else { 
+                        hInnehall = `${snyggtNamn}<br><span style="font-size:0.8rem; color:#6c757d; font-weight:normal;">${sx}</span>`; 
+                    }
+                    html += `<th class="text-end" style="font-weight: 600; color: var(--primary-dark);">${hInnehall}</th>`;
+                });
+                html += `</tr></thead><tbody><tr>`;
+                
+                const formateraVal = (n, k, pol) => {
+                    let isRiket = k.startsWith('r');
+                    let cleanKod = isRiket ? k.substring(1) : k;
+                    let pre = isRiket ? "Riket_" : "";
+
+                    let isDynamicY12 = (cleanKod === "y12"); 
+                    let num = "-";
+                    
+                    if (isDynamicY12) {
+                        let nuVal = parseSiffra(rad[`${pre}${n}_R12`]);
+                        let daVal = radDa ? parseSiffra(radDa[`${pre}${n}_R12`]) : null;
+                        if (nuVal !== null && daVal !== null && daVal !== 0) {
+                            num = ((nuVal - daVal) / Math.abs(daVal)) * 100;
+                        }
+                    } else {
+                        let rKey = "";
+                        if (cleanKod === "0") rKey = (rad[`${n}_Absolut_R12`]==="R12") ? `${pre}${n}_R12` : `${pre}${n}_Manad`;
+                        else if (cleanKod === "m") rKey = `${pre}${n}_Manad`;
+                        else if (cleanKod === "y") rKey = `${pre}${n}_R12`;
+                        else if (cleanKod === "1") rKey = `${pre}${n}_Manad_Pct_1M`;
+                        else if (cleanKod === "12") rKey = `${pre}${n}_Manad_Pct_12M`;
+
+                        let val = rad[rKey]; 
+                        if(val && val.toString().trim() !== "") {
+                            num = parseFloat(val.toString().replace(/\s/g,'').replace(',','.'));
+                        }
+                    }
+                    
+                    if(num === "-" || isNaN(num)) return "-";
+                    
+                    let isAbsolute = (cleanKod === "0" || cleanKod === "m" || cleanKod === "y");
+                    if(!isAbsolute) {
+                        let color = num===0 ? "#6c757d" : (num>0 ? (pol.toLowerCase()==="låg"?"#D55E00":"#009E73") : (pol.toLowerCase()==="låg"?"#009E73":"#D55E00"));
+                        return `<span style="color:${color}; font-weight:bold;">${num>0?"+":""}${num.toLocaleString('sv-SE',{minimumFractionDigits:1,maximumFractionDigits:1})} %</span>`;
+                    }
+                    return num.toLocaleString('sv-SE', {minimumFractionDigits:0, maximumFractionDigits:0});
+                };
+
+                kolumner.forEach(k => { html += `<td class="text-end">${formateraVal(k.namn, k.kod, k.polaritet)}</td>`; });
+                html += `</tr></tbody></table></div>`;
+                containerTabell.innerHTML = html;
+            }
+
+            if(vyNamn === "Befolkning") _ritaBefGrafer(rad, parseInt(valdAr), parseInt(valdManad));
+            if(vyNamn === "Flyttning") _ritaFlyttGrafer(rad, parseInt(valdAr), parseInt(valdManad));
+        }
+
+        function _ritaBefGrafer(rad, vAr, vMan) {
+            let targetIndex = dashboardData.indexOf(rad);
+            bCharts.forEach((c, i) => { if(c) { c.destroy(); bCharts[i] = null; }});
+            let poangSumma = 0;
+
+            let b1Labels = [], b1Data = [];
+            let befolk_key = "Totalt (Hela folkmängden)_Manad";
+            for (let i = 0; i <= targetIndex; i++) {
+                let aKey = dashboardData[i]["År"] !== undefined ? "År" : (dashboardData[i]["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = dashboardData[i]["Månad"] !== undefined ? "Månad" : (dashboardData[i]["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                if (parseInt(dashboardData[i][mKey]) === vMan) {
+                    let v = parseSiffra(dashboardData[i][befolk_key]);
+                    if(v !== null) { b1Labels.push(dashboardData[i][aKey]); b1Data.push(v); }
+                }
+            }
+            b1Labels = b1Labels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); b1Data = b1Data.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            let bUtfall = parseSiffra(rad[befolk_key]); let bJamforelse = b1Data.length > 1 ? b1Data[b1Data.length - 2] : null; 
+            poangSumma += uppdateraStatusBoll("status-graf-b1", bUtfall, bJamforelse, "Hög", "Total folkmängd jämfört med samma månad fg. år.");
+
+            bCharts[0] = new Chart(document.getElementById('canvas-b1').getContext('2d'), {
+                type: 'line', data: { labels: b1Labels, datasets: [{ label: 'Folkmängd', data: b1Data, borderColor: '#5a2e8c', backgroundColor: 'transparent', pointBackgroundColor: '#5a2e8c', borderWidth: 3, tension: 0.1 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { x: { display: true }, y: { beginAtZero: false } } }
+            });
+
+            // B2: Befolkningsförändring R12 (Räknas fram dynamiskt)
+            let b2Labels = [], b2Data = [];
+            for (let i = 0; i <= targetIndex; i++) {
+                let aKey = dashboardData[i]["År"] !== undefined ? "År" : (dashboardData[i]["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = dashboardData[i]["Månad"] !== undefined ? "Månad" : (dashboardData[i]["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                if (parseInt(dashboardData[i][mKey]) === vMan) {
+                    let popNu = parseSiffra(dashboardData[i]["Totalt (Hela folkmängden)_Manad"]);
+                    let popDa = (i >= 12) ? parseSiffra(dashboardData[i - 12]["Totalt (Hela folkmängden)_Manad"]) : null;
+                    if(popNu !== null && popDa !== null) { 
+                        let diff = popNu - popDa;
+                        b2Labels.push(dashboardData[i][aKey]); b2Data.push(diff); 
+                    }
+                }
+            }
+            b2Labels = b2Labels.slice(-INSTALLNING_ANTAL_AR_STAPELDIAGRAM); b2Data = b2Data.slice(-INSTALLNING_ANTAL_AR_STAPELDIAGRAM);
+            
+            let b2Nu = b2Data.length > 0 ? b2Data[b2Data.length - 1] : null;
+            let b2Da = b2Data.length > 1 ? b2Data[b2Data.length - 2] : null;
+            poangSumma += uppdateraStatusBoll("status-graf-b2", b2Nu, b2Da, "Hög", "Befolkningsförändring (1 år) jämfört med samma utveckling fg. år.");
+
+            bCharts[1] = new Chart(document.getElementById('canvas-b2').getContext('2d'), {
+                type: 'bar', data: { labels: b2Labels, datasets: [{ label: 'Förändring (1 år)', data: b2Data, backgroundColor: '#009E73', borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { y: { beginAtZero: true } } }
+            });
+
+            // B3: Födda
+            let b3Labels = [], b3Data = []; let fod_key = "Födda_R12";
+            for (let i = 0; i <= targetIndex; i++) {
+                let aKey = dashboardData[i]["År"] !== undefined ? "År" : (dashboardData[i]["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = dashboardData[i]["Månad"] !== undefined ? "Månad" : (dashboardData[i]["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                if (parseInt(dashboardData[i][mKey]) === vMan) {
+                    let v = parseSiffra(dashboardData[i][fod_key]);
+                    if(v !== null) { b3Labels.push(dashboardData[i][aKey]); b3Data.push(v); }
+                }
+            }
+            b3Labels = b3Labels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); b3Data = b3Data.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            poangSumma += uppdateraStatusBoll("status-graf-b3", parseSiffra(rad[fod_key]), b3Data.length > 1 ? b3Data[b3Data.length - 2] : null, "Hög", "Födda (R12) jämfört med samma period fg. år.");
+            
+            bCharts[2] = new Chart(document.getElementById('canvas-b3').getContext('2d'), {
+                type: 'line', data: { labels: b3Labels, datasets: [{ label: 'Födda', data: b3Data, borderColor: '#5a2e8c', backgroundColor: 'transparent', pointBackgroundColor: '#5a2e8c', borderWidth: 3, tension: 0.1 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} } }
+            });
+
+            // B4: Döda
+            let b4Labels = [], b4Data = []; let dod_key = "Döda_R12";
+            for (let i = 0; i <= targetIndex; i++) {
+                let aKey = dashboardData[i]["År"] !== undefined ? "År" : (dashboardData[i]["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = dashboardData[i]["Månad"] !== undefined ? "Månad" : (dashboardData[i]["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                if (parseInt(dashboardData[i][mKey]) === vMan) {
+                    let v = parseSiffra(dashboardData[i][dod_key]);
+                    if(v !== null) { b4Labels.push(dashboardData[i][aKey]); b4Data.push(v); }
+                }
+            }
+            b4Labels = b4Labels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); b4Data = b4Data.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            poangSumma += uppdateraStatusBoll("status-graf-b4", parseSiffra(rad[dod_key]), b4Data.length > 1 ? b4Data[b4Data.length - 2] : null, "Låg", "Döda (R12) jämfört med samma period fg. år.");
+            
+            bCharts[3] = new Chart(document.getElementById('canvas-b4').getContext('2d'), {
+                type: 'line', data: { labels: b4Labels, datasets: [{ label: 'Döda', data: b4Data, borderColor: '#D55E00', backgroundColor: 'transparent', pointBackgroundColor: '#D55E00', borderWidth: 3, tension: 0.1 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} } }
+            });
+
+            uppdateraBarometer(poangSumma, "barometer-nal-bef", "barometer-text-bef");
+        }
+
+        function _ritaFlyttGrafer(rad, vAr, vMan) {
+            let targetIndex = dashboardData.indexOf(rad);
+            fCharts.forEach((c, i) => { if(c) { c.destroy(); fCharts[i] = null; }});
+            let poangSumma = 0;
+
+            let in_key = "Inflyttning_R12"; let ut_key = "Utflyttning_R12";
+            let in_inrikes_key = "Inrikes_inflyttning_R12"; let ut_inrikes_key = "Inrikes_utflyttning_R12";
+            let in_utrikes_key = "Invandring_R12"; let ut_utrikes_key = "Utvandring_R12";
+            
+            // Nycklar för Inrikes Drill-down
+            let in_inom_key = "Inflyttning_inom_länet_R12"; let in_annat_key = "Inflyttning_annat_län_R12";
+            let ut_inom_key = "Utflyttning_inom_länet_R12"; let ut_annat_key = "Utflyttning_annat_län_R12";
+
+            let allLabels = [], dInTot = [], dUtTot = [], dInInrikes = [], dUtInrikes = [], dInUtrikes = [], dUtUtrikes = [];
+            let dInInom = [], dInAnnat = [], dUtInom = [], dUtAnnat = [];
+            
+            for (let i = 0; i <= targetIndex; i++) {
+                let aKey = dashboardData[i]["År"] !== undefined ? "År" : (dashboardData[i]["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = dashboardData[i]["Månad"] !== undefined ? "Månad" : (dashboardData[i]["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                if (parseInt(dashboardData[i][mKey]) === vMan) {
+                    allLabels.push(dashboardData[i][aKey]);
+                    dInTot.push(parseSiffra(dashboardData[i][in_key]));
+                    dUtTot.push(parseSiffra(dashboardData[i][ut_key]));
+                    dInInrikes.push(parseSiffra(dashboardData[i][in_inrikes_key]));
+                    dUtInrikes.push(parseSiffra(dashboardData[i][ut_inrikes_key]));
+                    dInUtrikes.push(parseSiffra(dashboardData[i][in_utrikes_key]));
+                    dUtUtrikes.push(parseSiffra(dashboardData[i][ut_utrikes_key]));
+                    
+                    dInInom.push(parseSiffra(dashboardData[i][in_inom_key]));
+                    dInAnnat.push(parseSiffra(dashboardData[i][in_annat_key]));
+                    dUtInom.push(parseSiffra(dashboardData[i][ut_inom_key]));
+                    dUtAnnat.push(parseSiffra(dashboardData[i][ut_annat_key]));
+                }
+            }
+
+            let labels5 = allLabels.slice(-INSTALLNING_ANTAL_AR_STAPELDIAGRAM);
+            let dInTot5 = dInTot.slice(-INSTALLNING_ANTAL_AR_STAPELDIAGRAM);
+            let dUtTot5 = dUtTot.slice(-INSTALLNING_ANTAL_AR_STAPELDIAGRAM);
+
+            let labels11 = allLabels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            let dInTot11 = dInTot.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            let dUtTot11 = dUtTot.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            let dInInrikes11 = dInInrikes.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            let dUtInrikes11 = dUtInrikes.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            let dInUtrikes11 = dInUtrikes.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            let dUtUtrikes11 = dUtUtrikes.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            
+            let dInInom11 = dInInom.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            let dInAnnat11 = dInAnnat.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            let dUtInom11 = dUtInom.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+            let dUtAnnat11 = dUtAnnat.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
+
+            const setNettoStatusBoll = (id, inArr, utArr, title) => {
+                let el = document.getElementById(id);
+                if(!el) return 0;
+                if(inArr.length < 2 || utArr.length < 2 || inArr[inArr.length-1] === null || utArr[utArr.length-1] === null) {
+                    el.className = "status-boll boll-gra"; el.innerText = "?"; el.title = "Data saknas"; return 0;
+                }
+                
+                let nettoNu = inArr[inArr.length-1] - utArr[utArr.length-1];
+                let nettoDa = inArr[inArr.length-2] - utArr[utArr.length-2];
+                let forandring = nettoNu - nettoDa;
+
+                if (Math.abs(forandring) <= 10) { 
+                    el.className = "status-boll boll-gra"; el.innerText = "→"; el.title = "Neutralt: Flyttnettot är i stort sett oförändrat mot fg. år."; return 1;
+                } else if (forandring > 0) {
+                    el.className = "status-boll boll-gron"; el.innerText = "↑"; el.title = "Positivt: Flyttnettot har stärkts jämfört med fg. år."; return 1;
+                } else {
+                    el.className = "status-boll boll-rod"; el.innerText = "↓"; el.title = "Negativt: Flyttnettot har försvagats jämfört med fg. år."; return 0;
+                }
+            };
+            
+            let el1 = document.getElementById("status-graf-f1");
+            let in_nu = dInTot5.length > 0 ? dInTot5[dInTot5.length - 1] : null;
+            let ut_nu = dUtTot5.length > 0 ? dUtTot5[dUtTot5.length - 1] : null;
+            
+            if(el1 && in_nu !== null && ut_nu !== null) {
+                let netto = in_nu - ut_nu;
+                if(netto > 0) { el1.className = "status-boll boll-gron"; el1.innerText = "↑"; poangSumma++; el1.title = "Positivt: Fler flyttar in än ut (Positivt flyttnetto)."; }
+                else if(netto < 0) { el1.className = "status-boll boll-rod"; el1.innerText = "↓"; el1.title = "Negativt: Fler flyttar ut än in (Negativt flyttnetto)."; }
+                else { el1.className = "status-boll boll-gra"; el1.innerText = "→"; poangSumma++; el1.title = "Neutralt: Lika många flyttar in som ut."; }
+            }
+
+            fCharts[0] = new Chart(document.getElementById('canvas-f1').getContext('2d'), {
+                type: 'bar', data: { labels: labels5, datasets: [
+                    { label: 'Inflyttning', data: dInTot5, backgroundColor: '#009E73', borderWidth: 0 },
+                    { label: 'Utflyttning', data: dUtTot5, backgroundColor: '#D55E00', borderWidth: 0 }
+                ]},
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: true, position: 'bottom'} }, scales: { y: { beginAtZero: true } } }
+            });
+
+            poangSumma += setNettoStatusBoll("status-graf-f2", dInTot11, dUtTot11);
+
+            fCharts[1] = new Chart(document.getElementById('canvas-f2').getContext('2d'), {
+                type: 'line', data: { labels: labels11, datasets: [
+                    { label: 'Inflyttning', data: dInTot11, borderColor: '#009E73', backgroundColor: 'transparent', pointBackgroundColor: '#009E73', borderWidth: 3, tension: 0.1 },
+                    { label: 'Utflyttning', data: dUtTot11, borderColor: '#D55E00', backgroundColor: 'transparent', pointBackgroundColor: '#D55E00', borderWidth: 3, tension: 0.1 }
+                ]},
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: true, position: 'bottom'} } }
+            });
+
+            poangSumma += setNettoStatusBoll("status-graf-f3", dInInrikes11, dUtInrikes11);
+
+            let dsF3Base = [
+                { label: 'Inrikes inflyttning', data: dInInrikes11, borderColor: '#005596', backgroundColor: 'transparent', pointBackgroundColor: '#005596', borderWidth: 3, tension: 0.1, pointStyle: 'circle', radius: 4 },
+                { label: 'Inrikes utflyttning', data: dUtInrikes11, borderColor: '#D55E00', backgroundColor: 'transparent', pointBackgroundColor: '#D55E00', borderWidth: 3, tension: 0.1, pointStyle: 'circle', radius: 4 }
+            ];
+
+            let dsF3Drilldown = [
+                { label: 'Inflyttning (Inom län)', data: dInInom11, borderColor: '#005596', backgroundColor: 'transparent', pointBackgroundColor: '#005596', borderWidth: 2, tension: 0.1, borderDash: [], pointStyle: 'circle', radius: 4 },
+                { label: 'Inflyttning (Annat län)', data: dInAnnat11, borderColor: '#00a8e8', backgroundColor: 'transparent', pointBackgroundColor: '#00a8e8', borderWidth: 2, tension: 0.1, borderDash: [], pointStyle: 'triangle', radius: 5 },
+                { label: 'Utflyttning (Inom län)', data: dUtInom11, borderColor: '#D55E00', backgroundColor: 'transparent', pointBackgroundColor: '#D55E00', borderWidth: 2, tension: 0.1, borderDash: [5, 5], pointStyle: 'rect', radius: 4 },
+                { label: 'Utflyttning (Annat län)', data: dUtAnnat11, borderColor: '#E69F00', backgroundColor: 'transparent', pointBackgroundColor: '#E69F00', borderWidth: 2, tension: 0.1, borderDash: [5, 5], pointStyle: 'rectRot', radius: 5 }
+            ];
+
+            window.dsF3BaseGlobal = dsF3Base; 
+
+            fCharts[2] = new Chart(document.getElementById('canvas-f3').getContext('2d'), {
+                type: 'line', data: { labels: labels11, datasets: dsF3Base },
+                options: { 
+                    responsive: true, maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: {display: true, position: 'bottom'},
+                        tooltip: {
+                            callbacks: {
+                                afterLabel: function(context) {
+                                    if (context.chart.data.datasets.length === 2) return "\n💡 Klicka på grafen för detaljer per län";
+                                    return null;
+                                }
+                            }
+                        }
+                    },
+                    onHover: (event, chartElement, chart) => {
+                        if (chart.data.datasets.length === 2) {
+                            event.native.target.style.cursor = chartElement[0] ? 'pointer' : 'default';
+                        } else {
+                            event.native.target.style.cursor = 'default';
+                        }
+                    },
+                    onClick: (event, activeEls, chart) => {
+                        if (chart.data.datasets.length === 2 && activeEls.length > 0) {
+                            chart.data.datasets = dsF3Drilldown;
+                            chart.update();
+                            document.getElementById("btn-back-f3").style.display = "block";
+                            document.getElementById("titel-f3").innerText = "Inrikes flyttningar (Länsdetaljer)";
+                        }
+                    }
+                }
+            });
+            
+            window.resetDrilldownF3 = function() {
+                if(fCharts[2]) {
+                    fCharts[2].data.datasets = window.dsF3BaseGlobal;
+                    fCharts[2].update();
+                    document.getElementById("btn-back-f3").style.display = "none";
+                    document.getElementById("titel-f3").innerText = "Inrikes flyttningar (Trend 11 år R12)";
+                }
+            };
+
+            poangSumma += setNettoStatusBoll("status-graf-f4", dInUtrikes11, dUtUtrikes11);
+
+            fCharts[3] = new Chart(document.getElementById('canvas-f4').getContext('2d'), {
+                type: 'line', data: { labels: labels11, datasets: [
+                    { label: 'Invandring', data: dInUtrikes11, borderColor: '#5a2e8c', backgroundColor: 'transparent', pointBackgroundColor: '#5a2e8c', borderWidth: 3, tension: 0.1 },
+                    { label: 'Utvandring', data: dUtUtrikes11, borderColor: '#E69F00', backgroundColor: 'transparent', pointBackgroundColor: '#E69F00', borderWidth: 3, tension: 0.1 }
+                ]},
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: true, position: 'bottom'} } }
+            });
+
+            uppdateraBarometer(poangSumma, "barometer-nal-fly", "barometer-text-fly");
+        }
+
+        function uppdateraAnalysKPIer() {
+            if (dashboardData.length === 0) return;
+            const vAr = parseInt(document.getElementById("global-ar").value);
+            const vMan = parseInt(document.getElementById("global-manad").value);
+            let targetIndex = dashboardData.findIndex(r => {
+                let aKey = r["År"] !== undefined ? "År" : (r["Ã…r"] !== undefined ? "Ã…r" : "r");
+                let mKey = r["Månad"] !== undefined ? "Månad" : (r["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
+                return parseInt(r[aKey]) === vAr && parseInt(r[mKey]) === vMan;
+            });
+            if (targetIndex === -1) return;
+
+            let rad = dashboardData[targetIndex];
+            let radDa = targetIndex >= 12 ? dashboardData[targetIndex - 12] : null;
+
+            const getKpiData = (key, pol) => {
+                let nu = parseSiffra(rad[key]);
+                let da = radDa ? parseSiffra(radDa[key]) : null;
+                if (nu === null) return { val: "-", trend: "", class: "neutral", diff: 0, isGood: false };
+                if (da === null) return { val: nu.toLocaleString('sv-SE'), trend: "", class: "neutral", diff: 0, isGood: false };
+                
+                let diff = nu - da;
+                let diffPct = (da !== 0) ? (diff / da) * 100 : 0;
+                let isGood = (pol === 'låg') ? diff <= 0 : diff >= 0; 
+                let trendClass = diff === 0 ? "neutral" : (isGood ? "positive" : "negative");
+                let pil = diff === 0 ? "→" : (diff > 0 ? "↑" : "↓");
+                let formatDiff = Math.abs(diffPct).toLocaleString('sv-SE', {minimumFractionDigits: 1, maximumFractionDigits: 1}) + " %";
+                
+                return { val: nu.toLocaleString('sv-SE'), trend: `${pil} ${formatDiff} (1 år)`, class: trendClass, diff: diff, isGood: isGood };
+            };
+
+            let befolkningVarde = parseSiffra(rad["Totalt (Hela folkmängden)_Manad"]);
+            document.getElementById("kpi-liten-befolkning").innerText = befolkningVarde !== null ? befolkningVarde.toLocaleString('sv-SE') : "-";
+
+            let inflytt = getKpiData("Inflyttning_R12", "hög");
+            document.getElementById("kpi-in-val").innerText = inflytt.val;
+            document.getElementById("kpi-in-trend").innerHTML = `<span class="kpi-trend ${inflytt.class}">${inflytt.trend}</span>`;
+
+            let utflytt = getKpiData("Utflyttning_R12", "låg");
+            document.getElementById("kpi-ut-val").innerText = utflytt.val;
+            document.getElementById("kpi-ut-trend").innerHTML = `<span class="kpi-trend ${utflytt.class}">${utflytt.trend}</span>`;
+
+            let fNu = parseSiffra(rad["Födda_R12"]) - parseSiffra(rad["Döda_R12"]);
+            let fDa = radDa ? (parseSiffra(radDa["Födda_R12"]) - parseSiffra(radDa["Döda_R12"])) : null;
+            if (fNu !== null && !isNaN(fNu)) {
+                document.getElementById("kpi-fodda-val").innerText = fNu > 0 ? "+" + fNu.toLocaleString('sv-SE') : fNu.toLocaleString('sv-SE');
+                if (fDa !== null && !isNaN(fDa)) {
+                    let fDiff = fNu - fDa;
+                    let fPil = fDiff > 0 ? "↑" : (fDiff < 0 ? "↓" : "→");
+                    let fClass = fDiff > 0 ? "positive" : (fDiff < 0 ? "negative" : "neutral");
+                    document.getElementById("kpi-fodda-trend").innerHTML = `<span class="kpi-trend ${fClass}">${fPil} ${Math.abs(fDiff)} st (1 år)</span>`;
+                } else { document.getElementById("kpi-fodda-trend").innerHTML = ""; }
+            } else { document.getElementById("kpi-fodda-val").innerText = "-"; }
+
+            let popVal = null;
+            let popNu = parseSiffra(rad["Totalt (Hela folkmängden)_Manad"]);
+            let popDa = radDa ? parseSiffra(radDa["Totalt (Hela folkmängden)_Manad"]) : null;
+            if (popNu !== null && popDa !== null) {
+                popVal = popNu - popDa;
+            }
+            
+            let tempText = "Stabil"; let tempColor = "var(--farg-neutral)"; let tempWidth = "50%";
+            if (popVal !== null) {
+                if (popVal > 500) { tempText = "Stark tillväxt"; tempColor = "var(--farg-bra)"; tempWidth = "90%"; }
+                else if (popVal > 0) { tempText = "Svag tillväxt"; tempColor = "#009E73"; tempWidth = "65%"; }
+                else if (popVal < 0) { tempText = "Minskning"; tempColor = "var(--farg-dalig)"; tempWidth = "20%"; }
+            } else { tempText = "Data saknas"; tempWidth = "0%"; }
+
+            document.getElementById("kpi-temp-val").innerText = tempText;
+            document.getElementById("kpi-temp-fill").style.width = tempWidth;
+            document.getElementById("kpi-temp-fill").style.backgroundColor = tempColor;
+        }
+
+        function skickaTillDiagrammen() {
+            const berakning = document.getElementById("master-berakning").value; 
+            const grafTyp = document.getElementById("master-graftyp").value;
+            const tid = document.getElementById("master-tid").value; 
+            const visningsTyp = document.getElementById("master-index").value; 
+            const manad = document.getElementById("global-manad").value;
+            
+            // NY: Läs av Prognos-knappen
+            const visaPrognos = document.getElementById("master-prognos") ? document.getElementById("master-prognos").checked : false;
+
+            let manadSelect = document.getElementById('global-manad');
+            if (aktuellVy === 'Analysvy') {
+                manadSelect.style.display = grafTyp === 'stapel' ? 'inline-block' : 'none';
+            }
+
+            for (let i = 1; i <= 4; i++) { 
+                const iframe = document.getElementById("iframe" + i);
+                if (iframe && iframe.contentWindow && typeof iframe.contentWindow.uppdateraFranMaster === "function") { 
+                    // NY: Skicka med värdet för visaPrognos
+                    iframe.contentWindow.uppdateraFranMaster(berakning, grafTyp, manad, tid, visningsTyp, visaPrognos); 
+                }
+            }
+            
+            uppdateraAnalysKPIer();
+        }
+
+        function uppdateraAllt(andratAr = false) {
+            if (andratAr) {
+                let arSelect = document.getElementById("global-ar");
+                fyllManadRullista(arSelect.value);
+            }
+            
+            if (aktuellVy === 'Befolkning' || aktuellVy === 'Flyttning') { bytVy(aktuellVy); } 
+            else { skickaTillDiagrammen(); }
+        }
+
+        window.addEventListener('load', () => { laddaAllData(); setTimeout(skickaTillDiagrammen, 600); });
+    </script>
+</body>
+</html>

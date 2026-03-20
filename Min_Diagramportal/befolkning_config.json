@@ -1,0 +1,18 @@
+{
+    "1": [],
+    "2": [],
+    "3": [
+        {
+            "id": "Totalt (Hela folkmängden)",
+            "label": "Folkmängd",
+            "drilldown_komponenter": [
+                "Åldersgrupper"
+            ],
+            "drilldown_farger": [
+                "Flera"
+            ],
+            "drilldown_typ": "cirkel, linje"
+        }
+    ],
+    "4": []
+}

@@ -1051,5 +1051,39 @@
       "Prognosår": 2035,
       "Typ": "Nej"
     }
+  ],
+  "Hushåll_referensperson": [
+    {
+      "Referenspersons_ålder": "25-29 år",
+      "Hushållsstorlek": 0.0,
+      "Eftersläpning första barnet": 0.0
+    },
+    {
+      "Referenspersons_ålder": "30-34 år",
+      "Hushållsstorlek": 0.0,
+      "Eftersläpning första barnet": 0.0
+    },
+    {
+      "Referenspersons_ålder": "35-39 år",
+      "Hushållsstorlek": 0.0,
+      "Eftersläpning första barnet": 0.0
+    },
+    {
+      "Referenspersons_ålder": "40-44 år",
+      "Hushållsstorlek": 0.0,
+      "Eftersläpning första barnet": 0.0
+    },
+    {
+      "Referenspersons_ålder": "45-49 år",
+      "Hushållsstorlek": 0.0,
+      "Eftersläpning första barnet": 0.0
+    }
+  ],
+  "Flytt_över_län": [
+    {
+      "Unnamed: 0": 0.0,
+      "Struktur / andel som förvärvsarbetare": 2019,
+      "Unnamed: 2": 2024
+    }
   ]
 }

@@ -82,15 +82,28 @@
                     <li><strong>Hög / Låg / Stagnerande:</strong> Dessa applicerar fasta antaganden för tillväxt, till exempel högre inflyttning eller längre livslängd (minskad dödlighet).</li>
                 </ul>
                 
-                <h3>Manuella reglage</h3>
-                <p>Du kan finjustera antagandena för att bygga ett helt eget scenario:</p>
-                <ul>
-                    <li><strong>Fruktsamhet (TFR):</strong> Styr det genomsnittliga antalet barn per kvinna.</li>
-                    <li><strong>Dödlighet (Förändring):</strong> Anger hur dödsriskerna förändras framåt. Exempelvis betyder "-10%" att dödligheten i varje specifik åldersgrupp minskar, vilket innebär att fler lever längre.</li>
-                    <li><strong>Flyttningsantaganden:</strong> I rullistan väljer du om du vill justera flyttströmmarna <em>procentuellt</em> i förhållande till historiken, eller med ett <em>absolut antal personer</em> extra per år. Inrikes och utrikes flöden kan styras oberoende av varandra.</li>
+                <h3>Manuella reglage och flyttningsmodeller</h3>
+                <p>Du kan finjustera antagandena för att bygga ett helt eget scenario. För flyttningsantaganden finns tre fundamentalt olika beräkningsmodeller att välja mellan i rullistan. Att förstå vad de gör "under huven" är avgörande för din analys:</p>
+                
+                <ul class="space-y-4 list-none pl-0 mt-4">
+                    <li class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <strong class="text-sky-700 text-lg">1. Relativ förändring (%)</strong><br>
+                        <em class="text-gray-600 block mt-1">Utgår från:</em> Snittet av det faktiska antalet flyttare i Linköping de senaste tre historiska åren.<br>
+                        <em class="text-gray-600 block mt-1">Så fungerar det:</em> Om det i snitt har flyttat in 100 stycken 22-åringar de senaste tre åren, och du ställer reglaget på <strong>+10 %</strong>, kommer kalkylatorn att räkna med 110 stycken 22-åringar varje prognosår. Det är en statisk och stabil modell som utgår från att framtiden ser ut exakt som de senaste åren, fast med en procentuell gas/broms.
+                    </li>
+                    <li class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <strong class="text-sky-700 text-lg">2. Absolut förändring (antal pers)</strong><br>
+                        <em class="text-gray-600 block mt-1">Utgår från:</em> Samma historiska treårssnitt som ovan, men använder det endast som en fördelningsnyckel.<br>
+                        <em class="text-gray-600 block mt-1">Så fungerar det:</em> Om du drar reglaget till <strong>+500 personer</strong>, adderas exakt 500 individer till den totala inflyttningen. Kalkylatorn tittar sedan på historiken för att se <em>vilka</em> som brukar flytta in, och fördelar dessa 500 personer enligt den historiska ålderskurvan (exempelvis hamnar lejonparten naturligt i studentåldrarna 19–25 år, och väldigt få över 80 år).
+                    </li>
+                    <li class="bg-gray-50 p-4 rounded border border-gray-200">
+                        <strong class="text-sky-700 text-lg">3. Andel av Rikets kohorter (‰)</strong> <span class="text-sm text-gray-500">(Gäller primärt inrikes flytt)</span><br>
+                        <em class="text-gray-600 block mt-1">Utgår från:</em> Framskrivningen av hela Sveriges befolkning kombinerat med Linköpings historiska "marknadsandel" av denna befolkning per åldersgrupp.<br>
+                        <em class="text-gray-600 block mt-1">Så fungerar det:</em> Kalkylatorn tittar först på hur många 20-åringar som finns i hela Sverige ett givet prognosår. Sedan tittar den på hur många promille av rikets 20-åringar som brukar flytta till Linköping. När du drar i reglaget ökar/minskar du Linköpings <em>attraktionskraft</em> (promillesatsen). Det briljanta är att om 20-åringarna blir dramatiskt färre i Sverige framöver, kommer inflyttningen till Linköping att sjunka automatiskt i denna modell – även om reglaget står på 0 %. Den fångar därmed upp de nationella demografiska vågorna!
+                    </li>
                 </ul>
 
-                <h3>Jämför två scenarier</h3>
+                <h3 class="mt-6">Jämför två scenarier</h3>
                 <p>En av kalkylatorns starkaste funktioner är möjligheten att jämföra två olika framtider. När du har kört en simulering klickar du på knappen <strong>Jämför (Spara)</strong>. Då sparas din aktuella prognos i bakgrunden. Du kan därefter ändra reglagen (t.ex. kraftigt öka inflyttningen) och klicka på <em>Kör Simulering</em> igen. Alla diagram kommer nu att rita ut båda scenarierna över varandra för omedelbar jämförelse.</p>
             </div>
 
@@ -125,16 +138,16 @@
                 </ul>
 
                 <h3>Åldersindelning (Drill-down)</h3>
-                <p>När du tittar på vissa diagram (exempelvis <em>Folkmängd totalt</em>, <em>Fruktsamhet (TFR)</em> eller <em>Dödlighet (‰)</em>) aktiveras en rullista till vänster. Där kan du byta från att se totalsumman till att visa kurvor för förutbestämda åldersgrupper.</p>
+                <p>När du tittar på nästan alla diagram (exempelvis <em>Folkmängd totalt</em>, <em>Inrikes flytt</em> eller <em>Årlig förändring</em>) kan du använda den inre vänstra rullistan. Där kan du byta från att se totalsumman till att visa kurvor för förutbestämda åldersgrupper.</p>
                 <div class="tip-box">
                     <strong>Analystips:</strong> Välj diagrammet <em>Fruktsamhet (TFR)</em> och sätt åldersindelningen till "Fruktsamhetsåldrar" (om detta är definierat i systemet). Du ser då fruktsamhetstalet uppbrutet på specifika ålderspann. Välj <em>Dödlighet</em> och "Omsorgsåldrar" för att studera livslängdsökningen hos de äldsta!
                 </div>
 
                 <h3>Dölj alla-knappen</h3>
-                <p>Om du aktiverar en åldersindelning med väldigt många åldersklasser (t.ex. 5-årsklasser) blir grafen snabbt rörig av alla linjer. Då dyker knappen <strong>"Dölj alla"</strong> upp. Klicka på den för att rensa grafen. Klicka sedan på namnet på den specifika åldersgrupp du är intresserad av i teckenförklaringen ovanför grafen, för att tända just den linjen.</p>
+                <p>Om du aktiverar en åldersindelning med väldigt många klasser (t.ex. 5-årsklasser) blir grafen snabbt rörig av alla linjer. Då dyker knappen <strong>"Dölj alla"</strong> upp. Klicka på den för att rensa grafen tillfälligt. Klicka sedan på namnet på den specifika åldersgrupp du är intresserad av i teckenförklaringen (legenden) strax ovanför grafen, för att tända just den linjen.</p>
 
                 <h3>Indexering (Bas = 100)</h3>
-                <p>Vid analyser av åldersgrupper dyker kryssrutan "Index" upp. När denna är markerad sätts det sista kända historiska året till index 100. Detta gör att du direkt kan se <em>tillväxttakten</em> – t.ex. vilken åldersgrupp som förväntas växa snabbast i procent under de kommande 10 åren, oavsett om gruppen är stor eller liten idag.</p>
+                <p>Vid analyser av folkmängd per åldersgrupp dyker kryssrutan "Index" upp. När denna är markerad sätts referensåret till index 100. (Om du har en aktiv prognos är referensåret det sista historiska året. Om du bara tittar på historik är referensåret det första året i grafen). Detta gör att du direkt kan jämföra <em>tillväxttakten</em> och se vilken åldersgrupp som växer snabbast i procent.</p>
             </div>
 
             <div id="riket" class="content-section">
@@ -145,20 +158,37 @@
                 <p>När du väljer diagrammen <em>Folkmängd totalt</em>, <em>Årlig förändring (%)</em> eller <em>Försörjningskvot</em> dyker en lila kryssruta för "Riket" upp. Klickar du i denna så ritas Sveriges snitt in i grafen. (För total folkmängd slår grafen automatiskt över till Index = 100, eftersom rikets befolkning annars skulle trycka ihop Linköpings linje i botten).</p>
 
                 <h3>Andel av riket-diagrammen</h3>
-                <p>Längst ner i listan över diagramtyper finns två specialverktyg:</p>
+                <p>I listan över diagramtyper finns två specialverktyg:</p>
                 <ul>
                     <li><strong>Andel av riket: Folkmängd (%):</strong> Visar hur stor del av Sveriges befolkning som bor i Linköping. Använd gärna åldersuppdelningen här för att se om Linköping har en växande andel av landets studenter eller pensionärer.</li>
-                    <li><strong>Andel av riket: Inrikes flytt (‰):</strong> Ett mycket skarpt mått som visar hur väl Linköping attraherar invånare från andra kommuner. Diagrammet visar hur många promille av rikets befolkning som flyttar in till, ut från, respektive netto-flyttar till Linköping. </li>
+                    <li><strong>Andel av riket: Inrikes flytt (‰):</strong> Ett mycket skarpt mått som visar hur väl Linköping attraherar invånare från andra kommuner. Diagrammet visar hur många promille av rikets befolkning i en viss ålder som flyttar in till, ut från, respektive netto-flyttar till Linköping. </li>
                 </ul>
             </div>
 
             <div id="export" class="content-section mb-10">
                 <h2>7. Tabeller och Export (CSV)</h2>
                 <p>All data du tar fram och granskar i kalkylatorn kan enkelt laddas ner för vidare bearbetning i Excel.</p>
-                <ul>
-                    <li><strong>Befolkningstabell (vid pyramiden):</strong> Klicka på knappen "Tabell" för att få ut exakta siffror (män/kvinnor/totalt) för det specifika år du granskar. Du kan välja att exportera detta i 1-årsklasser, 5-årsklasser eller i de anpassade åldersgrupperingarna.</li>
-                    <li><strong>Förändringstabell (vid trenddiagrammet):</strong> Klicka på knappen "Förändringar". Denna tabell visar den övergripande demografiska utvecklingen (befolkning, födda, döda, flyttnetto) år för år under hela den valda tidsperioden.
-                        <br><br><em>Tips vid export:</em> När du laddar ner förändringstabellen till Excel för ett simulerat scenario, sparas alla dina antaganden (hur du hade ställt in TFR, Inflyttning etc.) längst upp i CSV-filen, så att du alltid vet hur siffrorna kom till!</li>
+                <ul class="space-y-4 list-none pl-0">
+                    <li>
+                        <strong class="text-sky-700 block mb-1"><i class="fa-solid fa-table mr-2"></i>Befolkningstabell (vid pyramiden)</strong>
+                        Klicka på knappen "Tabell" bredvid pyramiden för att få ut exakta siffror (män/kvinnor/totalt) för det specifika år du granskar. Du kan välja att exportera detta i 1-årsklasser, 5-årsklasser eller i de anpassade åldersgrupperingarna.
+                    </li>
+                    <li>
+                        <strong class="text-sky-700 block mb-1"><i class="fa-solid fa-download mr-2"></i>Förändringstabell Totalt (Hela perioden)</strong>
+                        Klicka på knappen "Förändringar" ovanför trenddiagrammet. Du får då upp en tabell som visar den övergripande demografiska utvecklingen (befolkning, födda, döda, flyttnetto) år för år. Klicka sedan på den blå knappen "Ladda ner Totalt (CSV)".
+                        <div class="tip-box mt-2"><em>Tips:</em> När du laddar ner tabellen för ett simulerat scenario, sparas alla dina antaganden (TFR, Inflyttning etc.) längst upp i Excel-filen, så att du alltid vet exakt vilka inställningar som skapade siffrorna!</div>
+                    </li>
+                    <li class="bg-indigo-50 p-4 rounded border border-indigo-100">
+                        <strong class="text-indigo-800 text-lg block mb-2"><i class="fa-solid fa-people-arrows mr-2"></i>Specialexport: Inrikes flytt per ålder</strong>
+                        Detta är ett oumbärligt verktyg om du vill granska de faktiska volymerna i absoluta tal (antal personer) när du använder dig av flyttningsmodellen <em>"Andel av rikets kohorter (‰)"</em>.<br><br>
+                        <strong>Så här gör du för att exportera:</strong>
+                        <ol class="list-decimal pl-5 mt-2 mb-2 space-y-1 font-medium text-indigo-900">
+                            <li>Välj önskad åldersindelning i rullistan direkt under grafens rubrik (t.ex. "5-årsklasser").</li>
+                            <li>Klicka på knappen <strong>"Förändringar"</strong> (tabell-ikonen) precis ovanför grafen.</li>
+                            <li>I rutan som öppnas, klicka på den <strong>Lila knappen "Inrikes flytt per ålder (CSV)"</strong> uppe till höger.</li>
+                        </ol>
+                        <p class="text-sm text-indigo-700 mt-2">Du får nu ut en fil som är uppdelad på dina valda åldersgrupper och visar exakt hur många personer som beräknas flytta in, ut och netto för varje enskilt år!</p>
+                    </li>
                 </ul>
             </div>
 
