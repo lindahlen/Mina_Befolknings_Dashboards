@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Analys & Utredning, Linköpings kommun">
+    <meta name="description" content="Användarguide för Linköpings kommuns sysselsättningskalkylator.">
+    <title>Användarguide - Sysselsättningskalkylator</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; }
+        .content-section { background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); padding: 2rem; margin-bottom: 2rem; }
+        h2 { color: #0284c7; font-weight: 700; font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #e0f2fe; padding-bottom: 0.5rem; }
+        h3 { color: #334155; font-weight: 600; font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        p { margin-bottom: 1rem; line-height: 1.6; color: #475569; }
+        ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: #475569; }
+        li { margin-bottom: 0.5rem; line-height: 1.6; }
+        .highlight { background-color: #f0fdfa; border-left: 4px solid #14b8a6; padding: 1rem; margin: 1rem 0; border-radius: 0 0.5rem 0.5rem 0; }
+        .tip-box { background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 1rem; margin: 1rem 0; border-radius: 0 0.5rem 0.5rem 0; font-size: 0.95rem; }
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-slate-800 text-white shadow-md">
+        <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-bold mb-2"><i class="fa-solid fa-book-open mr-3"></i>Användarguide: Sysselsättning</h1>
+                <p class="text-slate-300 text-lg">En manual för regionalekonomisk modellering och kompetensförsörjning.</p>
+            </div>
+            <a href="sysselsattningskalkylator.html" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-2 px-4 rounded shadow-sm transition flex items-center border border-slate-600">
+                <i class="fa-solid fa-arrow-left mr-2"></i> Tillbaka till Kalkylatorn
+            </a>
+        </div>
+    </header>
+
+    <!-- Innehåll -->
+    <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8 flex-grow">
+        
+        <!-- Meny (Innehållsförteckning) -->
+        <aside class="w-full md:w-1/4">
+            <div class="bg-white rounded-lg shadow-sm p-5 sticky top-8 border border-gray-100">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 mt-0 border-b pb-2">Innehåll</h3>
+                <nav class="flex flex-col gap-3 text-sm text-sky-700 font-medium">
+                    <a href="#intro" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 1. Introduktion</a>
+                    <a href="#scenarier" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 2. Utbud & Efterfrågan</a>
+                    <a href="#geografi" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 3. Inpendling & Tyngdkraft</a>
+                    <a href="#demografi" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 4. Demografisk effekt</a>
+                    <a href="#ekonomi" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 5. Regional Ekonomi (BRP)</a>
+                    <a href="#matchning" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 6. Matchningsanalys & SNI</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Guide-sektioner -->
+        <main class="w-full md:w-3/4">
+            
+            <div id="intro" class="content-section mt-0">
+                <h2>1. Introduktion</h2>
+                <p>Sysselsättningskalkylatorn är ett avancerat verktyg skapat för att förstå arbetsmarknadens dynamik i Linköping. Verktyget besvarar frågan: <i>"Om näringslivet växer kraftigt, varifrån ska arbetskraften komma?"</i></p>
+                <p>Kalkylatorn bygger på att ställa den lokala <b>Efterfrågan</b> (jobb, dagbefolkning) mot det lokala <b>Utbudet</b> (invånare som jobbar, nattbefolkning). Mellanskillnaden utgörs av ett <b>Rekryteringsgap</b> som i slutändan måste täckas av antingen pendling eller inflyttning.</p>
+            </div>
+
+            <div id="scenarier" class="content-section">
+                <h2>2. Scenariomodellering: Lokal tillväxt & Utbud</h2>
+                <p>I vänstermenyn hittar du reglage som låter dig bygga framtidsscenarier (10 år framåt). Du kan antingen använda <b>Snabbscenarierna</b> (hämtade från styrfilen) eller dra i de tre huvudsakliga utbudsreglagen:</p>
+                <ul>
+                    <li><b>Lokal Jobbtillväxt:</b> Detta styr företagens Efterfrågan. Anger hur många procent lokala arbetstillfällen (dagbefolkning) ska öka (eller krympa).</li>
+                    <li><b>Sysselsättningsgrad:</b> Anger hur stor andel av de lokala invånarna (16-74 år) som faktiskt jobbar. Att lyckas öka denna (genom t.ex. integration eller minskat utanförskap) är det mest effektiva sättet att öka arbetskraftsutbudet utan att behöva bygga nya bostäder.</li>
+                    <li><b>Kvarstannandegrad LiU:</b> Universitetet (LiU) är Linköpings största resurs. Detta reglage adderar en procentandel av varje års nyexaminerade studenter till den lokala arbetskraftspoolen, vilket simulerar effekten av riktade insatser för att få studenter att etablera sig lokalt efter studierna.</li>
+                </ul>
+            </div>
+
+            <div id="geografi" class="content-section">
+                <h2>3. Inpendling & Tyngdkraftsmodell (Virtuellt Utbud)</h2>
+                <p>Om jobben växer snabbare än det lokala arbetskraftsutbudet uppstår ett rekryteringsgap. Om ingen lokal personal finns måste företagen rekrytera externt (inpendling). Här gör kalkylatorns mest avancerade matematik entré.</p>
+                
+                <div class="bg-gray-50 p-4 rounded border border-gray-200 mt-4">
+                    <strong class="text-sky-700 text-lg">Regionförstoring (Kortare restid)</strong><br>
+                    <p class="text-sm mt-2">Detta reglage använder en s.k. <i>Tyngdkraftsmodell (Gravity Model)</i>. Om vi investerar i infrastruktur (t.ex. Ostlänken) som kortar restiden till grannkommunerna, upplevs arbetsmarknaden som större. Kalkylatorn räknar omedelbart om pendlingsflödet från ex. Mjölby och Norrköping baserat på det nya kortare avståndet, och adderar de "nya" inpendlarna till det lokala kompetensutbudet.</p>
+                </div>
+                
+                <div class="bg-gray-50 p-4 rounded border border-gray-200 mt-4 mb-4">
+                    <strong class="text-sky-700 text-lg">Distansarbete</strong><br>
+                    <p class="text-sm mt-2">Ökade möjligheter att arbeta hemifrån minskar barriären för att ta ett jobb långt ifrån hemmet. Denna slider expanderar den potentiella pendlingspoolen proportionerligt.</p>
+                </div>
+                
+                <div class="tip-box">
+                    <strong>Så ser du effekten:</strong> Dessa reglage skapar ett <i>virtuellt arbetskraftsutbud</i>. Du ser resultatet genom att nyckeltalet "Rekryteringsgap" krymper (eftersom inpendlarna täcker behoven). De adderas även till de blå staplarna i matchningsdiagrammen!
+                </div>
+            </div>
+
+            <div id="demografi" class="content-section">
+                <h2>4. Demografisk Effekt (Befolkningsbehov)</h2>
+                <p>Målet med samhällsplanering är att säkerställa balans. Om vi drar upp jobbtillväxten kraftigt, och vare sig höjd sysselsättningsgrad eller ny infrastruktur (regionförstoring) lyckas täcka behovet, uppstår ett kvarstående <b>Rekryteringsgap</b>.</p>
+                <p>Nyckeltalet <strong class="text-orange-600">Befolkningsbehov</strong> räknar om detta gap till faktiska människor. Kalkylatorn tar hänsyn till att det inte räcker att 1 000 personer flyttar in för att fylla 1 000 jobb – vissa inflyttare är ju studenter, barn eller pensionärer! Den applicerar därför en historisk sysselsättningsgrad specifikt för <i>inflyttare</i> för att visa precis hur många nya bostäder och invånare kommunen måste planera för.</p>
+            </div>
+
+            <div id="ekonomi" class="content-section">
+                <h2>5. Regional Ekonomi (BRP)</h2>
+                <p>I rullistan för grafer kan du välja <b>Ekonomisk Tillväxt (Total BRP)</b>. Bruttoregionalprodukt (BRP) mäter storleken på Linköpings samlade ekonomi.</p>
+                <p>Kalkylatorn letar automatiskt upp hur mycket BRP per sysselsatt (dvs produktiviteten) har ökat de senaste tio åren. I prognosläget multiplicerar den detta med antalet framtida lokala jobb. Resultatet är en simulering av hur mycket rikare kommunen blir av din inställda jobbtillväxt.</p>
+                <div class="highlight">
+                    Eftersom SCB:s BRP-data ofta har en eftersläpning på ett par år, extrapolerar (gissar) kalkylatorn smart fram de saknade åren i historiken. De är då markerade med en liten asterisk (*).
+                </div>
+            </div>
+
+            <div id="matchning" class="content-section mb-10">
+                <h2>6. Matchningsanalys & SNI-kluster</h2>
+                <p>Sysselsättningskalkylatorns främsta styrka är att kunna djupdyka i matchningen. Det räcker ju inte att vi har 1 000 arbetslösa om de 1 000 nya jobben kräver en helt annan kompetens.</p>
+                
+                <h3>Så läser du graferna</h3>
+                <p>Byt till vyerna <i>Utbildningsmatchning</i>, <i>Sektormatchning</i> eller <i>Branschmatchning</i> i rullistan ovanför grafen. Här ställs <b>Utbudet</b> (blå staplar) jämte <b>Efterfrågan</b> (gröna staplar). Den <b>Röda linjen</b> visar gapet (bristen).</p>
+
+                <h3>Egna SNI-kluster</h3>
+                <p>Om du har mycket detaljerad branschdata, kan branschgrafen bli svårläst med tiotals staplar. Du kan då använda <b>SNIgrupper</b> i din Excel-styrfil! Om du skapar kolumner i filen där du t.ex. döper en kolumn till "Tech-sektorn" och mappar rätt SNI-koder dit, kommer kalkylatorn att tända en ny dold rullista bredvid diagramväljaren. Där kan du blixtsnabbt filtrera grafen så att den endast visar exakt de branschkluster du vill presentera.</p>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 border-t border-gray-200 mt-auto py-5">
+        <div class="container mx-auto px-4 text-center text-sm font-medium text-gray-500">
+            &copy; Utvecklad av Analys & Utredning, Linköpings kommun
+        </div>
+    </footer>
+
+</body>
+</html>

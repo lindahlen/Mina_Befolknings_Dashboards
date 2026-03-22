@@ -1,18 +1,317 @@
 {
-    "1": [],
-    "2": [],
+    "1": [
+        {
+            "id": "Skolålder",
+            "label": "Skolålder",
+            "drilldown_komponenter": [
+                "1-3 år",
+                "4-5 år",
+                "6-9 år",
+                "10-12 år",
+                "13-15 år",
+                "16-18 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Förskoleålder",
+            "label": "Förskoleålder",
+            "drilldown_komponenter": [
+                "1-3 år",
+                "4-5 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Grundskoleålder",
+            "label": "Grundskoleålder",
+            "drilldown_komponenter": [
+                "6-9 år",
+                "10-12 år",
+                "13-15 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Yngre_åldrar",
+            "label": "Yngre åldrar",
+            "drilldown_komponenter": [
+                "0 år",
+                "1 år",
+                "2 år",
+                "3 år",
+                "4 år",
+                "5 år",
+                "6 år",
+                "7 år",
+                "8 år",
+                "9 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Tre_års_intervall",
+            "label": "Tre års intervall",
+            "drilldown_komponenter": [
+                "1-3 år",
+                "4-6 år",
+                "7-9 år",
+                "10-12 år",
+                "13-15 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Gymnasie-_&_Universitetsålder",
+            "label": "Gymnasie- & Universitetsålder",
+            "drilldown_komponenter": [
+                "16-18 år",
+                "19-21 år",
+                "22-24 år",
+                "25-27 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        }
+    ],
+    "2": [
+        {
+            "id": "Pensionsåldrar",
+            "label": "Pensionsåldrar",
+            "drilldown_komponenter": [
+                "65-74 år",
+                "75-84 år",
+                "85-94 år",
+                "95+ år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Omsorgsåldrar",
+            "label": "Omsorgsåldrar",
+            "drilldown_komponenter": [
+                "60-64 år",
+                "65-74 år",
+                "75-79 år",
+                "80-84 år",
+                "85-89 år",
+                "90-94 år",
+                "95+ år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        }
+    ],
     "3": [
         {
             "id": "Totalt (Hela folkmängden)",
             "label": "Folkmängd",
             "drilldown_komponenter": [
-                "Åldersgrupper"
+                "Femårs_klasser"
             ],
             "drilldown_farger": [
                 "Flera"
             ],
-            "drilldown_typ": "cirkel, linje"
+            "drilldown_typ": "pyramid"
+        },
+        {
+            "id": "Yrkesverksam_ålder",
+            "label": "Yrkesverksam ålder",
+            "drilldown_komponenter": [
+                "25-34 år",
+                "35-44 år",
+                "45-54 år",
+                "55-64 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Yrkesverksamma_åldrar",
+            "label": "Yrkesverksamma åldrar",
+            "drilldown_komponenter": [
+                "15-18 år",
+                "19-24 år",
+                "25-29 år",
+                "30-34 år",
+                "35-39 år",
+                "40-44 år",
+                "45-49 år",
+                "50-54 år",
+                "55-59 år",
+                "60-65 år",
+                "66-74 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "SKR_ålder",
+            "label": "SKR ålder",
+            "drilldown_komponenter": [
+                "0-19 år",
+                "20-66 år",
+                "67-79 år",
+                "80+ år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Grov_åldersindelning",
+            "label": "Grov åldersindelning",
+            "drilldown_komponenter": [
+                "0-19 år",
+                "20-64 år",
+                "65+ år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Fruktsamhetsåldrar",
+            "label": "Fruktsamhetsåldrar",
+            "drilldown_komponenter": [
+                "15-19 år",
+                "20-24 år",
+                "25-29 år",
+                "30-34 år",
+                "35-39 år",
+                "40-49 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Flyttningsåldrar",
+            "label": "Flyttningsåldrar",
+            "drilldown_komponenter": [
+                "16-18 år",
+                "19-24 år",
+                "25-29 år",
+                "30-34 år",
+                "35-39 år",
+                "40-44 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
         }
     ],
-    "4": []
+    "4": [
+        {
+            "id": "Födda",
+            "label": "Födda",
+            "drilldown_komponenter": [
+                "Födda"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Döda",
+            "label": "Döda",
+            "drilldown_komponenter": [
+                "Döda"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Inflyttning",
+            "label": "Inflyttning",
+            "drilldown_komponenter": [
+                "Inflyttning_inom_länet",
+                "Inflyttning_annat_län",
+                "Invandring"
+            ],
+            "drilldown_farger": [
+                "Blå",
+                "Grön",
+                "Lila"
+            ],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Utflyttning",
+            "label": "Utflyttning",
+            "drilldown_komponenter": [
+                "Utflyttning_inom_länet",
+                "Utflyttning_annat_län",
+                "Utvandring"
+            ],
+            "drilldown_farger": [
+                "Röd",
+                "Gul",
+                "Rosa"
+            ],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Inrikes_inflyttning",
+            "label": "Inrikes inflyttning",
+            "drilldown_komponenter": [
+                "Inflyttning_inom_länet",
+                "Inflyttning_annat_län"
+            ],
+            "drilldown_farger": [
+                "Blå",
+                "Grön"
+            ],
+            "drilldown_typ": "linje"
+        },
+        {
+            "id": "Invandring",
+            "label": "Invandring",
+            "drilldown_komponenter": [
+                "Invandring"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Inrikes_utflyttning",
+            "label": "Inrikes utflyttning",
+            "drilldown_komponenter": [
+                "Utflyttning_inom_länet",
+                "Utflyttning_annat_län"
+            ],
+            "drilldown_farger": [
+                "Röd",
+                "Gul"
+            ],
+            "drilldown_typ": "linje"
+        },
+        {
+            "id": "Utvandring",
+            "label": "Utvandring",
+            "drilldown_komponenter": [
+                "Utvandring"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Befolkningsförändring",
+            "label": "Befolkningsförändring",
+            "drilldown_komponenter": [
+                "Födda",
+                "Döda",
+                "Inflyttning",
+                "Utflyttning"
+            ],
+            "drilldown_farger": [
+                "Blå",
+                "Gul",
+                "Grön",
+                "Röd"
+            ],
+            "drilldown_typ": "stapel"
+        }
+    ]
 }
