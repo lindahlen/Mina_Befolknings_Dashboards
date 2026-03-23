@@ -58,8 +58,17 @@
 
             <!-- Scenariokontroller -->
             <div class="card opacity-50 pointer-events-none transition-opacity duration-300" id="scenarioPanel">
-                <h2 class="text-lg font-bold mb-4">2. Scenariomodellering (10 år)</h2>
+                <h2 class="text-lg font-bold mb-3">2. Scenariomodellering (10 år)</h2>
                 
+                <!-- Simuleringsläge -->
+                <div class="mb-4 bg-slate-100 p-3 rounded border border-slate-200">
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Simuleringsläge</label>
+                    <select id="simMode" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-sky-500 focus:border-sky-500 font-medium" onchange="toggleSimMode()">
+                        <option value="full">Fullständig (Lokal tillväxt + Pendling & Geografi)</option>
+                        <option value="local">Endast Lokal (Fryser pendling på nuläget)</option>
+                    </select>
+                </div>
+
                 <!-- Snabbscenarier -->
                 <div class="mb-5 p-3 bg-slate-50 rounded border border-slate-200">
                     <div class="text-xs font-bold text-slate-500 uppercase mb-2 flex justify-between">
@@ -103,50 +112,77 @@
                     <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="document.getElementById('studentVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enheter'">
                 </div>
 
+                <!-- KORRIGERINGSFAKTOR MED NYTT INFO-I -->
+                <div class="slider-container bg-orange-50 p-3 rounded border border-orange-100 mt-4">
+                    <label class="block text-sm font-medium mb-1 flex justify-between items-center text-gray-700">
+                        <span class="flex items-center gap-1.5">
+                            Justering: Inflyttares syss.grad
+                            <i class="fa-solid fa-circle-info text-orange-400 cursor-pointer hover:text-orange-600 transition" onclick="showInfo('inflyttare')" title="Läs om SCB:s eftersläpning och mörkertal"></i>
+                        </span>
+                        <span id="migrantSyssVal" class="text-orange-600 font-bold">+10%-enheter</span>
+                    </label>
+                    <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="document.getElementById('migrantSyssVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enheter'; handleYearChange();">
+                    <p class="text-[11px] text-gray-500 leading-tight mt-1">Korrigerar den beräknade förvärvsfrekvensen bland inflyttare.</p>
+                </div>
+
                 <hr class="my-4 border-gray-200">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">Pendling & Geografi</h3>
-                    <span onclick="showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information"><i class="fa-solid fa-circle-info"></i></span>
-                </div>
+                
+                <!-- CONTAINER FÖR PENDLING & GEOGRAFI -->
+                <div id="geoPanel" class="transition-opacity duration-300">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">Pendling & Geografi</h3>
+                        <span onclick="showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information"><i class="fa-solid fa-circle-info"></i></span>
+                    </div>
 
-                <div class="slider-container">
-                    <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Grundantagande för hur mycket inpendlingen förväntas växa över prognosperioden.">
-                        <span>Inpendling (Förändring i volym)</span>
-                        <span id="inpendlingVal" class="text-slate-600 font-bold">+0%</span>
-                    </label>
-                    <input type="range" id="inpendlingSlider" min="-30" max="50" step="1" value="0" oninput="document.getElementById('inpendlingVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
-                </div>
+                    <div class="mb-4">
+                        <select id="pendlingType" class="w-full border border-gray-300 rounded p-1.5 text-sm focus:ring-sky-500 focus:border-sky-500 bg-gray-50" onchange="updatePendlingUI()">
+                            <option value="pct">Relativ förändring (%)</option>
+                            <option value="abs">Absolut förändring (Antal pers)</option>
+                        </select>
+                    </div>
 
-                <div class="slider-container">
-                    <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Grundantagande för hur mycket utpendlingen förväntas växa över prognosperioden.">
-                        <span>Utpendling (Förändring i volym)</span>
-                        <span id="utpendlingVal" class="text-slate-600 font-bold">+0%</span>
-                    </label>
-                    <input type="range" id="utpendlingSlider" min="-30" max="50" step="1" value="0" oninput="document.getElementById('utpendlingVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
-                </div>
+                    <div class="slider-container">
+                        <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Grundantagande för hur mycket inpendlingen förväntas växa över prognosperioden.">
+                            <span>Inpendling (Förändring i volym)</span>
+                            <span id="inpendlingVal" class="text-slate-600 font-bold">+0%</span>
+                        </label>
+                        <input type="range" id="inpendlingSlider" min="-50" max="50" step="1" value="0" oninput="updatePendlingValue('inpendlingSlider', 'inpendlingVal')">
+                    </div>
 
-                <div class="slider-container">
-                    <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Förändring i viljan/möjligheten att arbeta på distans. Skapar virtuellt pendlingsutbud.">
-                        <span>Distansarbete (Andel av pendlingsgapet)</span>
-                        <span id="distansVal" class="text-slate-600 font-bold">Baslinje</span>
-                    </label>
-                    <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="document.getElementById('distansVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
-                </div>
+                    <div class="slider-container">
+                        <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Grundantagande för hur mycket utpendlingen förväntas växa över prognosperioden.">
+                            <span>Utpendling (Förändring i volym)</span>
+                            <span id="utpendlingVal" class="text-slate-600 font-bold">+0%</span>
+                        </label>
+                        <input type="range" id="utpendlingSlider" min="-50" max="50" step="1" value="0" oninput="updatePendlingValue('utpendlingSlider', 'utpendlingVal')">
+                    </div>
 
-                <div class="slider-container">
-                    <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Krympande restider via ex. Ostlänken förstorar den tillgängliga arbetsmarknadsregionen.">
-                        <span>Regionförstoring (Kortare restid)</span>
-                        <span id="regionVal" class="text-slate-600 font-bold">Dagens nivå</span>
-                    </label>
-                    <input type="range" id="regionSlider" min="0" max="30" step="1" value="0" oninput="document.getElementById('regionVal').innerText = this.value == 0 ? 'Dagens nivå' : '+' + this.value + ' min'">
+                    <div class="slider-container">
+                        <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Förändring i viljan/möjligheten att arbeta på distans. Skapar virtuellt pendlingsutbud.">
+                            <span>Distansarbete (Andel av pendlingsgapet)</span>
+                            <span id="distansVal" class="text-slate-600 font-bold">Baslinje</span>
+                        </label>
+                        <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="document.getElementById('distansVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
+                    </div>
+
+                    <div class="slider-container">
+                        <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Krympande restider via ex. Ostlänken förstorar den tillgängliga arbetsmarknadsregionen.">
+                            <span>Regionförstoring (Kortare restid)</span>
+                            <span id="regionVal" class="text-slate-600 font-bold">Dagens nivå</span>
+                        </label>
+                        <input type="range" id="regionSlider" min="0" max="30" step="1" value="0" oninput="document.getElementById('regionVal').innerText = this.value == 0 ? 'Dagens nivå' : '+' + this.value + ' min'">
+                    </div>
                 </div>
 
                 <div class="flex gap-2 mt-5">
-                    <button id="simBtn" onclick="runSimulation()" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-3 rounded transition flex items-center justify-center shadow-md text-sm">
-                        <i class="fa-solid fa-gears mr-2"></i> Kör Modell
+                    <button id="simBtn" onclick="runSimulation()" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-2 rounded transition flex items-center justify-center shadow-md text-sm">
+                        <i class="fa-solid fa-gears mr-1"></i> Kör Modell
                     </button>
-                    <button onclick="resetSimulation()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-3 rounded transition flex items-center justify-center shadow-sm text-sm">
-                        <i class="fa-solid fa-rotate-left mr-1"></i> Nollställ
+                    <button onclick="toggleSaveScenario()" id="saveBtn" class="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-2 rounded transition flex items-center justify-center shadow-sm text-sm" title="Spara nuvarande prognos för att jämföra med en ny">
+                        <i class="fa-solid fa-code-compare mr-1"></i> Jämför (Spara)
+                    </button>
+                    <button onclick="resetSimulation()" class="flex-none w-10 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-2 rounded transition flex items-center justify-center shadow-sm text-sm" title="Rensa prognoser och återställ värden">
+                        <i class="fa-solid fa-rotate-left"></i>
                     </button>
                 </div>
             </div>
@@ -189,7 +225,6 @@
                         <div class="text-xs text-gray-500 font-medium">BRP/sysselsatt</div>
                         <div class="text-lg md:text-xl font-bold text-purple-800" id="kpiBRP">-</div>
                     </div>
-                    <!-- NYTT KPI FÖR BEFOLKNINGSBEHOV -->
                     <div class="card text-center p-3 border-b-4 border-orange-500 cursor-help" id="kpiBefolkningContainer" title="Hur rekryteringsgapet påverkar befolkningsutvecklingen">
                         <div class="text-xs text-gray-500 font-medium">Befolkningsbehov</div>
                         <div class="text-lg md:text-xl font-bold text-orange-600" id="kpiBefolkning">-</div>
@@ -219,7 +254,6 @@
                             <option value="sektor_match">Sektormatchning (Valt år)</option>
                         </select>
                         
-                        <!-- RULLISTA FÖR EGNA SNI-GRUPPERINGAR -->
                         <select id="subGroupSelect" class="hidden p-1.5 text-sm bg-indigo-50 outline-none focus:bg-indigo-100 transition-colors font-semibold text-indigo-800 border-l border-gray-200 rounded-r" onchange="updateDashboard(true)">
                             <!-- Fylls på dynamiskt av JS -->
                         </select>
@@ -264,32 +298,32 @@
         
         let histDataStore = {}; 
         let progDataStore = {}; 
+        let savedProjectedData = null; // För att spara Jämförelse
         
         let trendChartInstance = null;
         let allYears = [];
         let histYearsGlobal = [];
         let baseYear = 0; 
         let avgAnnualStudents = 3500; // Fallback
+        
+        // Dynamisk Förvärvsfrekvens för inflyttare (sätts under inläsning)
+        let globalMigrantEmploymentRate = 0.50; 
 
         // Inställningar för snabbscenarier
         window.scenarioSettings = {
-            base: { jobGrowth: 5, syssGrad: 0.5, student: 2, inpendling: 0, utpendling: 0, distans: 0, region: 0 },
-            high: { jobGrowth: 15, syssGrad: 2.0, student: 10, inpendling: 10, utpendling: 5, distans: 10, region: 15 },
-            low: { jobGrowth: -5, syssGrad: -1.0, student: -2, inpendling: -5, utpendling: -2, distans: 0, region: 0 },
-            stagnant: { jobGrowth: 0, syssGrad: 0, student: 0, inpendling: 0, utpendling: 0, distans: 0, region: 0 }
+            base: { jobGrowth: 5, syssGrad: 0.5, student: 2, inpendling: 0, utpendling: 0, distans: 0, region: 0, migrantSyss: 10 },
+            high: { jobGrowth: 15, syssGrad: 2.0, student: 10, inpendling: 10, utpendling: 5, distans: 10, region: 15, migrantSyss: 15 },
+            low: { jobGrowth: -5, syssGrad: -1.0, student: -2, inpendling: -5, utpendling: -2, distans: 0, region: 0, migrantSyss: 5 },
+            stagnant: { jobGrowth: 0, syssGrad: 0, student: 0, inpendling: 0, utpendling: 0, distans: 0, region: 0, migrantSyss: 10 }
         };
 
         // Info-texter för modalen
         const infoTexts = {
             'scenarios': {
-                title: 'Om Snabbscenarier',
+                title: 'Om Snabbscenarier & Simuleringsläge',
                 content: `
                     <p>Snabbscenarierna laddar in förinställda parametrar som har definierats i din Excel-styrfil under fliken <em>Scenarier</em>.</p>
-                    <ul class="list-disc pl-5 space-y-2">
-                        <li><b>Bas:</b> Huvudscenariot för en normal och stabil tillväxt utan större strukturella skiften.</li>
-                        <li><b>Hög:</b> Antar en expansiv tillväxt av lokala jobb, kombinerat med insatser för högre kvarstannandegrad och regionförstoring.</li>
-                        <li><b>Låg / Stagnerande:</b> Används för att studera effekterna av en inbromsande ekonomi eller en lågkonjunktur.</li>
-                    </ul>`
+                    <p><b>Simuleringsläget:</b> Överst kan du välja att frysa pendlingsantagandena ("Endast Lokal"). Detta är extremt användbart för att isolera effekten av lokala åtgärder, spara prognosen (Jämför-knappen), och sedan slå på "Fullständig" för att se hur mycket pendlingen därefter adderar.</p>`
             },
             'demografi': {
                 title: 'Lokal Tillväxt & Utbud',
@@ -297,8 +331,18 @@
                     <p>Dessa reglage styr hur det lokala arbetskraftsutbudet utvecklas och hur den lokala arbetsmarknaden växer.</p>
                     <ul class="list-disc pl-5 space-y-2">
                         <li><b>Lokal Jobbtillväxt:</b> Styr hur mycket företagens rekryteringsbehov förväntas växa i procent över prognosperioden.</li>
-                        <li><b>Sysselsättningsgrad:</b> Ökar/minskar andelen av den befintliga befolkningen som arbetar. <br><i>OBS: Eftersom en ökning av lokalt arbetande invånare i praktiken innebär att lokala jobb har fyllts, driver detta reglage både Utbudet (blå linjen) och Efterfrågan (gröna linjen) uppåt parallellt!</i></li>
-                        <li><b>Kvarstannandegrad LiU:</b> Styr effekten av ifall en viss procent extra av universitetets årskullar väljer att bo kvar och ta ett lokalt jobb efter examen.</li>
+                        <li><b>Sysselsättningsgrad:</b> Ökar/minskar andelen av den befintliga befolkningen som arbetar. <br><i>OBS: Eftersom en ökning av lokalt arbetande invånare innebär att jobb fylls, driver detta reglage både Utbudet (blå linjen) och Efterfrågan (gröna linjen) uppåt!</i></li>
+                        <li><b>Kvarstannandegrad LiU:</b> Styr effekten av ifall en viss procent extra av universitetets årskullar väljer att bo kvar.</li>
+                    </ul>`
+            },
+            'inflyttare': {
+                title: 'Justering av Inflyttares Sysselsättningsgrad',
+                content: `
+                    <p>När kalkylatorn räknar ut hur många som måste flytta in för att fylla rekryteringsgapet (Befolkningsbehovet), använder den din detaljerade Excel-data uppbruten på ettårsklasser och ett snitt för 2019/2024.</p>
+                    <ul class="list-disc pl-5 space-y-2">
+                        <li><b>Problemet med SCB:s data:</b> Eftersom SCB mäter sysselsättning i november året <i>innan</i>, syns ofta inte att en person flyttat till Linköping primärt för att börja ett nytt jobb. De klassas ofta som "övriga" eller "studerande" det första året.</li>
+                        <li><b>Reglagets funktion:</b> Med detta reglage kan du manuellt korrigera för detta mörkertal. En höjning med t.ex. +10 %-enheter betyder att vi antar att fler av inflyttarna de facto kliver rakt in i arbetskraften.</li>
+                        <li><b>Effekt:</b> En högre sysselsättningsgrad bland inflyttare minskar det totala behovet av nybyggda bostäder, eftersom varje inflyttad person bidrar mer till att täcka rekryteringsgapet!</li>
                     </ul>`
             },
             'geografi': {
@@ -306,8 +350,9 @@
                 content: `
                     <p>Dessa reglage styr det externa utbudet av kompetens, det vill säga pendlingsströmmarna över kommungränsen.</p>
                     <ul class="list-disc pl-5 space-y-2">
-                        <li><b>In- och Utpendling:</b> Reglage för att procentuellt minska eller öka den faktiska, fysiska pendlingen till och från kommunen under prognosperioden.</li>
-                        <li><b>Distansarbete & Regionförstoring:</b> Dessa skapar ett <i>virtuellt pendlingsutbud</i>. Kortade restider via ex. Ostlänken gör att kalkylatorn via en tyngdkraftsmodell beräknar hur många extra inpendlare som teoretiskt frigörs. Distansarbete appliceras som en bonusovanpå detta.</li>
+                        <li><b>Typ av förändring:</b> Välj mellan att skala upp pendlingen procentuellt (%) eller skriva in exakta volymer i antal personer.</li>
+                        <li><b>In- och Utpendling:</b> Reglage för att förändra den faktiska, fysiska grundpendlingen.</li>
+                        <li><b>Distansarbete & Regionförstoring:</b> Dessa skapar ett <i>virtuellt pendlingsutbud</i>. Kortade restider via ex. Ostlänken gör att kalkylatorn via en tyngdkraftsmodell beräknar hur många extra inpendlare som teoretiskt frigörs.</li>
                     </ul>`
             },
             'diagram': {
@@ -325,9 +370,9 @@
                 content: `
                     <p>KPI:t <b>Befolkningsbehov</b> visar hur det kvarvarande <i>Omatchade gapet</i> påverkar inflyttningsbehovet till kommunen.</p>
                     <ul class="list-disc pl-5 space-y-2">
-                        <li>Om Totalt Utbud (inklusive pendlingsnetto) inte täcker Efterfrågan uppstår en brist. För att tillsätta jobben måste människor flytta in.</li>
-                        <li><b>Uträkning:</b> Om gapet är 1 000 jobb räcker det inte att 1 000 personer flyttar in. Kalkylatorn tar hänsyn till att enbart en viss andel av inflyttare är förvärvsarbetande (ofta studenter eller barn/äldre).</li>
-                        <li><b>Nästa fas:</b> Snart kopplas detta direkt till fliken <i>Andel_förvarb_inflytt_över_län</i> för exakta beräkningar baserade på ålder. Just nu används en schablon på 65% sysselsättningsgrad bland inflyttare.</li>
+                        <li>Om Totalt Utbud (inklusive pendling) inte täcker Efterfrågan uppstår en brist. För att fylla jobben måste människor flytta in.</li>
+                        <li><b>Avancerad åldersviktning:</b> Det räcker inte att 100 personer flyttar in för 100 jobb. Kalkylatorn utnyttjar din flik <i>Andel_förvarb_inflytt_över_län</i> och viktar detta mot de faktiska ettårsklasserna för inflyttare för att få fram en exakt, historisk förvärvsfrekvens.</li>
+                        <li><b>Korrigeringsfaktor:</b> Via det orangea reglaget till vänster kan du sedan korrigera detta värde för att ta höjd för att SCB-datan släpar efter ett år.</li>
                     </ul>`
             }
         };
@@ -357,6 +402,76 @@
         window.addEventListener('click', (e) => {
             if (e.target === document.getElementById('infoModal')) closeInfoModal();
         });
+
+        // --- UI FUNKTIONER FÖR DE NYA TOGGLARNA ---
+        function toggleSimMode() {
+            const mode = document.getElementById('simMode').value;
+            const geoPanel = document.getElementById('geoPanel');
+            if (mode === 'local') {
+                geoPanel.classList.add('opacity-40', 'pointer-events-none');
+            } else {
+                geoPanel.classList.remove('opacity-40', 'pointer-events-none');
+            }
+            updateDashboard(true); // Uppdatera grafen direkt
+        }
+
+        function updatePendlingUI() {
+            const type = document.getElementById('pendlingType').value;
+            const inSlider = document.getElementById('inpendlingSlider');
+            const utSlider = document.getElementById('utpendlingSlider');
+
+            if (type === 'pct') {
+                inSlider.min = -50; inSlider.max = 50; inSlider.step = 1;
+                utSlider.min = -50; utSlider.max = 50; utSlider.step = 1;
+            } else {
+                inSlider.min = -5000; inSlider.max = 5000; inSlider.step = 50;
+                utSlider.min = -5000; utSlider.max = 5000; utSlider.step = 50;
+            }
+
+            updatePendlingValue('inpendlingSlider', 'inpendlingVal');
+            updatePendlingValue('utpendlingSlider', 'utpendlingVal');
+        }
+
+        function updatePendlingValue(sliderId, textId) {
+            const val = document.getElementById(sliderId).value;
+            const type = document.getElementById('pendlingType').value;
+            const prefix = val > 0 ? '+' : '';
+            const suffix = type === 'pct' ? '%' : ' pers';
+            document.getElementById(textId).innerText = prefix + val + suffix;
+        }
+
+        // --- JÄMFÖR (SPARA) FUNKTION ---
+        function toggleSaveScenario() {
+            const saveBtn = document.getElementById('saveBtn');
+            const startYearSelect = document.getElementById('startYearSelect');
+            
+            if (!savedProjectedData) {
+                if (Object.keys(progDataStore).length === 0) {
+                    alert("Du måste köra en simulering först innan du kan spara den för jämförelse.");
+                    return;
+                }
+                savedProjectedData = JSON.parse(JSON.stringify(progDataStore));
+                
+                saveBtn.innerHTML = '<i class="fa-solid fa-times mr-1"></i> Rensa jämförelse';
+                saveBtn.classList.replace('bg-indigo-100', 'bg-red-100');
+                saveBtn.classList.replace('text-indigo-800', 'text-red-800');
+                saveBtn.classList.replace('hover:bg-indigo-200', 'hover:bg-red-200');
+                
+                startYearSelect.classList.add('hidden'); 
+                updateDashboard(false);
+            } else {
+                savedProjectedData = null;
+                
+                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför (Spara)';
+                saveBtn.classList.replace('bg-red-100', 'bg-indigo-100');
+                saveBtn.classList.replace('text-red-800', 'text-indigo-800');
+                saveBtn.classList.replace('hover:bg-red-200', 'hover:bg-indigo-200');
+                
+                startYearSelect.classList.remove('hidden'); 
+                updateDashboard(false);
+            }
+        }
+
 
         async function fetchJSON(url) {
             const res = await fetch(url);
@@ -396,7 +511,8 @@
                             inpendling: parseFloat(rows.find(r => r.Indikator === 'Inpendling')?.[colName] || 0),
                             utpendling: parseFloat(rows.find(r => r.Indikator === 'Utpendling')?.[colName] || 0),
                             distans: parseFloat(rows.find(r => r.Indikator === 'Distansarbete')?.[colName] || 0),
-                            region: parseFloat(rows.find(r => r.Indikator === 'Regionförstoring')?.[colName] || 0)
+                            region: parseFloat(rows.find(r => r.Indikator === 'Regionförstoring')?.[colName] || 0),
+                            migrantSyss: parseFloat(rows.find(r => r.Indikator === 'Justering inflyttares syss.grad')?.[colName] || 10)
                         };
                     };
                     window.scenarioSettings.base = mapScenario('Bas');
@@ -405,7 +521,6 @@
                     window.scenarioSettings.stagnant = mapScenario('Stagnerande');
                 }
 
-                // Läs in egna SNI-grupperingar
                 const subGroupSelect = document.getElementById('subGroupSelect');
                 if (syssConfig['SNIgrupper'] && syssConfig['SNIgrupper'].length > 0) {
                     const firstRow = syssConfig['SNIgrupper'][0];
@@ -425,6 +540,7 @@
                 document.getElementById('scenarioPanel').classList.remove('opacity-50', 'pointer-events-none');
 
                 extractHistoricalData();
+                calculateMigrantEmploymentRate(); // Beräknar åldersviktad andel
                 buildDropdowns(); 
                 updateDashboard(false); 
             }).catch(error => {
@@ -432,6 +548,60 @@
                 document.getElementById('dataStatus').className = "p-3 bg-red-50 rounded text-red-600";
             });
         });
+
+        // --- NY FUNKTION: Beräkna åldersviktad sysselsättningsgrad för inflyttare ---
+        function calculateMigrantEmploymentRate() {
+            let totalInf = 0;
+            let workingInf = 0;
+            const migrantData = syssConfig['Andel_förvarb_inflytt_över_län'];
+            
+            let rateCol = null;
+            if (migrantData && migrantData.length > 0) {
+                const keys = Object.keys(migrantData[0]);
+                rateCol = keys.find(k => k.includes('Förvärvsarbetande_Totalt_In_Snitt')) ||
+                          keys.find(k => k.includes('Förvärvsarbetande_Totalt_In_2024')) ||
+                          keys.find(k => k.includes('Förvärvsarbetande'));
+            }
+
+            if (popData && popData.length > 0 && rateCol) {
+                let bYearData = popData.filter(r => String(r.tid).includes(String(baseYear)) && !String(r.ålder).includes('Totalt'));
+                if (bYearData.length === 0) {
+                     const aYears = [...new Set(popData.map(r => parseInt(String(r.tid).substring(0,4))))].filter(y => !isNaN(y)).sort();
+                     const latestY = aYears[aYears.length - 1];
+                     bYearData = popData.filter(r => String(r.tid).includes(String(latestY)) && !String(r.ålder).includes('Totalt'));
+                }
+
+                for (let age = 0; age <= 100; age++) {
+                    let inflyttThisAge = 0;
+                    bYearData.forEach(r => {
+                        const match = String(r.ålder).match(/\d+/);
+                        if (match && parseInt(match[0]) === age) {
+                            inflyttThisAge += (r.Inflyttade || 0); 
+                        }
+                    });
+                    
+                    let rate = 0;
+                    const mRow = migrantData.find(r => {
+                        const m = String(r['Ålder']).match(/\d+/);
+                        return m && parseInt(m[0]) === age;
+                    });
+                    
+                    if (mRow && mRow[rateCol]) {
+                        rate = parseFloat(mRow[rateCol]) / 100;
+                    }
+                    
+                    totalInf += inflyttThisAge;
+                    workingInf += inflyttThisAge * rate;
+                }
+            }
+            
+            if (totalInf > 0 && workingInf > 0) {
+                globalMigrantEmploymentRate = workingInf / totalInf;
+            } else {
+                globalMigrantEmploymentRate = 0.50; // Fallback
+            }
+        }
+
 
         function setScenario(type) {
             const s = window.scenarioSettings[type];
@@ -445,11 +615,17 @@
             document.getElementById('studentSlider').value = s.student || 0;
             document.getElementById('studentVal').innerText = (s.student > 0 ? '+' : '') + (s.student || 0) + '%-enheter';
 
+            document.getElementById('migrantSyssSlider').value = s.migrantSyss !== undefined ? s.migrantSyss : 10;
+            document.getElementById('migrantSyssVal').innerText = (s.migrantSyss > 0 ? '+' : '') + (s.migrantSyss !== undefined ? s.migrantSyss : 10) + '%-enheter';
+
+            document.getElementById('pendlingType').value = 'pct';
+            updatePendlingUI();
+
             document.getElementById('inpendlingSlider').value = s.inpendling || 0;
-            document.getElementById('inpendlingVal').innerText = (s.inpendling > 0 ? '+' : '') + (s.inpendling || 0) + '%';
+            updatePendlingValue('inpendlingSlider', 'inpendlingVal');
 
             document.getElementById('utpendlingSlider').value = s.utpendling || 0;
-            document.getElementById('utpendlingVal').innerText = (s.utpendling > 0 ? '+' : '') + (s.utpendling || 0) + '%';
+            updatePendlingValue('utpendlingSlider', 'utpendlingVal');
             
             document.getElementById('distansSlider').value = s.distans || 0;
             document.getElementById('distansVal').innerText = (s.distans > 0 ? '+' : '') + (s.distans || 0) + '%';
@@ -502,7 +678,6 @@
                 const nattRow = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase() === 'nattbefolkning');
                 if (nattRow && nattRow['Totalt'] != null) nattTotalt = parseFloat(nattRow['Totalt']);
 
-                // Extrahera pendling
                 const inRow = dfPendling.find(r => extractYear(r) == y && r['Pendlingsriktning'] === 'Inpendling' && r['Kön'] === 'Totalt');
                 if (inRow) { inpendlingTot = parseFloat(inRow['Totalt']); }
                 else {
@@ -547,7 +722,6 @@
                 let motorRate = null;
                 if (pop16_74 > 0 && nattTotalt > 0) motorRate = (nattTotalt / pop16_74) * 100;
 
-                // Historiskt nettopendling bör stämma exakt med Dag - Natt. Men vi skapar det explicita värdet.
                 let baseNetCommute = inpendlingTot - utpendlingTot;
 
                 histDataStore[y] = { 
@@ -565,8 +739,7 @@
                 };
             });
 
-            // Beräkna produktivitetsutveckling (CAGR) över de senaste 10 åren
-            let brpCAGR = 0.015; // 1.5% default
+            let brpCAGR = 0.015; 
             if (brpHistory.length >= 2) {
                 let first = brpHistory[Math.max(0, brpHistory.length - 11)];
                 let last = brpHistory[brpHistory.length - 1];
@@ -576,7 +749,6 @@
                 }
             }
 
-            // Extrapolera luckor fram till basåret
             sortedYears.forEach(y => {
                 if (histDataStore[y].brp === null && lastKnownBRP !== null && y > lastKnownBRPYear) {
                     let yearsAhead = y - lastKnownBRPYear;
@@ -640,21 +812,27 @@
             btn.classList.add('opacity-75', 'cursor-not-allowed');
 
             setTimeout(() => {
+                const simMode = document.getElementById('simMode').value;
+                const pendlingType = document.getElementById('pendlingType').value;
+
                 const jobGrowthPct = parseFloat(document.getElementById('jobGrowthSlider').value); 
                 const syssGradChange = parseFloat(document.getElementById('syssGradSlider').value);
                 const studentChange = parseFloat(document.getElementById('studentSlider').value);
                 
-                const inpendlingChange = parseFloat(document.getElementById('inpendlingSlider').value);
-                const utpendlingChange = parseFloat(document.getElementById('utpendlingSlider').value);
-                const distansChange = parseFloat(document.getElementById('distansSlider').value);
-                const regionChangeMin = parseFloat(document.getElementById('regionSlider').value);
+                let inpendlingChange = 0, utpendlingChange = 0, distansChange = 0, regionChangeMin = 0;
+                
+                if (simMode === 'full') {
+                    inpendlingChange = parseFloat(document.getElementById('inpendlingSlider').value);
+                    utpendlingChange = parseFloat(document.getElementById('utpendlingSlider').value);
+                    distansChange = parseFloat(document.getElementById('distansSlider').value);
+                    regionChangeMin = parseFloat(document.getElementById('regionSlider').value);
+                }
 
                 const base = histDataStore[baseYear];
                 progDataStore = {};
                 
                 let cumulativeExtraStudents = 0;
 
-                // --- 1. BERÄKNA REGIONFÖRSTORING (Tyngdkraftsmodell) ---
                 let extraRegionSupplyTotal = 0;
                 let beraknadeKommuner = 0;
                 
@@ -674,7 +852,6 @@
                     });
                 }
 
-                // --- 2. BERÄKNA DISTANSARBETE ---
                 const baselineGap = Math.max(0, base.demand - base.supply);
                 const distansBoostTotal = baselineGap * (distansChange / 100);
                 
@@ -682,15 +859,11 @@
                 const brpCAGR = histDataStore['brpCAGR'] || 0.015;
                 const baseExtrapolatedBRP = histDataStore[baseYear].extrapolatedBrp;
 
-                // --- 3. BERÄKNA NY JOBBEFTERFRÅGAN SKAPAD AV HÖJD SYSS.GRAD ---
-                // Makroantagande: Om x procent fler av lokalbefolkningen får jobb, betyder det att nya lokala jobb har fyllts.
                 const syssGradDemandBoostTotal = base.pop * (syssGradChange / 100);
 
-                // LOOP ÖVER PROGNOSÅREN
                 for (let i = 1; i <= 10; i++) {
                     const forecastYear = baseYear + i;
                     
-                    // Tillväxt i jobbefterfrågan via konjunktur + Tillväxt driven av att fler lokala invånare kommer i arbete
                     const demandGrowthFactor = 1 + ((jobGrowthPct / 100) * (i / 10));
                     const futureDemand = (base.demand * demandGrowthFactor) + (syssGradDemandBoostTotal * (i / 10));
 
@@ -714,11 +887,20 @@
                     
                     const futureSupply = (futurePop * (futureRate / 100)) + cumulativeExtraStudents;
                     
-                    // Tillväxt i den fysiska grundpendlingen
-                    const futureInpendling = base.inpendling * (1 + ((inpendlingChange/100) * (i/10)));
-                    const futureUtpendling = base.utpendling * (1 + ((utpendlingChange/100) * (i/10)));
-                    const explicitNetCommuting = futureInpendling - futureUtpendling;
+                    let futureInpendling = base.inpendling;
+                    let futureUtpendling = base.utpendling;
 
+                    if (simMode === 'full') {
+                        if (pendlingType === 'pct') {
+                            futureInpendling = base.inpendling * (1 + ((inpendlingChange/100) * (i/10)));
+                            futureUtpendling = base.utpendling * (1 + ((utpendlingChange/100) * (i/10)));
+                        } else {
+                            futureInpendling = Math.max(0, base.inpendling + (inpendlingChange * (i/10)));
+                            futureUtpendling = Math.max(0, base.utpendling + (utpendlingChange * (i/10)));
+                        }
+                    }
+
+                    const explicitNetCommuting = futureInpendling - futureUtpendling;
                     const virtualSupply = targetVirtualSupply * (i / 10);
                     
                     const futureTotalSupply = futureSupply + explicitNetCommuting + virtualSupply;
@@ -753,7 +935,7 @@
                 btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Klar!';
                 btn.classList.replace('bg-slate-700', 'bg-green-600');
                 setTimeout(() => {
-                    btn.innerHTML = '<i class="fa-solid fa-gears mr-2"></i> Kör / Uppdatera';
+                    btn.innerHTML = '<i class="fa-solid fa-gears mr-2"></i> Kör Modell';
                     btn.classList.replace('bg-green-600', 'bg-slate-700');
                     btn.classList.remove('opacity-75', 'cursor-not-allowed');
                 }, 2000);
@@ -762,12 +944,18 @@
         }
 
         function resetSimulation() {
+            document.getElementById('simMode').value = 'full';
+            toggleSimMode();
+            
             document.getElementById('jobGrowthSlider').value = 0;
             document.getElementById('jobGrowthVal').innerText = '+0%';
             document.getElementById('syssGradSlider').value = 0;
             document.getElementById('syssGradVal').innerText = 'Oförändrad';
             document.getElementById('studentSlider').value = 0;
             document.getElementById('studentVal').innerText = 'Baslinje';
+            
+            document.getElementById('pendlingType').value = 'pct';
+            updatePendlingUI();
             
             document.getElementById('inpendlingSlider').value = 0;
             document.getElementById('inpendlingVal').innerText = '+0%';
@@ -780,6 +968,14 @@
             document.getElementById('regionVal').innerText = 'Dagens nivå';
             
             progDataStore = {}; 
+            savedProjectedData = null;
+            
+            const saveBtn = document.getElementById('saveBtn');
+            saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför (Spara)';
+            saveBtn.classList.remove('bg-red-100', 'text-red-800', 'hover:bg-red-200');
+            saveBtn.classList.add('bg-indigo-100', 'text-indigo-800', 'hover:bg-indigo-200');
+            document.getElementById('startYearSelect').classList.remove('hidden');
+
             buildDropdowns();
             updateDashboard(false);
         }
@@ -811,45 +1007,81 @@
             const selectedYear = document.getElementById('yearSelect').value;
             const ctx = document.getElementById('trendChart').getContext('2d');
             
+            const isComparing = savedProjectedData !== null;
+            const simMode = document.getElementById('simMode').value;
+            const showCommuting = simMode === 'full';
+            
             if (chartType === 'utbud_efterfragan') {
-                startYearSelect.style.display = 'inline-block';
-                title.innerText = progDataStore[allYears[allYears.length-1]] ? "Utbud vs Efterfrågan (Prognos)" : "Utbud vs Efterfrågan (Historisk Baslinje)";
-                desc.innerText = "Grafen visar Efterfrågan på arbetskraft (Jobb/Grön), det lokala Utbudet (Bosatta/Blå), samt det Totala Utbudet inkl. in/ut-pendling (Streckad lila). När den lila linjen fångar in den gröna är arbetsmarknaden i balans!";
+                startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
+                let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historisk Baslinje)");
+                title.innerText = "Utbud vs Efterfrågan" + suffix;
 
-                const graphStartYear = parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0);
-                let labels = [], hDemand = [], hSupply = [], hTotalSupply = [], pDemand = [], pSupply = [], pTotalSupply = [];
+                const graphStartYear = isComparing ? baseYear : (parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0));
+                let labels = [], hDemand = [], hSupply = [], hTotalSupply = [];
+                let pDemand = [], pSupply = [], pTotalSupply = [];
+                let sDemand = [], sSupply = [], sTotalSupply = [];
 
                 allYears.forEach(y => {
                     if (y >= graphStartYear) {
                         labels.push(y);
                         if (histDataStore[y]) {
-                            hDemand.push(histDataStore[y].demand); 
-                            hSupply.push(histDataStore[y].supply);
-                            hTotalSupply.push(histDataStore[y].totalSupply);
+                            hDemand.push(histDataStore[y].demand); hSupply.push(histDataStore[y].supply); hTotalSupply.push(histDataStore[y].totalSupply);
                             
+                            if (isComparing) {
+                                sDemand.push(histDataStore[y].demand); sSupply.push(histDataStore[y].supply); sTotalSupply.push(histDataStore[y].totalSupply);
+                            }
                             pDemand.push(y === baseYear ? histDataStore[y].demand : null); 
                             pSupply.push(y === baseYear ? histDataStore[y].supply : null); 
                             pTotalSupply.push(y === baseYear ? histDataStore[y].totalSupply : null); 
                         } else if (progDataStore[y]) {
                             hDemand.push(null); hSupply.push(null); hTotalSupply.push(null);
-                            pDemand.push(progDataStore[y].demand); 
-                            pSupply.push(progDataStore[y].supply);
-                            pTotalSupply.push(progDataStore[y].totalSupply);
+                            pDemand.push(progDataStore[y].demand); pSupply.push(progDataStore[y].supply); pTotalSupply.push(progDataStore[y].totalSupply);
+                            
+                            if (isComparing && savedProjectedData[y]) {
+                                sDemand.push(savedProjectedData[y].demand); sSupply.push(savedProjectedData[y].supply); sTotalSupply.push(savedProjectedData[y].totalSupply);
+                            }
                         }
                     }
                 });
                 
                 if (trendChartInstance) trendChartInstance.destroy();
                 const hasProg = pDemand.some((v, idx) => v !== null && labels[idx] > baseYear);
-                let datasets = [
-                    { label: 'Efterfrågan/Jobb (Dagbef.)', data: hDemand, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'rect', spanGaps: true },
-                    { label: 'Lokalt Utbud/Arbetande invånare (Nattbef.)', data: hSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true },
-                    { label: 'Totalt Utbud (Inkl. Pendling)', data: hTotalSupply, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 3, borderDash: [2, 2], pointStyle: 'triangle', spanGaps: true }
-                ];
-                if (hasProg) {
-                    datasets.push({ label: 'Efterfrågan (Prognos)', data: pDemand, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'rect' });
-                    datasets.push({ label: 'Lokalt Utbud (Prognos)', data: pSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'circle' });
-                    datasets.push({ label: 'Totalt Utbud (Prognos)', data: pTotalSupply, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'triangle' });
+
+                if (showCommuting) {
+                    desc.innerText = "Grafen visar Efterfrågan på arbetskraft (Jobb/Grön), det lokala Utbudet (Bosatta/Blå), samt det Totala Utbudet inkl. in/ut-pendling (Streckad lila). När den lila linjen fångar in den gröna är arbetsmarknaden i balans!";
+                } else {
+                    desc.innerText = "Grafen visar Efterfrågan på arbetskraft (Jobb/Grön) och det lokala Utbudet (Bosatta/Blå). Pendling visas ej i denna vy.";
+                }
+
+                let datasets = [];
+                
+                if (!isComparing) {
+                    datasets = [
+                        { label: 'Efterfrågan/Jobb (Dagbef.)', data: hDemand, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'rect', spanGaps: true },
+                        { label: 'Lokalt Utbud/Arbetande invånare (Nattbef.)', data: hSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true }
+                    ];
+                    if (showCommuting) {
+                        datasets.push({ label: 'Totalt Utbud (Inkl. Pendling)', data: hTotalSupply, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 3, borderDash: [2, 2], pointStyle: 'triangle', spanGaps: true });
+                    }
+                    if (hasProg) {
+                        datasets.push({ label: 'Efterfrågan (Prognos)', data: pDemand, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'rect' });
+                        datasets.push({ label: 'Lokalt Utbud (Prognos)', data: pSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'circle' });
+                        if (showCommuting) {
+                            datasets.push({ label: 'Totalt Utbud (Prognos)', data: pTotalSupply, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'triangle' });
+                        }
+                    }
+                } else {
+                    datasets = [
+                        { label: 'Efterfrågan (Aktuell)', data: pDemand, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'rect' },
+                        { label: 'Efterfrågan (Sparad)', data: sDemand, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], opacity: 0.6, pointStyle: 'rectRot' },
+                        
+                        { label: 'Lokalt Utbud (Aktuell)', data: pSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle' },
+                        { label: 'Lokalt Utbud (Sparad)', data: sSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], opacity: 0.6, pointStyle: 'rectRot' }
+                    ];
+                    if (showCommuting) {
+                        datasets.push({ label: 'Totalt Utbud (Aktuell)', data: pTotalSupply, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'triangle' });
+                        datasets.push({ label: 'Totalt Utbud (Sparad)', data: sTotalSupply, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], opacity: 0.6, pointStyle: 'rectRot' });
+                    }
                 }
 
                 trendChartInstance = new Chart(ctx, {
@@ -864,12 +1096,13 @@
                 });
 
             } else if (chartType === 'brp_totalt') {
-                startYearSelect.style.display = 'inline-block';
-                title.innerText = progDataStore[allYears[allYears.length-1]] ? "Ekonomisk Tillväxt (Prognos)" : "Ekonomisk Tillväxt (Historik)";
+                startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
+                let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historik)");
+                title.innerText = "Ekonomisk Tillväxt" + suffix;
                 desc.innerText = "Visar den totala storleken på Linköpings lokala ekonomi (Bruttoregionalprodukt). I prognosen växer denna i takt med din inställda Jobbtillväxt multiplicerat med den historiska produktivitetsökningen.";
 
-                const graphStartYear = parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0);
-                let labels = [], hBRP = [], pBRP = [];
+                const graphStartYear = isComparing ? baseYear : (parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0));
+                let labels = [], hBRP = [], pBRP = [], sBRP = [];
 
                 allYears.forEach(y => {
                     if (y >= graphStartYear) {
@@ -879,23 +1112,32 @@
                             let tot = (brpPer && histDataStore[y].demand) ? (brpPer * histDataStore[y].demand) / 1000 : null;
                             hBRP.push(tot);
                             pBRP.push(y === baseYear ? tot : null);
+                            if (isComparing) sBRP.push(tot);
                         } else if (progDataStore[y]) {
                             hBRP.push(null);
                             pBRP.push(progDataStore[y].totalBrpMkr);
+                            if (isComparing && savedProjectedData[y]) sBRP.push(savedProjectedData[y].totalBrpMkr);
                         }
                     }
                 });
 
                 if (trendChartInstance) trendChartInstance.destroy();
+                let datasets = [];
+                if (!isComparing) {
+                    datasets = [
+                        { label: 'Total BRP (Mkr) - Historik', data: hBRP, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.2)', borderWidth: 3, pointStyle: 'rect', fill: true, spanGaps: true },
+                        { label: 'Total BRP (Mkr) - Prognos', data: pBRP, borderColor: '#a855f7', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'rect', fill: false }
+                    ]
+                } else {
+                     datasets = [
+                        { label: 'Total BRP (Mkr) - Aktuell', data: pBRP, borderColor: '#a855f7', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'rect' },
+                        { label: 'Total BRP (Mkr) - Sparad', data: sBRP, borderColor: '#a855f7', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], opacity: 0.6, pointStyle: 'rectRot' }
+                    ]
+                }
+
                 trendChartInstance = new Chart(ctx, {
                     type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [
-                            { label: 'Total BRP (Mkr) - Historik', data: hBRP, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.2)', borderWidth: 3, pointStyle: 'rect', fill: true, spanGaps: true },
-                            { label: 'Total BRP (Mkr) - Prognos', data: pBRP, borderColor: '#a855f7', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'rect', fill: false }
-                        ]
-                    },
+                    data: { labels: labels, datasets: datasets },
                     options: {
                         responsive: true, maintainAspectRatio: false,
                         interaction: { mode: 'index', intersect: false },
@@ -907,17 +1149,17 @@
             } else if (chartType === 'utb_match') {
                 startYearSelect.style.display = 'none'; 
                 title.innerText = `Utbildningsmatchning (År ${selectedYear})`;
-                desc.innerHTML = `Staplarna visar kraven från företagen i Linköping <b>(Efterfrågan)</b> ställt mot vad invånarna har för utbildning <b>(Utbud)</b>. Den röda linjen visar <b>Kompetensgapet</b> (under nollstrecket = inpendlingsbehov). <i>Dynamiskt framskriven baserat på dina simuleringar!</i>`;
+                desc.innerHTML = `Staplarna visar kraven från företagen i Linköping <b>(Efterfrågan)</b> ställt mot vad invånarna har för utbildning <b>(Utbud)</b>. Den röda linjen visar <b>Kompetensgapet</b> (under nollstrecket = inpendlingsbehov).`;
                 drawMatchChart(parseInt(selectedYear), 'utb');
             } else if (chartType === 'sektor_match') {
                 startYearSelect.style.display = 'none'; 
                 title.innerText = `Sektormatchning (År ${selectedYear})`;
-                desc.innerHTML = `Vilka sektorer arbetar Linköpingsborna i jämfört med vilka sektorer som erbjuder jobben lokalt? Röda markeringar (<0) visar pendlingsberoende sektorer. <i>Dynamiskt framskriven!</i>`;
+                desc.innerHTML = `Vilka sektorer arbetar Linköpingsborna i jämfört med vilka sektorer som erbjuder jobben lokalt? Röda markeringar (<0) visar pendlingsberoende sektorer.`;
                 drawMatchChart(parseInt(selectedYear), 'sektor');
             } else if (chartType === 'bransch_match') {
                 startYearSelect.style.display = 'none'; 
                 title.innerText = `Branschmatchning (År ${selectedYear})`;
-                desc.innerHTML = `Detaljerad matchning per näringsgren/bransch. Röda markeringar (<0) visar vilka branscher Linköping lider störst brist på lokalt arbetskraftsutbud inom. <i>Dynamiskt framskriven!</i>`;
+                desc.innerHTML = `Detaljerad matchning per näringsgren/bransch. Röda markeringar (<0) visar vilka branscher Linköping lider störst brist på lokalt arbetskraftsutbud inom.`;
                 drawMatchChart(parseInt(selectedYear), 'bransch');
             }
 
@@ -937,17 +1179,22 @@
             
             const kpiBef = document.getElementById('kpiBefolkning');
             const kpiBefContainer = document.getElementById('kpiBefolkningContainer');
+            
+            const simMode = document.getElementById('simMode').value;
+            const showCommuting = simMode === 'full';
 
             if (d.demand != null && d.supply != null) {
-                // Total pendlingsnetto = Explicita pendlingen + Virtuella regionförstoringen
                 let explNetto = d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0);
                 let virtualExt = d.virtualSupply || 0;
-                const totalPendling = explNetto + virtualExt;
+                const totalPendling = showCommuting ? (explNetto + virtualExt) : 0;
                 
                 document.getElementById('kpiPendling').innerText = (totalPendling > 0 ? '+' : '') + formatNumber(totalPendling);
-                document.getElementById('kpiPendling').className = "text-lg md:text-xl font-bold " + (totalPendling > 0 ? "text-indigo-600" : "text-emerald-600");
+                document.getElementById('kpiPendling').className = "text-lg md:text-xl font-bold " + (totalPendling > 0 ? "text-indigo-600" : (showCommuting ? "text-emerald-600" : "text-gray-400"));
                 
-                if (virtualExt > 0) {
+                if (!showCommuting) {
+                    document.getElementById('kpiPendling').title = "Pendling inaktiverad i läget 'Endast Lokal'.";
+                    document.getElementById('kpiPendling').innerText = '-';
+                } else if (virtualExt > 0) {
                     const komText = d.antalKommunerBeraknade ? ` för ${d.antalKommunerBeraknade} grannkommuner` : '';
                     document.getElementById('kpiPendling').title = `Faktisk pendling: ${formatNumber(explNetto)}.\nVirtuellt Pendlingsutbud (Distans & Regionförstoring): ${formatNumber(virtualExt)} ${komText}.`;
                 } else {
@@ -958,13 +1205,15 @@
                 const omatchatGap = d.demand - (d.supply + totalPendling);
 
                 if (omatchatGap > 5) {
-                    let migrantEmploymentRate = 0.65;
-                    let workingAgeNeeded = omatchatGap / migrantEmploymentRate;
-                    let totalPopNeeded = workingAgeNeeded * 1.25; 
+                    // Hämtar den åldersviktade basnivån och plussar på användarens manuella justering
+                    const userSyssAdjustment = parseFloat(document.getElementById('migrantSyssSlider').value) / 100;
+                    const employmentRate = (window.globalMigrantEmploymentRate || 0.50) + userSyssAdjustment;
+                    
+                    let totalPopNeeded = omatchatGap / Math.max(0.01, employmentRate); 
 
                     kpiBef.innerText = '+' + formatNumber(totalPopNeeded);
                     kpiBef.className = "text-lg md:text-xl font-bold text-orange-600";
-                    kpiBefContainer.title = `Det kvarstår ett omatchat gap på ${formatNumber(omatchatGap)} jobb.\nFör att fylla detta krävs inflyttning av ca ${formatNumber(totalPopNeeded)} nya invånare.\n(Antagande: 65% sysselsättningsgrad bland inflyttare).`;
+                    kpiBefContainer.title = `Det kvarstår ett omatchat gap på ${formatNumber(omatchatGap)} jobb.\nFör att fylla detta krävs inflyttning av ca ${formatNumber(totalPopNeeded)} nya invånare.\n(Beräknat: ca ${formatNumber(employmentRate * 100, 1)}% av inflyttarna förvärvsarbetar, resterande utgörs av familj, studenter etc).`;
                 } else if (omatchatGap < -5) {
                     kpiBef.innerText = 'Överskott';
                     kpiBef.className = "text-lg md:text-xl font-bold text-sky-600";
@@ -1100,11 +1349,17 @@
             if (isProg && histDataStore[baseYear]) {
                 const progD = progDataStore[year];
                 const baseD = histDataStore[baseYear];
+                const simMode = document.getElementById('simMode').value;
                 
                 const demandScale = progD.demand / baseD.demand;
-                // I matchningen jämförs Jobb mot (Lokalt Utbud + Fysisk pendling + Virtuell pendling)
-                const totalFutureSupplyCapacity = progD.totalSupply; 
-                const supplyScale = totalFutureSupplyCapacity / baseD.totalSupply;
+                let supplyScale = 1;
+                
+                if (simMode === 'full') {
+                    const totalFutureSupplyCapacity = progD.totalSupply; 
+                    supplyScale = totalFutureSupplyCapacity / baseD.totalSupply;
+                } else {
+                    supplyScale = progD.supply / baseD.supply;
+                }
 
                 labels.forEach(l => {
                     dagDataObj[l] *= demandScale;
@@ -1123,6 +1378,9 @@
                 y: { ticks: { callback: val => formatNumber(val) }, title: { display: true, text: 'Antal personer' } }
             };
 
+            const simMode = document.getElementById('simMode').value;
+            const supplyLabel = simMode === 'full' ? 'Utbud (Inkl. all pendling)' : 'Lokalt Utbud (Nattbef.)';
+
             trendChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -1140,7 +1398,7 @@
                             order: 1 
                         },
                         { type: 'bar', label: 'Efterfrågan/Jobb (Dag)', data: labels.map(l => dagDataObj[l]), backgroundColor: '#10b981', order: 2 },
-                        { type: 'bar', label: 'Utbud (Inkl. all pendling)', data: labels.map(l => nattDataObj[l]), backgroundColor: '#0ea5e9', order: 3 }
+                        { type: 'bar', label: supplyLabel, data: labels.map(l => nattDataObj[l]), backgroundColor: '#0ea5e9', order: 3 }
                     ]
                 },
                 options: {
