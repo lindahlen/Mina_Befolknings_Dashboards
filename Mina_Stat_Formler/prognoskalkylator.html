@@ -148,12 +148,16 @@
                     <button onclick="runSimulation()" id="simBtn" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-3 rounded transition flex items-center justify-center">
                         <i class="fa-solid fa-play mr-2"></i> Kör Simulering
                     </button>
-                    <div class="flex gap-2 mt-2">
-                        <button onclick="toggleSaveScenario()" id="saveBtn" class="w-1/2 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-2 rounded transition flex items-center justify-center text-sm" title="Spara nuvarande prognos för att jämföra med en ny">
-                            <i class="fa-solid fa-code-compare mr-1"></i> Jämför (Spara)
+                    <div class="flex flex-wrap sm:flex-nowrap gap-2 mt-2">
+                        <button onclick="toggleSaveScenario()" id="saveBtn" class="flex-1 w-full sm:w-auto bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-2 rounded transition flex items-center justify-center text-sm" title="Spara nuvarande prognos för att jämföra med en ny">
+                            <i class="fa-solid fa-code-compare mr-1"></i> Jämför
                         </button>
-                        <button onclick="resetSimulation()" class="w-1/2 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-2 rounded transition flex items-center justify-center text-sm" title="Rensa prognoser och återställ värden">
-                            <i class="fa-solid fa-rotate-left mr-1"></i> Nollställ
+                        <!-- SKICKA-KNAPP -->
+                        <button onclick="exportToSyss()" id="exportSyssBtn" class="flex-1 w-full sm:w-auto bg-purple-100 hover:bg-purple-200 text-purple-800 font-bold py-2 px-2 rounded transition flex items-center justify-center text-sm" title="Skicka denna prognos till Sysselsättningskalkylatorn">
+                            <i class="fa-solid fa-share-nodes mr-1"></i> Skicka
+                        </button>
+                        <button onclick="resetSimulation()" class="flex-none w-full sm:w-10 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-2 rounded transition flex items-center justify-center text-sm" title="Rensa prognoser och återställ värden">
+                            <i class="fa-solid fa-rotate-left"></i>
                         </button>
                     </div>
                 </div>
@@ -208,11 +212,11 @@
                         <h2 class="text-lg font-bold">Befolkningspyramid</h2>
                         <input type="text" id="cohortInput" placeholder="Följ födelseår (ex 1990)" title="Skriv in ett eller flera födelseår separerade med kommatecken för att belysa generationen i pyramiden" class="border border-gray-300 rounded px-2 py-1 text-xs w-40 focus:ring-sky-500 focus:border-sky-500" oninput="if(availableYears.length > 0) drawPyramidChart(document.getElementById('yearSelect').value)">
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="toggleAnimation()" id="playBtn" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-semibold py-1 px-3 border border-emerald-300 rounded shadow-sm text-sm transition">
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                        <button onclick="toggleAnimation()" id="playBtn" class="flex-1 sm:flex-none bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-semibold py-1 px-3 border border-emerald-300 rounded shadow-sm text-sm transition flex justify-center items-center">
                             <i class="fa-solid fa-play mr-1"></i> Spela
                         </button>
-                        <button onclick="openTableModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-3 border border-gray-300 rounded shadow-sm text-sm transition">
+                        <button onclick="openTableModal()" class="flex-1 sm:flex-none bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-3 border border-gray-300 rounded shadow-sm text-sm transition flex justify-center items-center">
                             <i class="fa-solid fa-table mr-1"></i> Tabell
                         </button>
                     </div>
@@ -232,19 +236,19 @@
                     <!-- Dynamisk rubrik -->
                     <h2 id="trendTitle" class="text-lg font-bold">Befolkningsutveckling</h2>
                     
-                    <div class="flex flex-wrap gap-2 items-center">
+                    <div class="flex flex-wrap gap-2 items-center w-full lg:w-auto">
                         <!-- Väljare för Startår -->
-                        <select id="startYearSelect" class="border border-gray-300 rounded p-1 text-sm bg-white font-medium" onchange="redrawTrendChart()" title="Välj startår för graf och tabell">
+                        <select id="startYearSelect" class="border border-gray-300 rounded p-1 text-sm bg-white font-medium w-full sm:w-auto" onchange="redrawTrendChart()" title="Välj startår för graf och tabell">
                             <option value="">Laddar...</option>
                         </select>
 
-                        <button onclick="openChangesModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-3 border border-gray-300 rounded shadow-sm text-sm transition">
+                        <button onclick="openChangesModal()" class="w-full sm:w-auto bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-3 border border-gray-300 rounded shadow-sm text-sm transition flex justify-center items-center">
                             <i class="fa-solid fa-table mr-1"></i> Förändringar
                         </button>
 
-                        <div class="flex items-center shadow-sm rounded-md border border-gray-300 bg-white">
+                        <div class="flex flex-col sm:flex-row shadow-sm rounded-md border border-gray-300 bg-white w-full sm:w-auto">
                             <!-- Åldersindelning -->
-                            <select id="chartPopGroupSelect" class="p-1.5 text-sm font-medium border-r border-gray-200 outline-none cursor-pointer focus:bg-sky-50 transition-colors bg-white rounded-l" onchange="redrawTrendChart()" title="Välj åldersindelning att visa i grafen">
+                            <select id="chartPopGroupSelect" class="p-1.5 text-sm font-medium sm:border-r border-b sm:border-b-0 border-gray-200 outline-none cursor-pointer focus:bg-sky-50 transition-colors bg-white rounded-t sm:rounded-l sm:rounded-tr-none w-full sm:w-auto" onchange="redrawTrendChart()" title="Välj åldersindelning att visa i grafen">
                                 <option value="total">Åldersuppdelning: Nej (Totalt)</option>
                                 <option value="func">Funktionella grupper (Standard)</option>
                                 <option value="5yr">5-årsklasser</option>
@@ -252,7 +256,7 @@
                             </select>
                             
                             <!-- Huvuddiagramtyp -->
-                            <select id="chartType" class="p-1.5 text-sm bg-gray-50 outline-none cursor-pointer focus:bg-sky-100 transition-colors font-semibold text-gray-700 rounded-r" onchange="handleChartTypeChange()" title="Välj vilken typ av diagram som ska visas">
+                            <select id="chartType" class="p-1.5 text-sm bg-gray-50 outline-none cursor-pointer focus:bg-sky-100 transition-colors font-semibold text-gray-700 rounded-b sm:rounded-r sm:rounded-bl-none w-full sm:w-auto" onchange="handleChartTypeChange()" title="Välj vilken typ av diagram som ska visas">
                                 <option value="pop">Folkmängd totalt</option>
                                 <option value="pop_change_abs">Årlig förändring (Antal)</option>
                                 <option value="pop_change_pct">Årlig förändring (%)</option>
@@ -270,22 +274,24 @@
                             </select>
                         </div>
 
-                        <!-- Dölj/Visa alla knapp (Endast synlig vid drill-down) -->
-                        <button id="hideAllBtn" onclick="toggleAllSeries()" class="hidden items-center gap-1 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 py-1.5 px-3 rounded shadow-sm border border-gray-300 transition" title="Dölj eller visa alla linjer i diagrammet">
-                            <i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla
-                        </button>
-                        
-                        <!-- Liten Checkbox för Indexering -->
-                        <label id="indexContainer" class="hidden ml-2 items-center gap-1 text-sm font-medium text-sky-700 cursor-pointer" title="Visar utvecklingen som ett index där det valda startåret (eller sista historiska) är 100.">
-                            <input type="checkbox" id="showIndex" onchange="redrawTrendChart()" class="rounded text-sky-600 focus:ring-sky-500 w-4 h-4" checked>
-                            Index <span class="text-xs text-gray-500 font-normal">(Bas = 100)</span>
-                        </label>
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-start sm:justify-end mt-1 sm:mt-0">
+                            <!-- Dölj/Visa alla knapp (Endast synlig vid drill-down) -->
+                            <button id="hideAllBtn" onclick="toggleAllSeries()" class="hidden items-center gap-1 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 py-1.5 px-3 rounded shadow-sm border border-gray-300 transition" title="Dölj eller visa alla linjer i diagrammet">
+                                <i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla
+                            </button>
+                            
+                            <!-- Liten Checkbox för Indexering -->
+                            <label id="indexContainer" class="hidden items-center gap-1 text-sm font-medium text-sky-700 cursor-pointer" title="Visar utvecklingen som ett index där det valda startåret (eller sista historiska) är 100.">
+                                <input type="checkbox" id="showIndex" onchange="redrawTrendChart()" class="rounded text-sky-600 focus:ring-sky-500 w-4 h-4" checked>
+                                Index <span class="text-xs text-gray-500 font-normal">(Bas=100)</span>
+                            </label>
 
-                        <!-- Liten Checkbox för Riket -->
-                        <label id="riketContainer" class="hidden ml-2 items-center gap-1 text-sm font-medium text-purple-700 cursor-pointer" title="Jämför utvecklingstakten med Riket.">
-                            <input type="checkbox" id="showRiket" onchange="redrawTrendChart()" class="rounded text-purple-600 focus:ring-purple-500 w-4 h-4">
-                            Riket
-                        </label>
+                            <!-- Liten Checkbox för Riket -->
+                            <label id="riketContainer" class="hidden items-center gap-1 text-sm font-medium text-purple-700 cursor-pointer" title="Jämför utvecklingstakten med Riket.">
+                                <input type="checkbox" id="showRiket" onchange="redrawTrendChart()" class="rounded text-purple-600 focus:ring-purple-500 w-4 h-4">
+                                Riket
+                            </label>
+                        </div>
                     </div>
                 </div>
                 
@@ -314,25 +320,25 @@
                 </button>
             </div>
             
-            <div class="p-4 border-b bg-gray-50 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <span class="text-sm font-medium text-gray-700">Välj indelning:</span>
-                    <select id="tableAggType" class="border border-gray-300 rounded p-1.5 text-sm bg-white focus:ring-sky-500 focus:border-sky-500 shadow-sm" onchange="updatePopulationTable()">
+            <div class="p-4 border-b bg-gray-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <span class="text-sm font-medium text-gray-700 whitespace-nowrap">Välj indelning:</span>
+                    <select id="tableAggType" class="border border-gray-300 rounded p-1.5 text-sm bg-white focus:ring-sky-500 focus:border-sky-500 shadow-sm w-full sm:w-auto" onchange="updatePopulationTable()">
                         <option value="1yr">1-årsklasser</option>
                         <option value="5yr" selected>5-årsklasser</option>
                         <option value="func">Funktionella grupper (Standard)</option>
                     </select>
                 </div>
-                <button onclick="exportTableCSV()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center">
+                <button onclick="exportTableCSV()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center justify-center w-full sm:w-auto">
                     <i class="fa-solid fa-download mr-2"></i> Ladda ner (CSV)
                 </button>
             </div>
             
-            <div class="overflow-y-auto p-0 custom-scrollbar flex-grow bg-white">
+            <div class="overflow-y-auto overflow-x-auto p-0 custom-scrollbar flex-grow bg-white">
                 <table class="min-w-full text-sm text-left text-gray-600">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10 shadow-sm">
                         <tr>
-                            <th scope="col" class="px-6 py-3">Ålder / Grupp</th>
+                            <th scope="col" class="px-6 py-3 whitespace-nowrap">Ålder / Grupp</th>
                             <th scope="col" class="px-6 py-3 text-right">Män</th>
                             <th scope="col" class="px-6 py-3 text-right">Kvinnor</th>
                             <th scope="col" class="px-6 py-3 text-right">Totalt</th>
@@ -356,28 +362,28 @@
                 </button>
             </div>
             
-            <div class="p-4 border-b bg-gray-50 flex flex-wrap items-center justify-between gap-3">
+            <div class="p-4 border-b bg-gray-50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div class="text-sm text-gray-600">
                     <i class="fa-solid fa-info-circle mr-1"></i> Visar period baserat på grafens startår.
                 </div>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="exportMigByAgeCSV()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center" title="Laddar ner inrikes in- och utflyttning för den åldersgruppering som just nu är vald i grafen">
+                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <button onclick="exportMigByAgeCSV()" class="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center justify-center" title="Laddar ner inrikes in- och utflyttning för den åldersgruppering som just nu är vald i grafen">
                         <i class="fa-solid fa-people-arrows mr-2"></i> Inrikes flytt per ålder (CSV)
                     </button>
-                    <button onclick="exportChangesCSV()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center">
+                    <button onclick="exportChangesCSV()" class="w-full sm:w-auto bg-sky-600 hover:bg-sky-700 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center justify-center">
                         <i class="fa-solid fa-download mr-2"></i> Ladda ner Totalt (CSV)
                     </button>
                 </div>
             </div>
             
-            <div class="overflow-y-auto p-0 custom-scrollbar flex-grow bg-white">
+            <div class="overflow-y-auto overflow-x-auto p-0 custom-scrollbar flex-grow bg-white">
                 <table class="min-w-full text-sm text-right text-gray-600">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10 shadow-sm">
                         <tr>
-                            <th class="px-5 py-3 text-left">År</th>
+                            <th class="px-5 py-3 text-left whitespace-nowrap">År</th>
                             <th class="px-5 py-3">Folkmängd</th>
-                            <th class="px-5 py-3">Förändring (Antal)</th>
-                            <th class="px-5 py-3">Förändring (%)</th>
+                            <th class="px-5 py-3 whitespace-nowrap">Förändring (Antal)</th>
+                            <th class="px-5 py-3 whitespace-nowrap">Förändring (%)</th>
                             <th class="px-5 py-3">Födda</th>
                             <th class="px-5 py-3">Döda</th>
                             <th class="px-5 py-3">Inflyttade</th>
@@ -425,7 +431,7 @@
         let riketData = []; 
         let projectedData = [];
         let savedProjectedData = [];
-        let projectedRiketData = []; // För att kunna framskriva andel av rikets kohorter
+        let projectedRiketData = []; 
         let availableYears = [];
         let currentYearData = []; 
         let currentTrendStats = {}; 
@@ -488,11 +494,14 @@
         // === GRAF-VERKTYG: DÖLJ/VISA ALLA ===
         function toggleAllSeries() {
             if (!trendChartInstance) return;
-            const anyVisible = trendChartInstance.data.datasets.some(ds => !ds.hidden);
-            trendChartInstance.data.datasets.forEach(ds => {
-                ds.hidden = anyVisible; 
+            const anyVisible = trendChartInstance.data.datasets.some((ds, i) => trendChartInstance.isDatasetVisible(i));
+            
+            trendChartInstance.data.datasets.forEach((ds, i) => {
+                trendChartInstance.setDatasetVisibility(i, !anyVisible);
+                ds.hidden = anyVisible; // Sync config
             });
             trendChartInstance.update();
+            
             const btn = document.getElementById('hideAllBtn');
             if (anyVisible) {
                 btn.innerHTML = '<i class="fa-solid fa-eye mr-1"></i> Visa alla';
@@ -508,11 +517,11 @@
                 clearInterval(playTimer);
                 isPlaying = false;
                 btn.innerHTML = '<i class="fa-solid fa-play mr-1"></i> Spela';
-                btn.className = "bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-semibold py-1 px-3 border border-emerald-300 rounded shadow-sm text-sm transition";
+                btn.className = "flex-1 sm:flex-none bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-semibold py-1 px-3 border border-emerald-300 rounded shadow-sm text-sm transition flex justify-center items-center";
             } else {
                 isPlaying = true;
                 btn.innerHTML = '<i class="fa-solid fa-pause mr-1"></i> Pausa';
-                btn.className = "bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold py-1 px-3 border border-amber-300 rounded shadow-sm text-sm transition";
+                btn.className = "flex-1 sm:flex-none bg-amber-100 hover:bg-amber-200 text-amber-800 font-semibold py-1 px-3 border border-amber-300 rounded shadow-sm text-sm transition flex justify-center items-center";
                 
                 if (yearSelect.selectedIndex === 0) {
                     yearSelect.selectedIndex = yearSelect.options.length - 1;
@@ -528,9 +537,39 @@
                         clearInterval(playTimer);
                         isPlaying = false;
                         btn.innerHTML = '<i class="fa-solid fa-rotate-left mr-1"></i> Igen';
-                        btn.className = "bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-3 border border-gray-300 rounded shadow-sm text-sm transition";
+                        btn.className = "flex-1 sm:flex-none bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-1 px-3 border border-gray-300 rounded shadow-sm text-sm transition flex justify-center items-center";
                     }
                 }, 500);
+            }
+        }
+
+        // === SKICKA TILL SYSSELSÄTTNINGSKALKYLATORN ===
+        function exportToSyss() {
+            if (projectedData.length === 0) {
+                alert("Du måste köra en simulering först innan du kan skicka den.");
+                return;
+            }
+            try {
+                localStorage.setItem('linkoping_shared_pop_scenario', JSON.stringify(projectedData));
+                
+                const btn = document.getElementById('exportSyssBtn');
+                const originalHtml = btn.innerHTML;
+                
+                btn.innerHTML = '<i class="fa-solid fa-check mr-1"></i> Skickad!';
+                btn.classList.replace('bg-purple-100', 'bg-green-100');
+                btn.classList.replace('text-purple-800', 'text-green-800');
+                btn.classList.replace('hover:bg-purple-200', 'hover:bg-green-200');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.classList.replace('bg-green-100', 'bg-purple-100');
+                    btn.classList.replace('text-green-800', 'text-purple-800');
+                    btn.classList.replace('hover:bg-green-200', 'hover:bg-purple-200');
+                }, 2000);
+                
+            } catch (e) {
+                console.error("Kunde inte spara till localStorage", e);
+                alert("Kunde inte skicka scenariot. Din webbläsare kanske blockerar lokal lagring.");
             }
         }
 
@@ -749,7 +788,7 @@
             } else {
                 savedProjectedData = [];
                 
-                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför (Spara)';
+                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
                 saveBtn.classList.replace('bg-red-100', 'bg-indigo-100');
                 saveBtn.classList.replace('text-red-800', 'text-indigo-800');
                 saveBtn.classList.replace('hover:bg-red-200', 'hover:bg-indigo-200');
@@ -767,8 +806,8 @@
             window.currentSimulationIsVariableTFR = false;
             
             const saveBtn = document.getElementById('saveBtn');
-            saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför (Spara)';
-            saveBtn.className = "w-1/2 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-2 rounded transition flex items-center justify-center text-sm";
+            saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
+            saveBtn.className = "flex-1 w-full sm:w-auto bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-2 rounded transition flex items-center justify-center text-sm";
             document.getElementById('startYearSelect').classList.remove('hidden');
 
             document.getElementById('tfrSlider').value = historicalTFR;
@@ -1593,7 +1632,6 @@
                 if (popGroupSelect.value !== 'total') {
                     hideAllBtn.classList.remove('hidden');
                     hideAllBtn.classList.add('flex');
-                    hideAllBtn.innerHTML = '<i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla';
                 } else {
                     hideAllBtn.classList.add('hidden');
                     hideAllBtn.classList.remove('flex');
@@ -1651,8 +1689,6 @@
             const popGroupVal = popGroupSelect.value;
             
             // NY LOGIK FÖR INDEX 100:
-            // Om det är en prognos/jämförelse, utgå från sista historiska år (baseYear).
-            // Om det enbart är historisk visning, utgå från första synliga året i grafen (labels[0]).
             const indexBaseYear = hasSimulation ? baseYear : (labels.length > 0 ? parseInt(labels[0].substring(0,4)) : baseYear);
 
             if (!isComparing) {
@@ -2245,7 +2281,28 @@
                 }
             }
 
-            if (trendChartInstance) trendChartInstance.destroy();
+            // MINNESFUNKTION FÖR DOLD/VISAD STATUS
+            let previousVisibility = {};
+            let hadPreviousChart = false;
+            
+            if (trendChartInstance) {
+                hadPreviousChart = true;
+                // Läs av exakt vilka linjer som är synliga i den nuvarande grafen
+                trendChartInstance.data.datasets.forEach((ds, i) => {
+                    const isHidden = !trendChartInstance.isDatasetVisible(i);
+                    previousVisibility[ds.label] = isHidden;
+                });
+                trendChartInstance.destroy();
+            }
+
+            // Applicera minnet på de nya linjerna som strax ritas upp
+            if (hadPreviousChart) {
+                datasets.forEach(ds => {
+                    if (previousVisibility[ds.label] !== undefined) {
+                        ds.hidden = previousVisibility[ds.label];
+                    }
+                });
+            }
 
             const isFloatChart = (chartType === 'tfr' || chartType === 'mort' || chartType === 'pop_change_pct' || chartType === 'pop_share_riket' || chartType === 'mig_share_riket' || chartType === 'dep_ratio');
             const isIndexMode = applyIndex && chartType === 'pop';
@@ -2276,6 +2333,19 @@
                                         return label;
                                     });
                                 }
+                            },
+                            // När användaren klickar på legenden måste vi uppdatera texten på Dölj-knappen dynamiskt!
+                            onClick: function(e, legendItem, legend) {
+                                Chart.defaults.plugins.legend.onClick.call(this, e, legendItem, legend);
+                                
+                                setTimeout(() => {
+                                    const hideBtn = document.getElementById('hideAllBtn');
+                                    if (hideBtn && !hideBtn.classList.contains('hidden')) {
+                                        const anyVis = trendChartInstance.data.datasets.some((ds, i) => trendChartInstance.isDatasetVisible(i));
+                                        if (anyVis) hideBtn.innerHTML = '<i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla';
+                                        else hideBtn.innerHTML = '<i class="fa-solid fa-eye mr-1"></i> Visa alla';
+                                    }
+                                }, 50);
                             }
                         },
                         tooltip: { 
@@ -2293,6 +2363,13 @@
                     }
                 }
             });
+            
+            // Uppdatera "Dölj alla"-knappens text utifrån minnet
+            if (!hideAllBtn.classList.contains('hidden')) {
+                const anyVis = trendChartInstance.data.datasets.some((ds, i) => trendChartInstance.isDatasetVisible(i));
+                if (anyVis) hideAllBtn.innerHTML = '<i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla';
+                else hideAllBtn.innerHTML = '<i class="fa-solid fa-eye mr-1"></i> Visa alla';
+            }
 
             // Uppdatera Förändringstabellen utifrån det vi ser
             const changesTbody = document.getElementById('changesTableBody');

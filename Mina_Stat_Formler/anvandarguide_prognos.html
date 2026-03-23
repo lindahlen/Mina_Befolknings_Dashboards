@@ -16,8 +16,14 @@
 
     <style>
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; }
-        .content-section { background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); padding: 2rem; margin-bottom: 2rem; }
-        h2 { color: #0284c7; font-weight: 700; font-size: 1.5rem; margin-bottom: 1rem; border-bottom: 2px solid #e0f2fe; padding-bottom: 0.5rem; }
+        .content-section { background-color: white; border-radius: 0.5rem; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); padding: 1.5rem; margin-bottom: 1.5rem; }
+        @media (min-width: 768px) {
+            .content-section { padding: 2rem; margin-bottom: 2rem; }
+        }
+        h2 { color: #0284c7; font-weight: 700; font-size: 1.25rem; margin-bottom: 1rem; border-bottom: 2px solid #e0f2fe; padding-bottom: 0.5rem; }
+        @media (min-width: 768px) {
+            h2 { font-size: 1.5rem; }
+        }
         h3 { color: #334155; font-weight: 600; font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.5rem; }
         p { margin-bottom: 1rem; line-height: 1.6; color: #475569; }
         ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 1rem; color: #475569; }
@@ -30,23 +36,23 @@
 
     <!-- Header -->
     <header class="bg-sky-800 text-white shadow-md">
-        <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="container mx-auto px-4 py-6 md:py-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-                <h1 class="text-3xl font-bold mb-2"><i class="fa-solid fa-book-open mr-3"></i>Användarguide: Prognoskalkylator</h1>
-                <p class="text-sky-200 text-lg">En manual för scenariomodellering och demografisk analys i Linköpings kommun.</p>
+                <h1 class="text-2xl md:text-3xl font-bold mb-2"><i class="fa-solid fa-book-open mr-3"></i>Användarguide: Prognoskalkylator</h1>
+                <p class="text-sky-200 text-base md:text-lg">En manual för scenariomodellering och demografisk analys i Linköpings kommun.</p>
             </div>
-            <a href="prognoskalkylator.html" class="bg-sky-700 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded shadow-sm transition flex items-center border border-sky-600">
+            <a href="prognoskalkylator.html" class="w-full md:w-auto bg-sky-700 hover:bg-sky-600 text-white font-semibold py-2 px-4 rounded shadow-sm transition flex items-center justify-center border border-sky-600">
                 <i class="fa-solid fa-arrow-left mr-2"></i> Tillbaka till Kalkylatorn
             </a>
         </div>
     </header>
 
     <!-- Innehåll -->
-    <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-8 flex-grow">
+    <div class="container mx-auto px-4 py-6 md:py-8 flex flex-col md:flex-row gap-6 md:gap-8 flex-grow">
         
         <!-- Meny (Innehållsförteckning) -->
         <aside class="w-full md:w-1/4">
-            <div class="bg-white rounded-lg shadow-sm p-5 sticky top-8 border border-gray-100">
+            <div class="bg-white rounded-lg shadow-sm p-4 md:p-5 sticky top-4 md:top-8 border border-gray-100">
                 <h3 class="text-lg font-bold text-gray-800 mb-4 mt-0 border-b pb-2">Innehåll</h3>
                 <nav class="flex flex-col gap-3 text-sm text-sky-700 font-medium">
                     <a href="#intro" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 1. Introduktion</a>
@@ -56,6 +62,7 @@
                     <a href="#diagram" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 5. Utvecklingsdiagram & Analys</a>
                     <a href="#riket" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 6. Jämförelser med Riket</a>
                     <a href="#export" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 7. Tabeller och Export</a>
+                    <a href="#skicka" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 8. Skicka till Sysselsättning</a>
                 </nav>
             </div>
         </aside>
@@ -104,7 +111,7 @@
                 </ul>
 
                 <h3 class="mt-6">Jämför två scenarier</h3>
-                <p>En av kalkylatorns starkaste funktioner är möjligheten att jämföra två olika framtider. När du har kört en simulering klickar du på knappen <strong>Jämför (Spara)</strong>. Då sparas din aktuella prognos i bakgrunden. Du kan därefter ändra reglagen (t.ex. kraftigt öka inflyttningen) och klicka på <em>Kör Simulering</em> igen. Alla diagram kommer nu att rita ut båda scenarierna över varandra för omedelbar jämförelse.</p>
+                <p>En av kalkylatorns starkaste funktioner är möjligheten att jämföra två olika framtider. När du har kört en simulering klickar du på knappen <strong>Jämför</strong>. Då sparas din aktuella prognos i bakgrunden. Du kan därefter ändra reglagen (t.ex. kraftigt öka inflyttningen) och klicka på <em>Kör Simulering</em> igen. Alla diagram kommer nu att rita ut båda scenarierna över varandra för omedelbar jämförelse.</p>
             </div>
 
             <div id="nyckeltal" class="content-section">
@@ -165,7 +172,7 @@
                 </ul>
             </div>
 
-            <div id="export" class="content-section mb-10">
+            <div id="export" class="content-section">
                 <h2>7. Tabeller och Export (CSV)</h2>
                 <p>All data du tar fram och granskar i kalkylatorn kan enkelt laddas ner för vidare bearbetning i Excel.</p>
                 <ul class="space-y-4 list-none pl-0">
@@ -182,7 +189,7 @@
                         <strong class="text-indigo-800 text-lg block mb-2"><i class="fa-solid fa-people-arrows mr-2"></i>Specialexport: Inrikes flytt per ålder</strong>
                         Detta är ett oumbärligt verktyg om du vill granska de faktiska volymerna i absoluta tal (antal personer) när du använder dig av flyttningsmodellen <em>"Andel av rikets kohorter (‰)"</em>.<br><br>
                         <strong>Så här gör du för att exportera:</strong>
-                        <ol class="list-decimal pl-5 mt-2 mb-2 space-y-1 font-medium text-indigo-900">
+                        <ol class="list-decimal pl-5 mt-2 mb-2 space-y-1 font-medium text-indigo-900 text-sm">
                             <li>Välj önskad åldersindelning i rullistan direkt under grafens rubrik (t.ex. "5-årsklasser").</li>
                             <li>Klicka på knappen <strong>"Förändringar"</strong> (tabell-ikonen) precis ovanför grafen.</li>
                             <li>I rutan som öppnas, klicka på den <strong>Lila knappen "Inrikes flytt per ålder (CSV)"</strong> uppe till höger.</li>
@@ -190,6 +197,29 @@
                         <p class="text-sm text-indigo-700 mt-2">Du får nu ut en fil som är uppdelad på dina valda åldersgrupper och visar exakt hur många personer som beräknas flytta in, ut och netto för varje enskilt år!</p>
                     </li>
                 </ul>
+            </div>
+
+            <!-- NYTT AVSNITT FÖR SKICKA-FUNKTIONEN -->
+            <div id="skicka" class="content-section mb-10">
+                <h2>8. Skicka till Sysselsättningskalkylatorn</h2>
+                <p>En av de mest kraftfulla funktionerna i Prognoskalkylatorn är möjligheten att koppla ihop den demografiska utvecklingen direkt med kommunens kompetensförsörjning.</p>
+                
+                <div class="bg-purple-50 p-5 rounded-lg border border-purple-200 mt-4 shadow-sm">
+                    <strong class="text-purple-800 text-lg block mb-3"><i class="fa-solid fa-share-nodes mr-2"></i>Knappen "Skicka"</strong>
+                    <p class="text-sm text-purple-900 mb-4">När du har skapat ett anpassat scenario (till exempel vad som händer om vi ökar inflyttningen markant) kan du klicka på den lila knappen <strong>Skicka</strong> i kontrollpanelen.</p>
+                    
+                    <ol class="list-decimal pl-5 space-y-3 font-medium text-purple-900 text-sm">
+                        <li>Ditt scenario sparas då tillfälligt i din webbläsares lokala minne (det ligger säkert kvar även om du stänger ner datorn eller webbläsaren).</li>
+                        <li>Öppna därefter <strong>Sysselsättningskalkylatorn</strong>.</li>
+                        <li>Sysselsättningskalkylatorn kommer automatiskt att upptäcka ditt sparade scenario från webbläsarens minne.</li>
+                        <li>En lila notis dyker upp i vänstermenyn som frågar om du vill använda ditt eget scenario som befolkningsbas för att räkna ut det framtida rekryterings- och bostadsbehovet, istället för den officiella standardprognosen!</li>
+                    </ol>
+                    
+                    <div class="mt-4 pt-4 border-t border-purple-200">
+                        <p class="text-sm text-purple-800 font-semibold"><i class="fa-solid fa-circle-info mr-1"></i> Vill du avbryta?</p>
+                        <p class="text-sm text-purple-700 mt-1 leading-tight">För att återgå till kommunens officiella basprognos klickar du bara på "Rensa" i den lila notisrutan inuti Sysselsättningskalkylatorn, alternativt raderar du webbläsarens cache/historik.</p>
+                    </div>
+                </div>
             </div>
 
         </main>
