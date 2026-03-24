@@ -53,13 +53,13 @@
             <div class="bg-white rounded-lg shadow-sm p-4 md:p-5 sticky top-4 md:top-8 border border-gray-100">
                 <h3 class="text-lg font-bold text-gray-800 mb-4 mt-0 border-b pb-2">Innehåll</h3>
                 <nav class="flex flex-col gap-3 text-sm text-sky-700 font-medium">
-                    <a href="#intro" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 1. Introduktion & Data</a>
+                    <a href="#intro" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 1. Introduktion & Basdata</a>
                     <a href="#simulering" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 2. Simuleringslägen</a>
-                    <a href="#utbud" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 3. Lokal tillväxt & Utbud</a>
-                    <a href="#chocker" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 4. Chocker & Branschglidning</a>
-                    <a href="#geografi" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 5. Pendling & Geografi</a>
-                    <a href="#nyckeltal" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 6. Nyckeltal & Befolkningsbehov</a>
-                    <a href="#diagram" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 7. Analys, Grafer & Matchning</a>
+                    <a href="#reglage" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 3. Reglage & Chocker</a>
+                    <a href="#tips" class="hover:text-sky-500 transition"><i class="fa-solid fa-lightbulb text-xs mr-1 text-amber-500"></i> 4. Smått, Gott & Analys-tips</a>
+                    <a href="#nyckeltal" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 5. Nyckeltal (KPI)</a>
+                    <a href="#diagram" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 6. Diagram & Nya vyer</a>
+                    <a href="#export" class="hover:text-sky-500 transition"><i class="fa-solid fa-chevron-right text-xs mr-1 text-gray-400"></i> 7. Dataexport (CSV)</a>
                 </nav>
             </div>
         </aside>
@@ -71,89 +71,132 @@
                 <h2>1. Introduktion & Datakopplingar</h2>
                 <p>Sysselsättningskalkylatorn är ett avancerat verktyg skapat för att förstå arbetsmarknadens dynamik i Linköping. Den ställer <b>Efterfrågan</b> (lokala arbetstillfällen/dagbefolkning) mot det <b>Totala Utbudet</b> (arbetande invånare + pendling).</p>
                 
-                <h3>Koppling till Befolkningsprognos</h3>
-                <p>Eftersom arbetskraftsutbudet bygger på antalet invånare i åldern 16–74 år, behöver kalkylatorn veta hur framtiden ser ut demografiskt. Den använder två källor:</p>
-                <ol class="list-decimal pl-5 space-y-2">
-                    <li><b>Officiell basprognos (Standard):</b> Kalkylatorn läser automatiskt in kommunens officiella framskrivning från styrfilen.</li>
-                    <li><b>Sandlådeläge (Anpassad):</b> Om du går in i <i>Prognoskalkylatorn</i>, bygger ett eget framtidsscenario och klickar på den lila "Skicka"-knappen, kommer Sysselsättningskalkylatorn att känna av detta. En lila ruta dyker då upp där du kan välja att koppla in ditt egna, fiktiva befolkningsscenario och se hur det påverkar kompetensförsörjningen!</li>
-                </ol>
+                <h3>Befolkningsunderlag (Val av prognoskälla)</h3>
+                <p>Eftersom det lokala arbetskraftsutbudet till stor del avgörs av antalet invånare, måste kalkylatorn veta hur den demografiska framtiden ser ut. I rullistan överst i verktyget väljer du källa:</p>
+                <ul class="space-y-2 mt-2 mb-4">
+                    <li class="bg-indigo-50 p-3 rounded border border-indigo-100"><b>Officiell (Styrfil):</b> Läser in kommunens officiella framskrivning. Kalkylatorn känner automatiskt av om andelen äldre ökar och <i>åldersviktar</i> sysselsättningen därefter.</li>
+                    <li class="bg-emerald-50 p-3 rounded border border-emerald-100"><b>Anpassad (Prognoskalkylatorn):</b> Om du har skapat ett eget scenario i <i>Prognoskalkylatorn</i> och klickat "Skicka", dyker detta val upp! Perfekt för att se hur en extrem inflyttningsvåg påverkar arbetskraften.</li>
+                    <li class="bg-gray-50 p-3 rounded border border-gray-200"><b>Fryst (Statisk nivå):</b> Låser befolkningen (16-74 år) vid basårets nivå framåt i tiden. Renodlar analysen till att bara handla om jobbtillväxt.</li>
+                </ul>
             </div>
 
             <div id="simulering" class="content-section">
                 <h2>2. Simuleringslägen & Jämförelser</h2>
-                <p>För att kunna analysera effekter på djupet är kalkylatorn utrustad med ett simuleringsläge och en sparfunktion.</p>
-
+                
                 <div class="bg-gray-50 p-4 rounded border border-gray-200 mt-4 mb-4">
-                    <strong class="text-sky-700 text-lg">Simuleringsläge (Rullista överst)</strong><br>
-                    <p class="text-sm mt-2">Här kan du byta mellan <b>Fullständig</b> och <b>Endast Lokal</b>. Om du väljer "Endast Lokal" fryses alla pendlingsantaganden på dagens nivå och pendlingslinjen försvinner ur grafen. Detta är extremt användbart för att först analysera <i>"Hur stor blir bristen om vi bara tittar på vår egen befolkning?"</i>, för att sedan slå över till "Fullständig" och addera in regionförstoring.</p>
+                    <strong class="text-sky-700 text-lg">Simuleringsläge för Pendling (Rullista)</strong><br>
+                    <p class="text-sm mt-2">Här växlar du mellan <b>Fullständig</b> (där pendling ritas ut) och <b>Endast Lokal</b>. Vid "Endast Lokal" fryses pendlingsvolymerna på dagens nivå. Dessutom ställer grafen om sig automatiskt för att tydligare visa gapet mellan enbart de lokala jobben och den lokala nattbefolkningen.</p>
                 </div>
 
                 <div class="bg-indigo-50 p-4 rounded border border-indigo-200 mt-4 mb-4">
-                    <strong class="text-indigo-800 text-lg">Jämför (Spara)</strong><br>
-                    <p class="text-sm mt-2">När du har kört en simulering kan du klicka på knappen "Jämför (Spara)". Dina nuvarande kurvor låses då fast i graferna som streckade linjer. Du kan sedan ändra reglagen, köra en ny modell, och omedelbart jämföra ditt nya scenario mot det du precis sparade.</p>
+                    <strong class="text-indigo-800 text-lg"><i class="fa-solid fa-code-compare mr-2"></i>Jämför (Spara-knappen)</strong><br>
+                    <p class="text-sm mt-2">Detta är ditt viktigaste verktyg för presentationer! Ställ in ett grundscenario och klicka "Kör". Klicka därefter på <b>Jämför</b>. Nu är dina grafer fastlåsta som streckade referenslinjer i bakgrunden. Ändra sedan reglagen (t.ex. lägg till en företagsetablering) och klicka "Kör" igen för att visa den exakta skillnaden.</p>
                 </div>
             </div>
 
-            <div id="utbud" class="content-section">
-                <h2>3. Lokal tillväxt & Utbud</h2>
-                <p>Här ställer du in de makroekonomiska grundpelarna för Linköpings arbetsmarknad:</p>
-                <ul>
-                    <li><b>Lokal Jobbtillväxt:</b> Företagens rekryteringsbehov. Anger hur många procent de lokala jobben förväntas växa över en tioårsperiod.</li>
-                    <li><b>Sysselsättningsgrad:</b> Anger andelen av Linköpingsborna (16-74 år) som faktiskt jobbar. <br><br>
-                    <i>Viktig Makrokoppling:</i> Om du drar upp detta reglage växer inte bara det blåa utbudet, utan även den gröna efterfrågan. Logiken är att om tusentals fler lokala invånare kommer i arbete, innebär det att de de facto har skapat och fyllt lokala jobb!</li>
-                    <li><b>Kvarstannandegrad LiU:</b> Universitetet tillför årligen ny kompetens. Detta reglage låter dig simulera effekten av att en större andel av alumnerna stannar kvar i regionen.</li>
-                </ul>
-            </div>
+            <div id="reglage" class="content-section">
+                <h2>3. Reglage & Chocker</h2>
+                <p>Verktyget är uppdelat i moduler. När du drar i reglagen simuleras framtiden stegvis över 10 år.</p>
 
-            <div id="chocker" class="content-section">
-                <h2>4. Specifika Etableringar & Branschglidning</h2>
-                <p>Kalkylatorn bygger på mer än bara procentuell tillväxt. Den kan simulera plötsliga, omvälvande industriella händelser via data från din Excel-styrfil.</p>
-                
+                <h3>Lokal tillväxt & Utbud</h3>
+                <ul>
+                    <li><b>Lokal Jobbtillväxt:</b> Ökar enbart Efterfrågan (gröna linjen). Detta ökar BRP, men spär på arbetskraftsbristen.</li>
+                    <li><b>Sysselsättningsgrad:</b> Ökar andelen invånare som arbetar. Observera att detta reglage drar upp BÅDE utbud (blå linje) och efterfrågan (grön linje) – logiken är att om 1000 Linköpingsbor går från bidrag till arbete, så har de de facto fyllt 1000 lokala jobb. </li>
+                    <li><b>Kvarstannandegrad LiU:</b> Ett specialreglage som enbart lägger till utbud. Det minskar omedelbart rekryteringsgapet genom att behålla nyutexaminerade studenter.</li>
+                </ul>
+
                 <h3>Specifika Etableringar (Chocker)</h3>
-                <p>Under en utfällbar meny i vänsterpanelen hittar du kända (eller spekulativa) händelser, t.ex. "Ny Tech-hubb 2028 (+800 jobb)". Kryssar du i en av dessa rutor, trycks exakt så många jobb in i just det årets prognos och för den specifika bransch som angetts i Excel-filen.</p>
+                <p>Under den utfällbara menyn hittar du händelser inlagda via din Excel-styrfil (t.ex. ny batterifabrik). Dessa skapar omedelbara "trappstegs-effekter" det valda året i efterfrågan. Branschen som anges i Excel-filen kommer också att sticka iväg i matchningsdiagrammen!</p>
 
-                <h3>Branschglidning (Kannibalisering)</h3>
-                <p>Om en snabbväxande bransch (t.ex. IT) har en definierad koppling till en annan bransch (t.ex. Tillverkning) i styrfilen, kommer kalkylatorn automatiskt att utföra <i>branschglidning</i>. Det innebär att när IT-jobben blir fler, suger de omedelbart åt sig en viss procent arbetskraft från Tillverkningsindustrin – som därmed tappar sitt utbud.</p>
+                <h3>Pendling & Geografi</h3>
+                <ul>
+                    <li><b>In- och Utpendling:</b> Styr den fysiska pendlingen. Inpendling höjer den lila linjen (Totalt utbud), utpendling sänker den.</li>
+                    <li><b>Distansarbete:</b> Dämpar arbetskraftsbristen genom att en procentuell andel av "gapet" fylls av personer som teoretiskt kan jobba från en annan ort.</li>
+                    <li><b>Regionförstoring:</b> Sänker du restiden med t.ex. 10 minuter, räknar kalkylatorn ut exakt hur många tusen personer från Mjölby, Norrköping, etc. som nu plötsligt befinner sig inom acceptabelt pendlingsavstånd.</li>
+                </ul>
             </div>
 
-            <div id="geografi" class="content-section">
-                <h2>5. Pendling & Geografi</h2>
-                <p>När jobben växer snabbare än lokalbefolkningen måste arbetskraft hämtas utifrån. Här styr du pendlingsflödena:</p>
-                <ul>
-                    <li><b>Fysisk Grundpendling (In/Ut):</b> Överst väljer du om du vill justera pendlingen i <i>Procent</i> eller i <i>Absoluta tal (antal personer)</i>. Sedan använder du reglagen för att skala den existerande pendlingsvolymen upp eller ner.</li>
-                    <li><b>Regionförstoring (Tyngdkraftsmodell):</b> Detta reglage minskar restiden till grannkommunerna (ex. Ostlänken). Modellen räknar då automatiskt – kommun för kommun – ut hur många teoretiska inpendlare som frigörs tack vare den kortare pendlingstiden.</li>
-                    <li><b>Distansarbete:</b> Adderar ett virtuellt pendlingsutbud för personer som teoretiskt kan ta ett jobb i Linköping trots långa avstånd, tack vare hemarbete.</li>
-                </ul>
+            <!-- NY SEKTION: TIPS & BÄSTA PRAXIS -->
+            <div id="tips" class="content-section bg-gradient-to-r from-amber-50 to-white border-l-4 border-amber-400">
+                <h2 class="text-amber-600 border-b-amber-200"><i class="fa-solid fa-lightbulb mr-2"></i>4. Smått, Gott & Analys-tips</h2>
+                <p class="text-gray-700">För att bygga trovärdiga scenarier och förklara mekanismerna för din publik, ha detta i åtanke:</p>
+                
+                <div class="space-y-4 mt-4">
+                    <div>
+                        <h4 class="font-bold text-gray-800">Tips 1: "Inflyttares syss.grad" påverkar inga grafer</h4>
+                        <p class="text-sm text-gray-600">Detta orangea reglage ritar inte om några linjer. SCB mäter ofta sysselsättning året <i>innan</i> flytt (mörkertal). Detta reglage korrigerar endast matten för nyckeltalet <b>Befolkning (Ny)</b>. Dra upp reglaget och se hur behovet av inflyttare (och därmed bostäder) sjunker utan att du förändrat själva arbetsmarknaden.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">Tips 2: Bygg inte ett Frankenstein-scenario</h4>
+                        <p class="text-sm text-gray-600">Om du skruvar upp <i>Lokal jobbtillväxt</i> extremt mycket skapas en massiv arbetskraftsbrist. Försök att balansera denna brist! Löser vi det genom att öka <i>Inpendlingen</i>? Genom att höja <i>Sysselsättningsgraden</i> för de som redan bor här? Eller tvingas vi acceptera att nyckeltalet för inflyttningsbehov skjuter i höjden?</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">Tips 3: Åldersviktningen är din osynliga medhjälpare</h4>
+                        <p class="text-sm text-gray-600">När du använder kommunens officiella befolkningsprognos, titta noga på den blåa linjen (Utbud). Även om befolkningen totalt sett förväntas öka i Linköping, kan den blåa utbudslinjen stagnera eller sjunka. Kalkylatorn känner nämligen av om ökningen enbart består av barn och äldre (som inte jobbar). Berätta gärna detta för din publik!</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-gray-800">Tips 4: Branschglidning (Kannibalisering)</h4>
+                        <p class="text-sm text-gray-600">Om du aktiverar en Etableringschock (t.ex. för Tech-industrin) och tittar i grafen <i>Branschmatchning</i>, kommer du ibland se att utbudet för Tillverkning minskar samtidigt som utbudet för Tech ökar. Detta sker helt automatiskt om du lagt in "Branschglidning" i styrfilen. Den nya industrin "dammsuger" helt enkelt de traditionella industrierna på personal.</p>
+                    </div>
+                </div>
             </div>
 
             <div id="nyckeltal" class="content-section">
-                <h2>6. Nyckeltal, Befolkningsbehov & Varningar</h2>
-                <p>Kalkylatorn översätter arbetsmarknadens gap till demografiska realiteter.</p>
-
-                <div class="highlight">
-                    <strong class="text-teal-800">Befolkningsbehovet (Hur många måste flytta hit?)</strong><br>
-                    Om det totala utbudet (inkl pendling) inte räcker, uppstår ett kompetensgap. Men om vi saknar 1 000 personer för att fylla jobben, räcker det inte att bygga bostäder för 1 000 personer. Många som flyttar in är nämligen medföljande barn, studerande eller pensionärer. Kalkylatorn utnyttjar er historiska SCB-data för att <i>åldersvikta</i> inflyttarna och räkna ut exakt hur många som de facto förvärvsarbetar – och ger er en korrekt siffra för hur stor den totala inflyttningen måste bli!
-                </div>
-
-                <h3>Justering: Inflyttares syss.grad</h3>
-                <p>SCB:s data har ofta en eftersläpning (visar sysselsättningsstatus i november året <i>innan</i> flytt). Många flyttar in till Linköping just för att börja ett nytt jobb, men syns inte i statistiken. Med det <b>orangea reglaget</b> i vänstermenyn kan du manuellt justera upp inflyttarnas sysselsättningsgrad. Detta minskar omedelbart det beräknade Befolkningsbehovet!</p>
-
-                <h3>Tak-effekten (Varningssystem)</h3>
-                <p>Om du skruvar upp sysselsättningsgraden så högt att arbetslösheten sjunker under <i>friktionsnivån</i> (det teoretiska taket definierat i styrfilen), kommer kalkylatorn att blinka rött med varningen <b>"Sysselsättningstaket uppnått"</b>. Då vet ni att scenariot är orealistiskt och driver skadlig lönekonkurrens.</p>
-            </div>
-
-            <div id="diagram" class="content-section mb-10">
-                <h2>7. Analys, Grafer & Matchning</h2>
-                <p>I rullistan ovanför det stora diagrammet kan du välja olika vyer för att förstå data på djupet:</p>
+                <h2>5. Nyckeltal (KPI) & Varningar</h2>
                 
-                <ul class="space-y-3">
-                    <li><b>Utbud vs Efterfrågan:</b> Den klassiska tidslinjen. Den lila streckade linjen visar <i>Totalt Utbud inkl. Pendling</i>. Målet med dina reglage är att få den lila linjen att täcka den gröna efterfrågelinjen.</li>
-                    <li><b>Arbetslöshet & Reserv:</b> Visar historisk andel arbetslösa, samt hur ditt prognostiserade ökade utbud teoretiskt äter upp denna "reserv" över tid.</li>
-                    <li><b>Matchningsvyer (Utbildning, Sektor, Bransch):</b> Ställer befolkningens faktiska kompetens direkt mot företagens krav. Röda linjer/staplar nedåt visar bristyrken.</li>
+                <p>När du byter årtal i rullistan "Granska År" uppdateras de sex nyckeltalen överst på skärmen.</p>
+                <ul class="space-y-2 mb-4">
+                    <li><b>Pendlingsnetto:</b> Visar totalbalansen. Håller du muspekaren över denna ruta visas hur stor del som är fysisk pendling kontra det "virtuella" tillskottet från distansarbete.</li>
+                    <li><b>Befolkning (Ny):</b> Visar hur många nya invånare kommunen behöver attrahera (och bygga bostäder för) för att mätta det gap som kvarstår när pendling och ökad sysselsättningsgrad räknats av.</li>
                 </ul>
 
-                <div class="tip-box">
-                    <strong>Magin med SNI-grupper:</strong> När du tittar på <i>Branschmatchning</i> kan du tända en extra rullista. Om ni har lagt in egna grupperingar i styrfilens flik <code>SNIgrupper</code> (exempelvis slagit ihop flera koder till "Tech-sektorn"), kan du snabbt välja denna vy här. Kalkylatorn slår då samman all data och alla chocker exakt enligt dina egna kluster!
+                <div class="bg-red-50 p-4 rounded border border-red-200">
+                    <strong class="text-red-700 text-lg"><i class="fa-solid fa-triangle-exclamation mr-2"></i>Tak-effekten (Varningssystem)</strong><br>
+                    <p class="text-sm mt-2 text-red-900">Om du drar upp sysselsättningsgraden så högt att arbetslösheten raderas ut (under den teoretiska "friktionsarbetslösheten" definierad i styrfilen), börjar varningen <b>Arbetskraftsbrist</b> blinka rött. Detta signalerar att scenariot är orealistiskt – det går inte att pressa ut mer folk i arbete lokalt, företagen kommer tvingas rekrytera externt eller flytta.</p>
+                </div>
+            </div>
+
+            <div id="diagram" class="content-section">
+                <h2>6. Diagram & Nya Vyer (Kön och Ursprung)</h2>
+                <p>Kalkylatorn erbjuder en rad olika vyer i rullistan ovanför grafen för djupare analys.</p>
+                
+                <h3>Smarta inställningar (Kryssrutor)</h3>
+                <div class="flex flex-col md:flex-row gap-4 mb-4 mt-2">
+                    <div class="flex-1 bg-white p-3 rounded border shadow-sm">
+                        <b class="text-sky-700 block mb-1">Utgå från 0</b>
+                        <p class="text-xs text-gray-600">Standard är ofta en "bruten" Y-axel (zoomat in på linjerna). Genom att kryssa i denna tvingas axeln till noll, vilket är utmärkt för att visa korrekta visuella proportioner och totalvolymer.</p>
+                    </div>
+                    <div class="flex-1 bg-white p-3 rounded border shadow-sm">
+                        <b class="text-sky-700 block mb-1">Delade axlar</b>
+                        <p class="text-xs text-gray-600">Visas endast vid jämförelser av t.ex. inrikes/utrikes arbetslöshet. Den separerar skalorna så du kan se trenden (lutningen) för båda grupperna tydligt, även om ena gruppen har 20% och den andra 5%.</p>
+                    </div>
+                </div>
+                
+                <h3>Kategorier i rullistan:</h3>
+                <ul class="space-y-3 mb-4">
+                    <li><b>Utbud vs Efterfrågan (Trend):</b> Basvyn. Klicka på legend-texten ovanför grafen för att tända/släcka specifika linjer (t.ex. för att rensa bort pendlingslinjen).</li>
+                    <li><b>Ekonomisk tillväxt (BRP):</b> Visar hur Bruttoregionalprodukten reagerar på antalet lokala arbetstillfällen.</li>
+                    <li><b>Kön (Män/Kvinnor):</b> Fyra nya vyer! Du kan följa utbud, efterfrågan, sysselsättningsgrad (för valfria åldersgrupper), samt arbetslöshet och långtidsarbetslöshet – allt uppdelat exakt på kön.</li>
+                    <li><b>Bakgrund / Ursprung:</b> Samma djupdykning som ovan, fast för Inrikes respektive Utrikes födda. Perfekt för att lokalisera den framtida arbetskraftsreserven.</li>
+                    <li><b>Matchningsvyer (Bransch, Utb, Sektor):</b> Ställer befolkningens faktiska kompetens direkt mot företagens krav. Röda linjer/staplar nedåt visar yrkesområden med akut brist. Väljer du branschmatchning dyker det upp en rullista där du kan klustra branscherna enligt dina egna inställningar (SNI) från Excel-filen.</li>
+                </ul>
+            </div>
+
+            <div id="export" class="content-section mb-10">
+                <h2>7. Dataexport (CSV)</h2>
+                <p>När analysen är klar vill du ofta presentera siffrorna eller arbeta vidare i Excel.</p>
+                
+                <div class="bg-emerald-50 p-5 rounded-lg border border-emerald-200 mt-4 shadow-sm">
+                    <strong class="text-emerald-800 text-lg block mb-3"><i class="fa-solid fa-download mr-2"></i>Knappen Exportera data (CSV)</strong>
+                    <p class="text-sm text-emerald-900 mb-4">Klicka på den gröna nedladdningsikonen under reglagen. Du får ut en ren fil som innehåller:</p>
+                    <ul class="list-disc pl-5 mt-2 space-y-1 font-medium text-emerald-900 text-sm">
+                        <li>De 5 senaste historiska åren (för trendanalys i Excel).</li>
+                        <li>Hela 10-årsprognosen, år för år.</li>
+                        <li>Exakta värden för Efterfrågan, Lokalt utbud, samt Pendlingskomponenterna.</li>
+                        <li>Det Omatchade gapet och det exakt uträknade <b>Befolkningsbehovet</b> per år.</li>
+                        <li>Bruttoregionalprodukt (BRP) i Miljoner kronor.</li>
+                        <li>Arbetslöshet och långtidsarbetslöshet (%).</li>
+                    </ul>
                 </div>
             </div>
 

@@ -15,8 +15,11 @@
 
     <style>
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; }
-        .card { background-color: white; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 1.5rem; }
-        .slider-container { margin-bottom: 1.2rem; }
+        /* Komprimerad design: padding minskad från 1.5rem till 1rem/1.25rem */
+        .card { background-color: white; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 1rem; }
+        @media (min-width: 768px) { .card { padding: 1.25rem; } }
+        /* Komprimerad design: margin-bottom minskad från 1.2rem till 0.75rem */
+        .slider-container { margin-bottom: 0.75rem; }
         input[type=range] { width: 100%; accent-color: #0ea5e9; } 
         .shock-checkbox:checked + label { background-color: #e0f2fe; border-color: #0ea5e9; font-weight: bold; color: #0369a1; }
     </style>
@@ -25,19 +28,22 @@
 
     <!-- Header -->
     <header class="bg-slate-800 text-white shadow-md">
-        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="container mx-auto px-4 py-3 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div class="flex items-center gap-4">
-                <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" class="h-12 w-auto hidden sm:block" onerror="this.style.display='none'">
+                <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" class="h-10 w-auto hidden sm:block" onerror="this.style.display='none'">
                 <div>
-                    <h1 class="text-2xl font-bold"><i class="fa-solid fa-briefcase mr-2"></i> Sysselsättningskalkylator: Linköping</h1>
-                    <div class="text-sm font-medium text-slate-300 mt-1">Arbetskraftsutbud, Efterfrågan & Regional Ekonomi</div>
+                    <h1 class="text-xl md:text-2xl font-bold"><i class="fa-solid fa-briefcase mr-2"></i> Sysselsättningskalkylator: Linköping</h1>
+                    <div class="text-xs font-medium text-slate-300 mt-0.5">Arbetskraftsutbud, Efterfrågan & Regional Ekonomi</div>
                 </div>
             </div>
-            <div class="flex gap-2 self-end md:self-center">
-                <a href="anvandarguide_sysselsattning.html" class="bg-white hover:bg-slate-50 text-slate-800 font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center border border-transparent">
-                    <i class="fa-solid fa-book-open mr-1.5"></i> Användarguide
+            <div class="flex flex-wrap gap-2 self-end lg:self-center justify-end w-full lg:w-auto">
+                <a href="prognoskalkylator.html" class="bg-indigo-700 hover:bg-indigo-600 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-xs sm:text-sm transition flex items-center border border-indigo-600" title="Öppna Befolkningsprognos">
+                    <i class="fa-solid fa-users mr-1.5"></i> Befolkning
                 </a>
-                <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center border border-slate-600">
+                <a href="anvandarguide_sysselsattning.html" class="bg-white hover:bg-slate-50 text-slate-800 font-semibold py-1.5 px-3 rounded shadow-sm text-xs sm:text-sm transition flex items-center border border-transparent">
+                    <i class="fa-solid fa-book-open mr-1.5"></i> Manual
+                </a>
+                <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-xs sm:text-sm transition flex items-center border border-slate-600">
                     <i class="fa-solid fa-arrow-left mr-1.5"></i> Startmeny
                 </a>
             </div>
@@ -45,120 +51,103 @@
     </header>
 
     <!-- Huvudinnehåll -->
-    <div class="container mx-auto px-4 py-8 flex flex-col md:flex-row gap-6 flex-grow">
+    <div class="container mx-auto px-4 py-4 md:py-6 flex flex-col md:flex-row gap-4 flex-grow">
         
         <!-- Vänster kolumn: Kontrollpanel -->
-        <aside class="w-full md:w-1/3 flex flex-col gap-6">
+        <aside class="w-full md:w-1/3 xl:w-1/4 flex flex-col gap-4">
             
-            <div class="card border-t-4 border-slate-600 pb-4">
-                <h2 class="text-lg font-bold mb-4">1. Datamotor & Kopplingar</h2>
-                <div id="dataStatus" class="p-3 bg-slate-50 rounded border border-slate-200 text-sm font-medium text-amber-600">
+            <div class="card border-t-4 border-slate-600 pb-3">
+                <h2 class="text-base font-bold mb-2">1. Datamotor & Kopplingar</h2>
+                <div id="dataStatus" class="p-2 bg-slate-50 rounded border border-slate-200 text-xs font-medium text-amber-600">
                     <i class="fa-solid fa-spinner fa-spin"></i> Ansluter till basdatabaser...
                 </div>
             </div>
 
-            <!-- KORT: Befolkningskälla (Integration med Prognoskalkylatorn) -->
-            <div class="card border-t-4 border-indigo-500 py-4 hidden" id="popSourceCard">
-                <h2 class="text-lg font-bold mb-2 flex items-center gap-2">
-                    Befolkningsprognos <span onclick="showInfo('pop_source')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Läs om befolkningskopplingar"><i class="fa-solid fa-circle-info text-sm"></i></span>
-                </h2>
-                <div id="popSourceStatus" class="text-sm text-gray-600 mb-3 leading-tight">
-                    Kalkylatorn använder <b>kommunens officiella basprognos</b> (från styrfilen) för att beräkna framtida utbud.
-                </div>
-                
-                <div id="customPopAlert" class="hidden bg-indigo-50 border border-indigo-200 rounded p-3 text-sm">
-                    <p class="text-indigo-800 font-bold mb-2"><i class="fa-solid fa-link mr-1"></i> Eget scenario hittat!</p>
-                    <p class="text-xs text-indigo-700 mb-3 leading-tight">Ett scenario skapat i Prognoskalkylatorn finns sparat. Vill du använda det istället för den officiella prognosen?</p>
-                    <div class="flex gap-2">
-                        <button onclick="enableCustomPop()" id="btnEnableCustom" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white py-1.5 px-2 rounded text-xs font-bold transition shadow-sm">Använd scenario</button>
-                        <button onclick="clearCustomPop()" class="flex-none bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 py-1.5 px-3 rounded text-xs font-bold transition shadow-sm">Rensa</button>
-                    </div>
-                </div>
-                
-                <div id="activeCustomPop" class="hidden bg-emerald-50 border border-emerald-200 rounded p-3 text-sm">
-                    <p class="text-emerald-800 font-bold mb-2"><i class="fa-solid fa-flask mr-1"></i> Sandlådeläge Aktivt</p>
-                    <p class="text-xs text-emerald-700 mb-3 leading-tight">Kalkylatorn drivs nu av den anpassade befolkningen från Prognoskalkylatorn.</p>
-                    <button onclick="disableCustomPop()" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 py-1.5 px-2 rounded text-xs font-bold transition w-full shadow-sm">Återgå till officiell prognos</button>
-                </div>
-            </div>
-
-            <!-- Scenariokontroller -->
             <div class="card opacity-50 pointer-events-none transition-opacity duration-300" id="scenarioPanel">
-                <h2 class="text-lg font-bold mb-3">2. Scenariomodellering (10 år)</h2>
+                <h2 class="text-base font-bold mb-2">2. Scenariomodellering</h2>
                 
-                <!-- Simuleringsläge -->
-                <div class="mb-4 bg-slate-100 p-3 rounded border border-slate-200">
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Simuleringsläge</label>
-                    <select id="simMode" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-sky-500 focus:border-sky-500 font-medium" onchange="toggleSimMode()">
-                        <option value="full">Fullständig (Lokal tillväxt + Pendling & Geografi)</option>
-                        <option value="local">Endast Lokal (Fryser pendling på nuläget)</option>
+                <div class="mb-3 bg-indigo-50 p-2 rounded border border-indigo-200">
+                    <label class="block text-[11px] font-bold text-indigo-800 uppercase mb-1.5 flex justify-between items-center">
+                        Befolkningsunderlag (16-74)
+                        <span onclick="showInfo('pop_source')" class="text-indigo-400 cursor-pointer hover:text-indigo-600 transition" title="Läs om befolkningskopplingar"><i class="fa-solid fa-circle-info"></i></span>
+                    </label>
+                    <select id="popSource" class="w-full border border-indigo-300 rounded p-1.5 text-xs focus:ring-indigo-500 font-medium" onchange="updatePopSourceDesc(); runSimulation()">
+                        <option value="fryst">Fryst befolkning (Statisk nivå)</option>
+                    </select>
+                    <p id="popSourceDesc" class="text-[10px] text-indigo-700 mt-1 leading-tight">Antar att befolkningen stannar på utgångsårets nivå.</p>
+                    <button id="clearCustomBtn" onclick="clearCustomPop()" class="hidden mt-1.5 text-[10px] font-bold text-red-600 hover:text-red-800 transition"><i class="fa-solid fa-trash mr-1"></i> Rensa sparat scenario</button>
+                </div>
+
+                <div class="mb-3 bg-slate-100 p-2 rounded border border-slate-200">
+                    <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1.5">Simuleringsläge (Pendling)</label>
+                    <select id="simMode" class="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-sky-500 focus:border-sky-500 font-medium" onchange="toggleSimMode()">
+                        <option value="full">Fullständig (Pendling & Geografi)</option>
+                        <option value="local">Endast Lokal (Fryser pendling)</option>
                     </select>
                 </div>
 
-                <!-- Snabbscenarier -->
-                <div class="mb-5 p-3 bg-slate-50 rounded border border-slate-200">
-                    <div class="text-xs font-bold text-slate-500 uppercase mb-2 flex justify-between">
+                <div class="mb-4 p-2 bg-slate-50 rounded border border-slate-200">
+                    <div class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 flex justify-between">
                         <span>Snabbscenarier</span>
-                        <span onclick="showInfo('scenarios')" class="text-slate-400 font-normal cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information"><i class="fa-solid fa-circle-info text-base"></i></span>
+                        <span onclick="showInfo('scenarios')" class="text-slate-400 font-normal cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
                     </div>
-                    <div class="flex gap-1.5">
-                        <button onclick="setScenario('base')" class="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-xs font-semibold transition shadow-sm">Bas</button>
-                        <button onclick="setScenario('high')" class="flex-1 bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 py-1 px-1 rounded text-xs font-semibold transition shadow-sm">Hög</button>
-                        <button onclick="setScenario('low')" class="flex-1 bg-white hover:bg-orange-50 text-orange-700 border border-orange-200 py-1 px-1 rounded text-xs font-semibold transition shadow-sm">Låg</button>
-                        <button onclick="setScenario('stagnant')" class="flex-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 py-1 px-1 rounded text-xs font-semibold transition shadow-sm">Stagnerande</button>
+                    <div class="flex flex-wrap gap-1">
+                        <button onclick="setScenario('base')" class="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Bas</button>
+                        <button onclick="setScenario('high')" class="flex-1 bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Hög</button>
+                        <button onclick="setScenario('low')" class="flex-1 bg-white hover:bg-orange-50 text-orange-700 border border-orange-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Låg</button>
+                        <button onclick="setScenario('stagnant')" class="flex-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Stagn.</button>
                     </div>
                 </div>
 
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">Lokal tillväxt & Utbud</h3>
-                    <span onclick="showInfo('demografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information"><i class="fa-solid fa-circle-info"></i></span>
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Lokal tillväxt & Utbud</h3>
+                    <span onclick="showInfo('demografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
                 </div>
 
                 <div class="slider-container">
-                    <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700">
-                        <span>Lokal Jobbtillväxt (Totalt över 10 år)</span>
+                    <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                        <span>Lokal Jobbtillväxt (Totalt)</span>
                         <span id="jobGrowthVal" class="text-slate-600 font-bold">+0%</span>
                     </label>
                     <input type="range" id="jobGrowthSlider" min="-10" max="30" step="1" value="0" oninput="document.getElementById('jobGrowthVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
                 </div>
 
                 <div class="slider-container">
-                    <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700">
+                    <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
                         <span>Sysselsättningsgrad (Förändring)</span>
                         <span id="syssGradVal" class="text-slate-600 font-bold">Oförändrad</span>
                     </label>
-                    <input type="range" id="syssGradSlider" min="-5" max="5" step="0.5" value="0" oninput="document.getElementById('syssGradVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enheter'">
+                    <input type="range" id="syssGradSlider" min="-5" max="5" step="0.5" value="0" oninput="document.getElementById('syssGradVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
                 </div>
 
                 <div class="slider-container">
-                    <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Andel examinerade studenter från LiU som stannar kvar och jobbar i kommunen.">
-                        <span>Kvarstannandegrad LiU (Universitet)</span>
+                    <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                        <span>Kvarstannandegrad LiU</span>
                         <span id="studentVal" class="text-slate-600 font-bold">Baslinje</span>
                     </label>
-                    <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="document.getElementById('studentVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enheter'">
+                    <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="document.getElementById('studentVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
                 </div>
 
-                <div class="slider-container bg-orange-50 p-3 rounded border border-orange-100 mt-4">
-                    <label class="block text-sm font-medium mb-1 flex justify-between items-center text-gray-700">
-                        <span class="flex items-center gap-1.5">
-                            Justering: Inflyttares syss.grad
-                            <i class="fa-solid fa-circle-info text-orange-400 cursor-pointer hover:text-orange-600 transition" onclick="showInfo('inflyttare')" title="Läs om SCB:s eftersläpning och mörkertal"></i>
+                <div class="slider-container bg-orange-50 p-2 rounded border border-orange-100 mt-3">
+                    <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
+                        <span class="flex items-center gap-1">
+                            Inflyttares syss.grad
+                            <i class="fa-solid fa-circle-info text-orange-400 cursor-pointer hover:text-orange-600 transition" onclick="showInfo('inflyttare')"></i>
                         </span>
-                        <span id="migrantSyssVal" class="text-orange-600 font-bold">+10%-enheter</span>
+                        <span id="migrantSyssVal" class="text-orange-600 font-bold">+10%-enh</span>
                     </label>
-                    <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="document.getElementById('migrantSyssVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enheter'; handleYearChange();">
-                    <p class="text-[11px] text-gray-500 leading-tight mt-1">Korrigerar den beräknade förvärvsfrekvensen bland inflyttare.</p>
+                    <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="document.getElementById('migrantSyssVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'; handleYearChange();">
                 </div>
 
-                <div id="shocksContainer" class="hidden mt-5 pt-4 border-t border-gray-200">
-                    <div class="flex justify-between items-center mb-3 cursor-pointer group" onclick="toggleShocks()">
-                        <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider group-hover:text-sky-700 transition">Specifika Etableringar</h3>
-                        <div class="flex items-center gap-3">
+                <div id="shocksContainer" class="hidden mt-4 pt-3 border-t border-gray-200">
+                    <div class="flex justify-between items-center mb-2 cursor-pointer group" onclick="toggleShocks()">
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider group-hover:text-sky-700 transition">Specifika Etableringar</h3>
+                        <div class="flex items-center gap-2">
                             <i id="shocksIcon" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
-                            <span onclick="showInfo('shocker'); event.stopPropagation();" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Läs mer om etableringschocker"><i class="fa-solid fa-circle-info"></i></span>
+                            <span onclick="showInfo('shocker'); event.stopPropagation();" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info"></i></span>
                         </div>
                     </div>
-                    <div id="shocksList" class="hidden flex-col gap-2">
+                    <div id="shocksList" class="hidden flex-col gap-1.5 mt-2">
                         <!-- Genereras av JS -->
                     </div>
                 </div>
@@ -166,59 +155,62 @@
                 <hr class="my-4 border-gray-200">
                 
                 <div id="geoPanel" class="transition-opacity duration-300">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-sm font-bold text-gray-700 uppercase tracking-wider">Pendling & Geografi</h3>
-                        <span onclick="showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information"><i class="fa-solid fa-circle-info"></i></span>
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Pendling & Geografi</h3>
+                        <span onclick="showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
                     </div>
 
-                    <div class="mb-4">
-                        <select id="pendlingType" class="w-full border border-gray-300 rounded p-1.5 text-sm focus:ring-sky-500 focus:border-sky-500 bg-gray-50" onchange="updatePendlingUI()">
+                    <div class="mb-3">
+                        <select id="pendlingType" class="w-full border border-gray-300 rounded p-1 text-xs focus:ring-sky-500 focus:border-sky-500 bg-gray-50" onchange="updatePendlingUI()">
                             <option value="pct">Relativ förändring (%)</option>
                             <option value="abs">Absolut förändring (Antal pers)</option>
                         </select>
                     </div>
 
                     <div class="slider-container">
-                        <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Grundantagande för hur mycket inpendlingen förväntas växa över prognosperioden.">
-                            <span>Inpendling (Förändring i volym)</span>
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                            <span>Inpendling (Förändring)</span>
                             <span id="inpendlingVal" class="text-slate-600 font-bold">+0%</span>
                         </label>
                         <input type="range" id="inpendlingSlider" min="-50" max="50" step="1" value="0" oninput="updatePendlingValue('inpendlingSlider', 'inpendlingVal')">
                     </div>
 
                     <div class="slider-container">
-                        <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Grundantagande för hur mycket utpendlingen förväntas växa över prognosperioden.">
-                            <span>Utpendling (Förändring i volym)</span>
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                            <span>Utpendling (Förändring)</span>
                             <span id="utpendlingVal" class="text-slate-600 font-bold">+0%</span>
                         </label>
                         <input type="range" id="utpendlingSlider" min="-50" max="50" step="1" value="0" oninput="updatePendlingValue('utpendlingSlider', 'utpendlingVal')">
                     </div>
 
                     <div class="slider-container">
-                        <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Förändring i viljan/möjligheten att arbeta på distans. Skapar virtuellt pendlingsutbud.">
-                            <span>Distansarbete (Andel av pendlingsgapet)</span>
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                            <span>Distansarbete (Andel)</span>
                             <span id="distansVal" class="text-slate-600 font-bold">Baslinje</span>
                         </label>
                         <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="document.getElementById('distansVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
                     </div>
 
                     <div class="slider-container">
-                        <label class="block text-sm font-medium mb-1 flex justify-between text-gray-700" title="Krympande restider via ex. Ostlänken förstorar den tillgängliga arbetsmarknadsregionen.">
-                            <span>Regionförstoring (Kortare restid)</span>
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                            <span>Regionförstoring (Restid)</span>
                             <span id="regionVal" class="text-slate-600 font-bold">Dagens nivå</span>
                         </label>
                         <input type="range" id="regionSlider" min="0" max="30" step="1" value="0" oninput="document.getElementById('regionVal').innerText = this.value == 0 ? 'Dagens nivå' : '+' + this.value + ' min'">
                     </div>
                 </div>
 
-                <div class="flex gap-2 mt-5">
-                    <button id="simBtn" onclick="runSimulation()" class="flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-2 rounded transition flex items-center justify-center shadow-md text-sm">
-                        <i class="fa-solid fa-gears mr-1"></i> Kör Modell
+                <div class="flex flex-wrap gap-1.5 mt-4">
+                    <button id="simBtn" onclick="runSimulation()" class="w-full sm:flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-md text-xs sm:text-sm">
+                        <i class="fa-solid fa-gears mr-1"></i> Kör
                     </button>
-                    <button onclick="toggleSaveScenario()" id="saveBtn" class="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-2 px-2 rounded transition flex items-center justify-center shadow-sm text-sm" title="Spara nuvarande prognos för att jämföra med en ny">
-                        <i class="fa-solid fa-code-compare mr-1"></i> Jämför (Spara)
+                    <button onclick="toggleSaveScenario()" id="saveBtn" class="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Spara nuvarande prognos för att jämföra med en ny">
+                        <i class="fa-solid fa-code-compare mr-1"></i> Jämför
                     </button>
-                    <button onclick="resetSimulation()" class="flex-none w-10 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-2 rounded transition flex items-center justify-center shadow-sm text-sm" title="Rensa prognoser och återställ värden">
+                    <button onclick="exportSyssToCSV()" class="flex-none bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Exportera data (CSV)">
+                        <i class="fa-solid fa-download"></i>
+                    </button>
+                    <button onclick="resetSimulation()" class="flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Återställ värden">
                         <i class="fa-solid fa-rotate-left"></i>
                     </button>
                 </div>
@@ -227,84 +219,106 @@
         </aside>
 
         <!-- Höger kolumn: Grafer och Nyckeltal -->
-        <main class="w-full md:w-2/3 flex flex-col gap-6">
+        <main class="w-full md:w-2/3 xl:w-3/4 flex flex-col gap-4">
             
             <!-- Nyckeltal (KPI) -->
-            <div class="flex flex-col gap-3">
-                <div class="flex justify-between items-end">
+            <div class="flex flex-col gap-2">
+                <div class="flex justify-between items-end mb-1">
                     <div class="flex items-center gap-2">
-                        <h2 class="text-xl font-bold text-gray-800">Nyckeltal</h2>
+                        <h2 class="text-lg md:text-xl font-bold text-gray-800">Nyckeltal</h2>
                         <span onclick="showInfo('befolkning')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information om nyckeltalen"><i class="fa-solid fa-circle-info"></i></span>
                         
-                        <div id="takWarning" class="hidden ml-3 bg-red-100 text-red-700 px-3 py-1 rounded text-xs font-bold border border-red-200 animate-pulse">
-                            <i class="fa-solid fa-triangle-exclamation mr-1"></i> Varning: Sysselsättningstaket uppnått (Arbetskraftsbrist)
+                        <div id="takWarning" class="hidden ml-2 bg-red-100 text-red-700 px-2 py-0.5 rounded text-[10px] md:text-xs font-bold border border-red-200 animate-pulse">
+                            <i class="fa-solid fa-triangle-exclamation mr-1"></i> Arbetskraftsbrist
                         </div>
                     </div>
-                    <select id="yearSelect" class="border border-gray-300 rounded p-1 text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="handleYearChange()" title="Välj år för att uppdatera nyckeltalen nedan">
+                    <select id="yearSelect" class="border border-gray-300 rounded p-1 text-xs md:text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="handleYearChange()" title="Välj år för att uppdatera nyckeltalen nedan">
                         <option value="">Laddar...</option>
                     </select>
                 </div>
                 
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4" id="kpiContainer">
-                    <div class="card text-center p-3 border-b-4 border-sky-500">
-                        <div class="text-xs text-gray-500 font-medium">Utbud (Natt)</div>
-                        <div class="text-lg md:text-xl font-bold text-gray-800" id="kpiUtbud">-</div>
+                <div class="grid grid-cols-3 xl:grid-cols-6 gap-2 md:gap-3" id="kpiContainer">
+                    <div class="card text-center p-2 md:p-3 border-b-4 border-sky-500" id="kpiUtbudContainer" title="Lokalt arbetskraftsutbud">
+                        <div class="text-[10px] md:text-xs text-gray-500 font-medium">Utbud (Natt)</div>
+                        <div class="text-base md:text-lg font-bold text-gray-800" id="kpiUtbud">-</div>
                     </div>
-                    <div class="card text-center p-3 border-b-4 border-emerald-500">
-                        <div class="text-xs text-gray-500 font-medium">Efterfrågan (Dag)</div>
-                        <div class="text-lg md:text-xl font-bold text-gray-800" id="kpiEfterfragan">-</div>
+                    <div class="card text-center p-2 md:p-3 border-b-4 border-emerald-500">
+                        <div class="text-[10px] md:text-xs text-gray-500 font-medium">Efterfrågan (Dag)</div>
+                        <div class="text-base md:text-lg font-bold text-gray-800" id="kpiEfterfragan">-</div>
                     </div>
-                    <div class="card text-center p-3 border-b-4 border-indigo-500" title="Totalt Pendlingsnetto (In - Ut + Virtuellt utbud)">
-                        <div class="text-xs text-gray-500 font-medium">Pendlingsnetto</div>
-                        <div class="text-lg md:text-xl font-bold text-gray-800" id="kpiPendling">-</div>
+                    <div class="card text-center p-2 md:p-3 border-b-4 border-indigo-500" title="Totalt Pendlingsnetto (In - Ut + Virtuellt utbud)">
+                        <div class="text-[10px] md:text-xs text-gray-500 font-medium">Pendlingsnetto</div>
+                        <div class="text-base md:text-lg font-bold text-gray-800" id="kpiPendling">-</div>
                     </div>
-                    <div class="card text-center p-3 border-b-4 border-amber-500" title="Beräknad genomsnittlig sysselsättningsgrad 16-74 år">
-                        <div class="text-xs text-gray-500 font-medium">Syss.grad</div>
-                        <div class="text-lg md:text-xl font-bold text-gray-800" id="kpiSyssGrad">-</div>
+                    <div class="card text-center p-2 md:p-3 border-b-4 border-amber-500" title="Beräknad genomsnittlig sysselsättningsgrad 16-74 år">
+                        <div class="text-[10px] md:text-xs text-gray-500 font-medium">Syss.grad</div>
+                        <div class="text-base md:text-lg font-bold text-gray-800" id="kpiSyssGrad">-</div>
                     </div>
-                    <div class="card text-center p-3 border-b-4 border-purple-500 cursor-help" id="kpiBRPContainer" title="Bruttoregionalprodukt per sysselsatt (tkr)">
-                        <div class="text-xs text-gray-500 font-medium">BRP/sysselsatt</div>
-                        <div class="text-lg md:text-xl font-bold text-purple-800" id="kpiBRP">-</div>
+                    <div class="card text-center p-2 md:p-3 border-b-4 border-purple-500 cursor-help" id="kpiBRPContainer" title="Bruttoregionalprodukt per sysselsatt (tkr)">
+                        <div class="text-[10px] md:text-xs text-gray-500 font-medium">BRP/syss</div>
+                        <div class="text-base md:text-lg font-bold text-purple-800" id="kpiBRP">-</div>
                     </div>
-                    <div class="card text-center p-3 border-b-4 border-orange-500 cursor-help" id="kpiBefolkningContainer" title="Hur rekryteringsgapet påverkar befolkningsutvecklingen">
-                        <div class="text-xs text-gray-500 font-medium">Befolkningsbehov</div>
-                        <div class="text-lg md:text-xl font-bold text-orange-600" id="kpiBefolkning">-</div>
+                    <div class="card text-center p-2 md:p-3 border-b-4 border-orange-500 cursor-help" id="kpiBefolkningContainer" title="Hur rekryteringsgapet påverkar befolkningsutvecklingen">
+                        <div class="text-[10px] md:text-xs text-gray-500 font-medium">Befolkning (Ny)</div>
+                        <div class="text-base md:text-lg font-bold text-orange-600" id="kpiBefolkning">-</div>
                     </div>
                 </div>
             </div>
 
             <!-- Historisk trend & Förändringar -->
-            <div class="card flex-grow flex flex-col mt-2 min-h-[450px]">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-3">
+            <div class="card flex-grow flex flex-col mt-1" style="min-height: 400px;">
+                <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3 gap-3">
                     <div class="flex items-center gap-2">
-                        <h2 class="text-lg font-bold" id="trendTitle">Utbud vs Efterfrågan</h2>
+                        <h2 class="text-base md:text-lg font-bold" id="trendTitle">Utbud vs Efterfrågan</h2>
                     </div>
                     
-                    <div class="flex items-center shadow-sm rounded-md border border-gray-300 bg-white">
-                        <span onclick="showInfo('diagram')" class="px-2 text-slate-400 cursor-pointer hover:text-sky-600 transition border-r border-gray-200" title="Information om graferna"><i class="fa-solid fa-circle-info"></i></span>
-                        <select id="startYearSelect" class="p-1.5 text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 transition-colors bg-white" onchange="updateDashboard(true)">
+                    <div class="flex flex-wrap items-center shadow-sm rounded-md border border-gray-300 bg-white overflow-hidden">
+                        <span onclick="showInfo('diagram')" class="px-2 py-1 md:py-1.5 text-slate-400 cursor-pointer hover:text-sky-600 transition border-r border-gray-200" title="Information om graferna"><i class="fa-solid fa-circle-info"></i></span>
+                        <select id="startYearSelect" class="p-1 md:p-1.5 text-xs md:text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 transition-colors bg-white" onchange="updateDashboard(true)">
                             <option value="">Laddar...</option>
                         </select>
                         
-                        <select id="chartType" class="p-1.5 text-sm bg-slate-50 outline-none focus:bg-sky-100 transition-colors font-semibold text-gray-700 rounded-r" onchange="updateDashboard(true)">
+                        <select id="chartType" class="p-1 md:p-1.5 text-xs md:text-sm bg-slate-50 outline-none focus:bg-sky-100 transition-colors font-semibold text-gray-700 border-r border-gray-200" onchange="updateDashboard(true)">
                             <option value="utbud_efterfragan">Utbud vs Efterfrågan (Trend)</option>
                             <option value="brp_totalt">Ekonomisk Tillväxt (Total BRP)</option>
-                            <option value="arbetsloshet">Arbetslöshet & Reserv (Historik)</option>
-                            <option disabled>──────────</option>
+                            <option disabled>── Kön ──</option>
+                            <option value="trend_kon">Utbud & Efterfrågan (Män/Kvinnor)</option>
+                            <option value="syssgrad_kon">Sysselsättningsgrad (Män/Kvinnor)</option>
+                            <option value="arbetsloshet_kon">Arbetslöshet (Män/Kvinnor)</option>
+                            <option value="langtidsarb_kon">Långtidsarbetslöshet (Män/Kvinnor)</option>
+                            <option disabled>── Bakgrund / Ursprung ──</option>
+                            <option value="trend_utrikes">Utbud & Efterfrågan (Inrikes/Utrikes)</option>
+                            <option value="arbetsloshet_utrikes">Arbetslöshet (Inrikes/Utrikes)</option>
+                            <option value="langtidsarb_utrikes">Långtidsarbetslöshet (Inrikes/Utrikes)</option>
+                            <option disabled>── Matchning (Valt år) ──</option>
                             <option value="bransch_match">Branschmatchning (Valt år)</option>
                             <option value="utb_match">Utbildningsmatchning (Valt år)</option>
                             <option value="sektor_match">Sektormatchning (Valt år)</option>
+                            <option value="sektor_match_kon">Sektormatchning (Män/Kvinnor)</option>
                         </select>
                         
-                        <select id="subGroupSelect" class="hidden p-1.5 text-sm bg-indigo-50 outline-none focus:bg-indigo-100 transition-colors font-semibold text-indigo-800 border-l border-gray-200 rounded-r" onchange="updateDashboard(true)">
+                        <!-- RULLISTA FÖR EGNA SNI-GRUPPERINGAR -->
+                        <select id="subGroupSelect" class="hidden p-1 md:p-1.5 text-xs md:text-sm bg-indigo-50 outline-none focus:bg-indigo-100 transition-colors font-semibold text-indigo-800 border-r border-gray-200" onchange="updateDashboard(true)">
                             <!-- Fylls på dynamiskt av JS -->
                         </select>
+
+                        <!-- CHECKBOX FÖR DELADE AXLAR -->
+                        <label id="dualAxesContainer" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer border-r border-gray-200">
+                            <input type="checkbox" id="useDualAxes" onchange="updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5" checked>
+                            <span>Delade axlar</span>
+                        </label>
+
+                        <!-- CHECKBOX FÖR UTGÅ FRÅN 0 -->
+                        <label id="zeroAxisContainer" class="flex items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer px-2">
+                            <input type="checkbox" id="useZeroAxis" onchange="updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5">
+                            <span>Utgå från 0</span>
+                        </label>
                     </div>
                 </div>
                 
-                <p id="chartDescription" class="text-sm text-gray-600 mb-4">Grafen visar hur många arbetstillfällen (grönt) som finns i Linköping i relation till hur många kommuninvånare som befinner sig i sysselsättning (blått). Gapet dem emellan utgör det lokala pendlingsnettot.</p>
+                <p id="chartDescription" class="text-xs md:text-sm text-gray-600 mb-2">Grafen visar hur många arbetstillfällen (grönt) som finns i Linköping i relation till hur många kommuninvånare som befinner sig i sysselsättning (blått). Gapet dem emellan utgör det lokala pendlingsnettot.</p>
                 
-                <div class="relative h-full w-full mb-2 flex-grow min-h-[300px]">
+                <div class="relative w-full flex-1 min-h-0 mt-2">
                     <canvas id="trendChart"></canvas>
                 </div>
             </div>
@@ -315,16 +329,16 @@
     <!-- DYNAMISK INFO-MODAL -->
     <div id="infoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col">
-            <div class="flex justify-between items-center p-4 border-b">
-                <h2 class="text-xl font-bold text-gray-800" id="infoModalTitle">Information</h2>
+            <div class="flex justify-between items-center p-3 border-b">
+                <h2 class="text-lg font-bold text-gray-800" id="infoModalTitle">Information</h2>
                 <button onclick="closeInfoModal()" class="text-gray-400 hover:text-gray-800 transition">
-                    <i class="fa-solid fa-times text-2xl"></i>
+                    <i class="fa-solid fa-times text-xl"></i>
                 </button>
             </div>
-            <div id="infoModalContent" class="p-5 text-gray-700 text-sm space-y-3 max-h-[70vh] overflow-y-auto">
+            <div id="infoModalContent" class="p-4 text-gray-700 text-xs md:text-sm space-y-2 max-h-[70vh] overflow-y-auto">
                 <!-- Innehåll genereras via JS -->
             </div>
-            <div class="p-4 border-t bg-gray-50 flex justify-end">
+            <div class="p-3 border-t bg-gray-50 flex justify-end">
                 <button onclick="closeInfoModal()" class="bg-slate-700 hover:bg-slate-800 text-white font-semibold py-1.5 px-4 rounded shadow-sm text-sm transition">
                     Stäng
                 </button>
@@ -346,6 +360,7 @@
         let currentShocks = []; 
         
         let trendChartInstance = null;
+        let globalChartVisibility = {}; 
         let allYears = [];
         let histYearsGlobal = [];
         let baseYear = 0; 
@@ -366,8 +381,9 @@
                 title: 'Om Befolkningskopplingar',
                 content: `<p>Eftersom Sysselsättningskalkylatorn fokuserar på jobb, behöver den veta hur befolkningsunderlaget ser ut framåt i tiden.</p>
                           <ul class="list-disc pl-5 space-y-2">
-                          <li><b>Standard (Officiell):</b> Använder de framskrivna antaganden som din kommun har beslutat om i basprognosen.</li>
-                          <li><b>Sandlådeläge (Anpassad):</b> Om du har skapat ett eget, radikalt annorlunda befolkningsscenario i <i>Prognoskalkylatorn</i> och tryckt "Skicka", kan du aktivera det här! Det låter dig testa t.ex. "Hur påverkas kompetensbristen om Linköping bara växer med 500 personer/år istället för 2000?".</li></ul>`
+                          <li><b>Fryst (Statisk befolkning):</b> Låser den arbetsföra befolkningen vid basårets nivå. Bra för att se effekten enbart av jobbtillväxt.</li>
+                          <li><b>Officiell (Styrfil):</b> Använder de framskrivna antaganden som kommunen beslutat om i basprognosen.</li>
+                          <li><b>Anpassad (Prognoskalkylatorn):</b> Importerat scenario. Låter dig testa vad som händer om kommunen växer radikalt annorlunda.</li></ul>`
             },
             'scenarios': {
                 title: 'Om Snabbscenarier & Simuleringsläge',
@@ -411,6 +427,15 @@
             return null;
         }
 
+        function getKon(r) {
+            for (let k in r) {
+                if (k.toLowerCase().trim() === 'kön') {
+                    return String(r[k]).trim().toLowerCase();
+                }
+            }
+            return null;
+        }
+
         function showInfo(topicKey) {
             const data = infoTexts[topicKey];
             if(data) {
@@ -424,50 +449,79 @@
             if (e.target === document.getElementById('infoModal')) closeInfoModal();
         });
 
-        // --- KONTROLL FÖR EXPORT FRÅN PROGNOSKALKYLATORN ---
         function checkSharedScenario() {
+            const popSelect = document.getElementById('popSource');
+            let hasOfficial = false;
+
+            if (syssConfig['Officiell_befolkningsprognos'] && syssConfig['Officiell_befolkningsprognos'].length > 0) {
+                popSelect.add(new Option("Officiell (Styrfil)", "officiell"));
+                hasOfficial = true;
+            }
+
             try {
                 const shared = localStorage.getItem('linkoping_shared_pop_scenario');
                 if (shared) {
                     customPopData = JSON.parse(shared);
-                    document.getElementById('popSourceCard').classList.remove('hidden');
-                    document.getElementById('customPopAlert').classList.remove('hidden');
-                } else if (syssConfig['Officiell_befolkningsprognos'] && syssConfig['Officiell_befolkningsprognos'].length > 0) {
-                    document.getElementById('popSourceCard').classList.remove('hidden');
-                    document.getElementById('customPopAlert').classList.add('hidden');
+                    popSelect.add(new Option("Anpassad (Prognoskalkylatorn)", "custom"));
+                    popSelect.value = "custom";
+                    document.getElementById('clearCustomBtn').classList.remove('hidden');
+                } else if (hasOfficial) {
+                    popSelect.value = "officiell";
                 }
             } catch(e) { console.error("Kunde inte läsa in anpassat scenario", e); }
+            
+            updatePopSourceDesc();
         }
 
-        function enableCustomPop() {
-            useCustomPop = true;
-            document.getElementById('customPopAlert').classList.add('hidden');
-            document.getElementById('activeCustomPop').classList.remove('hidden');
-            document.getElementById('popSourceStatus').innerHTML = "Kalkylatorn drivs nu av <b>ditt eget scenario</b> (skapat i Prognoskalkylatorn).";
-            runSimulation();
-        }
-
-        function disableCustomPop() {
-            useCustomPop = false;
-            document.getElementById('activeCustomPop').classList.add('hidden');
-            if (customPopData) document.getElementById('customPopAlert').classList.remove('hidden');
-            document.getElementById('popSourceStatus').innerHTML = "Kalkylatorn använder <b>kommunens officiella basprognos</b> för att beräkna framtida utbud.";
-            runSimulation();
+        function updatePopSourceDesc() {
+            const val = document.getElementById('popSource').value;
+            const desc = document.getElementById('popSourceDesc');
+            if (val === 'fryst') desc.innerText = "Antar att befolkningen (16-74 år) stannar på utgångsårets nivå.";
+            else if (val === 'officiell') desc.innerText = "Använder kommunens officiella framskrivning av befolkningen.";
+            else if (val === 'custom') desc.innerText = "Använder ditt egna, importerade scenario från Prognoskalkylatorn.";
         }
 
         function clearCustomPop() {
             localStorage.removeItem('linkoping_shared_pop_scenario');
             customPopData = null;
-            useCustomPop = false;
-            document.getElementById('customPopAlert').classList.add('hidden');
-            document.getElementById('activeCustomPop').classList.add('hidden');
-            if (!syssConfig['Officiell_befolkningsprognos']) {
-                document.getElementById('popSourceCard').classList.add('hidden');
+            document.getElementById('clearCustomBtn').classList.add('hidden');
+            const popSelect = document.getElementById('popSource');
+            for (let i=0; i<popSelect.options.length; i++) {
+                if (popSelect.options[i].value === 'custom') {
+                    popSelect.remove(i);
+                    break;
+                }
             }
+            popSelect.value = (syssConfig['Officiell_befolkningsprognos']) ? "officiell" : "fryst";
+            updatePopSourceDesc();
             runSimulation();
         }
 
-        // --- UI FUNKTIONER ---
+        function getPopForYear(dataset, year) {
+            let pop = 0;
+            let records = dataset.filter(r => String(r.tid).trim() === `${year} (Prognos)`);
+            if (records.length === 0) {
+                records = dataset.filter(r => String(r.tid).trim() === String(year));
+            }
+            
+            let useGender = records.some(r => String(r.kön).trim().toLowerCase() === 'män' || String(r.kön).trim().toLowerCase() === 'kvinnor');
+
+            records.forEach(r => {
+                if (!String(r.ålder).toLowerCase().includes('totalt')) {
+                    if (useGender && String(r.kön).trim().toLowerCase() !== 'män' && String(r.kön).trim().toLowerCase() !== 'kvinnor') return;
+                    
+                    const match = String(r.ålder).match(/\d+/);
+                    if (match) {
+                        const age = parseInt(match[0]);
+                        if (age >= 16 && age <= 74) {
+                            pop += (r.Befolkning || 0);
+                        }
+                    }
+                }
+            });
+            return pop;
+        }
+
         function toggleSimMode() {
             const mode = document.getElementById('simMode').value;
             const geoPanel = document.getElementById('geoPanel');
@@ -530,13 +584,74 @@
                 updateDashboard(false);
             } else {
                 savedProjectedData = null;
-                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför (Spara)';
+                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
                 saveBtn.classList.replace('bg-red-100', 'bg-indigo-100');
                 saveBtn.classList.replace('text-red-800', 'text-indigo-800');
                 saveBtn.classList.replace('hover:bg-red-200', 'hover:bg-indigo-200');
                 startYearSelect.classList.remove('hidden'); 
                 updateDashboard(false);
             }
+        }
+
+        function exportSyssToCSV() {
+            if (Object.keys(progDataStore).length === 0 && Object.keys(histDataStore).length === 0) {
+                alert("Ingen data finns att exportera.");
+                return;
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
+            csvContent += "År;Källa;Efterfrågan (Jobb);Lokalt Utbud (Nattbef.);Inpendling;Utpendling;Pendlingsnetto;Virtuellt Utbud;Totalt Utbud (Inkl. Pendling);Omatchat Gap;Befolkningsbehov;Sysselsättningsgrad (%);BRP per sysselsatt (tkr);Total BRP (Mkr);Arbetslöshet (%);Långtidsarbetslöshet (%)\n";
+            
+            const userSyssAdjustment = parseFloat(document.getElementById('migrantSyssSlider').value) / 100;
+            const baseEmploymentRate = window.globalMigrantEmploymentRate || 0.50;
+            const employmentRate = baseEmploymentRate + userSyssAdjustment;
+            const simMode = document.getElementById('simMode').value;
+            const showCommuting = simMode === 'full';
+
+            const addRow = (y, d, isProg) => {
+                if (!d) return;
+                const source = isProg ? "Prognos" : "Historik";
+                const dem = d.demand || 0;
+                const sup = d.supply || 0;
+                const inP = d.inpendling || 0;
+                const utP = d.utpendling || 0;
+                const netP = d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0);
+                const vSup = d.virtualSupply || 0;
+                const totPend = showCommuting ? (netP + vSup) : 0;
+                const totSup = sup + totPend;
+                const gap = dem - totSup;
+                
+                let befBehov = 0;
+                if (gap > 5) befBehov = gap / Math.max(0.01, employmentRate);
+                else if (gap < -5) befBehov = -Math.abs(gap); 
+                
+                const syssGrad = d.displayRate || 0;
+                const brp = d.brp || d.extrapolatedBrp || 0;
+                let totBrp = d.totalBrpMkr || 0;
+                if (!totBrp && dem) totBrp = (brp * dem) / 1000;
+                const arb = d.arbetsloshetPct !== null && d.arbetsloshetPct !== undefined ? d.arbetsloshetPct : "";
+                const larb = d.langtidsPct !== null && d.langtidsPct !== undefined ? d.langtidsPct : "";
+
+                csvContent += `"${y}";"${source}";${Math.round(dem)};${Math.round(sup)};${Math.round(inP)};${Math.round(utP)};${Math.round(netP)};${Math.round(vSup)};${Math.round(totSup)};${Math.round(gap)};${Math.round(befBehov)};${syssGrad.toFixed(2).replace('.', ',')};${brp.toFixed(1).replace('.', ',')};${Math.round(totBrp)};${arb !== "" ? arb.toFixed(2).replace('.', ',') : ""};${larb !== "" ? larb.toFixed(2).replace('.', ',') : ""}\n`;
+            };
+
+            const progYears = Object.keys(progDataStore).map(Number).sort((a,b)=>a-b);
+            let histYears = Object.keys(histDataStore).map(Number).sort((a,b)=>a-b);
+            
+            if (progYears.length > 0) {
+                histYears = histYears.slice(-5);
+            }
+
+            histYears.forEach(y => addRow(y, histDataStore[y], false));
+            progYears.forEach(y => addRow(y, progDataStore[y], true));
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Sysselsattningsprognos_Linkoping.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         async function fetchJSON(url) {
@@ -558,7 +673,7 @@
                 const statusDiv = document.getElementById('dataStatus');
                 if (!sBas) {
                     statusDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Hittade inte "syss_basdata.json".';
-                    statusDiv.className = "p-3 bg-red-50 rounded border border-red-100 text-sm font-medium text-red-600";
+                    statusDiv.className = "p-2 bg-red-50 rounded border border-red-100 text-xs font-medium text-red-600";
                     return;
                 }
 
@@ -566,7 +681,6 @@
                 syssConfig = sConf || {};
                 popData = pBas || [];
 
-                // Läs in scenarier
                 if (syssConfig['Scenarier'] && syssConfig['Scenarier'].length > 0) {
                     const rows = syssConfig['Scenarier'];
                     const mapScenario = (colName) => {
@@ -587,7 +701,6 @@
                     window.scenarioSettings.stagnant = mapScenario('Stagnerande');
                 }
 
-                // Läs in Tak-effekter
                 if (syssConfig['Tak_effekten'] && syssConfig['Tak_effekten'].length > 0) {
                     const rowMaxSyss = syssConfig['Tak_effekten'].find(r => String(r.Parameter).toLowerCase().includes('max_sysselsättningsgrad'));
                     if (rowMaxSyss && rowMaxSyss.Värde) {
@@ -595,7 +708,6 @@
                     }
                 }
 
-                // Läs in Etableringschocker UI
                 const shocksContainer = document.getElementById('shocksContainer');
                 const shocksList = document.getElementById('shocksList');
                 if (syssConfig['Etableringschocker'] && syssConfig['Etableringschocker'].length > 0) {
@@ -608,9 +720,9 @@
                         
                         div.innerHTML = `
                             <input type="checkbox" id="shock_${index}" class="hidden shock-checkbox" value="${index}" onchange="runSimulation()">
-                            <label for="shock_${index}" class="flex justify-between items-center p-2 rounded border border-gray-200 cursor-pointer hover:bg-gray-50 transition text-sm text-gray-600">
+                            <label for="shock_${index}" class="flex justify-between items-center p-2 rounded border border-gray-200 cursor-pointer hover:bg-gray-50 transition text-xs text-gray-600">
                                 <span><b>${shock['År']}:</b> ${shock['Händelsenamn']}</span>
-                                <span class="font-bold ${colorClass} px-1.5 py-0.5 rounded text-xs">${sign}${shock['Antal_Jobb']}</span>
+                                <span class="font-bold ${colorClass} px-1.5 py-0.5 rounded text-[10px]">${sign}${shock['Antal_Jobb']}</span>
                             </label>
                         `;
                         shocksList.appendChild(div);
@@ -618,7 +730,6 @@
                     shocksContainer.classList.remove('hidden');
                 }
 
-                // SNI grupper rullista
                 const subGroupSelect = document.getElementById('subGroupSelect');
                 if (syssConfig['SNIgrupper'] && syssConfig['SNIgrupper'].length > 0) {
                     const firstRow = syssConfig['SNIgrupper'][0];
@@ -626,11 +737,10 @@
                     const groupCols = keys.slice(1);
                     subGroupSelect.innerHTML = '<option value="all">Alla branscher (SNI)</option>';
                     groupCols.forEach(col => { subGroupSelect.add(new Option(col, col)); });
+                    subGroupSelect.setAttribute('data-type', 'bransch');
                 }
 
-                // Läs in Officiell Befolkningsprognos
                 if (syssConfig['Officiell_befolkningsprognos'] && syssConfig['Officiell_befolkningsprognos'].length > 0) {
-                    popData = popData.filter(r => !String(r.tid).includes('Prognos'));
                     syssConfig['Officiell_befolkningsprognos'].forEach(row => {
                         const year = extractYear(row);
                         if (!year) return;
@@ -655,8 +765,8 @@
                 checkSharedScenario(); 
 
                 let popStatus = (popData.length > 0 || customPopData !== null) ? "Befolkning kopplad." : "VARNING: Saknar befolkning!";
-                document.getElementById('dataStatus').innerHTML = `<i class="fa-solid fa-circle-check"></i> System redo! Datamoduler inlästa. <b>${popStatus}</b>`;
-                document.getElementById('dataStatus').className = "p-3 bg-green-50 rounded border border-green-100 text-sm font-medium text-green-600";
+                document.getElementById('dataStatus').innerHTML = `<i class="fa-solid fa-circle-check"></i> Datamoduler inlästa. <b>${popStatus}</b>`;
+                document.getElementById('dataStatus').className = "p-2 bg-green-50 rounded border border-green-100 text-xs font-medium text-green-600";
 
                 extractHistoricalData();
                 calculateMigrantEmploymentRate(); 
@@ -664,7 +774,7 @@
                 updateDashboard(false); 
             }).catch(error => {
                 document.getElementById('dataStatus').innerHTML = `<b>Krasch:</b> ${error.message}`;
-                document.getElementById('dataStatus').className = "p-3 bg-red-50 rounded text-red-600";
+                document.getElementById('dataStatus').className = "p-2 bg-red-50 rounded text-red-600 text-xs";
             });
         });
 
@@ -681,11 +791,11 @@
             }
 
             if (popData && popData.length > 0 && rateCol) {
-                let bYearData = popData.filter(r => String(r.tid).includes(String(baseYear)) && !String(r.ålder).includes('Totalt'));
+                let bYearData = popData.filter(r => String(r.tid).trim() === String(baseYear) && !String(r.ålder).includes('Totalt'));
                 if (bYearData.length === 0) {
                      const aYears = [...new Set(popData.map(r => parseInt(String(r.tid).substring(0,4))))].filter(y => !isNaN(y)).sort();
                      const latestY = aYears[aYears.length - 1];
-                     bYearData = popData.filter(r => String(r.tid).includes(String(latestY)) && !String(r.ålder).includes('Totalt'));
+                     bYearData = popData.filter(r => String(r.tid).trim() === String(latestY) && !String(r.ålder).includes('Totalt'));
                 }
 
                 for (let age = 0; age <= 100; age++) {
@@ -710,16 +820,68 @@
             else globalMigrantEmploymentRate = 0.50; 
         }
 
+        function getRowTotal(r) {
+            if (r['Totalt 16-74 år'] != null) return parseFloat(r['Totalt 16-74 år']);
+            if (r['Totalt 16-74'] != null) return parseFloat(r['Totalt 16-74']);
+            if (r['Totalt'] != null) return parseFloat(r['Totalt']);
+            if (r['Samtliga'] != null) return parseFloat(r['Samtliga']);
+            let sum = 0;
+            Object.keys(r).forEach(k => {
+                if (k.match(/\d+/) && !k.toLowerCase().includes('totalt') && !['År','år','ÅR','Kön','kön','Sektor','Utbildningsnivå','Bransch'].includes(k)) {
+                    sum += parseFloat(r[k]) || 0;
+                }
+            });
+            return sum;
+        }
+
+        function extractOriginPop(datasetName, targetYear) {
+            let inr = 0, utr = 0, found = false;
+            const ds = syssBasdata[datasetName] || [];
+            const records = ds.filter(r => extractYear(r) == targetYear);
+            
+            let hasTotal = records.some(r => getKon(r) === 'totalt');
+
+            records.forEach(r => {
+                let kon = getKon(r);
+                if (hasTotal) {
+                    if (kon !== 'totalt') return; 
+                } else {
+                    if (kon !== 'män' && kon !== 'kvinnor') return; 
+                }
+
+                let isUtr = false, isInr = false;
+                for (let k in r) {
+                    if (typeof r[k] === 'string') {
+                        let v = r[k].toLowerCase();
+                        if (v.includes('utrikes') && !v.includes('inrikes')) isUtr = true;
+                        if (v.includes('inrikes') || v.includes('sverige')) isInr = true;
+                    }
+                }
+                
+                if (isUtr || isInr) {
+                    found = true;
+                    if (isUtr) utr += getRowTotal(r);
+                    if (isInr) inr += getRowTotal(r);
+                } else {
+                    for (let k in r) {
+                        if (k.toLowerCase().includes('utrikes')) { utr += parseFloat(r[k]) || 0; found = true; }
+                        if (k.toLowerCase().includes('inrikes') || k.toLowerCase().includes('sverige')) { inr += parseFloat(r[k]) || 0; found = true; }
+                    }
+                }
+            });
+            return found ? { inr, utr } : null;
+        }
+
         function setScenario(type) {
             const s = window.scenarioSettings[type];
             document.getElementById('jobGrowthSlider').value = s.jobGrowth || 0;
             document.getElementById('jobGrowthVal').innerText = (s.jobGrowth > 0 ? '+' : '') + (s.jobGrowth || 0) + '%';
             document.getElementById('syssGradSlider').value = s.syssGrad || 0;
-            document.getElementById('syssGradVal').innerText = (s.syssGrad > 0 ? '+' : '') + (s.syssGrad || 0) + '%-enheter';
+            document.getElementById('syssGradVal').innerText = (s.syssGrad > 0 ? '+' : '') + (s.syssGrad || 0) + '%-enh';
             document.getElementById('studentSlider').value = s.student || 0;
-            document.getElementById('studentVal').innerText = (s.student > 0 ? '+' : '') + (s.student || 0) + '%-enheter';
+            document.getElementById('studentVal').innerText = (s.student > 0 ? '+' : '') + (s.student || 0) + '%-enh';
             document.getElementById('migrantSyssSlider').value = s.migrantSyss !== undefined ? s.migrantSyss : 10;
-            document.getElementById('migrantSyssVal').innerText = (s.migrantSyss > 0 ? '+' : '') + (s.migrantSyss !== undefined ? s.migrantSyss : 10) + '%-enheter';
+            document.getElementById('migrantSyssVal').innerText = (s.migrantSyss > 0 ? '+' : '') + (s.migrantSyss !== undefined ? s.migrantSyss : 10) + '%-enh';
 
             document.getElementById('pendlingType').value = 'pct';
             updatePendlingUI();
@@ -748,8 +910,19 @@
             dfTillagg.forEach(r => { let y = extractYear(r); if(y) years.add(y); });
             dfSyssGrad.forEach(r => { let y = extractYear(r); if(y) years.add(y); });
             dfBRP.forEach(r => { let y = extractYear(r); if(y) years.add(y); });
+            
             if(syssBasdata['Arbetslöshet']) {
                 syssBasdata['Arbetslöshet'].forEach(r => { let y = extractYear(r); if(y) years.add(y); });
+            }
+            if(syssBasdata['Långtidsarbetslöshet'] || syssBasdata['Langtidsarbetsloshet']) {
+                const lData = syssBasdata['Långtidsarbetslöshet'] || syssBasdata['Langtidsarbetsloshet'];
+                lData.forEach(r => { let y = extractYear(r); if(y) years.add(y); });
+            }
+            if(syssBasdata['Natt_utrikes']) {
+                syssBasdata['Natt_utrikes'].forEach(r => { let y = extractYear(r); if(y) years.add(y); });
+            }
+            if(syssBasdata['Syss_utrikes']) {
+                syssBasdata['Syss_utrikes'].forEach(r => { let y = extractYear(r); if(y) years.add(y); });
             }
             
             const sortedYears = Array.from(years).filter(y => !isNaN(y)).sort((a,b)=>a-b);
@@ -764,43 +937,81 @@
                 let inpendlingTot = 0, utpendlingTot = 0;
                 let hasPendlingData = false;
                 
-                // 1. Försök hitta pendling direkt i Syss_tillägg (Detta löser glappet 1975-2004)
-                const dagRow = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase() === 'dagbefolkning');
+                let d_man = null, d_kvinna = null;
+                const dagRowM = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase().includes('dag') && getKon(r) === 'män');
+                const dagRowK = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase().includes('dag') && getKon(r) === 'kvinnor');
+                if (dagRowM) d_man = parseFloat(dagRowM['Totalt'] || dagRowM['Samtliga'] || 0);
+                if (dagRowK) d_kvinna = parseFloat(dagRowK['Totalt'] || dagRowK['Samtliga'] || 0);
+
+                let n_man = null, n_kvinna = null;
+                const nattRowM = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase().includes('natt') && getKon(r) === 'män');
+                const nattRowK = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase().includes('natt') && getKon(r) === 'kvinnor');
+                if (nattRowM) n_man = parseFloat(nattRowM['Totalt'] || nattRowM['Samtliga'] || 0);
+                if (nattRowK) n_kvinna = parseFloat(nattRowK['Totalt'] || nattRowK['Samtliga'] || 0);
+
+                if (d_man == null || d_kvinna == null) {
+                    const syssAlderData = syssBasdata['Syss_ålder'] || syssBasdata['Syss_alder'] || [];
+                    let m = 0, k = 0, found = false;
+                    syssAlderData.filter(r => extractYear(r) == y).forEach(r => {
+                        let kon = getKon(r);
+                        if (kon === 'män') { m += getRowTotal(r); found = true; }
+                        if (kon === 'kvinnor') { k += getRowTotal(r); found = true; }
+                    });
+                    if (found) { d_man = m; d_kvinna = k; }
+                }
+                if (n_man == null || n_kvinna == null) {
+                    const nattAlderData = syssBasdata['Natt_ålder'] || syssBasdata['Natt_alder'] || [];
+                    let m = 0, k = 0, found = false;
+                    nattAlderData.filter(r => extractYear(r) == y).forEach(r => {
+                        let kon = getKon(r);
+                        if (kon === 'män') { m += getRowTotal(r); found = true; }
+                        if (kon === 'kvinnor') { k += getRowTotal(r); found = true; }
+                    });
+                    if (found) { n_man = m; n_kvinna = k; }
+                }
+
+                const dagRow = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase().includes('dag') && (getKon(r) === 'totalt' || getKon(r) === null));
                 if (dagRow && dagRow['Totalt'] != null) dagTotalt = parseFloat(dagRow['Totalt']);
+                else if (d_man != null && d_kvinna != null) dagTotalt = d_man + d_kvinna; 
+                
                 if (dagRow && dagRow['Pendling'] != null) {
                     inpendlingTot = parseFloat(dagRow['Pendling']);
                     hasPendlingData = true;
                 }
 
-                const nattRow = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase() === 'nattbefolkning');
+                const nattRow = dfTillagg.find(r => extractYear(r) == y && String(r['Typ']).toLowerCase().includes('natt') && (getKon(r) === 'totalt' || getKon(r) === null));
                 if (nattRow && nattRow['Totalt'] != null) nattTotalt = parseFloat(nattRow['Totalt']);
+                else if (n_man != null && n_kvinna != null) nattTotalt = n_man + n_kvinna; 
+
                 if (nattRow && nattRow['Pendling'] != null) {
                     utpendlingTot = parseFloat(nattRow['Pendling']);
                     hasPendlingData = true;
                 }
 
-                // 2. Fallback: Hämta från Pendling-fliken (som börjar 2005) ifall Syss_tillägg saknar info
                 if (!hasPendlingData && dfPendling.length > 0) {
-                    const inRow = dfPendling.find(r => extractYear(r) == y && r['Pendlingsriktning'] === 'Inpendling' && r['Kön'] === 'Totalt');
+                    const inRow = dfPendling.find(r => extractYear(r) == y && String(r['Pendlingsriktning']).includes('In') && (getKon(r) === 'totalt' || getKon(r) === null));
                     if (inRow && inRow['Totalt'] != null) { inpendlingTot = parseFloat(inRow['Totalt']); hasPendlingData = true; }
                     else {
-                        const inM = dfPendling.find(r => extractYear(r) == y && r['Pendlingsriktning'] === 'Inpendling' && r['Kön'] === 'Män');
-                        const inK = dfPendling.find(r => extractYear(r) == y && r['Pendlingsriktning'] === 'Inpendling' && r['Kön'] === 'Kvinnor');
+                        const inM = dfPendling.find(r => extractYear(r) == y && String(r['Pendlingsriktning']).includes('In') && getKon(r) === 'män');
+                        const inK = dfPendling.find(r => extractYear(r) == y && String(r['Pendlingsriktning']).includes('In') && getKon(r) === 'kvinnor');
                         if (inM || inK) { inpendlingTot = (inM ? parseFloat(inM['Totalt']) : 0) + (inK ? parseFloat(inK['Totalt']) : 0); hasPendlingData = true; }
                     }
 
-                    const utRow = dfPendling.find(r => extractYear(r) == y && r['Pendlingsriktning'] === 'Utpendling' && r['Kön'] === 'Totalt');
+                    const utRow = dfPendling.find(r => extractYear(r) == y && String(r['Pendlingsriktning']).includes('Ut') && (getKon(r) === 'totalt' || getKon(r) === null));
                     if (utRow && utRow['Totalt'] != null) { utpendlingTot = parseFloat(utRow['Totalt']); hasPendlingData = true; }
                     else {
-                        const utM = dfPendling.find(r => extractYear(r) == y && r['Pendlingsriktning'] === 'Utpendling' && r['Kön'] === 'Män');
-                        const utK = dfPendling.find(r => extractYear(r) == y && r['Pendlingsriktning'] === 'Utpendling' && r['Kön'] === 'Kvinnor');
+                        const utM = dfPendling.find(r => extractYear(r) == y && String(r['Pendlingsriktning']).includes('Ut') && getKon(r) === 'män');
+                        const utK = dfPendling.find(r => extractYear(r) == y && String(r['Pendlingsriktning']).includes('Ut') && getKon(r) === 'kvinnor');
                         if (utM || utK) { utpendlingTot = (utM ? parseFloat(utM['Totalt']) : 0) + (utK ? parseFloat(utK['Totalt']) : 0); hasPendlingData = true; }
                     }
                 }
 
                 let faktiskRate = null;
-                const syssGradRow = dfSyssGrad.find(r => extractYear(r) == y && r['Kön'] === 'Totalt');
+                const syssGradRow = dfSyssGrad.find(r => extractYear(r) == y && (getKon(r) === 'totalt' || getKon(r) === null));
                 if (syssGradRow && syssGradRow['Totalt 20-64 år'] != null) faktiskRate = parseFloat(syssGradRow['Totalt 20-64 år']);
+                
+                const syssGradM = dfSyssGrad.find(r => extractYear(r) == y && getKon(r) === 'män');
+                const syssGradK = dfSyssGrad.find(r => extractYear(r) == y && getKon(r) === 'kvinnor');
 
                 let brpPerSyss = null;
                 const brpRow = dfBRP.find(r => extractYear(r) == y);
@@ -809,30 +1020,118 @@
                     lastKnownBRP = brpPerSyss; lastKnownBRPYear = y; brpHistory.push({year: y, val: brpPerSyss});
                 }
 
-                let arbetsloshetPct = null;
+                let arbetsloshetPct = null, arb_inrikes = null, arb_utrikes = null, arb_man = null, arb_kvinna = null;
                 if(syssBasdata['Arbetslöshet']) {
                     const arbRow = syssBasdata['Arbetslöshet'].find(r => extractYear(r) == y);
                     if(arbRow) {
                         const pctKeys = Object.keys(arbRow).filter(k => String(k).toLowerCase().includes('%') || String(k).toLowerCase().includes('andel'));
                         if(pctKeys.length > 0) arbetsloshetPct = parseFloat(arbRow[pctKeys[0]]);
+                        
+                        const inKey = pctKeys.find(k => k.toLowerCase().includes('inrikes'));
+                        const utKey = pctKeys.find(k => k.toLowerCase().includes('utrikes'));
+                        if(inKey) arb_inrikes = parseFloat(arbRow[inKey]);
+                        if(utKey) arb_utrikes = parseFloat(arbRow[utKey]);
+
+                        const mKeyArb = pctKeys.find(k => { const kl = k.toLowerCase(); return (kl.includes('män') || kl.includes('man')) && !kl.includes('kvinna'); });
+                        const kKeyArb = pctKeys.find(k => k.toLowerCase().includes('kvinnor') || k.toLowerCase().includes('kvinna'));
+                        if(mKeyArb) arb_man = parseFloat(arbRow[mKeyArb]);
+                        if(kKeyArb) arb_kvinna = parseFloat(arbRow[kKeyArb]);
                     }
                 }
 
-                let pop16_74 = 0;
-                if(popData.length > 0) {
-                    popData.filter(r => String(r.tid).includes(String(y)) && !String(r.ålder).includes('Totalt')).forEach(r => {
-                        const match = String(r.ålder).match(/\d+/);
-                        if (match) {
-                            const age = parseInt(match[0]);
-                            if(age >= 16 && age <= 74) pop16_74 += (r.Befolkning || 0);
-                        }
-                    });
+                let langtidsPct = null, larb_inrikes = null, larb_utrikes = null, larb_man = null, larb_kvinna = null;
+                if(syssBasdata['Långtidsarbetslöshet'] || syssBasdata['Langtidsarbetsloshet']) {
+                    const lData = syssBasdata['Långtidsarbetslöshet'] || syssBasdata['Langtidsarbetsloshet'];
+                    const lRow = lData.find(r => extractYear(r) == y);
+                    if(lRow) {
+                        const pctKeys = Object.keys(lRow).filter(k => String(k).toLowerCase().includes('%') || String(k).toLowerCase().includes('andel'));
+                        if(pctKeys.length > 0) langtidsPct = parseFloat(lRow[pctKeys[0]]);
+                        
+                        const inKey = pctKeys.find(k => k.toLowerCase().includes('inrikes'));
+                        const utKey = pctKeys.find(k => k.toLowerCase().includes('utrikes'));
+                        if(inKey) larb_inrikes = parseFloat(lRow[inKey]);
+                        if(utKey) larb_utrikes = parseFloat(lRow[utKey]);
+
+                        const mKeyLarb = pctKeys.find(k => { const kl = k.toLowerCase(); return (kl.includes('män') || kl.includes('man')) && !kl.includes('kvinna'); });
+                        const kKeyLarb = pctKeys.find(k => k.toLowerCase().includes('kvinnor') || k.toLowerCase().includes('kvinna'));
+                        if(mKeyLarb) larb_man = parseFloat(lRow[mKeyLarb]);
+                        if(kKeyLarb) larb_kvinna = parseFloat(lRow[kKeyLarb]);
+                    }
                 }
+
+                let n_inrikes = null, n_utrikes = null, d_inrikes = null, d_utrikes = null;
+                const n_orig = extractOriginPop('Natt_utrikes', y);
+                if(n_orig) { n_inrikes = n_orig.inr; n_utrikes = n_orig.utr; }
+                const d_orig = extractOriginPop('Syss_utrikes', y);
+                if(d_orig) { d_inrikes = d_orig.inr; d_utrikes = d_orig.utr; }
+
+                let pop16_74 = getPopForYear(popData, y);
                 if(pop16_74 === 0 && nattTotalt > 0) pop16_74 = nattTotalt / 0.70; 
                 let motorRate = null;
                 if (pop16_74 > 0 && nattTotalt > 0) motorRate = (nattTotalt / pop16_74) * 100;
 
+                let ageRates = null;
+                const nattAlderData = syssBasdata['Natt_ålder'] || syssBasdata['Natt_alder'] || [];
+                let nattAlderRowsForYear = nattAlderData.filter(r => extractYear(r) == y);
+                
+                let nattAlderRow = null;
+                if (nattAlderRowsForYear.length > 0) {
+                    let totRow = nattAlderRowsForYear.find(r => getKon(r) === 'totalt');
+                    if (totRow) {
+                        nattAlderRow = totRow;
+                    } else {
+                        nattAlderRow = {};
+                        nattAlderRowsForYear.forEach(r => {
+                            let kon = getKon(r);
+                            if (kon === 'män' || kon === 'kvinnor') {
+                                Object.keys(r).forEach(k => {
+                                    if (typeof r[k] === 'number' || (!isNaN(parseFloat(r[k])) && String(r[k]).trim() !== '')) {
+                                        nattAlderRow[k] = (nattAlderRow[k] || 0) + parseFloat(r[k]);
+                                    } else if (k === 'År' || k === 'år' || k === 'ÅR') {
+                                        nattAlderRow[k] = r[k];
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+                
+                if (nattAlderRow && popData.length > 0) {
+                    ageRates = {};
+                    let recordsForYear = popData.filter(r => String(r.tid).trim() === String(y));
+                    let useGenderForYear = recordsForYear.some(r => String(r.kön).trim().toLowerCase() === 'män' || String(r.kön).trim().toLowerCase() === 'kvinnor');
+
+                    Object.keys(nattAlderRow).forEach(key => {
+                        if (String(key).toLowerCase().includes('totalt')) return;
+
+                        const match = String(key).match(/(\d+)\s*-\s*(\d+)/);
+                        if (match) {
+                            const minAge = parseInt(match[1]);
+                            const maxAge = parseInt(match[2]);
+                            if ((maxAge - minAge) > 5) return;
+
+                            const workers = parseFloat(nattAlderRow[key]) || 0;
+                            let groupPop = 0;
+                            
+                            recordsForYear.forEach(r => {
+                                if (!String(r.ålder).toLowerCase().includes('totalt')) {
+                                    if (useGenderForYear && String(r.kön).trim().toLowerCase() !== 'män' && String(r.kön).trim().toLowerCase() !== 'kvinnor') return;
+                                    const aMatch = String(r.ålder).match(/\d+/);
+                                    if (aMatch) {
+                                        const a = parseInt(aMatch[0]);
+                                        if (a >= minAge && a <= maxAge) groupPop += (r.Befolkning || 0);
+                                    }
+                                }
+                            });
+                            if (groupPop > 0) ageRates[key] = { min: minAge, max: maxAge, rate: workers / groupPop };
+                        }
+                    });
+                }
+
                 let baseNetCommute = hasPendlingData ? (inpendlingTot - utpendlingTot) : 0;
+
+                if (d_man != null && d_kvinna != null && dagTotalt == null) dagTotalt = d_man + d_kvinna;
+                if (n_man != null && n_kvinna != null && nattTotalt == null) nattTotalt = n_man + n_kvinna;
 
                 histDataStore[y] = { 
                     demand: dagTotalt, 
@@ -844,9 +1143,29 @@
                     pop: pop16_74 > 0 ? pop16_74 : null,
                     rate: motorRate,
                     displayRate: faktiskRate || motorRate,
+                    syssGradM: syssGradM,
+                    syssGradK: syssGradK,
                     brp: brpPerSyss,
                     extrapolatedBrp: null,
-                    arbetsloshetPct: arbetsloshetPct
+                    arbetsloshetPct: arbetsloshetPct,
+                    langtidsPct: langtidsPct,
+                    arb_inrikes: arb_inrikes,
+                    arb_utrikes: arb_utrikes,
+                    larb_inrikes: larb_inrikes,
+                    larb_utrikes: larb_utrikes,
+                    n_inrikes: n_inrikes,
+                    n_utrikes: n_utrikes,
+                    d_inrikes: d_inrikes,
+                    d_utrikes: d_utrikes,
+                    d_man: d_man,
+                    d_kvinna: d_kvinna,
+                    n_man: n_man,
+                    n_kvinna: n_kvinna,
+                    arb_man: arb_man,
+                    arb_kvinna: arb_kvinna,
+                    larb_man: larb_man,
+                    larb_kvinna: larb_kvinna,
+                    ageRates: Object.keys(ageRates || {}).length > 0 ? ageRates : null
                 };
             });
 
@@ -875,6 +1194,14 @@
                 let y = sortedYears[i];
                 if (histDataStore[y].demand != null && histDataStore[y].supply != null) {
                     baseYear = y; break;
+                }
+            }
+
+            histYearsGlobal = histYearsGlobal.filter(y => y <= baseYear);
+            for (let y in histDataStore) {
+                const numericY = parseInt(y);
+                if (!isNaN(numericY) && numericY > baseYear && y !== 'brpCAGR' && y !== 'lastKnownBRP') {
+                    delete histDataStore[y];
                 }
             }
         }
@@ -922,6 +1249,7 @@
 
             setTimeout(() => {
                 const simMode = document.getElementById('simMode').value;
+                const popSource = document.getElementById('popSource').value;
                 const pendlingType = document.getElementById('pendlingType').value;
 
                 const jobGrowthPct = parseFloat(document.getElementById('jobGrowthSlider').value); 
@@ -974,10 +1302,26 @@
                 const targetVirtualSupply = extraRegionSupplyTotal + distansBoostTotal;
                 const brpCAGR = histDataStore['brpCAGR'] || 0.015;
                 const baseExtrapolatedBRP = histDataStore[baseYear].extrapolatedBrp;
-
                 const syssGradDemandBoostTotal = base.pop * (syssGradChange / 100);
                 
                 let totalShockDemandAccumulated = 0;
+                const ageRates = base.ageRates; 
+                let isAgeWeighted = false;
+
+                const base_n_ut = base.n_utrikes || 0;
+                const base_n_in = base.n_inrikes || 0;
+                const base_d_ut = base.d_utrikes || 0;
+                const base_d_in = base.d_inrikes || 0;
+                const share_n_ut = (base_n_ut + base_n_in > 0) ? (base_n_ut / (base_n_ut + base_n_in)) : 0;
+                const share_d_ut = (base_d_ut + base_d_in > 0) ? (base_d_ut / (base_d_ut + base_d_in)) : 0;
+
+                const base_d_man = base.d_man || 0;
+                const base_d_kvinna = base.d_kvinna || 0;
+                const share_d_man = (base_d_man + base_d_kvinna > 0) ? (base_d_man / (base_d_man + base_d_kvinna)) : 0.5;
+
+                const base_n_man = base.n_man || 0;
+                const base_n_kvinna = base.n_kvinna || 0;
+                const share_n_man = (base_n_man + base_n_kvinna > 0) ? (base_n_man / (base_n_man + base_n_kvinna)) : 0.5;
 
                 for (let i = 1; i <= 10; i++) {
                     const forecastYear = baseYear + i;
@@ -994,23 +1338,74 @@
                     const demandGrowthFactor = 1 + ((jobGrowthPct / 100) * (i / 10));
                     const futureDemand = (base.demand * demandGrowthFactor) + (syssGradDemandBoostTotal * (i / 10)) + totalShockDemandAccumulated;
 
-                    let activePopData = useCustomPop && customPopData ? customPopData : popData;
-                    
+                    let activePopData = popSource === 'fryst' ? [] : (useCustomPop && customPopData ? customPopData : popData);
                     let futurePop = 0;
-                    if(activePopData && activePopData.length > 0) {
-                        activePopData.filter(r => String(r.tid).includes(forecastYear) && !String(r.ålder).includes('Totalt')).forEach(r => {
-                            const match = String(r.ålder).match(/\d+/);
-                            if (match && parseInt(match[0]) >= 16 && parseInt(match[0]) <= 74) futurePop += (r.Befolkning || 0);
-                        });
+                    let hasPopDataForYear = false; 
+                    
+                    if (popSource === 'fryst' || activePopData.length === 0) {
+                        futurePop = base.pop;
+                    } else {
+                        futurePop = getPopForYear(activePopData, forecastYear);
+                        if (futurePop > 0) {
+                            hasPopDataForYear = true;
+                        } else {
+                            futurePop = base.pop; 
+                        }
                     }
-                    if(futurePop === 0) futurePop = base.pop; 
 
                     const extraStudentsThisYear = avgAnnualStudents * (studentChange / 100);
                     cumulativeExtraStudents += extraStudentsThisYear;
 
-                    const targetRate = base.rate + syssGradChange;
-                    const futureRate = base.rate + ((targetRate - base.rate) * (i / 10));
-                    const futureSupply = (futurePop * (futureRate / 100)) + cumulativeExtraStudents;
+                    let futureSupply = 0;
+                    let futureSupplyM = 0;
+                    let futureSupplyK = 0;
+                    
+                    if (ageRates && popSource !== 'fryst' && activePopData.length > 0 && hasPopDataForYear) {
+                        isAgeWeighted = true;
+                        Object.values(ageRates).forEach(group => {
+                            let groupFuturePop = 0;
+                            let groupFuturePopM = 0;
+                            let groupFuturePopK = 0;
+
+                            let records = activePopData.filter(r => String(r.tid).trim() === `${forecastYear} (Prognos)`);
+                            if (records.length === 0) records = activePopData.filter(r => String(r.tid).trim() === String(forecastYear));
+                            
+                            let useGender = records.some(r => String(r.kön).trim().toLowerCase() === 'män' || String(r.kön).trim().toLowerCase() === 'kvinnor');
+                            records.forEach(r => {
+                                if (!String(r.ålder).toLowerCase().includes('totalt')) {
+                                    if (useGender && String(r.kön).trim().toLowerCase() !== 'män' && String(r.kön).trim().toLowerCase() !== 'kvinnor') return;
+                                    const aMatch = String(r.ålder).match(/\d+/);
+                                    if (aMatch) {
+                                        const a = parseInt(aMatch[0]);
+                                        if (a >= group.min && a <= group.max) {
+                                            groupFuturePop += (r.Befolkning || 0);
+                                            if (String(r.kön).trim().toLowerCase() === 'män') groupFuturePopM += (r.Befolkning || 0);
+                                            else if (String(r.kön).trim().toLowerCase() === 'kvinnor') groupFuturePopK += (r.Befolkning || 0);
+                                            else { 
+                                                groupFuturePopM += (r.Befolkning || 0) * share_n_man; 
+                                                groupFuturePopK += (r.Befolkning || 0) * (1 - share_n_man); 
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            
+                            const specificTargetRate = group.rate + (syssGradChange / 100); 
+                            const currentSpecificRate = group.rate + ((specificTargetRate - group.rate) * (i / 10));
+                            futureSupply += (groupFuturePop * currentSpecificRate);
+                            futureSupplyM += (groupFuturePopM * currentSpecificRate);
+                            futureSupplyK += (groupFuturePopK * currentSpecificRate);
+                        });
+                        futureSupply += cumulativeExtraStudents;
+                        futureSupplyM += cumulativeExtraStudents * share_n_man;
+                        futureSupplyK += cumulativeExtraStudents * (1 - share_n_man);
+                    } else {
+                        const targetRate = base.rate + syssGradChange;
+                        const futureRate = base.rate + ((targetRate - base.rate) * (i / 10));
+                        futureSupply = (futurePop * (futureRate / 100)) + cumulativeExtraStudents;
+                        futureSupplyM = futureSupply * share_n_man;
+                        futureSupplyK = futureSupply * (1 - share_n_man);
+                    }
                     
                     let futureInpendling = base.inpendling || 0;
                     let futureUtpendling = base.utpendling || 0;
@@ -1035,10 +1430,7 @@
                     const futureBrpPerSyss = baseExtrapolatedBRP ? baseExtrapolatedBRP * Math.pow(1 + brpCAGR, i) : null;
                     const futureTotalBrpMkr = (futureBrpPerSyss && futureDemand) ? (futureBrpPerSyss * futureDemand) / 1000 : null;
 
-                    let futureArbetsloshet = histDataStore[baseYear].arbetsloshetPct;
-                    if (futureArbetsloshet != null) {
-                        futureArbetsloshet = futureArbetsloshet - syssGradChange * (i/10); 
-                    }
+                    let futureArbetsloshet = base.arbetsloshetPct != null ? base.arbetsloshetPct - syssGradChange * (i/10) : null;
 
                     progDataStore[forecastYear] = {
                         demand: futureDemand,
@@ -1050,11 +1442,28 @@
                         totalSupply: futureTotalSupply,
                         antalKommunerBeraknade: beraknadeKommuner,
                         pop: futurePop,
-                        rate: futureRate,
+                        rate: futureSupply > 0 && futurePop > 0 ? (futureSupply / futurePop)*100 : futureRate,
                         displayRate: futureDisplayRate,
                         brp: futureBrpPerSyss,
                         totalBrpMkr: futureTotalBrpMkr,
-                        arbetsloshetPct: futureArbetsloshet
+                        arbetsloshetPct: futureArbetsloshet,
+                        isAgeWeighted: isAgeWeighted,
+                        n_utrikes: futureSupply * share_n_ut,
+                        n_inrikes: futureSupply * (1 - share_n_ut),
+                        d_utrikes: futureDemand * share_d_ut,
+                        d_inrikes: futureDemand * (1 - share_d_ut),
+                        n_man: futureSupplyM,
+                        n_kvinna: futureSupplyK,
+                        d_man: futureDemand * share_d_man,
+                        d_kvinna: futureDemand * (1 - share_d_man),
+                        arb_inrikes: base.arb_inrikes != null ? base.arb_inrikes - syssGradChange * (i/10) : null,
+                        arb_utrikes: base.arb_utrikes != null ? base.arb_utrikes - syssGradChange * (i/10) : null,
+                        arb_man: base.arb_man != null ? base.arb_man - syssGradChange * (i/10) : null,
+                        arb_kvinna: base.arb_kvinna != null ? base.arb_kvinna - syssGradChange * (i/10) : null,
+                        larb_inrikes: base.larb_inrikes != null ? base.larb_inrikes : null,
+                        larb_utrikes: base.larb_utrikes != null ? base.larb_utrikes : null,
+                        larb_man: base.larb_man != null ? base.larb_man : null,
+                        larb_kvinna: base.larb_kvinna != null ? base.larb_kvinna : null
                     };
                 }
 
@@ -1065,7 +1474,7 @@
                 btn.innerHTML = '<i class="fa-solid fa-check mr-2"></i> Klar!';
                 btn.classList.replace('bg-slate-700', 'bg-green-600');
                 setTimeout(() => {
-                    btn.innerHTML = '<i class="fa-solid fa-gears mr-2"></i> Kör Modell';
+                    btn.innerHTML = '<i class="fa-solid fa-gears mr-1"></i> Kör';
                     btn.classList.replace('bg-green-600', 'bg-slate-700');
                     btn.classList.remove('opacity-75', 'cursor-not-allowed');
                 }, 2000);
@@ -1103,7 +1512,7 @@
             savedProjectedData = null;
             
             const saveBtn = document.getElementById('saveBtn');
-            saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför (Spara)';
+            saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
             saveBtn.classList.remove('bg-red-100', 'text-red-800', 'hover:bg-red-200');
             saveBtn.classList.add('bg-indigo-100', 'text-indigo-800', 'hover:bg-indigo-200');
             document.getElementById('startYearSelect').classList.remove('hidden');
@@ -1115,7 +1524,7 @@
         function handleYearChange() {
             updateKPIs();
             const chartType = document.getElementById('chartType').value;
-            if (chartType !== 'utbud_efterfragan' && chartType !== 'brp_totalt' && chartType !== 'arbetsloshet') {
+            if (chartType !== 'utbud_efterfragan' && chartType !== 'brp_totalt' && !chartType.includes('arbetsloshet') && !chartType.includes('trend_utrikes') && !chartType.includes('trend_kon') && chartType !== 'syssgrad_kon') {
                 updateDashboard(true);
             }
         }
@@ -1125,10 +1534,47 @@
             const subGroupSelect = document.getElementById('subGroupSelect');
             const chartType = chartTypeElement.value;
             
-            if (chartType === 'bransch_match' && subGroupSelect.options.length > 1) {
+            const dualAxesContainer = document.getElementById('dualAxesContainer');
+            const useDualAxes = document.getElementById('useDualAxes') ? document.getElementById('useDualAxes').checked : false;
+            const useZeroAxis = document.getElementById('useZeroAxis') ? document.getElementById('useZeroAxis').checked : false;
+
+            if (chartType.includes('arbetsloshet_utrikes') || chartType.includes('langtidsarb_utrikes') || chartType.includes('arbetsloshet_kon') || chartType.includes('langtidsarb_kon')) {
+                if(dualAxesContainer) { dualAxesContainer.classList.remove('hidden'); dualAxesContainer.classList.add('flex'); }
+                subGroupSelect.classList.add('hidden'); 
+            } else if (chartType === 'bransch_match') {
+                if(dualAxesContainer) { dualAxesContainer.classList.add('hidden'); dualAxesContainer.classList.remove('flex'); }
+                if (subGroupSelect.getAttribute('data-type') !== 'bransch') {
+                    subGroupSelect.innerHTML = '<option value="all">Alla branscher (SNI)</option>';
+                    if (syssConfig['SNIgrupper'] && syssConfig['SNIgrupper'].length > 0) {
+                        const firstRow = syssConfig['SNIgrupper'][0];
+                        const groupCols = Object.keys(firstRow).slice(1);
+                        groupCols.forEach(col => subGroupSelect.add(new Option(col, col)));
+                    }
+                    subGroupSelect.setAttribute('data-type', 'bransch');
+                }
                 subGroupSelect.classList.remove('hidden');
                 chartTypeElement.classList.remove('rounded-r');
+                subGroupSelect.classList.add('rounded-r');
+            } else if (chartType === 'syssgrad_kon') {
+                if(dualAxesContainer) { dualAxesContainer.classList.add('hidden'); dualAxesContainer.classList.remove('flex'); }
+                if (subGroupSelect.getAttribute('data-type') !== 'syssgrad') {
+                    subGroupSelect.innerHTML = '';
+                    const sampleY = Object.keys(histDataStore).find(k => histDataStore[k].syssGradM);
+                    if (sampleY) {
+                        const keys = Object.keys(histDataStore[sampleY].syssGradM).filter(k => !['År', 'år', 'Kön', 'kön'].includes(k));
+                        keys.forEach(k => subGroupSelect.add(new Option(k, k)));
+                        
+                        let defaultOpt = Array.from(subGroupSelect.options).find(o => o.value.includes('20-64'));
+                        if (!defaultOpt && subGroupSelect.options.length > 0) defaultOpt = subGroupSelect.options[0];
+                        if (defaultOpt) subGroupSelect.value = defaultOpt.value;
+                    }
+                    subGroupSelect.setAttribute('data-type', 'syssgrad');
+                }
+                subGroupSelect.classList.remove('hidden');
+                chartTypeElement.classList.remove('rounded-r');
+                subGroupSelect.classList.add('rounded-r');
             } else {
+                if(dualAxesContainer) { dualAxesContainer.classList.add('hidden'); dualAxesContainer.classList.remove('flex'); }
                 subGroupSelect.classList.add('hidden');
                 chartTypeElement.classList.add('rounded-r');
             }
@@ -1136,16 +1582,28 @@
             const startYearSelect = document.getElementById('startYearSelect');
             const desc = document.getElementById('chartDescription');
             const title = document.getElementById('trendTitle');
-            const selectedYear = document.getElementById('yearSelect').value;
+            const selectedYearStr = document.getElementById('yearSelect').value;
             const ctx = document.getElementById('trendChart').getContext('2d');
             
             const isComparing = savedProjectedData !== null;
             const simMode = document.getElementById('simMode').value;
             const showCommuting = simMode === 'full';
             
+            const selYearInt = parseInt(selectedYearStr);
+            const isProgYear = progDataStore[selYearInt] !== undefined;
+            const refYear = isProgYear ? baseYear : selYearInt;
+            
+            if (trendChartInstance) {
+                trendChartInstance.data.datasets.forEach((ds, i) => {
+                    const meta = trendChartInstance.getDatasetMeta(i);
+                    globalChartVisibility[ds.label] = meta.hidden === null ? ds.hidden : meta.hidden;
+                });
+                trendChartInstance.destroy();
+            }
+
             if (chartType === 'utbud_efterfragan') {
                 startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
-                let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historisk Baslinje)");
+                let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historisk)");
                 title.innerText = "Utbud vs Efterfrågan" + suffix;
 
                 const graphStartYear = isComparing ? baseYear : (parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0));
@@ -1193,7 +1651,6 @@
                     }
                 });
                 
-                if (trendChartInstance) trendChartInstance.destroy();
                 const hasProg = pDemand.some((v, idx) => v !== null && labels[idx] > baseYear);
 
                 if (showCommuting) {
@@ -1205,8 +1662,8 @@
                 let datasets = [];
                 if (!isComparing) {
                     datasets = [
-                        { label: 'Efterfrågan/Jobb (Dagbef.)', data: hDemand, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'rect', spanGaps: true },
-                        { label: 'Lokalt Utbud/Arbetande invånare (Nattbef.)', data: hSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true }
+                        { label: 'Efterfrågan (Dagbefolkning)', data: hDemand, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'rect', spanGaps: true },
+                        { label: 'Lokalt Utbud (Nattbefolkning)', data: hSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true }
                     ];
                     if (showCommuting) datasets.push({ label: 'Totalt Utbud (Inkl. Pendling)', data: hTotalSupply, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 3, borderDash: [2, 2], pointStyle: 'triangle', spanGaps: true });
                     
@@ -1228,10 +1685,198 @@
                     }
                 }
 
+                let defaultHiddenLabels = ['Efterfrågan (Aktuell)', 'Efterfrågan (Sparad)', 'Totalt Utbud (Inkl. Pendling)', 'Totalt Utbud (Aktuell)', 'Totalt Utbud (Sparad)'];
+                if (showCommuting) {
+                    defaultHiddenLabels.push('Efterfrågan (Prognos)');
+                }
+                
+                datasets.forEach(ds => {
+                    if (globalChartVisibility[ds.label] !== undefined) {
+                        ds.hidden = globalChartVisibility[ds.label];
+                    } else if (defaultHiddenLabels.includes(ds.label)) {
+                        ds.hidden = true;
+                    }
+                });
+
                 trendChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: { labels: labels, datasets: datasets },
-                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { ticks: { callback: val => formatNumber(val) } } }, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw) } } } }
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val) } } }, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw) } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } } }
+                });
+
+            } else if (chartType === 'trend_utrikes') {
+                startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
+                let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historik)");
+                title.innerText = "Integration: Arbetsmarknad efter ursprung" + suffix;
+                desc.innerText = "Visar hur utbudet (nattbefolkning) och efterfrågan (dagbefolkning) fördelar sig mellan inrikes och utrikes födda.";
+
+                const graphStartYear = isComparing ? baseYear : (parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0));
+                let labels = [], h_n_in=[], h_n_ut=[], p_n_in=[], p_n_ut=[], h_d_in=[], h_d_ut=[], p_d_in=[], p_d_ut=[];
+
+                allYears.forEach(y => {
+                    if (y >= graphStartYear) {
+                        labels.push(y);
+                        
+                        if (y <= baseYear && histDataStore[y]) {
+                            h_n_in.push(histDataStore[y].n_inrikes); h_n_ut.push(histDataStore[y].n_utrikes);
+                            h_d_in.push(histDataStore[y].d_inrikes); h_d_ut.push(histDataStore[y].d_utrikes);
+                        } else {
+                            h_n_in.push(null); h_n_ut.push(null); h_d_in.push(null); h_d_ut.push(null);
+                        }
+                        
+                        if (y === baseYear && histDataStore[y]) {
+                            p_n_in.push(histDataStore[y].n_inrikes); p_n_ut.push(histDataStore[y].n_utrikes);
+                            p_d_in.push(histDataStore[y].d_inrikes); p_d_ut.push(histDataStore[y].d_utrikes);
+                        } else if (y > baseYear && progDataStore[y]) {
+                            p_n_in.push(progDataStore[y].n_inrikes); p_n_ut.push(progDataStore[y].n_utrikes);
+                            p_d_in.push(progDataStore[y].d_inrikes); p_d_ut.push(progDataStore[y].d_utrikes);
+                        } else {
+                            p_n_in.push(null); p_n_ut.push(null); p_d_in.push(null); p_d_ut.push(null);
+                        }
+                    }
+                });
+
+                let datasets = [
+                    { label: 'Lokalt Utbud (Inrikes)', data: h_n_in, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true },
+                    { label: 'Lokalt Utbud (Utrikes)', data: h_n_ut, borderColor: '#f97316', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true },
+                    { label: 'Efterfrågan (Inrikes)', data: h_d_in, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2,2], pointStyle: 'rect', spanGaps: true },
+                    { label: 'Efterfrågan (Utrikes)', data: h_d_ut, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2,2], pointStyle: 'rect', spanGaps: true }
+                ];
+                
+                const hasProg = p_n_in.some((v, idx) => v !== null && labels[idx] > baseYear);
+                if(hasProg && !isComparing) {
+                    datasets.push({ label: 'Utbud Inrikes (Prog)', data: p_n_in, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
+                    datasets.push({ label: 'Utbud Utrikes (Prog)', data: p_n_ut, borderColor: '#f97316', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
+                    datasets.push({ label: 'Efterfrågan Inrikes (Prog)', data: p_d_in, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointStyle: 'rect' });
+                    datasets.push({ label: 'Efterfrågan Utrikes (Prog)', data: p_d_ut, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointStyle: 'rect' });
+                }
+
+                const defaultHidden = ['Efterfrågan (Inrikes)', 'Efterfrågan (Utrikes)', 'Efterfrågan Inrikes (Prog)', 'Efterfrågan Utrikes (Prog)'];
+                datasets.forEach(ds => {
+                    if (globalChartVisibility[ds.label] !== undefined) ds.hidden = globalChartVisibility[ds.label];
+                    else if (defaultHidden.includes(ds.label)) ds.hidden = true;
+                });
+
+                trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: labels, datasets: datasets },
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val) } } }, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw) } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } } }
+                });
+
+            } else if (chartType === 'trend_kon') {
+                startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
+                let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historik)");
+                title.innerText = "Jämställdhet: Arbetsmarknad efter kön" + suffix;
+                desc.innerText = "Visar hur utbudet (nattbefolkning) och efterfrågan (dagbefolkning) fördelar sig mellan män och kvinnor.";
+
+                const graphStartYear = isComparing ? baseYear : (parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0));
+                let labels = [], h_n_m=[], h_n_k=[], p_n_m=[], p_n_k=[], h_d_m=[], h_d_k=[], p_d_m=[], p_d_k=[];
+
+                allYears.forEach(y => {
+                    if (y >= graphStartYear) {
+                        labels.push(y);
+                        
+                        if (y <= baseYear && histDataStore[y]) {
+                            h_n_m.push(histDataStore[y].n_man); h_n_k.push(histDataStore[y].n_kvinna);
+                            h_d_m.push(histDataStore[y].d_man); h_d_k.push(histDataStore[y].d_kvinna);
+                        } else {
+                            h_n_m.push(null); h_n_k.push(null); h_d_m.push(null); h_d_k.push(null);
+                        }
+                        
+                        if (y === baseYear && histDataStore[y]) {
+                            p_n_m.push(histDataStore[y].n_man); p_n_k.push(histDataStore[y].n_kvinna);
+                            p_d_m.push(histDataStore[y].d_man); p_d_k.push(histDataStore[y].d_kvinna);
+                        } else if (y > baseYear && progDataStore[y]) {
+                            p_n_m.push(progDataStore[y].n_man); p_n_k.push(progDataStore[y].n_kvinna);
+                            p_d_m.push(progDataStore[y].d_man); p_d_k.push(progDataStore[y].d_kvinna);
+                        } else {
+                            p_n_m.push(null); p_n_k.push(null); p_d_m.push(null); p_d_k.push(null);
+                        }
+                    }
+                });
+
+                let datasets = [
+                    { label: 'Lokalt Utbud (Män)', data: h_n_m, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true },
+                    { label: 'Lokalt Utbud (Kvinnor)', data: h_n_k, borderColor: '#ec4899', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true },
+                    { label: 'Efterfrågan (Män)', data: h_d_m, borderColor: '#0284c7', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2,2], pointStyle: 'rect', spanGaps: true },
+                    { label: 'Efterfrågan (Kvinnor)', data: h_d_k, borderColor: '#be185d', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2,2], pointStyle: 'rect', spanGaps: true }
+                ];
+                
+                const hasProg = p_n_m.some((v, idx) => v !== null && labels[idx] > baseYear);
+                if(hasProg && !isComparing) {
+                    datasets.push({ label: 'Utbud Män (Prog)', data: p_n_m, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
+                    datasets.push({ label: 'Utbud Kvinnor (Prog)', data: p_n_k, borderColor: '#ec4899', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
+                    datasets.push({ label: 'Efterfrågan Män (Prog)', data: p_d_m, borderColor: '#0284c7', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointStyle: 'rect' });
+                    datasets.push({ label: 'Efterfrågan Kvinnor (Prog)', data: p_d_k, borderColor: '#be185d', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointStyle: 'rect' });
+                }
+
+                const defaultHidden = ['Efterfrågan (Män)', 'Efterfrågan (Kvinnor)', 'Efterfrågan Män (Prog)', 'Efterfrågan Kvinnor (Prog)'];
+                datasets.forEach(ds => {
+                    if (globalChartVisibility[ds.label] !== undefined) ds.hidden = globalChartVisibility[ds.label];
+                    else if (defaultHidden.includes(ds.label)) ds.hidden = true;
+                });
+
+                trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: labels, datasets: datasets },
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val) } } }, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw) } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } } }
+                });
+
+            } else if (chartType === 'syssgrad_kon') {
+                startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
+                let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historik)");
+                title.innerText = "Sysselsättningsgrad: Män och Kvinnor" + suffix;
+                desc.innerText = "Visar hur stor andel av befolkningen som är sysselsatt, uppdelat på kön och ålder.";
+
+                const graphStartYear = isComparing ? baseYear : (parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0));
+                let labels = [], h_m = [], h_k = [], p_m = [], p_k = [];
+                const ageGroup = subGroupSelect.value;
+
+                allYears.forEach(y => {
+                    if (y >= graphStartYear) {
+                        labels.push(y);
+                        
+                        if (y <= baseYear && histDataStore[y]) {
+                            h_m.push(histDataStore[y].syssGradM && histDataStore[y].syssGradM[ageGroup] != null ? parseFloat(histDataStore[y].syssGradM[ageGroup]) : null);
+                            h_k.push(histDataStore[y].syssGradK && histDataStore[y].syssGradK[ageGroup] != null ? parseFloat(histDataStore[y].syssGradK[ageGroup]) : null);
+                        } else {
+                            h_m.push(null); h_k.push(null);
+                        }
+                        
+                        if (y === baseYear && histDataStore[y]) {
+                            p_m.push(histDataStore[y].syssGradM && histDataStore[y].syssGradM[ageGroup] != null ? parseFloat(histDataStore[y].syssGradM[ageGroup]) : null);
+                            p_k.push(histDataStore[y].syssGradK && histDataStore[y].syssGradK[ageGroup] != null ? parseFloat(histDataStore[y].syssGradK[ageGroup]) : null);
+                        } else if (y > baseYear && progDataStore[y]) {
+                            let base_m = histDataStore[baseYear].syssGradM && histDataStore[baseYear].syssGradM[ageGroup] != null ? parseFloat(histDataStore[baseYear].syssGradM[ageGroup]) : null;
+                            let base_k = histDataStore[baseYear].syssGradK && histDataStore[baseYear].syssGradK[ageGroup] != null ? parseFloat(histDataStore[baseYear].syssGradK[ageGroup]) : null;
+                            const sliderChange = parseFloat(document.getElementById('syssGradSlider').value);
+                            const step = (y - baseYear) / 10;
+                            p_m.push(base_m != null ? base_m + sliderChange * step : null);
+                            p_k.push(base_k != null ? base_k + sliderChange * step : null);
+                        } else {
+                            p_m.push(null); p_k.push(null);
+                        }
+                    }
+                });
+
+                let datasets = [
+                    { label: 'Sysselsättningsgrad Män %', data: h_m, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true },
+                    { label: 'Sysselsättningsgrad Kvinnor %', data: h_k, borderColor: '#ec4899', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true }
+                ];
+                const hasProg = p_m.some((v, idx) => v !== null && labels[idx] > baseYear);
+                if (hasProg) {
+                    datasets.push({ label: 'Män % (Prognos)', data: p_m, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle', fill: false });
+                    datasets.push({ label: 'Kvinnor % (Prognos)', data: p_k, borderColor: '#ec4899', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle', fill: false });
+                }
+
+                datasets.forEach(ds => {
+                    if (globalChartVisibility[ds.label] !== undefined) ds.hidden = globalChartVisibility[ds.label];
+                });
+
+                trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: labels, datasets: datasets },
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val, 1) + '%' } } }, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw, 1) + '%' } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } } }
                 });
 
             } else if (chartType === 'arbetsloshet') {
@@ -1245,20 +1890,13 @@
                 allYears.forEach(y => {
                     if (y >= graphStartYear) {
                         labels.push(y);
-                        
                         hArb.push(histDataStore[y] ? histDataStore[y].arbetsloshetPct : null);
-
-                        if (y === baseYear && histDataStore[y]) {
-                            pArb.push(histDataStore[y].arbetsloshetPct);
-                        } else if (y > baseYear && progDataStore[y]) {
-                            pArb.push(progDataStore[y].arbetsloshetPct);
-                        } else {
-                            pArb.push(null);
-                        }
+                        if (y === baseYear && histDataStore[y]) pArb.push(histDataStore[y].arbetsloshetPct);
+                        else if (y > baseYear && progDataStore[y]) pArb.push(progDataStore[y].arbetsloshetPct);
+                        else pArb.push(null);
                     }
                 });
 
-                if (trendChartInstance) trendChartInstance.destroy();
                 trendChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -1268,7 +1906,229 @@
                             { label: 'Teoretisk Arbetslöshet % (Prognos)', data: pArb, borderColor: '#ef4444', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'circle', fill: false }
                         ]
                     },
-                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { ticks: { callback: val => formatNumber(val, 1) + '%' } } }, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw, 1) + '%' } } } }
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val, 1) + '%' } } }, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw, 1) + '%' } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } } }
+                });
+
+            } else if (chartType === 'arbetsloshet_utrikes') {
+                startYearSelect.style.display = 'inline-block';
+                title.innerText = "Arbetslöshet: Inrikes och Utrikes födda";
+                desc.innerText = "Visar hur andelen inskrivna arbetslösa skiljer sig mellan inrikes födda och utrikes födda historiskt, samt teoretisk utveckling.";
+
+                const graphStartYear = parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0);
+                let labels = [], h_in = [], h_ut = [], p_in = [], p_ut = [];
+
+                allYears.forEach(y => {
+                    if (y >= graphStartYear) {
+                        labels.push(y);
+                        h_in.push(histDataStore[y] ? histDataStore[y].arb_inrikes : null);
+                        h_ut.push(histDataStore[y] ? histDataStore[y].arb_utrikes : null);
+                        
+                        if (y === baseYear && histDataStore[y]) {
+                            p_in.push(histDataStore[y].arb_inrikes); p_ut.push(histDataStore[y].arb_utrikes);
+                        } else if (y > baseYear && progDataStore[y]) {
+                            p_in.push(progDataStore[y].arb_inrikes); p_ut.push(progDataStore[y].arb_utrikes);
+                        } else {
+                            p_in.push(null); p_ut.push(null);
+                        }
+                    }
+                });
+
+                let datasets = [
+                    { label: 'Arbetslöshet Inrikes %', data: h_in, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true },
+                    { label: 'Arbetslöshet Utrikes %', data: h_ut, borderColor: '#f97316', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true }
+                ];
+                const hasProg = p_in.some((v, idx) => v !== null && labels[idx] > baseYear);
+                if (hasProg) {
+                    datasets.push({ label: 'Inrikes % (Prognos)', data: p_in, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle', fill: false });
+                    datasets.push({ label: 'Utrikes % (Prognos)', data: p_ut, borderColor: '#f97316', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle', fill: false });
+                }
+
+                datasets.forEach(ds => {
+                    if (globalChartVisibility[ds.label] !== undefined) ds.hidden = globalChartVisibility[ds.label];
+                });
+
+                let scalesConfig = { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val, 1) + '%' } } };
+                if (useDualAxes) {
+                    scalesConfig = {
+                        y: { beginAtZero: useZeroAxis, type: 'linear', display: true, position: 'left', title: { display: true, text: 'Inrikes %', color: '#0ea5e9' }, ticks: { callback: val => formatNumber(val, 1) + '%' } },
+                        y1: { beginAtZero: useZeroAxis, type: 'linear', display: true, position: 'right', title: { display: true, text: 'Utrikes %', color: '#f97316' }, grid: { drawOnChartArea: false }, ticks: { callback: val => formatNumber(val, 1) + '%' } }
+                    };
+                    datasets.forEach(ds => {
+                        if (ds.label.includes('Utrikes')) ds.yAxisID = 'y1';
+                        else ds.yAxisID = 'y';
+                    });
+                }
+
+                trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: labels, datasets: datasets },
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: scalesConfig, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw, 1) + '%' } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } } }
+                });
+
+            } else if (chartType === 'arbetsloshet_kon') {
+                startYearSelect.style.display = 'inline-block';
+                title.innerText = "Arbetslöshet: Män och Kvinnor";
+                desc.innerText = "Visar hur andelen inskrivna arbetslösa skiljer sig mellan könen historiskt, samt teoretisk utveckling.";
+
+                const graphStartYear = parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0);
+                let labels = [], h_m = [], h_k = [], p_m = [], p_k = [];
+
+                allYears.forEach(y => {
+                    if (y >= graphStartYear) {
+                        labels.push(y);
+                        h_m.push(histDataStore[y] ? histDataStore[y].arb_man : null);
+                        h_k.push(histDataStore[y] ? histDataStore[y].arb_kvinna : null);
+                        
+                        if (y === baseYear && histDataStore[y]) {
+                            p_m.push(histDataStore[y].arb_man); p_k.push(histDataStore[y].arb_kvinna);
+                        } else if (y > baseYear && progDataStore[y]) {
+                            p_m.push(progDataStore[y].arb_man); p_k.push(progDataStore[y].arb_kvinna);
+                        } else {
+                            p_m.push(null); p_k.push(null);
+                        }
+                    }
+                });
+
+                let datasets = [
+                    { label: 'Arbetslöshet Män %', data: h_m, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true },
+                    { label: 'Arbetslöshet Kvinnor %', data: h_k, borderColor: '#ec4899', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true }
+                ];
+                const hasProg = p_m.some((v, idx) => v !== null && labels[idx] > baseYear);
+                if (hasProg) {
+                    datasets.push({ label: 'Män % (Prognos)', data: p_m, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle', fill: false });
+                    datasets.push({ label: 'Kvinnor % (Prognos)', data: p_k, borderColor: '#ec4899', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle', fill: false });
+                }
+
+                datasets.forEach(ds => {
+                    if (globalChartVisibility[ds.label] !== undefined) ds.hidden = globalChartVisibility[ds.label];
+                });
+
+                let scalesConfig = { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val, 1) + '%' } } };
+                if (useDualAxes) {
+                    scalesConfig = {
+                        y: { beginAtZero: useZeroAxis, type: 'linear', display: true, position: 'left', title: { display: true, text: 'Män %', color: '#0ea5e9' }, ticks: { callback: val => formatNumber(val, 1) + '%' } },
+                        y1: { beginAtZero: useZeroAxis, type: 'linear', display: true, position: 'right', title: { display: true, text: 'Kvinnor %', color: '#ec4899' }, grid: { drawOnChartArea: false }, ticks: { callback: val => formatNumber(val, 1) + '%' } }
+                    };
+                    datasets.forEach(ds => {
+                        if (ds.label.includes('Kvinnor')) ds.yAxisID = 'y1';
+                        else ds.yAxisID = 'y';
+                    });
+                }
+
+                trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: labels, datasets: datasets },
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: scalesConfig, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw, 1) + '%' } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } } }
+                });
+
+            } else if (chartType === 'langtidsarbetsloshet') {
+                startYearSelect.style.display = 'inline-block';
+                title.innerText = "Långtidsarbetslöshet (Kärnan)";
+                desc.innerText = "Andel långtidsarbetslösa (Totalt). Denna grupp utgör ofta kärnan i den strukturella arbetslösheten och kan inte lika enkelt matchas mot nya jobb i en etableringschock.";
+
+                const graphStartYear = parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0);
+                let labels = [], hArb = [];
+
+                allYears.forEach(y => {
+                    if (y >= graphStartYear && y <= baseYear) {
+                        labels.push(y);
+                        hArb.push(histDataStore[y] ? histDataStore[y].langtidsPct : null);
+                    }
+                });
+
+                trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Långtidsarbetslösa %', data: hArb, borderColor: '#f97316', backgroundColor: 'rgba(249, 115, 22, 0.2)', borderWidth: 3, pointStyle: 'circle', fill: true, spanGaps: true }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val, 1) + '%' } } }, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw, 1) + '%' } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } } }
+                });
+
+            } else if (chartType === 'langtidsarb_utrikes') {
+                startYearSelect.style.display = 'inline-block';
+                title.innerText = "Långtidsarbetslöshet: Inrikes och Utrikes födda";
+                desc.innerText = "Andel långtidsarbetslösa uppdelat på bakgrund. Belyser var strukturella insatser kan behöva riktas.";
+
+                const graphStartYear = parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0);
+                let labels = [], h_in = [], h_ut = [];
+
+                allYears.forEach(y => {
+                    if (y >= graphStartYear && y <= baseYear) {
+                        labels.push(y);
+                        h_in.push(histDataStore[y] ? histDataStore[y].larb_inrikes : null);
+                        h_ut.push(histDataStore[y] ? histDataStore[y].larb_utrikes : null);
+                    }
+                });
+
+                let datasets = [
+                    { label: 'Långtidsarbetslösa Inrikes %', data: h_in, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true },
+                    { label: 'Långtidsarbetslösa Utrikes %', data: h_ut, borderColor: '#f97316', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true }
+                ];
+                datasets.forEach(ds => {
+                    if (globalChartVisibility[ds.label] !== undefined) ds.hidden = globalChartVisibility[ds.label];
+                });
+
+                let scalesConfig = { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val, 1) + '%' } } };
+                if (useDualAxes) {
+                    scalesConfig = {
+                        y: { beginAtZero: useZeroAxis, type: 'linear', display: true, position: 'left', title: { display: true, text: 'Inrikes %', color: '#0ea5e9' }, ticks: { callback: val => formatNumber(val, 1) + '%' } },
+                        y1: { beginAtZero: useZeroAxis, type: 'linear', display: true, position: 'right', title: { display: true, text: 'Utrikes %', color: '#f97316' }, grid: { drawOnChartArea: false }, ticks: { callback: val => formatNumber(val, 1) + '%' } }
+                    };
+                    datasets.forEach(ds => {
+                        if (ds.label.includes('Utrikes')) ds.yAxisID = 'y1';
+                        else ds.yAxisID = 'y';
+                    });
+                }
+
+                trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: labels, datasets: datasets },
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: scalesConfig, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw, 1) + '%' } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } } }
+                });
+
+            } else if (chartType === 'langtidsarb_kon') {
+                startYearSelect.style.display = 'inline-block';
+                title.innerText = "Långtidsarbetslöshet: Män och Kvinnor";
+                desc.innerText = "Andel långtidsarbetslösa uppdelat på kön.";
+
+                const graphStartYear = parseInt(startYearSelect.value) || (allYears.length > 0 ? allYears[0] : 0);
+                let labels = [], h_m = [], h_k = [];
+
+                allYears.forEach(y => {
+                    if (y >= graphStartYear && y <= baseYear) {
+                        labels.push(y);
+                        h_m.push(histDataStore[y] ? histDataStore[y].larb_man : null);
+                        h_k.push(histDataStore[y] ? histDataStore[y].larb_kvinna : null);
+                    }
+                });
+
+                let datasets = [
+                    { label: 'Långtidsarbetslösa Män %', data: h_m, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true },
+                    { label: 'Långtidsarbetslösa Kvinnor %', data: h_k, borderColor: '#ec4899', backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true }
+                ];
+                datasets.forEach(ds => {
+                    if (globalChartVisibility[ds.label] !== undefined) ds.hidden = globalChartVisibility[ds.label];
+                });
+
+                let scalesConfig = { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val, 1) + '%' } } };
+                if (useDualAxes) {
+                    scalesConfig = {
+                        y: { beginAtZero: useZeroAxis, type: 'linear', display: true, position: 'left', title: { display: true, text: 'Män %', color: '#0ea5e9' }, ticks: { callback: val => formatNumber(val, 1) + '%' } },
+                        y1: { beginAtZero: useZeroAxis, type: 'linear', display: true, position: 'right', title: { display: true, text: 'Kvinnor %', color: '#ec4899' }, grid: { drawOnChartArea: false }, ticks: { callback: val => formatNumber(val, 1) + '%' } }
+                    };
+                    datasets.forEach(ds => {
+                        if (ds.label.includes('Kvinnor')) ds.yAxisID = 'y1';
+                        else ds.yAxisID = 'y';
+                    });
+                }
+
+                trendChartInstance = new Chart(ctx, {
+                    type: 'line',
+                    data: { labels: labels, datasets: datasets },
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: scalesConfig, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw, 1) + '%' } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } } }
                 });
 
             } else if (chartType === 'brp_totalt') {
@@ -1316,7 +2176,6 @@
                     }
                 });
 
-                if (trendChartInstance) trendChartInstance.destroy();
                 let datasets = [];
                 if (!isComparing) {
                     datasets = [
@@ -1329,27 +2188,123 @@
                         { label: 'Total BRP (Mkr) - Sparad', data: sBRP, borderColor: '#a855f7', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], opacity: 0.6, pointStyle: 'rectRot' }
                     ]
                 }
+                
+                datasets.forEach(ds => {
+                    if (globalChartVisibility[ds.label] !== undefined) ds.hidden = globalChartVisibility[ds.label];
+                });
+
                 trendChartInstance = new Chart(ctx, {
                     type: 'line',
                     data: { labels: labels, datasets: datasets },
-                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { ticks: { callback: val => formatNumber(val) } } }, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw) + ' Mkr' } } } }
+                    options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val) } } }, plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw) + ' Mkr' } } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } }
                 });
 
             } else if (chartType === 'utb_match') {
                 startYearSelect.style.display = 'none'; 
-                title.innerText = `Utbildningsmatchning (År ${selectedYear})`;
+                title.innerText = `Utbildningsmatchning (År ${selectedYearStr})`;
                 desc.innerHTML = `Staplarna visar kraven från företagen ställt mot vad invånarna har för utbildning. Den röda linjen visar <b>Kompetensgapet</b>.`;
-                drawMatchChart(parseInt(selectedYear), 'utb');
+                
+                const dfDag = syssBasdata['Syss_utbnivå'] || syssBasdata['Syss_utbniva'] || [];
+                const dfNatt = syssBasdata['Natt_utbnivå'] || syssBasdata['Natt_utbniva'] || [];
+                const labels = ['Förgymnasial', 'Gymnasial', 'Eftergymnasial', 'Okänd'];
+                const mapLevel = (l) => {
+                    let text = String(l).toLowerCase();
+                    if (text.includes('förgymnasial')) return 'Förgymnasial';
+                    if (text.includes('eftergymnasial') || text.includes('forskar')) return 'Eftergymnasial';
+                    if (text.includes('gymnasial')) return 'Gymnasial';
+                    return 'Okänd';
+                };
+                let dagData = aggregateMatchData(dfDag, refYear, labels, 'Utbildningsnivå', mapLevel);
+                let nattData = aggregateMatchData(dfNatt, refYear, labels, 'Utbildningsnivå', mapLevel);
+                drawMatchChart(selYearInt, labels, dagData, nattData, false, useZeroAxis);
+            
             } else if (chartType === 'sektor_match') {
                 startYearSelect.style.display = 'none'; 
-                title.innerText = `Sektormatchning (År ${selectedYear})`;
+                title.innerText = `Sektormatchning (År ${selectedYearStr})`;
                 desc.innerHTML = `Sektor för invånarna jämfört med sektor för jobben.`;
-                drawMatchChart(parseInt(selectedYear), 'sektor');
+                
+                const dfDag = syssBasdata['Syss_sektor'] || [];
+                const dfNatt = syssBasdata['Natt_sektor'] || [];
+                const labels = ['Privat sektor', 'Offentlig sektor'];
+                let dagData = aggregateMatchData(dfDag, refYear, labels, 'Sektor');
+                let nattData = aggregateMatchData(dfNatt, refYear, labels, 'Sektor');
+                drawMatchChart(selYearInt, labels, dagData, nattData, false, useZeroAxis);
+            
+            } else if (chartType === 'sektor_match_kon') {
+                startYearSelect.style.display = 'none'; 
+                title.innerText = `Sektormatchning: Män och Kvinnor (År ${selectedYearStr})`;
+                desc.innerHTML = `Sektor för invånarna jämfört med sektor för jobben, uppdelat på kön.`;
+                
+                const dfDag = syssBasdata['Syss_sektor'] || [];
+                const dfNatt = syssBasdata['Natt_sektor'] || [];
+                const labels = ['Privat sektor', 'Offentlig sektor'];
+                
+                let d_m = { 'Privat sektor': 0, 'Offentlig sektor': 0 };
+                let d_k = { 'Privat sektor': 0, 'Offentlig sektor': 0 };
+                let n_m = { 'Privat sektor': 0, 'Offentlig sektor': 0 };
+                let n_k = { 'Privat sektor': 0, 'Offentlig sektor': 0 };
+
+                dfDag.filter(r => extractYear(r) == refYear).forEach(r => {
+                    let sec = String(r['Sektor'] || '').trim();
+                    if(labels.includes(sec)) {
+                        d_m[sec] += parseFloat(r['Män'] || r['män'] || 0);
+                        d_k[sec] += parseFloat(r['Kvinnor'] || r['kvinnor'] || 0);
+                    }
+                });
+                dfNatt.filter(r => extractYear(r) == refYear).forEach(r => {
+                    let sec = String(r['Sektor'] || '').trim();
+                    if(labels.includes(sec)) {
+                        n_m[sec] += parseFloat(r['Män'] || r['män'] || 0);
+                        n_k[sec] += parseFloat(r['Kvinnor'] || r['kvinnor'] || 0);
+                    }
+                });
+                
+                let dagData = {'män': d_m, 'kvinnor': d_k};
+                let nattData = {'män': n_m, 'kvinnor': n_k};
+                
+                drawMatchChart(selYearInt, labels, dagData, nattData, true, useZeroAxis);
+
             } else if (chartType === 'bransch_match') {
                 startYearSelect.style.display = 'none'; 
-                title.innerText = `Branschmatchning (År ${selectedYear})`;
+                title.innerText = `Branschmatchning (År ${selectedYearStr})`;
                 desc.innerHTML = `Detaljerad matchning per näringsgren/bransch. Röda markeringar (<0) visar lokalt underskott.`;
-                drawMatchChart(parseInt(selectedYear), 'bransch');
+                
+                const dfDag = syssBasdata['Syss_bransch'] || [];
+                const dfNatt = syssBasdata['Natt_bransch'] || [];
+                
+                let rawLabels = [];
+                if (dfDag.length > 0) {
+                    const excludeCols = ['År', 'år', 'Samtliga', 'Totalt', 'Kön', 'kön', 'Okänd bransch'];
+                    rawLabels = Object.keys(dfDag[0]).filter(k => !excludeCols.includes(k));
+                }
+                
+                let dagData = aggregateMatchData(dfDag, refYear, rawLabels, 'Cols');
+                let nattData = aggregateMatchData(dfNatt, refYear, rawLabels, 'Cols');
+                
+                const subGroupVal = subGroupSelect ? subGroupSelect.value : 'all';
+                if (subGroupVal && subGroupVal !== 'all' && syssConfig['SNIgrupper']) {
+                    let groupedDag = { 'totalt': {} };
+                    let groupedNatt = { 'totalt': {} };
+                    const sniGrupper = syssConfig['SNIgrupper'];
+                    const firstKey = Object.keys(sniGrupper[0])[0]; 
+
+                    rawLabels.forEach(l => {
+                        let mappingRow = sniGrupper.find(r => String(r[firstKey]).trim() === String(l).trim());
+                        let targetGroup = mappingRow ? mappingRow[subGroupVal] : null;
+
+                        if (targetGroup && targetGroup !== null && String(targetGroup).trim() !== '') {
+                            let groupName = String(targetGroup).trim();
+                            if (!groupedDag['totalt'][groupName]) { groupedDag['totalt'][groupName] = 0; groupedNatt['totalt'][groupName] = 0; }
+                            groupedDag['totalt'][groupName] += dagData['totalt'][l] || 0;
+                            groupedNatt['totalt'][groupName] += nattData['totalt'][l] || 0;
+                        }
+                    });
+                    rawLabels = Object.keys(groupedDag['totalt']);
+                    dagData = groupedDag;
+                    nattData = groupedNatt;
+                }
+
+                drawMatchChart(selYearInt, rawLabels, dagData, nattData, false, useZeroAxis, true);
             }
 
             if (!calledFromDropdown) updateKPIs();
@@ -1364,7 +2319,14 @@
             if (!d) return;
 
             document.getElementById('kpiEfterfragan').innerText = d.demand != null ? formatNumber(d.demand) : 'Data saknas';
-            document.getElementById('kpiUtbud').innerText = d.supply != null ? formatNumber(d.supply) : 'Data saknas';
+            
+            if (d.isAgeWeighted) {
+                document.getElementById('kpiUtbud').innerHTML = `${formatNumber(d.supply)} <span class="text-xs text-sky-400" title="Åldersviktad beräkning aktiv">*</span>`;
+                document.getElementById('kpiUtbudContainer').title = "Lokalt arbetskraftsutbud (Åldersviktad beräkning)";
+            } else {
+                document.getElementById('kpiUtbud').innerText = d.supply != null ? formatNumber(d.supply) : 'Data saknas';
+                document.getElementById('kpiUtbudContainer').title = "Lokalt arbetskraftsutbud";
+            }
             
             const kpiBef = document.getElementById('kpiBefolkning');
             const kpiBefContainer = document.getElementById('kpiBefolkningContainer');
@@ -1378,7 +2340,7 @@
                 const totalPendling = showCommuting ? (explNetto + virtualExt) : 0;
                 
                 document.getElementById('kpiPendling').innerText = (totalPendling > 0 ? '+' : '') + formatNumber(totalPendling);
-                document.getElementById('kpiPendling').className = "text-lg md:text-xl font-bold " + (totalPendling > 0 ? "text-indigo-600" : (showCommuting ? "text-emerald-600" : "text-gray-400"));
+                document.getElementById('kpiPendling').className = "text-base md:text-lg font-bold " + (totalPendling > 0 ? "text-indigo-600" : (showCommuting ? "text-emerald-600" : "text-gray-400"));
                 
                 if (!showCommuting) {
                     document.getElementById('kpiPendling').title = "Pendling inaktiverad i läget 'Endast Lokal'.";
@@ -1400,21 +2362,21 @@
                     let totalPopNeeded = omatchatGap / Math.max(0.01, employmentRate); 
 
                     kpiBef.innerText = '+' + formatNumber(totalPopNeeded);
-                    kpiBef.className = "text-lg md:text-xl font-bold text-orange-600";
+                    kpiBef.className = "text-base md:text-lg font-bold text-orange-600";
                     kpiBefContainer.title = `Det kvarstår ett omatchat gap på ${formatNumber(omatchatGap)} jobb.\nFör att fylla detta krävs inflyttning av ca ${formatNumber(totalPopNeeded)} nya invånare.\n(Beräknat: Grundnivå ${formatNumber(baseEmploymentRate * 100, 1)}% + justering ${formatNumber(userSyssAdjustment * 100, 1)}% = ${formatNumber(employmentRate * 100, 1)}% av inflyttarna förvärvsarbetar).`;
                 } else if (omatchatGap < -5) {
                     kpiBef.innerText = 'Överskott';
-                    kpiBef.className = "text-lg md:text-xl font-bold text-sky-600";
+                    kpiBef.className = "text-base md:text-lg font-bold text-sky-600";
                     kpiBefContainer.title = `Det lokala utbudet (inkl. pendling) är ${formatNumber(Math.abs(omatchatGap))} personer högre än antalet tillgängliga jobb. Ingen kompetensbrist som kräver inflyttning.`;
                 } else {
                     kpiBef.innerText = 'Balans';
-                    kpiBef.className = "text-lg md:text-xl font-bold text-emerald-600";
+                    kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
                     kpiBefContainer.title = "Perfekt matchning. Inget kvarstående rekryteringsgap.";
                 }
 
             } else {
                 document.getElementById('kpiPendling').innerText = 'Data saknas';
-                document.getElementById('kpiPendling').className = "text-lg md:text-xl font-bold text-gray-400";
+                document.getElementById('kpiPendling').className = "text-base md:text-lg font-bold text-gray-400";
                 kpiBef.innerText = '-';
             }
             
@@ -1422,10 +2384,10 @@
             if (d.displayRate != null) {
                 document.getElementById('kpiSyssGrad').innerText = formatNumber(d.displayRate, 1) + '%';
                 if (d.displayRate > takEffektMaxSyss) {
-                    document.getElementById('kpiSyssGrad').className = "text-lg md:text-xl font-bold text-red-600";
+                    document.getElementById('kpiSyssGrad').className = "text-base md:text-lg font-bold text-red-600";
                     warningEl.classList.remove('hidden');
                 } else {
-                    document.getElementById('kpiSyssGrad').className = "text-lg md:text-xl font-bold text-gray-800";
+                    document.getElementById('kpiSyssGrad').className = "text-base md:text-lg font-bold text-gray-800";
                     warningEl.classList.add('hidden');
                 }
             } else {
@@ -1448,7 +2410,7 @@
                 }
 
                 if (totalBrpMkr) {
-                    kpiBox.title = `Total Regional Ekonomi (BRP): ca ${formatNumber(totalBrpMkr, 0)} Mkr\n(Beräknat som BRP/sysselsatt × Dagbefolkning)`;
+                    kpiBox.title = `Total Regional Ekonomi (BRP): ca ${formatNumber(totalBrpMkr, 0)} Mkr\n(Beräknat som BRP/syss × Dagbefolkning)`;
                 } else {
                     kpiBox.title = "Bruttoregionalprodukt per sysselsatt (tkr)";
                 }
@@ -1458,203 +2420,148 @@
             }
         }
 
-        function drawMatchChart(year, type) {
-            const ctx = document.getElementById('trendChart').getContext('2d');
-            if (trendChartInstance) trendChartInstance.destroy();
-
-            let labels = [], dagDataObj = {}, nattDataObj = {};
-            let isHorizontal = false;
+        function aggregateMatchData(dataset, refYear, labels, keyField, mapFn = null) {
+            let result = { 'män': {}, 'kvinnor': {}, 'totalt': {} };
+            labels.forEach(l => { result['män'][l] = 0; result['kvinnor'][l] = 0; result['totalt'][l] = 0; });
             
-            let isProg = progDataStore[year] !== undefined;
-            let refYear = isProg ? baseYear : year; 
-
-            if (type === 'utb') {
-                const dfDag = syssBasdata['Syss_utbnivå'] || syssBasdata['Syss_utbniva'] || [];
-                const dfNatt = syssBasdata['Natt_utbnivå'] || syssBasdata['Natt_utbniva'] || [];
-                labels = ['Förgymnasial', 'Gymnasial', 'Eftergymnasial', 'Okänd'];
-                labels.forEach(l => { dagDataObj[l] = 0; nattDataObj[l] = 0; });
+            let records = dataset.filter(r => extractYear(r) == refYear);
+            if (records.length === 0) return result;
+            
+            let hasKonCol = records.some(r => getKon(r) !== null);
+            let hasTotalRow = hasKonCol ? records.some(r => getKon(r) === 'totalt' || getKon(r) === '') : false;
+            
+            records.forEach(r => {
+                let kon = getKon(r);
+                if (!hasKonCol || kon === null || kon === '') kon = 'totalt'; 
                 
-                const mapLevel = (l) => {
-                    let text = String(l).toLowerCase();
-                    if (text.includes('förgymnasial')) return 'Förgymnasial';
-                    if (text.includes('eftergymnasial') || text.includes('forskar')) return 'Eftergymnasial';
-                    if (text.includes('gymnasial')) return 'Gymnasial';
-                    return 'Okänd';
-                };
-
-                dfDag.filter(r => extractYear(r) == refYear && r['Kön'] === 'Totalt').forEach(r => {
-                    if(r['Samtliga'] != null) dagDataObj[mapLevel(r['Utbildningsnivå'])] += parseFloat(r['Samtliga']);
-                });
-                dfNatt.filter(r => extractYear(r) == refYear && r['Kön'] === 'Totalt').forEach(r => {
-                    if(r['Samtliga'] != null) nattDataObj[mapLevel(r['Utbildningsnivå'])] += parseFloat(r['Samtliga']);
-                });
-            } 
-            else if (type === 'sektor') {
-                const dfDag = syssBasdata['Syss_sektor'] || [];
-                const dfNatt = syssBasdata['Natt_sektor'] || [];
-                labels = ['Privat sektor', 'Offentlig sektor'];
-                labels.forEach(l => { dagDataObj[l] = 0; nattDataObj[l] = 0; });
-                
-                dfDag.filter(r => extractYear(r) == refYear).forEach(r => {
-                    let sec = String(r['Sektor']).trim();
-                    if(labels.includes(sec) && r['Totalt'] != null) dagDataObj[sec] += parseFloat(r['Totalt']);
-                });
-                dfNatt.filter(r => extractYear(r) == refYear).forEach(r => {
-                    let sec = String(r['Sektor']).trim();
-                    if(labels.includes(sec) && r['Totalt'] != null) nattDataObj[sec] += parseFloat(r['Totalt']);
-                });
-            }
-            else if (type === 'bransch') {
-                const dfDag = syssBasdata['Syss_bransch'] || [];
-                const dfNatt = syssBasdata['Natt_bransch'] || [];
-                isHorizontal = true; 
-
-                const dagRow = dfDag.find(r => extractYear(r) == refYear) || {};
-                const nattRow = dfNatt.find(r => extractYear(r) == refYear) || {};
-
-                const excludeCols = ['År', 'år', 'Samtliga', 'Okänd bransch'];
-                labels = Object.keys(dagRow).filter(k => !excludeCols.includes(k) && dagRow[k] !== null);
-                
-                labels.forEach(l => {
-                    dagDataObj[l] = parseFloat(dagRow[l] || 0);
-                    nattDataObj[l] = parseFloat(nattRow[l] || 0);
-                });
-
-                if (isProg && histDataStore[baseYear]) {
-                    const progD = progDataStore[year];
-                    const baseD = histDataStore[baseYear];
-                    const simMode = document.getElementById('simMode').value;
-                    
-                    const demandScale = progD.demand / baseD.demand;
-                    let supplyScale = 1;
-                    if (simMode === 'full') {
-                        supplyScale = progD.totalSupply / baseD.totalSupply;
-                    } else {
-                        supplyScale = progD.supply / baseD.supply;
-                    }
-
-                    let baseDagDataObj = {...dagDataObj};
-
-                    labels.forEach(l => {
-                        dagDataObj[l] *= demandScale;
-                        nattDataObj[l] *= supplyScale;
-                    });
-
-                    if (currentShocks.length > 0) {
-                        currentShocks.forEach(shock => {
-                            if (parseInt(shock['År']) <= year && shock['Bransch']) {
-                                const bName = String(shock['Bransch']).trim();
-                                const val = parseFloat(shock['Antal_Jobb']) || 0;
-                                if (dagDataObj[bName] !== undefined) {
-                                    dagDataObj[bName] += val;
-                                }
-                            }
-                        });
-                    }
-
-                    if (syssConfig['Branschglidning'] && syssConfig['Branschglidning'].length > 0) {
-                        syssConfig['Branschglidning'].forEach(row => {
-                            let vaxande = String(row['Växande_Bransch'] || '').trim();
-                            let drabbad = String(row['Drabbad_Bransch'] || '').trim();
-                            let faktor = parseFloat(row['Överföringsfaktor']) || 0;
-
-                            if (vaxande && drabbad && faktor > 0 && dagDataObj[vaxande] !== undefined && nattDataObj[drabbad] !== undefined) {
-                                let growth = dagDataObj[vaxande] - baseDagDataObj[vaxande];
-                                if (growth > 0) {
-                                    let transfer = growth * faktor;
-                                    transfer = Math.min(transfer, nattDataObj[drabbad]); 
-                                    nattDataObj[vaxande] += transfer;
-                                    nattDataObj[drabbad] -= transfer;
-                                }
-                            }
-                        });
-                    }
+                let isCountableTotal = false;
+                if (!hasKonCol) {
+                    isCountableTotal = true;
+                } else if (hasTotalRow) {
+                    isCountableTotal = (kon === 'totalt');
+                } else {
+                    isCountableTotal = (kon === 'män' || kon === 'kvinnor');
                 }
-
-                const subGroupSelect = document.getElementById('subGroupSelect');
-                const subGroupVal = subGroupSelect ? subGroupSelect.value : 'all';
-
-                if (subGroupVal && subGroupVal !== 'all' && syssConfig['SNIgrupper']) {
-                    let groupedDag = {};
-                    let groupedNatt = {};
-                    const sniGrupper = syssConfig['SNIgrupper'];
-                    const firstKey = Object.keys(sniGrupper[0])[0]; 
-
-                    labels.forEach(l => {
-                        let mappingRow = sniGrupper.find(r => String(r[firstKey]).trim() === String(l).trim());
-                        let targetGroup = mappingRow ? mappingRow[subGroupVal] : null;
-
-                        if (targetGroup && targetGroup !== null && String(targetGroup).trim() !== '') {
-                            let groupName = String(targetGroup).trim();
-                            if (!groupedDag[groupName]) { groupedDag[groupName] = 0; groupedNatt[groupName] = 0; }
-                            groupedDag[groupName] += dagDataObj[l];
-                            groupedNatt[groupName] += nattDataObj[l];
+                
+                if (keyField === 'Cols') {
+                    Object.keys(r).forEach(k => {
+                        let key = mapFn ? mapFn(k) : k;
+                        if (labels.includes(key)) {
+                            let val = parseFloat(r[k]) || 0;
+                            if (kon === 'män' || kon === 'kvinnor') result[kon][key] += val;
+                            if (isCountableTotal) result['totalt'][key] += val;
                         }
                     });
-
-                    labels = Object.keys(groupedDag);
-                    dagDataObj = groupedDag;
-                    nattDataObj = groupedNatt;
+                } else {
+                    let rawKey = String(r[keyField] || '').trim();
+                    let key = mapFn ? mapFn(rawKey) : rawKey;
+                    
+                    if (labels.includes(key)) {
+                        if (r['Män'] !== undefined || r['män'] !== undefined || r['Kvinnor'] !== undefined || r['kvinnor'] !== undefined) {
+                            let mVal = parseFloat(r['Män'] || r['män'] || 0);
+                            let kVal = parseFloat(r['Kvinnor'] || r['kvinnor'] || 0);
+                            let tVal = parseFloat(r['Totalt'] || r['totalt'] || (mVal + kVal));
+                            
+                            result['män'][key] += mVal;
+                            result['kvinnor'][key] += kVal;
+                            if (isCountableTotal) result['totalt'][key] += tVal;
+                        } else {
+                            let val = parseFloat(r['Totalt'] ?? r['Samtliga'] ?? r['Befolkning'] ?? r['Värde'] ?? r['Antal'] ?? 0);
+                            if (isNaN(val)) val = 0;
+                            if (kon === 'män' || kon === 'kvinnor') result[kon][key] += val;
+                            if (isCountableTotal) result['totalt'][key] += val;
+                        }
+                    }
                 }
-            } else if (isProg && histDataStore[baseYear]) {
+            });
+            return result;
+        }
+
+        function drawMatchChart(year, labels, dagData, nattData, splitGender, useZeroAxis, isHorizontal = false) {
+            const ctx = document.getElementById('trendChart').getContext('2d');
+            if (trendChartInstance) trendChartInstance.destroy();
+            
+            let isProg = progDataStore[year] !== undefined;
+
+            if (isProg && histDataStore[baseYear]) {
                 const progD = progDataStore[year];
                 const baseD = histDataStore[baseYear];
                 const simMode = document.getElementById('simMode').value;
                 const demandScale = progD.demand / baseD.demand;
-                let supplyScale = 1;
+                const supplyScale = simMode === 'full' ? (progD.totalSupply / baseD.totalSupply) : (progD.supply / baseD.supply);
                 
-                if (simMode === 'full') {
-                    supplyScale = progD.totalSupply / baseD.totalSupply;
-                } else {
-                    supplyScale = progD.supply / baseD.supply;
-                }
-
-                labels.forEach(l => {
-                    dagDataObj[l] *= demandScale;
-                    nattDataObj[l] *= supplyScale;
+                ['totalt', 'män', 'kvinnor'].forEach(kon => {
+                    labels.forEach(l => {
+                        if (dagData[kon]) dagData[kon][l] *= demandScale;
+                        if (nattData[kon]) nattData[kon][l] *= supplyScale;
+                    });
                 });
+
+                if (currentShocks.length > 0) {
+                    currentShocks.forEach(shock => {
+                        if (parseInt(shock['År']) <= year && shock['Bransch']) {
+                            const bName = String(shock['Bransch']).trim();
+                            const val = parseFloat(shock['Antal_Jobb']) || 0;
+                            if (dagData['totalt'] && dagData['totalt'][bName] !== undefined) {
+                                dagData['totalt'][bName] += val;
+                                if(dagData['män']) dagData['män'][bName] += val / 2;
+                                if(dagData['kvinnor']) dagData['kvinnor'][bName] += val / 2;
+                            }
+                        }
+                    });
+                }
             }
 
-            let netData = {};
-            labels.forEach(l => { netData[l] = nattDataObj[l] - dagDataObj[l]; });
+            let datasets = [];
+            
+            if (splitGender) {
+                datasets = [
+                    { label: 'Efterfrågan (Män)', data: labels.map(l => dagData['män'][l]), backgroundColor: '#0284c7' },
+                    { label: 'Efterfrågan (Kvinnor)', data: labels.map(l => dagData['kvinnor'][l]), backgroundColor: '#be185d' },
+                    { label: 'Lokalt Utbud (Män)', data: labels.map(l => nattData['män'][l]), backgroundColor: '#0ea5e9' },
+                    { label: 'Lokalt Utbud (Kvinnor)', data: labels.map(l => nattData['kvinnor'][l]), backgroundColor: '#ec4899' }
+                ];
+            } else {
+                let netData = {};
+                labels.forEach(l => { netData[l] = nattData['totalt'][l] - dagData['totalt'][l]; });
+                
+                const simMode = document.getElementById('simMode').value;
+                const supplyLabel = simMode === 'full' ? 'Utbud (Inkl. all pendling)' : 'Lokalt Utbud (Nattbef.)';
+
+                datasets = [
+                    { 
+                        type: isHorizontal ? 'bar' : 'line', 
+                        label: 'Rekryteringsgap (Lokal brist)', 
+                        data: labels.map(l => netData[l]), 
+                        borderColor: '#ef4444', 
+                        backgroundColor: isHorizontal ? 'rgba(239, 68, 68, 0.7)' : '#ef4444', 
+                        borderWidth: 2, 
+                        pointRadius: 4, 
+                        fill: false, 
+                        order: 1 
+                    },
+                    { type: 'bar', label: 'Efterfrågan/Jobb (Dag)', data: labels.map(l => dagData['totalt'][l]), backgroundColor: '#10b981', order: 2 },
+                    { type: 'bar', label: supplyLabel, data: labels.map(l => nattData['totalt'][l]), backgroundColor: '#0ea5e9', order: 3 }
+                ];
+            }
 
             const scaleConfig = isHorizontal ? {
-                x: { ticks: { callback: val => formatNumber(val) }, title: { display: true, text: 'Antal personer' } },
+                x: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val), font: { size: 10 } }, title: { display: true, text: 'Antal personer' } },
                 y: { ticks: { font: { size: 10 } } }
             } : {
-                x: { ticks: { font: { size: 11 } } },
-                y: { ticks: { callback: val => formatNumber(val) }, title: { display: true, text: 'Antal personer' } }
+                x: { ticks: { font: { size: 10 } } },
+                y: { beginAtZero: useZeroAxis, ticks: { callback: val => formatNumber(val), font: { size: 10 } }, title: { display: true, text: 'Antal personer' } }
             };
-
-            const simMode = document.getElementById('simMode').value;
-            const supplyLabel = simMode === 'full' ? 'Utbud (Inkl. all pendling)' : 'Lokalt Utbud (Nattbef.)';
 
             trendChartInstance = new Chart(ctx, {
                 type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        { 
-                            type: isHorizontal ? 'bar' : 'line', 
-                            label: 'Rekryteringsgap (Lokal brist)', 
-                            data: labels.map(l => netData[l]), 
-                            borderColor: '#ef4444', 
-                            backgroundColor: isHorizontal ? 'rgba(239, 68, 68, 0.7)' : '#ef4444', 
-                            borderWidth: 2, 
-                            pointRadius: 5, 
-                            fill: false, 
-                            order: 1 
-                        },
-                        { type: 'bar', label: 'Efterfrågan/Jobb (Dag)', data: labels.map(l => dagDataObj[l]), backgroundColor: '#10b981', order: 2 },
-                        { type: 'bar', label: supplyLabel, data: labels.map(l => nattDataObj[l]), backgroundColor: '#0ea5e9', order: 3 }
-                    ]
-                },
+                data: { labels: labels, datasets: datasets },
                 options: {
                     indexAxis: isHorizontal ? 'y' : 'x', 
                     responsive: true, maintainAspectRatio: false,
                     interaction: { mode: 'index', intersect: false },
                     scales: scaleConfig,
-                    plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw) } } }
+                    plugins: { tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(ctx.raw) } }, legend: { labels: { boxWidth: 10, font: { size: 11 } } } }
                 }
             });
         }

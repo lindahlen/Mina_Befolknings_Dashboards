@@ -57,362 +57,6 @@
       "Stagnerande": 0
     }
   ],
-  "Flyttningar": [
-    {
-      "Prognosår": 2025,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    },
-    {
-      "Prognosår": 2026,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    },
-    {
-      "Prognosår": 2027,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    },
-    {
-      "Prognosår": 2028,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    },
-    {
-      "Prognosår": 2029,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    },
-    {
-      "Prognosår": 2030,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    },
-    {
-      "Prognosår": 2031,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    },
-    {
-      "Prognosår": 2032,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    },
-    {
-      "Prognosår": 2033,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    },
-    {
-      "Prognosår": 2034,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    },
-    {
-      "Prognosår": 2035,
-      "Riket_16-18_år": 10,
-      "Riket_19-24_år": 10,
-      "Riket_25-29_år": 10,
-      "Riket_30-34_år": 10,
-      "Riket_35-39_år": 10,
-      "Riket_40-44_år": 10,
-      "Riket_45-49_år": 10
-    }
-  ],
-  "Flyttåldrar": [
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2025,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2026,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2027,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2028,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2029,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2030,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2031,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2032,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2033,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2034,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Inflyttning",
-      "Prognosår": 2035,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2025,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2026,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2027,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2028,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2029,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2030,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2031,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2032,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2033,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2034,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    },
-    {
-      "Riktning": "Utflyttning",
-      "Prognosår": 2035,
-      "16-18 år": 1,
-      "19-24 år": 2,
-      "25-29 år": 2,
-      "30-34 år": 1,
-      "35-39 år": 1,
-      "40-44 år": 1,
-      "45-49 år": 1
-    }
-  ],
   "Universitet": [
     {
       "År": 2000,
@@ -881,313 +525,6 @@
       "Kvar_ekonomer_2_år": 25,
       "Kvar_tekniker_2_år": 35,
       "Kvar_övriga_2_år": 20
-    }
-  ],
-  "Distans": [
-    {
-      "Prognosår": 2025,
-      "Distansarbete": 30
-    },
-    {
-      "Prognosår": 2026,
-      "Distansarbete": 30
-    },
-    {
-      "Prognosår": 2027,
-      "Distansarbete": 30
-    },
-    {
-      "Prognosår": 2028,
-      "Distansarbete": 30
-    },
-    {
-      "Prognosår": 2029,
-      "Distansarbete": 30
-    },
-    {
-      "Prognosår": 2030,
-      "Distansarbete": 30
-    },
-    {
-      "Prognosår": 2031,
-      "Distansarbete": 30
-    },
-    {
-      "Prognosår": 2032,
-      "Distansarbete": 30
-    },
-    {
-      "Prognosår": 2033,
-      "Distansarbete": 30
-    },
-    {
-      "Prognosår": 2034,
-      "Distansarbete": 30
-    },
-    {
-      "Prognosår": 2035,
-      "Distansarbete": 30
-    }
-  ],
-  "Branschkvalitet": [
-    {
-      "Prognosår": 2025,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    },
-    {
-      "Prognosår": 2026,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    },
-    {
-      "Prognosår": 2027,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    },
-    {
-      "Prognosår": 2028,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    },
-    {
-      "Prognosår": 2029,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    },
-    {
-      "Prognosår": 2030,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    },
-    {
-      "Prognosår": 2031,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    },
-    {
-      "Prognosår": 2032,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    },
-    {
-      "Prognosår": 2033,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    },
-    {
-      "Prognosår": 2034,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    },
-    {
-      "Prognosår": 2035,
-      "Branschstyrka_transportmedel": 10,
-      "Branschstyrka_datateknik": 10
-    }
-  ],
-  "Matchning": [
-    {
-      "Prognosår": 2025,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    },
-    {
-      "Prognosår": 2026,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    },
-    {
-      "Prognosår": 2027,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    },
-    {
-      "Prognosår": 2028,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    },
-    {
-      "Prognosår": 2029,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    },
-    {
-      "Prognosår": 2030,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    },
-    {
-      "Prognosår": 2031,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    },
-    {
-      "Prognosår": 2032,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    },
-    {
-      "Prognosår": 2033,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    },
-    {
-      "Prognosår": 2034,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    },
-    {
-      "Prognosår": 2035,
-      "Matchning_transportmedel": 10,
-      "Matchning_datateknik": 10
-    }
-  ],
-  "Behov": [
-    {
-      "Prognosår": 2025,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    },
-    {
-      "Prognosår": 2026,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    },
-    {
-      "Prognosår": 2027,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    },
-    {
-      "Prognosår": 2028,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    },
-    {
-      "Prognosår": 2029,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    },
-    {
-      "Prognosår": 2030,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    },
-    {
-      "Prognosår": 2031,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    },
-    {
-      "Prognosår": 2032,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    },
-    {
-      "Prognosår": 2033,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    },
-    {
-      "Prognosår": 2034,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    },
-    {
-      "Prognosår": 2035,
-      "Behov_transportmedel": 10,
-      "Behov_datateknik": 10
-    }
-  ],
-  "Dummy": [
-    {
-      "Prognosår": 2025,
-      "Typ": "Ja"
-    },
-    {
-      "Prognosår": 2026,
-      "Typ": "Ja"
-    },
-    {
-      "Prognosår": 2027,
-      "Typ": "Ja"
-    },
-    {
-      "Prognosår": 2028,
-      "Typ": "Ja"
-    },
-    {
-      "Prognosår": 2029,
-      "Typ": "Ja"
-    },
-    {
-      "Prognosår": 2030,
-      "Typ": "Nej"
-    },
-    {
-      "Prognosår": 2031,
-      "Typ": "Nej"
-    },
-    {
-      "Prognosår": 2032,
-      "Typ": "Nej"
-    },
-    {
-      "Prognosår": 2033,
-      "Typ": "Nej"
-    },
-    {
-      "Prognosår": 2034,
-      "Typ": "Nej"
-    },
-    {
-      "Prognosår": 2035,
-      "Typ": "Nej"
-    }
-  ],
-  "Hushåll_referensperson": [
-    {
-      "Referenspersons_ålder": "20-24 år",
-      "Hushållsstorlek": 1.865357142857143,
-      "Eftersläpning första barnet": 10,
-      "Antal_hushåll": 8400,
-      "Antal_boende": 15669
-    },
-    {
-      "Referenspersons_ålder": "25-29 år",
-      "Hushållsstorlek": 1.7084285522247613,
-      "Eftersläpning första barnet": 5,
-      "Antal_hushåll": 7439,
-      "Antal_boende": 12709
-    },
-    {
-      "Referenspersons_ålder": "30-34 år",
-      "Hushållsstorlek": 1.761864644762707,
-      "Eftersläpning första barnet": 1,
-      "Antal_hushåll": 7122,
-      "Antal_boende": 12548
-    },
-    {
-      "Referenspersons_ålder": "35-39 år",
-      "Hushållsstorlek": 1.7156033820138354,
-      "Eftersläpning första barnet": 0,
-      "Antal_hushåll": 6505,
-      "Antal_boende": 11160
-    },
-    {
-      "Referenspersons_ålder": "40-44 år",
-      "Hushållsstorlek": 1.6783252059862115,
-      "Eftersläpning första barnet": 0,
-      "Antal_hushåll": 5947,
-      "Antal_boende": 9981
-    },
-    {
-      "Referenspersons_ålder": "45-49 år",
-      "Hushållsstorlek": 1.6365616621983914,
-      "Eftersläpning första barnet": 0,
-      "Antal_hushåll": 5968,
-      "Antal_boende": 9767
     }
   ],
   "Andel_förvarb_inflytt_över_län": [
@@ -5837,34 +5174,46 @@
   "Etableringschocker": [
     {
       "År": 2026,
-      "Händelsenamn": "Saabs-expansion",
+      "Händelsenamn": "Saabs expansion",
       "Bransch": "Tillverkning och utvinning",
       "Antal_Jobb": 500
     },
     {
       "År": 2026,
-      "Händelsenamn": "Varsel hos stort industriföretag",
+      "Händelsenamn": "Saabs fortsatta expansion",
       "Bransch": "Tillverkning och utvinning",
-      "Antal_Jobb": -150
+      "Antal_Jobb": 750
     },
     {
       "År": 2027,
-      "Händelsenamn": "Saabs- fortsatta expansion",
+      "Händelsenamn": "Saabs fortsatta expansion",
       "Bransch": "Tillverkning och utvinning",
-      "Antal_Jobb": 250
+      "Antal_Jobb": 750
     },
     {
-      "År": 2032,
-      "Händelsenamn": "Ny logistikpark",
-      "Bransch": "Transport",
-      "Antal_Jobb": 500
+      "År": 2027,
+      "Händelsenamn": "Spillover effekt",
+      "Bransch": "Personliga och kulturella tjänster",
+      "Antal_Jobb": 50
+    },
+    {
+      "År": 2028,
+      "Händelsenamn": "Spillover effekt",
+      "Bransch": "Personliga och kulturella tjänster",
+      "Antal_Jobb": 50
+    },
+    {
+      "År": 2033,
+      "Händelsenamn": "Distorp",
+      "Bransch": "Handel",
+      "Antal_Jobb": 100
     }
   ],
   "Branschglidning": [
     {
       "Växande_Bransch": "Tillverkning och utvinning",
       "Drabbad_Bransch": "Handel",
-      "Överföringsfaktor": 0.1
+      "Överföringsfaktor": 0.04
     },
     {
       "Växande_Bransch": "Vård och omsorg",
@@ -8628,6 +7977,397 @@
       "98": 115,
       "99": 80,
       "100": 147
+    }
+  ],
+  "Matchning": [
+    {
+      "Prognosår": 2025,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2026,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2027,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2028,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2029,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2030,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2031,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2032,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2033,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2034,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    },
+    {
+      "Prognosår": 2035,
+      "Matchning_transportmedel": 10,
+      "Matchning_datateknik": 10
+    }
+  ],
+  "Dummy": [
+    {
+      "Prognosår": 2025,
+      "Typ": "Ja"
+    },
+    {
+      "Prognosår": 2026,
+      "Typ": "Ja"
+    },
+    {
+      "Prognosår": 2027,
+      "Typ": "Ja"
+    },
+    {
+      "Prognosår": 2028,
+      "Typ": "Ja"
+    },
+    {
+      "Prognosår": 2029,
+      "Typ": "Ja"
+    },
+    {
+      "Prognosår": 2030,
+      "Typ": "Nej"
+    },
+    {
+      "Prognosår": 2031,
+      "Typ": "Nej"
+    },
+    {
+      "Prognosår": 2032,
+      "Typ": "Nej"
+    },
+    {
+      "Prognosår": 2033,
+      "Typ": "Nej"
+    },
+    {
+      "Prognosår": 2034,
+      "Typ": "Nej"
+    },
+    {
+      "Prognosår": 2035,
+      "Typ": "Nej"
+    }
+  ],
+  "Flyttåldrar": [
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2025,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2026,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2027,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2028,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2029,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2030,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2031,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2032,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2033,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2034,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Inflyttning",
+      "Prognosår": 2035,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2025,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2026,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2027,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2028,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2029,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2030,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2031,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2032,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2033,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2034,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    },
+    {
+      "Riktning": "Utflyttning",
+      "Prognosår": 2035,
+      "16-18 år": 1,
+      "19-24 år": 2,
+      "25-29 år": 2,
+      "30-34 år": 1,
+      "35-39 år": 1,
+      "40-44 år": 1,
+      "45-49 år": 1
+    }
+  ],
+  "Hushåll_referensperson": [
+    {
+      "Referenspersons_ålder": "20-24 år",
+      "Hushållsstorlek": 1.865357142857143,
+      "Eftersläpning första barnet": 10,
+      "Antal_hushåll": 8400,
+      "Antal_boende": 15669
+    },
+    {
+      "Referenspersons_ålder": "25-29 år",
+      "Hushållsstorlek": 1.7084285522247613,
+      "Eftersläpning första barnet": 5,
+      "Antal_hushåll": 7439,
+      "Antal_boende": 12709
+    },
+    {
+      "Referenspersons_ålder": "30-34 år",
+      "Hushållsstorlek": 1.761864644762707,
+      "Eftersläpning första barnet": 1,
+      "Antal_hushåll": 7122,
+      "Antal_boende": 12548
+    },
+    {
+      "Referenspersons_ålder": "35-39 år",
+      "Hushållsstorlek": 1.7156033820138354,
+      "Eftersläpning första barnet": 0,
+      "Antal_hushåll": 6505,
+      "Antal_boende": 11160
+    },
+    {
+      "Referenspersons_ålder": "40-44 år",
+      "Hushållsstorlek": 1.6783252059862115,
+      "Eftersläpning första barnet": 0,
+      "Antal_hushåll": 5947,
+      "Antal_boende": 9981
+    },
+    {
+      "Referenspersons_ålder": "45-49 år",
+      "Hushållsstorlek": 1.6365616621983914,
+      "Eftersläpning första barnet": 0,
+      "Antal_hushåll": 5968,
+      "Antal_boende": 9767
     }
   ]
 }
