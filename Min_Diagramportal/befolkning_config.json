@@ -36,6 +36,24 @@
             "drilldown_typ": "stapel"
         },
         {
+            "id": "Grundskoleålder_detalj",
+            "label": "Grundskoleålder detalj",
+            "drilldown_komponenter": [
+                "6 år",
+                "7 år",
+                "8 år",
+                "9 år",
+                "10 år",
+                "11 år",
+                "12 år",
+                "13 år",
+                "14 år",
+                "15 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
             "id": "Yngre_åldrar",
             "label": "Yngre åldrar",
             "drilldown_komponenter": [
@@ -106,6 +124,30 @@
             ],
             "drilldown_farger": [],
             "drilldown_typ": "stapel"
+        },
+        {
+            "id": "85_år_och_äldre",
+            "label": "85 år och äldre",
+            "drilldown_komponenter": [
+                "85 år",
+                "86 år",
+                "87 år",
+                "88 år",
+                "89 år",
+                "90 år",
+                "91 år",
+                "92 år",
+                "93 år",
+                "94 år",
+                "95 år",
+                "96 år",
+                "97 år",
+                "98 år",
+                "99 år",
+                "100+ år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
         }
     ],
     "3": [
@@ -113,10 +155,29 @@
             "id": "Totalt (Hela folkmängden)",
             "label": "Folkmängd",
             "drilldown_komponenter": [
-                "Femårs_klasser"
+                "0-4 år",
+                "5-9 år",
+                "10-14 år",
+                "15-19 år",
+                "20-24 år",
+                "25-29 år",
+                "30-34 år",
+                "35-39 år",
+                "40-44 år",
+                "45-49 år",
+                "50-54 år",
+                "55-59 år",
+                "60-64 år",
+                "65-69 år",
+                "70-74 år",
+                "75-79 år",
+                "80-84 år",
+                "85-89 år",
+                "90-94 år",
+                "95+ år"
             ],
             "drilldown_farger": [
-                "Flera"
+                "Orange"
             ],
             "drilldown_typ": "pyramid"
         },
@@ -198,6 +259,27 @@
                 "30-34 år",
                 "35-39 år",
                 "40-44 år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Flyttningsåldrar_detalj",
+            "label": "Flyttningsåldrar detalj",
+            "drilldown_komponenter": [
+                "18 år",
+                "19 år",
+                "20 år",
+                "21 år",
+                "22 år",
+                "23 år",
+                "24 år",
+                "25 år",
+                "26 år",
+                "27 år",
+                "28 år",
+                "29 år",
+                "30 år"
             ],
             "drilldown_farger": [],
             "drilldown_typ": "stapel"

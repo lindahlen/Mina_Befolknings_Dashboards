@@ -13,7 +13,7 @@
     
     <style>
         :root {
-            var(--max-bredd-rullista): 250px; 
+            --max-bredd-rullista: 250px; 
             --primary-color: #5a2e8c; 
             --primary-dark: #3b1d5e;
             --bg-color: #f4f7f6;
@@ -50,6 +50,9 @@
         .minitabell-rad td, .minitabell-rad th { vertical-align: middle; white-space: normal; }
         .minitabell-riket td { color: #6c757d; }
         
+        /* --- SMART AVSTAVNING FÖR LÅNGA ORD --- */
+        .optional-br { display: none; }
+        
         .status-boll { display: inline-flex; justify-content: center; align-items: center; width: 32px; height: 32px; border-radius: 50%; color: white; font-size: 22px; font-weight: 900; -webkit-text-stroke: 1px white; flex-shrink: 0; cursor: help; }
         .boll-gron { background-color: var(--farg-bra); }
         .boll-rod { background-color: var(--farg-dalig); }
@@ -83,6 +86,10 @@
         .termometer-container { width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; margin-top: 8px; overflow: hidden; display: flex; }
         .termometer-fill { height: 100%; transition: width 0.5s ease, background-color 0.5s ease; border-radius: 4px; }
 
+        @media (max-width: 992px) {
+            .optional-br { display: inline; } /* Tillåter avstavning på små skärmar */
+        }
+
         @media (max-width: 768px) {
             .header-bar { flex-direction: column; text-align: center; gap: 15px; padding: 15px; }
             .header-title { font-size: 1.2rem; }
@@ -94,7 +101,7 @@
             
             .rapport-sektion { padding: 15px; }
             .analys-text { font-size: 1rem; }
-            .minitabell-rad th, .minitabell-rad td { font-size: 0.85rem; padding: 8px 5px; }
+            .minitabell-rad th, .minitabell-rad td { font-size: 0.85rem; padding: 6px 4px; }
             .status-boll { width: 26px; height: 26px; font-size: 16px; }
         }
 
@@ -102,25 +109,71 @@
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; transition: none !important; }
             @page { size: A4 portrait; margin: 1cm; }
             body { background-color: white; font-size: 11pt; }
+            
+            .optional-br { display: inline; } /* Tvingar avstavning på PDF */
+            
             .header-bar, .top-controls, .view-toggle, .site-footer { display: none !important; }
             .content-wrapper { padding: 0 !important; margin: 0 !important; max-width: 100%; }
+            
             .rapport-sektion { box-shadow: none !important; border: none !important; padding: 5px 0 !important; margin-bottom: 10px !important; }
             .rapport-titel { font-size: 1.4rem !important; margin-bottom: 5px !important; padding-bottom: 5px !important; }
             .analys-text { font-size: 10.5pt !important; line-height: 1.4 !important; margin-bottom: 8px !important; }
-            .col-md-8 { width: 66.66% !important; float: left; padding-right: 15px !important; }
-            .col-md-4 { width: 33.33% !important; float: left; }
-            .col-md-4 > div { padding: 8px !important; margin-bottom: 8px !important; } 
-            .col-md-6 { width: 50% !important; float: left; padding: 0 10px !important; }
+            
+            /* --- PDF VISNINGS-LOGIK --- */
+            body.print-mode-reports #vy-befolkning, 
+            body.print-mode-reports #vy-flyttning { display: block !important; }
+            body.print-mode-reports #analys-vy { display: none !important; }
+            
+            body.print-mode-analys #vy-befolkning, 
+            body.print-mode-analys #vy-flyttning { display: none !important; }
+            body.print-mode-analys #analys-vy { display: block !important; }
+            
+            /* Kolumner för standardvyerna */
+            #vy-befolkning .col-md-8, #vy-flyttning .col-md-8 { width: 66.66% !important; float: left; padding-right: 15px !important; }
+            #vy-befolkning .col-md-4, #vy-flyttning .col-md-4 { width: 33.33% !important; float: left; }
+            #vy-befolkning .col-md-4 > div, #vy-flyttning .col-md-4 > div { padding: 8px !important; margin-bottom: 8px !important; } 
+            #vy-befolkning .col-md-6, #vy-flyttning .col-md-6 { width: 50% !important; float: left; padding: 0 10px !important; }
+            
             .row { display: flex; flex-wrap: wrap; width: 100%; margin: 0 !important; }
-            .minitabell-rad th, .minitabell-rad td { padding: 5px !important; font-size: 9pt !important; white-space: normal !important; }
+            
+            /* TRICK: Tvinga tabellen att bryta ord för att förhindra att den rymmer utanför pappret */
+            .minitabell-rad { table-layout: fixed; width: 100%; }
+            .minitabell-rad th, .minitabell-rad td { 
+                padding: 4px !important; 
+                font-size: 8.5pt !important; 
+                white-space: normal !important; 
+                word-wrap: break-word !important; 
+                overflow-wrap: break-word !important;
+                hyphens: auto; 
+            }
+            
             h4 { font-size: 1.1rem !important; margin-bottom: 5px !important; margin-top: 5px !important;}
             .rapport-sektion > div[style*="height: 250px"] { height: 185px !important; margin-bottom: 5px !important; }
             canvas { max-height: 185px !important; width: 100% !important; }
             .rapport-sektion h5 { font-size: 0.95rem !important; margin-bottom: 5px !important; }
             .status-boll { width: 24px !important; height: 24px !important; font-size: 15px !important; }
             .gauge-container { transform: scale(0.85); transform-origin: top center; margin-bottom: -20px !important; }
+            
             .print-page-break { page-break-before: always; margin-top: 0 !important; padding-top: 0 !important; }
             .print-show { display: block !important; }
+
+            /* --- NYA PDF/PRINT-STILAR FÖR ANALYSVYN --- */
+            .kontroll-panel { display: none !important; } /* Dölj alla filterknappar */
+            #analys-kpi-container .col-md-3 { width: 25% !important; float: left; padding: 0 5px !important; box-sizing: border-box !important; }
+            .kpi-card { padding: 10px !important; box-shadow: none !important; border: 1px solid #ced4da !important; }
+            .kpi-title { font-size: 0.75rem !important; margin-bottom: 2px !important; }
+            .kpi-value { font-size: 1.2rem !important; }
+            .kpi-trend { font-size: 0.75rem !important; }
+            
+            /* Tvinga flexbox och 50% för diagrammen så inte pyramiden puttas ut */
+            #analys-vy .row { display: flex !important; flex-wrap: wrap !important; width: 100% !important; }
+            #analys-vy .col-xl-6 { width: 50% !important; flex: 0 0 50% !important; max-width: 50% !important; padding: 5px !important; box-sizing: border-box !important; }
+            
+            .iframe-container { height: 350px !important; width: 100% !important; box-shadow: none !important; page-break-inside: avoid; border: 1px solid #ced4da !important; margin-bottom: 10px !important; padding: 5px !important; box-sizing: border-box !important; overflow: visible !important; }
+            iframe { width: 100% !important; max-width: 100% !important; height: 100% !important; box-sizing: border-box !important; }
+            
+            /* Dölj ev. osynlig rubrik tills vi aktiverar print-mode för analys */
+            body.print-mode-analys .print-only-header { display: block !important; }
         }
     </style>
 </head>
@@ -280,14 +333,21 @@
         <!-- VY 3: ANALYSVY                             -->
         <!-- ========================================== -->
         <div id="analys-vy">
+            <div class="print-only-header" style="display: none;">
+                <h2 id="print-analys-rubrik" style="color: var(--primary-color); border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-bottom: 20px;">Analysvy - Befolkningsbarometern</h2>
+            </div>
+
             <div class="kontroll-panel">
                 <div class="kpi-liten" title="Befolkning totalt för vald månad">
                     <div class="kpi-liten-titel">Folkmängd</div>
                     <div class="kpi-liten-varde" id="kpi-liten-befolkning">Laddar...</div>
                 </div>
                 
-                <select id="master-berakning" onchange="skickaTillDiagrammen()"><option value="_Manad">Aktuell månad</option><option value="_R12" selected>Rullande 12 månader</option></select>
-                <select id="master-graftyp" onchange="skickaTillDiagrammen()"><option value="linje">Utveckling över tid (Linje)</option><option value="stapel">Jämför specifik månad (Stapel)</option></select>
+                <!-- NYHET: Stapel som standardval -->
+                <select id="master-graftyp" onchange="skickaTillDiagrammen()">
+                    <option value="stapel" selected>Jämför specifik månad (Stapel)</option>
+                    <option value="linje">Utveckling över tid (Linje)</option>
+                </select>
                 <select id="master-tid" onchange="skickaTillDiagrammen()">
                     <option value="1">Senaste året</option>
                     <option value="5" selected>Senaste 5 åren</option>
@@ -369,29 +429,89 @@
         let bCharts = [null, null, null, null]; 
         let fCharts = [null, null, null, null];
 
+        // --- SMARTARE PDF KONTEXT ---
         function skrivUtPDF() {
-            document.getElementById('vy-befolkning').style.display = 'block';
-            document.getElementById('vy-flyttning').style.display = 'block';
-            document.getElementById('analys-vy').style.display = 'none';
-
             Chart.defaults.animation = false;
-            byggRapportVy('Befolkning');
-            byggRapportVy('Flyttning');
 
+            // Spruta in utskrifts-CSS i iframes för att rensa rubrikerna och säkra flexbox-bredd
+            for (let i = 1; i <= 4; i++) { 
+                const iframe = document.getElementById("iframe" + i);
+                if (iframe && iframe.contentDocument) {
+                    if (!iframe.contentDocument.getElementById('pdf-print-style')) { 
+                        let style = iframe.contentDocument.createElement('style');
+                        style.id = 'pdf-print-style';
+                        style.innerHTML = `@media print { 
+                            .trend-ruta, .toggle-btn, .tillbaka-btn { display: none !important; } 
+                            .top-rad { height: auto !important; margin-bottom: 0 !important; }
+                            select#indikator { border: none !important; background: transparent !important; font-size: 14px !important; padding: 0 !important; appearance: none !important; -webkit-appearance: none !important; -moz-appearance: none !important; color: #5a2e8c !important; white-space: normal !important; text-overflow: clip !important; max-width: 100% !important; }
+                            /* Tvingar canvas att rita om och inte spränga PDF-bredden */
+                            .canvas-container { width: 100% !important; max-width: 100% !important; }
+                            canvas { width: 100% !important; max-width: 100% !important; height: auto !important; }
+                        }`;
+                        iframe.contentDocument.head.appendChild(style);
+                    }
+                    
+                    // Trigga en omritning inne i ramarna för att pyramiden ska skala ner innan utskrift
+                    if (iframe.contentWindow) {
+                        iframe.contentWindow.dispatchEvent(new Event('resize'));
+                    }
+                }
+            }
+
+            if (aktuellVy === 'Analysvy') {
+                document.body.classList.add('print-mode-analys');
+                document.body.classList.remove('print-mode-reports');
+                
+                skickaTillDiagrammen(); 
+            } else {
+                document.body.classList.add('print-mode-reports');
+                document.body.classList.remove('print-mode-analys');
+                
+                document.getElementById('vy-befolkning').style.display = 'block';
+                document.getElementById('vy-flyttning').style.display = 'block';
+
+                byggRapportVy('Befolkning');
+                byggRapportVy('Flyttning');
+            }
+
+            // Marginellt längre väntetid så att diagrammen hinner rita ut staplarna
             setTimeout(() => {
+                let originalBottomInfos = {}; // LÄGG TILL: Spara undan texterna
+
+                // Rensa tillfälligt bort "Klicka för historik"-texten från diagrammen
+                for (let i = 1; i <= 4; i++) { 
+                    const iframe = document.getElementById("iframe" + i);
+                    if (iframe && iframe.contentDocument) {
+                        let bottenInfo = iframe.contentDocument.getElementById("botten-info");
+                        if (bottenInfo) {
+                            originalBottomInfos[i] = bottenInfo.innerHTML;
+                            // Tar bort lightbulb-texten och rensar upp eventuella överblivna radbrytningar
+                            bottenInfo.innerHTML = bottenInfo.innerHTML.replace(/<em>💡.*?<\/em>/gi, '').replace(/^(<br>\s*)+|(<br>\s*)+$/gi, '').replace(/(<br>\s*)+<br>/gi, '<br>');
+                        }
+                    }
+                }
+
                 window.print();
                 Chart.defaults.animation = true;
-                bytVy(aktuellVy);
-            }, 500);
+                
+                // Återställ texterna efter utskriften
+                for (let i = 1; i <= 4; i++) {
+                    const iframe = document.getElementById("iframe" + i);
+                    if (iframe && iframe.contentDocument && originalBottomInfos[i] !== undefined) {
+                        let bottenInfo = iframe.contentDocument.getElementById("botten-info");
+                        if (bottenInfo) bottenInfo.innerHTML = originalBottomInfos[i];
+                    }
+                }
+                
+                document.body.classList.remove('print-mode-analys', 'print-mode-reports');
+                bytVy(aktuellVy); 
+            }, 1000);
         }
 
-        // --- SÄKERHETSFUNKTIONER FÖR RULLISTORNA ---
-        
         function arVald(rf) {
             if (!rf) return false;
             let v = rf.toString().toUpperCase().trim();
-            // Nu godkänner webbsidan A, F, M och K (men döljer NAN)
-            return v === "A" || v === "F" || v === "M" || v === "K";
+            return v === "A" || v === "F" || v === "M" || v === "K" || v.includes("A") || v.includes("M") || v.includes("F") || v.includes("K");
         }
 
         function harRiktigData(ar, man) {
@@ -450,13 +570,11 @@
                 let aKey = r["År"] !== undefined ? "År" : (r["Ã…r"] !== undefined ? "Ã…r" : "r");
                 let mKey = r["Månad"] !== undefined ? "Månad" : (r["MÃ¥nad"] !== undefined ? "MÃ¥nad" : "Mnad");
                 
-                // NYTT: Nu filtrerar vi månaderna på det exakta året vi har valt!
                 if (arVald(r["Robot_Fakta"]) && harRiktigData(r[aKey], r[mKey]) && r[aKey] == valdAr) {
                     if (r[mKey] && !isNaN(parseInt(r[mKey]))) {
                         let m = parseInt(r[mKey]);
                         manadSet.add(m);
                         
-                        // Sparar maxmånad ifall vi behöver en fallback
                         if (m > maxMForAr) {
                             maxMForAr = m;
                         }
@@ -477,7 +595,6 @@
                 if (sorteradeManader.includes(parseInt(nuvarandeValdManad))) {
                     manadSelect.value = nuvarandeValdManad;
                 } else if (maxMForAr > 0 && aktuellVy !== 'Analysvy') {
-                    // Tvingar fram senaste giltiga månaden för det året i Rapportvyn
                     manadSelect.value = maxMForAr;
                 } else if (sorteradeManader.length > 0) {
                     manadSelect.value = sorteradeManader[sorteradeManader.length - 1]; 
@@ -513,8 +630,6 @@
             } else {
                 document.getElementById('btn-analys').classList.add('active');
                 document.getElementById('analys-vy').style.display = 'block';
-                
-                // ALLTID SYNLIGA I ANALYSVYN FÖR ATT STYRA KPI:ER OCH TIDSFÖNSTER
                 arSelect.style.display = 'inline-block';
                 manadSelect.style.display = 'inline-block';
                 
@@ -528,8 +643,6 @@
 
             function initieraStartVyNardDataFinns() {
                 if (texterKlara && dataKlara) { 
-                    
-                    // SÖKER UPP DET ABSOLUT SENASTE DATUMET (Med godkänd text och data)
                     let latestY = 0;
                     let latestM = 0;
                     
@@ -553,10 +666,9 @@
                     let arSelect = document.getElementById("global-ar");
                     let manadSelect = document.getElementById("global-manad");
 
-                    // Tvingar Startvyn att öppna på absolut senaste månaden
                     if (latestY > 0 && latestM > 0 && !window.harInitierats) {
                         arSelect.value = latestY;
-                        fyllManadRullista(); // Fyller månadslistan baserat på året
+                        fyllManadRullista(); 
                         manadSelect.value = latestM;
                         window.harInitierats = true;
                     } else {
@@ -688,6 +800,9 @@
                 let indicatorUsageCount = {};
                 kolumner.forEach(kol => {
                     let snyggtNamn = kol.namn.replace(/_/g, " "); 
+                    // Tvinga Mjuk avstavning av Befolkningsförändring via CSS-klass
+                    snyggtNamn = snyggtNamn.replace(/Befolkningsförändring/gi, "Befolknings<span class='optional-br'>-</span><br class='optional-br'>förändring");
+                    
                     let isRiket = kol.kod.startsWith('r');
                     let cleanKod = isRiket ? kol.kod.substring(1) : kol.kod;
                     
@@ -716,6 +831,7 @@
                         } else {
                             hInnehall = `${mainTitle}`;
                         }
+                        hInnehall = hInnehall.replace(/Befolkningsförändring/gi, "Befolknings<span class='optional-br'>-</span><br class='optional-br'>förändring");
                     } else { 
                         hInnehall = `${snyggtNamn}<br><span style="font-size:0.8rem; color:#6c757d; font-weight:normal;">${sx}</span>`; 
                     }
@@ -1098,7 +1214,11 @@
         }
 
         function skickaTillDiagrammen() {
-            const berakning = document.getElementById("master-berakning").value; 
+            // OBS! Vi tar inte längre beräkningen (R12/Manad) från Mastern. 
+            // Vi hårdkodar _R12 så att Diagram 1, 2 och 3 alltid får rätt värde. 
+            // Diagram 4 har nu en egen lokal knapp som bestämmer själv.
+            const berakning = "_R12"; 
+            
             const grafTyp = document.getElementById("master-graftyp").value;
             const tid = document.getElementById("master-tid").value; 
             const visningsTyp = document.getElementById("master-index").value; 
@@ -1110,8 +1230,13 @@
             let manadSelect = document.getElementById('global-manad');
             let arSelect = document.getElementById('global-ar');
             
+            // Uppdatera rubriken i utskriftsläget (Analysvy)
+            let printRubrik = document.getElementById('print-analys-rubrik');
+            if (printRubrik && manadSelect.selectedIndex >= 0) {
+                printRubrik.innerText = `Analys: Demografi - Analysvy ${manadSelect.options[manadSelect.selectedIndex].text} ${arSelect.value}`;
+            }
+            
             if (aktuellVy === 'Analysvy') {
-                // ALLTID SYNLIGA I ANALYSVYN FÖR ATT STYRA KPI:ER OCH TIDSFÖNSTER
                 arSelect.style.display = 'inline-block';
                 manadSelect.style.display = 'inline-block';
             }

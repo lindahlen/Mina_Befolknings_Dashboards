@@ -9,10 +9,8 @@
     
     <!-- Tailwind CSS för styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <!-- Chart.js för grafer -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <!-- FontAwesome för ikoner -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -21,7 +19,6 @@
         .card { background-color: white; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 1.5rem; }
         .slider-container { margin-bottom: 1.2rem; }
         input[type=range] { width: 100%; accent-color: #0284c7; }
-        /* Smalare scrollbar för tabellen */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f8fafc; }
@@ -39,7 +36,10 @@
                     <div class="text-sm font-medium text-sky-200 mt-1">Befolkningsutveckling & Scenarier</div>
                 </div>
             </div>
-            <div class="flex gap-2 self-end md:self-center">
+            <div class="flex flex-wrap gap-2 self-end md:self-center">
+                <a href="sysselsattningskalkylator.html" class="bg-purple-700 hover:bg-purple-600 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center border border-purple-600" title="Öppna Sysselsättningskalkylatorn">
+                    <i class="fa-solid fa-briefcase mr-1.5"></i> Sysselsättning
+                </a>
                 <a href="anvandarguide_prognos.html" class="bg-white hover:bg-sky-50 text-sky-800 font-semibold py-1.5 px-3 rounded shadow-sm text-sm transition flex items-center border border-transparent">
                     <i class="fa-solid fa-book-open mr-1.5"></i> Användarguide
                 </a>
@@ -74,7 +74,7 @@
                 <div class="mb-5 p-3 bg-gray-50 rounded border border-gray-200">
                     <div class="text-xs font-bold text-gray-500 uppercase mb-2 flex justify-between">
                         <span>Snabbscenarier</span>
-                        <span onclick="openInfoModal()" class="text-gray-400 font-normal cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information om snabbscenarierna"><i class="fa-solid fa-circle-info text-base"></i></span>
+                        <span onclick="openInfoModal('scenarios')" class="text-gray-400 font-normal cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information om snabbscenarierna"><i class="fa-solid fa-circle-info text-base"></i></span>
                     </div>
                     <div class="flex gap-1.5">
                         <button onclick="setScenario('base')" class="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-xs font-semibold transition shadow-sm">Bas</button>
@@ -209,10 +209,18 @@
             <div class="card">
                 <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
                     <div class="flex items-center gap-3">
-                        <h2 class="text-lg font-bold">Befolkningspyramid</h2>
+                        <h2 class="text-lg font-bold mb-0">Befolkningspyramid (<span class="kpi-year">-</span>)</h2>
+                        <select id="pyramidGrouping" onchange="if(availableYears.length > 0) drawPyramidChart(document.getElementById('yearSelect').value)" class="border border-gray-300 rounded px-2 py-1 text-xs w-32 focus:ring-sky-500 focus:border-sky-500 hidden sm:inline-block">
+                            <option value="1yr">1-årsklasser</option>
+                            <option value="5yr">5-årsklasser</option>
+                        </select>
                         <input type="text" id="cohortInput" placeholder="Följ födelseår (ex 1990)" title="Skriv in ett eller flera födelseår separerade med kommatecken för att belysa generationen i pyramiden" class="border border-gray-300 rounded px-2 py-1 text-xs w-40 focus:ring-sky-500 focus:border-sky-500" oninput="if(availableYears.length > 0) drawPyramidChart(document.getElementById('yearSelect').value)">
                     </div>
                     <div class="flex flex-wrap gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                        <select id="pyramidGroupingMobile" onchange="document.getElementById('pyramidGrouping').value = this.value; if(availableYears.length > 0) drawPyramidChart(document.getElementById('yearSelect').value)" class="flex-1 border border-gray-300 rounded px-2 py-1 text-xs focus:ring-sky-500 focus:border-sky-500 sm:hidden">
+                            <option value="1yr">1-år</option>
+                            <option value="5yr">5-år</option>
+                        </select>
                         <button onclick="toggleAnimation()" id="playBtn" class="flex-1 sm:flex-none bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-semibold py-1 px-3 border border-emerald-300 rounded shadow-sm text-sm transition flex justify-center items-center">
                             <i class="fa-solid fa-play mr-1"></i> Spela
                         </button>
@@ -223,8 +231,6 @@
                 </div>
                 
                 <div class="relative h-80 w-full">
-                    <!-- Tydligt årtal uppe till vänster -->
-                    <div class="absolute top-0 left-2 text-3xl md:text-4xl font-black text-sky-800 opacity-90 pointer-events-none select-none z-0 kpi-year tracking-tighter" style="padding-top: 5px;">-</div>
                     <!-- Själva grafen -->
                     <canvas id="pyramidChart" class="z-10 relative"></canvas>
                 </div>
@@ -233,8 +239,11 @@
             <!-- Historisk trend & Förändringar (Nederst) -->
             <div class="card">
                 <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 gap-3">
-                    <!-- Dynamisk rubrik -->
-                    <h2 id="trendTitle" class="text-lg font-bold">Befolkningsutveckling</h2>
+                    <!-- Dynamisk rubrik med i-knapp -->
+                    <div class="flex items-start">
+                        <h2 id="trendTitle" class="text-lg font-bold m-0 leading-tight">Befolkningsutveckling</h2>
+                        <span onclick="openInfoModal('trend_diagram')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition ml-2 mt-1" title="Om diagrammet"><i class="fa-solid fa-circle-info"></i></span>
+                    </div>
                     
                     <div class="flex flex-wrap gap-2 items-center w-full lg:w-auto">
                         <!-- Väljare för Startår -->
@@ -273,26 +282,40 @@
                                 <option value="mig_share_riket">Andel av riket: Inrikes flytt (‰)</option>
                             </select>
                         </div>
-
-                        <div class="flex items-center gap-2 w-full sm:w-auto justify-start sm:justify-end mt-1 sm:mt-0">
-                            <!-- Dölj/Visa alla knapp (Endast synlig vid drill-down) -->
-                            <button id="hideAllBtn" onclick="toggleAllSeries()" class="hidden items-center gap-1 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 py-1.5 px-3 rounded shadow-sm border border-gray-300 transition" title="Dölj eller visa alla linjer i diagrammet">
-                                <i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla
-                            </button>
-                            
-                            <!-- Liten Checkbox för Indexering -->
-                            <label id="indexContainer" class="hidden items-center gap-1 text-sm font-medium text-sky-700 cursor-pointer" title="Visar utvecklingen som ett index där det valda startåret (eller sista historiska) är 100.">
-                                <input type="checkbox" id="showIndex" onchange="redrawTrendChart()" class="rounded text-sky-600 focus:ring-sky-500 w-4 h-4" checked>
-                                Index <span class="text-xs text-gray-500 font-normal">(Bas=100)</span>
-                            </label>
-
-                            <!-- Liten Checkbox för Riket -->
-                            <label id="riketContainer" class="hidden items-center gap-1 text-sm font-medium text-purple-700 cursor-pointer" title="Jämför utvecklingstakten med Riket.">
-                                <input type="checkbox" id="showRiket" onchange="redrawTrendChart()" class="rounded text-purple-600 focus:ring-purple-500 w-4 h-4">
-                                Riket
-                            </label>
-                        </div>
                     </div>
+                </div>
+                
+                <!-- Under-kontroller för diagrammet -->
+                <div class="flex flex-wrap items-center gap-3 mb-3 pb-2 border-b border-gray-100">
+                    <button id="hideAllBtn" onclick="toggleAllSeries()" class="hidden items-center gap-1 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 py-1 px-3 rounded shadow-sm border border-gray-300 transition" title="Dölj eller visa alla linjer i diagrammet">
+                        <i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla
+                    </button>
+                    
+                    <label id="indexContainer" class="hidden items-center gap-1 text-sm font-medium text-sky-700 cursor-pointer" title="Visar utvecklingen som ett index där det valda startåret (eller sista historiska) är 100.">
+                        <input type="checkbox" id="showIndex" onchange="redrawTrendChart()" class="rounded text-sky-600 focus:ring-sky-500 w-4 h-4" checked>
+                        Index <span class="text-xs text-gray-500 font-normal">(Bas=100)</span>
+                    </label>
+
+                    <label id="riketContainer" class="hidden items-center gap-1 text-sm font-medium text-purple-700 cursor-pointer" title="Jämför utvecklingstakten med Riket.">
+                        <input type="checkbox" id="showRiket" onchange="redrawTrendChart()" class="rounded text-purple-600 focus:ring-purple-500 w-4 h-4">
+                        Riket
+                    </label>
+
+                    <label id="officiellContainer" class="hidden items-center gap-1 text-sm font-medium text-emerald-700 cursor-pointer" title="Jämför med kommunens officiella prognos.">
+                        <input type="checkbox" id="showOfficial" onchange="redrawTrendChart(); if(document.getElementById('pyramidChart')) drawPyramidChart(document.getElementById('yearSelect').value);" class="rounded text-emerald-600 focus:ring-emerald-500 w-4 h-4">
+                        Officiell
+                    </label>
+
+                    <!-- GRACE/MARGINAL DROPDOWN -->
+                    <label id="yGraceContainer" class="hidden items-center gap-1 text-sm font-medium text-gray-600 ml-auto border border-gray-200 bg-gray-50 rounded px-2 py-0.5 transition-all" title="Skapar marginal (luft) mellan linjerna och x-axeln">
+                        <i class="fa-solid fa-arrows-up-down text-xs text-gray-400"></i> Marginal:
+                        <select id="yGrace" onchange="redrawTrendChart()" class="bg-transparent border-none outline-none font-bold text-sky-700 cursor-pointer p-0 pr-4 focus:ring-0 text-sm">
+                            <option value="0%">0%</option>
+                            <option value="5%">5%</option>
+                            <option value="10%">10%</option>
+                            <option value="20%" selected>20%</option>
+                        </select>
+                    </label>
                 </div>
                 
                 <div class="relative h-80 w-full mb-2">
@@ -399,23 +422,17 @@
         </div>
     </div>
 
-    <!-- MODAL FÖR INFO OM SNABBSCENARIER -->
+    <!-- DYNAMISK INFO-MODAL -->
     <div id="infoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col">
             <div class="flex justify-between items-center p-4 border-b">
-                <h2 class="text-xl font-bold text-gray-800">Om Snabbscenarier</h2>
+                <h2 class="text-xl font-bold text-gray-800" id="infoModalTitle">Information</h2>
                 <button onclick="closeInfoModal()" class="text-gray-400 hover:text-gray-800 transition">
                     <i class="fa-solid fa-times text-2xl"></i>
                 </button>
             </div>
-            <div class="p-5 text-gray-700 text-sm space-y-3">
-                <p>Snabbscenarierna laddar in förinställda värden som har definierats i din Excel-styrfil (under fliken <em>Tillväxt</em>).</p>
-                <ul class="list-disc pl-5 space-y-2">
-                    <li><b>Bas:</b> Huvudscenariot. Detta kan använda en <i>varierande fruktsamhet (TFR)</i> över tid om det är inställt så i styrfilen.</li>
-                    <li><b>Hög / Låg:</b> Applicerar en fast procentuell förändring på in- och utflyttning, fast fruktsamhet samt dödlighet enligt din styrfil.</li>
-                    <li><b>Stagnerande:</b> Låser flyttningsnettot genom <i>absolut förändring</i> och sätter övriga värden till en statisk nivå.</li>
-                </ul>
-                <p class="mt-2 font-medium text-sky-800">När du har klickat på ett snabbscenario kan du alltid finjustera reglagen manuellt efteråt!</p>
+            <div id="infoModalContent" class="p-5 text-gray-700 text-sm space-y-3">
+                <!-- Genereras av JS -->
             </div>
             <div class="p-4 border-t bg-gray-50 flex justify-end">
                 <button onclick="closeInfoModal()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-1.5 px-4 rounded shadow-sm text-sm transition">
@@ -426,11 +443,17 @@
     </div>
 
     <script>
+        // === KONFIGURATION FÖR MARGINAL (Y-AXEL) ===
+        // Sätt till false för att dölja "Marginal"-rullistan och använda standardvärdet statiskt i koden
+        const SHOW_Y_GRACE_UI = true; 
+        const DEFAULT_Y_GRACE = '20%';
+
         // === GLOBAL STATE ===
         let globalData = [];
         let riketData = []; 
         let projectedData = [];
         let savedProjectedData = [];
+        let officialDataStore = [];
         let projectedRiketData = []; 
         let availableYears = [];
         let currentYearData = []; 
@@ -438,6 +461,28 @@
         
         let pyramidChartInstance = null;
         let trendChartInstance = null;
+
+        const infoTexts = {
+            'scenarios': {
+                title: 'Om Snabbscenarier',
+                content: `<p>Snabbscenarierna laddar in förinställda värden som har definierats i din Excel-styrfil (under fliken <em>Tillväxt</em>).</p>
+                          <ul class="list-disc pl-5 space-y-2">
+                              <li><b>Bas:</b> Huvudscenariot. Detta kan använda en <i>varierande fruktsamhet (TFR)</i> över tid om det är inställt så i styrfilen.</li>
+                              <li><b>Hög / Låg:</b> Applicerar en fast procentuell förändring på in- och utflyttning, fast fruktsamhet samt dödlighet enligt din styrfil.</li>
+                              <li><b>Stagnerande:</b> Låser flyttningsnettot genom <i>absolut förändring</i> och sätter övriga värden till en statisk nivå.</li>
+                          </ul>
+                          <p class="mt-2 font-medium text-sky-800">När du har klickat på ett snabbscenario kan du alltid finjustera reglagen manuellt efteråt!</p>`
+            },
+            'trend_diagram': {
+                title: 'Om Befolkningsutveckling',
+                content: `<p>Diagrammet visar befolkningsutvecklingen över tid utifrån olika scenarier och jämförelser.</p>
+                          <ul class="list-disc pl-5 space-y-2">
+                              <li><b>Valt scenario (Ex. Blå linje):</b> Den prognos du just nu modellerar via reglagen till vänster.</li>
+                              <li><b>Riket (Lila linje):</b> En framskrivning av hela Sveriges utvecklingstakt applicerad lokalt. Visar om kommunen förväntas växa snabbare eller långsammare än snittet. Observera att de framtida uppgifterna inte kommer från riksprognosen.</li>
+                              <li><b>Officiell (Grön linje):</b> Linköpings kommuns senast beslutade (officiella) befolkningsprognos. Denna utgör kommunens planeringsram.</li>
+                          </ul>`
+            }
+        };
         
         // Dynamiska inställningar från styrfilen
         window.scenarioSettings = {
@@ -459,8 +504,11 @@
         let isPlaying = false;
         let playTimer = null;
 
-        // Formateringshjälpare
-        const formatNumber = (num, decimals = 0) => Number(num).toLocaleString('sv-SE', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+        // Smart Formateringshjälpare - Undviker decimaler om decimals är 0
+        const formatNumber = (num, decimals = 0) => {
+            if (num === null || num === undefined || isNaN(num)) return '-';
+            return Number(num).toLocaleString('sv-SE', {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+        };
 
         // === DOM ELEMENT ===
         const dataStatus = document.getElementById('dataStatus');
@@ -482,7 +530,14 @@
         function openChangesModal() { changesModal.classList.remove('hidden'); }
         function closeChangesModal() { changesModal.classList.add('hidden'); }
 
-        function openInfoModal() { infoModal.classList.remove('hidden'); }
+        function openInfoModal(key) {
+            const data = infoTexts[key];
+            if (data) {
+                document.getElementById('infoModalTitle').innerText = data.title;
+                document.getElementById('infoModalContent').innerHTML = data.content;
+                infoModal.classList.remove('hidden');
+            }
+        }
         function closeInfoModal() { infoModal.classList.add('hidden'); }
 
         window.addEventListener('click', (e) => {
@@ -498,7 +553,7 @@
             
             trendChartInstance.data.datasets.forEach((ds, i) => {
                 trendChartInstance.setDatasetVisibility(i, !anyVisible);
-                ds.hidden = anyVisible; // Sync config
+                ds.hidden = anyVisible; 
             });
             trendChartInstance.update();
             
@@ -608,20 +663,38 @@
             runSimulation();
         }
 
-        // === AUTO-LOAD DATA ===
+        // === AUTO-LOAD DATA MED SÄKER JSON-PARSNING ===
+        async function fetchJSON(url) {
+            const res = await fetch(url);
+            // Tillåt status 0 eftersom lokala filer (file://) inte returnerar en HTTP 200 kod
+            if (!res.ok && res.status !== 0) throw new Error(`Kunde inte ladda ${url}`);
+            let text = await res.text();
+            text = text.replace(/:\s*NaN/g, ': null');
+            try { return JSON.parse(text); }
+            catch (e) { throw new Error(`Ogiltig JSON i ${url}.`); }
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
-            const cb = '?v=' + new Date().getTime(); 
+            // Kontrollera om sidan körs lokalt för att undvika problem med cache-bustern "?v=..."
+            const isLocal = window.location.protocol === 'file:';
+            const cb = isLocal ? '' : '?v=' + new Date().getTime(); 
             
+            const yGraceContainer = document.getElementById('yGraceContainer');
+            if (yGraceContainer) {
+                yGraceContainer.style.display = SHOW_Y_GRACE_UI ? 'flex' : 'none';
+            }
+            const yGraceSelect = document.getElementById('yGrace');
+            if (yGraceSelect) {
+                yGraceSelect.value = DEFAULT_Y_GRACE;
+            }
+
             Promise.all([
-                fetch('kalkylator_basdata.json' + cb).then(res => {
-                    if (!res.ok) throw new Error('Kunde inte läsa in basdata.');
-                    return res.json();
+                fetchJSON('kalkylator_basdata.json' + cb).then(data => {
+                    if (!data) throw new Error('Kunde inte läsa in basdata.');
+                    return data;
                 }),
-                fetch('styrfil_config.json' + cb).then(res => {
-                    if (!res.ok) return null; 
-                    return res.json();
-                }).catch(() => null),
-                fetch('riket_basdata.json' + cb).then(r => r.json()).catch(() => null)
+                fetchJSON('styrfil_config.json' + cb).catch(() => null),
+                fetchJSON('riket_basdata.json' + cb).catch(() => null)
             ])
             .then(([basdata, configData, riksData]) => {
                 globalData = basdata;
@@ -631,7 +704,7 @@
                 initDashboard();
             })
             .catch(error => {
-                dataStatus.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Hittade inte kalkylator_basdata.json.';
+                dataStatus.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Hittade inte kalkylator_basdata.json. Fel: ${error.message}`;
                 dataStatus.className = "p-3 bg-red-50 rounded border border-red-100 text-sm font-medium text-red-600";
             });
         });
@@ -683,6 +756,50 @@
                     chartSelect.appendChild(optGroupChart);
                 }
             }
+
+            // Hämta officiell prognos om den finns (Robust köns-matchning)
+            if (data.officiell_prognos && data.officiell_prognos.length > 0) {
+                data.officiell_prognos.forEach(row => {
+                    const year = row['År'] || row['år'] || row['Prognosår'];
+                    const rawSex = String(row['Kön'] || row['kön'] || '').trim().toLowerCase();
+                    if (!year || !rawSex) return;
+                    
+                    let sex = null;
+                    if (rawSex.startsWith('m')) sex = 'Män';
+                    else if (rawSex.startsWith('k')) sex = 'Kvinnor';
+                    
+                    if (!sex) return;
+                    
+                    const numYear = parseInt(year);
+                    const tidStr = `${numYear} (Prognos)`; 
+                    
+                    let totalPop = 0;
+                    for (let age = 0; age <= 100; age++) {
+                        let val = row[String(age)] !== undefined ? row[String(age)] : (row[age] !== undefined ? row[age] : null);
+                        if (val !== undefined && val !== null) {
+                            let popVal = parseFloat(val);
+                            officialDataStore.push({
+                                tid: tidStr,
+                                kön: sex,
+                                ålder: age === 100 ? "100+ år" : `${age} år`,
+                                Befolkning: popVal
+                            });
+                            totalPop += popVal;
+                        }
+                    }
+                    officialDataStore.push({
+                        tid: tidStr,
+                        kön: sex,
+                        ålder: "Totalt",
+                        Befolkning: totalPop
+                    });
+                });
+                const offCont = document.getElementById('officiellContainer');
+                if(offCont) {
+                    offCont.classList.remove('hidden');
+                    offCont.style.display = 'flex';
+                }
+            }
         }
 
         // === UI HANTERING FLYTTNING ===
@@ -723,10 +840,12 @@
             for (let age = 15; age <= 49; age++) {
                 let popThisAge = 0, birthsThisAge = 0;
                 baselineData.forEach(row => {
-                    const match = String(row.ålder).match(/\d+/);
-                    if (!String(row.ålder).toLowerCase().includes('totalt') && row.kön === 'Kvinnor' && match && parseInt(match[0]) === age) {
-                        popThisAge += (row.Befolkning || 0);
-                        birthsThisAge += ((row.Födda_Pojkar || 0) + (row.Födda_Flickor || 0)) || (row.Födda_barn || 0);
+                    if (!String(row.ålder).toLowerCase().includes('totalt') && row.kön === 'Kvinnor') {
+                        const rAge = parseInt(row.ålder);
+                        if (!isNaN(rAge) && rAge === age) {
+                            popThisAge += (row.Befolkning || 0);
+                            birthsThisAge += ((row.Födda_Pojkar || 0) + (row.Födda_Flickor || 0)) || (row.Födda_barn || 0);
+                        }
                     }
                 });
                 if (popThisAge > 0) sumASFR += (birthsThisAge / popThisAge);
@@ -760,7 +879,15 @@
                 if (currentVal && histYears.includes(parseInt(currentVal))) {
                     startYearSelect.value = currentVal;
                 } else {
-                    startYearSelect.value = histYears[histYears.length - 1]; 
+                    // Starta grafen på år 2000 som standard, annars från äldsta.
+                    let defaultYear = histYears[histYears.length - 1]; 
+                    for (let i = histYears.length - 1; i >= 0; i--) {
+                        if (histYears[i] >= 2000) {
+                            defaultYear = histYears[i];
+                            break;
+                        }
+                    }
+                    startYearSelect.value = defaultYear; 
                 }
             }
         }
@@ -856,21 +983,23 @@
                 }
 
                 baselineData.forEach(row => {
-                    const match = String(row.ålder).match(/\d+/);
-                    if (!String(row.ålder).toLowerCase().includes('totalt') && match && (row.kön === 'Män' || row.kön === 'Kvinnor')) {
-                        const age = Math.min(parseInt(match[0]), 100);
-                        const r = rates[row.kön][age];
-                        
-                        r.pop += (row.Befolkning || 0);
-                        r.deaths += (row.Döda || 0);
-                        
-                        r.inIn += (row.Inflyttade_Inrikes || 0) / 2;
-                        r.utIn += (row.Utflyttade_Inrikes || 0) / 2;
-                        r.inUt += (row.Inflyttade_Utrikes || 0) / 2;
-                        r.utUt += (row.Utflyttade_Utrikes || 0) / 2;
+                    if (!String(row.ålder).toLowerCase().includes('totalt') && (row.kön === 'Män' || row.kön === 'Kvinnor')) {
+                        const age = parseInt(row.ålder);
+                        if (!isNaN(age)) {
+                            const clampedAge = Math.min(age, 100);
+                            const r = rates[row.kön][clampedAge];
+                            
+                            r.pop += (row.Befolkning || 0);
+                            r.deaths += (row.Döda || 0);
+                            
+                            r.inIn += (row.Inflyttade_Inrikes || 0) / 2;
+                            r.utIn += (row.Utflyttade_Inrikes || 0) / 2;
+                            r.inUt += (row.Inflyttade_Utrikes || 0) / 2;
+                            r.utUt += (row.Utflyttade_Utrikes || 0) / 2;
 
-                        if (row.kön === 'Kvinnor') {
-                            r.births += ((row.Födda_Pojkar || 0) + (row.Födda_Flickor || 0)) || (row.Födda_barn || 0);
+                            if (row.kön === 'Kvinnor') {
+                                r.births += ((row.Födda_Pojkar || 0) + (row.Födda_Flickor || 0)) || (row.Födda_barn || 0);
+                            }
                         }
                     }
                 });
@@ -903,9 +1032,11 @@
                 // Etablera utgångspopulation
                 let currentPop = { Män: new Array(101).fill(0), Kvinnor: new Array(101).fill(0) };
                 globalData.filter(d => parseInt(String(d.tid).substring(0,4)) === baseYear).forEach(row => {
-                    const match = String(row.ålder).match(/\d+/);
-                    if(!String(row.ålder).toLowerCase().includes('totalt') && match && (row.kön==='Män' || row.kön==='Kvinnor')) {
-                        currentPop[row.kön][Math.min(parseInt(match[0]), 100)] += (row.Befolkning || 0);
+                    if(!String(row.ålder).toLowerCase().includes('totalt') && (row.kön==='Män' || row.kön==='Kvinnor')) {
+                        const age = parseInt(row.ålder);
+                        if (!isNaN(age)) {
+                            currentPop[row.kön][Math.min(age, 100)] += (row.Befolkning || 0);
+                        }
                     }
                 });
                 
@@ -914,10 +1045,12 @@
                 let currentRiketPopBase = { Män: new Array(101).fill(0), Kvinnor: new Array(101).fill(0) };
                 if (riketData.length > 0) {
                     riketData.filter(d => parseInt(String(d.tid).substring(0,4)) === baseYear).forEach(row => {
-                        const match = String(row.ålder).match(/\d+/);
-                        if(!String(row.ålder).toLowerCase().includes('totalt') && match && (row.kön==='Män' || row.kön==='Kvinnor')) {
-                            currentRiketPop[row.kön][Math.min(parseInt(match[0]), 100)] += (row.Befolkning || 0);
-                            currentRiketPopBase[row.kön][Math.min(parseInt(match[0]), 100)] += (row.Befolkning || 0);
+                        if(!String(row.ålder).toLowerCase().includes('totalt') && (row.kön==='Män' || row.kön==='Kvinnor')) {
+                            const age = parseInt(row.ålder);
+                            if (!isNaN(age)) {
+                                currentRiketPop[row.kön][Math.min(age, 100)] += (row.Befolkning || 0);
+                                currentRiketPopBase[row.kön][Math.min(age, 100)] += (row.Befolkning || 0);
+                            }
                         }
                     });
                 }
@@ -1004,9 +1137,8 @@
                                 migInUt = Math.max(0, r.avgInUt + (utInVal * shareInUt));
                                 migUtUt = Math.max(0, r.avgUtUt + (utUtVal * shareUtUt));
                             } else if (migType === 'riket') {
-                                // Använd den framskrivna Riks-kohorten för Inrikes flytt!
                                 const rPopBase = currentRiketPopBase[sex][age];
-                                const rPopNow = currentRiketPop[sex][age]; // Använd årets kull för att bestämma flyttarvolym
+                                const rPopNow = currentRiketPop[sex][age]; 
                                 
                                 const shareInIn = rPopBase > 0 ? (r.avgInIn / rPopBase) : 0;
                                 const shareUtIn = rPopBase > 0 ? (r.avgUtIn / rPopBase) : 0;
@@ -1014,7 +1146,6 @@
                                 migInIn = rPopNow * shareInIn * (1 + (inInVal/100));
                                 migUtIn = rPopNow * shareUtIn * (1 + (inUtVal/100));
                                 
-                                // Utrikes baseras på lokala historiken
                                 migInUt = r.avgInUt * (1 + (utInVal/100));
                                 migUtUt = r.avgUtUt * (1 + (utUtVal/100));
                             }
@@ -1022,7 +1153,7 @@
                             yStatsAge[sex][age].inInr = migInIn;
                             yStatsAge[sex][age].utInr = migUtIn;
                             yStatsAge[sex][age].inUtr = migInUt;
-                            yStatsAge[sex][age].utUtr = migUtUt;
+                            yStatsAge[sex][age].inUtr = migUtUt;
 
                             const totalInMig = migInIn + migInUt;
                             const totalUtMig = migUtIn + migUtUt;
@@ -1099,19 +1230,16 @@
 
         // === UPPDATERA UI ===
         yearSelect.addEventListener('change', e => {
-            if (isPlaying) toggleAnimation(); // Pausa om man väljer manuellt
+            if (isPlaying) toggleAnimation(); 
             updateDashboardForYear(e.target.value);
         });
 
-        // Hanterar smart auto-återställning av åldersmenyn när diagramtyp byts
         function handleChartTypeChange() {
             const chartType = document.getElementById('chartType').value;
             const popGroupSelect = document.getElementById('chartPopGroupSelect');
             
-            // Tillåt åldersuppdelning för nästan alla diagram (även % och absolutförändring nu)
             const drilldownable = ['pop', 'tfr', 'mort', 'pop_share_riket', 'mig_share_riket', 'births_deaths', 'migration', 'mig_tot', 'mig_inr', 'mig_utr', 'pop_change_abs', 'pop_change_pct'];
             
-            // Återställ till Totalt om diagramtypen inte stöder åldersindelning
             if (!drilldownable.includes(chartType)) {
                 popGroupSelect.value = 'total';
             }
@@ -1123,7 +1251,13 @@
             if(combinedData.length === 0) return;
 
             if (trendTitle) {
-                trendTitle.innerText = projectedData.length > 0 ? 'Utveckling & Prognos' : 'Befolkningsutveckling';
+                let suffix = "";
+                if (projectedData.length > 0) {
+                    suffix = savedProjectedData.length > 0 ? "<br><span class='text-sm text-gray-500 font-normal'>(Jämförelse)</span>" : "<br><span class='text-sm text-gray-500 font-normal'>(Inkl. Prognos)</span>";
+                }
+                const chartSelect = document.getElementById('chartType');
+                const baseTitle = chartSelect.value === 'pop' ? 'Befolkningsutveckling' : chartSelect.options[chartSelect.selectedIndex].text;
+                trendTitle.innerHTML = baseTitle + suffix;
             }
 
             updateStartYearDropdown();
@@ -1188,13 +1322,15 @@
                         totalFodda += ((row.Födda_Pojkar || 0) + (row.Födda_Flickor || 0)) || (row.Födda_barn || 0);
                     }
                 } else {
-                    const match = String(row.ålder).match(/\d+/);
-                    if (match && (row.kön === 'Män' || row.kön === 'Kvinnor')) {
-                        const age = Math.min(parseInt(match[0]), 100);
-                        const pop = (row.Befolkning || 0);
-                        if (age <= 19) pop0_19 += pop;
-                        else if (age >= 20 && age <= 64) pop20_64 += pop;
-                        else if (age >= 65) pop65_plus += pop;
+                    if (row.kön === 'Män' || row.kön === 'Kvinnor') {
+                        const age = parseInt(row.ålder);
+                        if (!isNaN(age)) {
+                            const clampedAge = Math.min(age, 100);
+                            const pop = (row.Befolkning || 0);
+                            if (clampedAge <= 19) pop0_19 += pop;
+                            else if (clampedAge >= 20 && clampedAge <= 64) pop20_64 += pop;
+                            else if (clampedAge >= 65) pop65_plus += pop;
+                        }
                     }
                 }
             });
@@ -1308,11 +1444,11 @@
 
             currentYearData.forEach(row => {
                 if(!String(row.ålder).toLowerCase().includes('totalt')) {
-                    const match = String(row.ålder).match(/\d+/);
-                    const age = match ? Math.min(parseInt(match[0]), 100) : -1;
-                    if(age !== -1) {
-                        if(row.kön === 'Män') men[age] += (row.Befolkning || 0);
-                        if(row.kön === 'Kvinnor') women[age] += (row.Befolkning || 0);
+                    const age = parseInt(row.ålder);
+                    if(!isNaN(age)) {
+                        const clampedAge = Math.min(age, 100);
+                        if(row.kön === 'Män') men[clampedAge] += (row.Befolkning || 0);
+                        if(row.kön === 'Kvinnor') women[clampedAge] += (row.Befolkning || 0);
                     }
                 }
             });
@@ -1381,40 +1517,87 @@
 
         function drawPyramidChart(year) {
             const ctx = document.getElementById('pyramidChart').getContext('2d');
-            const ageLabels = Array.from({length: 101}, (_, i) => i === 100 ? '100+ år' : i + ' år');
+            const groupingType = document.getElementById('pyramidGrouping').value; 
             
-            const menDataAkt = new Array(101).fill(0), womenDataAkt = new Array(101).fill(0);
-            const menDataSpar = new Array(101).fill(0), womenDataSpar = new Array(101).fill(0);
+            let ageLabels = [];
+            let numBins = 0;
+            
+            if (groupingType === '5yr') {
+                for(let i=0; i<=100; i+=5) {
+                    let max = i === 100 ? 100 : i+4;
+                    ageLabels.push(i === 100 ? '100+' : i + '-' + max);
+                    numBins++;
+                }
+            } else {
+                ageLabels = Array.from({length: 101}, (_, i) => i === 100 ? '100+ år' : i + ' år');
+                numBins = 101;
+            }
+
+            // Samla rådata 0-100 år först
+            const rawMenAkt = new Array(101).fill(0), rawWomenAkt = new Array(101).fill(0);
+            const rawMenSpar = new Array(101).fill(0), rawWomenSpar = new Array(101).fill(0);
+            const rawMenOff = new Array(101).fill(0), rawWomenOff = new Array(101).fill(0);
 
             const isComparing = savedProjectedData.length > 0;
-            const combinedAkt = globalData.concat(projectedData);
-            const dataAkt = combinedAkt.filter(d => String(d.tid).trim() === String(year));
+            const dataAkt = globalData.concat(projectedData).filter(d => String(d.tid).trim() === String(year));
 
             dataAkt.forEach(row => {
                 if(!String(row.ålder).toLowerCase().includes('totalt')) {
-                    const match = String(row.ålder).match(/\d+/);
-                    const ageIdx = match ? Math.min(parseInt(match[0]), 100) : -1;
-                    if(ageIdx !== -1) {
-                        if(row.kön === 'Män') menDataAkt[ageIdx] += -(row.Befolkning || 0); 
-                        else if (row.kön === 'Kvinnor') womenDataAkt[ageIdx] += (row.Befolkning || 0);
+                    const ageIdx = parseInt(row.ålder);
+                    if(!isNaN(ageIdx)) {
+                        const clampedIdx = Math.min(ageIdx, 100);
+                        if(row.kön === 'Män') rawMenAkt[clampedIdx] += -(row.Befolkning || 0); 
+                        else if (row.kön === 'Kvinnor') rawWomenAkt[clampedIdx] += (row.Befolkning || 0);
                     }
                 }
             });
 
             if (isComparing) {
-                const combinedSpar = globalData.concat(savedProjectedData);
-                const dataSpar = combinedSpar.filter(d => String(d.tid).trim() === String(year));
+                const dataSpar = globalData.concat(savedProjectedData).filter(d => String(d.tid).trim() === String(year));
                 dataSpar.forEach(row => {
                     if(!String(row.ålder).toLowerCase().includes('totalt')) {
-                        const match = String(row.ålder).match(/\d+/);
-                        const ageIdx = match ? Math.min(parseInt(match[0]), 100) : -1;
-                        if(ageIdx !== -1) {
-                            if(row.kön === 'Män') menDataSpar[ageIdx] += -(row.Befolkning || 0); 
-                            else if (row.kön === 'Kvinnor') womenDataSpar[ageIdx] += (row.Befolkning || 0);
+                        const ageIdx = parseInt(row.ålder);
+                        if(!isNaN(ageIdx)) {
+                            const clampedIdx = Math.min(ageIdx, 100);
+                            if(row.kön === 'Män') rawMenSpar[clampedIdx] += -(row.Befolkning || 0); 
+                            else if (row.kön === 'Kvinnor') rawWomenSpar[clampedIdx] += (row.Befolkning || 0);
                         }
                     }
                 });
             }
+
+            const showOfficial = document.getElementById('showOfficial') && document.getElementById('showOfficial').checked && officialDataStore.length > 0;
+            if (showOfficial) {
+                const dataOff = officialDataStore.filter(d => String(d.tid).trim() === String(year));
+                dataOff.forEach(row => {
+                    if(!String(row.ålder).toLowerCase().includes('totalt')) {
+                        const ageIdx = parseInt(row.ålder);
+                        if(!isNaN(ageIdx)) {
+                            const clampedIdx = Math.min(ageIdx, 100);
+                            if(row.kön === 'Män') rawMenOff[clampedIdx] += -(row.Befolkning || 0); 
+                            else if (row.kön === 'Kvinnor') rawWomenOff[clampedIdx] += (row.Befolkning || 0);
+                        }
+                    }
+                });
+            }
+
+            // Funktion för att gruppera rådatan
+            const binData = (dataArray) => {
+                if (groupingType === '1yr') return dataArray;
+                let binned = new Array(numBins).fill(0);
+                for(let i=0; i<=100; i++) {
+                    let binIdx = Math.min(Math.floor(i/5), 20); // max bin är index 20 (100+)
+                    binned[binIdx] += dataArray[i];
+                }
+                return binned;
+            };
+
+            const menDataAkt = binData(rawMenAkt);
+            const womenDataAkt = binData(rawWomenAkt);
+            const menDataSpar = binData(rawMenSpar);
+            const womenDataSpar = binData(rawWomenSpar);
+            const menDataOff = binData(rawMenOff);
+            const womenDataOff = binData(rawWomenOff);
 
             const cohortStr = document.getElementById('cohortInput')?.value || "";
             const targetAges = [];
@@ -1431,8 +1614,16 @@
             const isForecast = String(year).includes('Prognos');
             const bgMen = [], borderMen = [], bgWomen = [], borderWomen = [];
 
-            for(let i=0; i<=100; i++) {
-                const isHighlight = targetAges.includes(i);
+            for(let i=0; i<numBins; i++) {
+                let isHighlight = false;
+                if (groupingType === '5yr') {
+                    let minAge = i * 5;
+                    let maxAge = i === 20 ? 100 : minAge + 4;
+                    isHighlight = targetAges.some(a => a >= minAge && a <= maxAge);
+                } else {
+                    isHighlight = targetAges.includes(i);
+                }
+                
                 bgMen.push(isHighlight ? '#fbbf24' : (isForecast ? 'rgba(54, 162, 235, 0.5)' : 'rgba(54, 162, 235, 0.8)'));
                 borderMen.push(isHighlight ? '#b45309' : (isForecast ? 'rgba(54, 162, 235, 0.8)' : 'rgba(54, 162, 235, 1)'));
                 
@@ -1444,13 +1635,13 @@
             
             let datasets = [
                 { 
-                    label: isComparing ? 'Män (Aktuell)' : 'Män', 
+                    label: isComparing || showOfficial ? 'Män (Aktuell)' : 'Män', 
                     data: menDataAkt, 
                     backgroundColor: bgMen, borderColor: borderMen, borderWidth: 1,
                     grouped: false, barPercentage: 0.9, categoryPercentage: 1.0
                 },
                 { 
-                    label: isComparing ? 'Kvinnor (Aktuell)' : 'Kvinnor', 
+                    label: isComparing || showOfficial ? 'Kvinnor (Aktuell)' : 'Kvinnor', 
                     data: womenDataAkt, 
                     backgroundColor: bgWomen, borderColor: borderWomen, borderWidth: 1,
                     grouped: false, barPercentage: 0.9, categoryPercentage: 1.0
@@ -1472,6 +1663,24 @@
                 });
             }
 
+            if (showOfficial) {
+                const hasOffData = menDataOff.some(v => v !== 0) || womenDataOff.some(v => v !== 0);
+                if (hasOffData) {
+                    datasets.push({
+                        label: 'Män (Officiell)', data: menDataOff,
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)', borderColor: '#10b981',
+                        borderWidth: 2, borderDash: [],
+                        grouped: false, barPercentage: 0.5, categoryPercentage: 1.0
+                    });
+                    datasets.push({
+                        label: 'Kvinnor (Officiell)', data: womenDataOff,
+                        backgroundColor: 'rgba(16, 185, 129, 0.15)', borderColor: '#10b981',
+                        borderWidth: 2, borderDash: [],
+                        grouped: false, barPercentage: 0.5, categoryPercentage: 1.0
+                    });
+                }
+            }
+
             pyramidChartInstance = new Chart(ctx, {
                 type: 'bar',
                 data: { labels: ageLabels, datasets: datasets },
@@ -1481,20 +1690,18 @@
                     scales: {
                         x: { 
                             stacked: false, 
-                            min: -2500, 
-                            max: 2500, 
+                            min: groupingType === '5yr' ? -15000 : -2500, 
+                            max: groupingType === '5yr' ? 15000 : 2500, 
                             ticks: { callback: val => formatNumber(Math.abs(val)) } 
                         },
-                        y: { stacked: false, reverse: true, ticks: { callback: (val, idx) => idx % 10 === 0 || idx === 100 ? ageLabels[idx] : '' } }
+                        y: { stacked: false, reverse: true, ticks: { callback: (val, idx) => {
+                            if (groupingType === '5yr') return ageLabels[idx];
+                            return idx % 10 === 0 || idx === 100 ? ageLabels[idx] : '';
+                        } } }
                     },
                     plugins: { 
                         legend: {
-                            labels: {
-                                padding: 15, 
-                                boxWidth: 12,
-                                usePointStyle: true,
-                                font: { size: 12 }
-                            }
+                            labels: { padding: 30, boxWidth: 12, usePointStyle: true, font: { size: 12 } }
                         },
                         tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + formatNumber(Math.abs(ctx.raw)) } } 
                     }
@@ -1543,31 +1750,33 @@
                         stats[y].births += ((row.Födda_Pojkar || 0) + (row.Födda_Flickor || 0)) || (row.Födda_barn || 0);
                     }
                 } else {
-                    const match = String(row.ålder).match(/\d+/);
-                    if (match && (row.kön === 'Män' || row.kön === 'Kvinnor')) {
-                        const age = Math.min(parseInt(match[0]), 100);
-                        stats[y].popByAge[age] += (row.Befolkning || 0); 
-                        stats[y].deathsByAge[age] += (row.Döda || 0); 
-                        stats[y].inTotByAge[age] += (row.Inflyttade || 0);
-                        stats[y].utTotByAge[age] += (row.Utflyttade || 0);
-                        
-                        if (y.includes('Prognos')) {
-                            stats[y].inInrByAge[age] += (row.Inflyttade_Inrikes || 0);
-                            stats[y].utInrByAge[age] += (row.Utflyttade_Inrikes || 0);
-                            stats[y].inUtrByAge[age] += (row.Inflyttade_Utrikes || 0);
-                            stats[y].utUtrByAge[age] += (row.Utflyttade_Utrikes || 0);
-                        } else {
-                            stats[y].inInrByAge[age] += (row.Inflyttade_Inrikes || 0) / 2;
-                            stats[y].utInrByAge[age] += (row.Utflyttade_Inrikes || 0) / 2;
-                            stats[y].inUtrByAge[age] += (row.Inflyttade_Utrikes || 0) / 2;
-                            stats[y].utUtrByAge[age] += (row.Utflyttade_Utrikes || 0) / 2;
-                        }
-                        
-                        if (row.kön === 'Kvinnor') {
-                            const b = ((row.Födda_Pojkar || 0) + (row.Födda_Flickor || 0)) || (row.Födda_barn || 0);
-                            stats[y].womenPopByAge[age] += (row.Befolkning || 0);
-                            stats[y].womenBirthsByAge[age] += b;
-                            stats[y].birthsByAge[age] += b; // Sparas som Födda för åldersklassen (båda könen)
+                    if (row.kön === 'Män' || row.kön === 'Kvinnor') {
+                        const age = parseInt(row.ålder);
+                        if (!isNaN(age)) {
+                            const clampedAge = Math.min(age, 100);
+                            stats[y].popByAge[clampedAge] += (row.Befolkning || 0); 
+                            stats[y].deathsByAge[clampedAge] += (row.Döda || 0); 
+                            stats[y].inTotByAge[clampedAge] += (row.Inflyttade || 0);
+                            stats[y].utTotByAge[clampedAge] += (row.Utflyttade || 0);
+                            
+                            if (y.includes('Prognos')) {
+                                stats[y].inInrByAge[clampedAge] += (row.Inflyttade_Inrikes || 0);
+                                stats[y].utInrByAge[clampedAge] += (row.Utflyttade_Inrikes || 0);
+                                stats[y].inUtrByAge[clampedAge] += (row.Inflyttade_Utrikes || 0);
+                                stats[y].utUtrByAge[clampedAge] += (row.Utflyttade_Utrikes || 0);
+                            } else {
+                                stats[y].inInrByAge[clampedAge] += (row.Inflyttade_Inrikes || 0) / 2;
+                                stats[y].utInrByAge[clampedAge] += (row.Utflyttade_Inrikes || 0) / 2;
+                                stats[y].inUtrByAge[clampedAge] += (row.Inflyttade_Utrikes || 0) / 2;
+                                stats[y].utUtrByAge[clampedAge] += (row.Utflyttade_Utrikes || 0) / 2;
+                            }
+                            
+                            if (row.kön === 'Kvinnor') {
+                                const b = ((row.Födda_Pojkar || 0) + (row.Födda_Flickor || 0)) || (row.Födda_barn || 0);
+                                stats[y].womenPopByAge[clampedAge] += (row.Befolkning || 0);
+                                stats[y].womenBirthsByAge[clampedAge] += b;
+                                stats[y].birthsByAge[clampedAge] += b; 
+                            }
                         }
                     }
                 }
@@ -1593,6 +1802,67 @@
             return stats;
         }
 
+        function createLineDatasets(labels, dataObj, key, labelName, color, fillMode, pointStyle = 'circle', offDataObj = null, offColorOverride = null) {
+            const histData = labels.map(y => y.includes('Prognos') ? null : (dataObj[y] ? dataObj[y][key] : null));
+            const progData = labels.map((y, idx) => {
+                if (y.includes('Prognos')) return dataObj[y] ? dataObj[y][key] : null;
+                if (idx < labels.length - 1 && labels[idx+1].includes('Prognos')) return dataObj[y] ? dataObj[y][key] : null;
+                return null;
+            });
+            
+            const hasProg = progData.some(val => val !== null);
+            const hasHist = histData.some(val => val !== null);
+            let offColor = offColorOverride || color;
+            
+            let ds = [];
+            if (hasHist || !hasProg) {
+                ds.push({ label: labelName + (hasProg ? ' (Hist)' : ''), data: histData, borderColor: color, backgroundColor: fillMode ? color+'20' : 'transparent', borderWidth: 2, fill: fillMode, pointStyle: pointStyle });
+            }
+            if (hasProg) {
+                ds.push({ label: labelName + ' (Prog)', data: progData, borderColor: color, backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], fill: false, pointStyle: pointStyle });
+            }
+
+            if (offDataObj) {
+                const offData = labels.map((y, idx) => {
+                    if (y.includes('Prognos')) return offDataObj[y] ? offDataObj[y][key] : null;
+                    if (idx < labels.length - 1 && labels[idx+1].includes('Prognos')) return offDataObj[y] ? offDataObj[y][key] : null;
+                    return null;
+                });
+                if (offData.some(val => val !== null)) {
+                    ds.push({ label: labelName + ' (Officiell)', data: offData, borderColor: offColor, backgroundColor: 'transparent', borderWidth: 2, borderDash: [], fill: false, opacity: 0.9, pointStyle: 'rect' });
+                }
+            }
+
+            return ds;
+        }
+
+        function createCompareDatasets(labels, currentStats, savedStats, key, labelName, color, pointStyle1 = 'circle', pointStyle2 = 'rectRot', offStatsObj = null, offColorOverride = null) {
+            const currData = labels.map(y => currentStats[y] ? currentStats[y][key] : null);
+            const savedData = savedStats ? labels.map(y => savedStats[y] ? savedStats[y][key] : null) : [];
+            const offData = offStatsObj ? labels.map((y, idx) => {
+                if (y.includes('Prognos')) return offStatsObj[y] ? offStatsObj[y][key] : null;
+                if (idx < labels.length - 1 && labels[idx+1].includes('Prognos')) return offStatsObj[y] ? offStatsObj[y][key] : null;
+                return null;
+            }) : [];
+            
+            const hasSaved = savedData.length > 0 && savedData.some(val => val !== null);
+            const hasOff = offData.length > 0 && offData.some(val => val !== null);
+            let offColor = offColorOverride || color;
+            
+            let ds = [
+                { label: labelName + (hasSaved || hasOff ? ' (Aktuell)' : ''), data: currData, borderColor: color, backgroundColor: 'transparent', borderWidth: 3, fill: false, pointStyle: pointStyle1 }
+            ];
+            
+            if (hasSaved) {
+                ds.push({ label: labelName + ' (Sparad)', data: savedData, borderColor: color, backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], fill: false, opacity: 0.6, pointStyle: pointStyle2 });
+            }
+            if (hasOff) {
+                ds.push({ label: labelName + ' (Officiell)', data: offData, borderColor: offColor, backgroundColor: 'transparent', borderWidth: 2, borderDash: [], fill: false, opacity: 0.9, pointStyle: 'rect' });
+            }
+            
+            return ds;
+        }
+
         // === TREND DIAGRAM OCH JÄMFÖRELSELOGIK ===
         function redrawTrendChart() {
             const chartSelect = document.getElementById('chartType');
@@ -1604,12 +1874,16 @@
             const indexContainer = document.getElementById('indexContainer');
             const riketContainer = document.getElementById('riketContainer');
             const hideAllBtn = document.getElementById('hideAllBtn');
-            const useIndex = document.getElementById('showIndex').checked;
+            
+            // Säker kontroll för showIndex
+            const showIndexElement = document.getElementById('showIndex');
+            const useIndex = showIndexElement ? showIndexElement.checked : false;
+            
             const useRiket = document.getElementById('showRiket').checked;
+            const useOfficial = document.getElementById('showOfficial') && document.getElementById('showOfficial').checked && officialDataStore.length > 0;
 
             const drilldownable = ['pop', 'tfr', 'mort', 'pop_share_riket', 'mig_share_riket', 'births_deaths', 'migration', 'mig_tot', 'mig_inr', 'mig_utr', 'pop_change_abs', 'pop_change_pct'];
 
-            // Tillåt åldersuppdelning för alla grafer där det är relevant
             if (drilldownable.includes(chartType)) {
                 popGroupSelect.disabled = false;
                 popGroupSelect.classList.remove('opacity-50', 'text-gray-400');
@@ -1628,7 +1902,6 @@
                     indexContainer.style.display = 'none';
                 }
                 
-                // Hantera "Dölj alla"-knappen om man gör en drill-down
                 if (popGroupSelect.value !== 'total') {
                     hideAllBtn.classList.remove('hidden');
                     hideAllBtn.classList.add('flex');
@@ -1652,10 +1925,10 @@
             const baseTitle = chartType === 'pop' ? 'Befolkningsutveckling' : selectedText;
             let suffix = "";
             if (projectedData.length > 0) {
-                suffix = isComparing ? " (Jämförelse)" : " (Inkl. Prognos)";
+                suffix = isComparing ? "<br><span class='text-sm text-gray-500 font-normal'>(Jämförelse)</span>" : "<br><span class='text-sm text-gray-500 font-normal'>(Inkl. Prognos)</span>";
             }
             if (document.getElementById('trendTitle')) {
-                document.getElementById('trendTitle').innerText = baseTitle + suffix;
+                document.getElementById('trendTitle').innerHTML = baseTitle + suffix;
             }
 
             const histYears = [...new Set(globalData.map(d => parseInt(String(d.tid).substring(0,4))))].filter(y => !isNaN(y)).sort((a,b)=>a-b);
@@ -1676,19 +1949,29 @@
 
             let riketTrendStats = null;
             if (riketData.length > 0) {
-                // Inkluderar projectedRiketData så att "Andel av riket" kan ritas för prognosåren också!
                 const riketCombined = riketData.filter(row => parseInt(String(row.tid).substring(0,4)) >= startYear).concat(projectedRiketData);
                 riketTrendStats = aggregateStatsForGraph(riketCombined, 1.6);
+            }
+
+            let officialTrendStats = null;
+            if (useOfficial) {
+                officialTrendStats = aggregateStatsForGraph(officialDataStore, 1.6);
+                
+                const baseYearStr = String(baseYear);
+                if (currentTrendStats[baseYearStr]) {
+                    officialTrendStats[baseYearStr] = JSON.parse(JSON.stringify(currentTrendStats[baseYearStr]));
+                }
             }
 
             const labels = Object.keys(currentTrendStats).sort((a,b) => parseInt(a) - parseInt(b));
             let datasets = [];
 
             const forceIndex = (useRiket && chartType === 'pop');
-            const applyIndex = forceIndex || (useIndex && chartType === 'pop');
             const popGroupVal = popGroupSelect.value;
             
-            // NY LOGIK FÖR INDEX 100:
+            // Säkerställ att Index inte tvingas igång om behållaren är gömd
+            const applyIndex = forceIndex || (useIndex && chartType === 'pop' && popGroupVal !== 'total');
+            
             const indexBaseYear = hasSimulation ? baseYear : (labels.length > 0 ? parseInt(labels[0].substring(0,4)) : baseYear);
 
             if (!isComparing) {
@@ -1717,18 +2000,38 @@
                                 const rData = labels.map(y => riketTrendStats[y] ? (riketTrendStats[y].pop / rBase) * 100 : null);
                                 datasets.push({ label: 'Riket (Index)', data: rData, borderColor: '#9333ea', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2, 2], fill: false, pointStyle: 'triangle' });
                             }
+
+                            if (useOfficial && officialTrendStats) {
+                                let offBase = null;
+                                labels.forEach(y => { if(officialTrendStats[y] && parseInt(y.substring(0,4)) === indexBaseYear && !y.includes('Prognos')) offBase = officialTrendStats[y].pop; });
+                                if(!offBase) offBase = 1;
+                                const offData = labels.map((y, idx2) => {
+                                    if (y.includes('Prognos')) return officialTrendStats[y] ? (officialTrendStats[y].pop / offBase) * 100 : null;
+                                    if (idx2 < labels.length - 1 && labels[idx2+1].includes('Prognos')) return officialTrendStats[y] ? (officialTrendStats[y].pop / offBase) * 100 : null;
+                                    return null;
+                                });
+                                datasets.push({ label: 'Officiell Prognos (Index)', data: offData, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 2, borderDash: [], fill: false, pointStyle: 'rect' });
+                            }
                         } else {
-                            if (chartType === 'pop') datasets = createLineDatasets(labels, currentTrendStats, 'pop', 'Folkmängd totalt', '#0284c7', true, 'circle');
+                            if (chartType === 'pop') {
+                                const offObj = {};
+                                if (useOfficial && officialTrendStats) { 
+                                    labels.forEach(y => offObj[y] = { pop: officialTrendStats[y] ? officialTrendStats[y].pop : null }); 
+                                }
+                                datasets = createLineDatasets(labels, currentTrendStats, 'pop', 'Folkmängd totalt', '#0284c7', true, 'circle', useOfficial ? offObj : null, '#10b981');
+                            }
                             else if (chartType === 'tfr') datasets = createLineDatasets(labels, currentTrendStats, 'tfr', 'Fruktsamhet (TFR)', '#ec4899', true, 'circle');
                             else if (chartType === 'mort') datasets = createLineDatasets(labels, currentTrendStats, 'mortality', 'Dödlighet (‰)', '#64748b', true, 'triangle');
                             else if (chartType === 'pop_share_riket') {
                                 const dataObj = {};
+                                const offObj = {};
                                 labels.forEach(y => {
                                     if (riketTrendStats && riketTrendStats[y] && riketTrendStats[y].pop > 0) {
                                         dataObj[y] = { val: (currentTrendStats[y].pop / riketTrendStats[y].pop) * 100 };
-                                    } else { dataObj[y] = { val: null }; }
+                                        if (useOfficial && officialTrendStats && officialTrendStats[y]) offObj[y] = { val: (officialTrendStats[y].pop / riketTrendStats[y].pop) * 100 };
+                                    } else { dataObj[y] = { val: null }; offObj[y] = { val: null }; }
                                 });
-                                datasets = createLineDatasets(labels, dataObj, 'val', 'Andel av riket (%)', '#0284c7', true, 'circle');
+                                datasets = createLineDatasets(labels, dataObj, 'val', 'Andel av riket (%)', '#0284c7', true, 'circle', useOfficial ? offObj : null, '#10b981');
                             }
                         }
                     } else {
@@ -1739,15 +2042,19 @@
                         groups.forEach((g, idx) => {
                             const color = colors[idx % colors.length];
                             const groupDataObj = {};
+                            const offGroupDataObj = {};
                             let baseValue = null;
                             let rBaseValue = null;
 
                             labels.forEach(y => {
-                                let val = null;
+                                let val = null, valOff = null;
                                 if (chartType === 'pop') {
-                                    let sum = 0;
+                                    let sum = 0, sumOff = 0;
                                     for(let a=g.min; a<=g.max; a++) sum += currentTrendStats[y].popByAge[a];
-                                    val = sum;
+                                    if(useOfficial && officialTrendStats && officialTrendStats[y]) {
+                                        for(let a=g.min; a<=g.max; a++) sumOff += officialTrendStats[y].popByAge[a];
+                                    }
+                                    val = sum; valOff = sumOff;
                                 } else if (chartType === 'mort') {
                                     let sumPop = 0, sumDeaths = 0;
                                     for(let a=g.min; a<=g.max; a++) {
@@ -1764,15 +2071,17 @@
                                     }
                                     val = sumASFR;
                                 } else if (chartType === 'pop_share_riket') {
-                                    let sumL = 0, sumR = 0;
+                                    let sumL = 0, sumR = 0, sumOff = 0;
                                     for(let a=g.min; a<=g.max; a++) {
                                         sumL += currentTrendStats[y].popByAge[a];
                                         if(riketTrendStats && riketTrendStats[y]) sumR += riketTrendStats[y].popByAge[a];
+                                        if(useOfficial && officialTrendStats && officialTrendStats[y]) sumOff += officialTrendStats[y].popByAge[a];
                                     }
-                                    if (sumR > 0) val = (sumL / sumR) * 100;
+                                    if (sumR > 0) { val = (sumL / sumR) * 100; valOff = (sumOff / sumR) * 100; }
                                 }
 
                                 groupDataObj[y] = { val: val };
+                                offGroupDataObj[y] = { val: valOff };
                                 if (parseInt(y.substring(0,4)) === indexBaseYear && !y.includes('Prognos')) baseValue = val;
                             });
 
@@ -1794,6 +2103,17 @@
                             }
                             if (hasProg) {
                                 datasets.push({ label: g.label + (applyIndex ? ' (Index)' : '') + ' (Prog)', data: progData, borderColor: color, backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], fill: false, pointStyle: 'circle' });
+                            }
+
+                            if (useOfficial && (chartType === 'pop' || chartType === 'pop_share_riket')) {
+                                const offData = labels.map((y, idx2) => {
+                                    if (y.includes('Prognos')) return processVal(offGroupDataObj[y].val);
+                                    if (idx2 < labels.length - 1 && labels[idx2+1].includes('Prognos')) return processVal(offGroupDataObj[y].val);
+                                    return null;
+                                });
+                                if (offData.some(v => v !== null)) {
+                                    datasets.push({ label: g.label + (applyIndex ? ' (Index)' : '') + ' (Officiell)', data: offData, borderColor: color, backgroundColor: 'transparent', borderWidth: 2, borderDash: [], fill: false, opacity: 0.9, pointStyle: 'rect' });
+                                }
                             }
 
                             if (riketTrendStats && useRiket && chartType === 'pop') {
@@ -1899,6 +2219,7 @@
                 else if (chartType === 'pop_change_abs' || chartType === 'pop_change_pct') {
                     if (popGroupVal === 'total') {
                         const changeDataObj = {};
+                        const offChangeDataObj = {};
                         labels.forEach(y => {
                             const currYearNum = parseInt(y.substring(0,4));
                             const prevYearStr = labels.find(l => parseInt(l.substring(0,4)) === currYearNum - 1);
@@ -1910,9 +2231,15 @@
                                     changeDataObj[y] = { val: diff };
                                 }
                             } else { changeDataObj[y] = { val: null }; }
+
+                            if (useOfficial && officialTrendStats && prevYearStr && officialTrendStats[y] && officialTrendStats[prevYearStr]) {
+                                const diff = officialTrendStats[y].pop - officialTrendStats[prevYearStr].pop;
+                                if (chartType === 'pop_change_pct') offChangeDataObj[y] = { val: (diff / officialTrendStats[prevYearStr].pop) * 100 };
+                                else offChangeDataObj[y] = { val: diff };
+                            } else { offChangeDataObj[y] = { val: null }; }
                         });
                         const lblName = chartType === 'pop_change_pct' ? 'Befolkningsförändring (%)' : 'Befolkningsförändring (Antal)';
-                        datasets = createLineDatasets(labels, changeDataObj, 'val', lblName, '#f59e0b', true, 'circle');
+                        datasets = createLineDatasets(labels, changeDataObj, 'val', lblName, '#f59e0b', true, 'circle', useOfficial ? offChangeDataObj : null, '#10b981');
                         
                         if (useRiket && chartType === 'pop_change_pct' && riketTrendStats) {
                             const rChangeDataObj = {};
@@ -1934,6 +2261,7 @@
                         groups.forEach((g, idx) => {
                             const color = colors[idx % colors.length];
                             const changeDataObj = {};
+                            const offChangeDataObj = {};
                             labels.forEach(y => {
                                 const currYearNum = parseInt(y.substring(0,4));
                                 const prevYearStr = labels.find(l => parseInt(l.substring(0,4)) === currYearNum - 1);
@@ -1947,22 +2275,42 @@
                                     if (chartType === 'pop_change_pct') changeDataObj[y] = { val: sumPrev > 0 ? (diff / sumPrev) * 100 : 0 };
                                     else changeDataObj[y] = { val: diff };
                                 } else { changeDataObj[y] = { val: null }; }
+
+                                if (useOfficial && officialTrendStats && prevYearStr && officialTrendStats[y] && officialTrendStats[prevYearStr]) {
+                                    let sumCurr = 0, sumPrev = 0;
+                                    for(let a=g.min; a<=g.max; a++) {
+                                        sumCurr += officialTrendStats[y].popByAge[a];
+                                        sumPrev += officialTrendStats[prevYearStr].popByAge[a];
+                                    }
+                                    const diff = sumCurr - sumPrev;
+                                    if (chartType === 'pop_change_pct') offChangeDataObj[y] = { val: sumPrev > 0 ? (diff / sumPrev) * 100 : 0 };
+                                    else offChangeDataObj[y] = { val: diff };
+                                } else { offChangeDataObj[y] = { val: null }; }
                             });
                             const lblName = chartType === 'pop_change_pct' ? g.label + ' (%)' : g.label + ' (Antal)';
-                            datasets.push(...createLineDatasets(labels, changeDataObj, 'val', lblName, color, false, 'circle'));
+                            datasets.push(...createLineDatasets(labels, changeDataObj, 'val', lblName, color, false, 'circle', useOfficial ? offChangeDataObj : null, color));
                         });
                     }
                 }
                 else if (chartType === 'dep_ratio') {
                     const dDep = {};
+                    const offDep = {};
                     labels.forEach(y => {
                         let p0_19 = 0, p20_64 = 0, p65 = 0;
                         for(let a=0;a<=19;a++) p0_19 += currentTrendStats[y].popByAge[a];
                         for(let a=20;a<=64;a++) p20_64 += currentTrendStats[y].popByAge[a];
                         for(let a=65;a<=100;a++) p65 += currentTrendStats[y].popByAge[a];
                         dDep[y] = { val: p20_64 > 0 ? ((p0_19 + p65)/p20_64)*100 : null };
+
+                        if (useOfficial && officialTrendStats && officialTrendStats[y]) {
+                            let o0_19 = 0, o20_64 = 0, o65 = 0;
+                            for(let a=0;a<=19;a++) o0_19 += officialTrendStats[y].popByAge[a];
+                            for(let a=20;a<=64;a++) o20_64 += officialTrendStats[y].popByAge[a];
+                            for(let a=65;a<=100;a++) o65 += officialTrendStats[y].popByAge[a];
+                            offDep[y] = { val: o20_64 > 0 ? ((o0_19 + o65)/o20_64)*100 : null };
+                        } else { offDep[y] = { val: null }; }
                     });
-                    datasets = createLineDatasets(labels, dDep, 'val', 'Försörjningskvot', '#d946ef', true, 'rectRounded');
+                    datasets = createLineDatasets(labels, dDep, 'val', 'Försörjningskvot', '#d946ef', true, 'rectRounded', useOfficial ? offDep : null, '#10b981');
                     
                     if (useRiket && riketTrendStats) {
                         const rDep = {};
@@ -1986,7 +2334,14 @@
                 // ============================================
                 if (['pop', 'tfr', 'mort', 'pop_share_riket'].includes(chartType)) {
                     if (popGroupVal === 'total') {
-                        if (chartType === 'pop') datasets = createCompareDatasets(labels, currentTrendStats, savedTrendStats, 'pop', 'Folkmängd totalt', '#0284c7', 'circle', 'rectRot');
+                        let offObj = null;
+                        if (useOfficial && chartType === 'pop') {
+                            offObj = {}; labels.forEach(y => offObj[y] = { pop: officialTrendStats[y] ? officialTrendStats[y].pop : null });
+                        } else if (useOfficial && chartType === 'pop_share_riket') {
+                            offObj = {}; labels.forEach(y => offObj[y] = { val: officialTrendStats[y] && riketTrendStats[y] ? (officialTrendStats[y].pop / riketTrendStats[y].pop)*100 : null });
+                        }
+
+                        if (chartType === 'pop') datasets = createCompareDatasets(labels, currentTrendStats, savedTrendStats, 'pop', 'Folkmängd totalt', '#0284c7', 'circle', 'rectRot', offObj, '#10b981');
                         else if (chartType === 'tfr') datasets = createCompareDatasets(labels, currentTrendStats, savedTrendStats, 'tfr', 'Fruktsamhet (TFR)', '#ec4899', 'circle', 'rectRot');
                         else if (chartType === 'mort') datasets = createCompareDatasets(labels, currentTrendStats, savedTrendStats, 'mortality', 'Dödlighet (‰)', '#64748b', 'triangle', 'rectRot');
                         else if (chartType === 'pop_share_riket') {
@@ -1999,7 +2354,7 @@
                                 }
                                 dataObj[y] = { val }; savedDataObj[y] = { val: savedVal };
                             });
-                            datasets = createCompareDatasets(labels, dataObj, savedDataObj, 'val', 'Andel av riket (%)', '#0284c7', 'circle', 'rectRot');
+                            datasets = createCompareDatasets(labels, dataObj, savedDataObj, 'val', 'Andel av riket (%)', '#0284c7', 'circle', 'rectRot', offObj, '#10b981');
                         }
                     } else {
                         const groups = getGroupDefinitions(popGroupVal);
@@ -2008,18 +2363,22 @@
                             const color = colors[idx % colors.length];
                             const groupDataObj = {};
                             const savedGroupDataObj = {};
+                            const offGroupDataObj = {};
                             let baseValue = null;
 
                             labels.forEach(y => {
-                                let val = null, savedVal = null;
+                                let val = null, savedVal = null, offVal = null;
 
                                 if (chartType === 'pop') {
-                                    let sum = 0, sumSaved = 0;
+                                    let sum = 0, sumSaved = 0, sumOff = 0;
                                     for(let a=g.min; a<=g.max; a++) sum += currentTrendStats[y].popByAge[a];
                                     if(savedTrendStats && savedTrendStats[y]) {
                                         for(let a=g.min; a<=g.max; a++) sumSaved += savedTrendStats[y].popByAge[a];
                                     }
-                                    val = sum; savedVal = sumSaved;
+                                    if(useOfficial && officialTrendStats && officialTrendStats[y]) {
+                                        for(let a=g.min; a<=g.max; a++) sumOff += officialTrendStats[y].popByAge[a];
+                                    }
+                                    val = sum; savedVal = sumSaved; offVal = sumOff;
                                 } else if (chartType === 'mort') {
                                     let sp = 0, sd = 0, sps = 0, sds = 0;
                                     for(let a=g.min; a<=g.max; a++) {
@@ -2036,17 +2395,19 @@
                                     }
                                     val = sa; savedVal = sas;
                                 } else if (chartType === 'pop_share_riket') {
-                                    let sumL = 0, sumS = 0, sumR = 0;
+                                    let sumL = 0, sumS = 0, sumR = 0, sumOff = 0;
                                     for(let a=g.min; a<=g.max; a++) {
                                         sumL += currentTrendStats[y].popByAge[a];
                                         if(savedTrendStats && savedTrendStats[y]) sumS += savedTrendStats[y].popByAge[a];
+                                        if(useOfficial && officialTrendStats && officialTrendStats[y]) sumOff += officialTrendStats[y].popByAge[a];
                                         if(riketTrendStats && riketTrendStats[y]) sumR += riketTrendStats[y].popByAge[a];
                                     }
-                                    if (sumR > 0) { val = (sumL / sumR) * 100; savedVal = (sumS / sumR) * 100; }
+                                    if (sumR > 0) { val = (sumL / sumR) * 100; savedVal = (sumS / sumR) * 100; offVal = (sumOff / sumR) * 100;}
                                 }
 
                                 groupDataObj[y] = { val: val };
                                 savedGroupDataObj[y] = { val: savedVal };
+                                offGroupDataObj[y] = { val: offVal };
 
                                 if (parseInt(y.substring(0,4)) === indexBaseYear && !y.includes('Prognos')) {
                                     baseValue = val; 
@@ -2060,10 +2421,21 @@
                             const savedData = labels.map(y => processVal(savedGroupDataObj[y].val));
                             
                             const hasSaved = savedData.some(v => v !== null);
-                            datasets.push({ label: g.label + (applyIndex ? ' (Index)' : '') + (hasSaved ? ' (Aktuell)' : ''), data: currData, borderColor: color, backgroundColor: 'transparent', borderWidth: 2, fill: false, pointStyle: 'circle' });
+                            datasets.push({ label: g.label + (applyIndex ? ' (Index)' : '') + (hasSaved ? ' (Aktuell)' : ''), data: currData, borderColor: color, backgroundColor: 'transparent', borderWidth: 3, fill: false, pointStyle: 'circle' });
                             
                             if (hasSaved) {
                                 datasets.push({ label: g.label + (applyIndex ? ' (Index)' : '') + ' (Sparad)', data: savedData, borderColor: color, backgroundColor: 'transparent', borderWidth: 2, borderDash: [3, 3], fill: false, opacity: 0.6, pointStyle: 'rectRot' });
+                            }
+                            
+                            if (useOfficial && (chartType === 'pop' || chartType === 'pop_share_riket')) {
+                                const offData = labels.map((y, idx2) => {
+                                    if (y.includes('Prognos')) return processVal(offGroupDataObj[y].val);
+                                    if (idx2 < labels.length - 1 && labels[idx2+1].includes('Prognos')) return processVal(offGroupDataObj[y].val);
+                                    return null;
+                                });
+                                if (offData.some(v => v !== null)) {
+                                    datasets.push({ label: g.label + (applyIndex ? ' (Index)' : '') + ' (Officiell)', data: offData, borderColor: color, backgroundColor: 'transparent', borderWidth: 2, borderDash: [], fill: false, opacity: 0.9, pointStyle: 'rect' });
+                                }
                             }
                         });
                     }
@@ -2181,6 +2553,7 @@
                     if (popGroupVal === 'total') {
                         const changeDataObj = {};
                         const savedChangeDataObj = {};
+                        const offChangeDataObj = {};
                         labels.forEach(y => {
                             const currYearNum = parseInt(y.substring(0,4));
                             const prevYearStr = labels.find(l => parseInt(l.substring(0,4)) === currYearNum - 1);
@@ -2196,9 +2569,15 @@
                                 if (chartType === 'pop_change_pct') savedChangeDataObj[y] = { val: (diffSav / savedTrendStats[prevYearStr].pop) * 100 };
                                 else savedChangeDataObj[y] = { val: diffSav };
                             } else { savedChangeDataObj[y] = { val: null }; }
+
+                            if (useOfficial && officialTrendStats && prevYearStr && officialTrendStats[y] && officialTrendStats[prevYearStr]) {
+                                const diffOff = officialTrendStats[y].pop - officialTrendStats[prevYearStr].pop;
+                                if (chartType === 'pop_change_pct') offChangeDataObj[y] = { val: (diffOff / officialTrendStats[prevYearStr].pop) * 100 };
+                                else offChangeDataObj[y] = { val: diffOff };
+                            } else { offChangeDataObj[y] = { val: null }; }
                         });
                         const lblName = chartType === 'pop_change_pct' ? 'Befolkningsförändring (%)' : 'Befolkningsförändring (Antal)';
-                        datasets = createCompareDatasets(labels, changeDataObj, savedChangeDataObj, 'val', lblName, '#f59e0b', 'circle', 'rectRot');
+                        datasets = createCompareDatasets(labels, changeDataObj, savedChangeDataObj, 'val', lblName, '#f59e0b', 'circle', 'rectRot', useOfficial ? offChangeDataObj : null, '#10b981');
                         
                         if (useRiket && chartType === 'pop_change_pct' && riketTrendStats) {
                             const rChangeDataObj = {};
@@ -2219,7 +2598,7 @@
                         const colors = ['#0284c7', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#14b8a6', '#f97316', '#84cc16'];
                         groups.forEach((g, idx) => {
                             const color = colors[idx % colors.length];
-                            const changeDataObj = {}, savedChangeDataObj = {};
+                            const changeDataObj = {}, savedChangeDataObj = {}, offChangeDataObj = {};
                             labels.forEach(y => {
                                 const currYearNum = parseInt(y.substring(0,4));
                                 const prevYearStr = labels.find(l => parseInt(l.substring(0,4)) === currYearNum - 1);
@@ -2239,17 +2618,27 @@
                                     if (chartType === 'pop_change_pct') savedChangeDataObj[y] = { val: sumPrevS>0 ? (diffS / sumPrevS) * 100 : 0 };
                                     else savedChangeDataObj[y] = { val: diffS };
                                 } else { savedChangeDataObj[y] = { val: null }; }
+
+                                if (useOfficial && officialTrendStats && prevYearStr && officialTrendStats[y] && officialTrendStats[prevYearStr]) {
+                                    let sumCurrO = 0, sumPrevO = 0;
+                                    for(let a=g.min; a<=g.max; a++) { sumCurrO += officialTrendStats[y].popByAge[a]; sumPrevO += officialTrendStats[prevYearStr].popByAge[a]; }
+                                    const diffO = sumCurrO - sumPrevO;
+                                    if (chartType === 'pop_change_pct') offChangeDataObj[y] = { val: sumPrevO>0 ? (diffO / sumPrevO) * 100 : 0 };
+                                    else offChangeDataObj[y] = { val: diffO };
+                                } else { offChangeDataObj[y] = { val: null }; }
                             });
                             const lblName = chartType === 'pop_change_pct' ? g.label + ' (%)' : g.label + ' (Antal)';
-                            datasets.push(...createCompareDatasets(labels, changeDataObj, savedChangeDataObj, 'val', lblName, color, 'circle', 'rectRot'));
+                            datasets.push(...createCompareDatasets(labels, changeDataObj, savedChangeDataObj, 'val', lblName, color, 'circle', 'rectRot', useOfficial ? offChangeDataObj : null, color));
                         });
                     }
                 }
                 else if (chartType === 'dep_ratio') {
-                    const dDep = {}, dDepS = {};
+                    const dDep = {}, dDepS = {}, dDepO = {};
                     labels.forEach(y => {
                         let p0_19=0, p20_64=0, p65=0;
                         let s0_19=0, s20_64=0, s65=0;
+                        let o0_19=0, o20_64=0, o65=0;
+
                         for(let a=0;a<=19;a++) p0_19 += currentTrendStats[y].popByAge[a];
                         for(let a=20;a<=64;a++) p20_64 += currentTrendStats[y].popByAge[a];
                         for(let a=65;a<=100;a++) p65 += currentTrendStats[y].popByAge[a];
@@ -2259,10 +2648,18 @@
                             for(let a=20;a<=64;a++) s20_64 += savedTrendStats[y].popByAge[a];
                             for(let a=65;a<=100;a++) s65 += savedTrendStats[y].popByAge[a];
                         }
+
+                        if (useOfficial && officialTrendStats && officialTrendStats[y]) {
+                            for(let a=0;a<=19;a++) o0_19 += officialTrendStats[y].popByAge[a];
+                            for(let a=20;a<=64;a++) o20_64 += officialTrendStats[y].popByAge[a];
+                            for(let a=65;a<=100;a++) o65 += officialTrendStats[y].popByAge[a];
+                        }
+
                         dDep[y] = { val: p20_64 > 0 ? ((p0_19 + p65)/p20_64)*100 : null };
                         dDepS[y] = { val: s20_64 > 0 ? ((s0_19 + s65)/s20_64)*100 : null };
+                        dDepO[y] = { val: o20_64 > 0 ? ((o0_19 + o65)/o20_64)*100 : null };
                     });
-                    datasets = createCompareDatasets(labels, dDep, dDepS, 'val', 'Försörjningskvot', '#d946ef', 'rectRounded', 'rectRot');
+                    datasets = createCompareDatasets(labels, dDep, dDepS, 'val', 'Försörjningskvot', '#d946ef', 'rectRounded', 'rectRot', useOfficial ? dDepO : null, '#10b981');
                     
                     if (useRiket && riketTrendStats) {
                         const rDep = {};
@@ -2281,13 +2678,11 @@
                 }
             }
 
-            // MINNESFUNKTION FÖR DOLD/VISAD STATUS
             let previousVisibility = {};
             let hadPreviousChart = false;
             
             if (trendChartInstance) {
                 hadPreviousChart = true;
-                // Läs av exakt vilka linjer som är synliga i den nuvarande grafen
                 trendChartInstance.data.datasets.forEach((ds, i) => {
                     const isHidden = !trendChartInstance.isDatasetVisible(i);
                     previousVisibility[ds.label] = isHidden;
@@ -2295,7 +2690,6 @@
                 trendChartInstance.destroy();
             }
 
-            // Applicera minnet på de nya linjerna som strax ritas upp
             if (hadPreviousChart) {
                 datasets.forEach(ds => {
                     if (previousVisibility[ds.label] !== undefined) {
@@ -2308,6 +2702,16 @@
             const isIndexMode = applyIndex && chartType === 'pop';
             const isMultiLine = (popGroupVal !== 'total') || useRiket || chartType === 'mig_share_riket';
 
+            let decimals = 0;
+            if (chartType === 'tfr') decimals = 2;
+            else if (isFloatChart || isIndexMode) decimals = 1;
+
+            const useZeroAxisElement = document.getElementById('useZeroAxis');
+            const useZeroAxis = useZeroAxisElement ? useZeroAxisElement.checked : false;
+            
+            const yGraceElement = document.getElementById('yGrace');
+            const graceVal = SHOW_Y_GRACE_UI && yGraceElement ? yGraceElement.value : DEFAULT_Y_GRACE;
+
             trendChartInstance = new Chart(ctx, {
                 type: 'line',
                 data: { labels: labels.map(l => l.replace(' (Prognos)', '')), datasets: datasets },
@@ -2317,7 +2721,16 @@
                         mode: isMultiLine ? 'index' : 'nearest', 
                         intersect: false,
                     },
-                    scales: { y: { ticks: { callback: val => formatNumber(val, isFloatChart ? 2 : (isIndexMode ? 1 : 0)) } } },
+                    scales: { 
+                        y: { 
+                            beginAtZero: useZeroAxis,
+                            grace: graceVal,
+                            ticks: { 
+                                precision: decimals === 0 ? 0 : undefined,
+                                callback: val => formatNumber(val, decimals) 
+                            } 
+                        } 
+                    },
                     plugins: { 
                         legend: {
                             labels: {
@@ -2334,10 +2747,8 @@
                                     });
                                 }
                             },
-                            // När användaren klickar på legenden måste vi uppdatera texten på Dölj-knappen dynamiskt!
                             onClick: function(e, legendItem, legend) {
                                 Chart.defaults.plugins.legend.onClick.call(this, e, legendItem, legend);
-                                
                                 setTimeout(() => {
                                     const hideBtn = document.getElementById('hideAllBtn');
                                     if (hideBtn && !hideBtn.classList.contains('hidden')) {
@@ -2356,7 +2767,7 @@
                                     else if (chartType === 'mig_share_riket') suffix = ' ‰';
                                     else if (isIndexMode) suffix = ' (Index)';
                                     else if (chartType === 'pop_change_pct') suffix = ' %';
-                                    return ctx.dataset.label + ': ' + formatNumber(ctx.raw, isFloatChart ? 2 : (isIndexMode ? 1 : 0)) + suffix;
+                                    return ctx.dataset.label + ': ' + formatNumber(ctx.raw, decimals) + suffix;
                                 }
                             } 
                         } 
@@ -2364,14 +2775,12 @@
                 }
             });
             
-            // Uppdatera "Dölj alla"-knappens text utifrån minnet
             if (!hideAllBtn.classList.contains('hidden')) {
                 const anyVis = trendChartInstance.data.datasets.some((ds, i) => trendChartInstance.isDatasetVisible(i));
                 if (anyVis) hideAllBtn.innerHTML = '<i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla';
                 else hideAllBtn.innerHTML = '<i class="fa-solid fa-eye mr-1"></i> Visa alla';
             }
 
-            // Uppdatera Förändringstabellen utifrån det vi ser
             const changesTbody = document.getElementById('changesTableBody');
             changesTbody.innerHTML = '';
             
@@ -2409,47 +2818,6 @@
                     </tr>
                 `;
             });
-        }
-
-        // Hjälpare för Normal läge
-        function createLineDatasets(labels, dataObj, key, labelName, color, fillMode, pointStyle = 'circle') {
-            const histData = labels.map(y => y.includes('Prognos') ? null : (dataObj[y] ? dataObj[y][key] : null));
-            const progData = labels.map((y, idx) => {
-                if (y.includes('Prognos')) return dataObj[y] ? dataObj[y][key] : null;
-                // Om vi är på det sista historiska året och nästa är en prognos, rita en bindande punkt
-                if (idx < labels.length - 1 && labels[idx+1].includes('Prognos')) return dataObj[y] ? dataObj[y][key] : null;
-                return null;
-            });
-            
-            const hasProg = progData.some(val => val !== null);
-            const hasHist = histData.some(val => val !== null);
-            
-            let ds = [];
-            if (hasHist || !hasProg) {
-                ds.push({ label: labelName + (hasProg ? ' (Hist)' : ''), data: histData, borderColor: color, backgroundColor: fillMode ? color+'20' : 'transparent', borderWidth: 2, fill: fillMode, pointStyle: pointStyle });
-            }
-            if (hasProg) {
-                ds.push({ label: labelName + ' (Prog)', data: progData, borderColor: color, backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], fill: false, pointStyle: pointStyle });
-            }
-            return ds;
-        }
-
-        // Hjälpare för Jämförelseläge
-        function createCompareDatasets(labels, currentStats, savedStats, key, labelName, color, pointStyle1 = 'circle', pointStyle2 = 'rectRot') {
-            const currData = labels.map(y => currentStats[y] ? currentStats[y][key] : null);
-            const savedData = labels.map(y => savedStats[y] ? savedStats[y][key] : null);
-            
-            const hasSaved = savedData.some(val => val !== null);
-            
-            let ds = [
-                { label: labelName + (hasSaved ? ' (Aktuell)' : ''), data: currData, borderColor: color, backgroundColor: 'transparent', borderWidth: 3, fill: false, pointStyle: pointStyle1 }
-            ];
-            
-            if (hasSaved) {
-                ds.push({ label: labelName + ' (Sparad)', data: savedData, borderColor: color, backgroundColor: 'transparent', borderWidth: 2, borderDash: [5, 5], fill: false, opacity: 0.6, pointStyle: pointStyle2 });
-            }
-            
-            return ds;
         }
 
         // === EXPORT FÖRÄNDRINGAR TILL CSV MED ANTAGANDEN ===
@@ -2503,7 +2871,6 @@
             if (Object.keys(currentTrendStats).length === 0) return;
             
             let popGroupVal = document.getElementById('chartPopGroupSelect').value;
-            // Om "Totalt" är valt i rullistan, tvingar vi ner den till 5-årsklasser för att exporten ska vara användbar
             if (popGroupVal === 'total') popGroupVal = '5yr'; 
             
             const groups = getGroupDefinitions(popGroupVal);

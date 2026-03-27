@@ -21,6 +21,13 @@
             --farg-dalig: #D55E00;
             --farg-neutral: #6c757d;
             --farg-varning: #F0E442;
+            
+            /* Utökad färgpalett */
+            --farg-lila: #6f42c1;
+            --farg-orange: #fd7e14;
+            --farg-turkos: #20c997;
+            --farg-rosa: #e83e8c;
+            --farg-ljusbla: #36A2EB;
         }
 
         body { 
@@ -127,7 +134,9 @@
             
             .rapport-sektion { padding: 15px; }
             .analys-text { font-size: 1rem; }
-            .minitabell-rad th, .minitabell-rad td { font-size: 0.85rem; padding: 8px 5px; }
+            
+            /* Justeringar för minitabeller på små skärmar */
+            .minitabell-rad th, .minitabell-rad td { font-size: 0.85rem; padding: 6px 4px; }
             .status-boll { width: 26px; height: 26px; font-size: 16px; }
         }
 
@@ -147,10 +156,22 @@
             .rapport-titel { font-size: 1.4rem !important; margin-bottom: 5px !important; padding-bottom: 5px !important; }
             .analys-text { font-size: 10.5pt !important; line-height: 1.4 !important; margin-bottom: 8px !important; }
             
-            .col-md-8 { width: 66.66% !important; float: left; padding-right: 15px !important; }
-            .col-md-4 { width: 33.33% !important; float: left; }
-            .col-md-4 > div { padding: 8px !important; margin-bottom: 8px !important; } 
-            .col-md-6 { width: 50% !important; float: left; padding: 0 10px !important; }
+            /* Säkra att tabeller kan visas i sin helhet i PDF */
+            .table-responsive { overflow: visible !important; }
+
+            /* --- Smarta PDF-lägen --- */
+            body.print-mode-reports #vy-sysselsattning, 
+            body.print-mode-reports #vy-arbetsloshet { display: block !important; }
+            body.print-mode-reports #analys-vy { display: none !important; }
+            
+            body.print-mode-analys #vy-sysselsattning, 
+            body.print-mode-analys #vy-arbetsloshet { display: none !important; }
+            body.print-mode-analys #analys-vy { display: block !important; }
+            
+            #vy-sysselsattning .col-md-8, #vy-arbetsloshet .col-md-8 { width: 66.66% !important; float: left; padding-right: 15px !important; }
+            #vy-sysselsattning .col-md-4, #vy-arbetsloshet .col-md-4 { width: 33.33% !important; float: left; }
+            #vy-sysselsattning .col-md-4 > div, #vy-arbetsloshet .col-md-4 > div { padding: 8px !important; margin-bottom: 8px !important; } 
+            #vy-sysselsattning .col-md-6, #vy-arbetsloshet .col-md-6 { width: 50% !important; float: left; padding: 0 10px !important; }
             .row { display: flex; flex-wrap: wrap; width: 100%; margin: 0 !important; }
             
             .minitabell-rad th, .minitabell-rad td { padding: 5px !important; font-size: 9pt !important; white-space: normal !important; }
@@ -165,7 +186,19 @@
             .gauge-container { transform: scale(0.85); transform-origin: top center; margin-bottom: -20px !important; }
             
             .print-page-break { page-break-before: always; margin-top: 0 !important; padding-top: 0 !important; }
-            .print-show { display: block !important; }
+            
+            /* --- PDF-STILAR FÖR ANALYSVYN --- */
+            .kontroll-panel { display: none !important; } /* Dölj alla filterknappar */
+            #analys-kpi-container .col-md-3 { width: 25% !important; float: left; padding: 0 5px !important; }
+            .kpi-card { padding: 10px !important; box-shadow: none !important; border: 1px solid #ced4da !important; }
+            .kpi-title { font-size: 0.75rem !important; margin-bottom: 2px !important; }
+            .kpi-value { font-size: 1.2rem !important; }
+            .kpi-trend { font-size: 0.75rem !important; }
+            #analys-vy .col-xl-6 { width: 50% !important; float: left; padding: 5px !important; }
+            .iframe-container { height: 400px !important; box-shadow: none !important; page-break-inside: avoid; border: 1px solid #ced4da !important; margin-bottom: 10px !important; padding: 5px !important; }
+            
+            /* Dölj ev. osynlig rubrik tills vi aktiverar print-mode för analys */
+            body.print-mode-analys .print-only-header { display: block !important; }
         }
     </style>
 </head>
@@ -179,6 +212,13 @@
         <div class="header-nav">
             <a href="guide_manadsbarometern.html" class="nav-btn">📖 Användarguide</a>
             <a href="dashboard_px.html" class="nav-btn">📊 Kvartalsuppföljning</a>
+            <!-- NYHET: Länk till Befolkningsbarometern med vit SVG-ikon och snäppet ljusare lila -->
+            <a href="befolkningsbarometern.html" class="nav-btn" style="background-color: #6f42c1; border-color: #5a2e8c;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7Zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-5.784 6A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216ZM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
+                </svg>
+                Befolkningsbarometern
+            </a>
             <a href="../index.html" class="nav-btn">🏠 Startmeny</a>
         </div>
     </div>
@@ -201,7 +241,7 @@
         <!-- ========================================== -->
         <!-- VY 1: SYSSELSÄTTNING                       -->
         <!-- ========================================== -->
-        <div id="vy-sysselsattning" class="print-show">
+        <div id="vy-sysselsattning">
             <div class="rapport-sektion">
                 <h2 class="rapport-titel" id="rapport-rubrik-syss">Laddar...</h2>
                 <div class="row align-items-center">
@@ -212,7 +252,7 @@
                             <div class="gauge-container">
                                 <div class="gauge-background"></div><div class="gauge-center"></div><div class="gauge-needle" id="barometer-nal-syss"></div>
                             </div>
-                            <div class="gauge-labels"><span>Kritiskt</span><span>OK</span><span>Bra</span></div>
+                            <div class="gauge-labels"><span>Pressat</span><span>OK</span><span>Bra</span></div>
                             <p id="barometer-text-syss" style="margin-top: 10px; font-weight: bold; color: #495057; font-size: 0.9rem;">Analys av underliggande mål...</p>
                         </div>
                     </div>
@@ -264,7 +304,7 @@
         <!-- ========================================== -->
         <!-- VY 2: ARBETSLÖSHET                         -->
         <!-- ========================================== -->
-        <div id="vy-arbetsloshet" class="print-show print-page-break" style="display:none;">
+        <div id="vy-arbetsloshet" class="print-page-break" style="display:none;">
             <div class="rapport-sektion">
                 <h2 class="rapport-titel" id="rapport-rubrik-arb">Laddar...</h2>
                 <div class="row align-items-center">
@@ -275,7 +315,7 @@
                             <div class="gauge-container">
                                 <div class="gauge-background"></div><div class="gauge-center"></div><div class="gauge-needle" id="barometer-nal-arb"></div>
                             </div>
-                            <div class="gauge-labels"><span>Kritiskt</span><span>OK</span><span>Bra</span></div>
+                            <div class="gauge-labels"><span>Pressat</span><span>OK</span><span>Bra</span></div>
                             <p id="barometer-text-arb" style="margin-top: 10px; font-weight: bold; color: #495057; font-size: 0.9rem;">Analys av underliggande mål...</p>
                         </div>
                     </div>
@@ -328,6 +368,11 @@
         <!-- VY 3: ANALYSVY                             -->
         <!-- ========================================== -->
         <div id="analys-vy">
+            <!-- NYHET: Rubrik som endast syns på papper i PDF-läget för Analysvyn -->
+            <div class="print-only-header" style="display: none;">
+                <h2 id="print-analys-rubrik" style="color: var(--primary-blue); border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-bottom: 20px;">Analysvy - Månadsbarometern</h2>
+            </div>
+            
             <div class="kontroll-panel">
                 <div class="kpi-liten" title="Befolkning totalt för vald månad">
                     <div class="kpi-liten-titel">Befolkning</div>
@@ -341,7 +386,6 @@
                     <option value="5">Senaste 5 åren</option>
                     <option value="alla">Visa alla år</option>
                 </select>
-                <!-- UPPATERAD MASTER-INDEX RULLISTA MED 3 VAL -->
                 <select id="master-index" onchange="skickaTillDiagrammen()" style="background-color: #1e293b;">
                     <option value="absolut">Absoluta tal</option>
                     <option value="index">Visa som Index (Basår=100)</option>
@@ -402,6 +446,11 @@
         // --- MANUELLA INSTÄLLNINGAR FÖR GRAFER ---
         const INSTALLNING_ANTAL_AR_LINJEDIAGRAM = 6; 
         const INSTALLNING_ANTAL_AR_SEKTOR = 3;       
+        
+        // --- KONSTANTER FÖR BAROMETERN ---
+        const BAROMETER_TEXT_ROD = "Pressat läge";
+        const BAROMETER_TEXT_GUL = "Neutralt läge";
+        const BAROMETER_TEXT_GRON = "Positivt läge";
         // ------------------------------------------
 
         let texterData = [];
@@ -410,28 +459,52 @@
         let sCharts = [null, null, null, null]; 
         let aCharts = [null, null, null, null];
 
+        // --- SMARTARE PDF KONTEXT ---
         function skrivUtPDF() {
-            document.getElementById('vy-sysselsattning').style.display = 'block';
-            document.getElementById('vy-arbetsloshet').style.display = 'block';
-            document.getElementById('analys-vy').style.display = 'none';
-
             Chart.defaults.animation = false;
 
-            byggRapportVy('Sysselsättning');
-            byggRapportVy('Arbetslöshet');
+            // Spruta in utskrifts-CSS i iframes för att rensa rubrikerna (Tar bort trend-rutan och fixar till select-boxen)
+            for (let i = 1; i <= 4; i++) { 
+                const iframe = document.getElementById("iframe" + i);
+                if (iframe && iframe.contentDocument && !iframe.contentDocument.getElementById('pdf-print-style')) { 
+                    let style = iframe.contentDocument.createElement('style');
+                    style.id = 'pdf-print-style';
+                    style.innerHTML = `@media print { 
+                        .trend-ruta, .toggle-btn, .tillbaka-btn { display: none !important; } 
+                        .top-rad { height: auto !important; margin-bottom: 0 !important; }
+                        select#indikator { border: none !important; background: transparent !important; font-size: 14px !important; padding: 0 !important; appearance: none !important; -webkit-appearance: none !important; -moz-appearance: none !important; color: #005596 !important; white-space: normal !important; text-overflow: clip !important; max-width: 100% !important; }
+                    }`;
+                    iframe.contentDocument.head.appendChild(style);
+                }
+            }
+
+            if (aktuellVy === 'Analysvy') {
+                document.body.classList.add('print-mode-analys');
+                document.body.classList.remove('print-mode-reports');
+                skickaTillDiagrammen();
+            } else {
+                document.body.classList.add('print-mode-reports');
+                document.body.classList.remove('print-mode-analys');
+                
+                document.getElementById('vy-sysselsattning').style.display = 'block';
+                document.getElementById('vy-arbetsloshet').style.display = 'block';
+                
+                byggRapportVy('Sysselsättning');
+                byggRapportVy('Arbetslöshet');
+            }
 
             setTimeout(() => {
                 window.print();
                 Chart.defaults.animation = true;
+                
+                document.body.classList.remove('print-mode-analys', 'print-mode-reports');
                 bytVy(aktuellVy);
-            }, 500);
+            }, 800);
         }
 
-        // --- Nya funktioner för att bygga tidsrullistor dynamiskt ---
         function harGiltigText(rad) {
-            let s = rad["Sysselsättning"] ? rad["Sysselsättning"].toString().trim() : "";
-            let a = rad["Arbetslöshet"] ? rad["Arbetslöshet"].toString().trim() : "";
-            return (s !== "" && s !== "..") || (a !== "" && a !== "..");
+            let text = rad["Färdig_Analystext"] ? rad["Färdig_Analystext"].toString().trim() : "";
+            return text !== "" && text !== "..";
         }
 
         function fyllArRullista() {
@@ -600,9 +673,9 @@
         function uppdateraBarometer(poangSumma, idNal, idText) {
             let needle = document.getElementById(idNal); let statusText = document.getElementById(idText);
             if(!needle || !statusText) return;
-            if (poangSumma <= 1) { needle.style.transform = "rotate(-60deg)"; statusText.innerHTML = `<span style="color:var(--farg-dalig);">Kritiskt läge</span>`; } 
-            else if (poangSumma === 2) { needle.style.transform = "rotate(0deg)"; statusText.innerHTML = `<span style="color:#d4a017;">Neutralt läge</span>`; } 
-            else { needle.style.transform = "rotate(60deg)"; statusText.innerHTML = `<span style="color:var(--farg-bra);">Positivt läge</span>`; }
+            if (poangSumma <= 1) { needle.style.transform = "rotate(-60deg)"; statusText.innerHTML = `<span style="color:var(--farg-dalig);">${BAROMETER_TEXT_ROD}</span>`; } 
+            else if (poangSumma === 2) { needle.style.transform = "rotate(0deg)"; statusText.innerHTML = `<span style="color:#d4a017;">${BAROMETER_TEXT_GUL}</span>`; } 
+            else { needle.style.transform = "rotate(60deg)"; statusText.innerHTML = `<span style="color:var(--farg-bra);">${BAROMETER_TEXT_GRON}</span>`; }
         }
 
         function byggRapportVy(vyNamn) {
@@ -621,9 +694,10 @@
             
             let htmlInnehall = ""; let harText = false;
             texterData.forEach(r => {
-                if(r["År"] == valdAr && r["Månad"] == valdManad) {
-                    if (r[vyNamn] && r[vyNamn].trim() !== "" && r[vyNamn].trim() !== "..") {
-                        harText = true; htmlInnehall += `<p>${r[vyNamn].replace(/\\n/g, '<br>').replace(/\n/g, '<br>')}</p>`;
+                if(r["År"] == valdAr && r["Månad"] == valdManad && r["Rapportvy"] === vyNamn) {
+                    let textAttVisa = r["Färdig_Analystext"];
+                    if (textAttVisa && textAttVisa.trim() !== "") {
+                        harText = true; htmlInnehall += `<p>${textAttVisa.replace(/\\n/g, '<br>').replace(/\n/g, '<br>')}</p>`;
                     }
                 }
             });
@@ -649,26 +723,57 @@
                     else if (!isNaN(parseInt(strVal.charAt(0)))) { tNr = strVal; }
 
                     if (tNr === tabellNr) {
-                        koder.forEach(kod => { kolumner.push({ namn: dashNamn, kod: kod.trim(), sort: parseFloat(rad[`${dashNamn}_Minitabell_Sort`])||999, polaritet: rad[`${dashNamn}_Polaritet`]||"Hög" }); });
+                        kolumner.push({ namn: dashNamn, koder: koder, sort: parseFloat(rad[`${dashNamn}_Minitabell_Sort`])||999, polaritet: rad[`${dashNamn}_Polaritet`]||"Hög" });
                     }
                 }
             }
 
             if (kolumner.length > 0 && containerTabell) {
                 kolumner.sort((a, b) => a.sort - b.sort);
+                
                 let html = `<div class="table-responsive"><table class="table table-bordered align-middle minitabell-rad" style="background: white; margin-bottom: 0;"><thead class="table-light"><tr><th style="background-color: #f8f9fa;">Region</th>`;
                 
+                let utokadeKolumner = [];
                 let indicatorUsageCount = {};
+                
                 kolumner.forEach(kol => {
-                    let snyggtNamn = kol.namn.replace(/_/g, " "); let sx = kol.kod==="0" ? ((rad[`${kol.namn}_Absolut_R12`]==="R12")?"(R12)":"(Utfall)") : (kol.kod==="1"?"(1 mån %)":"(1 år %)");
-                    let altRubrik = rad[`${kol.namn}_Alternativ_rubrik`];
-                    let hInnehall = "";
-                    if (altRubrik && altRubrik.toString().trim() !== "" && altRubrik.toString().trim() !== "NaN") {
-                        indicatorUsageCount[kol.namn] = (indicatorUsageCount[kol.namn] || 0) + 1;
-                        let delar = altRubrik.toString().split('|');
-                        hInnehall = delar[Math.min(indicatorUsageCount[kol.namn] - 1, delar.length - 1)].trim().replace(/\\n/g, '<br>').replace(/\n/g, '<br>');
-                    } else { hInnehall = `${snyggtNamn}<br><span style="font-size:0.8rem; color:#6c757d; font-weight:normal;">${sx}</span>`; }
-                    html += `<th class="text-end" style="font-weight: 600; color: var(--primary-dark);">${hInnehall}</th>`;
+                    kol.koder.forEach(kod => {
+                        utokadeKolumner.push({ namn: kol.namn, kod: kod.trim().toLowerCase(), polaritet: kol.polaritet });
+                        
+                        let snyggtNamn = kol.namn.replace(/_/g, " "); 
+                        let isRiket = kod.trim().toLowerCase().startsWith('r');
+                        let cleanKod = isRiket ? kod.trim().toLowerCase().substring(1) : kod.trim().toLowerCase();
+                        
+                        let sx = "";
+                        if (cleanKod === "0") sx = (rad[`${kol.namn}_Absolut_R12`]==="R12") ? "(R12)" : "(Utfall)";
+                        else if (cleanKod === "m") sx = "(Månad)";
+                        else if (cleanKod === "y") sx = "(R12)";
+                        else if (cleanKod === "1") sx = "(1 mån %)";
+                        else if (cleanKod === "12") sx = "(1 år %)";
+                        else if (cleanKod === "y12") sx = "(1 år % R12)"; 
+                        
+                        if (isRiket) sx = "Riket " + sx;
+
+                        let altRubrik = rad[`${kol.namn}_Alternativ_rubrik`];
+                        let hInnehall = "";
+                        if (altRubrik && altRubrik.toString().trim() !== "" && altRubrik.toString().trim() !== "NaN") {
+                            indicatorUsageCount[kol.namn] = (indicatorUsageCount[kol.namn] || 0) + 1;
+                            let delar = altRubrik.toString().split('|');
+                            let aktuellRubrik = delar[Math.min(indicatorUsageCount[kol.namn] - 1, delar.length - 1)].trim();
+                            
+                            let parts = aktuellRubrik.split(/\n|\\n/);
+                            let mainTitle = parts[0];
+                            if (parts.length > 1) {
+                                let subTitle = parts.slice(1).join('<br>');
+                                hInnehall = `${mainTitle}<br><span style="font-size:0.8rem; color:#6c757d; font-weight:normal;">${subTitle}</span>`;
+                            } else {
+                                hInnehall = `${mainTitle}`;
+                            }
+                        } else { 
+                            hInnehall = `${snyggtNamn}<br><span style="font-size:0.8rem; color:#6c757d; font-weight:normal;">${sx}</span>`; 
+                        }
+                        html += `<th class="text-end" style="font-weight: 600; color: var(--primary-dark);">${hInnehall}</th>`;
+                    });
                 });
                 html += `</tr></thead><tbody><tr><td style="font-weight: bold; background-color: #f8f9fa;">Linköping</td>`;
                 
@@ -689,9 +794,9 @@
                     return num.toLocaleString('sv-SE', formatteringsVal);
                 };
 
-                kolumner.forEach(k => { html += `<td class="text-end">${formateraVal(k.namn, k.kod, "", k.polaritet)}</td>`; });
+                utokadeKolumner.forEach(k => { html += `<td class="text-end">${formateraVal(k.namn, k.kod, "", k.polaritet)}</td>`; });
                 html += `</tr><tr class="minitabell-riket"><td style="font-weight: bold; background-color: #f8f9fa;">Riket (Snitt)</td>`;
-                kolumner.forEach(k => { html += `<td class="text-end">${formateraVal(k.namn, k.kod, "Riket_", k.polaritet)}</td>`; });
+                utokadeKolumner.forEach(k => { html += `<td class="text-end">${formateraVal(k.namn, k.kod, "Riket_", k.polaritet)}</td>`; });
                 html += `</tr></tbody></table></div>`;
                 containerTabell.innerHTML = html;
             }
@@ -843,7 +948,7 @@
                     elGraf4.title = "Positivt: Obalansen (totalt antal arbetslösa minus totalt antal lediga jobb) har minskat jämfört med fg. år.";
                 } else {
                     elGraf4.className = "status-boll boll-rod"; elGraf4.innerText = "↑";
-                    elGraf4.title = "Kritiskt: Obalansen (totalt antal arbetslösa minus totalt antal lediga jobb) har ökat jämfört med fg. år.";
+                    elGraf4.title = "Pressat: Obalansen (totalt antal arbetslösa minus totalt antal lediga jobb) har ökat jämfört med fg. år.";
                 }
             } else if(elGraf4) {
                 elGraf4.className = "status-boll boll-gra"; elGraf4.innerText = "?";
@@ -1000,6 +1105,15 @@
             const manad = document.getElementById("global-manad").value;
 
             let manadSelect = document.getElementById('global-manad');
+            let arSelect = document.getElementById('global-ar');
+            let grafTypAnalys = document.getElementById('master-graftyp').value;
+            
+            // Uppdatera rubriken i utskriftsläget (Analysvy)
+            let printRubrik = document.getElementById('print-analys-rubrik');
+            if (printRubrik && manadSelect.selectedIndex >= 0) {
+                printRubrik.innerText = `Analys: Arbetsmarknadsläget - Analysvy ${manadSelect.options[manadSelect.selectedIndex].text} ${arSelect.value}`;
+            }
+
             if (aktuellVy === 'Analysvy') {
                 manadSelect.style.display = grafTyp === 'stapel' ? 'inline-block' : 'none';
             }
