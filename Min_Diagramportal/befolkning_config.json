@@ -111,6 +111,21 @@
             "drilldown_typ": "stapel"
         },
         {
+            "id": "Pensionsåldrar_(nya)",
+            "label": "Pensionsåldrar (nya)",
+            "drilldown_komponenter": [
+                "67-71 år",
+                "72-76 år",
+                "77-81 år",
+                "82-86 år",
+                "87-91 år",
+                "92-96 år",
+                "97+ år"
+            ],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
             "id": "Omsorgsåldrar",
             "label": "Omsorgsåldrar",
             "drilldown_komponenter": [
@@ -283,6 +298,33 @@
             ],
             "drilldown_farger": [],
             "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Åldersstruktur",
+            "label": "Åldersstruktur",
+            "drilldown_komponenter": [
+                "0-5 år",
+                "6-15 år",
+                "16-18 år",
+                "19-24 år",
+                "25-29 år",
+                "30-44 år",
+                "45-64 år",
+                "65-79 år",
+                "80+ år"
+            ],
+            "drilldown_farger": [
+                "Blå",
+                "Gul",
+                "Grön",
+                "Röd",
+                "Orange",
+                "Turkos",
+                "Rosa",
+                "Lila",
+                "Svart"
+            ],
+            "drilldown_typ": "cirkel"
         }
     ],
     "4": [
@@ -290,19 +332,27 @@
             "id": "Födda",
             "label": "Födda",
             "drilldown_komponenter": [
-                "Födda"
+                "Födda",
+                "Döda"
             ],
-            "drilldown_farger": [],
-            "drilldown_typ": "stapel"
+            "drilldown_farger": [
+                "Blåare",
+                "Ljusgrå"
+            ],
+            "drilldown_typ": "linje"
         },
         {
             "id": "Döda",
             "label": "Döda",
             "drilldown_komponenter": [
-                "Döda"
+                "Döda",
+                "Födda"
             ],
-            "drilldown_farger": [],
-            "drilldown_typ": "stapel"
+            "drilldown_farger": [
+                "Röd",
+                "Ljusgrå"
+            ],
+            "drilldown_typ": "linje"
         },
         {
             "id": "Inflyttning",
@@ -365,7 +415,7 @@
             ],
             "drilldown_farger": [
                 "Röd",
-                "Gul"
+                "Orange"
             ],
             "drilldown_typ": "linje"
         },
