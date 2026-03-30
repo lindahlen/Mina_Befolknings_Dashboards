@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import time
 import pandas as pd
 import numpy as np
 from pyaxis import pyaxis
@@ -87,11 +88,10 @@ df_main = pd.merge(df_lkpg, df_riket, on=['År', 'Månad'], how='outer')
 df_main = df_main.sort_values(['År', 'Månad']).reset_index(drop=True)
 
 # ---------------------------------------------------------
-# 5. LÄS IN PROGNOSER OCH TEXTER
+# 5. LÄS IN PROGNOSER 
 # ---------------------------------------------------------
-print("3. Läser in prognoser och kommentarer...")
+print("3. Läser in prognoser...")
 prog_path = hitta_fil("Prognoser_Manad.xlsx")
-inm_path = hitta_fil("Inmatning_Manad.xlsx")
 
 try:
     df_prognos = pd.read_excel(prog_path)
@@ -99,14 +99,6 @@ try:
         df_prognos = df_prognos.rename(columns={'Kvartal': 'Månad'})
     df_prognos = df_prognos.replace(['-', '–', '—', '−'], 0).replace(['..', ' ', ''], np.nan)
     df_main = pd.merge(df_main, df_prognos, on=['År', 'Månad'], how='left')
-except Exception:
-    pass
-
-try:
-    df_texter = pd.read_excel(inm_path, sheet_name=0)
-    df_texter = df_texter.fillna('').replace(['..', '-', '–', '—', '−'], '')
-    out_text_path = os.path.join(spara_mapp, "manadsbarometern_texter.csv")
-    df_texter.to_csv(out_text_path, sep=';', index=False, encoding='cp1252')
 except Exception:
     pass
 
@@ -132,7 +124,7 @@ for index, row in df_styrning.iterrows():
 
     col_r12 = f"{dash_namn}_R12"
     regel = row['R12_Regel']
-    # FIX: Tvingar R12 att bara rita värden när det faktiskt finns 12 månader att bygga på
+    
     if regel == 'SUM':
         df_main[col_r12] = df_main[col_utfall].rolling(12, min_periods=12).sum()
         df_main[f"Riket_{col_r12}"] = df_main[col_riket].rolling(12, min_periods=12).sum()
@@ -188,10 +180,121 @@ for index, row in df_styrning.iterrows():
     df_main[f"{dash_namn}_Minitabell_Sort"] = row.get('Minitabell_Sortering', np.nan)
     df_main[f"{dash_namn}_Alternativ_rubrik"] = row.get('Alternativ_tabellrubrik', np.nan)
 
+
 # ---------------------------------------------------------
-# 7. STÄDA OCH EXPORTERA CSV
+# 7. GENERERA RAPPORTTEXT (MÅNADSMOTORN)
 # ---------------------------------------------------------
-print("5. Formaterar och exporterar CSV...")
+print("5. Kollar efter nya AI-fakta för begärda månader i Inmatning_Manad.xlsx...")
+inm_path = hitta_fil("Inmatning_Manad.xlsx")
+
+def safe_int(v):
+    try:
+        if pd.isna(v): return 0
+        v_str = str(v).strip().upper()
+        if v_str == "" or v_str == "NAN" or v_str == "..": return 0
+        return int(float(v))
+    except:
+        return 0
+
+try:
+    df_texter = pd.read_excel(inm_path, sheet_name=0)
+    df_texter.columns = [str(c).strip() for c in df_texter.columns]
+    
+    # 1. Kasta bort 'Stöd_manuell' så att den inte exporteras till CSV
+    if 'Stöd_manuell' in df_texter.columns:
+        df_texter = df_texter.drop(columns=['Stöd_manuell'])
+        
+    df_texter = df_texter.loc[:, ~df_texter.columns.duplicated()]
+    df_texter = df_texter.fillna('')
+    
+    for col in ['Autogenererad_Fakta', 'Färdig_Analystext', 'Robot_Fakta', 'Rapportvy']:
+        if col not in df_texter.columns:
+            df_texter[col] = ''
+            
+    manader_namn = ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"]
+    
+    print("      -> Bearbetar textfilen och exporterar historik/ny data...")
+    for idx, row in df_texter.iterrows():
+        try:
+            if str(row['År']).strip() == '' or str(row['Månad']).strip() == '': 
+                continue
+            s_ar = int(float(row['År']))
+            s_manad = int(float(row['Månad']))
+            vy = str(row['Rapportvy']).strip()
+            robot = str(row['Robot_Fakta']).strip().upper()
+            if robot == 'NAN': robot = ''
+        except (ValueError, TypeError):
+            continue
+            
+        # Generera endast ny text om koden är "A"
+        if robot == 'A':
+            mask_nu = (df_main['År'] == s_ar) & (df_main['Månad'] == s_manad)
+            df_nu = df_main[mask_nu]
+            if df_nu.empty: continue 
+            rad_nu = df_nu.iloc[0]
+            
+            mask_fg_a = (df_main['År'] == s_ar - 1) & (df_main['Månad'] == s_manad)
+            df_fg_a = df_main[mask_fg_a]
+            rad_fg_a = df_fg_a.iloc[0] if not df_fg_a.empty else pd.Series(dtype=float)
+            
+            manad_namn = manader_namn[s_manad - 1]
+            
+            if vy == 'Sysselsättning':
+                syss_nu = safe_int(rad_nu.get('Sysselsatta_dagbefolkning_Manad', 0))
+                syss_fg = safe_int(rad_fg_a.get('Sysselsatta_dagbefolkning_Manad', 0)) if not rad_fg_a.empty else 0
+                diff_syss = syss_nu - syss_fg
+                varsel = safe_int(rad_nu.get('Varslade_personer_Manad', 0))
+                
+                fakta_text = (f"I {manad_namn.lower()} {s_ar} uppgick antalet sysselsatta i Linköping till {syss_nu:,}. "
+                              f"Det innebär en förändring med {diff_syss:+} personer jämfört med samma månad föregående år. "
+                              f"Under månaden varslades {varsel} personer om uppsägning.").replace(',', ' ')
+                
+                df_texter.at[idx, 'Autogenererad_Fakta'] = fakta_text
+                df_texter.at[idx, 'Färdig_Analystext'] = fakta_text
+                
+            elif vy == 'Arbetslöshet':
+                arb_nu = safe_int(rad_nu.get('Inskrivna_arbetslösa_Manad', 0))
+                arb_fg = safe_int(rad_fg_a.get('Inskrivna_arbetslösa_Manad', 0)) if not rad_fg_a.empty else 0
+                diff_arb = arb_nu - arb_fg
+                
+                rel_arb = rad_nu.get('Relativ_arbetslöshet_16_64_år_Manad', 0)
+                if pd.isna(rel_arb): rel_arb = 0
+                
+                fakta_text = (f"Under {manad_namn.lower()} {s_ar} var {arb_nu:,} personer inskrivna som arbetslösa i Linköping. "
+                              f"Det är en förändring med {diff_arb:+} personer jämfört med samma månad föregående år. "
+                              f"Den relativa arbetslösheten uppgick till {rel_arb:.1f} procent.").replace(',', ' ').replace('.', ',')
+                
+                df_texter.at[idx, 'Autogenererad_Fakta'] = fakta_text
+                df_texter.at[idx, 'Färdig_Analystext'] = fakta_text
+
+    def rensa_heltal(v):
+        try:
+            if pd.isna(v): return ''
+            v_str = str(v).strip().upper()
+            if v_str == '' or v_str == 'NAN': return ''
+            return str(int(float(v)))
+        except:
+            return str(v)
+    
+    if 'År' in df_texter.columns: df_texter['År'] = df_texter['År'].apply(rensa_heltal)
+    if 'Månad' in df_texter.columns: df_texter['Månad'] = df_texter['Månad'].apply(rensa_heltal)
+    
+    # Städar bort ordet "NAN" om det har sparats i text-kolumnerna
+    for c in ['Robot_Fakta', 'Autogenererad_Fakta', 'Färdig_Analystext', 'Rapportvy']:
+        if c in df_texter.columns:
+            df_texter[c] = df_texter[c].astype(str).replace(r'(?i)^nan$', '', regex=True)
+
+    out_text_path = os.path.join(spara_mapp, "manadsbarometern_texter.csv")
+    df_texter.to_csv(out_text_path, sep=';', index=False, encoding='cp1252')
+    print(f"      -> Textfilen sparades som {out_text_path}")
+
+except Exception as e:
+    print(f"Ett fel uppstod vid inläsning/textgenerering: {e}")
+
+# ---------------------------------------------------------
+# 8. STÄDA OCH EXPORTERA DATA CSV
+# ---------------------------------------------------------
+print("6. Formaterar och exporterar CSV för webben...")
 scb_cols = [c for c in df_styrning['SCB_Namn_i_filen'].tolist() if c in df_main.columns]
 riket_scb_cols = [f"Riket_{c}" for c in scb_cols if f"Riket_{c}" in df_main.columns]
 df_main = df_main.drop(columns=scb_cols + riket_scb_cols)
@@ -209,9 +312,9 @@ out_csv = os.path.join(spara_mapp, "manadsbarometern_data.csv")
 df_main.to_csv(out_csv, sep=';', index=False, encoding='cp1252')
 
 # ---------------------------------------------------------
-# 8. SKAPA DIAGRAM-KONFIGURATION (JSON) MED DRILLDOWN-LOGIK
+# 9. SKAPA DIAGRAM-KONFIGURATION (JSON) MED DRILLDOWN-LOGIK
 # ---------------------------------------------------------
-print("6. Skapar konfigurationsfil för diagrammen...")
+print("7. Skapar konfigurationsfil för diagrammen...")
 diagram_config = {"1": [], "2": [], "3": [], "4": []}
 
 for index, row in df_styrning.iterrows():
@@ -264,4 +367,7 @@ out_json = os.path.join(spara_mapp, "diagram_config.json")
 with open(out_json, "w", encoding="utf-8") as f:
     json.dump(diagram_config, f, ensure_ascii=False, indent=4)
 
-print(f"KLAR! All data processades och sparades till: {spara_mapp}")
+print("\n" + "=" * 50)
+print("BEARBETNING KLAR!")
+print("Stänger programmet automatiskt om 2 sekunder...")
+time.sleep(2)
