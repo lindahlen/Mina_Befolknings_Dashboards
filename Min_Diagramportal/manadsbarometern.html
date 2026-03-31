@@ -194,9 +194,14 @@
             .kpi-title { font-size: 0.75rem !important; margin-bottom: 2px !important; }
             .kpi-value { font-size: 1.2rem !important; }
             .kpi-trend { font-size: 0.75rem !important; }
-            #analys-vy .col-xl-6 { width: 50% !important; float: left; padding: 5px !important; }
-            .iframe-container { height: 400px !important; box-shadow: none !important; page-break-inside: avoid; border: 1px solid #ced4da !important; margin-bottom: 10px !important; padding: 5px !important; }
             
+            /* Tvinga flexbox och exakt 50% för diagrammen i analysvyn */
+            #analys-vy .row { display: flex !important; flex-wrap: wrap !important; width: 100% !important; }
+            #analys-vy .col-xl-6 { width: 50% !important; flex: 0 0 50% !important; max-width: 50% !important; padding: 5px !important; box-sizing: border-box !important; }
+
+            .iframe-container { height: 350px !important; width: 100% !important; box-shadow: none !important; page-break-inside: avoid; border: 1px solid #ced4da !important; margin-bottom: 10px !important; padding: 5px !important; box-sizing: border-box !important; overflow: visible !important; }
+            iframe { width: 100% !important; max-width: 100% !important; height: 100% !important; box-sizing: border-box !important; }
+
             /* Dölj ev. osynlig rubrik tills vi aktiverar print-mode för analys */
             body.print-mode-analys .print-only-header { display: block !important; }
         }
@@ -355,7 +360,7 @@
                 <div class="col-md-6 mb-4">
                     <div class="rapport-sektion" style="height: 100%; position:relative;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-                            <h5 style="margin:0; font-weight:bold; color: #003d6b; font-size:1rem;">Ekonomiskt bistånd</h5>
+                            <h5 style="margin:0; font-weight:bold; color: #003d6b; font-size:1rem;">Ekonomiskt bistånd (Rullande 12 månader)</h5>
                             <div class="status-boll" id="status-graf-a4">?</div>
                         </div>
                         <div style="height: 250px; width: 100%;"><canvas id="canvas-a4"></canvas></div>
@@ -472,9 +477,16 @@
                     style.innerHTML = `@media print { 
                         .trend-ruta, .toggle-btn, .tillbaka-btn { display: none !important; } 
                         .top-rad { height: auto !important; margin-bottom: 0 !important; }
-                        select#indikator { border: none !important; background: transparent !important; font-size: 14px !important; padding: 0 !important; appearance: none !important; -webkit-appearance: none !important; -moz-appearance: none !important; color: #005596 !important; white-space: normal !important; text-overflow: clip !important; max-width: 100% !important; }
-                    }`;
+                        select#indikator { border: none !important; background: transparent !important; font-size: 14px !important; padding: 0 !important; appearance: none !important; -webkit-appearance: none !important; -moz-appearance: none !important; color: #5a2e8c !important; white-space: normal !important; text-overflow: clip !important; max-width: 100% !important; }
+                        /* Tvingar canvas att rita om och inte spränga PDF-bredden */
+                        .canvas-container { width: 100% !important; max-width: 100% !important; }
+                        canvas { width: 100% !important; max-width: 100% !important; height: auto !important; }
+                }`;
                     iframe.contentDocument.head.appendChild(style);
+                }
+                // <-- Steg C (Komplettera med detta direkt under klammern) -->
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.dispatchEvent(new Event('resize'));
                 }
             }
 
@@ -1020,7 +1032,7 @@
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { y: { beginAtZero: false } } }
             });
 
-            let bistandKey = Object.keys(rad).find(k => k.toLowerCase().includes("bistånd") && k.endsWith("_Manad") && !k.includes("Pct"));
+            let bistandKey = Object.keys(rad).find(k => k.toLowerCase().includes("bistånd") && k.endsWith("_R12") && !k.includes("Pct"));
             let a4Labels = [], a4Data = [];
             if (bistandKey) {
                 for (let i = 0; i <= targetIndex; i++) {
@@ -1030,10 +1042,10 @@
                     }
                 }
                 a4Labels = a4Labels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM); a4Data = a4Data.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
-                poangSumma += uppdateraStatusBoll("status-graf-a4", parseSiffra(rad[bistandKey]), a4Data.length > 1 ? a4Data[a4Data.length - 2] : null, rad[bistandKey.replace("_Manad", "_Polaritet")] || "Låg", "Jämförelse mot samma månad föregående år.");
+                poangSumma += uppdateraStatusBoll("status-graf-a4", parseSiffra(rad[bistandKey]), a4Data.length > 1 ? a4Data[a4Data.length - 2] : null, rad[bistandKey.replace("_R12", "_Polaritet")] || "Låg", "Jämförelse mot samma månad föregående år.");
             }
             aCharts[3] = new Chart(document.getElementById('canvas-a4').getContext('2d'), {
-                type: 'bar', data: { labels: a4Labels, datasets: [{ label: 'Antal/Belopp', data: a4Data, backgroundColor: '#005596', borderWidth: 0 }] },
+                type: 'bar', data: { labels: a4Labels, datasets: [{ label: 'Antal hushåll', data: a4Data, backgroundColor: '#005596', borderWidth: 0 }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { y: { beginAtZero: true } } }
             });
 
