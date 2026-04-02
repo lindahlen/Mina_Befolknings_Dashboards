@@ -247,7 +247,6 @@ def main():
     df_riket = process_population_sheet("Riket", prefix="Riket")
     df_prognos = process_population_sheet("Prognos", prefix="Prognos")
     
-    # LÄSER IN FLIKARNA MÄN OCH KVINNOR (Nyhet)
     df_man = process_population_sheet("Män", prefix="Män")
     df_kvinna = process_population_sheet("Kvinnor", prefix="Kvinnor")
 
@@ -340,6 +339,68 @@ def main():
         df_main['Befolkningsförändring'] = df_main['Totalt (Hela folkmängden)'].diff()
     if 'Riket_Befolkningsförändring' not in df_main.columns and 'Riket_Totalt (Hela folkmängden)' in df_main.columns:
         df_main['Riket_Befolkningsförändring'] = df_main['Riket_Totalt (Hela folkmängden)'].diff()
+
+
+    # =========================================================================
+    # 3.5 SKUGG-IMPLEMENTERING: SÄSONGSFÖRDELNING AV PROGNOS
+    # =========================================================================
+    print(" -> Beräknar säsongsprofiler för prognos (skugg-implementering)...")
+    komponenter = ['Födda', 'Döda', 'Inflyttning', 'Utflyttning']
+    
+    # Hitta det senaste året som är komplett (har data i december för Födda)
+    kompletta_ar_mask = df_main['Födda'].notna() & (df_main['Månad'] == 12)
+    if kompletta_ar_mask.any():
+        senaste_hela_ar = int(df_main.loc[kompletta_ar_mask, 'År'].max())
+    else:
+        senaste_hela_ar = int(df_main['År'].max()) - 1
+        
+    start_ar = senaste_hela_ar - 4 # Ger oss exakt 5 år (t.ex. 2021-2025)
+    
+    # Klipp ut de 5 åren från huvuddatan för att räkna historik
+    df_5ar = df_main[(df_main['År'] >= start_ar) & (df_main['År'] <= senaste_hela_ar)].copy()
+    
+    sasongsvikter = {}
+    if not df_5ar.empty:
+        for komp in komponenter:
+            if komp in df_5ar.columns:
+                # Summera upp hur mycket som skedde varje specifik månad (1-12) över de 5 åren
+                manads_summor = df_5ar.groupby('Månad')[komp].sum()
+                total_summa = manads_summor.sum()
+                if total_summa > 0:
+                    # Räkna ut % (vikt) för respektive månad
+                    sasongsvikter[komp] = manads_summor / total_summa
+                else:
+                    # Om datan helt saknas (extremfall), fördela jämnt
+                    sasongsvikter[komp] = pd.Series(1/12, index=range(1, 13))
+
+    # Skapa de nya skuggkolumnerna i den slutgiltiga datan och applicera historiska vikten
+    for komp in komponenter:
+        prog_col = f"{komp}_Prognos_Slutgiltig"
+        sasong_col = f"{komp}_Prognos_Sasong"
+        
+        df_main[sasong_col] = np.nan
+        
+        if prog_col in df_main.columns and komp in sasongsvikter:
+            for m in range(1, 13):
+                mask_m = df_main['Månad'] == m
+                # Eftersom process_change_sheet tidigare kopierade årsprognosen rakt ner 
+                # till alla tolv månader, så innehåller mask_m redan helårsvärdet. 
+                # Vi multiplicerar det nu med vår framräknade %-vikt för just den månaden.
+                df_main.loc[mask_m, sasong_col] = df_main.loc[mask_m, prog_col] * sasongsvikter[komp].get(m, 1/12)
+
+    # Beräkna totalt säsongsfördelat netto: (Födda - Döda) + (Inflyttning - Utflyttning)
+    df_main['Befolkningsförändring_Prognos_Sasong'] = np.nan
+    
+    if all(f"{k}_Prognos_Sasong" in df_main.columns for k in komponenter):
+        df_main['Befolkningsförändring_Prognos_Sasong'] = (
+            (df_main['Födda_Prognos_Sasong'].fillna(0) - df_main['Döda_Prognos_Sasong'].fillna(0)) +
+            (df_main['Inflyttning_Prognos_Sasong'].fillna(0) - df_main['Utflyttning_Prognos_Sasong'].fillna(0))
+        )
+        # Städa upp: Sätt värdet till NaN om vi faktiskt inte har någon årsprognos inlagd alls
+        saknar_prognos = df_main['Befolkningsförändring_Prognos_Slutgiltig'].isna()
+        df_main.loc[saknar_prognos, 'Befolkningsförändring_Prognos_Sasong'] = np.nan
+    # =========================================================================
+
 
     # ---------------------------------------------------------
     # 4. BYGG DASHBOARD-KOLUMNER (R12 etc)
@@ -548,7 +609,8 @@ def main():
         if isinstance(val, float): return f"{val:.2f}".replace('.', ',')
         return val
 
-    behåll_kolumner = ['År', 'Månad'] + [c for c in df_main.columns if c.endswith(('_Manad', '_R12', '_Polaritet', '_Troskel', '_Absolut_R12', '_Minitabell', '_Minitabell_Sort', '_Alternativ_rubrik', '_Pct_1M', '_Pct_12M', '_Prognos_Slutgiltig'))]
+    # OBS: Vi har lagt till '_Prognos_Sasong' i denna lista för att exportera skugg-kolumnerna!
+    behåll_kolumner = ['År', 'Månad'] + [c for c in df_main.columns if c.endswith(('_Manad', '_R12', '_Polaritet', '_Troskel', '_Absolut_R12', '_Minitabell', '_Minitabell_Sort', '_Alternativ_rubrik', '_Pct_1M', '_Pct_12M', '_Prognos_Slutgiltig', '_Prognos_Sasong'))]
     df_export = df_main[behåll_kolumner].copy()
 
     for col in df_export.columns:

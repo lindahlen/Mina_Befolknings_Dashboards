@@ -32,7 +32,7 @@
         .custom-ui-panel { 
             position: fixed; bottom: 30px; left: 30px; z-index:9999; 
             background: rgba(255,255,255,0.95); padding: 15px; border-radius: 8px; 
-            box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 280px; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 320px; 
             max-height: 90vh; overflow-y: auto;
         }
         .info-modal-content { font-size: 14px; }
@@ -67,6 +67,20 @@
             font-size: 14px;
         }
 
+        /* Anpassning av lagerkontrollen (högra menyn) */
+        .leaflet-control-layers {
+            font-size: 15px !important;
+            margin-right: 50px !important; /* Flyttar in den från högerkanten */
+            margin-top: 15px !important;
+            border-radius: 8px !important;
+            box-shadow: 0 0 15px rgba(0,0,0,0.2) !important;
+            padding: 5px;
+        }
+        .leaflet-control-layers label {
+            font-size: 15px !important;
+            margin-bottom: 3px;
+        }
+
         /* Markeringsverktyg CSS */
         .measuring-cursor { cursor: crosshair !important; }
 
@@ -79,9 +93,10 @@
                 max-height: 40vh; 
                 padding: 10px;
             }
-            .custom-ui-panel h5 { font-size: 16px; margin-bottom: 8px; }
+            .custom-ui-panel h5 { font-size: 16px !important; margin-bottom: 8px; }
             .custom-ui-panel hr { margin: 8px 0; }
-            .custom-ui-panel .btn { font-size: 12px; padding: 6px; margin-bottom: 5px !important;}
+            .custom-ui-panel .btn { font-size: 13px !important; padding: 6px !important; margin-bottom: 5px !important;}
+            .custom-ui-panel label { font-size: 13px !important; }
             
             .legend-container { 
                 width: calc(100% - 20px);
@@ -99,6 +114,10 @@
             .legend-item { margin-bottom: 2px; width: 45%; } /* Två kolumner på mobil */
             
             .leaflet-control-search .search-input { width: 120px !important; }
+            
+            .leaflet-control-layers {
+                margin-right: 10px !important; /* Återställer marginalen på små skärmar */
+            }
         }
     </style>
 </head>
@@ -124,36 +143,36 @@
 
     <!-- KONTROLLPANEL NERE TILL VÄNSTER -->
     <div class="custom-ui-panel">
-        <h5 style="margin-top:0; font-weight: bold; color: #2b8cbe;">Analys: Linköping</h5>
+        <h5 style="margin-top:0; font-weight: bold; color: #2b8cbe; font-size: 20px;">Analys: Linköping</h5>
         
-        <button type="button" class="btn btn-info w-100 mb-2" data-bs-toggle="modal" data-bs-target="#infoModal" style="color: white; font-weight: bold;">
+        <button type="button" class="btn btn-info w-100 mb-2" data-bs-toggle="modal" data-bs-target="#infoModal" style="color: white; font-weight: bold; font-size: 15px;">
             <i class="fa fa-info-circle"></i> Teknisk Information
         </button>
 
         <hr style="border-top: 1px solid #ccc; margin: 12px 0;">
         
         <div style="display: flex; gap: 5px; margin-bottom: 8px;">
-            <button onclick="map.flyTo([58.4108, 15.6214], 8);" class="btn btn-primary w-50" style="font-size: 13px; font-weight: bold;">
+            <button onclick="map.flyTo([58.4108, 15.6214], 9);" class="btn btn-primary w-50" style="font-size: 15px; font-weight: bold;">
                 🏠 Hem
             </button>
-            <button onclick="map.flyToBounds(searchLayer.getBounds(), {padding: [30, 30]});" class="btn btn-success w-50" style="font-size: 13px; font-weight: bold;">
+            <button onclick="map.flyToBounds(searchLayer.getBounds(), {padding: [30, 30]});" class="btn btn-success w-50" style="font-size: 15px; font-weight: bold;">
                 🌍 Överblick
             </button>
         </div>
 
-        <button id="measure-btn" onclick="toggleMeasure()" class="btn btn-outline-dark w-100 mb-2" style="font-size: 13px; font-weight: bold; background: white;">
+        <button id="measure-btn" onclick="toggleMeasure()" class="btn btn-outline-dark w-100 mb-2" style="font-size: 15px; font-weight: bold; background: white;">
             📏 Mät från Linköping
         </button>
         
-        <button onclick="clearSearch();" class="btn btn-warning w-100 mb-2" style="color: white; font-size: 13px; font-weight: bold;">
+        <button onclick="clearSearch();" class="btn btn-warning w-100 mb-2" style="color: white; font-size: 15px; font-weight: bold;">
             ❌ Rensa sökning / mätning
         </button>
 
-        <button onclick="exportMap()" class="btn btn-outline-secondary w-100 mb-3" style="font-size: 13px; font-weight: bold; background: white;">
+        <button onclick="exportMap()" class="btn btn-outline-secondary w-100 mb-3" style="font-size: 15px; font-weight: bold; background: white;">
             📸 Spara som bild (.png)
         </button>
 
-        <label for="opacity-slider" style="font-family: sans-serif; font-size: 13px;"><b>Ytornas opacitet:</b> <span id="opacity-val">50%</span></label>
+        <label for="opacity-slider" style="font-family: sans-serif; font-size: 15px;"><b>Ytornas opacitet:</b> <span id="opacity-val">50%</span></label>
         <input type="range" id="opacity-slider" min="0" max="100" value="50" style="width: 100%; margin-top: 5px;">
     </div>
 
@@ -196,7 +215,7 @@
     // 1. INITIERA KARTAN OCH BAKGRUNDSLAGER
     var map = L.map("map", { 
         center: [58.4108, 15.6214], 
-        zoom: 8,
+        zoom: 9, // Inzoomat från start (ändrat från 8)
         fullscreenControl: true // Lägger till fullskärmsknapp!
     });
 
@@ -236,362 +255,362 @@
     // =========================================================================
     var ostergotland_data_highres = {"bbox": [14.537647, 57.700911, 16.903088, 59.038757], "features": [{"bbox": [14.537647, 58.073777, 14.933687, 58.353526], "geometry": {"coordinates": [[[[14.868239, 58.177985], [14.933687, 58.131115], [14.894718, 58.089863], [14.755588, 58.073777], [14.748141, 58.104872], [14.604127, 58.092495], [14.537647, 58.106135], [14.590757, 58.205145], [14.614093, 58.272564], [14.638925, 58.294765], [14.625842, 58.315305], [14.646262, 58.349764], [14.681539, 58.337715], [14.794197, 58.353526], [14.843572, 58.343681], [14.843653, 58.293106], [14.87201, 58.253056], [14.858216, 58.212847], [14.868239, 58.177985]]]], "type": "MultiPolygon"}, "id": "43", "properties": {"KnKod": "0509", "KnNamn": "Ödeshög"}, "type": "Feature"}, {"bbox": [14.983107, 57.700911, 15.536465, 58.032157], "geometry": {"coordinates": [[[[15.00458, 57.895979], [14.983107, 57.934495], [15.014315, 57.97676], [15.049617, 58.000114], [15.025647, 58.032157], [15.139004, 58.022263], [15.238134, 58.009466], [15.285722, 57.977841], [15.363143, 57.975209], [15.414416, 57.961389], [15.403924, 57.896908], [15.448128, 57.897939], [15.466489, 57.873361], [15.512851, 57.868826], [15.521147, 57.844819], [15.536465, 57.796286], [15.516614, 57.761898], [15.457058, 57.767225], [15.429141, 57.747157], [15.415855, 57.700911], [15.284386, 57.715772], [15.141346, 57.707647], [15.100256, 57.758748], [15.064576, 57.825796], [15.076379, 57.850441], [15.00458, 57.895979]]]], "type": "MultiPolygon"}, "id": "44", "properties": {"KnKod": "0512", "KnNamn": "Ydre"}, "type": "Feature"}, {"bbox": [15.350851, 57.796286, 16.066764, 58.212511], "geometry": {"coordinates": [[[[15.964434, 58.125498], [16.015688, 58.111437], [15.998818, 58.087751], [15.984406, 58.035572], [16.064853, 57.972586], [16.019725, 57.953707], [16.066764, 57.864759], [16.018628, 57.861472], [15.919627, 57.813382], [15.866648, 57.832964], [15.794729, 57.81387], [15.778232, 57.845643], [15.670931, 57.864822], [15.580596, 57.853954], [15.590997, 57.824387], [15.536465, 57.796286], [15.521147, 57.844819], [15.512851, 57.868826], [15.466489, 57.873361], [15.448128, 57.897939], [15.403924, 57.896908], [15.414416, 57.961389], [15.363143, 57.975209], [15.350851, 58.044623], [15.374515, 58.070375], [15.429568, 58.094316], [15.457092, 58.080057], [15.505832, 58.100724], [15.501611, 58.128089], [15.539746, 58.162032], [15.542069, 58.203489], [15.607071, 58.188803], [15.647259, 58.170132], [15.704981, 58.199245], [15.804751, 58.212511], [15.845517, 58.201588], [15.878938, 58.168777], [15.943736, 58.15392], [15.964434, 58.125498]]]], "type": "MultiPolygon"}, "id": "45", "properties": {"KnKod": "0513", "KnNamn": "Kinda"}, "type": "Feature"}, {"bbox": [14.858216, 57.975209, 15.374515, 58.294618], "geometry": {"coordinates": [[[[14.868239, 58.177985], [14.858216, 58.212847], [14.87201, 58.253056], [14.901616, 58.275564], [14.954146, 58.281779], [14.984105, 58.294618], [15.019475, 58.283662], [15.058131, 58.288779], [15.209804, 58.246044], [15.235139, 58.172322], [15.230231, 58.1491], [15.26759, 58.137951], [15.27649, 58.110335], [15.337011, 58.106883], [15.322699, 58.087813], [15.374515, 58.070375], [15.350851, 58.044623], [15.363143, 57.975209], [15.285722, 57.977841], [15.238134, 58.009466], [15.139004, 58.022263], [15.025647, 58.032157], [14.981983, 58.117655], [14.933687, 58.131115], [14.868239, 58.177985]]]], "type": "MultiPolygon"}, "id": "46", "properties": {"KnKod": "0560", "KnNamn": "Boxholm"}, "type": "Feature"}, {"bbox": [15.779173, 58.063422, 16.432407, 58.37733], "geometry": {"coordinates": [[[[15.964434, 58.125498], [15.943736, 58.15392], [15.878938, 58.168777], [15.845517, 58.201588], [15.804751, 58.212511], [15.819184, 58.235764], [15.816417, 58.268507], [15.779173, 58.28523], [15.792032, 58.311592], [15.885557, 58.345704], [15.945186, 58.336622], [16.04736, 58.37733], [16.076145, 58.339333], [16.126407, 58.348842], [16.194357, 58.317385], [16.232783, 58.320351], [16.27997, 58.302849], [16.293647, 58.260323], [16.432407, 58.225926], [16.422321, 58.184935], [16.376429, 58.178881], [16.371983, 58.1514], [16.29372, 58.133558], [16.251843, 58.157988], [16.179033, 58.124642], [16.151266, 58.108307], [16.175504, 58.06693], [16.116801, 58.063422], [16.09208, 58.08853], [15.998818, 58.087751], [16.015688, 58.111437], [15.964434, 58.125498]]]], "type": "MultiPolygon"}, "id": "47", "properties": {"KnKod": "0561", "KnNamn": "Åtvidaberg"}, "type": "Feature"}, {"bbox": [15.40809, 58.61739, 16.16703, 59.038757], "geometry": {"coordinates": [[[[15.649265, 58.667425], [15.608003, 58.61739], [15.584401, 58.640477], [15.531076, 58.618252], [15.516178, 58.644434], [15.479223, 58.644147], [15.465647, 58.681692], [15.483342, 58.745774], [15.448061, 58.758644], [15.40809, 58.813342], [15.419401, 58.830918], [15.439951, 58.876816], [15.523524, 58.875636], [15.566392, 58.911165], [15.530669, 58.944614], [15.632338, 59.003197], [15.741795, 58.980327], [15.793832, 59.038757], [15.84306, 59.024982], [15.861301, 58.998557], [15.958149, 58.96497], [16.053788, 58.941645], [16.098887, 58.897222], [16.16703, 58.85739], [16.075283, 58.828103], [16.062856, 58.790855], [15.998758, 58.754993], [15.977511, 58.709238], [15.986534, 58.688784], [15.954593, 58.670834], [15.918971, 58.622337], [15.846064, 58.635809], [15.744438, 58.659993], [15.649265, 58.667425]]]], "type": "MultiPolygon"}, "id": "48", "properties": {"KnKod": "0562", "KnNamn": "Finspång"}, "type": "Feature"}, {"bbox": [16.232783, 57.982286, 16.819901, 58.397251], "geometry": {"coordinates": [[[[16.236865, 58.379853], [16.247935, 58.397251], [16.449437, 58.364268], [16.487952, 58.367176], [16.550433, 58.328627], [16.602626, 58.31789], [16.680985, 58.266121], [16.766056, 58.232552], [16.819901, 58.188976], [16.769002, 58.1236], [16.679097, 58.146045], [16.691576, 58.114391], [16.772599, 58.070786], [16.709321, 58.049754], [16.748819, 58.004152], [16.688897, 57.982286], [16.612465, 57.989284], [16.561645, 58.099602], [16.501002, 58.116323], [16.469169, 58.084025], [16.371983, 58.1514], [16.376429, 58.178881], [16.422321, 58.184935], [16.432407, 58.225926], [16.293647, 58.260323], [16.27997, 58.302849], [16.232783, 58.320351], [16.27009, 58.346941], [16.236865, 58.379853]]]], "type": "MultiPolygon"}, "id": "49", "properties": {"KnKod": "0563", "KnNamn": "Valdemarsvik"}, "type": "Feature"}, {"bbox": [15.253731, 58.070375, 16.04736, 58.657603], "geometry": {"coordinates": [[[[15.816417, 58.268507], [15.819184, 58.235764], [15.804751, 58.212511], [15.704981, 58.199245], [15.647259, 58.170132], [15.607071, 58.188803], [15.542069, 58.203489], [15.539746, 58.162032], [15.501611, 58.128089], [15.505832, 58.100724], [15.457092, 58.080057], [15.429568, 58.094316], [15.374515, 58.070375], [15.322699, 58.087813], [15.337011, 58.106883], [15.27649, 58.110335], [15.26759, 58.137951], [15.364275, 58.170403], [15.347482, 58.250915], [15.330156, 58.313375], [15.356625, 58.340791], [15.31455, 58.352218], [15.333176, 58.390929], [15.253731, 58.404454], [15.287378, 58.433289], [15.362982, 58.465176], [15.349911, 58.626811], [15.380793, 58.657603], [15.434515, 58.634662], [15.479223, 58.644147], [15.516178, 58.644434], [15.531076, 58.618252], [15.584401, 58.640477], [15.608003, 58.61739], [15.681142, 58.564264], [15.743221, 58.564184], [15.752469, 58.529266], [15.910561, 58.512467], [15.900501, 58.484123], [15.964629, 58.463915], [15.938431, 58.44018], [15.999621, 58.417703], [16.028737, 58.400222], [16.04736, 58.37733], [15.945186, 58.336622], [15.885557, 58.345704], [15.792032, 58.311592], [15.779173, 58.28523], [15.816417, 58.268507]]]], "type": "MultiPolygon"}, "id": "50", "properties": {"KnKod": "0580", "KnNamn": "Linköping"}, "type": "Feature"}, {"bbox": [15.608003, 58.417703, 16.903088, 58.85739], "geometry": {"coordinates": [[[[15.649265, 58.667425], [15.744438, 58.659993], [15.846064, 58.635809], [15.918971, 58.622337], [15.954593, 58.670834], [15.986534, 58.688784], [15.977511, 58.709238], [15.998758, 58.754993], [16.062856, 58.790855], [16.075283, 58.828103], [16.16703, 58.85739], [16.226592, 58.849427], [16.252922, 58.82905], [16.369456, 58.709968], [16.545292, 58.705769], [16.687839, 58.680015], [16.748365, 58.632453], [16.68323, 58.635022], [16.578573, 58.645611], [16.444527, 58.663456], [16.37546, 58.664299], [16.273595, 58.672644], [16.234287, 58.653415], [16.232837, 58.619107], [16.265591, 58.611588], [16.345749, 58.628184], [16.399532, 58.593931], [16.421277, 58.639616], [16.572002, 58.63336], [16.711974, 58.59866], [16.827564, 58.550956], [16.903088, 58.509528], [16.828307, 58.4476], [16.719882, 58.427785], [16.612484, 58.438631], [16.564924, 58.441192], [16.399783, 58.483439], [16.318816, 58.490484], [16.302477, 58.522312], [16.135163, 58.52932], [16.065093, 58.510168], [16.071884, 58.466307], [16.028232, 58.456352], [15.999621, 58.417703], [15.938431, 58.44018], [15.964629, 58.463915], [15.900501, 58.484123], [15.910561, 58.512467], [15.752469, 58.529266], [15.743221, 58.564184], [15.681142, 58.564264], [15.608003, 58.61739], [15.649265, 58.667425]]]], "type": "MultiPolygon"}, "id": "51", "properties": {"KnKod": "0581", "KnNamn": "Norrköping"}, "type": "Feature"}, {"bbox": [15.999621, 58.266121, 16.883692, 58.52932], "geometry": {"coordinates": [[[[16.809585, 58.361869], [16.883692, 58.329582], [16.84761, 58.283138], [16.680985, 58.266121], [16.602626, 58.31789], [16.550433, 58.328627], [16.487952, 58.367176], [16.449437, 58.364268], [16.247935, 58.397251], [16.236865, 58.379853], [16.27009, 58.346941], [16.232783, 58.320351], [16.194357, 58.317385], [16.126407, 58.348842], [16.076145, 58.339333], [16.04736, 58.37733], [16.028737, 58.400222], [15.999621, 58.417703], [16.028232, 58.456352], [16.071884, 58.466307], [16.065093, 58.510168], [16.135163, 58.52932], [16.302477, 58.522312], [16.318816, 58.490484], [16.399783, 58.483439], [16.564924, 58.441192], [16.596469, 58.416141], [16.688931, 58.400886], [16.71456, 58.366536], [16.809585, 58.361869]]]], "type": "MultiPolygon"}, "id": "52", "properties": {"KnKod": "0582", "KnNamn": "Söderköping"}, "type": "Feature"}, {"bbox": [14.859164, 58.411686, 15.483342, 58.875002], "geometry": {"coordinates": [[[[15.085946, 58.804283], [15.134414, 58.835994], [15.186906, 58.836742], [15.2474, 58.875002], [15.33919, 58.847233], [15.38733, 58.859904], [15.419401, 58.830918], [15.40809, 58.813342], [15.448061, 58.758644], [15.483342, 58.745774], [15.465647, 58.681692], [15.479223, 58.644147], [15.434515, 58.634662], [15.380793, 58.657603], [15.349911, 58.626811], [15.362982, 58.465176], [15.287378, 58.433289], [15.232698, 58.434555], [15.246317, 58.450057], [15.116904, 58.455422], [15.102589, 58.436329], [15.068279, 58.436396], [14.99109, 58.411686], [14.979265, 58.446032], [14.986594, 58.490863], [14.96147, 58.518074], [15.024138, 58.538178], [14.98964, 58.554492], [14.929053, 58.561355], [14.859164, 58.590342], [14.926684, 58.633738], [14.939575, 58.699059], [15.028301, 58.727799], [15.049838, 58.764628], [15.085946, 58.804283]]]], "type": "MultiPolygon"}, "id": "53", "properties": {"KnKod": "0583", "KnNamn": "Motala"}, "type": "Feature"}, {"bbox": [14.646262, 58.337715, 14.99109, 58.518074], "geometry": {"coordinates": [[[[14.979265, 58.446032], [14.99109, 58.411686], [14.956419, 58.409934], [14.964485, 58.382406], [14.907916, 58.340262], [14.843572, 58.343681], [14.794197, 58.353526], [14.681539, 58.337715], [14.646262, 58.349764], [14.659822, 58.383987], [14.77262, 58.434124], [14.775678, 58.46648], [14.81898, 58.47685], [14.862218, 58.45289], [14.92363, 58.467693], [14.96147, 58.518074], [14.986594, 58.490863], [14.979265, 58.446032]]]], "type": "MultiPolygon"}, "id": "54", "properties": {"KnKod": "0584", "KnNamn": "Vadstena"}, "type": "Feature"}, {"bbox": [14.843572, 58.137951, 15.364275, 58.455422], "geometry": {"coordinates": [[[[15.209804, 58.246044], [15.058131, 58.288779], [15.019475, 58.283662], [14.984105, 58.294618], [14.954146, 58.281779], [14.901616, 58.275564], [14.87201, 58.253056], [14.843653, 58.293106], [14.843572, 58.343681], [14.907916, 58.340262], [14.964485, 58.382406], [14.956419, 58.409934], [14.99109, 58.411686], [15.068279, 58.436396], [15.102589, 58.436329], [15.116904, 58.455422], [15.246317, 58.450057], [15.232698, 58.434555], [15.287378, 58.433289], [15.253731, 58.404454], [15.333176, 58.390929], [15.31455, 58.352218], [15.356625, 58.340791], [15.330156, 58.313375], [15.347482, 58.250915], [15.364275, 58.170403], [15.26759, 58.137951], [15.230231, 58.1491], [15.235139, 58.172322], [15.209804, 58.246044]]]], "type": "MultiPolygon"}, "id": "55", "properties": {"KnKod": "0586", "KnNamn": "Mjölby"}, "type": "Feature"}]};
 
-    L.geoJson(ostergotland_data_highres, {
-        style: function() { return {color: "#3182bd", fillColor: "#9ecae1", fillOpacity: 0.5, weight: 1.5}; },
-        onEachFeature: function(feature, layer) { layer.bindTooltip(`<b>${feature.properties.KnNamn}</b>`, {sticky: true}); }
-    }).addTo(fg_kommungranser);
-    fg_kommungranser.addTo(map);
+        L.geoJson(ostergotland_data_highres, {
+            style: function() { return {color: "#3182bd", fillColor: "#9ecae1", fillOpacity: 0.5, weight: 1.5}; },
+            onEachFeature: function(feature, layer) { layer.bindTooltip(`<b>${feature.properties.KnNamn}</b>`, {sticky: true}); }
+        }).addTo(fg_kommungranser);
+        fg_kommungranser.addTo(map);
 
-    // =========================================================================
-    // 4. DATA OCH MATEMATIK FÖR NÄRMASTE GRANNAR OCH SPINDELNÄT
-    // =========================================================================
-    function haversineDist(lat1, lon1, lat2, lon2) {
-        const R = 6371; // km
-        const dLat = (lat2-lat1)*Math.PI/180;
-        const dLon = (lon2-lon1)*Math.PI/180;
-        const a = Math.sin(dLat/2)*Math.sin(dLat/2) + 
-                  Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)*Math.sin(dLon/2);
-        return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
+        // =========================================================================
+        // 4. DATA OCH MATEMATIK FÖR NÄRMASTE GRANNAR OCH SPINDELNÄT
+        // =========================================================================
+        function haversineDist(lat1, lon1, lat2, lon2) {
+            const R = 6371; // km
+            const dLat = (lat2-lat1)*Math.PI/180;
+            const dLon = (lon2-lon1)*Math.PI/180;
+            const a = Math.sin(dLat/2)*Math.sin(dLat/2) + 
+                    Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2)*Math.sin(dLon/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        }
 
-    var central_data = [
-        {name: "Linköping", lat: 58.4108, lon: 15.6214, pop_int: 168737, pop: "168 713", isCenter: true},
-        {name: "Norrköping", lat: 58.5877, lon: 16.1924, pop_int: 145042, pop: "144 902", f_km: 39, b_km: 43, b_tid: "35 min", k_tid: "25 min (Tåg)"},
-        {name: "Motala", lat: 58.5371, lon: 15.0365, pop_int: 43175, pop: "43 132", f_km: 38, b_km: 46, b_tid: "40 min", k_tid: "40 min (Tåg)"},
-        {name: "Mjölby", lat: 58.322, lon: 15.125, pop_int: 28773, pop: "28 821", f_km: 31, b_km: 34, b_tid: "25 min", k_tid: "20 min (Tåg)"},
-        {name: "Finspång", lat: 58.705, lon: 15.82, pop_int: 21524, pop: "21 503", f_km: 43, b_km: 50, b_tid: "45 min", k_tid: "55 min (Buss)"},
-        {name: "Söderköping", lat: 58.481, lon: 16.32, pop_int: 14722, pop: "14 741", f_km: 43, b_km: 54, b_tid: "45 min", k_tid: "60 min (Buss)"},
-        {name: "Åtvidaberg", lat: 58.2, lon: 16.0, pop_int: 11509, pop: "11 490", f_km: 33, b_km: 38, b_tid: "35 min", k_tid: "45 min (Tåg/Buss)"},
-        {name: "Kisa (Kinda)", lat: 57.988, lon: 15.63, pop_int: 9936, pop: "9 925", f_km: 50, b_km: 56, b_tid: "45 min", k_tid: "50 min (Tåg/Buss)"},
-        {name: "Vadstena", lat: 58.45, lon: 14.89, pop_int: 7532, pop: "7 483", f_km: 45, b_km: 51, b_tid: "45 min", k_tid: "55 min (Tåg+Buss)"},
-        {name: "Valdemarsvik", lat: 58.203, lon: 16.6, pop_int: 7517, pop: "7 524", f_km: 78, b_km: 91, b_tid: "1h 15min", k_tid: "1h 45min (Buss)"},
-        {name: "Boxholm", lat: 58.195, lon: 15.05, pop_int: 5432, pop: "5 450", f_km: 45, b_km: 50, b_tid: "40 min", k_tid: "35 min (Tåg)"},
-        {name: "Ödeshög", lat: 58.23, lon: 14.65, pop_int: 5238, pop: "5 223", f_km: 62, b_km: 67, b_tid: "45 min", k_tid: "60 min (Buss)"},
-        {name: "Österbymo (Ydre)", lat: 57.828, lon: 15.305, pop_int: 3620, pop: "3 619", f_km: 67, b_km: 78, b_tid: "1h 10min", k_tid: "1h 30min (Tåg+Buss)"}
-    ];
+        var central_data = [
+            {name: "Linköping", lat: 58.4108, lon: 15.6214, pop_int: 168737, pop: "168 713", isCenter: true},
+            {name: "Norrköping", lat: 58.5877, lon: 16.1924, pop_int: 145042, pop: "144 902", f_km: 39, b_km: 43, b_tid: "35 min", k_tid: "25 min (Tåg)"},
+            {name: "Motala", lat: 58.5371, lon: 15.0365, pop_int: 43175, pop: "43 132", f_km: 38, b_km: 46, b_tid: "40 min", k_tid: "40 min (Tåg)"},
+            {name: "Mjölby", lat: 58.322, lon: 15.125, pop_int: 28773, pop: "28 821", f_km: 31, b_km: 34, b_tid: "25 min", k_tid: "20 min (Tåg)"},
+            {name: "Finspång", lat: 58.705, lon: 15.82, pop_int: 21524, pop: "21 503", f_km: 43, b_km: 50, b_tid: "45 min", k_tid: "55 min (Buss)"},
+            {name: "Söderköping", lat: 58.481, lon: 16.32, pop_int: 14722, pop: "14 741", f_km: 43, b_km: 54, b_tid: "45 min", k_tid: "60 min (Buss)"},
+            {name: "Åtvidaberg", lat: 58.2, lon: 16.0, pop_int: 11509, pop: "11 490", f_km: 33, b_km: 38, b_tid: "35 min", k_tid: "45 min (Tåg/Buss)"},
+            {name: "Kisa (Kinda)", lat: 57.988, lon: 15.63, pop_int: 9936, pop: "9 925", f_km: 50, b_km: 56, b_tid: "45 min", k_tid: "50 min (Tåg/Buss)"},
+            {name: "Vadstena", lat: 58.45, lon: 14.89, pop_int: 7532, pop: "7 483", f_km: 45, b_km: 51, b_tid: "45 min", k_tid: "55 min (Tåg+Buss)"},
+            {name: "Valdemarsvik", lat: 58.203, lon: 16.6, pop_int: 7517, pop: "7 524", f_km: 78, b_km: 91, b_tid: "1h 15min", k_tid: "1h 45min (Buss)"},
+            {name: "Boxholm", lat: 58.195, lon: 15.05, pop_int: 5432, pop: "5 450", f_km: 45, b_km: 50, b_tid: "40 min", k_tid: "35 min (Tåg)"},
+            {name: "Ödeshög", lat: 58.23, lon: 14.65, pop_int: 5238, pop: "5 223", f_km: 62, b_km: 67, b_tid: "45 min", k_tid: "60 min (Buss)"},
+            {name: "Österbymo (Ydre)", lat: 57.828, lon: 15.305, pop_int: 3620, pop: "3 619", f_km: 67, b_km: 78, b_tid: "1h 10min", k_tid: "1h 30min (Tåg+Buss)"}
+        ];
 
-    // Räkna ut 3 närmaste grannar dynamiskt!
-    central_data.forEach(d => {
-        let dists = central_data.filter(x => x.name !== d.name).map(x => {
-            return { name: x.name, dist: haversineDist(d.lat, d.lon, x.lat, x.lon) };
-        });
-        dists.sort((a,b) => a.dist - b.dist);
-        d.neighbors = dists.slice(0, 3);
-    });
-
-    var icon_center = L.AwesomeMarkers.icon({markerColor: "red", iconColor: "white", icon: "star", prefix: "glyphicon"});
-    var icon_ort = L.AwesomeMarkers.icon({markerColor: "blue", iconColor: "white", icon: "info-sign", prefix: "glyphicon"});
-
-    function createPopupHTML(d) {
-        let n_html = d.neighbors ? `<div style="margin-top: 8px;"><i>Tre närmaste centralorter:</i><br>` +
-                     d.neighbors.map((n, i) => `${i+1}. ${n.name} (${n.dist.toFixed(1)} km)`).join('<br>') + `</div>` : '';
-                     
-        let restid_html = d.f_km ? `
-            <div style="background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 8px;">
-                <b style="font-size: 12px; color: #d95f0e;">Restid & Avstånd från Linköping</b>
-                <table class="popup-table">
-                    <tr><td>Fågelvägen</td><td>${d.f_km} km</td></tr>
-                    <tr><td>Körsträcka (Bil)</td><td>${d.b_km} km</td></tr>
-                    <tr><td>Restid (Bil)</td><td>${d.b_tid}</td></tr>
-                    <tr><td>Kollektivtrafik</td><td>${d.k_tid}</td></tr>
-                </table>
-            </div>` : '';
-
-        return `
-            <div style="font-family: sans-serif; min-width: 220px;">
-                <h5 style="margin-bottom: 2px; color: #333;"><b>${d.name}</b></h5>
-                ${d.pop ? `<div style="font-size: 12px; color: #666; margin-bottom: 4px;">Befolkning (${POP_DATE}): <b>${d.pop}</b></div>` : ''}
-                ${d.isCenter ? `<i>Utgångspunkt för analys (Stora torget)</i>` : ''}
-                ${n_html}
-                ${restid_html}
-            </div>`;
-    }
-
-    central_data.forEach(d => {
-        // Skapa grannskaps-pluppar
-        let marker = L.marker([d.lat, d.lon], {icon: d.isCenter ? icon_center : icon_ort, title: d.name});
-        marker.bindPopup(createPopupHTML(d));
-        marker.bindTooltip(`<b>${d.name}</b>`, {sticky: true});
-        
-        // --- VISUELLA LINJER TILL GRANNAR ---
-        marker.on('click', function() {
-            fg_connection_lines.clearLayers();
-            d.neighbors.forEach(n => {
-                let neighborData = central_data.find(x => x.name === n.name);
-                if(neighborData) {
-                    L.polyline([ [d.lat, d.lon], [neighborData.lat, neighborData.lon] ], {
-                        color: '#34495e', weight: 2, dashArray: '5,5', opacity: 0.7
-                    }).addTo(fg_connection_lines);
-                }
+        // Räkna ut 3 närmaste grannar dynamiskt!
+        central_data.forEach(d => {
+            let dists = central_data.filter(x => x.name !== d.name).map(x => {
+                return { name: x.name, dist: haversineDist(d.lat, d.lon, x.lat, x.lon) };
             });
+            dists.sort((a,b) => a.dist - b.dist);
+            d.neighbors = dists.slice(0, 3);
         });
-        
-        marker.addTo(fg_grannar);
 
-        // Skapa en HELT OSYNLIG kopia för sökfunktionen!
-        let searchMarker = L.circleMarker([d.lat, d.lon], {
-            radius: 0, opacity: 0, fillOpacity: 0, interactive: false, title: d.name
-        });
-        searchMarker.bindPopup(createPopupHTML(d));
-        searchMarker.addTo(searchLayer);
+        var icon_center = L.AwesomeMarkers.icon({markerColor: "red", iconColor: "white", icon: "star", prefix: "glyphicon"});
+        var icon_ort = L.AwesomeMarkers.icon({markerColor: "blue", iconColor: "white", icon: "info-sign", prefix: "glyphicon"});
 
-        // Skapa befolkningsringar (areaproportionerliga)
-        if (d.pop_int) {
-            let radius = Math.max(3, Math.sqrt(d.pop_int) * 0.08);
-            let color = d.isCenter ? "#D13438" : "#0078D4";
-            let circle = L.circleMarker([d.lat, d.lon], {
-                radius: radius, color: color, weight: 3, fillOpacity: 0.6, fillColor: color,
-                className: "pop-ring" // Skyddas av opacitetsreglaget nedan
+        function createPopupHTML(d) {
+            let n_html = d.neighbors ? `<div style="margin-top: 8px;"><i>Tre närmaste centralorter:</i><br>` +
+                        d.neighbors.map((n, i) => `${i+1}. ${n.name} (${n.dist.toFixed(1)} km)`).join('<br>') + `</div>` : '';
+                        
+            let restid_html = d.f_km ? `
+                <div style="background: #f8f9fa; padding: 8px; border-radius: 5px; margin-top: 8px;">
+                    <b style="font-size: 12px; color: #d95f0e;">Restid & Avstånd från Linköping</b>
+                    <table class="popup-table">
+                        <tr><td>Fågelvägen</td><td>${d.f_km} km</td></tr>
+                        <tr><td>Körsträcka (Bil)</td><td>${d.b_km} km</td></tr>
+                        <tr><td>Restid (Bil)</td><td>${d.b_tid}</td></tr>
+                        <tr><td>Kollektivtrafik</td><td>${d.k_tid}</td></tr>
+                    </table>
+                </div>` : '';
+
+            return `
+                <div style="font-family: sans-serif; min-width: 220px;">
+                    <h5 style="margin-bottom: 2px; color: #333;"><b>${d.name}</b></h5>
+                    ${d.pop ? `<div style="font-size: 12px; color: #666; margin-bottom: 4px;">Befolkning (${POP_DATE}): <b>${d.pop}</b></div>` : ''}
+                    ${d.isCenter ? `<i>Utgångspunkt för analys (Stora torget)</i>` : ''}
+                    ${n_html}
+                    ${restid_html}
+                </div>`;
+        }
+
+        central_data.forEach(d => {
+            // Skapa grannskaps-pluppar
+            let marker = L.marker([d.lat, d.lon], {icon: d.isCenter ? icon_center : icon_ort, title: d.name});
+            marker.bindPopup(createPopupHTML(d));
+            marker.bindTooltip(`<b>${d.name}</b>`, {sticky: true});
+            
+            // --- VISUELLA LINJER TILL GRANNAR ---
+            marker.on('click', function() {
+                fg_connection_lines.clearLayers();
+                d.neighbors.forEach(n => {
+                    let neighborData = central_data.find(x => x.name === n.name);
+                    if(neighborData) {
+                        L.polyline([ [d.lat, d.lon], [neighborData.lat, neighborData.lon] ], {
+                            color: '#34495e', weight: 2, dashArray: '5,5', opacity: 0.7
+                        }).addTo(fg_connection_lines);
+                    }
+                });
             });
-            circle.bindPopup(`<b>${d.name}</b><br>Befolkning (${POP_DATE}): ${d.pop}`);
-            circle.bindTooltip(`<b>${d.name}</b> (${d.pop})`, {sticky: true});
-            circle.addTo(fg_population_rings);
-        }
-    });
+            
+            marker.addTo(fg_grannar);
 
-    // Rensa linjer när popups stängs
-    map.on('popupclose', function() {
-        fg_connection_lines.clearLayers();
-    });
+            // Skapa en HELT OSYNLIG kopia för sökfunktionen!
+            let searchMarker = L.circleMarker([d.lat, d.lon], {
+                radius: 0, opacity: 0, fillOpacity: 0, interactive: false, title: d.name
+            });
+            searchMarker.bindPopup(createPopupHTML(d));
+            searchMarker.addTo(searchLayer);
 
-    // =========================================================================
-    // 5. LÄGG TILL KNUTPUNKTER & LOGISTIKNODER
-    // =========================================================================
-    var knut_data = [
-        {name: "Tranås", lat: 58.03, lon: 14.97, f_km: 57, b_km: 67, b_tid: "55 min", k_tid: "45 min (Tåg)"},
-        {name: "Askersund", lat: 58.88, lon: 14.90, f_km: 65, b_km: 80, b_tid: "1h 5min", k_tid: "1h 30min (Tåg+Buss)"},
-        {name: "Vimmerby", lat: 57.66, lon: 15.85, f_km: 71, b_km: 84, b_tid: "1h 10min", k_tid: "1h 20min (Tåg)"},
-        {name: "Katrineholm", lat: 58.99, lon: 16.20, f_km: 75, b_km: 95, b_tid: "1h 10min", k_tid: "55 min (Tåg)"},
-        {name: "Eksjö", lat: 57.66, lon: 14.97, f_km: 75, b_km: 95, b_tid: "1h 15min", k_tid: "1h 45min (Tåg+Buss)"},
-        {name: "Hallsberg", lat: 59.06, lon: 15.11, f_km: 85, b_km: 105, b_tid: "1h 15min", k_tid: "1h 30min (Tåg)"},
-        {name: "Hultsfred", lat: 57.49, lon: 15.84, f_km: 85, b_km: 105, b_tid: "1h 25min", k_tid: "1h 25min (Tåg)"},
-        {name: "Västervik", lat: 57.75, lon: 16.63, f_km: 86, b_km: 102, b_tid: "1h 20min", k_tid: "1h 30min (Buss)"},
-        {name: "Nyköping", lat: 58.75, lon: 17.00, f_km: 92, b_km: 104, b_tid: "1h 10min", k_tid: "1h 5min (Tåg)"},
-        {name: "Örebro", lat: 59.27, lon: 15.21, f_km: 100, b_km: 120, b_tid: "1h 30min", k_tid: "2h 10min (Tåg/Buss)"},
-        {name: "Skövde", lat: 58.39, lon: 13.84, f_km: 105, b_km: 140, b_tid: "1h 45min", k_tid: "1h 40min (Tåg)"},
-        {name: "Nässjö", lat: 57.65, lon: 14.69, f_km: 105, b_km: 125, b_tid: "1h 20min", k_tid: "1h 15min (Tåg)"},
-        {name: "Eskilstuna", lat: 59.36, lon: 16.51, f_km: 110, b_km: 145, b_tid: "1h 50min", k_tid: "1h 45min (Tåg)"},
-        {name: "Jönköping", lat: 57.78, lon: 14.16, f_km: 113, b_km: 131, b_tid: "1h 25min", k_tid: "1h 30min (Tåg/Buss)"},
-        {name: "Trosa", lat: 58.89, lon: 17.54, f_km: 125, b_km: 145, b_tid: "1h 40min", k_tid: "1h 45min (Tåg+Buss)"},
-        {name: "Västerås", lat: 59.61, lon: 16.54, f_km: 145, b_km: 200, b_tid: "2h 15min", k_tid: "2h 00min (Tåg)"},
-        {name: "Södertälje", lat: 59.19, lon: 17.62, f_km: 145, b_km: 170, b_tid: "1h 50min", k_tid: "1h 20min (Tåg)"},
-        {name: "Växjö", lat: 56.87, lon: 14.80, f_km: 165, b_km: 215, b_tid: "2h 40min", k_tid: "2h 20min (Tåg)"},
-        {name: "Alvesta", lat: 56.90, lon: 14.55, f_km: 170, b_km: 210, b_tid: "2h 20min", k_tid: "1h 45min (Tåg)"},
-        {name: "Stockholm", lat: 59.32, lon: 18.06, f_km: 175, b_km: 200, b_tid: "2h 15min", k_tid: "1h 40min (Tåg)"},
-        {name: "Borås", lat: 57.72, lon: 12.94, f_km: 180, b_km: 210, b_tid: "2h 20min", k_tid: "3h 00min (Buss/Tåg)"},
-        {name: "Kalmar", lat: 56.66, lon: 16.36, f_km: 180, b_km: 235, b_tid: "3h 00min", k_tid: "2h 45min (Tåg)"},
-        {name: "Karlstad", lat: 59.40, lon: 13.51, f_km: 180, b_km: 230, b_tid: "3h 00min", k_tid: "3h 30min (Tåg)"},
-        {name: "Uppsala", lat: 59.85, lon: 17.63, f_km: 210, b_km: 270, b_tid: "3h 00min", k_tid: "2h 20min (Tåg)"},
-        {name: "Göteborg", lat: 57.70, lon: 11.97, f_km: 230, b_km: 275, b_tid: "3h 00min", k_tid: "3h 20min (Tåg)"},
-        {name: "Falun", lat: 60.60, lon: 15.63, f_km: 245, b_km: 310, b_tid: "3h 40min", k_tid: "3h 45min (Tåg)"},
-        {name: "Halmstad", lat: 56.67, lon: 12.86, f_km: 250, b_km: 250, b_tid: "3h 00min", k_tid: "3h 30min (Tåg)"},
-        {name: "Karlskrona", lat: 56.16, lon: 15.59, f_km: 250, b_km: 295, b_tid: "3h 40min", k_tid: "3h 50min (Tåg/Buss)"},
-        {name: "Gävle", lat: 60.67, lon: 17.14, f_km: 260, b_km: 340, b_tid: "3h 40min", k_tid: "2h 50min (Tåg)"},
-        {name: "Helsingborg", lat: 56.04, lon: 12.69, f_km: 295, b_km: 350, b_tid: "3h 50min", k_tid: "3h 10min (Tåg)"},
-        {name: "Lund", lat: 55.70, lon: 13.19, f_km: 325, b_km: 400, b_tid: "4h 15min", k_tid: "2h 30min (Tåg)"},
-        {name: "Malmö", lat: 55.60, lon: 13.00, f_km: 340, b_km: 415, b_tid: "4h 30min", k_tid: "2h 45min (Tåg)"}
-    ];
-
-    var icon_knut = L.AwesomeMarkers.icon({markerColor: "purple", iconColor: "white", icon: "road", prefix: "glyphicon"});
-
-    knut_data.forEach(d => {
-        let marker = L.marker([d.lat, d.lon], {icon: icon_knut, title: d.name});
-        marker.bindPopup(createPopupHTML(d));
-        marker.bindTooltip(`<b>${d.name}</b>`, {sticky: true});
-        marker.addTo(fg_knutpunkter);
-
-        let searchMarker = L.circleMarker([d.lat, d.lon], {radius: 0, opacity: 0, fillOpacity: 0, interactive: false, title: d.name});
-        searchMarker.bindPopup(createPopupHTML(d));
-        searchMarker.addTo(searchLayer);
-    });
-
-    var logistik_data = [
-        {name: "Linköping City Airport", lat: 58.401, lon: 15.678, i: "plane", f_km: 3, b_km: 4, b_tid: "10 min", k_tid: "15 min (Buss)"},
-        {name: "Norrköpings Hamn", lat: 58.601, lon: 16.216, i: "ship", f_km: 41, b_km: 46, b_tid: "40 min", k_tid: "45 min (Buss/Spårvagn)"},
-        {name: "Skavsta Flygplats", lat: 58.789, lon: 16.912, i: "plane", f_km: 88, b_km: 100, b_tid: "1h 5min", k_tid: "1h 20min (Tåg+Buss)"},
-        {name: "Arlanda Flygplats", lat: 59.651, lon: 17.918, i: "plane", f_km: 190, b_km: 235, b_tid: "2h 30min", k_tid: "2h 00min (Tåg)"},
-        {name: "Landvetter Flygplats", lat: 57.661, lon: 12.290, i: "plane", f_km: 215, b_km: 250, b_tid: "2h 40min", k_tid: "3h 00min (Buss/Tåg)"},
-        {name: "Kastrup Flygplats", lat: 55.628, lon: 12.649, i: "plane", f_km: 350, b_km: 430, b_tid: "4h 45min", k_tid: "3h 00min (Tåg)"}
-    ];
-
-    logistik_data.forEach(d => {
-        let icon_log = L.AwesomeMarkers.icon({markerColor: "orange", iconColor: "white", icon: d.i, prefix: "fa"});
-        let marker = L.marker([d.lat, d.lon], {icon: icon_log, title: d.name});
-        marker.bindPopup(createPopupHTML(d));
-        marker.bindTooltip(`<b>${d.name}</b>`, {sticky: true});
-        marker.addTo(fg_logistik);
-
-        let searchMarker = L.circleMarker([d.lat, d.lon], {radius: 0, opacity: 0, fillOpacity: 0, interactive: false, title: d.name});
-        searchMarker.bindPopup(createPopupHTML(d));
-        searchMarker.addTo(searchLayer);
-    });
-
-    // =========================================================================
-    // 6. RÄCKVIDDSANALYSER & INFRASTRUKTUR
-    // =========================================================================
-    
-    // Järnvägsnätet (Södra stambanan, Västra stambanan, Godsstråket, Jönköpingsbanan m.fl.)
-    var railwayLines = [
-        // Södra stambanan
-        [[59.32, 18.06], [59.19, 17.62], [58.99, 16.20], [58.5877, 16.1924], [58.4108, 15.6214], [58.322, 15.125], [58.03, 14.97], [57.65, 14.69], [56.90, 14.55], [55.70, 13.19], [55.60, 13.00]],
-        // Västra stambanan
-        [[59.32, 18.06], [59.19, 17.62], [58.99, 16.20], [59.06, 15.11], [58.39, 13.84], [57.70, 11.97]],
-        // Godsstråket genom Bergslagen
-        [[58.322, 15.125], [58.5371, 15.0365], [58.88, 14.90], [59.06, 15.11]],
-        // Stångådalsbanan
-        [[58.4108, 15.6214], [57.988, 15.63], [57.66, 15.85], [57.49, 15.84], [56.66, 16.36]],
-        // Jönköpingsbanan / Borås
-        [[57.65, 14.69], [57.78, 14.16], [57.72, 12.94], [57.70, 11.97]]
-    ];
-    railwayLines.forEach(line => {
-        L.polyline(line, {color: '#666', weight: 4, opacity: 0.6}).addTo(fg_jarnvag);
-        L.polyline(line, {color: '#fff', weight: 2, opacity: 0.8, dashArray: '5, 5'}).addTo(fg_jarnvag);
-    });
-
-
-    // Radier (fågelvägen)
-    L.circle([58.4108, 15.6214], {radius: 60000, color: '#3498db', weight: 2, fillOpacity: 0.05, dashArray: '5,10'}).bindTooltip("<b>Radie:</b> 60 km fågelvägen", {sticky: true}).addTo(fg_radie_60km);
-    L.circle([58.4108, 15.6214], {radius: 90000, color: '#e74c3c', weight: 2, fillOpacity: 0.05, dashArray: '5,10'}).bindTooltip("<b>Radie:</b> 90 km fågelvägen", {sticky: true}).addTo(fg_radie_90km);
-    L.circle([58.4108, 15.6214], {radius: 120000, color: '#9b59b6', weight: 2, fillOpacity: 0.05, dashArray: '5,10'}).bindTooltip("<b>Radie:</b> 120 km fågelvägen", {sticky: true}).addTo(fg_radie_120km);
-
-    // 60 min bil 
-    var iso_bil_60 = [ [58.80, 16.80], [58.90, 16.00], [58.80, 14.90], [58.40, 14.60], [58.00, 14.50], [57.75, 15.00], [57.75, 15.80], [58.00, 16.50], [58.30, 16.70] ];
-    L.polygon(iso_bil_60, {color: '#f39c12', weight: 2, fillColor: '#f39c12', fillOpacity: 0.15}).bindTooltip("<b>Räckvidd:</b> Ca 60 min med Bil", {sticky: true}).addTo(fg_isokron_bil_60);
-
-    // 90 min bil 
-    var iso_bil_90 = [ [59.19, 17.62], [58.99, 16.20], [59.27, 15.21], [59.06, 15.11], [58.88, 14.90], [57.78, 14.16], [57.65, 14.69], [57.49, 15.84], [57.75, 16.63], [58.20, 16.80], [58.75, 17.00] ];
-    L.polygon(iso_bil_90, {color: '#e67e22', weight: 2, fillColor: '#e67e22', fillOpacity: 0.10, dashArray: '4,6'}).bindTooltip("<b>Räckvidd:</b> Ca 90 min med Bil", {sticky: true}).addTo(fg_isokron_bil_90);
-
-    // 60 min Kollektivtrafik 
-    var iso_koll_60 = [ [58.99, 16.20], [58.60, 16.40], [58.48, 16.32], [57.98, 15.63], [58.03, 14.97], [58.32, 15.12], [58.53, 15.03], [58.70, 15.82] ];
-    L.polygon(iso_koll_60, {color: '#27ae60', weight: 3, fillColor: '#27ae60', fillOpacity: 0.2}).bindTooltip("<b>Räckvidd:</b> Ca 60 min med Kollektivtrafik (Tåg/Buss)", {sticky: true}).addTo(fg_isokron_koll_60);
-
-    // 90 min Kollektivtrafik 
-    var iso_koll_90 = [ [59.19, 17.62], [58.75, 17.00], [58.20, 16.60], [57.75, 16.63], [57.66, 15.85], [57.65, 14.69], [59.06, 15.11], [59.36, 16.51] ];
-    L.polygon(iso_koll_90, {color: '#2ecc71', weight: 3, fillColor: '#2ecc71', fillOpacity: 0.15, dashArray: '4,6'}).bindTooltip("<b>Räckvidd:</b> Ca 90 min med Kollektivtrafik (Tåg/Buss)", {sticky: true}).addTo(fg_isokron_koll_90);
-
-
-    // =========================================================================
-    // 7. LAGERKONTROLL, SÖKFUNKTION OCH VERKTYG
-    // =========================================================================
-    var baseLayers = {
-        "Karta: Blek": base_blek,
-        "Karta: Färgstark": base_fargstark
-    };
-    var overlayLayers = {
-        "Kommungränser (Polygoner)": fg_kommungranser,
-        "Närmaste grannar (Pluppar)": fg_grannar,
-        "Befolkning Q4 2025 (Ringar)": fg_population_rings,
-        "Knutpunkter (Utomläns)": fg_knutpunkter,
-        "Logistiknoder (Flyg/Hamn)": fg_logistik,
-        "Järnvägsnätet (Stambanor)": fg_jarnvag,
-        "Radie: 60 km från Linköping": fg_radie_60km,
-        "Radie: 90 km från Linköping": fg_radie_90km,
-        "Radie: 120 km från Linköping": fg_radie_120km,
-        "Räckvidd: 60 min Bil": fg_isokron_bil_60,
-        "Räckvidd: 90 min Bil": fg_isokron_bil_90,
-        "Räckvidd: 60 min Kollektivt": fg_isokron_koll_60,
-        "Räckvidd: 90 min Kollektivt": fg_isokron_koll_90
-    };
-
-    L.control.layers(baseLayers, overlayLayers, {position: 'topright', collapsed: false}).addTo(map);
-
-    // Sökverktyg
-    var searchControl = new L.Control.Search({
-        layer: searchLayer, 
-        propertyName: 'title', 
-        marker: false, 
-        textPlaceholder: 'Sök...', 
-        collapsed: false, 
-        moveToLocation: function(latlng, title, map) {
-            map.flyTo(latlng, 12);
-        }
-    });
-    
-    searchControl.on('search:locationfound', function(e) {
-        setTimeout(() => { map.openPopup(e.layer.getPopup().getContent(), e.latlng); }, 300);
-    });
-    map.addControl(searchControl);
-
-    // --- MÄTVERKTYG ---
-    let isMeasuring = false;
-    let measureLine = null;
-
-    function toggleMeasure() {
-        isMeasuring = !isMeasuring;
-        let btn = document.getElementById("measure-btn");
-        let mapContainer = document.getElementById("map");
-
-        if (isMeasuring) {
-            btn.style.background = "#e74c3c";
-            btn.style.color = "white";
-            btn.innerHTML = "❌ Avbryt mätning";
-            mapContainer.classList.add("measuring-cursor");
-        } else {
-            btn.style.background = "white";
-            btn.style.color = "black";
-            btn.innerHTML = "📏 Mät från Linköping";
-            mapContainer.classList.remove("measuring-cursor");
-            if(measureLine) { map.removeLayer(measureLine); measureLine = null; }
-        }
-    }
-
-    map.on('click', function(e) {
-        if (!isMeasuring) return;
-        if (measureLine) map.removeLayer(measureLine);
-        
-        let dist = haversineDist(58.4108, 15.6214, e.latlng.lat, e.latlng.lng);
-        
-        measureLine = L.polyline([[58.4108, 15.6214], e.latlng], {color: 'red', dashArray: '5,5', weight: 2}).addTo(map);
-        
-        L.popup()
-            .setLatLng(e.latlng)
-            .setContent(`<b>Avstånd från Stora torget (Linköping):</b><br>${dist.toFixed(1)} km (fågelvägen)`)
-            .openOn(map);
-    });
-
-    // --- BILDEXPORT ---
-    function exportMap() {
-        alert("Genererar bild av kartan... Det kan ta ett par sekunder. Klicka OK för att starta.");
-        html2canvas(document.querySelector("#map"), {
-            useCORS: true // Krävs för att tillåta externa kart-tiles i bilden
-        }).then(canvas => {
-            let link = document.createElement('a');
-            link.download = 'Linkoping_Regional_Karta.png';
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }).catch(err => {
-            console.error("Fel vid bildexport:", err);
-            alert("Något gick fel vid exporten (ofta säkerhetsbegränsningar för inbäddade kartor). Använd PrtScn / Win+Shift+S istället.");
-        });
-    }
-
-    // --- OPACITETSREGLAGE ---
-    var slider = document.getElementById("opacity-slider");
-    var output = document.getElementById("opacity-val");
-    
-    slider.oninput = function() {
-        output.innerHTML = this.value + "%";
-        var val = this.value / 100;
-        var paths = document.querySelectorAll('path.leaflet-interactive');
-        
-        paths.forEach(function(path) {
-            if(path.getAttribute('stroke-dasharray')) return;
-            if(path.classList && path.classList.contains('pop-ring')) {
-                path.style.fillOpacity = 0.4 + (val * 0.4); 
-                return;
+            // Skapa befolkningsringar (areaproportionerliga)
+            if (d.pop_int) {
+                let radius = Math.max(3, Math.sqrt(d.pop_int) * 0.08);
+                let color = d.isCenter ? "#D13438" : "#0078D4";
+                let circle = L.circleMarker([d.lat, d.lon], {
+                    radius: radius, color: color, weight: 3, fillOpacity: 0.6, fillColor: color,
+                    className: "pop-ring" // Skyddas av opacitetsreglaget nedan
+                });
+                circle.bindPopup(`<b>${d.name}</b><br>Befolkning (${POP_DATE}): ${d.pop}`);
+                circle.bindTooltip(`<b>${d.name}</b> (${d.pop})`, {sticky: true});
+                circle.addTo(fg_population_rings);
             }
-            path.style.fillOpacity = val;
         });
-    }
 
-    function clearSearch() {
-        if(searchControl) searchControl.cancel();
-        map.closePopup();
-        fg_connection_lines.clearLayers();
-        if(isMeasuring) toggleMeasure();
-    }
+        // Rensa linjer när popups stängs
+        map.on('popupclose', function() {
+            fg_connection_lines.clearLayers();
+        });
 
-</script>
-</body>
-</html>
+        // =========================================================================
+        // 5. LÄGG TILL KNUTPUNKTER & LOGISTIKNODER
+        // =========================================================================
+        var knut_data = [
+            {name: "Tranås", lat: 58.03, lon: 14.97, f_km: 57, b_km: 67, b_tid: "55 min", k_tid: "45 min (Tåg)"},
+            {name: "Askersund", lat: 58.88, lon: 14.90, f_km: 65, b_km: 80, b_tid: "1h 5min", k_tid: "1h 30min (Tåg+Buss)"},
+            {name: "Vimmerby", lat: 57.66, lon: 15.85, f_km: 71, b_km: 84, b_tid: "1h 10min", k_tid: "1h 20min (Tåg)"},
+            {name: "Katrineholm", lat: 58.99, lon: 16.20, f_km: 75, b_km: 95, b_tid: "1h 10min", k_tid: "55 min (Tåg)"},
+            {name: "Eksjö", lat: 57.66, lon: 14.97, f_km: 75, b_km: 95, b_tid: "1h 15min", k_tid: "1h 45min (Tåg+Buss)"},
+            {name: "Hallsberg", lat: 59.06, lon: 15.11, f_km: 85, b_km: 105, b_tid: "1h 15min", k_tid: "1h 30min (Tåg)"},
+            {name: "Hultsfred", lat: 57.49, lon: 15.84, f_km: 85, b_km: 105, b_tid: "1h 25min", k_tid: "1h 25min (Tåg)"},
+            {name: "Västervik", lat: 57.75, lon: 16.63, f_km: 86, b_km: 102, b_tid: "1h 20min", k_tid: "1h 30min (Buss)"},
+            {name: "Nyköping", lat: 58.75, lon: 17.00, f_km: 92, b_km: 104, b_tid: "1h 10min", k_tid: "1h 5min (Tåg)"},
+            {name: "Örebro", lat: 59.27, lon: 15.21, f_km: 100, b_km: 120, b_tid: "1h 30min", k_tid: "2h 10min (Tåg/Buss)"},
+            {name: "Skövde", lat: 58.39, lon: 13.84, f_km: 105, b_km: 140, b_tid: "1h 45min", k_tid: "1h 40min (Tåg)"},
+            {name: "Nässjö", lat: 57.65, lon: 14.69, f_km: 105, b_km: 125, b_tid: "1h 20min", k_tid: "1h 15min (Tåg)"},
+            {name: "Eskilstuna", lat: 59.36, lon: 16.51, f_km: 110, b_km: 145, b_tid: "1h 50min", k_tid: "1h 45min (Tåg)"},
+            {name: "Jönköping", lat: 57.78, lon: 14.16, f_km: 113, b_km: 131, b_tid: "1h 25min", k_tid: "1h 30min (Tåg/Buss)"},
+            {name: "Trosa", lat: 58.89, lon: 17.54, f_km: 125, b_km: 145, b_tid: "1h 40min", k_tid: "1h 45min (Tåg+Buss)"},
+            {name: "Västerås", lat: 59.61, lon: 16.54, f_km: 145, b_km: 200, b_tid: "2h 15min", k_tid: "2h 00min (Tåg)"},
+            {name: "Södertälje", lat: 59.19, lon: 17.62, f_km: 145, b_km: 170, b_tid: "1h 50min", k_tid: "1h 20min (Tåg)"},
+            {name: "Växjö", lat: 56.87, lon: 14.80, f_km: 165, b_km: 215, b_tid: "2h 40min", k_tid: "2h 20min (Tåg)"},
+            {name: "Alvesta", lat: 56.90, lon: 14.55, f_km: 170, b_km: 210, b_tid: "2h 20min", k_tid: "1h 45min (Tåg)"},
+            {name: "Stockholm", lat: 59.32, lon: 18.06, f_km: 175, b_km: 200, b_tid: "2h 15min", k_tid: "1h 40min (Tåg)"},
+            {name: "Borås", lat: 57.72, lon: 12.94, f_km: 180, b_km: 210, b_tid: "2h 20min", k_tid: "3h 00min (Buss/Tåg)"},
+            {name: "Kalmar", lat: 56.66, lon: 16.36, f_km: 180, b_km: 235, b_tid: "3h 00min", k_tid: "2h 45min (Tåg)"},
+            {name: "Karlstad", lat: 59.40, lon: 13.51, f_km: 180, b_km: 230, b_tid: "3h 00min", k_tid: "3h 30min (Tåg)"},
+            {name: "Uppsala", lat: 59.85, lon: 17.63, f_km: 210, b_km: 270, b_tid: "3h 00min", k_tid: "2h 20min (Tåg)"},
+            {name: "Göteborg", lat: 57.70, lon: 11.97, f_km: 230, b_km: 275, b_tid: "3h 00min", k_tid: "3h 20min (Tåg)"},
+            {name: "Falun", lat: 60.60, lon: 15.63, f_km: 245, b_km: 310, b_tid: "3h 40min", k_tid: "3h 45min (Tåg)"},
+            {name: "Halmstad", lat: 56.67, lon: 12.86, f_km: 250, b_km: 250, b_tid: "3h 00min", k_tid: "3h 30min (Tåg)"},
+            {name: "Karlskrona", lat: 56.16, lon: 15.59, f_km: 250, b_km: 295, b_tid: "3h 40min", k_tid: "3h 50min (Tåg/Buss)"},
+            {name: "Gävle", lat: 60.67, lon: 17.14, f_km: 260, b_km: 340, b_tid: "3h 40min", k_tid: "2h 50min (Tåg)"},
+            {name: "Helsingborg", lat: 56.04, lon: 12.69, f_km: 295, b_km: 350, b_tid: "3h 50min", k_tid: "3h 10min (Tåg)"},
+            {name: "Lund", lat: 55.70, lon: 13.19, f_km: 325, b_km: 400, b_tid: "4h 15min", k_tid: "2h 30min (Tåg)"},
+            {name: "Malmö", lat: 55.60, lon: 13.00, f_km: 340, b_km: 415, b_tid: "4h 30min", k_tid: "2h 45min (Tåg)"}
+        ];
+
+        var icon_knut = L.AwesomeMarkers.icon({markerColor: "purple", iconColor: "white", icon: "road", prefix: "glyphicon"});
+
+        knut_data.forEach(d => {
+            let marker = L.marker([d.lat, d.lon], {icon: icon_knut, title: d.name});
+            marker.bindPopup(createPopupHTML(d));
+            marker.bindTooltip(`<b>${d.name}</b>`, {sticky: true});
+            marker.addTo(fg_knutpunkter);
+
+            let searchMarker = L.circleMarker([d.lat, d.lon], {radius: 0, opacity: 0, fillOpacity: 0, interactive: false, title: d.name});
+            searchMarker.bindPopup(createPopupHTML(d));
+            searchMarker.addTo(searchLayer);
+        });
+
+        var logistik_data = [
+            {name: "Linköping City Airport", lat: 58.401, lon: 15.678, i: "plane", f_km: 3, b_km: 4, b_tid: "10 min", k_tid: "15 min (Buss)"},
+            {name: "Norrköpings Hamn", lat: 58.601, lon: 16.216, i: "ship", f_km: 41, b_km: 46, b_tid: "40 min", k_tid: "45 min (Buss/Spårvagn)"},
+            {name: "Skavsta Flygplats", lat: 58.789, lon: 16.912, i: "plane", f_km: 88, b_km: 100, b_tid: "1h 5min", k_tid: "1h 20min (Tåg+Buss)"},
+            {name: "Arlanda Flygplats", lat: 59.651, lon: 17.918, i: "plane", f_km: 190, b_km: 235, b_tid: "2h 30min", k_tid: "2h 00min (Tåg)"},
+            {name: "Landvetter Flygplats", lat: 57.661, lon: 12.290, i: "plane", f_km: 215, b_km: 250, b_tid: "2h 40min", k_tid: "3h 00min (Buss/Tåg)"},
+            {name: "Kastrup Flygplats", lat: 55.628, lon: 12.649, i: "plane", f_km: 350, b_km: 430, b_tid: "4h 45min", k_tid: "3h 00min (Tåg)"}
+        ];
+
+        logistik_data.forEach(d => {
+            let icon_log = L.AwesomeMarkers.icon({markerColor: "orange", iconColor: "white", icon: d.i, prefix: "fa"});
+            let marker = L.marker([d.lat, d.lon], {icon: icon_log, title: d.name});
+            marker.bindPopup(createPopupHTML(d));
+            marker.bindTooltip(`<b>${d.name}</b>`, {sticky: true});
+            marker.addTo(fg_logistik);
+
+            let searchMarker = L.circleMarker([d.lat, d.lon], {radius: 0, opacity: 0, fillOpacity: 0, interactive: false, title: d.name});
+            searchMarker.bindPopup(createPopupHTML(d));
+            searchMarker.addTo(searchLayer);
+        });
+
+        // =========================================================================
+        // 6. RÄCKVIDDSANALYSER & INFRASTRUKTUR
+        // =========================================================================
+        
+        // Järnvägsnätet (Södra stambanan, Västra stambanan, Godsstråket, Jönköpingsbanan m.fl.)
+        var railwayLines = [
+            // Södra stambanan
+            [[59.32, 18.06], [59.19, 17.62], [58.99, 16.20], [58.5877, 16.1924], [58.4108, 15.6214], [58.322, 15.125], [58.03, 14.97], [57.65, 14.69], [56.90, 14.55], [55.70, 13.19], [55.60, 13.00]],
+            // Västra stambanan
+            [[59.32, 18.06], [59.19, 17.62], [58.99, 16.20], [59.06, 15.11], [58.39, 13.84], [57.70, 11.97]],
+            // Godsstråket genom Bergslagen
+            [[58.322, 15.125], [58.5371, 15.0365], [58.88, 14.90], [59.06, 15.11]],
+            // Stångådalsbanan
+            [[58.4108, 15.6214], [57.988, 15.63], [57.66, 15.85], [57.49, 15.84], [56.66, 16.36]],
+            // Jönköpingsbanan / Borås
+            [[57.65, 14.69], [57.78, 14.16], [57.72, 12.94], [57.70, 11.97]]
+        ];
+        railwayLines.forEach(line => {
+            L.polyline(line, {color: '#666', weight: 4, opacity: 0.6}).addTo(fg_jarnvag);
+            L.polyline(line, {color: '#fff', weight: 2, opacity: 0.8, dashArray: '5, 5'}).addTo(fg_jarnvag);
+        });
+
+
+        // Radier (fågelvägen)
+        L.circle([58.4108, 15.6214], {radius: 60000, color: '#3498db', weight: 2, fillOpacity: 0.05, dashArray: '5,10'}).bindTooltip("<b>Radie:</b> 60 km fågelvägen", {sticky: true}).addTo(fg_radie_60km);
+        L.circle([58.4108, 15.6214], {radius: 90000, color: '#e74c3c', weight: 2, fillOpacity: 0.05, dashArray: '5,10'}).bindTooltip("<b>Radie:</b> 90 km fågelvägen", {sticky: true}).addTo(fg_radie_90km);
+        L.circle([58.4108, 15.6214], {radius: 120000, color: '#9b59b6', weight: 2, fillOpacity: 0.05, dashArray: '5,10'}).bindTooltip("<b>Radie:</b> 120 km fågelvägen", {sticky: true}).addTo(fg_radie_120km);
+
+        // 60 min bil 
+        var iso_bil_60 = [ [58.80, 16.80], [58.90, 16.00], [58.80, 14.90], [58.40, 14.60], [58.00, 14.50], [57.75, 15.00], [57.75, 15.80], [58.00, 16.50], [58.30, 16.70] ];
+        L.polygon(iso_bil_60, {color: '#f39c12', weight: 2, fillColor: '#f39c12', fillOpacity: 0.15}).bindTooltip("<b>Räckvidd:</b> Ca 60 min med Bil", {sticky: true}).addTo(fg_isokron_bil_60);
+
+        // 90 min bil 
+        var iso_bil_90 = [ [59.19, 17.62], [58.99, 16.20], [59.27, 15.21], [59.06, 15.11], [58.88, 14.90], [57.78, 14.16], [57.65, 14.69], [57.49, 15.84], [57.75, 16.63], [58.20, 16.80], [58.75, 17.00] ];
+        L.polygon(iso_bil_90, {color: '#e67e22', weight: 2, fillColor: '#e67e22', fillOpacity: 0.10, dashArray: '4,6'}).bindTooltip("<b>Räckvidd:</b> Ca 90 min med Bil", {sticky: true}).addTo(fg_isokron_bil_90);
+
+        // 60 min Kollektivtrafik 
+        var iso_koll_60 = [ [58.99, 16.20], [58.60, 16.40], [58.48, 16.32], [57.98, 15.63], [58.03, 14.97], [58.32, 15.12], [58.53, 15.03], [58.70, 15.82] ];
+        L.polygon(iso_koll_60, {color: '#27ae60', weight: 3, fillColor: '#27ae60', fillOpacity: 0.2}).bindTooltip("<b>Räckvidd:</b> Ca 60 min med Kollektivtrafik (Tåg/Buss)", {sticky: true}).addTo(fg_isokron_koll_60);
+
+        // 90 min Kollektivtrafik 
+        var iso_koll_90 = [ [59.19, 17.62], [58.75, 17.00], [58.20, 16.60], [57.75, 16.63], [57.66, 15.85], [57.65, 14.69], [59.06, 15.11], [59.36, 16.51] ];
+        L.polygon(iso_koll_90, {color: '#2ecc71', weight: 3, fillColor: '#2ecc71', fillOpacity: 0.15, dashArray: '4,6'}).bindTooltip("<b>Räckvidd:</b> Ca 90 min med Kollektivtrafik (Tåg/Buss)", {sticky: true}).addTo(fg_isokron_koll_90);
+
+
+        // =========================================================================
+        // 7. LAGERKONTROLL, SÖKFUNKTION OCH VERKTYG
+        // =========================================================================
+        var baseLayers = {
+            "Karta: Blek": base_blek,
+            "Karta: Färgstark": base_fargstark
+        };
+        var overlayLayers = {
+            "Kommungränser (Polygoner)": fg_kommungranser,
+            "Närmaste grannar (Pluppar)": fg_grannar,
+            "Befolkning Q4 2025 (Ringar)": fg_population_rings,
+            "Knutpunkter (Utomläns)": fg_knutpunkter,
+            "Logistiknoder (Flyg/Hamn)": fg_logistik,
+            "Järnvägsnätet (Stambanor)": fg_jarnvag,
+            "Radie: 60 km från Linköping": fg_radie_60km,
+            "Radie: 90 km från Linköping": fg_radie_90km,
+            "Radie: 120 km från Linköping": fg_radie_120km,
+            "Räckvidd: 60 min Bil": fg_isokron_bil_60,
+            "Räckvidd: 90 min Bil": fg_isokron_bil_90,
+            "Räckvidd: 60 min Kollektivt": fg_isokron_koll_60,
+            "Räckvidd: 90 min Kollektivt": fg_isokron_koll_90
+        };
+
+        L.control.layers(baseLayers, overlayLayers, {position: 'topright', collapsed: false}).addTo(map);
+
+        // Sökverktyg
+        var searchControl = new L.Control.Search({
+            layer: searchLayer, 
+            propertyName: 'title', 
+            marker: false, 
+            textPlaceholder: 'Sök...', 
+            collapsed: false, 
+            moveToLocation: function(latlng, title, map) {
+                map.flyTo(latlng, 12);
+            }
+        });
+        
+        searchControl.on('search:locationfound', function(e) {
+            setTimeout(() => { map.openPopup(e.layer.getPopup().getContent(), e.latlng); }, 300);
+        });
+        map.addControl(searchControl);
+
+        // --- MÄTVERKTYG ---
+        let isMeasuring = false;
+        let measureLine = null;
+
+        function toggleMeasure() {
+            isMeasuring = !isMeasuring;
+            let btn = document.getElementById("measure-btn");
+            let mapContainer = document.getElementById("map");
+
+            if (isMeasuring) {
+                btn.style.background = "#e74c3c";
+                btn.style.color = "white";
+                btn.innerHTML = "❌ Avbryt mätning";
+                mapContainer.classList.add("measuring-cursor");
+            } else {
+                btn.style.background = "white";
+                btn.style.color = "black";
+                btn.innerHTML = "📏 Mät från Linköping";
+                mapContainer.classList.remove("measuring-cursor");
+                if(measureLine) { map.removeLayer(measureLine); measureLine = null; }
+            }
+        }
+
+        map.on('click', function(e) {
+            if (!isMeasuring) return;
+            if (measureLine) map.removeLayer(measureLine);
+            
+            let dist = haversineDist(58.4108, 15.6214, e.latlng.lat, e.latlng.lng);
+            
+            measureLine = L.polyline([[58.4108, 15.6214], e.latlng], {color: 'red', dashArray: '5,5', weight: 2}).addTo(map);
+            
+            L.popup()
+                .setLatLng(e.latlng)
+                .setContent(`<b>Avstånd från Stora torget (Linköping):</b><br>${dist.toFixed(1)} km (fågelvägen)`)
+                .openOn(map);
+        });
+
+        // --- BILDEXPORT ---
+        function exportMap() {
+            alert("Genererar bild av kartan... Det kan ta ett par sekunder. Klicka OK för att starta.");
+            html2canvas(document.querySelector("#map"), {
+                useCORS: true // Krävs för att tillåta externa kart-tiles i bilden
+            }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = 'Linkoping_Regional_Karta.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                console.error("Fel vid bildexport:", err);
+                alert("Något gick fel vid exporten (ofta säkerhetsbegränsningar för inbäddade kartor). Använd PrtScn / Win+Shift+S istället.");
+            });
+        }
+
+        // --- OPACITETSREGLAGE ---
+        var slider = document.getElementById("opacity-slider");
+        var output = document.getElementById("opacity-val");
+        
+        slider.oninput = function() {
+            output.innerHTML = this.value + "%";
+            var val = this.value / 100;
+            var paths = document.querySelectorAll('path.leaflet-interactive');
+            
+            paths.forEach(function(path) {
+                if(path.getAttribute('stroke-dasharray')) return;
+                if(path.classList && path.classList.contains('pop-ring')) {
+                    path.style.fillOpacity = 0.4 + (val * 0.4); 
+                    return;
+                }
+                path.style.fillOpacity = val;
+            });
+        }
+
+        function clearSearch() {
+            if(searchControl) searchControl.cancel();
+            map.closePopup();
+            fg_connection_lines.clearLayers();
+            if(isMeasuring) toggleMeasure();
+        }
+
+    </script>
+    </body>
+    </html>

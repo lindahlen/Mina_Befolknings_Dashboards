@@ -348,8 +348,8 @@
             let tidsBeskrivning = globalBerakning === "_R12" ? "Rullande 12 mån" : "Månaden";
             let formatOptionsDD = (globalVisningsTyp === "procent_12m") ? {minimumFractionDigits: 1, maximumFractionDigits: 1} : {minimumFractionDigits: 0, maximumFractionDigits: 0};
             
-            // LÅS PROGNOS TILL ENBART R12 LÄGET FÖR DIAGRAM 4
-            let actualVisaPrognos = globalVisaPrognos && (globalBerakning === "_R12");
+            // Tillåter prognos även för specifik månad i Diagram 4
+            let actualVisaPrognos = globalVisaPrognos;
 
             let ddTyp = "stapel"; 
             if (ddConfig.drilldown_typ && ddConfig.drilldown_typ !== "nan" && ddConfig.drilldown_typ !== "") ddTyp = String(ddConfig.drilldown_typ).toLowerCase().trim();
@@ -502,7 +502,9 @@
                     let kolNamn = komp + globalBerakning;
                     let actualKolNamn = kolNamn;
                     if (rad && rad[kolNamn] === undefined && rad[komp] !== undefined) { actualKolNamn = komp; }
-                    let progKolNamn = komp + "_Prognos_Slutgiltig";
+                    
+                    // Väljer dynamiskt om vi ska visa den slutgiltiga prognosen eller säsongsprognosen
+                    let progKolNamn = globalBerakning === "_R12" ? komp + "_Prognos_Slutgiltig" : komp + "_Prognos_Sasong";
                     
                     let rawData = globalAllaRader.map(function(r) { return tvattaSiffra(r[actualKolNamn]); });
                     if (globalVisningsTyp === "procent_12m") { rawData = beraknaYoY(rawData, globalAllaRader.map(r => r["År"]), globalAllaRader.map(r => r["Månad"])); }
@@ -569,7 +571,10 @@
 
             const indikator = selectEl.value; 
             const kolumnNamn = indikator + globalBerakning; 
-            const prognosKolumnNamn = indikator + "_Prognos_Slutgiltig"; 
+            
+            // Väljer dynamiskt om vi ska visa den slutgiltiga prognosen eller säsongsprognosen
+            const prognosKolumnNamn = globalBerakning === "_R12" ? indikator + "_Prognos_Slutgiltig" : indikator + "_Prognos_Sasong"; 
+            
             const polaritetKolumn = indikator + "_Polaritet"; 
             const troskelKolumn = indikator + "_Troskel"; 
             
@@ -624,12 +629,12 @@
                     
                     let drawBG = FARG_NEUTRAL_PUNKT, drawBorder = FARG_NEUTRAL_PUNKT;
                     if (globalGrafTyp === "stapel") {
-                        let vFarg = (globalBerakning === "_R12") ? varde : tvattaSiffra(rad[indikator + "_R12"]); let pFarg = prognos;
+                        let vFarg = varde; let pFarg = prognos;
                         if (vFarg !== null && pFarg !== null) { let diff = vFarg - pFarg; let tr = beraknaTroskel(rad[troskelKolumn], pFarg); 
                             if (Math.abs(diff) <= tr) { drawBG = FARG_NEUTRAL_TEXT_STAPEL; drawBorder = FARG_NEUTRAL_TEXT_STAPEL; } else { let c = ((rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diff < 0) : (diff > 0)) ? FARG_BRA : FARG_DALIG; drawBG = c; drawBorder = c; }
                         } else { drawBG = FARG_STAPEL; drawBorder = FARG_STAPEL_KANT; }
                     } else {
-                        if (globalBerakning === "_R12" && varde !== null && prognos !== null) { 
+                        if (varde !== null && prognos !== null) { 
                             let diff = varde - prognos; let tr = beraknaTroskel(rad[troskelKolumn], prognos);
                             if (Math.abs(diff) <= tr) { drawBG = FARG_NEUTRAL_PUNKT; drawBorder = FARG_NEUTRAL_PUNKT; } else { let c = ((rad[polaritetKolumn] ? rad[polaritetKolumn].toString().trim().toLowerCase() : "hög") === "låg" ? (diff < 0) : (diff > 0)) ? FARG_BRA : FARG_DALIG; drawBG = c; drawBorder = c; }
                         } else { drawBG = FARG_PUNKTER; drawBorder = FARG_PUNKTER; }
@@ -661,7 +666,7 @@
                 let prevVal = null; for(let i = lastIndex - 1; i >= 0; i--) { if (allArLista[i] === targetAr && allManadLista[i] === targetManad && modVarden[i] !== null) { prevVal = modVarden[i]; break; } }
                 
                 let tr = 0;
-                if (globalVisningsTyp === "absolut") tr = (globalBerakning === "_R12") ? beraknaTroskel(aktuellRad[troskelKolumn], (lastPrognos !== null ? lastPrognos : prevVal)) : 0; 
+                if (globalVisningsTyp === "absolut") tr = beraknaTroskel(aktuellRad[troskelKolumn], (lastPrognos !== null ? lastPrognos : prevVal)); 
                 
                 let diffTrend = prevVal !== null ? lastVal - prevVal : 0;
                 let trendPil = Math.abs(diffTrend) <= (globalBerakning !== "_R12" ? 0 : tr) ? "→" : (diffTrend > 0 ? "↑" : "↓");
@@ -676,7 +681,7 @@
                     let diffText = Math.abs(lastVal).toLocaleString('sv-SE', {minimumFractionDigits: 1, maximumFractionDigits: 1});
                     document.getElementById("avvikelse-text").innerHTML = `<span class="${textKlass}"><span class="pil-boll" title="Trend i utvecklingstakt mot fg. period">${trendPil}</span> Årlig förändring: ${lastVal > 0 ? '+' : (lastVal < 0 ? '-' : '')}${diffText} %</span>`;
                 }
-                else if (globalBerakning === "_R12" && lastPrognos !== null) {
+                else if (lastPrognos !== null) {
                     let diffPrognos = lastVal - lastPrognos;
                     if (globalVisningsTyp === "index") {
                         let baseVarde = modVarden.find(function(v) { return v !== null && v !== 0; });
@@ -750,8 +755,8 @@
                 borderWidth: 2, tension: 0.1, yAxisID: 'y' 
             }];
             
-            // LÅS PROGNOS TILL ENBART R12 LÄGET FÖR DIAGRAM 4
-            let actualVisaPrognos = globalVisaPrognos && (globalBerakning === "_R12");
+            // Tillåter prognos även för specifik månad i Diagram 4
+            let actualVisaPrognos = globalVisaPrognos;
             let hasPrognos = chartPrognos.some(function(v) { return v !== null && v !== undefined && !isNaN(v); });
             
             if (actualVisaPrognos && hasPrognos && selectedCompareRegion === "none" && globalVisningsTyp !== "procent_12m") {
@@ -759,7 +764,7 @@
                     if (bottenInfoElementLocal) bottenInfoElementLocal.innerHTML += (bottenInfoElementLocal.innerHTML === "" ? "" : "<br>") + `<em>* Den streckade grå linjen visar prognos/målvärde.</em>`;
                     ds.push({ type: 'line', label: "Prognos", data: chartPrognos, backgroundColor: 'transparent', borderColor: '#6c757d', borderDash: [5, 5], pointRadius: 0, pointHitRadius: 25, borderWidth: 2, tension: 0.1, yAxisID: 'y' });
                 } else if (globalGrafTyp === "stapel") {
-                    // NYTT: Ritar ut prognosen som en stapel när vi är i Stapel-vyn!
+                    // Ritar ut prognosen som en stapel när vi är i Stapel-vyn
                     ds.push({ type: 'bar', label: "Prognos", data: chartPrognos, backgroundColor: '#e9ecef', borderColor: '#ced4da', borderWidth: 2, yAxisID: 'y' });
                 }
             }

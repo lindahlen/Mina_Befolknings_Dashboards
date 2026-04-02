@@ -72,8 +72,8 @@
             "drilldown_typ": "stapel"
         },
         {
-            "id": "Tre_års_intervall",
-            "label": "Tre års intervall",
+            "id": "Treårs_intervall",
+            "label": "Treårs intervall",
             "drilldown_komponenter": [
                 "1-3 år",
                 "4-6 år",

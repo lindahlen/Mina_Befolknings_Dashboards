@@ -128,6 +128,15 @@ for col in age_cols:
     if col in pop_df.columns:
         pop_df[col] = pd.to_numeric(pop_df[col], errors='coerce').fillna(0)
 
+# Hantera NYKO-koder för dynamisk aggregering (Nivå 1, 3, 4 och 6)
+pop_df['NYKO_str'] = pop_df['NYKO6'].astype(str).str.replace(r'\.0$', '', regex=True).str.zfill(6)
+pop_df['NYKO1'] = pop_df['NYKO_str'].str[:1]
+pop_df['NYKO3'] = pop_df['NYKO_str'].str[:3]
+pop_df['NYKO4'] = pop_df['NYKO_str'].str[:4]
+pop_df['NYKO6_kod'] = pop_df['NYKO_str']
+
+# För över till Nyko3 (Koroplet)
+pop_df['NYKO3_kod'] = pop_df['NYKO3'].astype(float)
 pop_df['Grp_0_5'] = pop_df.get('0-1_år', 0) + pop_df.get('2-3_år', 0) + pop_df.get('4-5_år', 0)
 pop_df['Grp_6_15'] = pop_df.get('6_år', 0) + pop_df.get('7-9_år', 0) + pop_df.get('10-12_år', 0) + pop_df.get('13-15_år', 0)
 pop_df['Grp_6_9'] = pop_df.get('6_år', 0) + pop_df.get('7-9_år', 0)
@@ -138,7 +147,6 @@ pop_df['Grp_19_64'] = pop_df.get('19-24_år', 0) + pop_df.get('25-34_år', 0) + 
 pop_df['Grp_65_79'] = pop_df.get('65-69_år', 0) + pop_df.get('70-79_år', 0)
 pop_df['Grp_80plus'] = pop_df.get('80+_år', 0)
 
-pop_df['NYKO3_kod'] = pop_df['NYKO6'].astype(str).str.zfill(6).str[:3].astype(float)
 pop_nyko3 = pop_df.groupby('NYKO3_kod')[['Totalt', 'Grp_0_5', 'Grp_6_15', 'Grp_6_9', 'Grp_10_12', 'Grp_13_15', 'Grp_16_18', 'Grp_19_64', 'Grp_65_79', 'Grp_80plus']].sum().reset_index()
 
 nyko3 = nyko3.merge(pop_nyko3, left_on='NYKO', right_on='NYKO3_kod', how='left')
@@ -151,16 +159,60 @@ print("Beräknar koordinater för detaljerad data...")
 pts = gpd.GeoDataFrame(pop_df, geometry=gpd.points_from_xy(pop_df['Y_koordinat'], pop_df['X_koordinat']), crs=3006)
 pts_wgs84 = pts.to_crs(4326)
 
+# Lagra lat/lon i dataframe för snabb åtkomst
+pop_df['lat'] = pts_wgs84.geometry.y
+pop_df['lon'] = pts_wgs84.geometry.x
+
+# Skapa rådata för Heatmap och Kluster
 heat_data = []
-for idx, row in pts_wgs84.iterrows():
+for idx, row in pop_df.iterrows():
     if row['Totalt'] > 0:
         heat_data.append({
-            'lat': round(row.geometry.y, 5), 'lon': round(row.geometry.x, 5),
+            'lat': round(row['lat'], 5), 'lon': round(row['lon'], 5),
             'tot': int(row['Totalt']), 'a0_5': int(row['Grp_0_5']), 'a6_15': int(row['Grp_6_15']),
             'a6_9': int(row['Grp_6_9']), 'a10_12': int(row['Grp_10_12']), 'a13_15': int(row['Grp_13_15']),
             'a16_18': int(row['Grp_16_18']), 'a19_64': int(row['Grp_19_64']), 
             'a65_79': int(row['Grp_65_79']), 'a80': int(row['Grp_80plus'])
         })
+
+# --- SKAPA DYNAMISKA BEFOLKNINGS-NIVÅER ---
+print("Aggregerar dynamiska zoom-nivåer (Nyko 1, 3, 4, 6)...")
+def aggregate_dyn_pop(level_col):
+    agg_data = []
+    for kod, group in pop_df.groupby(level_col):
+        tot = int(group['Totalt'].sum())
+        if tot == 0: continue
+        
+        w_lat = (group['lat'] * group['Totalt']).sum() / tot if tot > 0 else group['lat'].mean()
+        w_lon = (group['lon'] * group['Totalt']).sum() / tot if tot > 0 else group['lon'].mean()
+        
+        distances = ((group['lat'] - w_lat)**2 + (group['lon'] - w_lon)**2)
+        closest_idx = distances.idxmin()
+        lat_val = group.loc[closest_idx, 'lat']
+        lon_val = group.loc[closest_idx, 'lon']
+        
+        agg_data.append({
+            'kod': str(kod),
+            'lat': round(lat_val, 5),
+            'lon': round(lon_val, 5),
+            'Totalt': tot,
+            'Grp_0_5': int(group['Grp_0_5'].sum()),
+            'Grp_6_15': int(group['Grp_6_15'].sum()),
+            'Grp_6_9': int(group['Grp_6_9'].sum()),
+            'Grp_10_12': int(group['Grp_10_12'].sum()),
+            'Grp_13_15': int(group['Grp_13_15'].sum()),
+            'Grp_16_18': int(group['Grp_16_18'].sum()),
+            'Grp_19_64': int(group['Grp_19_64'].sum()),
+            'Grp_65_79': int(group['Grp_65_79'].sum()),
+            'Grp_80plus': int(group['Grp_80plus'].sum())
+        })
+    return agg_data
+
+dyn_pop1_str = json.dumps(aggregate_dyn_pop('NYKO1'))
+dyn_pop3_str = json.dumps(aggregate_dyn_pop('NYKO3'))
+dyn_pop4_str = json.dumps(aggregate_dyn_pop('NYKO4'))
+dyn_pop6_str = json.dumps(aggregate_dyn_pop('NYKO6_kod'))
+
 
 # --- LÄS IN ALLA POI-FLIKAR MED ORGANISATION ---
 print("Hämtar intressepunkter (POI) från Excel-flikar...")
@@ -271,12 +323,10 @@ folium.GeoJson(
     tooltip=folium.GeoJsonTooltip(fields=['NAMN', 'Folkmängd', 'Area_km2', 'Inv_per_km2'], aliases=['Område:', f'Folkmängd ({latest_year}):', 'Yta (km²):', 'Invånare/km²:'], localize=True)
 ).add_to(m)
 
-# --- LAGER 3: Hushållsstorlek (Koroplet) - MED DYNAMISK MIN/MAX ---
+# --- LAGER 3: Hushållsstorlek (Koroplet) ---
 valid_hushall = nyko3[nyko3['Hushallsstorlek'] > 0]['Hushallsstorlek']
 min_hushall = valid_hushall.min() if not valid_hushall.empty else 0
 max_hushall = valid_hushall.max() if not valid_hushall.empty else 1
-
-# Marginaler för att få en snygg färgskala
 min_hushall = max(0, min_hushall - 0.2)
 max_hushall = max_hushall + 0.2
 
@@ -293,7 +343,6 @@ folium.GeoJson(
     },
     tooltip=folium.GeoJsonTooltip(fields=['NAMN', 'Folkmängd', 'Hushallsstorlek'], aliases=['Område:', f'Folkmängd ({latest_year}):', 'Snitt hushållsstorlek:'], localize=True)
 ).add_to(m)
-
 
 # --- LAGER 4: Områdesgränser (Endast linjer) ---
 folium.GeoJson(nyko3, name='Områdesgränser', style_function=lambda feature: {'fill': False, 'color': '#2c3e50', 'weight': 2, 'className': 'polygon-layer border-polygon'}).add_to(m)
@@ -320,26 +369,18 @@ ui_html = f"""
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-    /* Global variabel för Zoom-skala på ikoner */
     :root {{ --poi-scale: 1; }}
 
-    /* VÄNSTER PANEL: VERKTYG & ANALYS - Flyttad till 60px */
     .tools-panel {{ position: fixed; bottom: 30px; left: 60px; z-index: 9999; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 300px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; transition: all 0.3s ease; }}
+    .layers-panel {{ position: fixed; top: 20px; right: 20px; z-index: 9999; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 310px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; }}
     
-    /* HÖGER PANEL: LAGER & BAKGRUNDSKARTOR */
-    .layers-panel {{ position: fixed; top: 20px; right: 20px; z-index: 9999; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 290px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; }}
-    
-    /* INFO-PANEL (Större text för ökad läsbarhet) */
-    .info-panel {{ position: fixed; top: 20px; right: 330px; z-index: 9999; background: rgba(255,255,255,0.98); padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.3); width: 320px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; display: none; transition: all 0.3s ease; font-size: 14px; line-height: 1.5; }}
+    .info-panel {{ position: fixed; top: 20px; right: 340px; z-index: 9999; background: rgba(255,255,255,0.98); padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.3); width: 320px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; display: none; transition: all 0.3s ease; font-size: 14px; line-height: 1.5; }}
     .info-panel p {{ margin-bottom: 6px; }}
     
     .btn-custom {{ width: 100%; margin-bottom: 8px; text-align: left; font-size: 14px; padding: 6px 12px; }}
-    
-    /* Tydligare, lite större kryssrutor */
     .form-check-input {{ transform: scale(1.55); margin-top: 4px; margin-right: 12px; cursor: pointer; }}
     .form-check-label {{ cursor: pointer; font-size: 13px; }}
     
-    /* CUSTOM MARKERS OCH IKONER MED DYNAMISK SKALNING */
     .custom-marker {{ display: flex; justify-content: center; align-items: center; border-radius: 50%; color: white; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.5); border: 2px solid white; transform: scale(var(--poi-scale)); transition: transform 0.2s ease; transform-origin: center; }}
     .marker-pulse {{ animation: pulse 2s infinite; border: 3px solid gold !important; z-index: 1000 !important; }}
     @keyframes pulse {{
@@ -348,16 +389,13 @@ ui_html = f"""
         100% {{ box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); transform: scale(calc(var(--poi-scale) * 1.15)); }}
     }}
 
-    /* CONTAINER FÖR FÄRGLEGENDER */
     .legend-container {{ position: fixed; bottom: 30px; right: 20px; z-index: 9998; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }}
     .legend {{ pointer-events: auto; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.2); position: relative !important; top: auto !important; right: auto !important; bottom: auto !important; display: none; }}
-
     .leaflet-control-search .search-input {{ padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc; outline: none; width: 190px; font-size: 14px; }}
+    
+    /* Dynamiska Gränser för Satellit-läge */
+    body.sat-mode path.border-polygon {{ stroke: #ffffff !important; }}
 
-    .cluster-custom {{ background-color: rgba(52, 152, 219, 0.6); border-radius: 50%; }}
-    .cluster-custom div {{ background-color: rgba(41, 128, 185, 0.9); color: white; border-radius: 50%; width: 30px; height: 30px; margin: 5px; text-align: center; line-height: 30px; font-weight: bold; font-size: 11px; }}
-
-    /* Grafer i Info-panelen (Större) */
     .popup-table {{ width: 100%; font-size: 14px; }}
     .popup-table th {{ border-bottom: 2px solid #333; padding-bottom: 5px; margin-bottom: 5px; text-align:left; }}
     .popup-table td {{ padding-top: 3px; padding-bottom: 3px; }}
@@ -366,8 +404,6 @@ ui_html = f"""
 </style>
 
 <div class="legend-container" id="legend-container"></div>
-
-<!-- INFO-PANELEN -->
 <div id="infoPanel" class="info-panel">
     <div class="d-flex justify-content-between align-items-center mb-3" style="border-bottom: 2px solid #ccc; padding-bottom: 8px;">
         <h5 class="fw-bold mb-0">📊 Information</h5>
@@ -444,26 +480,15 @@ ui_html = f"""
     <select id="basemapSelect" class="form-select form-select-sm mb-3" style="font-size: 13px;">
         <option value="blek" selected>Karta: Blek (För tydlig analys)</option>
         <option value="farg">Karta: Färgstark (Detaljerad)</option>
+        <option value="satellit">Karta: Satellit (Flygfoto)</option>
     </select>
     
     <hr style="margin: 10px 0;">
     <h6 class="fw-bold mb-2" style="font-size: 13px;">Ytor & Områden</h6>
-    <div class="form-check mb-1">
-        <input class="form-check-input" type="checkbox" id="togglePop" checked>
-        <label class="form-check-label" for="togglePop">Befolkning {latest_year}</label>
-    </div>
-    <div class="form-check mb-1">
-        <input class="form-check-input" type="checkbox" id="toggleDens">
-        <label class="form-check-label" for="toggleDens">Befolkningstäthet</label>
-    </div>
-    <div class="form-check mb-1">
-        <input class="form-check-input" type="checkbox" id="toggleHushall">
-        <label class="form-check-label" for="toggleHushall">Hushållsstorlek</label>
-    </div>
-    <div class="form-check mb-1">
-        <input class="form-check-input" type="checkbox" id="toggleBorders">
-        <label class="form-check-label" for="toggleBorders">Områdesgränser</label>
-    </div>
+    <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="togglePop" checked><label class="form-check-label" for="togglePop">Befolkning {latest_year}</label></div>
+    <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleDens"><label class="form-check-label" for="toggleDens">Befolkningstäthet</label></div>
+    <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleHushall"><label class="form-check-label" for="toggleHushall">Hushållsstorlek</label></div>
+    <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleBorders"><label class="form-check-label" for="toggleBorders">Områdesgränser</label></div>
     
     <hr style="margin: 10px 0;">
     <h6 class="fw-bold mb-2" style="font-size: 13px;">Infrastruktur & Natur</h6>
@@ -474,6 +499,7 @@ ui_html = f"""
     <h6 class="fw-bold mb-2" style="font-size: 13px;">Analyspunkter</h6>
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleCentroids" checked><label class="form-check-label" for="toggleCentroids">🟡 Centrumpunkter</label></div>
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleCircles"><label class="form-check-label" for="toggleCircles">🟢 Befolkningsringar (Åldrar)</label></div>
+    <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleDynPop"><label class="form-check-label" for="toggleDynPop">🟠 Dynamisk Befolkning <span id="dynPopLabel" class="badge" style="display:none; font-size:10px; margin-left:3px; background-color:#2980b9;">Nyko 1</span></label></div>
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleClusters"><label class="form-check-label" for="toggleClusters">🔵 Detaljerad Befolkning (Kluster)</label></div>
     
     <hr style="margin: 10px 0;">
@@ -491,26 +517,23 @@ ui_html = f"""
 </div>
 
 <script>
-    var lastZoomBounds = null; // Global variabel för att minnas POI-zoom
+    var lastZoomBounds = null;
 
     document.addEventListener('DOMContentLoaded', function() {{
         var map_id = Object.keys(window).find(key => key.startsWith('map_'));
         var map = window[map_id];
         
-        // Dynamisk POI-storlek när man zoomar
         document.documentElement.style.setProperty('--poi-scale', 1 + (map.getZoom() - 11) * 0.15);
         map.on('zoomend', function() {{
             var z = map.getZoom();
-            var s = 1 + (z - 11) * 0.15; // Gör dem större vid in-zoomning
+            var s = 1 + (z - 11) * 0.15; 
             if (s < 0.8) s = 0.8;
             if (s > 2.5) s = 2.5;
             document.documentElement.style.setProperty('--poi-scale', s);
         }});
         
         function getDistance(lat1, lon1, lat2, lon2) {{
-            var R = 6371; 
-            var dLat = (lat2 - lat1) * Math.PI / 180;
-            var dLon = (lon2 - lon1) * Math.PI / 180;
+            var R = 6371; var dLat = (lat2 - lat1) * Math.PI / 180; var dLon = (lon2 - lon1) * Math.PI / 180;
             var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon/2) * Math.sin(dLon/2);
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
         }}
@@ -531,10 +554,7 @@ ui_html = f"""
 
         window.closeInfoPanel = function() {{
             document.getElementById('infoPanel').style.display = 'none';
-            // Om användaren hade zoomat till platser, flyg tillbaka dit automatiskt!
-            if (lastZoomBounds) {{
-                map.flyToBounds(lastZoomBounds, {{padding: [50, 50], maxZoom: 15}});
-            }}
+            if (lastZoomBounds) {{ map.flyToBounds(lastZoomBounds, {{padding: [50, 50], maxZoom: 15}}); }}
         }}
 
         function showInfoPanel(htmlContent) {{
@@ -544,30 +564,34 @@ ui_html = f"""
 
         var tileBlek = L.tileLayer('https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{ attribution: '&copy; OpenStreetMap contributors &copy; CARTO', crossOrigin: true }}).addTo(map);
         var tileFarg = L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{ attribution: '&copy; OpenStreetMap contributors', crossOrigin: true }});
+        var tileSatellit = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ attribution: 'Tiles &copy; Esri', crossOrigin: true }});
 
         document.getElementById('basemapSelect').addEventListener('change', function(e) {{
-            if(e.target.value === 'blek') {{ map.removeLayer(tileFarg); tileBlek.addTo(map); }} 
-            else {{ map.removeLayer(tileBlek); tileFarg.addTo(map); }}
-        }});
-
-        // --- HANTERA FÄRGSKALOR (Teckenförklaringar) ---
-        var container = document.getElementById('legend-container');
-        var legendsArray = Array.from(document.querySelectorAll('.legend'));
-        
-        var validLegends = [];
-        
-        legendsArray.forEach(function(leg) {{
-            var txt = (leg.textContent || leg.innerText || "").trim();
-            // Folium ibland skapar tomma legend-boxar. Vi sparar bara de som faktiskt har text!
-            if (txt.length > 5) {{
-                validLegends.push(leg);
-                container.appendChild(leg);
-            }} else {{
-                leg.style.display = 'none'; // Göm de tomma spökboxarna permanent
+            map.removeLayer(tileBlek); 
+            map.removeLayer(tileFarg); 
+            map.removeLayer(tileSatellit);
+            
+            if(e.target.value === 'blek') {{ 
+                tileBlek.addTo(map); 
+                document.body.classList.remove('sat-mode');
+            }} else if(e.target.value === 'farg') {{ 
+                tileFarg.addTo(map); 
+                document.body.classList.remove('sat-mode');
+            }} else if(e.target.value === 'satellit') {{
+                tileSatellit.addTo(map);
+                document.body.classList.add('sat-mode');
             }}
         }});
+
+        var container = document.getElementById('legend-container');
+        var legendsArray = Array.from(document.querySelectorAll('.legend'));
+        var validLegends = [];
+        legendsArray.forEach(function(leg) {{
+            var txt = (leg.textContent || leg.innerText || "").trim();
+            if (txt.length > 5) {{ validLegends.push(leg); container.appendChild(leg); }} 
+            else {{ leg.style.display = 'none'; }}
+        }});
         
-        // Uppdatera radioknapp-beteende för ytlager
         function updatePolygonVisibility() {{
             var showPop = document.getElementById('togglePop').checked;
             var showDens = document.getElementById('toggleDens').checked;
@@ -577,14 +601,10 @@ ui_html = f"""
             document.querySelectorAll('.density-polygon').forEach(el => el.style.display = showDens ? '' : 'none');
             document.querySelectorAll('.hushall-polygon').forEach(el => el.style.display = showHushall ? '' : 'none');
             
-            // Visa alla *riktiga* teckenförklaringar om någon yta är tänd
             var showAny = showPop || showDens || showHushall;
-            validLegends.forEach(function(leg) {{
-                leg.style.display = showAny ? 'block' : 'none';
-            }});
+            validLegends.forEach(function(leg) {{ leg.style.display = showAny ? 'block' : 'none'; }});
         }}
         
-        // Dölj lager som ska vara släckta från början via CSS
         document.querySelectorAll('.density-polygon').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.hushall-polygon').forEach(el => el.style.display = 'none');
         document.querySelectorAll('.border-polygon').forEach(el => el.style.display = 'none');
@@ -596,26 +616,17 @@ ui_html = f"""
         }});
 
         document.getElementById('togglePop').addEventListener('change', function(e) {{
-            if(e.target.checked) {{
-                document.getElementById('toggleDens').checked = false;
-                document.getElementById('toggleHushall').checked = false;
-            }}
+            if(e.target.checked) {{ document.getElementById('toggleDens').checked = false; document.getElementById('toggleHushall').checked = false; }}
             updatePolygonVisibility();
         }});
 
         document.getElementById('toggleDens').addEventListener('change', function(e) {{
-            if(e.target.checked) {{
-                document.getElementById('togglePop').checked = false;
-                document.getElementById('toggleHushall').checked = false;
-            }}
+            if(e.target.checked) {{ document.getElementById('togglePop').checked = false; document.getElementById('toggleHushall').checked = false; }}
             updatePolygonVisibility();
         }});
         
         document.getElementById('toggleHushall').addEventListener('change', function(e) {{
-            if(e.target.checked) {{
-                document.getElementById('togglePop').checked = false;
-                document.getElementById('toggleDens').checked = false;
-            }}
+            if(e.target.checked) {{ document.getElementById('togglePop').checked = false; document.getElementById('toggleDens').checked = false; }}
             updatePolygonVisibility();
         }});
 
@@ -623,89 +634,45 @@ ui_html = f"""
             document.querySelectorAll('.border-polygon').forEach(el => el.style.display = e.target.checked ? '' : 'none');
         }});
 
-        updatePolygonVisibility(); // Kör vid start för att ställa in legends rätt
+        updatePolygonVisibility();
 
-        var nykoData = {nyko_json_str};
-        var poiData = {poi_json_str};
+        var nykoData = {nyko_json_str}; 
+        var poiData = {poi_json_str}; 
         var heatDataRaw = []; 
-        var transportData = {transport_str};
+        var transportData = {transport_str}; 
         var vattenData = {vatten_str};
+        
+        // Dynamisk Zoom-data inläsning
+        var dynPop1 = {dyn_pop1_str};
+        var dynPop3 = {dyn_pop3_str};
+        var dynPop4 = {dyn_pop4_str};
+        var dynPop6 = {dyn_pop6_str};
 
         var zoomSel = document.getElementById('zoomSelect');
         nykoData.sort((a,b) => a.namn.localeCompare(b.namn)).forEach(function(d) {{
-            var opt = document.createElement('option');
-            opt.value = d.lat + ',' + d.lon;
-            opt.innerHTML = d.namn;
-            zoomSel.appendChild(opt);
+            var opt = document.createElement('option'); opt.value = d.lat + ',' + d.lon; opt.innerHTML = d.namn; zoomSel.appendChild(opt);
         }});
         zoomSel.addEventListener('change', function() {{
-            if(this.value) {{
-                var coords = this.value.split(',');
-                map.flyTo([parseFloat(coords[0]), parseFloat(coords[1])], 14);
-            }}
+            if(this.value) {{ var coords = this.value.split(','); map.flyTo([parseFloat(coords[0]), parseFloat(coords[1])], 14); }}
         }});
         
-        var centroidLayer = L.featureGroup().addTo(map); 
-        var searchLayer = L.layerGroup().addTo(map);
-        var customRadiusLayer = L.featureGroup().addTo(map); 
-        
-        var circleLayer = L.featureGroup(); 
-        var layerGrundskolor = L.featureGroup();
-        var layerGymnasieskolor = L.featureGroup();
-        var layerHandel = L.featureGroup();
-        var layerIdrott = L.featureGroup();
-        var layerSamhalle = L.featureGroup();
-        var layerKultur = L.featureGroup();
-        var layerOvriga = L.featureGroup();
-        var layerVard = L.featureGroup();
+        var centroidLayer = L.featureGroup().addTo(map); var searchLayer = L.layerGroup().addTo(map); var customRadiusLayer = L.featureGroup().addTo(map); 
+        var circleLayer = L.featureGroup(); var layerGrundskolor = L.featureGroup(); var layerGymnasieskolor = L.featureGroup(); var layerHandel = L.featureGroup(); var layerIdrott = L.featureGroup(); var layerSamhalle = L.featureGroup(); var layerKultur = L.featureGroup(); var layerOvriga = L.featureGroup(); var layerVard = L.featureGroup();
 
-        var layerTransport = L.geoJSON(transportData, {{
-            style: function(feature) {{
-                var props = feature.properties || {{}};
-                if (props.railway || (props.fklass && props.fklass.toLowerCase().includes('järnväg'))) return {{ color: '#000000', weight: 3, dashArray: '5, 5' }};
-                else if (props.highway === 'motorway' || (props.namn && props.namn.includes('E4'))) return {{ color: '#e74c3c', weight: 4 }};
-                else return {{ color: '#f39c12', weight: 2 }};
-            }}
-        }});
+        var layerTransport = L.geoJSON(transportData, {{ style: function(feature) {{ var props = feature.properties || {{}}; if (props.railway || (props.fklass && props.fklass.toLowerCase().includes('järnväg'))) return {{ color: '#000000', weight: 3, dashArray: '5, 5' }}; else if (props.highway === 'motorway' || (props.namn && props.namn.includes('E4'))) return {{ color: '#e74c3c', weight: 4 }}; else return {{ color: '#f39c12', weight: 2 }}; }} }});
         var layerVatten = L.geoJSON(vattenData, {{ style: function(feature) {{ return {{ color: '#3498db', fillColor: '#3498db', weight: 1, fillOpacity: 0.5 }}; }} }});
 
-        map.createPane('centroidPane');
-        map.getPane('centroidPane').style.zIndex = 650;
+        map.createPane('centroidPane'); map.getPane('centroidPane').style.zIndex = 650;
 
         function safeStat(val) {{ return val < 5 ? '< 5' : val; }}
         function makeBarRow(label, value, total) {{
             var pct = total > 0 && value >= 5 ? ((value / total) * 100).toFixed(1) : 0;
-            return `
-                <tr>
-                    <td style="width: 45%;">${{label}}</td>
-                    <td style="width: 15%; text-align: right;"><strong>${{safeStat(value)}}</strong></td>
-                    <td style="width: 40%; padding-left: 10px;">
-                        <div class="bar-bg"><div class="bar-fill" style="width: ${{pct}}%; background: ${{pct > 25 ? '#e74c3c' : '#3498db'}};"></div></div>
-                    </td>
-                </tr>
-            `;
+            return `<tr><td style="width: 45%;">${{label}}</td><td style="width: 15%; text-align: right;"><strong>${{safeStat(value)}}</strong></td><td style="width: 40%; padding-left: 10px;"><div class="bar-bg"><div class="bar-fill" style="width: ${{pct}}%; background: ${{pct > 25 ? '#e74c3c' : '#3498db'}};"></div></div></td></tr>`;
         }}
-        function makeSubRow(label, value) {{
-            return `<tr style="color: #666; font-size: 12px;"><td style="padding-left: 15px;">↳ varav ${{label}}</td><td style="text-align: right;">${{safeStat(value)}}</td><td></td></tr>`;
-        }}
+        function makeSubRow(label, value) {{ return `<tr style="color: #666; font-size: 12px;"><td style="padding-left: 15px;">↳ varav ${{label}}</td><td style="text-align: right;">${{safeStat(value)}}</td><td></td></tr>`; }}
 
         function generateDemographicHtml(title, stats) {{
-            return `
-                <h5 style="border-bottom:2px solid #333; padding-bottom:5px; margin-bottom:12px;"><b>${{title}}</b></h5>
-                <table class="popup-table">
-                    <tr style="font-size:15px;"><td style="width: 60%;"><b>Totalt invånare:</b></td><td style="text-align: right;"><b>${{safeStat(stats.tot)}}</b></td><td style="width: 40%;"></td></tr>
-                    <tr><td colspan="3"><hr style="margin: 5px 0;"></td></tr>
-                    ${{makeBarRow('0-5 år', stats.a0_5, stats.tot)}}
-                    ${{makeBarRow('6-15 år', stats.a6_15, stats.tot)}}
-                    ${{makeSubRow('6-9 år', stats.a6_9)}}
-                    ${{makeSubRow('10-12 år', stats.a10_12)}}
-                    ${{makeSubRow('13-15 år', stats.a13_15)}}
-                    ${{makeBarRow('16-18 år', stats.a16_18, stats.tot)}}
-                    ${{makeBarRow('19-64 år', stats.a19_64, stats.tot)}}
-                    ${{makeBarRow('65-79 år', stats.a65_79, stats.tot)}}
-                    ${{makeBarRow('80+ år', stats.a80, stats.tot)}}
-                </table>
-            `;
+            return `<h5 style="border-bottom:2px solid #333; padding-bottom:5px; margin-bottom:12px;"><b>${{title}}</b></h5><table class="popup-table"><tr style="font-size:15px;"><td style="width: 60%;"><b>Totalt invånare:</b></td><td style="text-align: right;"><b>${{safeStat(stats.tot)}}</b></td><td style="width: 40%;"></td></tr><tr><td colspan="3"><hr style="margin: 5px 0;"></td></tr>${{makeBarRow('0-5 år', stats.a0_5, stats.tot)}}${{makeBarRow('6-15 år', stats.a6_15, stats.tot)}}${{makeSubRow('6-9 år', stats.a6_9)}}${{makeSubRow('10-12 år', stats.a10_12)}}${{makeSubRow('13-15 år', stats.a13_15)}}${{makeBarRow('16-18 år', stats.a16_18, stats.tot)}}${{makeBarRow('19-64 år', stats.a19_64, stats.tot)}}${{makeBarRow('65-79 år', stats.a65_79, stats.tot)}}${{makeBarRow('80+ år', stats.a80, stats.tot)}}</table>`;
         }}
 
         function getDemographicsInRadius(lat, lon, radiusKm) {{
@@ -722,66 +689,102 @@ ui_html = f"""
             return stats;
         }}
 
+        // --- 5. NY DYNAMISK BEFOLKNING (BYTER ÖVER ZOOM-NIVÅER) ---
+        function buildDynLayer(data, color, levelName) {{
+            var layer = L.featureGroup();
+            data.forEach(function(d) {{
+                var isSecret = d.Totalt > 0 && d.Totalt < 5;
+                var displayPop = isSecret ? "< 5" : d.Totalt;
+                var size = Math.max(30, Math.min(70, 15 + Math.sqrt(d.Totalt)*0.8));
+                var html = `<div style="background-color: ${{color}}; color: white; border-radius: 50%; width: ${{size}}px; height: ${{size}}px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight:bold; border: 2px solid #fff; opacity: 0.9; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">${{displayPop}}</div>`;
+                var markerIcon = L.divIcon({{ html: html, className: '', iconSize: [size, size], iconAnchor: [size/2, size/2] }});
+                var marker = L.marker([d.lat, d.lon], {{ icon: markerIcon }});
+                
+                var stats = {{
+                    tot: d.Totalt, a0_5: d.Grp_0_5, a6_15: d.Grp_6_15, a6_9: d.Grp_6_9, 
+                    a10_12: d.Grp_10_12, a13_15: d.Grp_13_15, a16_18: d.Grp_16_18, 
+                    a19_64: d.Grp_19_64, a65_79: d.Grp_65_79, a80: d.Grp_80plus
+                }};
+                
+                marker.bindTooltip("<b>" + levelName + " (" + d.kod + ")</b><br>" + (isSecret ? "Sekretesskyddad" : "Klicka för demografi"), {{direction: 'top'}});
+
+                marker.on('click', function() {{
+                    showInfoPanel(generateDemographicHtml("Demografi " + levelName + " (" + d.kod + ")", stats)); 
+                    map.flyTo([d.lat, d.lon], map.getZoom() + 1);
+                }});
+                marker.addTo(layer);
+            }});
+            return layer;
+        }}
+
+        var layerDyn1 = buildDynLayer(dynPop1, '#2980b9', 'Nyko 1 (Kommundel)'); // Blå
+        var layerDyn3 = buildDynLayer(dynPop3, '#8e44ad', 'Nyko 3 (Stadsdel)'); // Lila
+        var layerDyn4 = buildDynLayer(dynPop4, '#e67e22', 'Nyko 4 (Basområde)'); // Orange
+        var layerDyn6 = buildDynLayer(dynPop6, '#c0392b', 'Nyko 6 (Kvarter)'); // Röd
+
+        function updateDynPopLayer() {{
+            var lbl = document.getElementById('dynPopLabel');
+            if (!document.getElementById('toggleDynPop').checked) {{
+                map.removeLayer(layerDyn1); map.removeLayer(layerDyn3); map.removeLayer(layerDyn4); map.removeLayer(layerDyn6);
+                lbl.style.display = 'none';
+                return;
+            }}
+            
+            lbl.style.display = 'inline-block';
+            var z = map.getZoom();
+            map.removeLayer(layerDyn1); map.removeLayer(layerDyn3); map.removeLayer(layerDyn4); map.removeLayer(layerDyn6);
+            
+            if (z <= 11) {{
+                map.addLayer(layerDyn1);
+                lbl.innerText = "Nyko 1"; lbl.style.backgroundColor = "#2980b9";
+            }} else if (z === 12) {{
+                map.addLayer(layerDyn3);
+                lbl.innerText = "Nyko 3"; lbl.style.backgroundColor = "#8e44ad";
+            }} else if (z === 13 || z === 14) {{
+                map.addLayer(layerDyn4);
+                lbl.innerText = "Nyko 4"; lbl.style.backgroundColor = "#e67e22";
+            }} else if (z >= 15) {{
+                map.addLayer(layerDyn6);
+                lbl.innerText = "Nyko 6"; lbl.style.backgroundColor = "#c0392b";
+            }}
+        }}
+        
+        map.on('zoomend', updateDynPopLayer);
+        document.getElementById('toggleDynPop').addEventListener('change', updateDynPopLayer);
+
+
         nykoData.forEach(function(d) {{
             if(d.tot > 0) {{
                 var radius = Math.max(4, Math.sqrt(d.tot) * 0.4); 
-                var prevTot = d.tot - d.pop_change;
-                var pctChange = prevTot > 0 ? (d.pop_change / prevTot) * 100 : 0;
-                
-                var circleColor = '#f1c40f';
-                if (pctChange > 0.4) circleColor = '#27ae60'; else if (pctChange < -0.4) circleColor = '#e74c3c';
+                var prevTot = d.tot - d.pop_change; var pctChange = prevTot > 0 ? (d.pop_change / prevTot) * 100 : 0;
+                var circleColor = '#f1c40f'; if (pctChange > 0.4) circleColor = '#27ae60'; else if (pctChange < -0.4) circleColor = '#e74c3c';
                 var changeSign = d.pop_change > 0 ? '+' : '';
                 
-                var panelHtml = `
-                    ${{generateDemographicHtml(d.namn, d)}}
-                    <div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 15px;">
-                        <p style="margin: 0; font-size: 14px;"><b>Utveckling (1 år):</b> <strong style="color:${{circleColor}}">${{changeSign}}${{d.pop_change}} inv (${{pctChange.toFixed(1)}}%)</strong></p>
-                    </div>
-                `;
+                var panelHtml = `${{generateDemographicHtml(d.namn, d)}}<div style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 15px;"><p style="margin: 0; font-size: 14px;"><b>Utveckling (1 år):</b> <strong style="color:${{circleColor}}">${{changeSign}}${{d.pop_change}} inv (${{pctChange.toFixed(1)}}%)</strong></p></div>`;
                 
                 var circle = L.circleMarker([d.lat, d.lon], {{ radius: radius, fillColor: circleColor, color: '#fff', weight: 1, fillOpacity: 0.8, className: 'pop-ring' }}).bindTooltip("Klicka för åldersfördelning", {{direction: 'top'}});
                 circle.on('click', function() {{ showInfoPanel(panelHtml); map.flyTo([d.lat, d.lon], 14); }});
                 circle.addTo(circleLayer);
 
                 var t = estimateTravelTimes(d.lat, d.lon); 
-                var distances = nykoData.map(node => ({{ node: node, dist: getDistance(d.lat, d.lon, node.lat, node.lon) }})).filter(n => n.dist > 0 && n.node.namn !== d.namn);
-                distances.sort((a,b) => a.dist - b.dist);
-                var nearest = distances.slice(0, 3);
+                var distances = nykoData.map(node => ({{ node: node, dist: getDistance(d.lat, d.lon, node.lat, node.lon) }})).filter(n => n.dist > 0 && n.node.namn !== d.namn); distances.sort((a,b) => a.dist - b.dist); var nearest = distances.slice(0, 3);
                 var nnHtml = nearest.map(n => `<li style="margin-bottom:4px;">${{n.node.namn}}: <b>${{n.dist.toFixed(2)}} km</b></li>`).join('');
 
-                var centroidHtml = `
-                    <h4 style="border-bottom:2px solid #333; padding-bottom:5px; margin-bottom:12px;"><b>${{d.namn}}</b></h4>
-                    <p style="font-size:15px;"><b>Folkmängd:</b> ${{d.tot}} invånare</p>
-                    <p style="font-size:15px;"><b>Fågelväg t. Stora torget:</b> 🚲 ${{t.st.bike}} km | 🚗 ${{t.st.car}} km <i>(${{t.st.dist}} km)</i></p>
-                    <p style="font-size:15px; margin-bottom: 15px;"><b>Restid t. Resecentrum:</b><br>🚶 ${{t.rc.walk}} min | 🚲 ${{t.rc.bike}} min | 🚌 ${{t.rc.pt}} min | 🚗 ${{t.rc.car}} min</p>
-                    
-                    <div style="background: #f8f9fa; padding: 12px; border-radius: 5px;">
-                        <b style="display:block; margin-bottom:8px; font-size:14px;">De 3 närmaste grannarna:</b>
-                        <ul style="padding-left:20px; margin-bottom:0; font-size:14px;">${{nnHtml}}</ul>
-                    </div>
-                `;
+                var centroidHtml = `<h4 style="border-bottom:2px solid #333; padding-bottom:5px; margin-bottom:12px;"><b>${{d.namn}}</b></h4><p style="font-size:15px;"><b>Folkmängd:</b> ${{d.tot}} invånare</p><p style="font-size:15px;"><b>Fågelväg t. Stora torget:</b> 🚲 ${{t.st.bike}} km | 🚗 ${{t.st.car}} km <i>(${{t.st.dist}} km)</i></p><p style="font-size:15px; margin-bottom: 15px;"><b>Restid t. Resecentrum:</b><br>🚶 ${{t.rc.walk}} min | 🚲 ${{t.rc.bike}} min | 🚌 ${{t.rc.pt}} min | 🚗 ${{t.rc.car}} min</p><div style="background: #f8f9fa; padding: 12px; border-radius: 5px;"><b style="display:block; margin-bottom:8px; font-size:14px;">De 3 närmaste grannarna:</b><ul style="padding-left:20px; margin-bottom:0; font-size:14px;">${{nnHtml}}</ul></div>`;
                 
                 var centroidMarker = L.circleMarker([d.lat, d.lon], {{ radius: 7, fillColor: '#f1c40f', color: '#e74c3c', weight: 2, fillOpacity: 1, pane: 'centroidPane' }}).bindTooltip("Klicka för områdesanalys", {{direction: 'top'}});
                 centroidMarker.on('click', function() {{ showInfoPanel(centroidHtml); map.flyTo([d.lat, d.lon], 14); }});
                 centroidMarker.feature = {{ properties: {{ name: d.namn, html: centroidHtml }} }}; 
                 centroidMarker.addTo(centroidLayer);
                 
-                var ghost = L.marker([d.lat, d.lon], {{opacity: 0, interactive: false}});
-                ghost.feature = {{ properties: {{ name: d.namn }} }};
-                ghost.addTo(searchLayer);
+                var ghost = L.marker([d.lat, d.lon], {{opacity: 0, interactive: false}}); ghost.feature = {{ properties: {{ name: d.namn }} }}; ghost.addTo(searchLayer);
             }}
         }});
 
-        // --- C. KATEGORISERA POI:s DYNAMISKT OCH BYGG IKONER ---
         poiData.forEach(function(p) {{
-            var cat = p.kategori.toLowerCase();
-            var typ = p.type; 
-            
-            var targetLayer = layerOvriga;
-            var markerColor = '#bdc3c7'; 
-            var iconClass = 'fa-map-marker-alt';
+            var cat = p.kategori.toLowerCase(); var typ = p.type; 
+            var targetLayer = layerOvriga; var markerColor = '#bdc3c7'; var iconClass = 'fa-map-marker-alt';
 
-            // Logik inkl. Förvaltning/Näringsliv till Samhälle och Idrottsanläggning till Idrott
             if (typ === 'skola' && cat.includes('grundskola')) {{ targetLayer = layerGrundskolor; markerColor = '#3498db'; iconClass = 'fa-child'; }} 
             else if (typ === 'skola' && cat.includes('gymnasi')) {{ targetLayer = layerGymnasieskolor; markerColor = '#9b59b6'; iconClass = 'fa-graduation-cap'; }} 
             else if (cat.includes('handel') || cat.includes('centrum') || cat.includes('torg')) {{ targetLayer = layerHandel; markerColor = '#e67e22'; iconClass = 'fa-shopping-cart'; }} 
@@ -789,108 +792,55 @@ ui_html = f"""
             else if (typ === 'vard' || cat.includes('samhälle') || cat.includes('infrastruktur') || cat.includes('sjukhus') || cat.includes('station') || cat.includes('förvaltning') || cat.includes('näringsliv')) {{ targetLayer = layerSamhalle; markerColor = '#34495e'; iconClass = 'fa-building'; }} 
             else if (cat.includes('kultur') || cat.includes('sevärdhet') || cat.includes('kyrka') || cat.includes('museum') || cat.includes('evenemang')) {{ targetLayer = layerKultur; markerColor = '#e74c3c'; iconClass = 'fa-theater-masks'; }} 
             
-            // Specialhantering för viktiga noder (Stora Torget / Resecentrum)
             var isSpecial = p.namn.toLowerCase().includes('stora torget') || p.namn.toLowerCase().includes('resecentrum');
-            var extraClass = isSpecial ? ' marker-pulse' : '';
-            var activeIcon = isSpecial ? 'fa-star' : iconClass;
+            var extraClass = isSpecial ? ' marker-pulse' : ''; var activeIcon = isSpecial ? 'fa-star' : iconClass;
             
             var iconHtml = `<div class="custom-marker${{extraClass}}" style="background-color: ${{markerColor}}; width: 100%; height: 100%;"><i class="fas ${{activeIcon}}"></i></div>`;
-            
-            var marker = L.marker([p.lat, p.lon], {{
-                icon: L.divIcon({{ html: iconHtml, className: '', iconSize: isSpecial ? [36, 36] : [26, 26] }})
-            }}).bindTooltip(`<b>${{p.namn}}</b> (Klicka för analys)`, {{direction: 'top'}});
+            var marker = L.marker([p.lat, p.lon], {{ icon: L.divIcon({{ html: iconHtml, className: '', iconSize: isSpecial ? [36, 36] : [26, 26] }}) }}).bindTooltip(`<b>${{p.namn}}</b> (Klicka för analys)`, {{direction: 'top'}});
             
             marker.on('click', function() {{
-                var t = estimateTravelTimes(p.lat, p.lon);
-                var demoStats = getDemographicsInRadius(p.lat, p.lon, 1);
-                
+                var t = estimateTravelTimes(p.lat, p.lon); var demoStats = getDemographicsInRadius(p.lat, p.lon, 1);
                 var orgText = p.org && p.org !== 'nan' && p.org !== 'None' && p.org !== '' ? `<p style="margin-bottom: 5px; font-size:15px; color:#2c3e50;"><b>Huvudman:</b> ${{p.org}}</p>` : '';
-                
-                var poiHtml = `
-                    <h5 style="border-bottom:2px solid #333; padding-bottom:5px; margin-bottom:12px;"><b>${{p.namn}}</b></h5>
-                    <p style="margin-bottom: 3px; font-size:15px;"><b>Typ:</b> ${{p.kategori}}</p>
-                    ${{orgText}}
-                    <p style="margin-bottom: 3px; font-size:15px; margin-top:10px;"><b>Avstånd t. Stora torget:</b> 🚲 ${{t.st.bike}} km | 🚗 ${{t.st.car}} km <i>(${{t.st.dist}} km)</i></p>
-                    <p style="margin-bottom: 15px; font-size:15px;"><b>Restid t. Resecentrum:</b><br>🚶 ${{t.rc.walk}} min | 🚲 ${{t.rc.bike}} min | 🚌 ${{t.rc.pt}} min | 🚗 ${{t.rc.car}} min</p>
-                    <div style="background: #f8f9fa; padding: 12px; border-radius: 5px;">
-                        ${{generateDemographicHtml("Demografi inom 1 km radie", demoStats)}}
-                    </div>
-                `;
-                showInfoPanel(poiHtml);
-                map.flyTo([p.lat, p.lon], 15);
+                var poiHtml = `<h5 style="border-bottom:2px solid #333; padding-bottom:5px; margin-bottom:12px;"><b>${{p.namn}}</b></h5><p style="margin-bottom: 3px; font-size:15px;"><b>Typ:</b> ${{p.kategori}}</p>${{orgText}}<p style="margin-bottom: 3px; font-size:15px; margin-top:10px;"><b>Avstånd t. Stora torget:</b> 🚲 ${{t.st.bike}} km | 🚗 ${{t.st.car}} km <i>(${{t.st.dist}} km)</i></p><p style="margin-bottom: 15px; font-size:15px;"><b>Restid t. Resecentrum:</b><br>🚶 ${{t.rc.walk}} min | 🚲 ${{t.rc.bike}} min | 🚌 ${{t.rc.pt}} min | 🚗 ${{t.rc.car}} min</p><div style="background: #f8f9fa; padding: 12px; border-radius: 5px;">${{generateDemographicHtml("Demografi inom 1 km radie", demoStats)}}</div>`;
+                showInfoPanel(poiHtml); map.flyTo([p.lat, p.lon], 15);
             }});
-            
             marker.addTo(targetLayer);
         }});
 
         var highlightedPolygon = null;
-        function clearHighlight() {{
-            if (highlightedPolygon) {{ highlightedPolygon.setStyle({{weight: 1, color: '#333333'}}); highlightedPolygon = null; }}
-        }}
+        function clearHighlight() {{ if (highlightedPolygon) {{ highlightedPolygon.setStyle({{weight: 1, color: '#333333'}}); highlightedPolygon = null; }} }}
 
         var searchControl = new L.Control.Search({{ 
             layer: searchLayer, propertyName: 'name', marker: false, collapsed: false, textPlaceholder: 'Sök område...',
             moveToLocation: function(latlng, title, map) {{ 
                 map.flyTo(latlng, 14); clearHighlight();
-                map.eachLayer(function(layer) {{
-                    if (layer.feature && layer.feature.properties && layer.feature.properties.NAMN === title) {{
-                        if (layer.setStyle) {{ layer.setStyle({{weight: 5, color: '#f39c12'}}); highlightedPolygon = layer; }}
-                    }}
-                }});
-                centroidLayer.eachLayer(function(layer) {{
-                    if (layer.feature && layer.feature.properties.name === title) {{ showInfoPanel(layer.feature.properties.html); }}
-                }});
+                map.eachLayer(function(layer) {{ if (layer.feature && layer.feature.properties && layer.feature.properties.NAMN === title) {{ if (layer.setStyle) {{ layer.setStyle({{weight: 5, color: '#f39c12'}}); highlightedPolygon = layer; }} }} }});
+                centroidLayer.eachLayer(function(layer) {{ if (layer.feature && layer.feature.properties.name === title) {{ showInfoPanel(layer.feature.properties.html); }} }});
             }} 
         }});
         map.addControl(searchControl);
 
         document.getElementById('btn-reset').addEventListener('click', function() {{
-            map.setView([58.4102, 15.6216], 11);
-            clearHighlight();
-            searchControl.collapse(); 
-            document.getElementById('zoomSelect').value = ""; 
-            if(drawnItems) drawnItems.clearLayers(); 
-            customRadiusLayer.clearLayers(); 
-            document.getElementById('infoPanel').style.display = 'none'; 
-            lastZoomBounds = null; // Rensa det memorerade zoomet
+            map.setView([58.4102, 15.6216], 11); clearHighlight(); searchControl.collapse(); document.getElementById('zoomSelect').value = ""; 
+            if(drawnItems) drawnItems.clearLayers(); customRadiusLayer.clearLayers(); document.getElementById('infoPanel').style.display = 'none'; lastZoomBounds = null; 
             
-            document.getElementById('opacitySlider').value = 0.60;
-            document.getElementById('opacityVal').innerText = '60%';
+            document.getElementById('basemapSelect').value = 'blek';
+            document.getElementById('basemapSelect').dispatchEvent(new Event('change'));
+
+            document.getElementById('opacitySlider').value = 0.60; document.getElementById('opacityVal').innerText = '60%';
             document.querySelectorAll('.pop-polygon, .density-polygon, .hushall-polygon, .default-polygon').forEach(el => {{ el.style.fillOpacity = 0.60; }});
-            
-            document.getElementById('togglePop').checked = true;
-            document.getElementById('togglePop').dispatchEvent(new Event('change'));
-            document.getElementById('toggleCentroids').checked = true;
-            document.getElementById('toggleCentroids').dispatchEvent(new Event('change'));
-            
-            // Stäng mätverktyg
-            if(measureMode) document.getElementById('btn-measure').click();
-            if(isochroneMode) document.getElementById('btn-isochrone').click();
-            
-            ['toggleDens', 'toggleHushall', 'toggleBorders', 'toggleCircles', 'toggleClusters', 'toggleTransport', 'toggleVatten', 'toggleGrundskolor', 'toggleGymnasieskolor', 'toggleHandel', 'toggleIdrott', 'toggleSamhalle', 'toggleKultur', 'toggleOvriga'].forEach(function(id) {{
-                var cb = document.getElementById(id);
-                if(cb && cb.checked) {{ cb.checked = false; cb.dispatchEvent(new Event('change')); }}
-            }});
+            document.getElementById('togglePop').checked = true; document.getElementById('togglePop').dispatchEvent(new Event('change'));
+            document.getElementById('toggleCentroids').checked = true; document.getElementById('toggleCentroids').dispatchEvent(new Event('change'));
+            if(measureMode) document.getElementById('btn-measure').click(); if(isochroneMode) document.getElementById('btn-isochrone').click();
+            ['toggleDens', 'toggleHushall', 'toggleBorders', 'toggleCircles', 'toggleDynPop', 'toggleClusters', 'toggleTransport', 'toggleVatten', 'toggleGrundskolor', 'toggleGymnasieskolor', 'toggleHandel', 'toggleIdrott', 'toggleSamhalle', 'toggleKultur', 'toggleOvriga'].forEach(function(id) {{ var cb = document.getElementById(id); if(cb && cb.checked) {{ cb.checked = false; cb.dispatchEvent(new Event('change')); }} }});
         }});
         
         document.getElementById('btnZoomPOI').addEventListener('click', function() {{
-            var bounds = L.latLngBounds();
-            var hasPoints = false;
+            var bounds = L.latLngBounds(); var hasPoints = false;
             var layersToCheck = [ {{id: 'toggleGrundskolor', layer: layerGrundskolor}}, {{id: 'toggleGymnasieskolor', layer: layerGymnasieskolor}}, {{id: 'toggleHandel', layer: layerHandel}}, {{id: 'toggleIdrott', layer: layerIdrott}}, {{id: 'toggleSamhalle', layer: layerSamhalle}}, {{id: 'toggleKultur', layer: layerKultur}}, {{id: 'toggleOvriga', layer: layerOvriga}}, {{id: 'toggleVard', layer: layerVard}} ];
-            
-            layersToCheck.forEach(function(item) {{
-                var cb = document.getElementById(item.id);
-                if (cb && cb.checked && !cb.disabled) {{
-                    item.layer.eachLayer(function(marker) {{ bounds.extend(marker.getLatLng()); hasPoints = true; }});
-                }}
-            }});
-            
-            if(hasPoints) {{
-                map.flyToBounds(bounds, {{padding: [50, 50], maxZoom: 15}});
-                lastZoomBounds = bounds; // Spara denna vy för att flyga tillbaka!
-            }} else {{
-                showInfoPanel("<div style='padding:10px; font-size:15px;'><b>Inga platser valda.</b><br>Kryssa i minst en POI-kategori i lagerlistan för att zooma in.</div>");
-            }}
+            layersToCheck.forEach(function(item) {{ var cb = document.getElementById(item.id); if (cb && cb.checked && !cb.disabled) {{ item.layer.eachLayer(function(marker) {{ bounds.extend(marker.getLatLng()); hasPoints = true; }}); }} }});
+            if(hasPoints) {{ map.flyToBounds(bounds, {{padding: [50, 50], maxZoom: 15}}); lastZoomBounds = bounds; }} 
+            else {{ showInfoPanel("<div style='padding:10px; font-size:15px;'><b>Inga platser valda.</b><br>Kryssa i minst en POI-kategori i lagerlistan för att zooma in.</div>"); }}
         }});
 
         // --- KONTROLLERA LAGER TÄND/SLÄCK ---
@@ -909,18 +859,18 @@ ui_html = f"""
         // --- 4. VÄRMEKARTOR & DETALJERADE KLUSTER ---
         var currentHeatLayer = null;
         
-        // GEMENSAM DESIGN FÖR ALLA BOLLAR (Klustrade och enskilda)
-        function createPopIcon(pop) {{
-            var size = 28;
+        function createCleanIcon(pop) {{
+            var size = 24;
+            if (pop >= 10) size = 28;
             if (pop >= 50) size = 32;
             if (pop >= 200) size = 38;
             if (pop >= 1000) size = 46;
 
-            var displayPop = pop < 5 ? "" : pop; // Döljer siffran för < 5
-            var fSize = pop >= 1000 ? 11 : 13;
+            var displayPop = pop < 5 ? "" : pop;
+            var fSize = pop >= 1000 ? 11 : 12;
 
             return L.divIcon({{
-                html: `<div style="background-color: rgba(41, 128, 185, 0.95); color: white; border-radius: 50%; width: ${{size}}px; height: ${{size}}px; display: flex; align-items: center; justify-content: center; font-size: ${{fSize}}px; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">${{displayPop}}</div>`,
+                html: `<div style="background-color: rgba(52, 152, 219, 0.95); color: white; border-radius: 50%; width: ${{size}}px; height: ${{size}}px; display: flex; align-items: center; justify-content: center; font-size: ${{fSize}}px; font-weight: bold; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.4);">${{displayPop}}</div>`,
                 className: '',
                 iconSize: [size, size]
             }});
@@ -929,20 +879,19 @@ ui_html = f"""
         var clusterLayer = L.markerClusterGroup({{
             chunkedLoading: true, 
             iconCreateFunction: function(cluster) {{
-                var markers = cluster.getAllChildMarkers();
+                var markers = cluster.getAllChildMarkers(); 
                 var sum = 0;
                 for (var i = 0; i < markers.length; i++) {{ sum += markers[i].options.population || 0; }}
-                return createPopIcon(sum); // Använder nu den enhetliga designen!
+                return createCleanIcon(sum); 
             }}
         }});
 
         fetch('heat_data.json').then(response => response.json()).then(data => {{ 
-            heatDataRaw = data; 
-            var markersToAdd = [];
+            heatDataRaw = data; var markersToAdd = [];
             heatDataRaw.forEach(function(p) {{
                 var pop = p.tot;
                 if (pop > 0) {{
-                    var markerIcon = createPopIcon(pop); // Använder nu den enhetliga designen!
+                    var markerIcon = createCleanIcon(pop);
                     var marker = L.marker([p.lat, p.lon], {{ icon: markerIcon, population: pop }});
                     marker.on('click', function() {{
                         var html = "";
@@ -960,29 +909,24 @@ ui_html = f"""
             if (currentHeatLayer) map.removeLayer(currentHeatLayer);
             var val = e.target.value;
             if (val === 'none' || heatDataRaw.length === 0) return;
-            
             var heatPoints = heatDataRaw.map(p => [p.lat, p.lon, p[val]]).filter(p => p[2] > 0);
-            
-            // Dynamiskt max-värde för att få bra kontrast även på små åldersgrupper (98:e percentilen)
             var maxVal = 10;
-            if (heatPoints.length > 0) {{
-                var values = heatPoints.map(p => p[2]).sort((a,b) => a - b);
-                maxVal = values[Math.floor(values.length * 0.98)] || 10; 
-            }}
-            maxVal = Math.max(3, maxVal); // Undvik för brusig rendering vid extremt låga tal
-
+            if (heatPoints.length > 0) {{ var values = heatPoints.map(p => p[2]).sort((a,b) => a - b); maxVal = values[Math.floor(values.length * 0.98)] || 10; }}
+            maxVal = Math.max(3, maxVal); 
             currentHeatLayer = L.heatLayer(heatPoints, {{ radius: 15, blur: 20, maxZoom: 14, max: maxVal }}).addTo(map);
         }});
 
         document.getElementById('toggleClusters').addEventListener('change', function(e) {{ if(e.target.checked) map.addLayer(clusterLayer); else map.removeLayer(clusterLayer); }});
 
         // --- 5. RITA EGNA POLYGONER FÖR DEMOGRAFIANALYS ---
-        var drawnItems = new L.FeatureGroup();
-        map.addLayer(drawnItems);
+        var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
         L.drawLocal.draw.toolbar.actions.title = 'Avbryt ritning'; L.drawLocal.draw.toolbar.actions.text = 'Avbryt'; L.drawLocal.draw.toolbar.finish.title = 'Slutför ritning'; L.drawLocal.draw.toolbar.finish.text = 'Slutför'; L.drawLocal.draw.toolbar.undo.title = 'Ångra sista punkten'; L.drawLocal.draw.toolbar.undo.text = 'Ångra'; L.drawLocal.draw.handlers.polygon.tooltip.start = 'Klicka för att börja rita en yta.'; L.drawLocal.draw.handlers.polygon.tooltip.cont = 'Klicka för att fortsätta rita ytan.'; L.drawLocal.draw.handlers.polygon.tooltip.end = 'Klicka på första punkten för att slutföra.'; L.drawLocal.draw.handlers.rectangle.tooltip.start = 'Klicka och dra för att rita en rektangel.';
-
         var drawControl = new L.Control.Draw({{ draw: {{ polyline: false, marker: false, circlemarker: false, circle: false, polygon: {{ shapeOptions: {{ color: '#9b59b6', weight: 2, fillOpacity: 0.3 }} }}, rectangle: {{ shapeOptions: {{ color: '#9b59b6', weight: 2, fillOpacity: 0.3 }} }} }}, edit: {{ featureGroup: drawnItems }} }});
         map.addControl(drawControl);
+
+        var isDrawingMode = false;
+        map.on('draw:drawstart', function(e) {{ isDrawingMode = true; }});
+        map.on('draw:drawstop', function(e) {{ isDrawingMode = false; }});
 
         map.on(L.Draw.Event.CREATED, function (e) {{
             var layer = e.layer; drawnItems.addLayer(layer); var polyGeoJson = layer.toGeoJSON();
@@ -1004,31 +948,13 @@ ui_html = f"""
         var measureMode = false; var isochroneMode = false;
 
         document.getElementById('btn-measure').addEventListener('click', function() {{
-            measureMode = !measureMode; 
-            isochroneMode = false; // Stäng av det andra verktyget
-            document.getElementById('btn-isochrone').classList.replace('btn-info', 'btn-outline-info');
-            
-            if(measureMode) {{ 
-                this.classList.replace('btn-outline-primary', 'btn-primary'); 
-                document.getElementById(map._container.id).style.cursor = 'crosshair'; 
-            }} else {{ 
-                this.classList.replace('btn-primary', 'btn-outline-primary'); 
-                document.getElementById(map._container.id).style.cursor = ''; 
-            }}
+            measureMode = !measureMode; isochroneMode = false; document.getElementById('btn-isochrone').classList.replace('btn-info', 'btn-outline-info');
+            if(measureMode) {{ this.classList.replace('btn-outline-primary', 'btn-primary'); document.getElementById(map._container.id).style.cursor = 'crosshair'; }} else {{ this.classList.replace('btn-primary', 'btn-outline-primary'); document.getElementById(map._container.id).style.cursor = ''; }}
         }});
 
         document.getElementById('btn-isochrone').addEventListener('click', function() {{
-            isochroneMode = !isochroneMode; 
-            measureMode = false; // Stäng av det andra verktyget
-            document.getElementById('btn-measure').classList.replace('btn-primary', 'btn-outline-primary');
-            
-            if(isochroneMode) {{ 
-                this.classList.replace('btn-outline-info', 'btn-info'); 
-                document.getElementById(map._container.id).style.cursor = 'crosshair'; 
-            }} else {{ 
-                this.classList.replace('btn-info', 'btn-outline-info'); 
-                document.getElementById(map._container.id).style.cursor = ''; 
-            }}
+            isochroneMode = !isochroneMode; measureMode = false; document.getElementById('btn-measure').classList.replace('btn-primary', 'btn-outline-primary');
+            if(isochroneMode) {{ this.classList.replace('btn-outline-info', 'btn-info'); document.getElementById(map._container.id).style.cursor = 'crosshair'; }} else {{ this.classList.replace('btn-info', 'btn-outline-info'); document.getElementById(map._container.id).style.cursor = ''; }}
         }});
         
         map.on('click', function(e) {{
@@ -1071,50 +997,75 @@ ui_html = f"""
                 bikeLayer.on('click', function() {{ showInfoPanel(isoHtml); }});
                 carLayer.on('click', function() {{ showInfoPanel(isoHtml); }});
                 
-                showInfoPanel(isoHtml); 
-                map.flyTo([lat, lon], 12);
-                return; 
+                showInfoPanel(isoHtml); map.flyTo([lat, lon], 12); return; 
             }}
         }});
 
-        // --- 7. INTERAKTIV GRAF (Chart.js) VID KLICK ---
-        var histData = {hist_json_str};
-        var myChart = null;
-        var chartModal = new bootstrap.Modal(document.getElementById('chartModal'));
+        // --- 7. HOVER-EFFEKT & GRAF VID KLICK ---
+        var histData = {hist_json_str}; var myChart = null; var chartModal = new bootstrap.Modal(document.getElementById('chartModal'));
 
         function openChart(namn) {{
             if(!histData[namn] || histData[namn].labels.length === 0) return;
             document.getElementById('chartModalLabel').innerText = 'Befolkningsutveckling: ' + namn;
-            if(myChart) myChart.destroy();
-            var ctx = document.getElementById('popChart').getContext('2d');
-            myChart = new Chart(ctx, {{
-                type: 'line', data: {{ labels: histData[namn].labels, datasets: [{{ label: 'Folkmängd', data: histData[namn].data, borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)', borderWidth: 2, fill: true, tension: 0.3, pointRadius: 3 }}] }},
-                options: {{ responsive: true, scales: {{ y: {{ beginAtZero: false }} }} }}
-            }});
+            if(myChart) myChart.destroy(); var ctx = document.getElementById('popChart').getContext('2d');
+            myChart = new Chart(ctx, {{ type: 'line', data: {{ labels: histData[namn].labels, datasets: [{{ label: 'Folkmängd', data: histData[namn].data, borderColor: '#2ecc71', backgroundColor: 'rgba(46, 204, 113, 0.2)', borderWidth: 2, fill: true, tension: 0.3, pointRadius: 3 }}] }}, options: {{ responsive: true, scales: {{ y: {{ beginAtZero: false }} }} }} }});
             chartModal.show();
         }}
 
-        // Säker, repetitiv bindning för Graferna för att skydda mot långsam inläsning
-        function bindGraphClicks() {{
+        // Funktion för att binda hover (mouseover) och klick till alla stadsdelar
+        function bindPolygonInteractions() {{
             var found = false;
             map.eachLayer(function(layer) {{
                 if (layer.feature && layer.feature.properties && layer.feature.properties.NAMN) {{
-                    layer.off('click'); 
+                    
+                    // Ta bort gamla events för att undvika dubbletter
+                    layer.off('mouseover mouseout click'); 
+                    
+                    // Hover PÅ (Röd och tjock gräns)
+                    layer.on('mouseover', function(e) {{
+                        if (measureMode || isochroneMode || isDrawingMode) return; // Blockera hover om mät/rit-verktyg är igång
+                        var target = e.target;
+                        target.setStyle({{ weight: 4, color: '#e74c3c' }});
+                        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {{
+                            target.bringToFront();
+                        }}
+                    }});
+
+                    // Hover AV (Återställ gräns)
+                    layer.on('mouseout', function(e) {{
+                        var target = e.target;
+                        // Behåll gul/tjock gräns om området är sökt och markerat
+                        if (target === highlightedPolygon) {{
+                            target.setStyle({{weight: 5, color: '#f39c12'}});
+                            return;
+                        }}
+                        
+                        var isBorder = target.options.className && target.options.className.includes('border-polygon');
+                        var currentOpacity = document.getElementById('opacitySlider').value;
+                        
+                        // Återställ till vit eller svart gräns beroende på om Satellit är aktivt
+                        var defaultBorderColor = document.body.classList.contains('sat-mode') ? '#ffffff' : '#2c3e50';
+                        
+                        if (isBorder) {{
+                            target.setStyle({{weight: 2, color: defaultBorderColor, fill: false}});
+                        }} else {{
+                            target.setStyle({{weight: 1, color: '#333333', fillOpacity: currentOpacity}});
+                        }}
+                    }});
+
+                    // Klick (Öppna graf)
                     layer.on('click', function(e) {{
-                        if (measureMode || isochroneMode) return; 
+                        if (measureMode || isochroneMode || isDrawingMode) return; 
                         if (!document.getElementById('toggleGraph').checked) return; 
-                        openChart(layer.feature.properties.NAMN);
+                        openChart(layer.feature.properties.NAMN); 
                         L.DomEvent.stopPropagation(e);
                     }});
                     found = true;
                 }}
             }});
-            if (!found) {{
-                setTimeout(bindGraphClicks, 500); 
-            }}
+            if (!found) setTimeout(bindPolygonInteractions, 500); 
         }}
-        bindGraphClicks();
-
+        bindPolygonInteractions();
     }});
 </script>
 """
