@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Användarguide - Befolkningsbarometern</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Anpassade färger för Befolkningsbarometern */
+            --primary-color: #5a2e8c; 
+            --primary-dark: #3b1d5e;
+            --bg-color: #f4f7f6;
+            --farg-bra: #009E73;
+            --farg-dalig: #D55E00;
+            --farg-neutral: #6c757d;
+            --farg-varning: #F0E442;
+        }
+
+        body { 
+            background-color: var(--bg-color); 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header-bar {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: 15px 30px; 
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .logga-titel-container { display: flex; align-items: center; gap: 15px; }
+        .logotyp { height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2)); }
+        .header-title { margin: 0; font-size: 1.5rem; font-weight: 600; }
+
+        /* Navigation i Header */
+        .header-nav { display: flex; gap: 12px; align-items: center; }
+        .nav-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white; text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; transition: all 0.2s ease; display: flex; align-items: center; gap: 8px;
+        }
+        .nav-btn:hover { background-color: rgba(255, 255, 255, 0.2); color: white; border-color: rgba(255, 255, 255, 0.6); }
+
+        .content-wrapper {
+            max-width: 1000px; margin: 40px auto; padding: 20px 15px; width: 100%; flex-grow: 1;
+        }
+
+        /* Kort för Innehåll */
+        .guide-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            margin-bottom: 30px;
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .guide-card h2 { color: var(--primary-color); font-weight: bold; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; margin-bottom: 20px; }
+        .guide-card h4 { color: var(--primary-dark); font-weight: 600; margin-top: 25px; }
+        .guide-card p, .guide-card li { font-size: 1.1rem; line-height: 1.7; color: #495057; }
+        
+        .boll-exempel { display: inline-flex; justify-content: center; align-items: center; width: 24px; height: 24px; border-radius: 50%; color: white; font-size: 16px; font-weight: 900; margin-right: 8px; -webkit-text-stroke: 1px white; }
+
+        .highlight-box { background-color: #f8fbff; border-left: 4px solid var(--primary-color); padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0; }
+        .highlight-box p { margin: 0; font-size: 1.05rem; }
+
+        /* Sidfot (Footer) */
+        .site-footer {
+            background-color: #343a40;
+            color: #ced4da;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.85rem;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar">
+        <div class="logga-titel-container">
+            <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" class="logotyp" onerror="this.style.display='none'">
+            <h1 class="header-title">Användarguide Befolkningsbarometern</h1>
+        </div>
+        <div class="header-nav">
+            <a href="befolkningsbarometern.html" class="nav-btn">🔙 Tillbaka till Dashboard</a>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        
+        <div class="guide-card">
+            <h2>Välkommen till Befolkningsbarometern!</h2>
+            <p>Befolkningsbarometern är ett kraftfullt och interaktivt verktyg utvecklat av Analys & Utredning för att följa upp den demografiska utvecklingen och flyttströmmarna i Linköpings kommun månad för månad.</p>
+            <p>Denna guide hjälper dig att snabbt förstå hur du navigerar i plattformen och hur du bäst utnyttjar de inbyggda smarta funktionerna.</p>
+        </div>
+
+        <div class="guide-card">
+            <h2>1. Smarta tidsval och Vyer</h2>
+            <p>Högst upp på sidan hittar du kontrollpanelen där du väljer <strong>År</strong> och <strong>Månad</strong>. Rullistorna är helt datadrivna och visar endast de år och månader där det faktiskt finns en färdig textanalys inlagd. Systemet ställer alltid in sig på den allra senaste tillgängliga analysmånaden när du öppnar sidan.</p>
+            
+            <h4>De tre huvudvyerna:</h4>
+            <ul>
+                <li><strong>📄 Rapport: Folkmängd</strong> - Din "Executive Summary" för befolkningsutvecklingen. Visar en textanalys för månaden, en nyckeltalstabell med utfall och procentuell utveckling, den stora barometern, samt fyra fasta fördjupningsdiagram (Folkmängd, Förändring, Födda och Döda).</li>
+                <li><strong>📄 Rapport: Flyttningar</strong> - Motsvarande sammanfattningsvy men med fullt fokus på flyttnetto, inrikes- och utrikes flyttningar över tid.</li>
+                <li><strong>📊 Analysvy</strong> - En interaktiv utforskande vy för dig som vill borra djupare, jämföra med Riket och studera enskilda åldersgrupper.</li>
+            </ul>
+        </div>
+
+        <div class="guide-card">
+            <h2>2. Förstå Måluppfyllelse och Färgkoder</h2>
+            <p>I Rapportvyerna hjälper färgkoderna dig att snabbt utläsa om utvecklingen går åt rätt håll. Statusen sätts utifrån utfallet för de senaste 12 månaderna (R12) jämfört med exakt samma 12-månadersperiod förra året. Genom att hålla muspekaren över en statusboll ser du alltid exakt vad som jämförs.</p>
+            
+            <h4>Statusbollar vid diagrammen:</h4>
+            <ul style="list-style: none; padding-left: 0;">
+                <li style="margin-bottom: 10px;"><span class="boll-exempel" style="background-color: var(--farg-bra);">↑</span> <strong>Grönt:</strong> Positiv utveckling. Indikatorn utvecklas i rätt riktning historiskt (t.ex. att inflyttningen eller födelseöverskottet ökar).</li>
+                <li style="margin-bottom: 10px;"><span class="boll-exempel" style="background-color: var(--farg-dalig);">↓</span> <strong>Rött:</strong> Negativ utveckling. Indikatorn underpresterar jämfört med historik (t.ex. att utflyttningen eller antalet döda ökar).</li>
+                <li style="margin-bottom: 10px;"><span class="boll-exempel" style="background-color: var(--farg-neutral);">→</span> <strong>Grått:</strong> Neutralt. Utvecklingen har inte förändrats utanför de fastställda toleransnivåerna (tröskelvärdena).</li>
+            </ul>
+
+            <h4>Hur beräknas pilarna?</h4>
+            <p>För att pilarna ska vara helt objektiva och inte reagera på minimala svängningar, använder systemet en logik i tre steg:</p>
+            <ol>
+                <li><strong>Jämförelse:</strong> Aktuellt utfall jämförs mot historik och en differens räknas ut.</li>
+                <li><strong>Tröskelvärde (Marginal):</strong> Om förändringen ligger inom felmarginalen (som standard ±1 %) bedöms läget som oförändrat/stabilt. Bollen blir <strong>Grå (→)</strong>.</li>
+                <li><strong>Polaritet:</strong> Om förändringen passerar tröskelvärdet tittar systemet på om en uppgång är bra eller dålig. En ökning av <em>inflyttning</em> eller <em>födslar</em> ger en <strong>Grön pil (↑)</strong>. En ökning av <em>utflyttning</em> eller <em>dödsfall</em> ger däremot en <strong>Röd pil (↑)</strong>, eftersom det minskar befolkningstillväxten.</li>
+            </ol>
+
+            <div class="highlight-box">
+                <p><strong>💡 Specialdiagram med flyttnetto</strong><br>
+                Flera grafer i Flyttnings-rapporten visar två linjer (t.ex. Inflyttning och Utflyttning) samtidigt. För dessa grafer beräknar statusbollen alltid det underliggande <strong>Flyttnettot</strong>. Om inflyttningen ökar mer än utflyttningen växer flyttnettot och bollen blir grön, och vice versa.</p>
+            </div>
+
+            <h4>Barometern (Mätaren uppe till höger):</h4>
+            <p>Den halvcirkelformade mätaren väger samman resultatet från de fyra underliggande diagrammen för rapportvyn genom ett poängsystem. En grön eller grå boll ger 1 poäng vardera. En röd boll ger 0 poäng.</p>
+            <ul>
+                <li>Pekar pilen på <strong>Rött (0–1 poäng):</strong> Endast 1 eller 0 av målen utvecklas positivt/stabilt. Läget bedöms som pressat.</li>
+                <li>Pekar pilen på <strong>Gult (2 poäng):</strong> Läget är neutralt (hälften av indikatorerna går bra, hälften sämre).</li>
+                <li>Pekar pilen på <strong>Grönt (3–4 poäng):</strong> Majoriteten av målen utvecklas starkt och positivt.</li>
+            </ul>
+        </div>
+
+        <div class="guide-card">
+            <h2>3. Analysvyn och Djupdykning (Drill-down)</h2>
+            <p>I Analysvyn arbetar du med fyra fristående diagramfönster. Längst upp finns en huvudpanel där du styr tidshorisont (t.ex. "Senaste 5 åren"), om du vill se staplar (enskilda månader) eller linjer över tid, samt om datan ska visas i absoluta tal eller index/procent.</p>
+
+            <h4>Avancerade funktioner för kvalificerade jämförelser:</h4>
+            <ul>
+                <li><strong>Kvalificerad Prognosuppföljning:</strong> Genom att bocka i <em>"Visa Prognos"</em> kan du göra kvalificerade jämförelser mellan faktiskt utfall och kommunens officiella befolkningsprognos. Systemet hämtar det förväntade utvecklingsvärdet för det <strong>första prognosåret</strong> i den aktuella befolkningsprognosen för respektive år och ritar ut det som en grå referenslinje eller stapel. Detta gör det enkelt att direkt se om kommunen växer i den takt som förväntats.</li>
+                <li><strong>Jämförelser med Riket:</strong> För många av indikatorerna (t.ex. in- och utflyttning) kan du kryssa i <em>"Jämför med Riket"</em> inuti diagramrutan för att ställa Linköpings utveckling mot det nationella genomsnittet.</li>
+            </ul>
+
+            <div class="highlight-box">
+                <p><strong>💡 Smart säsongsprognos (Diagram 4)</strong><br>
+                I det fjärde diagrammet (längst ner till höger) finns en unik, lokal knapp för att välja mellan <strong>Rullande 12 månader</strong> eller aktuell månad. Om du aktiverar "Visa Prognos" och väljer att titta på den enskilda månaden, kommer systemet automatiskt att räkna fram ett <em>säsongsanpassat månadsmål</em> (baserat på hur månadens andel av helåret sett ut historiskt under de senaste 5 åren). Detta gör att du exakt kan se om exempelvis inflyttningen i just augusti var bättre eller sämre än förväntat enligt årets officiella befolkningsprognos.</p>
+            </div>
+            
+            <h4>Djupdykning med klick (Drill-down)</h4>
+            <p>Majoriteten av befolkningsmåtten är uppbyggda av mindre komponenter (t.ex. åldersgrupper, män/kvinnor, eller typ av flyttning). Om du för muspekaren över en linje eller stapel och markören förvandlas till en hand, kan du <strong>klicka på den</strong> för att spränga isär datan!</p>
+            
+            <p><strong>De två vanligaste Drill-down-beteendena i Befolkningsbarometern:</strong></p>
+            <ul>
+                <li><strong>Fördelningscirklar och Staplar:</strong> Om du klickar på t.ex. <em>Inflyttning</em> för en specifik månad, växlar diagrammet och visar dig direkt hur stor andel som kom från "Eget län", "Annat län" eller "Utlandet". Klickar du på <em>Befolkningsförändring</em> får du fram staplar för Födda, Döda, Inflyttade och Utflyttade för att förklara exakt vad som drev förändringen den månaden.</li>
+                <li><strong>Befolkningspyramider:</strong> Unikt för Befolkningsbarometern är stödet för befolkningspyramider. Om du borrar dig ner i en specifik åldersgrupp, kommer diagrammet rita ut en klassisk ålderspyramid där män visas till vänster och kvinnor till höger, vilket ger en omedelbar visuell förståelse för könsfördelningen i åldersgruppen.</li>
+            </ul>
+            <p>För att återgå till den normala grafen klickar du alltid på knappen <em>"🔙 Tillbaka till trenden"</em> uppe till höger inuti diagramrutan.</p>
+        </div>
+
+        <div class="guide-card">
+            <h2>4. Utskrifter och Rapportering (PDF)</h2>
+            <p>Hela instrumentpanelen är optimerad för utskrift. Genom att klicka på knappen <strong>📄 Skapa PDF</strong> uppe till höger, formaterar systemet automatiskt om den vy du befinner dig i till en snygg, ren A4-rapport. Menyerna göms, diagrammen anpassas i storlek och långa rubriker avstavas intelligent för att passa perfekt på papperet.</p>
+        </div>
+
+    </div>
+
+    <footer class="site-footer">
+        Utvecklad av Analys & Utredning, Linköpings kommun &bull; Data uppdateras månadsvis via SCB. Statistiken har bearbetats av Linköpings kommun.
+    </footer>
+
+</body>
+</html>

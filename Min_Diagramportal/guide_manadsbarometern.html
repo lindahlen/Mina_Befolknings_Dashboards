@@ -86,7 +86,7 @@
         .boll-exempel { display: inline-flex; justify-content: center; align-items: center; width: 24px; height: 24px; border-radius: 50%; color: white; font-size: 16px; font-weight: 900; margin-right: 8px; -webkit-text-stroke: 1px white; }
 
         .highlight-box { background-color: #f8fbff; border-left: 4px solid var(--primary-blue); padding: 15px; margin: 20px 0; border-radius: 0 8px 8px 0; }
-        .highlight-box p { margin: 0; font-size: 1rem; }
+        .highlight-box p { margin: 0; font-size: 1.05rem; }
 
         /* Sidfot (Footer) */
         .site-footer {
@@ -102,16 +102,11 @@
 <body>
 
     <!-- Liten navigeringsmeny i toppen -->
-    <div class="top-nav-bar">
-        <a href="index.html">Startmeny</a>
-        <a href="dashboard_px.html">Kvartalsuppföljning</a>
-        <a href="manadsbarometern.html">Månadsbarometern</a>
-    </div>
 
     <div class="header-bar">
         <div class="logga-titel-container">
             <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" class="logotyp" onerror="this.style.display='none'">
-            <h1 class="header-title">Användarguide</h1>
+            <h1 class="header-title">Användarguide Månadsbarometern</h1>
         </div>
         <div class="header-nav">
             <a href="manadsbarometern.html" class="nav-btn">🔙 Tillbaka till Dashboard</a>
@@ -141,7 +136,7 @@
         <div class="guide-card">
             <h2>2. Förstå Måluppfyllelse och Färgkoder</h2>
             <p>I Rapportvyerna hjälper färgkoderna dig att snabbt utläsa om utvecklingen går åt rätt håll. Färgen sätts utifrån det aktuella utfallet jämfört med en fastställd <strong>prognos</strong>, eller jämfört med <strong>samma period föregående år</strong>. Du kan alltid hålla muspekaren över en statusboll för att se exakt vad som jämförs.</p>
-            
+
             <h4>Statusbollar vid diagrammen:</h4>
             <ul style="list-style: none; padding-left: 0;">
                 <li style="margin-bottom: 10px;"><span class="boll-exempel" style="background-color: var(--farg-bra);">↑</span> <strong>Grönt:</strong> Positiv utveckling. Indikatorn utvecklas bättre än prognos, eller utvecklas i rätt riktning historiskt (t.ex. att arbetslösheten sjunker).</li>
@@ -149,12 +144,26 @@
                 <li style="margin-bottom: 10px;"><span class="boll-exempel" style="background-color: var(--farg-neutral);">→</span> <strong>Grått:</strong> Neutralt. Utvecklingen ligger i nivå med prognos, eller har inte förändrats utanför de fastställda toleransnivåerna (tröskelvärdena).</li>
             </ul>
 
+            <h4>Hur beräknas pilarna?</h4>
+            <p>För att pilarna inte ska slå om till rött eller grönt för minsta lilla tillfälliga avvikelse, använder systemet en inbyggd logik i tre steg:</p>
+            <ol>
+                <li><strong>Jämförelse:</strong> Aktuellt utfall jämförs mot historik (eller prognos) och en differens räknas ut.</li>
+                <li><strong>Tröskelvärde (Marginal):</strong> Om förändringen ligger inom en förutbestämd felmarginal (som standard ±1 %) bedöms läget som oförändrat/stabilt, och bollen blir <strong>Grå (→)</strong>.</li>
+                <li><strong>Polaritet:</strong> Om förändringen passerar tröskelvärdet tittar systemet på om en uppgång är bra eller dålig. En ökning av <em>sysselsättning</em> (hög polaritet) ger en <strong>Grön pil (↑)</strong>. En ökning av <em>arbetslöshet</em> (låg polaritet) ger däremot en <strong>Röd pil (↑)</strong>, eftersom en uppgång är negativt.</li>
+            </ol>
+
+            <div class="highlight-box">
+                <p><strong>💡 Specialdiagram med flera linjer/staplar</strong><br>
+                Vissa diagram visar flera grupper samtidigt, t.ex. <em>Sektorutveckling</em> (privat/offentlig), <em>Arbetslöshet</em> (inrikes/utrikes födda) eller <em>Matchning</em>. En viktig grundregel är att <strong>pilen alltid bedömer helheten (Totalen)</strong>. <br><br>
+                Pilen talar om <em>VAD</em> som händer med det övergripande läget i Linköping, medan linjerna/staplarna i diagrammet hjälper dig att förstå <em>VARFÖR</em> det händer. Om den totala arbetslösheten ökar blir pilen röd, även om den skulle ha minskat för en av de specifika undergrupperna.</p>
+            </div>
+
             <h4>Barometern (Mätaren uppe till höger):</h4>
-            <p>Den halvcirkelformade barometern väger samman resultatet från de fyra underliggande diagrammen för den specifika rapportvyn.</p>
+            <p>Den halvcirkelformade barometern väger samman resultatet från de fyra underliggande diagrammen för den specifika rapportvyn genom ett poängsystem. En grön boll eller en grå boll (stabilt läge) ger 1 poäng vardera. En röd boll ger 0 poäng.</p>
             <ul>
-                <li>Pekar pilen på <strong>Rött</strong>, uppnås 1 eller 0 av delmålen. Läget bedöms som pressat/kritiskt.</li>
-                <li>Pekar pilen på <strong>Gult</strong>, uppnås hälften av målen (2 st). Läget bedöms som stabilt eller neutralt.</li>
-                <li>Pekar pilen på <strong>Grönt</strong>, uppnås 3 eller 4 av målen. Läget är positivt och starkt.</li>
+                <li>Pekar pilen på <strong>Rött (0–1 poäng):</strong> Endast 1 eller 0 av målen uppnås. Läget bedöms som pressat/kritiskt.</li>
+                <li>Pekar pilen på <strong>Gult (2 poäng):</strong> Hälften av målen (2 st) uppnås. Läget bedöms som stabilt eller neutralt.</li>
+                <li>Pekar pilen på <strong>Grönt (3–4 poäng):</strong> Majoriteten av målen uppnås. Läget är positivt och starkt.</li>
             </ul>
         </div>
 
