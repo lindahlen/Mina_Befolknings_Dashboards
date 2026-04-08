@@ -291,7 +291,7 @@
                 <div class="col-md-6 mb-4">
                     <div class="rapport-sektion" style="height: 100%; position:relative;">
                         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px;">
-                            <h5 style="margin:0; font-weight:bold; color: var(--primary-dark); font-size:1rem;">In- och utflyttning (R12)</h5>
+                            <h5 style="margin:0; font-weight:bold; color: var(--primary-dark); font-size:1rem;">Nettoflyttning (R12)</h5>
                             <div class="status-boll" id="status-graf-f1">?</div>
                         </div>
                         <div style="height: 250px; width: 100%;"><canvas id="canvas-f1"></canvas></div>
@@ -1009,6 +1009,14 @@
             let dInTot5 = dInTot.slice(-INSTALLNING_ANTAL_AR_STAPELDIAGRAM);
             let dUtTot5 = dUtTot.slice(-INSTALLNING_ANTAL_AR_STAPELDIAGRAM);
 
+            // --- NY LOGIK FÖR DIAGRAM 1 (Flyttningsnetto som staplar) ---
+            let dNettoTot5 = dInTot5.map((inVal, idx) => {
+                let utVal = dUtTot5[idx];
+                if (inVal !== null && utVal !== null) return inVal - utVal;
+                return null;
+            });
+            let netColors = dNettoTot5.map(v => v >= 0 ? '#009E73' : '#D55E00');
+
             let labels11 = allLabels.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
             let dInTot11 = dInTot.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
             let dUtTot11 = dUtTot.slice(-INSTALLNING_ANTAL_AR_LINJEDIAGRAM);
@@ -1055,10 +1063,9 @@
 
             fCharts[0] = new Chart(document.getElementById('canvas-f1').getContext('2d'), {
                 type: 'bar', data: { labels: labels5, datasets: [
-                    { label: 'Inflyttning', data: dInTot5, backgroundColor: '#009E73', borderWidth: 0 },
-                    { label: 'Utflyttning', data: dUtTot5, backgroundColor: '#D55E00', borderWidth: 0 }
+                    { label: 'Flyttningsnetto', data: dNettoTot5, backgroundColor: netColors, borderWidth: 0 }
                 ]},
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: true, position: 'bottom'} }, scales: { y: { beginAtZero: true } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false} }, scales: { y: { beginAtZero: true } } }
             });
 
             poangSumma += setNettoStatusBoll("status-graf-f2", dInTot11, dUtTot11);
@@ -1125,7 +1132,7 @@
                     fCharts[2].data.datasets = window.dsF3BaseGlobal;
                     fCharts[2].update();
                     document.getElementById("btn-back-f3").style.display = "none";
-                    document.getElementById("titel-f3").innerText = "Inrikes flyttningar (R12)";
+                    document.getElementById("titel-f3").innerText = "Inrikes flyttningar (Trend 11 år R12)";
                 }
             };
 

@@ -355,6 +355,19 @@
             "drilldown_typ": "linje"
         },
         {
+            "id": "Födelseöverskott",
+            "label": "Födelseöverskott",
+            "drilldown_komponenter": [
+                "Födda",
+                "Döda"
+            ],
+            "drilldown_farger": [
+                "Blå",
+                "Gul"
+            ],
+            "drilldown_typ": "stapel"
+        },
+        {
             "id": "Inflyttning",
             "label": "Inflyttning",
             "drilldown_komponenter": [
@@ -426,6 +439,21 @@
                 "Utvandring"
             ],
             "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Flyttningsnetto",
+            "label": "Flyttningsnetto",
+            "drilldown_komponenter": [
+                "Flyttningsnetto_eget_län",
+                "Flyttningsnetto_annat_län",
+                "Flyttningsnetto_utrikes"
+            ],
+            "drilldown_farger": [
+                "Blå",
+                "Orange",
+                "Grön"
+            ],
             "drilldown_typ": "stapel"
         },
         {
