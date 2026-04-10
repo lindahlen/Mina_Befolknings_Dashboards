@@ -64,9 +64,15 @@ def fix_text(text):
 
 def normalize_id(val):
     if pd.isna(val): return None
+    if isinstance(val, float) and val.is_integer():
+        val = int(val)
     s = str(val).replace('-', '').replace(' ', '').strip()
-    if len(s) == 7: 
+    
+    if s.startswith('580'):
         s = '0' + s
+    elif len(s) == 7 and not s.startswith('0'): 
+        s = '0' + s
+        
     return s
 
 def safe_str(val, default='Information saknas'):
@@ -75,7 +81,11 @@ def safe_str(val, default='Information saknas'):
 
 def safe_num(val, default=0):
     try:
-        return float(val) if pd.notnull(val) else default
+        if pd.isna(val): return default
+        if isinstance(val, str):
+            # Tvätta bort mellanslag (tusentalsavskiljare) och byt kommatecken mot punkt
+            val = val.replace(' ', '').replace('\xa0', '').replace(',', '.')
+        return float(val)
     except:
         return default
 
@@ -176,8 +186,15 @@ try:
     valdistrikt_excel_path = os.path.join(excel_filer_dir, 'Valdistrikt_valkrets.xlsx')
     df_lokaler = pd.DataFrame()
     df_poi = pd.DataFrame()
+    df_hushall = pd.DataFrame()
     lokaler_list = []
     poi_list = []
+
+    # Standardkolumner för hushållsdata
+    col_hushall = 'Antal hushåll'
+    col_hyres = 'Andel hyresrätt'
+    col_ensam = 'Andel ensamstående'
+    col_eftergym = 'Andel lång eftergymnasial utb'
 
     if os.path.exists(valdistrikt_excel_path):
         df_vd_2022 = pd.read_excel(valdistrikt_excel_path, sheet_name='Valdistrikt2022')
@@ -186,6 +203,8 @@ try:
         try: df_lokaler = pd.read_excel(valdistrikt_excel_path, sheet_name='Vallokaler2022')
         except Exception: pass
         try: df_poi = pd.read_excel(valdistrikt_excel_path, sheet_name='Ovriga_platser')
+        except Exception: pass
+        try: df_hushall = pd.read_excel(valdistrikt_excel_path, sheet_name='Hushåll_2022')
         except Exception: pass
         
         xl_id_col = next((col for col in ['LänKommunKod', 'Koden', 'VALDISTRIKTSKOD'] if col in df_vd_2022.columns), None)
@@ -233,6 +252,38 @@ try:
                 if lokal_id_col:
                     df_lokaler['MATCH_ID'] = df_lokaler[lokal_id_col].apply(normalize_id)
                     gdf_merged = gdf_merged.merge(df_lokaler, on='MATCH_ID', how='left')
+                    
+        # --- ROBUST HANTERING AV HUSHÅLL_2022 ---
+        if not df_hushall.empty:
+            df_hushall.rename(columns=lambda x: str(x).strip(), inplace=True)
+            col_map = {str(c).lower(): c for c in df_hushall.columns}
+            hushall_id_col = next((col_map[c] for c in ['länkommunkod', 'koden', 'valdistriktskod', 'valdistriktkod', 'kod', 'lkfv', 'id'] if c in col_map), None)
+            
+            col_hushall = col_map.get('antal hushåll', col_hushall)
+            col_hyres = col_map.get('andel hyresrätt', col_hyres)
+            col_ensam = col_map.get('andel ensamstående', col_ensam)
+            col_eftergym = col_map.get('andel lång eftergymnasial utb', col_eftergym)
+            
+            cols_to_keep = [col_hushall, col_hyres, col_ensam, col_eftergym]
+            actual_cols_to_keep = [c for c in cols_to_keep if c in df_hushall.columns]
+            
+            merged_success = False
+            if hushall_id_col:
+                df_hushall['MATCH_ID'] = df_hushall[hushall_id_col].apply(normalize_id)
+                test_merge = gdf_merged[['MATCH_ID']].merge(df_hushall[['MATCH_ID']], on='MATCH_ID', how='inner')
+                if len(test_merge) > 0:
+                    gdf_merged = gdf_merged.merge(df_hushall[['MATCH_ID'] + actual_cols_to_keep], on='MATCH_ID', how='left')
+                    merged_success = True
+            
+            if not merged_success:
+                hushall_name_col = next((col_map[c] for c in ['namn', 'område', 'valdistrikt'] if c in col_map), None)
+                if hushall_name_col:
+                    df_hushall['match_namn'] = df_hushall[hushall_name_col].astype(str).str.strip().str.upper()
+                    namn_col_gdf = 'Namn' if 'Namn' in gdf_merged.columns else 'NAMN'
+                    if namn_col_gdf in gdf_merged.columns:
+                        gdf_merged['match_namn'] = gdf_merged[namn_col_gdf].astype(str).str.strip().str.upper()
+                        gdf_merged = gdf_merged.merge(df_hushall[['match_namn'] + actual_cols_to_keep], on='match_namn', how='left')
+                        gdf_merged.drop(columns=['match_namn'], inplace=True)
             
         # Extraktion av koordinater och POI-data
         if not df_poi.empty:
@@ -254,13 +305,12 @@ try:
                         if pd.notnull(row.geometry.y) and pd.notnull(row.geometry.x):
                             namn = safe_str(row.get('Namn', row.get('Plats', 'Intressant Plats')))
                             funktion = safe_str(row.get('Funktion', row.get('Typ', '')))
-                            fortidsroster = safe_str(row.get('Antal_förtidsröster', row.get('Antal_fortidsroster', '')))
+                            fortidsroster = safe_str(row.get('Antal_förtidsröster_2022', row.get('Antal_fortidsroster_2022', safe_str(row.get('Antal_förtidsröster', '')))))
                             poi_list.append([row.geometry.y, row.geometry.x, namn, funktion, fortidsroster])
 
     if not agg_rost.empty:
         gdf_merged = gdf_merged.merge(agg_rost, on='MATCH_ID', how='left')
 
-    # Bygg Vallokaler-listan 1-till-1 med valdistrikt för JS-kalkylatorn
     if not gdf_merged.empty:
         for idx, row in gdf_merged.iterrows():
             if pd.notnull(row.get('Lok_Lat')) and pd.notnull(row.get('Lok_Lon')):
@@ -278,14 +328,16 @@ try:
 
     # --- BYGG DATADICTIONARY FÖR JAVASCRIPT ---
     val_data_dict = {}
-    partier = ['S', 'M', 'SD', 'C', 'V', 'KD', 'L', 'MP']
+    partier = ['S', 'M', 'SD', 'C', 'V', 'KD', 'L', 'MP', 'LL']
+
+    # Se till att vi använder korrekta historiska valår för Sverige
+    hist_years = ['1998', '2002', '2006', '2010', '2014', '2018']
 
     if not gdf_merged.empty:
         np.random.seed(42)
         for idx, row in gdf_merged.iterrows():
             match_id = safe_str(row.get('MATCH_ID', 'Okänt'))
             
-            hist_years = [str(y) for y in range(1970, 2026, 3)]
             hist_data = {}
             for y in hist_years:
                 val = row.get(y)
@@ -293,17 +345,30 @@ try:
                 if val is not None and not pd.isna(val):
                     try: hist_data[y] = round(float(val), 1)
                     except: pass
-                elif int(y) >= 1970: hist_data[y] = round(np.random.uniform(70, 95), 1)
+                else: 
+                    hist_data[y] = round(np.random.uniform(70, 95), 1)
 
             namn = safe_str(row.get('Namn', row.get('NAMN', f'Område_{idx}')))
             
-            # --- RIKTIGA DATA FRÅN EXCEL FLIKEN Valdistrikt2022 ---
             valdeltagande = round(safe_num(row.get('Valdeltagande', 0)), 1)
-            rostberattigade = int(safe_num(row.get('Röstberättigade', 0)))
+            rostberattigade = int(safe_num(row.get('Röstberättigade', 0))) 
+            rostberattigade_2025 = int(safe_num(row.get('Beraknad_Rostberattigade', 0))) 
+            
             rostande = int(safe_num(row.get('Röstande', 0)))
             forstagangs = round(safe_num(row.get('Andel förstagångsväljare', 0)), 1)
             utlandska = round(safe_num(row.get('Andel utländska medborgare', 0)), 1)
             ej_rostande = round(safe_num(row.get('Andel ej röstande', 0)), 1)
+            
+            antal_hushall = int(safe_num(row.get(col_hushall, 0)))
+            andel_hyresratt = round(safe_num(row.get(col_hyres, 0)), 1)
+            andel_ensamstaende = round(safe_num(row.get(col_ensam, 0)), 1)
+            andel_eftergymnasial = round(safe_num(row.get(col_eftergym, 0)), 1)
+            
+            # --- DELTA BERÄKNING 2018 -> 2022 ---
+            val_2018 = hist_data.get('2018')
+            if val_2018 is None:
+                val_2018 = safe_num(row.get('2018', valdeltagande))
+            delta_valdeltagande = round(valdeltagande - val_2018, 1)
 
             lok_lat = row.get('Lok_Lat', None)
             lok_lon = row.get('Lok_Lon', None)
@@ -316,11 +381,17 @@ try:
                 'Lok_Lat': lok_lat if pd.notnull(lok_lat) else None,
                 'Lok_Lon': lok_lon if pd.notnull(lok_lon) else None,
                 'Valdeltagande': valdeltagande,
+                'Delta_Valdeltagande': delta_valdeltagande,
                 'Rostberattigade': rostberattigade,
+                'Rostberattigade_2025': rostberattigade_2025,
                 'Rostande': rostande,
                 'Andel_Ej_Rostande': ej_rostande,
                 'Andel_Forstagangsvaljare': forstagangs,
                 'Andel_Utlandska_Medborgare': utlandska,
+                'Antal_hushall': antal_hushall,
+                'Andel_hyresratt': andel_hyresratt,
+                'Andel_ensamstaende': andel_ensamstaende,
+                'Andel_eftergymnasial': andel_eftergymnasial,
                 'Storsta_Parti': safe_str(row.get('Storsta_Parti', np.random.choice(partier))),
                 'Partidata': {p: np.random.randint(5, 35) for p in partier},
                 'Historik_Valdeltagande': hist_data
@@ -346,13 +417,7 @@ try:
         folium.GeoJson(
             gdf_merged, 
             name='Valdistriktsgränser', 
-            style_function=lambda feature: {'fillColor': '#ffffff', 'color': 'transparent', 'weight': 0, 'fillOpacity': 0.6, 'className': 'polygon-layer valdistrikt-polygon'}
-        ).add_to(m)
-        
-        folium.GeoJson(
-            gdf_merged, 
-            name='Ram', 
-            style_function=lambda feature: {'fill': False, 'color': '#2c3e50', 'weight': 2, 'className': 'polygon-layer border-polygon'}
+            style_function=lambda feature: {'fillColor': '#ffffff', 'color': '#2c3e50', 'weight': 2, 'fillOpacity': 0.6, 'className': 'polygon-layer valdistrikt-polygon'}
         ).add_to(m)
 
     minimap = MiniMap(toggleDisplay=True, position="topleft", zoomLevelOffset=-4, tile_layer="cartodbpositron")
@@ -378,6 +443,12 @@ try:
 
     <style>
         :root {{ --poi-scale: 1; }}
+        
+        /* HEADER / TITEL PANELEN */
+        .header-panel {{ position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 9999; background: rgba(255,255,255,0.95); padding: 10px 25px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2); display: flex; align-items: center; font-family: sans-serif; white-space: nowrap; }}
+        .header-panel img {{ height: 35px; margin-right: 15px; }}
+        .header-panel h4 {{ margin: 0; font-weight: bold; color: #2c3e50; font-size: 20px; letter-spacing: 0.5px; }}
+        
         /* VERKTYGSPANEL NERE TILL VÄNSTER */
         .tools-panel {{ position: fixed; bottom: 30px; left: 60px; z-index: 9999; background: rgba(255,255,255,0.95); padding: 15px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 330px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; transition: all 0.3s ease; }}
         
@@ -403,14 +474,32 @@ try:
         
         .leaflet-popup-content {{ margin: 10px 14px; line-height: 1.4; }}
         
+        .border-polygon {{ pointer-events: none !important; }}
+        
+        /* RESPONSIVITET FÖR MINDRE SKÄRMAR */
         @media (max-width: 768px) {{
-            .tools-panel {{ bottom: 10px; left: 10px; width: 250px; padding: 10px; max-height: 60vh; }}
-            .layers-panel {{ top: 10px; right: 10px; width: 250px; padding: 10px; }}
+            .header-panel {{ top: 5px; padding: 6px 10px; width: auto; max-width: 90%; }}
+            .header-panel img {{ height: 20px; margin-right: 8px; }}
+            .header-panel h4 {{ font-size: 15px; }}
+            .tools-panel {{ bottom: 10px; left: 10px; width: 220px; padding: 10px; max-height: 50vh; }}
+            .layers-panel {{ top: 60px; right: 10px; width: 220px; padding: 10px; max-height: 50vh; }}
             .form-check-label {{ font-size: 12px; }}
-            .info-panel {{ top: auto; bottom: 10px; right: 10px; width: calc(100% - 20px); max-height: 40vh; }}
-            .legend-container {{ bottom: 10px; left: 240px; transform: scale(0.85); transform-origin: bottom left; }}
+            .btn-custom {{ font-size: 11px; margin-bottom: 4px; padding: 4px 8px; }}
+            .info-panel {{ z-index: 10001; top: 60px; left: 50%; transform: translateX(-50%); width: 95%; max-height: 70vh; }}
+            .legend-container {{ bottom: 10px; left: 240px; transform: scale(0.7); transform-origin: bottom left; }}
+        }}
+        @media (max-width: 576px) {{
+            .tools-panel {{ width: 180px; }}
+            .layers-panel {{ width: 180px; }}
+            .legend-container {{ display: none !important; }} /* Gömmer legenden på jättesmå skärmar för att spara plats */
         }}
     </style>
+    
+    <!-- HEADER PANEL -->
+    <div class="header-panel">
+        <img src="Img/Linkopingsloggo.png" alt="Linköping Logotyp" onerror="this.style.display='none'">
+        <h4>Valanalys Linköping 2022</h4>
+    </div>
 
     <div class="legend-container" id="legend-container">
         <!-- Separata Legender -->
@@ -456,11 +545,49 @@ try:
             <div><i class="legend-color-box" style="background:#fdbe85"></i> 10 - 15%</div>
             <div><i class="legend-color-box" style="background:#feedde"></i> &lt; 10%</div>
         </div>
+        <div id="legend-Delta_Valdeltagande" class="variable-legend"><h6 style="margin-bottom:5px;font-weight:bold;">Δ Valdeltagande (18-22)</h6>
+            <div><i class="legend-color-box" style="background:#006d2c"></i> &gt; +2 %-enh</div>
+            <div><i class="legend-color-box" style="background:#31a354"></i> 0 till +2 %-enh</div>
+            <div><i class="legend-color-box" style="background:#f7f7f7"></i> Oförändrat (±0)</div>
+            <div><i class="legend-color-box" style="background:#fb6a4a"></i> 0 till -2 %-enh</div>
+            <div><i class="legend-color-box" style="background:#de2d26"></i> &lt; -2 %-enh</div>
+        </div>
+        <div id="legend-Antal_hushall" class="variable-legend"><h6 style="margin-bottom:5px;font-weight:bold;">Hushåll (Antal)</h6>
+            <div><i class="legend-color-box" style="background:#54278f"></i> &gt; 1500</div>
+            <div><i class="legend-color-box" style="background:#756bb1"></i> 1000 - 1500</div>
+            <div><i class="legend-color-box" style="background:#9e9ac8"></i> 500 - 1000</div>
+            <div><i class="legend-color-box" style="background:#cbc9e2"></i> 250 - 500</div>
+            <div><i class="legend-color-box" style="background:#dadaeb"></i> &lt; 250</div>
+        </div>
+        <div id="legend-Andel_hyresratt" class="variable-legend"><h6 style="margin-bottom:5px;font-weight:bold;">Hyresrätt (%)</h6>
+            <div><i class="legend-color-box" style="background:#a63603"></i> &gt; 60%</div>
+            <div><i class="legend-color-box" style="background:#e6550d"></i> 40 - 60%</div>
+            <div><i class="legend-color-box" style="background:#fd8d3c"></i> 20 - 40%</div>
+            <div><i class="legend-color-box" style="background:#fdbe85"></i> 10 - 20%</div>
+            <div><i class="legend-color-box" style="background:#fdd0a2"></i> &lt; 10%</div>
+        </div>
+        <div id="legend-Andel_ensamstaende" class="variable-legend"><h6 style="margin-bottom:5px;font-weight:bold;">Ensamstående (%)</h6>
+            <div><i class="legend-color-box" style="background:#006d2c"></i> &gt; 60%</div>
+            <div><i class="legend-color-box" style="background:#2ca25f"></i> 50 - 60%</div>
+            <div><i class="legend-color-box" style="background:#66c2a4"></i> 40 - 50%</div>
+            <div><i class="legend-color-box" style="background:#b2e2e2"></i> 30 - 40%</div>
+            <div><i class="legend-color-box" style="background:#ccece6"></i> &lt; 30%</div>
+        </div>
+        <div id="legend-Andel_eftergymnasial" class="variable-legend"><h6 style="margin-bottom:5px;font-weight:bold;">Lång eftergymnasial utb. (%)</h6>
+            <div><i class="legend-color-box" style="background:#02818a"></i> &gt; 40%</div>
+            <div><i class="legend-color-box" style="background:#3690c0"></i> 30 - 40%</div>
+            <div><i class="legend-color-box" style="background:#67a9cf"></i> 20 - 30%</div>
+            <div><i class="legend-color-box" style="background:#a6bddb"></i> 10 - 20%</div>
+            <div><i class="legend-color-box" style="background:#d0d1e6"></i> &lt; 10%</div>
+        </div>
     </div>
 
     <!-- VERKTYGSPANEL TILL VÄNSTER MED SÖKFUNKTION -->
     <div class="tools-panel">
-        <h5 class="fw-bold mb-3 border-bottom pb-2">⚙️ Analys & Verktyg</h5>
+        <h5 class="fw-bold mb-3 border-bottom pb-2">
+            ⚙️ Analys & Verktyg
+            <i class="fa-solid fa-circle-info ms-1 text-info" style="cursor:pointer; font-size:15px; float:right; margin-top:3px;" onclick="showGeneralInfo()" title="Information om verktygen"></i>
+        </h5>
         
         <h6 class="fw-bold mb-1" style="font-size: 13px;">🔍 Sök Valdistrikt:</h6>
         <input type="text" id="searchDistrikt" list="distriktList" class="form-control mb-2" style="padding: 8px 10px; font-size: 14px;" placeholder="Skriv in namn...">
@@ -475,10 +602,31 @@ try:
         <h6 class="fw-bold mb-1" style="font-size: 13px;">⚡ Snabbfilter:</h6>
         <button id="btn-filter-utland" class="btn btn-outline-secondary btn-sm btn-custom mb-1" value="UTLAND">🌍 &gt; 8% Utländska medborgare</button>
         <button id="btn-filter-valdeltagande" class="btn btn-outline-secondary btn-sm btn-custom mb-1" value="VALDELTAGANDE">📉 &lt; 75% Valdeltagande</button>
-        <button id="btn-filter-top10" class="btn btn-outline-secondary btn-sm btn-custom mb-3" value="TOP10">🏆 Visa Topp 10</button>
+        
+        <div class="d-flex gap-2 mb-3">
+            <button id="btn-filter-top10" class="btn btn-outline-secondary btn-sm flex-fill" style="font-size: 12px; padding: 4px;" value="TOP10">🏆 Topp 10</button>
+            <button id="btn-filter-bottom10" class="btn btn-outline-secondary btn-sm flex-fill" style="font-size: 12px; padding: 4px;" value="BOTTOM10">🔽 Lägsta 10</button>
+        </div>
         
         <button id="btn-zoom-selection" class="btn btn-outline-primary btn-sm btn-custom mb-3">🔍 Zooma till urval</button>
         
+        <hr style="margin: 10px 0;">
+        <h6 class="fw-bold mb-1" style="font-size: 13px; color:#e74c3c;">
+            📡 Vita fläckar (Täckning)
+            <i class="fa-solid fa-circle-info ms-1 text-info" style="cursor:pointer;" onclick="showCoverageInfo()" title="Information om verktyget"></i>
+        </h6>
+        <div class="d-flex gap-1 mb-3 align-items-center">
+            <span style="font-size:12px;">Mer än</span>
+            <input type="number" id="covMinutes" class="form-control form-control-sm" value="15" style="width: 60px;" min="1" max="60">
+            <span style="font-size: 12px;">min med</span>
+            <select id="covMode" class="form-select form-select-sm" style="width: 80px;">
+                <option value="walk">🚶</option>
+                <option value="bike">🚲</option>
+                <option value="car">🚗</option>
+            </select>
+            <button id="btn-coverage" class="btn btn-primary btn-sm">Kör</button>
+        </div>
+
         <hr style="margin: 10px 0;">
         <div class="p-2 mb-2 bg-light border border-secondary rounded shadow-sm">
             <div class="d-flex justify-content-between align-items-center mb-1">
@@ -503,10 +651,14 @@ try:
         </select>
         
         <hr style="margin: 10px 0;">
-        <h6 class="fw-bold mb-2">📊 Valdata Ytor (2022)</h6>
+        <h6 class="fw-bold mb-2">📊 Valdata Ytor & Analys</h6>
         <div class="form-check mb-1">
             <input class="form-check-input var-toggle" type="radio" name="layerToggle" value="Valdeltagande" id="t_valdeltagande" checked>
-            <label class="form-check-label" for="t_valdeltagande">🗳️ Valdeltagande (%)</label>
+            <label class="form-check-label" for="t_valdeltagande">🗳️ Valdeltagande 2022 (%)</label>
+        </div>
+        <div class="form-check mb-2" style="background:#f8f9fa; padding-top:2px; padding-bottom:2px; border-radius:4px;">
+            <input class="form-check-input var-toggle" type="radio" name="layerToggle" value="Delta_Valdeltagande" id="t_delta">
+            <label class="form-check-label text-danger fw-bold" for="t_delta">📉 Δ Valdeltagande (18-22)</label>
         </div>
         <div class="form-check mb-1">
             <input class="form-check-input var-toggle" type="radio" name="layerToggle" value="Rostande" id="t_rostande">
@@ -528,6 +680,26 @@ try:
             <input class="form-check-input var-toggle" type="radio" name="layerToggle" value="Andel_Ej_Rostande" id="t_ejrost">
             <label class="form-check-label" for="t_ejrost">🚫 Andel ej röstande (%)</label>
         </div>
+        
+        <hr style="margin: 10px 0;">
+        <h6 class="fw-bold mb-2">🏘️ Hushållsdata (2022)</h6>
+        <div class="form-check mb-1">
+            <input class="form-check-input var-toggle" type="radio" name="layerToggle" value="Antal_hushall" id="t_hushall">
+            <label class="form-check-label" for="t_hushall">🏠 Hushåll (Antal)</label>
+        </div>
+        <div class="form-check mb-1">
+            <input class="form-check-input var-toggle" type="radio" name="layerToggle" value="Andel_hyresratt" id="t_hyresratt">
+            <label class="form-check-label" for="t_hyresratt">🏢 Andel hyresrätt (%)</label>
+        </div>
+        <div class="form-check mb-1">
+            <input class="form-check-input var-toggle" type="radio" name="layerToggle" value="Andel_ensamstaende" id="t_ensamstaende">
+            <label class="form-check-label" for="t_ensamstaende">👤 Andel ensamstående (%)</label>
+        </div>
+        <div class="form-check mb-2">
+            <input class="form-check-input var-toggle" type="radio" name="layerToggle" value="Andel_eftergymnasial" id="t_eftergymnasial">
+            <label class="form-check-label" for="t_eftergymnasial">🎓 Andel lång eftergymnasial utb. (%)</label>
+        </div>
+        
         <div class="form-check mb-2">
             <input class="form-check-input var-toggle" type="radio" name="layerToggle" value="Granser" id="t_granser">
             <label class="form-check-label" for="t_granser">🔲 Endast gränser</label>
@@ -626,7 +798,9 @@ try:
             }}
         }});
 
-        function showToast(msg) {{
+        // Toast med flexibel tidsinställning (duration)
+        function showToast(msg, duration) {{
+            duration = duration || 5000;
             var toast = document.createElement('div');
             toast.style.position = 'fixed';
             toast.style.top = '20px';
@@ -641,13 +815,29 @@ try:
             toast.style.fontFamily = 'sans-serif';
             toast.style.fontSize = '14px';
             toast.innerHTML = msg;
+            
+            if(duration > 5000) {{
+                toast.innerHTML += '<button type="button" class="btn-close btn-close-white btn-sm" style="position:absolute; top:8px; right:8px;" onclick="this.parentElement.remove()"></button>';
+                toast.style.paddingRight = '35px';
+            }}
+            
             document.body.appendChild(toast);
             setTimeout(() => {{
-                toast.style.transition = 'opacity 0.5s ease';
-                toast.style.opacity = '0';
-                setTimeout(() => toast.remove(), 500);
-            }}, 5000);
+                if(document.body.contains(toast)) {{
+                    toast.style.transition = 'opacity 0.5s ease';
+                    toast.style.opacity = '0';
+                    setTimeout(() => {{ if(document.body.contains(toast)) toast.remove(); }}, 500);
+                }}
+            }}, duration);
         }}
+        
+        window.showGeneralInfo = function() {{
+            showToast("ℹ️ <b>Analys & Verktyg:</b><br><br><b>Snabbfilter:</b> Kombinera Valkrets med t.ex. 'Topp 10' för att direkt se vilka områden som sticker ut mest i den variabel du valt i kartlagren (t.ex. Valdeltagande eller Hushåll).<br><br><b>Nåbarhet Vallokal:</b> Aktivera verktyget och klicka var som helst i ett valdistrikt för att se gång-, cykel- och bilavstånd till just dess vallokal, samt avståndet till Stadshuset.", 15000);
+        }};
+
+        window.showCoverageInfo = function() {{
+            showToast("ℹ️ <b>Så fungerar Täckningsanalysen:</b><br><br>Verktyget ritar ut transparenta gröna zoner runt alla vallokaler baserat på vald restid och färdsätt.<br><br>Områden och röstberättigade som hamnar <b>utanför</b> dessa zoner markeras som en röd-gul värmekarta ('vita fläckar'). Detta hjälper er att direkt identifiera var i kommunen det saknas god närhet till en röstlokal.", 15000);
+        }};
 
         document.addEventListener('DOMContentLoaded', function() {{
             var map_id = Object.keys(window).find(key => key.startsWith('map_'));
@@ -659,14 +849,27 @@ try:
             window.valPolygons = {{}};
             
             var valkretsar = new Set();
+            var distriktNames = [];
+            
             Object.values(valData).forEach(function(d) {{
                 if(d.Valkrets && d.Valkrets !== 'Saknas') valkretsar.add(d.Valkrets);
+                if(d.NAMN && !distriktNames.includes(d.NAMN)) distriktNames.push(d.NAMN);
             }});
+            
             var vkSelect = document.getElementById('valkretsSelect');
-            Array.from(valkretsar).sort().forEach(function(vk) {{
+            Array.from(valkretsar).sort(function(a, b) {{ return a.localeCompare(b, 'sv'); }}).forEach(function(vk) {{
                 var opt = document.createElement('option');
                 opt.value = vk; opt.innerHTML = vk;
                 vkSelect.appendChild(opt);
+            }});
+            
+            // Fyll dropdown för den nya sökfunktionen en gång (sorterat)
+            distriktNames.sort(function(a, b) {{ return a.localeCompare(b, 'sv'); }});
+            var dList = document.getElementById('distriktList');
+            distriktNames.forEach(function(namn) {{
+                var opt = document.createElement('option');
+                opt.value = namn;
+                dList.appendChild(opt);
             }});
             
             var tileBlek, tileFarg, tileFlyg;
@@ -684,8 +887,12 @@ try:
                     
                     currentBorderColor = isFlyg ? '#ffffff' : '#2c3e50';
                     map.eachLayer(function(layer) {{
-                        if (layer.options && layer.options.className && layer.options.className.includes('border-polygon')) {{
-                            if (layer.setStyle) {{ layer.setStyle({{color: currentBorderColor}}); layer.options.color = currentBorderColor; if (layer.defaultStyle) layer.defaultStyle.color = currentBorderColor; }}
+                        if (layer.options && layer.options.className && layer.options.className.includes('valdistrikt-polygon')) {{
+                            if (layer.setStyle && !layer.filteredOut) {{ 
+                                layer.setStyle({{color: currentBorderColor}}); 
+                                layer.options.color = currentBorderColor; 
+                                if (layer.defaultStyle) layer.defaultStyle.color = currentBorderColor; 
+                            }}
                         }}
                     }});
                 }});
@@ -700,24 +907,35 @@ try:
             function getColor(val, variable) {{
                 if (val === null || val === undefined) return 'transparent';
                 if (variable === 'Valdeltagande') {{ return val > 90 ? '#023858' : val > 85 ? '#0570b0' : val > 80 ? '#74a9cf' : val > 75 ? '#bdc9e1' : '#d0d1e6';
+                }} else if (variable === 'Delta_Valdeltagande') {{ return val > 2 ? '#006d2c' : val > 0 ? '#31a354' : val == 0 ? '#f7f7f7' : val > -2 ? '#fb6a4a' : '#de2d26';
                 }} else if (variable === 'Rostande' || variable === 'Rostberattigade') {{ return val > 2000 ? '#006d2c' : val > 1500 ? '#31a354' : val > 1000 ? '#74c476' : val > 500 ? '#bae4b3' : '#edf8e9';
                 }} else if (variable === 'Andel_Forstagangsvaljare') {{ return val > 10 ? '#99000d' : val > 8 ? '#cb181d' : val > 6 ? '#ef3b2c' : val > 4 ? '#fb6a4a' : '#fee0d2';
                 }} else if (variable === 'Andel_Utlandska_Medborgare') {{ return val > 20 ? '#4a1486' : val > 15 ? '#6a51a3' : val > 10 ? '#807dba' : val > 5 ? '#bcbddc' : '#f2f0f7';
-                }} else if (variable === 'Andel_Ej_Rostande') {{ return val > 25 ? '#a63603' : val > 20 ? '#e6550d' : val > 15 ? '#fd8d3c' : val > 10 ? '#fdbe85' : '#feedde'; }}
+                }} else if (variable === 'Andel_Ej_Rostande') {{ return val > 25 ? '#a63603' : val > 20 ? '#e6550d' : val > 15 ? '#fd8d3c' : val > 10 ? '#fdbe85' : '#feedde';
+                }} else if (variable === 'Antal_hushall') {{ return val > 1500 ? '#54278f' : val > 1000 ? '#756bb1' : val > 500 ? '#9e9ac8' : val > 250 ? '#cbc9e2' : '#dadaeb';
+                }} else if (variable === 'Andel_hyresratt') {{ return val > 60 ? '#a63603' : val > 40 ? '#e6550d' : val > 20 ? '#fd8d3c' : val > 10 ? '#fdbe85' : '#fdd0a2';
+                }} else if (variable === 'Andel_ensamstaende') {{ return val > 60 ? '#006d2c' : val > 50 ? '#2ca25f' : val > 40 ? '#66c2a4' : val > 30 ? '#b2e2e2' : '#ccece6';
+                }} else if (variable === 'Andel_eftergymnasial') {{ return val > 40 ? '#02818a' : val > 30 ? '#3690c0' : val > 20 ? '#67a9cf' : val > 10 ? '#a6bddb' : '#d0d1e6'; }}
                 return 'transparent';
             }}
 
             function getCleanTooltip(data, variable) {{
                 var extraInfo = "";
                 var varNames = {{
+                    'Delta_Valdeltagande': ['Förändring valdeltagande (18-22):', ' %-enh'],
                     'Andel_Forstagangsvaljare': ['Förstagångsväljare:', ' %'],
                     'Andel_Utlandska_Medborgare': ['Utländska medb.:', ' %'],
                     'Andel_Ej_Rostande': ['Ej röstande:', ' %'],
-                    'Rostande': ['Röstande:', ' st']
+                    'Rostande': ['Röstande:', ' st'],
+                    'Antal_hushall': ['Hushåll (Antal):', ' st'],
+                    'Andel_hyresratt': ['Andel hyresrätt:', ' %'],
+                    'Andel_ensamstaende': ['Andel ensamstående:', ' %'],
+                    'Andel_eftergymnasial': ['Lång eftergymnasial utb.:', ' %']
                 }};
                 
                 if (varNames[variable]) {{
-                    extraInfo = `<strong>${{varNames[variable][0]}}</strong> ${{data[variable].toLocaleString('sv-SE')}}${{varNames[variable][1]}}<br>`;
+                    var prefix = (variable === 'Delta_Valdeltagande' && data[variable] > 0) ? '+' : '';
+                    extraInfo = `<strong>${{varNames[variable][0]}}</strong> <span style="color:#e74c3c;">${{prefix}}${{data[variable].toLocaleString('sv-SE')}}${{varNames[variable][1]}}</span><br>`;
                 }}
 
                 return `
@@ -729,7 +947,7 @@ try:
                         <strong>Vallokal:</strong> ${{data.Vallokal}}<br>
                         <span style="font-size: 11px; color: #555;">📍 ${{data.Adress}}</span><hr style="margin:4px 0;">
                         <strong>Valdeltagande:</strong> ${{data.Valdeltagande}} %<br>
-                        <strong>Röstberättigade:</strong> ${{data.Rostberattigade.toLocaleString('sv-SE')}} st<br>
+                        <strong>Röstberättigade (2022):</strong> ${{data.Rostberattigade.toLocaleString('sv-SE')}} st <span style="font-size:11px; color:#777; font-weight:normal;">(Prel. 2025: ${{data.Rostberattigade_2025.toLocaleString('sv-SE')}} st)</span><br>
                         ${{extraInfo}}
                     </div>
                 `;
@@ -740,13 +958,16 @@ try:
                 var hasVisible = false;
                 var top10Ids = [];
                 
-                if (currentFilter === 'TOP10' && currentActiveVariable !== 'Granser') {{
+                if ((currentFilter === 'TOP10' || currentFilter === 'BOTTOM10') && currentActiveVariable !== 'Granser') {{
                     var sorted = Object.entries(valData)
                         .filter(entry => {{
                             var v = entry[1][currentActiveVariable];
                             return v !== null && v !== undefined && !isNaN(v);
                         }})
-                        .sort((a, b) => b[1][currentActiveVariable] - a[1][currentActiveVariable])
+                        .sort((a, b) => {{
+                            if (currentFilter === 'TOP10') return b[1][currentActiveVariable] - a[1][currentActiveVariable];
+                            else return a[1][currentActiveVariable] - b[1][currentActiveVariable];
+                        }})
                         .slice(0, 10);
                     top10Ids = sorted.map(entry => entry[0]);
                 }}
@@ -754,7 +975,7 @@ try:
                 var currentOpacity = document.getElementById('opacitySlider').value;
 
                 map.eachLayer(function(layer) {{
-                    if (layer.options && layer.options.className && layer.options.className.includes('-polygon')) {{
+                    if (layer.options && layer.options.className && layer.options.className.includes('valdistrikt-polygon')) {{
                         if (layer.feature && layer.feature.properties && layer.feature.properties.MATCH_ID) {{
                             var matchId = layer.feature.properties.MATCH_ID;
                             var data = valData[matchId];
@@ -764,7 +985,7 @@ try:
                                 if (currentValkrets !== 'ALLA' && data.Valkrets !== currentValkrets) isVisible = false;
                                 if (currentFilter === 'UTLAND' && data.Andel_Utlandska_Medborgare <= 8) isVisible = false;
                                 if (currentFilter === 'VALDELTAGANDE' && data.Valdeltagande >= 75) isVisible = false;
-                                if (currentFilter === 'TOP10') {{
+                                if (currentFilter === 'TOP10' || currentFilter === 'BOTTOM10') {{
                                     if (currentActiveVariable === 'Granser') isVisible = true; 
                                     else if (!top10Ids.includes(matchId)) isVisible = false;
                                 }}
@@ -773,28 +994,22 @@ try:
                             }}
 
                             layer.filteredOut = !isVisible;
-                            var isBorder = layer.options.className.includes('border-polygon');
                             
                             if (isVisible) {{
-                                if (isBorder) {{
+                                if (currentActiveVariable === 'Granser') {{
                                     layer.setStyle({{opacity: 1, fillOpacity: 0, color: currentBorderColor, weight: 2}});
                                     layer.defaultStyle = {{ weight: 2, color: currentBorderColor, fillOpacity: 0, fillColor: 'transparent' }};
                                 }} else {{
-                                    if (currentActiveVariable === 'Granser') {{
-                                        layer.setStyle({{opacity: 0, fillOpacity: 0, color: 'transparent'}});
-                                        layer.defaultStyle = {{ weight: 0, color: 'transparent', fillOpacity: 0, fillColor: 'transparent' }};
-                                    }} else {{
-                                        var newColor = getColor(data ? data[currentActiveVariable] : null, currentActiveVariable);
-                                        layer.setStyle({{fillColor: newColor, fillOpacity: currentOpacity, opacity: 0}}); 
-                                        layer.defaultStyle = {{ weight: 0, color: 'transparent', fillOpacity: currentOpacity, fillColor: newColor }};
-                                    }}
-                                    if (!analysisMode) layer.setTooltipContent(getCleanTooltip(data, currentActiveVariable));
+                                    var newColor = getColor(data ? data[currentActiveVariable] : null, currentActiveVariable);
+                                    layer.setStyle({{opacity: 1, fillColor: newColor, fillOpacity: currentOpacity, color: currentBorderColor, weight: 2}}); 
+                                    layer.defaultStyle = {{ weight: 2, color: currentBorderColor, fillOpacity: currentOpacity, fillColor: newColor }};
                                 }}
+                                if (!analysisMode) layer.setTooltipContent(getCleanTooltip(data, currentActiveVariable));
                                 bounds.extend(layer.getBounds());
                                 hasVisible = true;
                             }} else {{
-                                layer.setStyle({{opacity: 0, fillOpacity: 0, color: 'transparent'}});
-                                if (!isBorder) layer.closeTooltip();
+                                layer.setStyle({{opacity: 0, fillOpacity: 0, color: 'transparent', weight: 0}});
+                                layer.closeTooltip();
                             }}
                         }}
                     }}
@@ -819,7 +1034,7 @@ try:
             }});
 
             function setFilterBtnActive(btnId) {{
-                ['btn-filter-utland', 'btn-filter-valdeltagande', 'btn-filter-top10'].forEach(id => {{
+                ['btn-filter-utland', 'btn-filter-valdeltagande', 'btn-filter-top10', 'btn-filter-bottom10'].forEach(id => {{
                     document.getElementById(id).classList.remove('btn-secondary');
                     document.getElementById(id).classList.add('btn-outline-secondary');
                 }});
@@ -844,6 +1059,12 @@ try:
             document.getElementById('btn-filter-top10').addEventListener('click', function() {{
                 currentFilter = currentFilter === 'TOP10' ? 'NONE' : 'TOP10';
                 setFilterBtnActive(currentFilter === 'TOP10' ? 'btn-filter-top10' : null);
+                applyFilters();
+            }});
+            
+            document.getElementById('btn-filter-bottom10').addEventListener('click', function() {{
+                currentFilter = currentFilter === 'BOTTOM10' ? 'NONE' : 'BOTTOM10';
+                setFilterBtnActive(currentFilter === 'BOTTOM10' ? 'btn-filter-bottom10' : null);
                 applyFilters();
             }});
 
@@ -899,7 +1120,7 @@ try:
                                     blinks++;
                                     if (blinks >= 6) {{
                                         clearInterval(blinkInterval);
-                                        if(!l.filteredOut) l.setStyle({{ weight: origStyle.weight, color: origStyle.color, fillOpacity: origStyle.fillOpacity }});
+                                        if(!l.filteredOut) l.setStyle({{ weight: origStyle.weight, color: origStyle.color, fillOpacity: origStyle.fillOpacity, fillColor: origStyle.fillColor }});
                                     }}
                                 }}, 500); // Blinkar varje halvsekund i 3 sekunder
                             }}
@@ -911,7 +1132,8 @@ try:
                             <h6 style="color:#0570b0; font-weight:bold; margin-bottom:4px; font-size:13px;">${{data.NAMN}}</h6>
                             <button type="button" class="btn-close btn-sm" style="font-size:10px;" onclick="document.getElementById('searchResultBox').style.display='none'; document.getElementById('searchDistrikt').value='';"></button>
                         </div>
-                        <b>Röstberättigade:</b> ${{data.Rostberattigade.toLocaleString('sv-SE')}} st<br>
+                        <b>Röstberättigade (2022):</b> ${{data.Rostberattigade.toLocaleString('sv-SE')}} st<br>
+                        <span style="font-size:11px; color:#777;">(Prel. 2025: ${{data.Rostberattigade_2025.toLocaleString('sv-SE')}} st)</span><br>
                         <hr style="margin:4px 0;">
                         <b>Vallokal:</b> ${{data.Vallokal}}<br>
                         <span style="color:#555;">📍 ${{data.Adress}}</span>
@@ -1030,11 +1252,20 @@ try:
                 lokalerLayerObj.addLayer(marker);
             }});
             
-            // POI
+            // POI med speciell styling för Stadshuset
             var poiLayerObj = L.markerClusterGroup({{maxClusterRadius: 20, spiderfyOnMaxZoom: true}});
             poiData.forEach(function(poi) {{
                 var lat = poi[0], lon = poi[1], namn = poi[2], funktion = poi[3], rots = poi[4];
-                var marker = L.circleMarker([lat, lon], {{radius: 8, fillColor: '#e67e22', color: '#fff', weight: 2, fillOpacity: 0.9, pane: 'topMarkersPane'}});
+                
+                var isStadshus = namn.toLowerCase().includes('stadshus');
+                var marker = L.circleMarker([lat, lon], {{
+                    radius: isStadshus ? 11 : 8, 
+                    fillColor: isStadshus ? '#c0392b' : '#e67e22', 
+                    color: isStadshus ? '#f1c40f' : '#fff', 
+                    weight: isStadshus ? 3 : 2, 
+                    fillOpacity: 0.9, 
+                    pane: 'topMarkersPane'
+                }});
                 
                 var tooltipHtml = "<b>" + namn + "</b>";
                 if (funktion && funktion !== 'Information saknas') tooltipHtml += "<br><span style='font-size:11px;'>" + funktion + "</span>";
@@ -1065,7 +1296,9 @@ try:
             document.getElementById('toggleVatten').addEventListener('change', function(e) {{ if(this.checked) map.addLayer(vattenLayerObj); else map.removeLayer(vattenLayerObj); }});
 
             window.closeInfoPanel = function() {{ document.getElementById('infoPanel').style.display = 'none'; }}
-            const partyColors = {{'S': '#E8112d', 'M': '#52BDEC', 'SD': '#DDDD00', 'C': '#009933', 'V': '#DA291C', 'KD': '#000077', 'L': '#006AB3', 'MP': '#83CF39'}};
+            
+            // Färgkodning för partier, inkl Linköpingslistan (LL)
+            const partyColors = {{'S': '#E8112d', 'M': '#52BDEC', 'SD': '#DDDD00', 'C': '#009933', 'V': '#DA291C', 'KD': '#000077', 'L': '#006AB3', 'MP': '#83CF39', 'LL': '#FF9900'}};
 
             function showInfoPanel(matchId) {{
                 let data = valData[matchId];
@@ -1076,7 +1309,8 @@ try:
                     <table class="table table-sm table-borderless mb-2">
                         <tr><td><strong>Valkrets:</strong></td><td class="text-end">${{data.Valkrets}}</td></tr>
                         <tr><td><strong>Vallokal:</strong></td><td class="text-end">${{data.Vallokal}}<br><span style="font-size: 11px; color: #777;">📍 ${{data.Adress}}</span></td></tr>
-                        <tr><td><strong>Röstberättigade:</strong></td><td class="text-end">${{data.Rostberattigade.toLocaleString('sv-SE')}} st</td></tr>
+                        <tr><td><strong>Röstberättigade 2022:</strong></td><td class="text-end">${{data.Rostberattigade.toLocaleString('sv-SE')}} st</td></tr>
+                        <tr><td><strong><span style="color:#777;">(Prel. 2025):</span></strong></td><td class="text-end"><span style="color:#777;">${{data.Rostberattigade_2025.toLocaleString('sv-SE')}} st</span></td></tr>
                         <tr><td><strong>Röstande:</strong></td><td class="text-end">${{data.Rostande.toLocaleString('sv-SE')}} st</td></tr>
                         <tr><td><strong>Valdeltagande:</strong></td><td class="text-end fw-bold text-primary">${{data.Valdeltagande}} %</td></tr>
                     </table>
@@ -1118,12 +1352,77 @@ try:
                 this.classList.toggle('btn-outline-info');
                 if(analysisMode) {{
                     map._container.style.cursor = 'crosshair';
-                    showToast("ℹ️ <b>Nåbarhetsanalys aktiv!</b><br>Klicka var som helst i ett valdistrikt för att analysera rutten till dess vallokal.");
+                    showToast("ℹ️ <b>Nåbarhetsanalys aktiv!</b><br>Klicka var som helst i ett valdistrikt för att analysera rutten till dess vallokal.", 10000);
                 }} else {{
                     map._container.style.cursor = '';
                     analysisGroup.clearLayers();
                     applyFilters(); 
                 }}
+            }});
+
+            // ================= NY TÄCKNINGSANALYS (VITA FLÄCKAR) =================
+            var coverageGroup = L.layerGroup().addTo(map);
+            var heatLayerOutside = null;
+            
+            document.getElementById('btn-coverage').addEventListener('click', function() {{
+                coverageGroup.clearLayers();
+                if(heatLayerOutside) map.removeLayer(heatLayerOutside);
+                
+                var minutes = parseFloat(document.getElementById('covMinutes').value);
+                var mode = document.getElementById('covMode').value;
+                if(isNaN(minutes) || minutes <= 0) return;
+                
+                var speed, factor;
+                if(mode === 'walk') {{ speed = 5; factor = 1.3; }}
+                else if(mode === 'bike') {{ speed = 15; factor = 1.2; }}
+                else {{ speed = 40; factor = 1.3; }}
+                
+                var radiusKm = (minutes * speed) / (60 * factor);
+                
+                // Rita ut zonerna runt varje lokal
+                lokalerData.forEach(loc => {{
+                    L.circle([loc[0], loc[1]], {{
+                        radius: radiusKm * 1000,
+                        color: '#27ae60',
+                        fillColor: '#27ae60',
+                        fillOpacity: 0.15,
+                        weight: 1,
+                        interactive: false
+                    }}).addTo(coverageGroup);
+                }});
+                
+                // Räkna ut vilka som är utanför zonerna (Vita fläckar)
+                var ptsOutside = [];
+                var totalVotersOutside = 0;
+                
+                heatPoints.forEach(p => {{
+                    var pt = turf.point([p[1], p[0]]);
+                    var isCovered = false;
+                    for(var i=0; i<lokalerData.length; i++) {{
+                        var locPt = turf.point([lokalerData[i][1], lokalerData[i][0]]);
+                        if (turf.distance(pt, locPt, {{units: 'kilometers'}}) <= radiusKm) {{
+                            isCovered = true;
+                            break;
+                        }}
+                    }}
+                    if (!isCovered) {{
+                        ptsOutside.push([p[0], p[1], p[2]]);
+                        totalVotersOutside += p[2];
+                    }}
+                }});
+                
+                // Rita de som hamnar utanför som en RÖD värmekarta!
+                if(ptsOutside.length > 0) {{
+                    heatLayerOutside = L.heatLayer(ptsOutside, {{
+                        radius: 12, 
+                        blur: 15, 
+                        maxZoom: 14, 
+                        gradient: {{0.4: 'red', 0.6: 'yellow', 1: 'orange'}}
+                    }}).addTo(coverageGroup);
+                }}
+                
+                // Ny toast som ligger kvar länge (20 sek)
+                showToast(`<b>Täckningsanalys klar!</b><br>Kartan visar nu zoner som nås inom ${{minutes}} min. De röda områdena markerar de ca <b>${{totalVotersOutside.toLocaleString('sv-SE')}}</b> röstberättigade som har för långt till en vallokal.`, 20000);
             }});
 
             function runAccessibilityAnalysis(clickLatlng, matchId, layer) {{
@@ -1203,7 +1502,7 @@ try:
                         <tr><td>🚗 Bil (40 km/h):</td><td style="text-align:right; font-weight:bold; color:#e74c3c;">~${{carTime}} min</td></tr>
                     </table>
                     <h6 style="color:#8e44ad;font-weight:bold;border-bottom:1px solid #ccc;padding-bottom:5px;margin-bottom:5px;">⏱️ Nåbarhetsfångst (5 min)</h6>
-                    <span style="font-size:11px;color:#555;">Av distriktets ${{totalDist.toLocaleString('sv-SE')}} röstberättigade når:</span>
+                    <span style="font-size:11px;color:#555;">Av distriktets ${{totalDist.toLocaleString('sv-SE')}} röstberättigade (Prel. 2025) når:</span>
                     <table style="width:100%; margin-top:3px; font-size:13px;">
                         <tr><td>🚶 Gång:</td><td style="text-align:right;"><b>${{countWalk.toLocaleString('sv-SE')}} st</b> (${{pctWalk}}%)</td></tr>
                         <tr><td>🚲 Cykel:</td><td style="text-align:right;"><b>${{countBike.toLocaleString('sv-SE')}} st</b> (${{pctBike}}%)</td></tr>
@@ -1247,7 +1546,7 @@ try:
                     }});
                     
                     var formattedCount = totalCount.toLocaleString('sv-SE');
-                    layer.bindPopup("<div style='font-family:sans-serif; font-size:14px; padding:5px; text-align:center;'><b>Egenritat område</b><hr style='margin:5px 0;'><span style='color:#0570b0; font-size:18px; font-weight:bold;'>" + formattedCount + "</span><br>Röstberättigade personer 18+ år</div>").openPopup();
+                    layer.bindPopup("<div style='font-family:sans-serif; font-size:14px; padding:5px; text-align:center;'><b>Egenritat område</b><hr style='margin:5px 0;'><span style='color:#0570b0; font-size:18px; font-weight:bold;'>" + formattedCount + "</span><br>Röstberättigade personer 18+ år (Prel. 2025)</div>").openPopup();
                 }});
 
                 document.getElementById('opacitySlider').addEventListener('input', function(e) {{
@@ -1264,7 +1563,7 @@ try:
                         }}
                     }});
 
-                    // STARTA UPP KARTAN MED FILTER
+                    // STARTA UPP KARTAN MED FILTER (som ritar ut allt i det kombinerade lagret)
                     applyFilters();
 
                     map.eachLayer(function(layer) {{
@@ -1274,15 +1573,8 @@ try:
                                 let data = valData[matchId];
                                 window.valPolygons[matchId] = layer.toGeoJSON();
                                 
-                                if (data) {{
-                                    // Fyll dropdown för den nya sökfunktionen
-                                    var opt = document.createElement('option');
-                                    opt.value = data.NAMN;
-                                    document.getElementById('distriktList').appendChild(opt);
-                                    
-                                    if (!layer.filteredOut) {{
-                                        layer.bindTooltip(getCleanTooltip(data, currentActiveVariable), {{sticky: true, direction: 'auto', className: 'custom-tooltip-wrapper', opacity: 1.0}});
-                                    }}
+                                if (data && !layer.filteredOut) {{
+                                    layer.bindTooltip(getCleanTooltip(data, currentActiveVariable), {{sticky: true, direction: 'auto', className: 'custom-tooltip-wrapper', opacity: 1.0}});
                                 }}
 
                                 layer.on('mouseover', function(e) {{
@@ -1296,7 +1588,8 @@ try:
 
                                     var currentOpacity = document.getElementById('opacitySlider').value;
                                     var hoverOp = currentActiveVariable === 'Granser' ? 0.3 : Math.min(1.0, parseFloat(currentOpacity) + 0.2);
-                                    this.setStyle({{ weight: 4, color: '#ff0000', fillOpacity: hoverOp }});
+                                    // Vi ändrar tjockleken kraftigt här för att ge en märkbar kantlinje
+                                    this.setStyle({{ weight: 5, color: '#ff0000', fillOpacity: hoverOp }});
                                     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) this.bringToFront();
                                 }});
                                 
@@ -1333,7 +1626,9 @@ try:
                     // 2. Töm Ritverktyg och Nåbarhet
                     drawnItems.clearLayers(); 
                     analysisMode = false; 
-                    analysisGroup.clearLayers(); 
+                    analysisGroup.clearLayers();
+                    coverageGroup.clearLayers();
+                    if(heatLayerOutside) map.removeLayer(heatLayerOutside);
                     map.closePopup(); 
                     document.getElementById('btn-measure').classList.remove('btn-info'); 
                     document.getElementById('btn-measure').classList.add('btn-outline-info'); 

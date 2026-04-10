@@ -247,6 +247,7 @@ def main():
     df_riket = process_population_sheet("Riket", prefix="Riket")
     df_prognos = process_population_sheet("Prognos", prefix="Prognos")
     
+    # LÄSER IN FLIKARNA MÄN OCH KVINNOR
     df_man = process_population_sheet("Män", prefix="Män")
     df_kvinna = process_population_sheet("Kvinnor", prefix="Kvinnor")
 
@@ -335,11 +336,77 @@ def main():
 
     df_main = df_main.sort_values(['År', 'Månad']).reset_index(drop=True)
 
+    # ---------------------------------------------------------
+    # 3.2 BERÄKNA NETTON (UTFALL OCH HELÅRSPROGNOS)
+    # ---------------------------------------------------------
     if 'Befolkningsförändring' not in df_main.columns and 'Totalt (Hela folkmängden)' in df_main.columns:
         df_main['Befolkningsförändring'] = df_main['Totalt (Hela folkmängden)'].diff()
     if 'Riket_Befolkningsförändring' not in df_main.columns and 'Riket_Totalt (Hela folkmängden)' in df_main.columns:
         df_main['Riket_Befolkningsförändring'] = df_main['Riket_Totalt (Hela folkmängden)'].diff()
 
+    # UTFALL: Födelseöverskott & Flyttningsnetto
+    if 'Födelseöverskott' not in df_main.columns and 'Födda' in df_main.columns and 'Döda' in df_main.columns:
+        df_main['Födelseöverskott'] = df_main['Födda'].fillna(0) - df_main['Döda'].fillna(0)
+        df_main.loc[df_main['Födda'].isna() & df_main['Döda'].isna(), 'Födelseöverskott'] = np.nan
+
+    if 'Riket_Födelseöverskott' not in df_main.columns and 'Riket_Födda' in df_main.columns and 'Riket_Döda' in df_main.columns:
+        df_main['Riket_Födelseöverskott'] = df_main['Riket_Födda'].fillna(0) - df_main['Riket_Döda'].fillna(0)
+        df_main.loc[df_main['Riket_Födda'].isna() & df_main['Riket_Döda'].isna(), 'Riket_Födelseöverskott'] = np.nan
+
+    if 'Flyttningsnetto' not in df_main.columns and 'Inflyttning' in df_main.columns and 'Utflyttning' in df_main.columns:
+        df_main['Flyttningsnetto'] = df_main['Inflyttning'].fillna(0) - df_main['Utflyttning'].fillna(0)
+        df_main.loc[df_main['Inflyttning'].isna() & df_main['Utflyttning'].isna(), 'Flyttningsnetto'] = np.nan
+
+    if 'Riket_Flyttningsnetto' not in df_main.columns and 'Riket_Inflyttning' in df_main.columns and 'Riket_Utflyttning' in df_main.columns:
+        df_main['Riket_Flyttningsnetto'] = df_main['Riket_Inflyttning'].fillna(0) - df_main['Riket_Utflyttning'].fillna(0)
+        df_main.loc[df_main['Riket_Inflyttning'].isna() & df_main['Riket_Utflyttning'].isna(), 'Riket_Flyttningsnetto'] = np.nan
+
+    # --- NYA DETALJERADE FLYTTNINGSNETTON ---
+    if 'Flyttningsnetto_inrikes' not in df_main.columns and 'Inrikes_inflyttning' in df_main.columns and 'Inrikes_utflyttning' in df_main.columns:
+        df_main['Flyttningsnetto_inrikes'] = df_main['Inrikes_inflyttning'].fillna(0) - df_main['Inrikes_utflyttning'].fillna(0)
+        df_main.loc[df_main['Inrikes_inflyttning'].isna() & df_main['Inrikes_utflyttning'].isna(), 'Flyttningsnetto_inrikes'] = np.nan
+
+    if 'Riket_Flyttningsnetto_inrikes' not in df_main.columns and 'Riket_Inrikes_inflyttning' in df_main.columns and 'Riket_Inrikes_utflyttning' in df_main.columns:
+        df_main['Riket_Flyttningsnetto_inrikes'] = df_main['Riket_Inrikes_inflyttning'].fillna(0) - df_main['Riket_Inrikes_utflyttning'].fillna(0)
+        df_main.loc[df_main['Riket_Inrikes_inflyttning'].isna() & df_main['Riket_Inrikes_utflyttning'].isna(), 'Riket_Flyttningsnetto_inrikes'] = np.nan
+
+    if 'Flyttningsnetto_utrikes' not in df_main.columns and 'Invandring' in df_main.columns and 'Utvandring' in df_main.columns:
+        df_main['Flyttningsnetto_utrikes'] = df_main['Invandring'].fillna(0) - df_main['Utvandring'].fillna(0)
+        df_main.loc[df_main['Invandring'].isna() & df_main['Utvandring'].isna(), 'Flyttningsnetto_utrikes'] = np.nan
+
+    if 'Riket_Flyttningsnetto_utrikes' not in df_main.columns and 'Riket_Invandring' in df_main.columns and 'Riket_Utvandring' in df_main.columns:
+        df_main['Riket_Flyttningsnetto_utrikes'] = df_main['Riket_Invandring'].fillna(0) - df_main['Riket_Utvandring'].fillna(0)
+        df_main.loc[df_main['Riket_Invandring'].isna() & df_main['Riket_Utvandring'].isna(), 'Riket_Flyttningsnetto_utrikes'] = np.nan
+        
+    if 'Flyttningsnetto_eget_län' not in df_main.columns and 'Inflyttning_inom_länet' in df_main.columns and 'Utflyttning_inom_länet' in df_main.columns:
+        df_main['Flyttningsnetto_eget_län'] = df_main['Inflyttning_inom_länet'].fillna(0) - df_main['Utflyttning_inom_länet'].fillna(0)
+        df_main.loc[df_main['Inflyttning_inom_länet'].isna() & df_main['Utflyttning_inom_länet'].isna(), 'Flyttningsnetto_eget_län'] = np.nan
+
+    if 'Riket_Flyttningsnetto_eget_län' not in df_main.columns and 'Riket_Inflyttning_inom_länet' in df_main.columns and 'Riket_Utflyttning_inom_länet' in df_main.columns:
+        df_main['Riket_Flyttningsnetto_eget_län'] = df_main['Riket_Inflyttning_inom_länet'].fillna(0) - df_main['Riket_Utflyttning_inom_länet'].fillna(0)
+        df_main.loc[df_main['Riket_Inflyttning_inom_länet'].isna() & df_main['Riket_Utflyttning_inom_länet'].isna(), 'Riket_Flyttningsnetto_eget_län'] = np.nan
+
+    if 'Flyttningsnetto_annat_län' not in df_main.columns and 'Inflyttning_annat_län' in df_main.columns and 'Utflyttning_annat_län' in df_main.columns:
+        df_main['Flyttningsnetto_annat_län'] = df_main['Inflyttning_annat_län'].fillna(0) - df_main['Utflyttning_annat_län'].fillna(0)
+        df_main.loc[df_main['Inflyttning_annat_län'].isna() & df_main['Utflyttning_annat_län'].isna(), 'Flyttningsnetto_annat_län'] = np.nan
+
+    if 'Riket_Flyttningsnetto_annat_län' not in df_main.columns and 'Riket_Inflyttning_annat_län' in df_main.columns and 'Riket_Utflyttning_annat_län' in df_main.columns:
+        df_main['Riket_Flyttningsnetto_annat_län'] = df_main['Riket_Inflyttning_annat_län'].fillna(0) - df_main['Riket_Utflyttning_annat_län'].fillna(0)
+        df_main.loc[df_main['Riket_Inflyttning_annat_län'].isna() & df_main['Riket_Utflyttning_annat_län'].isna(), 'Riket_Flyttningsnetto_annat_län'] = np.nan
+    # ---------------------------------------------------------
+
+    # PROGNOS SLUTGILTIG: Födelseöverskott & Flyttningsnetto
+    if 'Födelseöverskott_Prognos_Slutgiltig' not in df_main.columns and 'Födda_Prognos_Slutgiltig' in df_main.columns and 'Döda_Prognos_Slutgiltig' in df_main.columns:
+        df_main['Födelseöverskott_Prognos_Slutgiltig'] = df_main['Födda_Prognos_Slutgiltig'].fillna(0) - df_main['Döda_Prognos_Slutgiltig'].fillna(0)
+        df_main.loc[df_main['Födda_Prognos_Slutgiltig'].isna() & df_main['Döda_Prognos_Slutgiltig'].isna(), 'Födelseöverskott_Prognos_Slutgiltig'] = np.nan
+        
+    if 'Flyttningsnetto_Prognos_Slutgiltig' not in df_main.columns and 'Inflyttning_Prognos_Slutgiltig' in df_main.columns and 'Utflyttning_Prognos_Slutgiltig' in df_main.columns:
+        df_main['Flyttningsnetto_Prognos_Slutgiltig'] = df_main['Inflyttning_Prognos_Slutgiltig'].fillna(0) - df_main['Utflyttning_Prognos_Slutgiltig'].fillna(0)
+        df_main.loc[df_main['Inflyttning_Prognos_Slutgiltig'].isna() & df_main['Utflyttning_Prognos_Slutgiltig'].isna(), 'Flyttningsnetto_Prognos_Slutgiltig'] = np.nan
+        
+    if 'Befolkningsförändring_Prognos_Slutgiltig' not in df_main.columns and 'Födelseöverskott_Prognos_Slutgiltig' in df_main.columns and 'Flyttningsnetto_Prognos_Slutgiltig' in df_main.columns:
+        df_main['Befolkningsförändring_Prognos_Slutgiltig'] = df_main['Födelseöverskott_Prognos_Slutgiltig'].fillna(0) + df_main['Flyttningsnetto_Prognos_Slutgiltig'].fillna(0)
+        df_main.loc[df_main['Födelseöverskott_Prognos_Slutgiltig'].isna() & df_main['Flyttningsnetto_Prognos_Slutgiltig'].isna(), 'Befolkningsförändring_Prognos_Slutgiltig'] = np.nan
 
     # =========================================================================
     # 3.5 SKUGG-IMPLEMENTERING: SÄSONGSFÖRDELNING AV PROGNOS
@@ -347,60 +414,51 @@ def main():
     print(" -> Beräknar säsongsprofiler för prognos (skugg-implementering)...")
     komponenter = ['Födda', 'Döda', 'Inflyttning', 'Utflyttning']
     
-    # Hitta det senaste året som är komplett (har data i december för Födda)
     kompletta_ar_mask = df_main['Födda'].notna() & (df_main['Månad'] == 12)
     if kompletta_ar_mask.any():
         senaste_hela_ar = int(df_main.loc[kompletta_ar_mask, 'År'].max())
     else:
         senaste_hela_ar = int(df_main['År'].max()) - 1
         
-    start_ar = senaste_hela_ar - 4 # Ger oss exakt 5 år (t.ex. 2021-2025)
-    
-    # Klipp ut de 5 åren från huvuddatan för att räkna historik
+    start_ar = senaste_hela_ar - 4 
     df_5ar = df_main[(df_main['År'] >= start_ar) & (df_main['År'] <= senaste_hela_ar)].copy()
     
     sasongsvikter = {}
     if not df_5ar.empty:
         for komp in komponenter:
             if komp in df_5ar.columns:
-                # Summera upp hur mycket som skedde varje specifik månad (1-12) över de 5 åren
                 manads_summor = df_5ar.groupby('Månad')[komp].sum()
                 total_summa = manads_summor.sum()
                 if total_summa > 0:
-                    # Räkna ut % (vikt) för respektive månad
                     sasongsvikter[komp] = manads_summor / total_summa
                 else:
-                    # Om datan helt saknas (extremfall), fördela jämnt
                     sasongsvikter[komp] = pd.Series(1/12, index=range(1, 13))
 
-    # Skapa de nya skuggkolumnerna i den slutgiltiga datan och applicera historiska vikten
     for komp in komponenter:
         prog_col = f"{komp}_Prognos_Slutgiltig"
         sasong_col = f"{komp}_Prognos_Sasong"
-        
         df_main[sasong_col] = np.nan
         
         if prog_col in df_main.columns and komp in sasongsvikter:
             for m in range(1, 13):
                 mask_m = df_main['Månad'] == m
-                # Eftersom process_change_sheet tidigare kopierade årsprognosen rakt ner 
-                # till alla tolv månader, så innehåller mask_m redan helårsvärdet. 
-                # Vi multiplicerar det nu med vår framräknade %-vikt för just den månaden.
                 df_main.loc[mask_m, sasong_col] = df_main.loc[mask_m, prog_col] * sasongsvikter[komp].get(m, 1/12)
 
-    # Beräkna totalt säsongsfördelat netto: (Födda - Döda) + (Inflyttning - Utflyttning)
+    # SÄSONGSPROGNOS FÖR NETTON
     df_main['Befolkningsförändring_Prognos_Sasong'] = np.nan
+    df_main['Födelseöverskott_Prognos_Sasong'] = np.nan
+    df_main['Flyttningsnetto_Prognos_Sasong'] = np.nan
     
     if all(f"{k}_Prognos_Sasong" in df_main.columns for k in komponenter):
-        df_main['Befolkningsförändring_Prognos_Sasong'] = (
-            (df_main['Födda_Prognos_Sasong'].fillna(0) - df_main['Döda_Prognos_Sasong'].fillna(0)) +
-            (df_main['Inflyttning_Prognos_Sasong'].fillna(0) - df_main['Utflyttning_Prognos_Sasong'].fillna(0))
-        )
-        # Städa upp: Sätt värdet till NaN om vi faktiskt inte har någon årsprognos inlagd alls
+        df_main['Födelseöverskott_Prognos_Sasong'] = df_main['Födda_Prognos_Sasong'].fillna(0) - df_main['Döda_Prognos_Sasong'].fillna(0)
+        df_main['Flyttningsnetto_Prognos_Sasong'] = df_main['Inflyttning_Prognos_Sasong'].fillna(0) - df_main['Utflyttning_Prognos_Sasong'].fillna(0)
+        df_main['Befolkningsförändring_Prognos_Sasong'] = df_main['Födelseöverskott_Prognos_Sasong'] + df_main['Flyttningsnetto_Prognos_Sasong']
+        
         saknar_prognos = df_main['Befolkningsförändring_Prognos_Slutgiltig'].isna()
         df_main.loc[saknar_prognos, 'Befolkningsförändring_Prognos_Sasong'] = np.nan
+        df_main.loc[saknar_prognos, 'Födelseöverskott_Prognos_Sasong'] = np.nan
+        df_main.loc[saknar_prognos, 'Flyttningsnetto_Prognos_Sasong'] = np.nan
     # =========================================================================
-
 
     # ---------------------------------------------------------
     # 4. BYGG DASHBOARD-KOLUMNER (R12 etc)
@@ -429,7 +487,8 @@ def main():
 
         col_r12 = f"{indikator}_R12"
         
-        if "förändring" in kategori or "flytt" in kategori.lower() or indikator in ['Födda', 'Döda', 'Inflyttning', 'Utflyttning', 'Befolkningsförändring']:
+        # Säkerställer att även netton hanteras som SUM vid R12
+        if "förändring" in kategori or "flytt" in kategori.lower() or indikator in ['Födda', 'Döda', 'Inflyttning', 'Utflyttning', 'Befolkningsförändring', 'Födelseöverskott', 'Flyttningsnetto', 'Flyttningsnetto_inrikes', 'Flyttningsnetto_utrikes', 'Flyttningsnetto_eget_län', 'Flyttningsnetto_annat_län']:
             df_main[col_r12] = df_main[col_utfall].rolling(12, min_periods=12).sum()
             df_main[f"Riket_{indikator}_R12"] = df_main[col_riket].rolling(12, min_periods=12).sum() if col_riket in df_main.columns else np.nan
             regel = 'SUM'
@@ -438,11 +497,9 @@ def main():
             df_main[f"Riket_{indikator}_R12"] = df_main[col_riket]
             regel = 'LATEST'
 
-        # Skapa Månad och R12 för drilldown-komponenter i pyramiden m.fl.
         if pd.notna(row.get('Drilldown_Komponenter')):
             komps = [k.strip() for k in str(row['Drilldown_Komponenter']).split(',') if k.strip()]
             for k in komps:
-                # Loopar igenom för Totalt, Män och Kvinnor
                 for prefix in ["", "Män_", "Kvinnor_"]:
                     k_col = f"{prefix}{k}"
                     if k_col in df_main.columns:
@@ -463,7 +520,7 @@ def main():
         df_main[f"{indikator}_Alternativ_rubrik"] = row.get('Alternativ_tabellrubrik', np.nan)
 
     # ---------------------------------------------------------
-    # 5. GENERERA RAPPORTTEXT (BEFOLKNING OCH FLYTTNING)
+    # 5. GENERERA RAPPORTTEXT
     # ---------------------------------------------------------
     print("4. Kollar efter nya AI-fakta för begärda månader...")
     
@@ -478,21 +535,15 @@ def main():
 
     try:
         df_texter = pd.read_excel(excel_fil, sheet_name="Rapporttext")
-        
         df_texter.columns = [str(c).strip() for c in df_texter.columns]
-        
-        if 'Stöd_manuell' in df_texter.columns:
-            df_texter = df_texter.drop(columns=['Stöd_manuell'])
+        if 'Stöd_manuell' in df_texter.columns: df_texter = df_texter.drop(columns=['Stöd_manuell'])
             
-        df_texter = df_texter.loc[:, ~df_texter.columns.duplicated()]
-        df_texter = df_texter.fillna('')
+        df_texter = df_texter.loc[:, ~df_texter.columns.duplicated()].fillna('')
         
         for col in ['Autogenererad_Fakta', 'Färdig_Analystext', 'Robot_Fakta', 'Rapportvy']:
-            if col not in df_texter.columns:
-                df_texter[col] = ''
+            if col not in df_texter.columns: df_texter[col] = ''
                 
         manader_namn = ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"]
-        
         robot_list = df_texter['Robot_Fakta'].astype(str).str.strip().str.upper()
         skapa_ny_csv = any(x in ['A', 'M'] for x in robot_list)
         
@@ -502,23 +553,18 @@ def main():
             print("      -> Hittade uppdateringar. Bearbetar och skapar en ny text-CSV...")
             for idx, row in df_texter.iterrows():
                 try:
-                    if str(row['År']).strip() == '' or str(row['Månad']).strip() == '': 
-                        continue
-                    
+                    if str(row['År']).strip() == '' or str(row['Månad']).strip() == '': continue
                     s_ar = int(float(row['År']))
                     s_manad = int(float(row['Månad']))
                     vy = str(row['Rapportvy']).strip()
                     robot = str(row['Robot_Fakta']).strip().upper()
                     if robot == 'NAN': robot = ''
-                except (ValueError, TypeError):
-                    continue
+                except (ValueError, TypeError): continue
                     
                 if robot == 'A':
-                    
                     mask_nu = (df_main['År'] == s_ar) & (df_main['Månad'] == s_manad)
                     df_nu = df_main[mask_nu]
-                    if df_nu.empty: 
-                        continue 
+                    if df_nu.empty: continue 
                     rad_nu = df_nu.iloc[0]
                     
                     fg_ar_m = s_ar if s_manad > 1 else s_ar - 1
@@ -552,14 +598,12 @@ def main():
                                       f"och {diff_ar:+} personer jämfört med samma månad föregående år. "
                                       f"Under månaden föddes {fodda} barn och {doda} personer avled (födelsenetto {fodselnetto:+}). "
                                       f"Samtidigt var kommunens totala flyttnetto {flyttnetto:+} personer.").replace(',', ' ')
-                        
                         df_texter.at[idx, 'Autogenererad_Fakta'] = fakta_text
                         df_texter.at[idx, 'Färdig_Analystext'] = fakta_text
                         
                     elif vy == 'Flyttning':
                         inflytt_fg_a = safe_int(rad_fg_a.get('Inflyttning_Manad', 0)) if not rad_fg_a.empty else 0
                         utflytt_fg_a = safe_int(rad_fg_a.get('Utflyttning_Manad', 0)) if not rad_fg_a.empty else 0
-                        
                         diff_in = inflytt - inflytt_fg_a
                         diff_ut = utflytt - utflytt_fg_a
                         
@@ -567,7 +611,6 @@ def main():
                                       f"och {utflytt} utflyttningar. Detta gav ett flyttnetto på {flyttnetto:+} personer för månaden. "
                                       f"Jämfört med samma månad föregående år innebär det en förändring av inflyttningen med {diff_in:+} "
                                       f"personer och utflyttningen med {diff_ut:+} personer.").replace(',', ' ')
-                        
                         df_texter.at[idx, 'Autogenererad_Fakta'] = fakta_text
                         df_texter.at[idx, 'Färdig_Analystext'] = fakta_text
 
@@ -580,10 +623,8 @@ def main():
                 except:
                     return str(v)
             
-            if 'År' in df_texter.columns:
-                df_texter['År'] = df_texter['År'].apply(rensa_heltal)
-            if 'Månad' in df_texter.columns:
-                df_texter['Månad'] = df_texter['Månad'].apply(rensa_heltal)
+            if 'År' in df_texter.columns: df_texter['År'] = df_texter['År'].apply(rensa_heltal)
+            if 'Månad' in df_texter.columns: df_texter['Månad'] = df_texter['Månad'].apply(rensa_heltal)
             
             for c in ['Robot_Fakta', 'Autogenererad_Fakta', 'Färdig_Analystext', 'Rapportvy']:
                 if c in df_texter.columns:
@@ -609,7 +650,6 @@ def main():
         if isinstance(val, float): return f"{val:.2f}".replace('.', ',')
         return val
 
-    # OBS: Vi har lagt till '_Prognos_Sasong' i denna lista för att exportera skugg-kolumnerna!
     behåll_kolumner = ['År', 'Månad'] + [c for c in df_main.columns if c.endswith(('_Manad', '_R12', '_Polaritet', '_Troskel', '_Absolut_R12', '_Minitabell', '_Minitabell_Sort', '_Alternativ_rubrik', '_Pct_1M', '_Pct_12M', '_Prognos_Slutgiltig', '_Prognos_Sasong'))]
     df_export = df_main[behåll_kolumner].copy()
 
