@@ -91,7 +91,6 @@ def main():
     
     df_troskel = pd.read_excel(excel_fil, sheet_name=troskel_namn)
     
-    # Kasta bort 'Stöd_manuell' direkt så att den aldrig bearbetas eller exporteras
     if 'Stöd_manuell' in df_troskel.columns:
         df_troskel = df_troskel.drop(columns=['Stöd_manuell'])
     
@@ -205,6 +204,7 @@ def main():
 
         df_enskild = df_melt[['År', 'Månad', 'Ålder', 'Antal']].rename(columns={'Ålder': 'Indikator'})
 
+        # Summerar åldersgrupperna (Detta blir nu en backup, om CKM-totalen saknas)
         df_only_ages = df_melt[df_melt['Ålder_match'] != '']
         df_totalt = df_only_ages.groupby(['År', 'Månad'])['Antal'].sum().reset_index()
         df_totalt['Indikator'] = 'Totalt (Hela folkmängden)'
@@ -247,7 +247,6 @@ def main():
     df_riket = process_population_sheet("Riket", prefix="Riket")
     df_prognos = process_population_sheet("Prognos", prefix="Prognos")
     
-    # LÄSER IN FLIKARNA MÄN OCH KVINNOR
     df_man = process_population_sheet("Män", prefix="Män")
     df_kvinna = process_population_sheet("Kvinnor", prefix="Kvinnor")
 
@@ -336,6 +335,25 @@ def main():
 
     df_main = df_main.sort_values(['År', 'Månad']).reset_index(drop=True)
 
+    # =========================================================================
+    # NYTT: CKM-KORRIGERING (OFFICIELL FOLKMÄNGD)
+    # =========================================================================
+    if 'Folkmängd' in df_main.columns:
+        print(" -> Tillämpar CKM-korrigering: Använder SCB:s officiella totala Folkmängd...")
+        if 'Totalt (Hela folkmängden)' in df_main.columns:
+            mask_folkmangd = df_main['Folkmängd'].notna()
+            df_main.loc[mask_folkmangd, 'Totalt (Hela folkmängden)'] = df_main.loc[mask_folkmangd, 'Folkmängd']
+        else:
+            df_main['Totalt (Hela folkmängden)'] = df_main['Folkmängd']
+            
+    if 'Riket_Folkmängd' in df_main.columns:
+        if 'Riket_Totalt (Hela folkmängden)' in df_main.columns:
+            mask_rfolkmangd = df_main['Riket_Folkmängd'].notna()
+            df_main.loc[mask_rfolkmangd, 'Riket_Totalt (Hela folkmängden)'] = df_main.loc[mask_rfolkmangd, 'Riket_Folkmängd']
+        else:
+            df_main['Riket_Totalt (Hela folkmängden)'] = df_main['Riket_Folkmängd']
+    # =========================================================================
+
     # ---------------------------------------------------------
     # 3.2 BERÄKNA NETTON (UTFALL OCH HELÅRSPROGNOS)
     # ---------------------------------------------------------
@@ -344,7 +362,6 @@ def main():
     if 'Riket_Befolkningsförändring' not in df_main.columns and 'Riket_Totalt (Hela folkmängden)' in df_main.columns:
         df_main['Riket_Befolkningsförändring'] = df_main['Riket_Totalt (Hela folkmängden)'].diff()
 
-    # UTFALL: Födelseöverskott & Flyttningsnetto
     if 'Födelseöverskott' not in df_main.columns and 'Födda' in df_main.columns and 'Döda' in df_main.columns:
         df_main['Födelseöverskott'] = df_main['Födda'].fillna(0) - df_main['Döda'].fillna(0)
         df_main.loc[df_main['Födda'].isna() & df_main['Döda'].isna(), 'Födelseöverskott'] = np.nan
@@ -361,7 +378,6 @@ def main():
         df_main['Riket_Flyttningsnetto'] = df_main['Riket_Inflyttning'].fillna(0) - df_main['Riket_Utflyttning'].fillna(0)
         df_main.loc[df_main['Riket_Inflyttning'].isna() & df_main['Riket_Utflyttning'].isna(), 'Riket_Flyttningsnetto'] = np.nan
 
-    # --- NYA DETALJERADE FLYTTNINGSNETTON ---
     if 'Flyttningsnetto_inrikes' not in df_main.columns and 'Inrikes_inflyttning' in df_main.columns and 'Inrikes_utflyttning' in df_main.columns:
         df_main['Flyttningsnetto_inrikes'] = df_main['Inrikes_inflyttning'].fillna(0) - df_main['Inrikes_utflyttning'].fillna(0)
         df_main.loc[df_main['Inrikes_inflyttning'].isna() & df_main['Inrikes_utflyttning'].isna(), 'Flyttningsnetto_inrikes'] = np.nan
@@ -393,9 +409,8 @@ def main():
     if 'Riket_Flyttningsnetto_annat_län' not in df_main.columns and 'Riket_Inflyttning_annat_län' in df_main.columns and 'Riket_Utflyttning_annat_län' in df_main.columns:
         df_main['Riket_Flyttningsnetto_annat_län'] = df_main['Riket_Inflyttning_annat_län'].fillna(0) - df_main['Riket_Utflyttning_annat_län'].fillna(0)
         df_main.loc[df_main['Riket_Inflyttning_annat_län'].isna() & df_main['Riket_Utflyttning_annat_län'].isna(), 'Riket_Flyttningsnetto_annat_län'] = np.nan
-    # ---------------------------------------------------------
 
-    # PROGNOS SLUTGILTIG: Födelseöverskott & Flyttningsnetto
+    # PROGNOS SLUTGILTIG
     if 'Födelseöverskott_Prognos_Slutgiltig' not in df_main.columns and 'Födda_Prognos_Slutgiltig' in df_main.columns and 'Döda_Prognos_Slutgiltig' in df_main.columns:
         df_main['Födelseöverskott_Prognos_Slutgiltig'] = df_main['Födda_Prognos_Slutgiltig'].fillna(0) - df_main['Döda_Prognos_Slutgiltig'].fillna(0)
         df_main.loc[df_main['Födda_Prognos_Slutgiltig'].isna() & df_main['Döda_Prognos_Slutgiltig'].isna(), 'Födelseöverskott_Prognos_Slutgiltig'] = np.nan
@@ -444,7 +459,6 @@ def main():
                 mask_m = df_main['Månad'] == m
                 df_main.loc[mask_m, sasong_col] = df_main.loc[mask_m, prog_col] * sasongsvikter[komp].get(m, 1/12)
 
-    # SÄSONGSPROGNOS FÖR NETTON
     df_main['Befolkningsförändring_Prognos_Sasong'] = np.nan
     df_main['Födelseöverskott_Prognos_Sasong'] = np.nan
     df_main['Flyttningsnetto_Prognos_Sasong'] = np.nan
@@ -458,7 +472,6 @@ def main():
         df_main.loc[saknar_prognos, 'Befolkningsförändring_Prognos_Sasong'] = np.nan
         df_main.loc[saknar_prognos, 'Födelseöverskott_Prognos_Sasong'] = np.nan
         df_main.loc[saknar_prognos, 'Flyttningsnetto_Prognos_Sasong'] = np.nan
-    # =========================================================================
 
     # ---------------------------------------------------------
     # 4. BYGG DASHBOARD-KOLUMNER (R12 etc)
@@ -487,7 +500,6 @@ def main():
 
         col_r12 = f"{indikator}_R12"
         
-        # Säkerställer att även netton hanteras som SUM vid R12
         if "förändring" in kategori or "flytt" in kategori.lower() or indikator in ['Födda', 'Döda', 'Inflyttning', 'Utflyttning', 'Befolkningsförändring', 'Födelseöverskott', 'Flyttningsnetto', 'Flyttningsnetto_inrikes', 'Flyttningsnetto_utrikes', 'Flyttningsnetto_eget_län', 'Flyttningsnetto_annat_län']:
             df_main[col_r12] = df_main[col_utfall].rolling(12, min_periods=12).sum()
             df_main[f"Riket_{indikator}_R12"] = df_main[col_riket].rolling(12, min_periods=12).sum() if col_riket in df_main.columns else np.nan
@@ -522,7 +534,7 @@ def main():
     # ---------------------------------------------------------
     # 5. GENERERA RAPPORTTEXT
     # ---------------------------------------------------------
-    print("4. Kollar efter nya AI-fakta för begärda månader...")
+    print("4. Genererar och uppdaterar rapporttexter...")
     
     def safe_int(v):
         try:
@@ -544,95 +556,104 @@ def main():
             if col not in df_texter.columns: df_texter[col] = ''
                 
         manader_namn = ["Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"]
-        robot_list = df_texter['Robot_Fakta'].astype(str).str.strip().str.upper()
-        skapa_ny_csv = any(x in ['A', 'M'] for x in robot_list)
         
-        if not skapa_ny_csv:
-            print("      -> Inga nya markeringar för 'A' eller 'M' hittades.")
-        else:
-            print("      -> Hittade uppdateringar. Bearbetar och skapar en ny text-CSV...")
-            for idx, row in df_texter.iterrows():
-                try:
-                    if str(row['År']).strip() == '' or str(row['Månad']).strip() == '': continue
-                    s_ar = int(float(row['År']))
-                    s_manad = int(float(row['Månad']))
-                    vy = str(row['Rapportvy']).strip()
-                    robot = str(row['Robot_Fakta']).strip().upper()
-                    if robot == 'NAN': robot = ''
-                except (ValueError, TypeError): continue
-                    
-                if robot == 'A':
-                    mask_nu = (df_main['År'] == s_ar) & (df_main['Månad'] == s_manad)
-                    df_nu = df_main[mask_nu]
-                    if df_nu.empty: continue 
-                    rad_nu = df_nu.iloc[0]
-                    
-                    fg_ar_m = s_ar if s_manad > 1 else s_ar - 1
-                    fg_manad_m = s_manad - 1 if s_manad > 1 else 12
-                    mask_fg_m = (df_main['År'] == fg_ar_m) & (df_main['Månad'] == fg_manad_m)
-                    df_fg_m = df_main[mask_fg_m]
-                    rad_fg_m = df_fg_m.iloc[0] if not df_fg_m.empty else pd.Series(dtype=float)
-                    
-                    mask_fg_a = (df_main['År'] == s_ar - 1) & (df_main['Månad'] == s_manad)
-                    df_fg_a = df_main[mask_fg_a]
-                    rad_fg_a = df_fg_a.iloc[0] if not df_fg_a.empty else pd.Series(dtype=float)
-                    
-                    folk_nu = safe_int(rad_nu.get('Totalt (Hela folkmängden)_Manad', 0))
-                    folk_fg_m = safe_int(rad_fg_m.get('Totalt (Hela folkmängden)_Manad', 0)) if not rad_fg_m.empty else 0
-                    folk_fg_a = safe_int(rad_fg_a.get('Totalt (Hela folkmängden)_Manad', 0)) if not rad_fg_a.empty else 0
-                    
-                    fodda = safe_int(rad_nu.get('Födda_Manad', 0))
-                    doda = safe_int(rad_nu.get('Döda_Manad', 0))
-                    inflytt = safe_int(rad_nu.get('Inflyttning_Manad', 0))
-                    utflytt = safe_int(rad_nu.get('Utflyttning_Manad', 0))
-                    
-                    diff_manad = folk_nu - folk_fg_m if not rad_fg_m.empty else 0
-                    diff_ar = folk_nu - folk_fg_a if not rad_fg_a.empty else 0
-                    flyttnetto = inflytt - utflytt
-                    fodselnetto = fodda - doda
-                    manad_namn = manader_namn[s_manad - 1]
-                    
-                    if vy == 'Befolkning':
-                        fakta_text = (f"I {manad_namn.lower()} {s_ar} uppgick folkmängden i Linköping till {folk_nu:,}. "
-                                      f"Det innebär en förändring med {diff_manad:+} personer jämfört med föregående månad, "
-                                      f"och {diff_ar:+} personer jämfört med samma månad föregående år. "
-                                      f"Under månaden föddes {fodda} barn och {doda} personer avled (födelsenetto {fodselnetto:+}). "
-                                      f"Samtidigt var kommunens totala flyttnetto {flyttnetto:+} personer.").replace(',', ' ')
-                        df_texter.at[idx, 'Autogenererad_Fakta'] = fakta_text
-                        df_texter.at[idx, 'Färdig_Analystext'] = fakta_text
-                        
-                    elif vy == 'Flyttning':
-                        inflytt_fg_a = safe_int(rad_fg_a.get('Inflyttning_Manad', 0)) if not rad_fg_a.empty else 0
-                        utflytt_fg_a = safe_int(rad_fg_a.get('Utflyttning_Manad', 0)) if not rad_fg_a.empty else 0
-                        diff_in = inflytt - inflytt_fg_a
-                        diff_ut = utflytt - utflytt_fg_a
-                        
-                        fakta_text = (f"Under {manad_namn.lower()} {s_ar} registrerades {inflytt} inflyttningar till Linköping "
-                                      f"och {utflytt} utflyttningar. Detta gav ett flyttnetto på {flyttnetto:+} personer för månaden. "
-                                      f"Jämfört med samma månad föregående år innebär det en förändring av inflyttningen med {diff_in:+} "
-                                      f"personer och utflyttningen med {diff_ut:+} personer.").replace(',', ' ')
-                        df_texter.at[idx, 'Autogenererad_Fakta'] = fakta_text
-                        df_texter.at[idx, 'Färdig_Analystext'] = fakta_text
-
-            def rensa_heltal(v):
-                try:
-                    if pd.isna(v): return ''
-                    v_str = str(v).strip().upper()
-                    if v_str == '' or v_str == 'NAN': return ''
-                    return str(int(float(v)))
-                except:
-                    return str(v)
+        print("      -> Bearbetar rader i textfliken...")
+        for idx, row in df_texter.iterrows():
+            try:
+                if str(row['År']).strip() == '' or str(row['Månad']).strip() == '': continue
+                s_ar = int(float(row['År']))
+                s_manad = int(float(row['Månad']))
+                vy = str(row['Rapportvy']).strip()
+                robot = str(row['Robot_Fakta']).strip().upper()
+                if robot == 'NAN': robot = ''
+            except (ValueError, TypeError): continue
+                
+            mask_nu = (df_main['År'] == s_ar) & (df_main['Månad'] == s_manad)
+            df_nu = df_main[mask_nu]
+            if df_nu.empty: continue 
+            rad_nu = df_nu.iloc[0]
             
-            if 'År' in df_texter.columns: df_texter['År'] = df_texter['År'].apply(rensa_heltal)
-            if 'Månad' in df_texter.columns: df_texter['Månad'] = df_texter['Månad'].apply(rensa_heltal)
+            fg_ar_m = s_ar if s_manad > 1 else s_ar - 1
+            fg_manad_m = s_manad - 1 if s_manad > 1 else 12
+            mask_fg_m = (df_main['År'] == fg_ar_m) & (df_main['Månad'] == fg_manad_m)
+            df_fg_m = df_main[mask_fg_m]
+            rad_fg_m = df_fg_m.iloc[0] if not df_fg_m.empty else pd.Series(dtype=float)
             
-            for c in ['Robot_Fakta', 'Autogenererad_Fakta', 'Färdig_Analystext', 'Rapportvy']:
-                if c in df_texter.columns:
-                    df_texter[c] = df_texter[c].astype(str).replace(r'(?i)^nan$', '', regex=True)
+            mask_fg_a = (df_main['År'] == s_ar - 1) & (df_main['Månad'] == s_manad)
+            df_fg_a = df_main[mask_fg_a]
+            rad_fg_a = df_fg_a.iloc[0] if not df_fg_a.empty else pd.Series(dtype=float)
+            
+            folk_nu = safe_int(rad_nu.get('Totalt (Hela folkmängden)_Manad', 0))
+            folk_fg_m = safe_int(rad_fg_m.get('Totalt (Hela folkmängden)_Manad', 0)) if not rad_fg_m.empty else 0
+            folk_fg_a = safe_int(rad_fg_a.get('Totalt (Hela folkmängden)_Manad', 0)) if not rad_fg_a.empty else 0
+            
+            fodda = safe_int(rad_nu.get('Födda_Manad', 0))
+            doda = safe_int(rad_nu.get('Döda_Manad', 0))
+            inflytt = safe_int(rad_nu.get('Inflyttning_Manad', 0))
+            utflytt = safe_int(rad_nu.get('Utflyttning_Manad', 0))
+            
+            diff_manad = folk_nu - folk_fg_m if not rad_fg_m.empty else 0
+            diff_ar = folk_nu - folk_fg_a if not rad_fg_a.empty else 0
+            flyttnetto = inflytt - utflytt
+            fodselnetto = fodda - doda
+            manad_namn = manader_namn[s_manad - 1]
+            
+            fakta_text = ""
+            if vy == 'Befolkning':
+                fakta_text = (f"I {manad_namn.lower()} {s_ar} uppgick folkmängden i Linköping till {folk_nu:,}. "
+                              f"Det innebär en förändring med {diff_manad:+} personer jämfört med föregående månad, "
+                              f"och {diff_ar:+} personer jämfört med samma månad föregående år. "
+                              f"Under månaden föddes {fodda} barn och {doda} personer avled (födelsenetto {fodselnetto:+}). "
+                              f"Samtidigt var kommunens totala flyttnetto {flyttnetto:+} personer.").replace(',', ' ')
+                
+            elif vy == 'Flyttning':
+                inflytt_fg_a = safe_int(rad_fg_a.get('Inflyttning_Manad', 0)) if not rad_fg_a.empty else 0
+                utflytt_fg_a = safe_int(rad_fg_a.get('Utflyttning_Manad', 0)) if not rad_fg_a.empty else 0
+                diff_in = inflytt - inflytt_fg_a
+                diff_ut = utflytt - utflytt_fg_a
+                
+                fakta_text = (f"Under {manad_namn.lower()} {s_ar} registrerades {inflytt} inflyttningar till Linköping "
+                              f"och {utflytt} utflyttningar. Detta gav ett flyttnetto på {flyttnetto:+} personer för månaden. "
+                              f"Jämfört med samma månad föregående år innebär det en förändring av inflyttningen med {diff_in:+} "
+                              f"personer och utflyttningen med {diff_ut:+} personer.").replace(',', ' ')
 
-            out_text_path = os.path.join(spara_mapp, "befolkning_texter.csv")
-            df_texter.to_csv(out_text_path, sep=';', index=False, encoding='cp1252')
-            print(f"      -> Filen sparades som {out_text_path}")
+            # Spara ner grundtexten i autogenererad
+            df_texter.at[idx, 'Autogenererad_Fakta'] = fakta_text
+            
+            # --- Smart hantering av A, M, K ---
+            egen_text = str(row.get('Färdig_Analystext', '')).strip()
+            if egen_text.upper() == 'NAN': egen_text = ''
+            
+            if robot == 'M' and egen_text != '':
+                df_texter.at[idx, 'Färdig_Analystext'] = egen_text
+            elif robot == 'K':
+                if egen_text != '':
+                    df_texter.at[idx, 'Färdig_Analystext'] = egen_text
+                else:
+                    df_texter.at[idx, 'Färdig_Analystext'] = fakta_text # Fallback om cellen är tom
+            else:
+                # Oavsett om det står A eller är tomt, sätts den autogenererade texten
+                df_texter.at[idx, 'Färdig_Analystext'] = fakta_text
+
+        def rensa_heltal(v):
+            try:
+                if pd.isna(v): return ''
+                v_str = str(v).strip().upper()
+                if v_str == '' or v_str == 'NAN': return ''
+                return str(int(float(v)))
+            except:
+                return str(v)
+        
+        if 'År' in df_texter.columns: df_texter['År'] = df_texter['År'].apply(rensa_heltal)
+        if 'Månad' in df_texter.columns: df_texter['Månad'] = df_texter['Månad'].apply(rensa_heltal)
+        
+        for c in ['Robot_Fakta', 'Autogenererad_Fakta', 'Färdig_Analystext', 'Rapportvy']:
+            if c in df_texter.columns:
+                df_texter[c] = df_texter[c].astype(str).replace(r'(?i)^nan$', '', regex=True)
+
+        out_text_path = os.path.join(spara_mapp, "befolkning_texter.csv")
+        df_texter.to_csv(out_text_path, sep=';', index=False, encoding='cp1252')
+        print(f"      -> Filen sparades som {out_text_path}")
         
     except Exception as e:
         print(f"Ett fel uppstod vid textgenerering: {e}")

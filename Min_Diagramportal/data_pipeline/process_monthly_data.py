@@ -174,7 +174,10 @@ for index, row in df_styrning.iterrows():
 
     df_main[f"{dash_namn}_Prognos_Slutgiltig"] = np.select(conditions, choices, default=np.nan)
     df_main[f"{dash_namn}_Polaritet"] = row.get('Polaritet', np.nan)
-    df_main[f"{dash_namn}_Troskel"] = row.get('Troskel', np.nan)
+    
+    # FIX FÖR TRÖSKEL: Hanterar både 'Troskel' och 'Tröskel' för att undvika NaN om man använder å/ä/ö
+    df_main[f"{dash_namn}_Troskel"] = row.get('Tröskel', row.get('Troskel', np.nan))
+    
     df_main[f"{dash_namn}_Absolut_R12"] = row.get('Absolut_R12', np.nan)
     df_main[f"{dash_namn}_Minitabell"] = row.get('Minitabell_Kolumn', np.nan)
     df_main[f"{dash_namn}_Minitabell_Sort"] = row.get('Minitabell_Sortering', np.nan)
@@ -207,7 +210,8 @@ try:
     df_texter = df_texter.loc[:, ~df_texter.columns.duplicated()]
     df_texter = df_texter.fillna('')
     
-    for col in ['Autogenererad_Fakta', 'Färdig_Analystext', 'Robot_Fakta', 'Rapportvy']:
+    # Lade till Diagram4_syss här så att kolumnen skapas/bevaras
+    for col in ['Autogenererad_Fakta', 'Färdig_Analystext', 'Robot_Fakta', 'Rapportvy', 'Diagram4_syss']:
         if col not in df_texter.columns:
             df_texter[col] = ''
             
@@ -280,7 +284,7 @@ try:
     if 'Månad' in df_texter.columns: df_texter['Månad'] = df_texter['Månad'].apply(rensa_heltal)
     
     # Städar bort ordet "NAN" om det har sparats i text-kolumnerna
-    for c in ['Robot_Fakta', 'Autogenererad_Fakta', 'Färdig_Analystext', 'Rapportvy']:
+    for c in ['Robot_Fakta', 'Autogenererad_Fakta', 'Färdig_Analystext', 'Rapportvy', 'Diagram4_syss']:
         if c in df_texter.columns:
             df_texter[c] = df_texter[c].astype(str).replace(r'(?i)^nan$', '', regex=True)
 
@@ -352,7 +356,7 @@ for index, row in df_styrning.iterrows():
     ind_obj = {
         "id": dash_namn,
         "label": label,
-        "drilldown_komponenter": drill_komp,
+        "drilldown_komponenter": drill_komp,    
         "drilldown_farger": drill_farg,
         "drilldown_typ": drill_typ
     }
