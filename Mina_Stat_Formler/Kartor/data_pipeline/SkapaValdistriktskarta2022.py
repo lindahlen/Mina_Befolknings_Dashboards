@@ -48,8 +48,6 @@ print(f"✅ Modermapp identifierad: {moder_mapp}")
 # --- FILNAMN FÖR VALKARTAN ---
 GEOJSON_VAL_FILENAME = 'Valkarta2022.geojson'
 OUT_HTML_NAME = 'Valdeltagande_2022.html'
-OUT_JSON_NAME = 'val_områdesdata_2022.json'
-HEAT_JSON_NAME = 'val_heat_data_2022.json'
 
 encoding_fix = {
     'Ã¥': 'å', 'Ã¤': 'ä', 'Ã¶': 'ö', 'Ã…': 'Å', 'Ã„': 'Ä', 'Ã–': 'Ö',
@@ -139,15 +137,40 @@ try:
     df_adress = None
     heat_data_list = []
     cluster_points = []
+    trakt_list = []
     agg_rost = pd.DataFrame()
 
     if os.path.exists(adress_file_xlsx): df_adress = pd.read_excel(adress_file_xlsx)
     elif os.path.exists(adress_file_csv): df_adress = pd.read_csv(adress_file_csv)
 
     if df_adress is not None and not df_adress.empty:
-        df_adress['X'] = pd.to_numeric(df_adress.get('X', np.nan), errors='coerce')
-        df_adress['Y'] = pd.to_numeric(df_adress.get('Y', np.nan), errors='coerce')
+        # Säkerställ koordinaterna genom kommateckentvätt
+        df_adress['X'] = pd.to_numeric(df_adress.get('X', np.nan).astype(str).str.replace(',', '.').str.replace(' ', ''), errors='coerce')
+        df_adress['Y'] = pd.to_numeric(df_adress.get('Y', np.nan).astype(str).str.replace(',', '.').str.replace(' ', ''), errors='coerce')
         df_adress = df_adress.dropna(subset=['X', 'Y'])
+        
+        # --- AGGREGERA PÅ TRAKT/KVARTER ---
+        # Tvätta fastighet och antal_rostberattigade oavsett små/stora bokstäver
+        c_map_adr = {str(c).strip().lower(): c for c in df_adress.columns}
+        fast_col = next((c_map_adr[c] for c in ['fastighet', 'fastighetsbeteckning'] if c in c_map_adr), None)
+        if fast_col:
+            df_adress['fastighet_clean'] = df_adress[fast_col].apply(lambda x: fix_text(str(x)) if pd.notnull(x) else 'Okänd')
+        else:
+            df_adress['fastighet_clean'] = 'Okänd'
+            
+        rost_col = next((c_map_adr[c] for c in ['antal_rostberattigade', 'rostberattigade'] if c in c_map_adr), 'antal_rostberattigade')
+        df_adress['rostberattigade_clean'] = pd.to_numeric(df_adress.get(rost_col, 0), errors='coerce').fillna(0)
+        
+        # Klipp av siffrorna från fastigheten för att få trakt ("Olofstorp 1:16" -> "Olofstorp")
+        df_adress['trakt'] = df_adress['fastighet_clean'].astype(str).str.extract(r'^([^\d]+)')[0].str.strip()
+        valid_adress = df_adress[df_adress['rostberattigade_clean'] > 0].copy()
+        
+        if not valid_adress.empty:
+            trakt_agg = valid_adress.groupby('trakt').agg({'X': 'mean', 'Y': 'mean', 'rostberattigade_clean': 'sum'}).reset_index()
+            trakt_gdf = gpd.GeoDataFrame(trakt_agg, geometry=gpd.points_from_xy(trakt_agg.X, trakt_agg.Y), crs="EPSG:3006").to_crs(4326)
+            for idx, row in trakt_gdf.iterrows():
+                if pd.notnull(row.geometry.y) and pd.notnull(row.geometry.x) and row['trakt'] and row['trakt'] != 'Okänd':
+                    trakt_list.append([float(row.geometry.y), float(row.geometry.x), safe_str(row['trakt']), int(row['rostberattigade_clean'])])
         
         adress_gdf = gpd.GeoDataFrame(df_adress, geometry=gpd.points_from_xy(df_adress.X, df_adress.Y), crs="EPSG:3006")
         
@@ -155,33 +178,34 @@ try:
         if not valdistrikt_gdf.empty:
             vd_3006 = valdistrikt_gdf.to_crs(epsg=3006)
             joined = gpd.sjoin(adress_gdf, vd_3006, how="inner", predicate="within")
-            agg_rost = joined.groupby('MATCH_ID')['antal_rostberattigade'].sum().reset_index()
-            agg_rost.rename(columns={'antal_rostberattigade': 'Beraknad_Rostberattigade'}, inplace=True)
+            agg_rost = joined.groupby('MATCH_ID')['rostberattigade_clean'].sum().reset_index()
+            agg_rost.rename(columns={'rostberattigade_clean': 'Beraknad_Rostberattigade'}, inplace=True)
             
             joined_4326 = joined.to_crs(epsg=4326)
-            joined_4326['antal_rostberattigade'] = pd.to_numeric(joined_4326['antal_rostberattigade'], errors='coerce')
-            valid_points = joined_4326.dropna(subset=['geometry', 'antal_rostberattigade'])
-            valid_points = valid_points[valid_points['antal_rostberattigade'] > 0]
+            joined_4326['rostberattigade_clean'] = pd.to_numeric(joined_4326['rostberattigade_clean'], errors='coerce')
+            valid_points = joined_4326.dropna(subset=['geometry', 'rostberattigade_clean'])
+            valid_points = valid_points[valid_points['rostberattigade_clean'] > 0]
             
             for idx, row in valid_points.iterrows():
                 y, x = float(row.geometry.y), float(row.geometry.x)
                 if not math.isnan(y) and not math.isnan(x):
                     # Lägg till MATCH_ID (index 3) i listan för supersnabb JS-filtrering!
-                    heat_data_list.append([y, x, float(row.antal_rostberattigade), str(row.MATCH_ID)])
+                    heat_data_list.append([y, x, float(row.rostberattigade_clean), str(row.MATCH_ID)])
                     cluster_points.append([y, x, str(row.MATCH_ID)])
         else:
             adress_gdf_4326 = adress_gdf.to_crs(epsg=4326)
-            adress_gdf_4326['antal_rostberattigade'] = pd.to_numeric(adress_gdf_4326['antal_rostberattigade'], errors='coerce')
-            valid_points = adress_gdf_4326.dropna(subset=['geometry', 'antal_rostberattigade'])
-            valid_points = valid_points[valid_points['antal_rostberattigade'] > 0]
+            adress_gdf_4326['rostberattigade_clean'] = pd.to_numeric(adress_gdf_4326['rostberattigade_clean'], errors='coerce')
+            valid_points = adress_gdf_4326.dropna(subset=['geometry', 'rostberattigade_clean'])
+            valid_points = valid_points[valid_points['rostberattigade_clean'] > 0]
             for idx, row in valid_points.iterrows():
                 y, x = float(row.geometry.y), float(row.geometry.x)
                 if not math.isnan(y) and not math.isnan(x):
-                    heat_data_list.append([y, x, float(row.antal_rostberattigade), ""])
+                    heat_data_list.append([y, x, float(row.rostberattigade_clean), ""])
                     cluster_points.append([y, x, ""])
 
     heat_data_json_str = json.dumps(heat_data_list, cls=NumpyPandasEncoder)
     cluster_points_json_str = json.dumps(cluster_points, cls=NumpyPandasEncoder)
+    trakt_json_str = json.dumps(trakt_list, cls=NumpyPandasEncoder)
 
     valdistrikt_excel_path = os.path.join(excel_filer_dir, 'Valdistrikt_valkrets.xlsx')
     df_lokaler = pd.DataFrame()
@@ -217,8 +241,8 @@ try:
             y_col = next((c for c in df_lokaler.columns if str(c).upper() in ['Y', 'Y_KOORD', 'LAT', 'LATITUDE', 'LATITUD']), None)
             
             if x_col and y_col:
-                df_lokaler['X_num'] = pd.to_numeric(df_lokaler[x_col], errors='coerce')
-                df_lokaler['Y_num'] = pd.to_numeric(df_lokaler[y_col], errors='coerce')
+                df_lokaler['X_num'] = pd.to_numeric(df_lokaler[x_col].astype(str).str.replace(',', '.').str.replace(' ', ''), errors='coerce')
+                df_lokaler['Y_num'] = pd.to_numeric(df_lokaler[y_col].astype(str).str.replace(',', '.').str.replace(' ', ''), errors='coerce')
                 valid_lok = df_lokaler.dropna(subset=['X_num', 'Y_num']).copy()
                 
                 if not valid_lok.empty:
@@ -326,31 +350,75 @@ try:
     lokaler_json_str = json.dumps(lokaler_list, cls=NumpyPandasEncoder)
     poi_json_str = json.dumps(poi_list, cls=NumpyPandasEncoder)
 
+    # --- LÄS IN RIKTIG PARTIDATA FRÅN EXCEL OCH TVÄTTA ---
+    partier = ['M', 'KD', 'L', 'C', 'S', 'V', 'MP', 'SD', 'LL']
+    party_data_dict = {}
+    party_results_path = os.path.join(excel_filer_dir, 'Partiernas_valresultat.xlsx')
+    
+    if os.path.exists(party_results_path):
+        try:
+            xls_parti = pd.ExcelFile(party_results_path)
+            for p in partier:
+                if p in xls_parti.sheet_names:
+                    df_p = pd.read_excel(party_results_path, sheet_name=p)
+                    c_map_p = {str(c).strip().upper(): c for c in df_p.columns}
+                    p_id_col = next((c_map_p[c] for c in ['LÄNKOMMUNKOD', 'KODEN', 'LKFV', 'VALDISTRIKTSKOD'] if c in c_map_p), None)
+                    val_col = next((c_map_p[c] for c in ['2022', 'VALRESULTAT 2022', 'ANDEL 2022', 'PROCENT', 'ANDEL', 'RESULTAT', 'RÖSTER (%)'] if c in c_map_p), None)
+                    
+                    if p_id_col and val_col:
+                        df_p['MATCH_ID'] = df_p[p_id_col].apply(normalize_id)
+                        for _, row_p in df_p.iterrows():
+                            m_id = str(row_p['MATCH_ID'])
+                            if m_id not in party_data_dict:
+                                party_data_dict[m_id] = {pt: 0.0 for pt in partier}
+                            
+                            val_str = str(row_p[val_col]).replace(',', '.').replace('%', '').replace(' ', '').strip()
+                            try:
+                                v = float(val_str)
+                                party_data_dict[m_id][p] = v
+                            except:
+                                pass
+                                
+            # Säkerhetscheck: Är värdena inmatade som t.ex. 0.25 istället för 25%?
+            for m_id, p_data in party_data_dict.items():
+                tot = sum(p_data.values())
+                # Om summan av alla partier är under 1.5 betyder det att decimalformat används
+                if 0 < tot <= 1.5:  
+                    for pt in p_data:
+                        party_data_dict[m_id][pt] = round(p_data[pt] * 100, 1)
+                else:
+                    for pt in p_data:
+                        party_data_dict[m_id][pt] = round(p_data[pt], 1)
+        except Exception as e:
+            print(f"Kunde inte läsa in Partiernas valresultat: {e}")
+
     # --- BYGG DATADICTIONARY FÖR JAVASCRIPT ---
     val_data_dict = {}
-    partier = ['S', 'M', 'SD', 'C', 'V', 'KD', 'L', 'MP', 'LL']
 
-    # Se till att vi använder korrekta historiska valår för Sverige
-    hist_years = ['1998', '2002', '2006', '2010', '2014', '2018']
+    hist_years = ['1998', '2002', '2006', '2010', '2014', '2018', '2022']
 
     if not gdf_merged.empty:
-        np.random.seed(42)
         for idx, row in gdf_merged.iterrows():
             match_id = safe_str(row.get('MATCH_ID', 'Okänt'))
             
             hist_data = {}
             for y in hist_years:
-                val = row.get(y)
+                val = row.get(y, row.get(y + '_hist'))
                 if pd.isna(val) and int(y) in row: val = row.get(int(y))
                 if val is not None and not pd.isna(val):
-                    try: hist_data[y] = round(float(val), 1)
-                    except: pass
+                    try: hist_data[y] = round(float(str(val).replace(',', '.')), 1)
+                    except: hist_data[y] = None
                 else: 
-                    hist_data[y] = round(np.random.uniform(70, 95), 1)
+                    hist_data[y] = None
 
             namn = safe_str(row.get('Namn', row.get('NAMN', f'Område_{idx}')))
             
             valdeltagande = round(safe_num(row.get('Valdeltagande', 0)), 1)
+            
+            # Säkerställ att 2022 kommer med i linjediagrammet
+            if hist_data.get('2022') is None and valdeltagande > 0:
+                hist_data['2022'] = valdeltagande
+                
             rostberattigade = int(safe_num(row.get('Röstberättigade', 0))) 
             rostberattigade_2025 = int(safe_num(row.get('Beraknad_Rostberattigade', 0))) 
             
@@ -373,6 +441,10 @@ try:
             lok_lat = row.get('Lok_Lat', None)
             lok_lon = row.get('Lok_Lon', None)
 
+            # Dra in riktig partidata istället för random!
+            p_data = party_data_dict.get(match_id, {pt: 0.0 for pt in partier})
+            storsta_parti = max(p_data, key=p_data.get) if any(v > 0 for v in p_data.values()) else 'Saknas'
+
             val_data_dict[match_id] = {
                 'NAMN': namn,
                 'Valkrets': safe_str(row.get('Valkrets', 'Saknas')),
@@ -392,8 +464,8 @@ try:
                 'Andel_hyresratt': andel_hyresratt,
                 'Andel_ensamstaende': andel_ensamstaende,
                 'Andel_eftergymnasial': andel_eftergymnasial,
-                'Storsta_Parti': safe_str(row.get('Storsta_Parti', np.random.choice(partier))),
-                'Partidata': {p: np.random.randint(5, 35) for p in partier},
+                'Storsta_Parti': storsta_parti,
+                'Partidata': p_data,
                 'Historik_Valdeltagande': hist_data
             }
         val_data_json_str = json.dumps(val_data_dict, cls=NumpyPandasEncoder)
@@ -713,7 +785,11 @@ try:
         </div>
         <div class="form-check mb-1">
             <input class="form-check-input" type="checkbox" id="toggleKluster">
-            <label class="form-check-label" for="toggleKluster">🏘️ Adresspunkter (Kluster)</label>
+            <label class="form-check-label" for="toggleKluster">🏘️ Adresspunkter (Alla)</label>
+        </div>
+        <div class="form-check mb-1">
+            <input class="form-check-input" type="checkbox" id="toggleTrakter">
+            <label class="form-check-label fw-bold text-primary" for="toggleTrakter">🏘️ Trakter/Kvarter (Summerat)</label>
         </div>
         <div class="form-check mb-1">
             <input class="form-check-input" type="checkbox" id="toggleLokaler">
@@ -748,7 +824,7 @@ try:
         
         <ul class="nav nav-tabs mb-3" id="infoTabs" role="tablist">
             <li class="nav-item"><button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab">Översikt 2022</button></li>
-            <li class="nav-item"><button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">Historik (1970-)</button></li>
+            <li class="nav-item"><button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history" type="button" role="tab">Historik (1998-)</button></li>
         </ul>
         
         <div class="tab-content" id="infoTabsContent">
@@ -774,6 +850,7 @@ try:
         var valData = {val_data_json_str};
         var heatPoints = {heat_data_json_str};
         var clusterPoints = {cluster_points_json_str};
+        var traktData = {trakt_json_str};
         var lokalerData = {lokaler_json_str};
         var poiData = {poi_json_str};
         var transportData = {transport_str};
@@ -935,7 +1012,7 @@ try:
                 
                 if (varNames[variable]) {{
                     var prefix = (variable === 'Delta_Valdeltagande' && data[variable] > 0) ? '+' : '';
-                    extraInfo = `<strong>${{varNames[variable][0]}}</strong> <span style="color:#e74c3c;">${{prefix}}${{data[variable].toLocaleString('sv-SE')}}${{varNames[variable][1]}}</span><br>`;
+                    extraInfo = `<strong>${{varNames[variable][0]}}</strong> <span style="color:#e74c3c;">${{prefix}}${{data[variable] !== null ? data[variable].toLocaleString('sv-SE') : '?'}}${{varNames[variable][1]}}</span><br>`;
                 }}
 
                 return `
@@ -972,7 +1049,7 @@ try:
                     top10Ids = sorted.map(entry => entry[0]);
                 }}
 
-                var currentOpacity = document.getElementById('opacitySlider').value;
+                var currentOpacity = parseFloat(document.getElementById('opacitySlider').value);
 
                 map.eachLayer(function(layer) {{
                     if (layer.options && layer.options.className && layer.options.className.includes('valdistrikt-polygon')) {{
@@ -983,8 +1060,8 @@ try:
                             
                             if (data) {{
                                 if (currentValkrets !== 'ALLA' && data.Valkrets !== currentValkrets) isVisible = false;
-                                if (currentFilter === 'UTLAND' && data.Andel_Utlandska_Medborgare <= 8) isVisible = false;
-                                if (currentFilter === 'VALDELTAGANDE' && data.Valdeltagande >= 75) isVisible = false;
+                                if (currentFilter === 'UTLAND' && data.Andel_Utlandska_Medborgare !== null && data.Andel_Utlandska_Medborgare <= 8) isVisible = false;
+                                if (currentFilter === 'VALDELTAGANDE' && data.Valdeltagande !== null && data.Valdeltagande >= 75) isVisible = false;
                                 if (currentFilter === 'TOP10' || currentFilter === 'BOTTOM10') {{
                                     if (currentActiveVariable === 'Granser') isVisible = true; 
                                     else if (!top10Ids.includes(matchId)) isVisible = false;
@@ -1035,26 +1112,38 @@ try:
 
             function setFilterBtnActive(btnId) {{
                 ['btn-filter-utland', 'btn-filter-valdeltagande', 'btn-filter-top10', 'btn-filter-bottom10'].forEach(id => {{
-                    document.getElementById(id).classList.remove('btn-secondary');
-                    document.getElementById(id).classList.add('btn-outline-secondary');
+                    var el = document.getElementById(id);
+                    if(el) {{
+                        el.classList.remove('btn-secondary');
+                        el.classList.add('btn-outline-secondary');
+                    }}
                 }});
                 if (btnId) {{
-                    document.getElementById(btnId).classList.remove('btn-outline-secondary');
-                    document.getElementById(btnId).classList.add('btn-secondary');
+                    var btnEl = document.getElementById(btnId);
+                    if(btnEl) {{
+                        btnEl.classList.remove('btn-outline-secondary');
+                        btnEl.classList.add('btn-secondary');
+                    }}
                 }}
             }}
 
-            document.getElementById('btn-filter-utland').addEventListener('click', function() {{
-                currentFilter = currentFilter === 'UTLAND' ? 'NONE' : 'UTLAND';
-                setFilterBtnActive(currentFilter === 'UTLAND' ? 'btn-filter-utland' : null);
-                applyFilters();
-            }});
+            var filterUtland = document.getElementById('btn-filter-utland');
+            if (filterUtland) {{
+                filterUtland.addEventListener('click', function() {{
+                    currentFilter = currentFilter === 'UTLAND' ? 'NONE' : 'UTLAND';
+                    setFilterBtnActive(currentFilter === 'UTLAND' ? 'btn-filter-utland' : null);
+                    applyFilters();
+                }});
+            }}
 
-            document.getElementById('btn-filter-valdeltagande').addEventListener('click', function() {{
-                currentFilter = currentFilter === 'VALDELTAGANDE' ? 'NONE' : 'VALDELTAGANDE';
-                setFilterBtnActive(currentFilter === 'VALDELTAGANDE' ? 'btn-filter-valdeltagande' : null);
-                applyFilters();
-            }});
+            var filterVald = document.getElementById('btn-filter-valdeltagande');
+            if (filterVald) {{
+                filterVald.addEventListener('click', function() {{
+                    currentFilter = currentFilter === 'VALDELTAGANDE' ? 'NONE' : 'VALDELTAGANDE';
+                    setFilterBtnActive(currentFilter === 'VALDELTAGANDE' ? 'btn-filter-valdeltagande' : null);
+                    applyFilters();
+                }});
+            }}
 
             document.getElementById('btn-filter-top10').addEventListener('click', function() {{
                 currentFilter = currentFilter === 'TOP10' ? 'NONE' : 'TOP10';
@@ -1109,31 +1198,31 @@ try:
                                 map.fitBounds(l.getBounds(), {{padding: [50, 50], maxZoom: 14}});
                                 
                                 var origStyle = l.defaultStyle;
-                                // Tydligare blink-effekt för sökningen!
                                 var blinks = 0;
                                 var blinkInterval = setInterval(function() {{
                                     if (blinks % 2 === 0) {{
-                                        l.setStyle({{ weight: 8, color: '#ffff00', fillOpacity: 0.9 }}); // Tjock gul
+                                        l.setStyle({{ weight: 8, color: '#ffff00', fillOpacity: 0.9 }});
                                     }} else {{
-                                        l.setStyle({{ weight: 8, color: '#ff0000', fillOpacity: 0.9 }}); // Tjock röd
+                                        l.setStyle({{ weight: 8, color: '#ff0000', fillOpacity: 0.9 }});
                                     }}
                                     blinks++;
                                     if (blinks >= 6) {{
                                         clearInterval(blinkInterval);
                                         if(!l.filteredOut) l.setStyle({{ weight: origStyle.weight, color: origStyle.color, fillOpacity: origStyle.fillOpacity, fillColor: origStyle.fillColor }});
                                     }}
-                                }}, 500); // Blinkar varje halvsekund i 3 sekunder
+                                }}, 500);
                             }}
                         }}
                     }});
+
+                    var sRost = data.Rostberattigade !== null ? `<b>Röstberättigade (2022):</b> ${{data.Rostberattigade.toLocaleString('sv-SE')}} st<br><span style="font-size:11px; color:#777;">(Prel. 2025: ${{data.Rostberattigade_2025.toLocaleString('sv-SE')}} st)</span><br>` : `<b>Röstberättigade (Prel. 2025):</b> ${{data.Rostberattigade_2025.toLocaleString('sv-SE')}} st<br>`;
 
                     box.innerHTML = `
                         <div style="display:flex; justify-content:space-between;">
                             <h6 style="color:#0570b0; font-weight:bold; margin-bottom:4px; font-size:13px;">${{data.NAMN}}</h6>
                             <button type="button" class="btn-close btn-sm" style="font-size:10px;" onclick="document.getElementById('searchResultBox').style.display='none'; document.getElementById('searchDistrikt').value='';"></button>
                         </div>
-                        <b>Röstberättigade (2022):</b> ${{data.Rostberattigade.toLocaleString('sv-SE')}} st<br>
-                        <span style="font-size:11px; color:#777;">(Prel. 2025: ${{data.Rostberattigade_2025.toLocaleString('sv-SE')}} st)</span><br>
+                        ${{sRost}}
                         <hr style="margin:4px 0;">
                         <b>Vallokal:</b> ${{data.Vallokal}}<br>
                         <span style="color:#555;">📍 ${{data.Adress}}</span>
@@ -1153,6 +1242,43 @@ try:
             
             var clusterLayerObj = L.markerClusterGroup({{disableClusteringAtZoom: 15, spiderfyOnMaxZoom: false}});
             clusterPoints.forEach(function(p) {{ clusterLayerObj.addLayer(L.circleMarker([p[0], p[1]], {{radius: 4, fillColor: '#3498db', color: 'white', weight: 1, fillOpacity: 0.8}})); }});
+
+            // ================= NY FUNKTION: TRAKTER / KVARTER =================
+            var traktLayerObj = L.markerClusterGroup({{maxClusterRadius: 40, disableClusteringAtZoom: 13}});
+            traktData.forEach(function(t) {{
+                var lat = t[0], lng = t[1], namn = t[2], rost = t[3];
+                var html = "";
+                var displayNum = "";
+                
+                // SEKRETESS: Visa inte exakt siffra om < 5 personer
+                if (rost < 5) {{
+                    html = `
+                        <div class='val-tooltip' style='font-family:sans-serif; padding:5px; line-height: 1.4; text-align:center;'>
+                            <b style='color:#2980b9; font-size:14px;'>📍 ${{namn}}</b>
+                        </div>
+                    `;
+                    displayNum = ""; 
+                }} else {{
+                    html = `
+                        <div class='val-tooltip' style='font-family:sans-serif; padding:5px; line-height: 1.4; text-align:center;'>
+                            <b style='color:#2980b9; font-size:14px;'>📍 ${{namn}}</b><br>
+                            <b>Röstberättigade (Prel 2025):</b> ${{rost.toLocaleString('sv-SE')}} st
+                        </div>
+                    `;
+                    displayNum = rost >= 1000 ? (rost/1000).toFixed(1).replace('.0','') + 'k' : rost;
+                }}
+                
+                var icon = L.divIcon({{
+                    className: 'custom-div-icon',
+                    html: `<div style='background-color:#3498db; color:white; border-radius:50%; border:2px solid white; width:28px; height:28px; display:flex; justify-content:center; align-items:center; font-size:10px; font-weight:bold; box-shadow: 0 0 5px rgba(0,0,0,0.5);'>${{displayNum}}</div>`,
+                    iconSize: [28, 28],
+                    iconAnchor: [14, 14]
+                }});
+                
+                var marker = L.marker([lat, lng], {{icon: icon, pane: 'topMarkersPane'}}); 
+                marker.bindTooltip(html, {{direction: 'top', className: 'custom-tooltip-wrapper', offset: [0, -10]}});
+                traktLayerObj.addLayer(marker);
+            }});
 
             var transportLayerObj = L.geoJSON(transportData, {{
                 style: function(feature) {{ 
@@ -1217,7 +1343,6 @@ try:
 
                     var totalDist = 0, countWalk5 = 0, countBike5 = 0, countCar5 = 0;
                     
-                    // SUPERSNABB BERÄKNING (Kör endast på distriktets egna points)
                     distPts.forEach(p => {{
                         totalDist += p[2];
                         var d = turf.distance(turf.point([p[1], p[0]]), ptLokal, {{units: 'kilometers'}});
@@ -1225,6 +1350,10 @@ try:
                         if(d <= 1.0) countBike5 += p[2];  
                         if(d <= 2.5) countCar5 += p[2];   
                     }});
+
+                    var pctWalk = totalDist > 0 ? Math.round((countWalk5/totalDist)*100) : 0;
+                    var pctBike = totalDist > 0 ? Math.round((countBike5/totalDist)*100) : 0;
+                    var pctCar = totalDist > 0 ? Math.round((countCar5/totalDist)*100) : 0;
 
                     var html = `
                         <div style='width:260px; font-family:sans-serif;'>
@@ -1234,25 +1363,25 @@ try:
                             <b>Till Stadshuset (Fågelväg: ${{distStadshus.toFixed(2)}} km)</b><br>
                             <span style='font-size:12px;'>🚲 Cykel: ~${{bikeStadshus}} min | 🚗 Bil: ~${{carStadshus}} min</span>
                             <hr style='margin:8px 0;'>
-                            <b>Röstberättigade i ${{distriktNamn}} (${{totalDist.toLocaleString('sv-SE')}} st)</b><br>
+                            <b>Röstberättigade (Prel 2025): (${{totalDist.toLocaleString('sv-SE')}} st)</b><br>
                             <table style='width:100%; font-size:12px; margin-top:4px;'>
                                 <tr><td>&lt; 500m till lokal:</td><td style='text-align:right'><b>${{countUnder500.toLocaleString('sv-SE')}} st</b></td></tr>
                                 <tr><td>&gt; 2.5km till lokal:</td><td style='text-align:right'><b>${{countOver2500.toLocaleString('sv-SE')}} st</b></td></tr>
                             </table>
-                            <div style='font-size:12px; margin-top:6px;'><b>Når lokal på under 5 min:</b></div>
-                            <table style='width:100%; font-size:12px;'>
-                                <tr><td>🚶 Gång:</td><td style='text-align:right'>${{countWalk5.toLocaleString('sv-SE')}} st</td></tr>
-                                <tr><td>🚲 Cykel:</td><td style='text-align:right'>${{countBike5.toLocaleString('sv-SE')}} st</td></tr>
-                                <tr><td>🚗 Bil:</td><td style='text-align:right'>${{countCar5.toLocaleString('sv-SE')}} st</td></tr>
+                            <h5 style="color:#8e44ad;font-weight:bold;border-bottom:1px solid #ccc;padding-bottom:5px;margin-bottom:5px;font-size:16px;">⏱️ Nåbarhetsfångst (5 min)</h5>
+                            <span style="font-size:11px;color:#555;">Av distriktets ${{totalDist.toLocaleString('sv-SE')}} röstberättigade (Prel. 2025) når:</span>
+                            <table style="width:100%; margin-top:3px; font-size:13px;">
+                                <tr><td>🚶 Gång:</td><td style="text-align:right;"><b>${{countWalk5.toLocaleString('sv-SE')}} st</b> (${{pctWalk}}%)</td></tr>
+                                <tr><td>🚲 Cykel:</td><td style="text-align:right;"><b>${{countBike5.toLocaleString('sv-SE')}} st</b> (${{pctBike}}%)</td></tr>
+                                <tr><td>🚗 Bil:</td><td style="text-align:right;"><b>${{countCar5.toLocaleString('sv-SE')}} st</b> (${{pctCar}}%)</td></tr>
                             </table>
                         </div>
                     `;
-                    L.popup({{offset: [0, -10]}}).setLatLng([lat, lon]).setContent(html).openOn(map);
+                    L.popup({{maxWidth: 320, offset: [0, -80], autoPanPadding: [50, 50]}}).setLatLng([lat, lon]).setContent(html).openOn(map);
                 }});
                 lokalerLayerObj.addLayer(marker);
             }});
             
-            // POI med speciell styling för Stadshuset
             var poiLayerObj = L.markerClusterGroup({{maxClusterRadius: 20, spiderfyOnMaxZoom: true}});
             poiData.forEach(function(poi) {{
                 var lat = poi[0], lon = poi[1], namn = poi[2], funktion = poi[3], rots = poi[4];
@@ -1288,8 +1417,10 @@ try:
                 poiLayerObj.addLayer(marker);
             }});
 
+            // Slå på lager när de klickas
             document.getElementById('toggleVarmekarta').addEventListener('change', function(e) {{ if(this.checked) map.addLayer(heatLayerObj); else map.removeLayer(heatLayerObj); }});
             document.getElementById('toggleKluster').addEventListener('change', function(e) {{ if(this.checked) map.addLayer(clusterLayerObj); else map.removeLayer(clusterLayerObj); }});
+            document.getElementById('toggleTrakter').addEventListener('change', function(e) {{ if(this.checked) map.addLayer(traktLayerObj); else map.removeLayer(traktLayerObj); }});
             document.getElementById('toggleLokaler').addEventListener('change', function(e) {{ if(this.checked) map.addLayer(lokalerLayerObj); else map.removeLayer(lokalerLayerObj); }});
             document.getElementById('togglePOI').addEventListener('change', function(e) {{ if(this.checked) map.addLayer(poiLayerObj); else map.removeLayer(poiLayerObj); }});
             document.getElementById('toggleTransport').addEventListener('change', function(e) {{ if(this.checked) map.addLayer(transportLayerObj); else map.removeLayer(transportLayerObj); }});
@@ -1309,9 +1440,9 @@ try:
                     <table class="table table-sm table-borderless mb-2">
                         <tr><td><strong>Valkrets:</strong></td><td class="text-end">${{data.Valkrets}}</td></tr>
                         <tr><td><strong>Vallokal:</strong></td><td class="text-end">${{data.Vallokal}}<br><span style="font-size: 11px; color: #777;">📍 ${{data.Adress}}</span></td></tr>
-                        <tr><td><strong>Röstberättigade 2022:</strong></td><td class="text-end">${{data.Rostberattigade.toLocaleString('sv-SE')}} st</td></tr>
+                        <tr><td><strong>Röstberättigade (2022):</strong></td><td class="text-end">${{data.Rostberattigade !== null ? data.Rostberattigade.toLocaleString('sv-SE') : '?'}} st</td></tr>
                         <tr><td><strong><span style="color:#777;">(Prel. 2025):</span></strong></td><td class="text-end"><span style="color:#777;">${{data.Rostberattigade_2025.toLocaleString('sv-SE')}} st</span></td></tr>
-                        <tr><td><strong>Röstande:</strong></td><td class="text-end">${{data.Rostande.toLocaleString('sv-SE')}} st</td></tr>
+                        <tr><td><strong>Röstande:</strong></td><td class="text-end">${{data.Rostande !== null ? data.Rostande.toLocaleString('sv-SE') : '?'}} st</td></tr>
                         <tr><td><strong>Valdeltagande:</strong></td><td class="text-end fw-bold text-primary">${{data.Valdeltagande}} %</td></tr>
                     </table>
                 `;
@@ -1321,6 +1452,11 @@ try:
                 var overviewTab = new bootstrap.Tab(document.querySelector('#overview-tab'));
                 overviewTab.show();
 
+                var ar = data.Party_Year || "2022";
+                var st_parti_html = data.Storsta_Parti && data.Storsta_Parti !== 'Saknas' ? ` (Störst: <span style="color:${{partyColors[data.Storsta_Parti]}}">${{data.Storsta_Parti}}</span>)` : '';
+                var titleEl = document.getElementById('partyChartTitle');
+                if (titleEl) titleEl.innerHTML = "Partifördelning " + ar + ":" + st_parti_html;
+
                 let ctxParty = document.getElementById('partyChart').getContext('2d');
                 if (partyChartInstance) partyChartInstance.destroy(); 
                 let pLabels = Object.keys(data.Partidata);
@@ -1329,7 +1465,7 @@ try:
                 partyChartInstance = new Chart(ctxParty, {{
                     type: 'bar',
                     data: {{ labels: pLabels, datasets: [{{ data: pValues, backgroundColor: bgColors, borderRadius: 3 }}] }},
-                    options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }} }}, scales: {{ y: {{ beginAtZero: true, max: 50, title: {{ display: true, text: 'Röster (%)' }} }} }} }}
+                    options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }}, tooltip: {{callbacks: {{label: function(context) {{ return context.parsed.y + ' %'; }} }} }} }}, scales: {{ y: {{ beginAtZero: true, max: 60, title: {{ display: true, text: 'Röster (%)' }} }} }} }}
                 }});
 
                 let ctxHist = document.getElementById('historyChart').getContext('2d');
@@ -1338,8 +1474,8 @@ try:
                 let hValues = hLabels.map(y => data.Historik_Valdeltagande[y]);
                 historyChartInstance = new Chart(ctxHist, {{
                     type: 'line',
-                    data: {{ labels: hLabels, datasets: [{{ label: 'Valdeltagande (%)', data: hValues, borderColor: '#0570b0', backgroundColor: 'rgba(5, 112, 176, 0.1)', borderWidth: 2, fill: true, tension: 0.3 }}] }},
-                    options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }} }}, scales: {{ y: {{ min: 60, max: 100 }} }} }}
+                    data: {{ labels: hLabels, datasets: [{{ label: 'Valdeltagande (%)', data: hValues, borderColor: '#0570b0', backgroundColor: 'rgba(5, 112, 176, 0.1)', borderWidth: 2, fill: true, tension: 0.3, spanGaps: false }}] }},
+                    options: {{ responsive: true, maintainAspectRatio: false, plugins: {{ legend: {{ display: false }} }}, scales: {{ y: {{ min: 50, max: 100 }} }} }}
                 }});
             }}
 
@@ -1379,7 +1515,6 @@ try:
                 
                 var radiusKm = (minutes * speed) / (60 * factor);
                 
-                // Rita ut zonerna runt varje lokal
                 lokalerData.forEach(loc => {{
                     L.circle([loc[0], loc[1]], {{
                         radius: radiusKm * 1000,
@@ -1391,7 +1526,6 @@ try:
                     }}).addTo(coverageGroup);
                 }});
                 
-                // Räkna ut vilka som är utanför zonerna (Vita fläckar)
                 var ptsOutside = [];
                 var totalVotersOutside = 0;
                 
@@ -1411,7 +1545,6 @@ try:
                     }}
                 }});
                 
-                // Rita de som hamnar utanför som en RÖD värmekarta!
                 if(ptsOutside.length > 0) {{
                     heatLayerOutside = L.heatLayer(ptsOutside, {{
                         radius: 12, 
@@ -1421,7 +1554,6 @@ try:
                     }}).addTo(coverageGroup);
                 }}
                 
-                // Ny toast som ligger kvar länge (20 sek)
                 showToast(`<b>Täckningsanalys klar!</b><br>Kartan visar nu zoner som nås inom ${{minutes}} min. De röda områdena markerar de ca <b>${{totalVotersOutside.toLocaleString('sv-SE')}}</b> röstberättigade som har för långt till en vallokal.`, 20000);
             }});
 
@@ -1501,7 +1633,7 @@ try:
                         <tr><td>🚲 Cykel (15 km/h):</td><td style="text-align:right; font-weight:bold; color:#f39c12;">~${{bikeTime}} min</td></tr>
                         <tr><td>🚗 Bil (40 km/h):</td><td style="text-align:right; font-weight:bold; color:#e74c3c;">~${{carTime}} min</td></tr>
                     </table>
-                    <h6 style="color:#8e44ad;font-weight:bold;border-bottom:1px solid #ccc;padding-bottom:5px;margin-bottom:5px;">⏱️ Nåbarhetsfångst (5 min)</h6>
+                    <h5 style="color:#8e44ad;font-weight:bold;border-bottom:1px solid #ccc;padding-bottom:5px;margin-bottom:5px;font-size:16px;">⏱️ Nåbarhetsfångst (5 min)</h5>
                     <span style="font-size:11px;color:#555;">Av distriktets ${{totalDist.toLocaleString('sv-SE')}} röstberättigade (Prel. 2025) når:</span>
                     <table style="width:100%; margin-top:3px; font-size:13px;">
                         <tr><td>🚶 Gång:</td><td style="text-align:right;"><b>${{countWalk.toLocaleString('sv-SE')}} st</b> (${{pctWalk}}%)</td></tr>
@@ -1550,7 +1682,7 @@ try:
                 }});
 
                 document.getElementById('opacitySlider').addEventListener('input', function(e) {{
-                    var val = e.target.value;
+                    var val = parseFloat(e.target.value);
                     document.getElementById('opacityVal').innerText = Math.round(val * 100) + '%';
                     applyFilters(); 
                 }});
@@ -1586,9 +1718,8 @@ try:
                                         layer.setTooltipContent(getCleanTooltip(data, currentActiveVariable));
                                     }}
 
-                                    var currentOpacity = document.getElementById('opacitySlider').value;
-                                    var hoverOp = currentActiveVariable === 'Granser' ? 0.3 : Math.min(1.0, parseFloat(currentOpacity) + 0.2);
-                                    // Vi ändrar tjockleken kraftigt här för att ge en märkbar kantlinje
+                                    var currentOpacity = parseFloat(document.getElementById('opacitySlider').value);
+                                    var hoverOp = currentActiveVariable === 'Granser' ? 0.3 : Math.min(1.0, currentOpacity + 0.2);
                                     this.setStyle({{ weight: 5, color: '#ff0000', fillOpacity: hoverOp }});
                                     if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) this.bringToFront();
                                 }});
@@ -1648,14 +1779,16 @@ try:
                     var toggles = [
                         {{id: 'toggleVarmekarta', layer: heatLayerObj}},
                         {{id: 'toggleKluster', layer: clusterLayerObj}},
+                        {{id: 'toggleTrakter', layer: traktLayerObj}},
                         {{id: 'toggleLokaler', layer: lokalerLayerObj}},
                         {{id: 'togglePOI', layer: poiLayerObj}},
                         {{id: 'toggleTransport', layer: transportLayerObj}},
                         {{id: 'toggleVatten', layer: vattenLayerObj}}
                     ];
                     toggles.forEach(t => {{
-                        document.getElementById(t.id).checked = false;
-                        map.removeLayer(t.layer);
+                        var el = document.getElementById(t.id);
+                        if (el) el.checked = false;
+                        if(map.hasLayer(t.layer)) map.removeLayer(t.layer);
                     }});
                     
                     // 6. Sätt standard bakgrundskarta (Blek)
@@ -1666,8 +1799,8 @@ try:
                     currentBorderColor = '#2c3e50';
                     
                     // 7. Sätt tillbaka till "Valdeltagande" som standardyta
-                    document.getElementById('t_valdeltagande').checked = true;
-                    currentActiveVariable = 'Valdeltagande';
+                    var defBtn = document.getElementById('t_' + currentActiveVariable.toLowerCase()) || document.getElementById('t_valdeltagande') || document.getElementById('t_hushall');
+                    if (defBtn) defBtn.checked = true;
                     
                     // 8. Tvinga kartan att rita om allt från grunden med våra nollställda värden
                     applyFilters();

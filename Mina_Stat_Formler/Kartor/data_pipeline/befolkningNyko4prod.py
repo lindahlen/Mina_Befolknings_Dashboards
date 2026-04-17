@@ -26,6 +26,7 @@ excel_filer_dir = os.path.join(moder_mapp, 'excel_filer')
 GEOJSON_NYKO4_FILENAME = 'NYKO4v23.geojson' 
 EXCEL_POP_SHEET = 'Basområden'
 EXCEL_HUSHALL_SHEET = 'Hushållstorl_basomr'
+EXCEL_UPPLATELSE_SHEET = 'Upplåtelseform_basomr'
 OUT_JSON_NAME = 'nyko4_data.json'
 OUT_HTML_NAME = 'Linkoping_Basomraden_Nyko4.html'
 
@@ -41,7 +42,7 @@ def fix_text(text):
     return text
 
 # =====================================================================
-# 2. DATAHANTERING & ÅLDERSAGGREGERING
+# 2. DATAHANTERING & ÅLDERSAGGREGERING / BYT ÅR FÖR PUNKTDATA HÄR!
 # =====================================================================
 PUNKT_DATA_AR = "2025"
 
@@ -116,6 +117,37 @@ except Exception as e:
     print(f"INFO: Kunde inte ladda fliken '{EXCEL_HUSHALL_SHEET}' ({e}). Sätter värden till 0.")
     nyko4['Hushallsstorlek'] = 0.0
 
+# --- Läs in Upplåtelseform ---
+print(f"Hämtar data från fliken '{EXCEL_UPPLATELSE_SHEET}'...")
+try:
+    uppl_df = pd.read_excel(excel_path, sheet_name=EXCEL_UPPLATELSE_SHEET)
+    uppl_df.columns = uppl_df.columns.astype(str).str.strip()
+    uppl_df['Namn'] = uppl_df['Namn'].apply(fix_text)
+    
+    for col in ['Äganderätt', 'Bostadsrätt', 'Hyresrätt', 'Totalt']:
+        if col in uppl_df.columns:
+            uppl_df[col] = pd.to_numeric(uppl_df[col], errors='coerce').fillna(0)
+            
+    uppl_df.rename(columns={'Totalt': 'Totalt_uppl'}, inplace=True)
+    
+    nyko4 = nyko4.merge(uppl_df[['Namn', 'Äganderätt', 'Bostadsrätt', 'Hyresrätt', 'Totalt_uppl']], left_on='NAMN', right_on='Namn', how='left')
+    for col in ['Äganderätt', 'Bostadsrätt', 'Hyresrätt', 'Totalt_uppl']:
+        nyko4[col] = nyko4[col].fillna(0)
+        
+    # Beräkna "Uppgift saknas" för diagrammet
+    nyko4['Uppgift_saknas'] = nyko4['Totalt_uppl'] - (nyko4['Äganderätt'] + nyko4['Bostadsrätt'] + nyko4['Hyresrätt'])
+    nyko4['Uppgift_saknas'] = nyko4['Uppgift_saknas'].apply(lambda x: max(0, x)) # Undviker ev. minusvärden
+        
+    # Beräkna andelar i procent (skydda mot division med noll) för kartlagren
+    nyko4['Andel_Aganderatt'] = nyko4.apply(lambda r: round((r['Äganderätt'] / r['Totalt_uppl'] * 100), 1) if r['Totalt_uppl'] > 0 else 0.0, axis=1)
+    nyko4['Andel_Bostadsratt'] = nyko4.apply(lambda r: round((r['Bostadsrätt'] / r['Totalt_uppl'] * 100), 1) if r['Totalt_uppl'] > 0 else 0.0, axis=1)
+    nyko4['Andel_Hyresratt'] = nyko4.apply(lambda r: round((r['Hyresrätt'] / r['Totalt_uppl'] * 100), 1) if r['Totalt_uppl'] > 0 else 0.0, axis=1)
+
+except Exception as e:
+    print(f"INFO: Kunde inte ladda fliken '{EXCEL_UPPLATELSE_SHEET}' ({e}). Sätter andelar till 0.")
+    for col in ['Totalt_uppl', 'Äganderätt', 'Bostadsrätt', 'Hyresrätt', 'Uppgift_saknas', 'Andel_Aganderatt', 'Andel_Bostadsratt', 'Andel_Hyresratt']:
+        nyko4[col] = 0.0
+
 # --- Skapa visningskolumner för att dölja data under < 5 (Sekretess) ---
 def mask_pop(x):
     try:
@@ -137,6 +169,11 @@ nyko4['Folkmängd_visa'] = nyko4['Folkmängd'].apply(mask_pop)
 nyko4['Inv_per_km2_visa'] = nyko4.apply(lambda r: mask_other(r['Inv_per_km2'], r['Folkmängd']), axis=1)
 nyko4['Hushallsstorlek_visa'] = nyko4.apply(lambda r: mask_other(r['Hushallsstorlek'], r['Folkmängd']), axis=1)
 
+# Skapa masker för andelar (baserat på antalet hushåll)
+nyko4['Andel_Aganderatt_visa'] = nyko4.apply(lambda r: mask_other(r['Andel_Aganderatt'], r['Totalt_uppl']), axis=1)
+nyko4['Andel_Bostadsratt_visa'] = nyko4.apply(lambda r: mask_other(r['Andel_Bostadsratt'], r['Totalt_uppl']), axis=1)
+nyko4['Andel_Hyresratt_visa'] = nyko4.apply(lambda r: mask_other(r['Andel_Hyresratt'], r['Totalt_uppl']), axis=1)
+
 
 # Förbered historisk data för Grafen
 hist_json_data = {}
@@ -148,7 +185,11 @@ for idx, row in nyko4.iterrows():
         val = row[y]
         if pd.notna(val):
             labels.append(y)
-            data.append(int(val))
+            # Maskera värden under 5 i historik-grafen genom att lägga till None
+            if 0 < int(val) < 5:
+                data.append(None)
+            else:
+                data.append(int(val))
     hist_json_data[namn] = {'labels': labels, 'data': data}
 hist_json_str = json.dumps(hist_json_data)
 
@@ -305,15 +346,22 @@ for idx, row in nyko4.iterrows():
             'hushall': float(row.get('Hushallsstorlek', 0)),
             'a0_5': int(row['Grp_0_5']), 'a6_15': int(row['Grp_6_15']), 'a6_9': int(row['Grp_6_9']),
             'a10_12': int(row['Grp_10_12']), 'a13_15': int(row['Grp_13_15']), 'a16_18': int(row['Grp_16_18']),
-            'a19_64': int(row['Grp_19_64']), 'a65_79': int(row['Grp_65_79']), 'a80': int(row['Grp_80plus'])
+            'a19_64': int(row['Grp_19_64']), 'a65_79': int(row['Grp_65_79']), 'a80': int(row['Grp_80plus']),
+            'agan': int(row.get('Äganderätt', 0)),
+            'bost': int(row.get('Bostadsrätt', 0)),
+            'hyre': int(row.get('Hyresrätt', 0)),
+            'saknas': int(row.get('Uppgift_saknas', 0)),
+            'tot_uppl': int(row.get('Totalt_uppl', 0))
         })
 
+# Spara med nya namnet för Nyko4
 with open(os.path.join(moder_mapp, OUT_JSON_NAME), 'w', encoding='utf-8') as f: json.dump(nyko4_data, f, ensure_ascii=False)
 with open(os.path.join(moder_mapp, 'poi_data.json'), 'w', encoding='utf-8') as f: json.dump(poi_data, f, ensure_ascii=False)
 with open(os.path.join(moder_mapp, 'heat_data.json'), 'w', encoding='utf-8') as f: json.dump(heat_data, f, ensure_ascii=False)
 
 nyko4_json_str = json.dumps(nyko4_data)
 poi_json_str = json.dumps(poi_data)
+heat_data_str = json.dumps(heat_data) # Direkt inkludering för att slippa lokala Fetch-problem!
 
 # =====================================================================
 # 4. KARTBYGGE (HTML/JS Visualisering med Folium)
@@ -328,8 +376,6 @@ valid_pop = nyko4[nyko4['Folkmängd'] > 0]['Folkmängd']
 min_pop = valid_pop.min() if not valid_pop.empty else 0
 max_pop = valid_pop.max() if not valid_pop.empty else 1
 colormap_pop = cm.LinearColormap(colors=viridis_rev, vmin=min_pop, vmax=max_pop)
-colormap_pop.caption = f'Befolkning {latest_year} (antal invånare)'
-colormap_pop.add_to(m)
 
 folium.GeoJson(
     nyko4,
@@ -346,8 +392,6 @@ valid_dens = nyko4[nyko4['Inv_per_km2'] > 0]['Inv_per_km2']
 min_dens = valid_dens.min() if not valid_dens.empty else 0
 max_dens = valid_dens.max() if not valid_dens.empty else 1
 colormap_dens = cm.LinearColormap(colors=viridis_rev, vmin=min_dens, vmax=max_dens)
-colormap_dens.caption = f'Befolkningstäthet {latest_year} (inv/km²)'
-colormap_dens.add_to(m)
 
 folium.GeoJson(
     nyko4,
@@ -367,8 +411,6 @@ min_hushall = max(0, min_hushall - 0.2)
 max_hushall = max_hushall + 0.2
 
 colormap_hushall = cm.LinearColormap(colors=viridis_rev, vmin=min_hushall, vmax=max_hushall)
-colormap_hushall.caption = f'Hushållsstorlek (personer/hushåll)'
-colormap_hushall.add_to(m)
 
 folium.GeoJson(
     nyko4,
@@ -380,10 +422,46 @@ folium.GeoJson(
     tooltip=folium.GeoJsonTooltip(fields=['NAMN', 'Folkmängd_visa', 'Hushallsstorlek_visa'], aliases=['Basområde:', f'Folkmängd ({latest_year}):', 'Snitt hushållsstorlek:'], localize=True)
 ).add_to(m)
 
-# --- LAGER 4: Områdesgränser (Endast linjer) ---
+# --- LAGER 4-6: Upplåtelseformer (Choropleths) ---
+colormap_agan = cm.LinearColormap(colors=viridis_rev, vmin=0, vmax=100)
+colormap_bost = cm.LinearColormap(colors=viridis_rev, vmin=0, vmax=100)
+colormap_hyre = cm.LinearColormap(colors=viridis_rev, vmin=0, vmax=100)
+
+folium.GeoJson(
+    nyko4,
+    name='Äganderätt (%)',
+    style_function=lambda feature: {
+        'fillColor': colormap_agan(feature['properties']['Andel_Aganderatt']) if feature['properties'].get('Totalt_uppl', 0) > 0 else 'transparent',
+        'color': '#333333', 'weight': 1, 'fillOpacity': 0.60, 'className': 'polygon-layer agan-polygon'
+    },
+    tooltip=folium.GeoJsonTooltip(fields=['NAMN', 'Andel_Aganderatt_visa'], aliases=['Basområde:', 'Andel Äganderätt (%):'], localize=True)
+).add_to(m)
+
+folium.GeoJson(
+    nyko4,
+    name='Bostadsrätt (%)',
+    style_function=lambda feature: {
+        'fillColor': colormap_bost(feature['properties']['Andel_Bostadsratt']) if feature['properties'].get('Totalt_uppl', 0) > 0 else 'transparent',
+        'color': '#333333', 'weight': 1, 'fillOpacity': 0.60, 'className': 'polygon-layer bost-polygon'
+    },
+    tooltip=folium.GeoJsonTooltip(fields=['NAMN', 'Andel_Bostadsratt_visa'], aliases=['Basområde:', 'Andel Bostadsrätt (%):'], localize=True)
+).add_to(m)
+
+folium.GeoJson(
+    nyko4,
+    name='Hyresrätt (%)',
+    style_function=lambda feature: {
+        'fillColor': colormap_hyre(feature['properties']['Andel_Hyresratt']) if feature['properties'].get('Totalt_uppl', 0) > 0 else 'transparent',
+        'color': '#333333', 'weight': 1, 'fillOpacity': 0.60, 'className': 'polygon-layer hyre-polygon'
+    },
+    tooltip=folium.GeoJsonTooltip(fields=['NAMN', 'Andel_Hyresratt_visa'], aliases=['Basområde:', 'Andel Hyresrätt (%):'], localize=True)
+).add_to(m)
+
+
+# --- LAGER 7: Områdesgränser (Endast linjer) ---
 folium.GeoJson(nyko4, name='Områdesgränser', style_function=lambda feature: {'fill': False, 'color': '#2c3e50', 'weight': 2, 'className': 'polygon-layer border-polygon'}).add_to(m)
 
-# --- LAGER 5: MiniMap (Karta i kartan) ---
+# --- LAGER 8: MiniMap (Karta i kartan) ---
 minimap = MiniMap(
     toggleDisplay=True, 
     position="topleft", 
@@ -434,12 +512,13 @@ ui_html = f"""
         100% {{ box-shadow: 0 0 0 0 rgba(243, 156, 18, 0); transform: scale(calc(var(--poi-scale) * 1.15)); }}
     }}
 
-    /* RESPONSIV LEGEND-CONTAINER */
+    /* RESPONSIV LEGEND-CONTAINER (EGENBYGGD) */
     .legend-container {{ position: fixed; bottom: 30px; right: 20px; z-index: 9998; display: flex; flex-direction: column; gap: 10px; pointer-events: none; max-height: 80vh; overflow-y: auto; }}
-    .legend {{ pointer-events: auto; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.2); position: relative !important; top: auto !important; right: auto !important; bottom: auto !important; display: none; margin: 0; border: none; }}
+    .variable-legend {{ pointer-events: auto; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 220px; }}
+    
     .leaflet-control-search .search-input {{ padding: 6px 10px; border-radius: 4px; border: 1px solid #ccc; outline: none; width: 190px; font-size: 14px; }}
     
-    /* FIXAD CSS FÖR KLUSTER - TAR BORT DEN EXTRA BAKGRUNDSRINGEN */
+    /* FIXAD CSS FÖR KLUSTER */
     .cluster-custom {{ background-color: transparent; }}
     .cluster-custom div {{ background-color: rgba(41, 128, 185, 0.95); color: white; border-radius: 50%; width: 34px; height: 34px; margin: 3px; text-align: center; line-height: 34px; font-weight: bold; font-size: 12px; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.4); }}
 
@@ -460,7 +539,63 @@ ui_html = f"""
     }}
 </style>
 
-<div class="legend-container" id="legend-container"></div>
+<!-- EGENBYGGDA, STABILA HTML-LEGENDER -->
+<div class="legend-container" id="legend-container">
+    <div id="legend-pop" class="variable-legend" style="display: block;">
+        <h6 style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color:#333;">Befolkning {latest_year} (inv)</h6>
+        <div style="background: linear-gradient(to right, #fde725, #b5de2b, #6ece58, #35b779, #1f9e89, #26828e, #31688e, #3e4989, #482878, #440154); height: 12px; border-radius: 3px; width: 100%;"></div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 3px; color:#666;">
+            <span>{int(min_pop)}</span>
+            <span>{int(max_pop)}</span>
+        </div>
+    </div>
+
+    <div id="legend-dens" class="variable-legend" style="display: none;">
+        <h6 style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color:#333;">Täthet {latest_year} (inv/km²)</h6>
+        <div style="background: linear-gradient(to right, #fde725, #b5de2b, #6ece58, #35b779, #1f9e89, #26828e, #31688e, #3e4989, #482878, #440154); height: 12px; border-radius: 3px; width: 100%;"></div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 3px; color:#666;">
+            <span>{int(min_dens)}</span>
+            <span>{int(max_dens)}</span>
+        </div>
+    </div>
+
+    <div id="legend-hushall" class="variable-legend" style="display: none;">
+        <h6 style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color:#333;">Hushållsstorlek (snitt)</h6>
+        <div style="background: linear-gradient(to right, #fde725, #b5de2b, #6ece58, #35b779, #1f9e89, #26828e, #31688e, #3e4989, #482878, #440154); height: 12px; border-radius: 3px; width: 100%;"></div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 3px; color:#666;">
+            <span>{round(min_hushall, 1)}</span>
+            <span>{round(max_hushall, 1)}</span>
+        </div>
+    </div>
+
+    <div id="legend-agan" class="variable-legend" style="display: none;">
+        <h6 style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color:#333;">Andel Äganderätt (%)</h6>
+        <div style="background: linear-gradient(to right, #fde725, #b5de2b, #6ece58, #35b779, #1f9e89, #26828e, #31688e, #3e4989, #482878, #440154); height: 12px; border-radius: 3px; width: 100%;"></div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 3px; color:#666;">
+            <span>0</span>
+            <span>100</span>
+        </div>
+    </div>
+
+    <div id="legend-bost" class="variable-legend" style="display: none;">
+        <h6 style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color:#333;">Andel Bostadsrätt (%)</h6>
+        <div style="background: linear-gradient(to right, #fde725, #b5de2b, #6ece58, #35b779, #1f9e89, #26828e, #31688e, #3e4989, #482878, #440154); height: 12px; border-radius: 3px; width: 100%;"></div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 3px; color:#666;">
+            <span>0</span>
+            <span>100</span>
+        </div>
+    </div>
+
+    <div id="legend-hyre" class="variable-legend" style="display: none;">
+        <h6 style="font-size: 13px; font-weight: bold; margin-bottom: 5px; color:#333;">Andel Hyresrätt (%)</h6>
+        <div style="background: linear-gradient(to right, #fde725, #b5de2b, #6ece58, #35b779, #1f9e89, #26828e, #31688e, #3e4989, #482878, #440154); height: 12px; border-radius: 3px; width: 100%;"></div>
+        <div style="display: flex; justify-content: space-between; font-size: 11px; margin-top: 3px; color:#666;">
+            <span>0</span>
+            <span>100</span>
+        </div>
+    </div>
+</div>
+
 <div id="infoPanel" class="info-panel">
     <div class="d-flex justify-content-between align-items-center mb-3" style="border-bottom: 2px solid #ccc; padding-bottom: 8px;">
         <h5 class="fw-bold mb-0">📊 Information</h5>
@@ -551,7 +686,10 @@ ui_html = f"""
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="togglePop" checked><label class="form-check-label" for="togglePop">Befolkning {latest_year}</label></div>
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleDens"><label class="form-check-label" for="toggleDens">Befolkningstäthet</label></div>
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleHushall"><label class="form-check-label" for="toggleHushall">Hushållsstorlek</label></div>
-    <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleBorders"><label class="form-check-label" for="toggleBorders">Områdesgränser</label></div>
+    <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleAgan"><label class="form-check-label" for="toggleAgan">Äganderätt (%)</label></div>
+    <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleBost"><label class="form-check-label" for="toggleBost">Bostadsrätt (%)</label></div>
+    <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleHyre"><label class="form-check-label" for="toggleHyre">Hyresrätt (%)</label></div>
+    <div class="form-check mb-1 mt-2"><input class="form-check-input" type="checkbox" id="toggleBorders"><label class="form-check-label" for="toggleBorders">Områdesgränser</label></div>
     
     <hr style="margin: 10px 0;">
     <h6 class="fw-bold mb-2" style="font-size: 13px;">Infrastruktur & Natur</h6>
@@ -587,6 +725,7 @@ ui_html = f"""
     document.addEventListener('DOMContentLoaded', function() {{
         var map_id = Object.keys(window).find(key => key.startsWith('map_'));
         var map = window[map_id];
+        var upplatelseChartInstans = null; // --- GLOBAL VARIABEL FÖR DIAGRAMMET ---
         
         document.documentElement.style.setProperty('--poi-scale', 1 + (map.getZoom() - 11) * 0.15);
         map.on('zoomend', function() {{
@@ -641,7 +780,6 @@ ui_html = f"""
             else if(e.target.value === 'farg') {{ tileFarg.addTo(map); }}
             else if(e.target.value === 'flyg') {{ tileFlyg.addTo(map); isFlyg = true; }}
             
-            // Uppdatera färg på områdesgränser baserat på bakgrund
             var borderColor = isFlyg ? '#ffffff' : '#2c3e50';
             map.eachLayer(function(layer) {{
                 if (layer.options && layer.options.className && layer.options.className.includes('border-polygon')) {{
@@ -656,20 +794,14 @@ ui_html = f"""
             }});
         }});
 
-        var container = document.getElementById('legend-container');
-        var legendsArray = Array.from(document.querySelectorAll('.legend'));
-        var validLegends = [];
-        legendsArray.forEach(function(leg) {{
-            var txt = (leg.textContent || leg.innerText || "").trim();
-            if (txt.length > 5) {{ validLegends.push(leg); container.appendChild(leg); }} 
-            else {{ leg.style.display = 'none'; }}
-        }});
-        
-        // --- UPPDATERAD VISIBILITETSFUNKTION (FILTRERAR ÄVEN PÅ KARAKTÄR) ---
+        // --- UPPDATERAD VISIBILITETSFUNKTION FÖR ATT HANTERA EGNA HTML-LEGENDER ---
         function updatePolygonVisibility() {{
             var showPop = document.getElementById('togglePop').checked;
             var showDens = document.getElementById('toggleDens').checked;
             var showHushall = document.getElementById('toggleHushall').checked;
+            var showAgan = document.getElementById('toggleAgan').checked;
+            var showBost = document.getElementById('toggleBost').checked;
+            var showHyre = document.getElementById('toggleHyre').checked;
             var showBorders = document.getElementById('toggleBorders').checked;
 
             var activeK1 = document.getElementById('zoomKaraktar1').value;
@@ -689,6 +821,9 @@ ui_html = f"""
                         if (cls.includes('pop-polygon') && showPop) layerVisible = true;
                         if (cls.includes('density-polygon') && showDens) layerVisible = true;
                         if (cls.includes('hushall-polygon') && showHushall) layerVisible = true;
+                        if (cls.includes('agan-polygon') && showAgan) layerVisible = true;
+                        if (cls.includes('bost-polygon') && showBost) layerVisible = true;
+                        if (cls.includes('hyre-polygon') && showHyre) layerVisible = true;
                         if (cls.includes('border-polygon') && showBorders) layerVisible = true;
 
                         var path = layer.getElement ? layer.getElement() : layer._path;
@@ -699,29 +834,47 @@ ui_html = f"""
                 }}
             }});
             
-            var showAny = showPop || showDens || showHushall;
-            validLegends.forEach(function(leg) {{ leg.style.display = showAny ? 'block' : 'none'; }});
+            // --- Hantera synlighet för våra inbyggda HTML-Legender ---
+            document.querySelectorAll('.variable-legend').forEach(el => el.style.display = 'none');
+            
+            if (showPop) {{
+                document.getElementById('legend-pop').style.display = 'block';
+            }} else if (showDens) {{
+                document.getElementById('legend-dens').style.display = 'block';
+            }} else if (showHushall) {{
+                document.getElementById('legend-hushall').style.display = 'block';
+            }} else if (showAgan) {{
+                document.getElementById('legend-agan').style.display = 'block';
+            }} else if (showBost) {{
+                document.getElementById('legend-bost').style.display = 'block';
+            }} else if (showHyre) {{
+                document.getElementById('legend-hyre').style.display = 'block';
+            }}
         }}
 
         document.getElementById('opacitySlider').addEventListener('input', function(e) {{
             var val = e.target.value;
             document.getElementById('opacityVal').innerText = Math.round(val * 100) + '%';
-            document.querySelectorAll('.pop-polygon, .density-polygon, .hushall-polygon, .default-polygon').forEach(el => {{ el.style.fillOpacity = val; }});
+            document.querySelectorAll('.pop-polygon, .density-polygon, .hushall-polygon, .agan-polygon, .bost-polygon, .hyre-polygon, .default-polygon').forEach(el => {{ el.style.fillOpacity = val; }});
         }});
 
-        document.getElementById('togglePop').addEventListener('change', function(e) {{
-            if(e.target.checked) {{ document.getElementById('toggleDens').checked = false; document.getElementById('toggleHushall').checked = false; }}
-            updatePolygonVisibility();
-        }});
-
-        document.getElementById('toggleDens').addEventListener('change', function(e) {{
-            if(e.target.checked) {{ document.getElementById('togglePop').checked = false; document.getElementById('toggleHushall').checked = false; }}
-            updatePolygonVisibility();
-        }});
+        // --- ÖMSESIDIGT UTESLUTANDE RADIOLIKNANDE LOGIK FÖR YTOR ---
+        var baseLayers = ['togglePop', 'toggleDens', 'toggleHushall', 'toggleAgan', 'toggleBost', 'toggleHyre'];
         
-        document.getElementById('toggleHushall').addEventListener('change', function(e) {{
-            if(e.target.checked) {{ document.getElementById('togglePop').checked = false; document.getElementById('toggleDens').checked = false; }}
-            updatePolygonVisibility();
+        baseLayers.forEach(function(id) {{
+            var el = document.getElementById(id);
+            if (el) {{
+                el.addEventListener('change', function(e) {{
+                    if (e.target.checked) {{
+                        baseLayers.forEach(function(otherId) {{
+                            if (otherId !== id) {{
+                                document.getElementById(otherId).checked = false;
+                            }}
+                        }});
+                    }}
+                    updatePolygonVisibility();
+                }});
+            }}
         }});
 
         document.getElementById('toggleBorders').addEventListener('change', function(e) {{
@@ -733,7 +886,7 @@ ui_html = f"""
         // Data injicerad från Python
         var nykoData = {nyko4_json_str}; 
         var poiData = {poi_json_str}; 
-        var heatDataRaw = []; 
+        var heatDataRaw = {heat_data_str}; 
         var transportData = {transport_str}; 
         var vattenData = {vatten_str};
 
@@ -788,7 +941,7 @@ ui_html = f"""
         
         // --- LÖSNING PÅ PANES (Tvingar cirklar att ligga ovanpå polygoner) ---
         map.createPane('centroidPane'); map.getPane('centroidPane').style.zIndex = 650;
-        map.createPane('circlePane'); map.getPane('circlePane').style.zIndex = 600; // Ny pane!
+        map.createPane('circlePane'); map.getPane('circlePane').style.zIndex = 600;
 
         var centroidLayer = L.featureGroup(); // Startar EJ på kartan
         var searchLayer = L.layerGroup().addTo(map); var customRadiusLayer = L.featureGroup().addTo(map); 
@@ -848,11 +1001,72 @@ ui_html = f"""
                 var distances = nykoData.map(node => ({{ node: node, dist: getDistance(d.lat, d.lon, node.lat, node.lon) }})).filter(n => n.dist > 0 && n.node.namn !== d.namn); distances.sort((a,b) => a.dist - b.dist); var nearest = distances.slice(0, 3);
                 var nnHtml = nearest.map(n => `<li style="margin-bottom:4px;">${{n.node.namn}}: <b>${{n.dist.toFixed(2)}} km</b></li>`).join('');
 
-                var centroidHtml = `<h4 style="border-bottom:2px solid #333; padding-bottom:5px; margin-bottom:12px;"><b>${{d.namn}}</b></h4><p style="font-size:15px;"><b>Folkmängd:</b> ${{safeStat(d.tot)}} invånare</p><p style="font-size:15px; margin-bottom:10px;"><b>Kategori:</b> ${{d.k1}} / ${{d.k2}}</p><p style="font-size:15px;"><b>Fågelväg t. Stora torget:</b> 🚲 ${{t.st.bike}} km | 🚗 ${{t.st.car}} km <i>(${{t.st.dist}} km)</i></p><p style="font-size:15px; margin-bottom: 15px;"><b>Restid t. Resecentrum:</b><br>🚶 ${{t.rc.walk}} min | 🚲 ${{t.rc.bike}} min | 🚌 ${{t.rc.pt}} min | 🚗 ${{t.rc.car}} min</p><div style="background: #f8f9fa; padding: 12px; border-radius: 5px;"><b style="display:block; margin-bottom:8px; font-size:14px;">De 3 närmaste grannarna:</b><ul style="padding-left:20px; margin-bottom:0; font-size:14px;">${{nnHtml}}</ul></div>`;
+                // --- BYGGER TABBADE STRUKTUREN MED DIAGRAM ---
+                var chartContent = d.tot_uppl > 0 
+                    ? `<div style="height: 200px; width: 100%; position: relative;"><canvas id="upplatelsePieChart"></canvas></div><p style="font-size:12px; color:#666; margin-top:10px; text-align:center; margin-bottom:0;">Totalt antal hushåll: ${{d.tot_uppl}}</p>` 
+                    : `<p style="text-align:center; font-style:italic; color:#999; margin-top:30px;">Upplåtelseform saknas för detta område.</p>`;
+
+                var tabsHtml = `
+                    <h4 style="border-bottom:2px solid #333; padding-bottom:5px; margin-bottom:12px;"><b>${{d.namn}}</b></h4>
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#tab-oversikt" type="button" style="padding: 6px 10px; font-size: 13px; color:#2c3e50;">Översikt</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" data-bs-toggle="tab" data-bs-target="#tab-uppl" type="button" style="padding: 6px 10px; font-size: 13px; color:#2c3e50;">Upplåtelseform</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" style="padding-top: 12px;">
+                        <div class="tab-pane fade show active" id="tab-oversikt" role="tabpanel">
+                            <p style="font-size:14px; margin-bottom: 6px;"><b>Folkmängd:</b> ${{safeStat(d.tot)}} invånare</p>
+                            <p style="font-size:14px; margin-bottom: 10px;"><b>Kategori:</b> ${{d.k1}} / ${{d.k2}}</p>
+                            <p style="font-size:14px; margin-bottom: 6px;"><b>Fågelväg t. Stora torget:</b> 🚲 ${{t.st.bike}} km | 🚗 ${{t.st.car}} km</p>
+                            <p style="font-size:14px; margin-bottom: 12px;"><b>Restid t. Resecentrum:</b><br>🚶 ${{t.rc.walk}} min | 🚲 ${{t.rc.bike}} min | 🚌 ${{t.rc.pt}} min | 🚗 ${{t.rc.car}} min</p>
+                            <div style="background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                                <b style="display:block; margin-bottom:5px; font-size:13px;">De 3 närmaste grannarna:</b>
+                                <ul style="padding-left:20px; margin-bottom:0; font-size:13px;">${{nnHtml}}</ul>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="tab-uppl" role="tabpanel">
+                            ${{chartContent}}
+                        </div>
+                    </div>
+                `;
                 
                 var centroidMarker = L.circleMarker([d.lat, d.lon], {{ radius: 7, fillColor: '#f1c40f', color: '#e74c3c', weight: 2, fillOpacity: 1, pane: 'centroidPane' }}).bindTooltip("Klicka för områdesanalys", {{direction: 'top'}});
-                centroidMarker.on('click', function() {{ showInfoPanel(centroidHtml); map.flyTo([d.lat, d.lon], 15); }});
-                centroidMarker.feature = {{ properties: {{ name: d.namn, html: centroidHtml }} }}; 
+                
+                centroidMarker.on('click', function() {{ 
+                    showInfoPanel(tabsHtml); 
+                    map.flyTo([d.lat, d.lon], 15); 
+
+                    // --- DIAGRAMRITNING ---
+                    if (d.tot_uppl > 0) {{
+                        setTimeout(() => {{
+                            var ctx = document.getElementById('upplatelsePieChart');
+                            if (ctx) {{
+                                if (upplatelseChartInstans) {{ upplatelseChartInstans.destroy(); }}
+                                upplatelseChartInstans = new Chart(ctx.getContext('2d'), {{
+                                    type: 'pie',
+                                    data: {{
+                                        labels: ['Äganderätt', 'Bostadsrätt', 'Hyresrätt', 'Uppgift saknas'],
+                                        datasets: [{{
+                                            data: [d.agan, d.bost, d.hyre, d.saknas],
+                                            backgroundColor: ['#2ecc71', '#3498db', '#e74c3c', '#95a5a6'],
+                                            borderWidth: 1
+                                        }}]
+                                    }},
+                                    options: {{
+                                        responsive: true, 
+                                        maintainAspectRatio: false,
+                                        plugins: {{ legend: {{ position: 'right', labels: {{ boxWidth: 10, font: {{ size: 11 }} }} }} }}
+                                    }}
+                                }});
+                            }}
+                        }}, 50); // Timeout låter DOM rita HTML innan vi bygger diagrammet
+                    }}
+                }});
+                
+                centroidMarker.feature = {{ properties: {{ name: d.namn }} }}; 
                 centroidMarker.addTo(centroidLayer);
                 
                 var ghost = L.marker([d.lat, d.lon], {{opacity: 0, interactive: false}}); ghost.feature = {{ properties: {{ name: d.namn }} }}; ghost.addTo(searchLayer);
@@ -893,24 +1107,29 @@ ui_html = f"""
             moveToLocation: function(latlng, title, map) {{ 
                 map.flyTo(latlng, 15); clearHighlight();
                 map.eachLayer(function(layer) {{ if (layer.feature && layer.feature.properties && layer.feature.properties.NAMN === title) {{ if (layer.setStyle) {{ layer.setStyle({{weight: 5, color: '#f39c12'}}); highlightedPolygon = layer; }} }} }});
-                centroidLayer.eachLayer(function(layer) {{ if (layer.feature && layer.feature.properties.name === title) {{ showInfoPanel(layer.feature.properties.html); }} }});
+                centroidLayer.eachLayer(function(layer) {{ 
+                    if (layer.feature && layer.feature.properties.name === title) {{ 
+                        // Startar fönstret och bygger grafen via klick-eventet
+                        layer.fire('click'); 
+                    }} 
+                }});
             }} 
         }});
         map.addControl(searchControl);
 
         document.getElementById('btn-reset').addEventListener('click', function() {{
             map.setView([58.4102, 15.6216], 11); clearHighlight(); searchControl.collapse(); document.getElementById('zoomSelect').value = ""; document.getElementById('zoomKaraktar1').value = ""; document.getElementById('zoomKaraktar2').value = "";
-            updatePolygonVisibility(); // Ser till att alla ytor återvänder
+            updatePolygonVisibility(); 
             if(drawnItems) drawnItems.clearLayers(); customRadiusLayer.clearLayers(); document.getElementById('infoPanel').style.display = 'none'; lastZoomBounds = null; 
             document.getElementById('opacitySlider').value = 0.60; document.getElementById('opacityVal').innerText = '60%';
-            document.querySelectorAll('.pop-polygon, .density-polygon, .hushall-polygon, .default-polygon').forEach(el => {{ el.style.fillOpacity = 0.60; }});
+            document.querySelectorAll('.pop-polygon, .density-polygon, .hushall-polygon, .agan-polygon, .bost-polygon, .hyre-polygon, .default-polygon').forEach(el => {{ el.style.fillOpacity = 0.60; }});
             document.getElementById('togglePop').checked = true; document.getElementById('togglePop').dispatchEvent(new Event('change'));
             
             document.getElementById('toggleCentroids').checked = false; document.getElementById('toggleCentroids').dispatchEvent(new Event('change'));
             document.getElementById('toggleDynPop').checked = false; document.getElementById('toggleDynPop').dispatchEvent(new Event('change'));
             
             if(measureMode) document.getElementById('btn-measure').click(); if(isochroneMode) document.getElementById('btn-isochrone').click();
-            ['toggleDens', 'toggleHushall', 'toggleBorders', 'toggleCircles', 'toggleClusters', 'toggleTransport', 'toggleVatten', 'toggleGrundskolor', 'toggleGymnasieskolor', 'toggleHandel', 'toggleIdrott', 'toggleSamhalle', 'toggleKultur', 'toggleOvriga'].forEach(function(id) {{ var cb = document.getElementById(id); if(cb && cb.checked) {{ cb.checked = false; cb.dispatchEvent(new Event('change')); }} }});
+            ['toggleTransport', 'toggleVatten', 'toggleGrundskolor', 'toggleGymnasieskolor', 'toggleHandel', 'toggleIdrott', 'toggleSamhalle', 'toggleKultur', 'toggleOvriga'].forEach(function(id) {{ var cb = document.getElementById(id); if(cb && cb.checked) {{ cb.checked = false; cb.dispatchEvent(new Event('change')); }} }});
         }});
         
         document.getElementById('btnZoomPOI').addEventListener('click', function() {{
@@ -947,24 +1166,22 @@ ui_html = f"""
             }}
         }});
 
-        fetch('heat_data.json').then(response => response.json()).then(data => {{ 
-            heatDataRaw = data; var markersToAdd = [];
-            heatDataRaw.forEach(function(p) {{
-                var pop = p.tot;
-                if (pop > 0) {{
-                    var displayPop = (pop < 5) ? "< 5" : pop;
-                    var markerIcon = L.divIcon({{ html: `<div style="background-color: #3498db; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid #fff; opacity: 0.9;">${{displayPop}}</div>`, className: '', iconSize: [24, 24] }});
-                    var marker = L.marker([p.lat, p.lon], {{ icon: markerIcon, population: pop }});
-                    marker.on('click', function() {{
-                        // generateDemographicHtml sköter nu om tot < 5 automatiskt
-                        showInfoPanel(generateDemographicHtml("Befolkning på platsen", p)); 
-                        map.flyTo([p.lat, p.lon], 16);
-                    }});
-                    markersToAdd.push(marker);
-                }}
-            }});
-            clusterLayer.addLayers(markersToAdd);
-        }}).catch(err => console.error("Kunde inte ladda punktdata:", err));
+        // Klustren renderas nu direkt utan fetch-beroenden!
+        var markersToAdd = [];
+        heatDataRaw.forEach(function(p) {{
+            var pop = p.tot;
+            if (pop > 0) {{
+                var displayPop = (pop < 5) ? "< 5" : pop;
+                var markerIcon = L.divIcon({{ html: `<div style="background-color: #3498db; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid #fff; opacity: 0.9;">${{displayPop}}</div>`, className: '', iconSize: [24, 24] }});
+                var marker = L.marker([p.lat, p.lon], {{ icon: markerIcon, population: pop }});
+                marker.on('click', function() {{
+                    showInfoPanel(generateDemographicHtml("Befolkning på platsen", p)); 
+                    map.flyTo([p.lat, p.lon], 16);
+                }});
+                markersToAdd.push(marker);
+            }}
+        }});
+        clusterLayer.addLayers(markersToAdd);
 
         document.getElementById('heatSelect').addEventListener('change', function(e) {{
             if (currentHeatLayer) map.removeLayer(currentHeatLayer);
@@ -1042,14 +1259,14 @@ ui_html = f"""
         map.on('zoomend', updateDynPopLayer);
         document.getElementById('toggleDynPop').addEventListener('change', updateDynPopLayer);
 
-        // --- 6. RITA EGNA POLYGONER FÖR DEMOGRAFIANALYS ---
+        // --- 6. RITVERKTYG (AVANCERADE) ---
+        var isDrawingMode = false; var measureMode = false; var isochroneMode = false;
+        
         var drawnItems = new L.FeatureGroup(); map.addLayer(drawnItems);
         L.drawLocal.draw.toolbar.actions.title = 'Avbryt ritning'; L.drawLocal.draw.toolbar.actions.text = 'Avbryt'; L.drawLocal.draw.toolbar.finish.title = 'Slutför ritning'; L.drawLocal.draw.toolbar.finish.text = 'Slutför'; L.drawLocal.draw.toolbar.undo.title = 'Ångra sista punkten'; L.drawLocal.draw.toolbar.undo.text = 'Ångra'; L.drawLocal.draw.handlers.polygon.tooltip.start = 'Klicka för att börja rita en yta.'; L.drawLocal.draw.handlers.polygon.tooltip.cont = 'Klicka för att fortsätta rita ytan.'; L.drawLocal.draw.handlers.polygon.tooltip.end = 'Klicka på första punkten för att slutföra.'; L.drawLocal.draw.handlers.rectangle.tooltip.start = 'Klicka och dra för att rita en rektangel.';
         var drawControl = new L.Control.Draw({{ draw: {{ polyline: false, marker: false, circlemarker: false, circle: false, polygon: {{ shapeOptions: {{ color: '#9b59b6', weight: 2, fillOpacity: 0.3 }} }}, rectangle: {{ shapeOptions: {{ color: '#9b59b6', weight: 2, fillOpacity: 0.3 }} }} }}, edit: {{ featureGroup: drawnItems }} }});
         map.addControl(drawControl);
 
-        // Variabel som håller koll på om vi ritar något
-        var isDrawingMode = false;
         map.on('draw:drawstart', function (e) {{ isDrawingMode = true; }});
         map.on('draw:drawstop', function (e) {{ isDrawingMode = false; }});
 
@@ -1070,8 +1287,6 @@ ui_html = f"""
         }});
 
         // --- 7. NÅBARHETSANALYS (ISOKRONER) & AVSTÅNDSMÄTARE ---
-        var measureMode = false; var isochroneMode = false;
-
         document.getElementById('btn-measure').addEventListener('click', function() {{
             measureMode = !measureMode; isochroneMode = false; document.getElementById('btn-isochrone').classList.replace('btn-info', 'btn-outline-info');
             if(measureMode) {{ this.classList.replace('btn-outline-primary', 'btn-primary'); document.getElementById(map._container.id).style.cursor = 'crosshair'; }} else {{ this.classList.replace('btn-primary', 'btn-outline-primary'); document.getElementById(map._container.id).style.cursor = ''; }}
@@ -1171,9 +1386,7 @@ ui_html = f"""
                             }};
                         }}
                         layer.off('mouseover').on('mouseover', function(e) {{
-                            // Avbryt hover-effekten om vi använder ett rit- eller analysverktyg
                             if (isDrawingMode || measureMode || isochroneMode) return; 
-                            
                             var currentOpacity = document.getElementById('opacitySlider').value;
                             this.setStyle({{ weight: 4, color: '#ff0000', fillOpacity: Math.min(1.0, parseFloat(currentOpacity) + 0.2) }});
                             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {{ this.bringToFront(); }}
