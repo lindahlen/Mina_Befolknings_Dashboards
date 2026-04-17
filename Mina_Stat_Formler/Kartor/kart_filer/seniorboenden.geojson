@@ -1,0 +1,18 @@
+{
+  "type": "FeatureCollection",
+  "name": "Stangastaden_Seniorboenden",
+  "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+  "features": [
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Ellipsen" }, "geometry": { "type": "Point", "coordinates": [ 15.6143081, 58.4033059 ] } },
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Labbet" }, "geometry": { "type": "Point", "coordinates": [ 15.606032, 58.4017865 ] } },
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Vingården" }, "geometry": { "type": "Point", "coordinates": [ 15.621854, 58.395714 ] } },
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Ryd Centrum" }, "geometry": { "type": "Point", "coordinates": [ 15.5626716, 58.4088745 ] } },
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Skräddaren" }, "geometry": { "type": "Point", "coordinates": [ 15.5984655, 58.416003 ] } },
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Löjtnanten" }, "geometry": { "type": "Point", "coordinates": [ 15.6349242, 58.3919183 ] } },
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Folkets Park" }, "geometry": { "type": "Point", "coordinates": [ 15.588562, 58.4090991 ] } },
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Solvändan" }, "geometry": { "type": "Point", "coordinates": [ 15.6398822, 58.3953137 ] } },
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Skogslyckan" }, "geometry": { "type": "Point", "coordinates": [ 15.6630861, 58.3955345 ] } },
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Tinnerbäcken" }, "geometry": { "type": "Point", "coordinates": [ 15.6267826, 58.4055481 ] } },
+    { "type": "Feature", "properties": { "Namn": "Seniorboende Ejdern" }, "geometry": { "type": "Point", "coordinates": [ 15.6172153, 58.4070055 ] } }
+  ]
+}   
