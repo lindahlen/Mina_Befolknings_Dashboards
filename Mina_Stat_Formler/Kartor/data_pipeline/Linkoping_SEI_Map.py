@@ -18,8 +18,8 @@ from shapely.geometry import Point
 # 🛑 ÄNDRA ÅRTAL OCH FILNAMN HÄR NÄSTA ÅR! 🛑
 # --------------------------------------------------
 GEOJSON_NYKO4_FILENAME = 'NYKO4v23.geojson' 
-PUNKT_DATA_FILNAMN = 'BefKoord2025.csv'      
-PUNKT_DATA_AR = "2025"                       
+PUNKT_DATA_FILNAMN = 'BefKoord2025.csv'      # <--- Byt till t.ex. 'BefKoord2026.csv' nästa år!
+PUNKT_DATA_AR = "2025"                       # <--- Byt till "2026"
 # --------------------------------------------------
 
 EXCEL_POP_SHEET = 'Basområden'
@@ -55,7 +55,7 @@ def fix_text(text):
 # =====================================================================
 # 2. DATAHANTERING & GEOGRAFI
 # =====================================================================
-print("Läser in och processar data för Nyko 4 (Hela kommunen)...")
+print("Läser in och processar data för Nyko 4 (2D Karta)...")
 
 geojson_path = os.path.join(kart_filer_dir, GEOJSON_NYKO4_FILENAME)
 try:
@@ -75,6 +75,7 @@ else:
 nyko4_3006 = nyko4.to_crs(epsg=3006)
 nyko4['Area_km2'] = nyko4_3006.geometry.area / 1_000_000
 
+# WGS84 Geometri för framtida polygon-kontroller (Innehåller punkten polygonen?)
 nyko4_4326 = nyko4.to_crs(epsg=4326)
 nyko4_3006_centroids = nyko4_3006.geometry.centroid
 
@@ -136,11 +137,22 @@ if os.path.exists(sei_path):
             def get_col(kws): return next((c for c in df_ind.columns if any(k in c.lower() for k in kws)), None)
             
             mappings = {
-                'ind_netink': ['nettoinkomst'], 'ind_forvink': ['förvärvsinkomst'], 'ind_syssel': ['sysselsättningsgrad', 'sysselsättning'],
-                'ind_arblosa': ['arbetslösa'], 'ind_bistand': ['bistånd'], 'ind_lagekon': ['låg_ekonomisk', 'låg ekonomisk'],
-                'ind_lagink': ['inkomststandard', 'låg_inkomst', 'låg inkomst'], 'ind_trang': ['trångbodda'], 'ind_kvm': ['kvm'],
-                'ind_ensam': ['ensamstående'], 'ind_ohalsa': ['ohälsotal', 'ohälsa'], 'ind_forgym': ['förgymnasial'], 'ind_uvas': ['uvas'],
-                'ind_utrfod': ['utrikes födda', 'utrikes_födda', 'utrikes'], 'ind_utlbak': ['utländsk', 'utländsk_bakgrund'], 'ind_val': ['valdeltagande']
+                'ind_netink': ['nettoinkomst'], 
+                'ind_forvink': ['förvärvsinkomst'], 
+                'ind_syssel': ['sysselsättningsgrad', 'sysselsättning'],
+                'ind_arblosa': ['arbetslösa'], 
+                'ind_bistand': ['bistånd'], 
+                'ind_lagekon': ['låg_ekonomisk', 'låg ekonomisk'],
+                'ind_lagink': ['inkomststandard', 'låg_inkomst', 'låg inkomst'], 
+                'ind_trang': ['trångbodda'], 
+                'ind_kvm': ['kvm'],
+                'ind_ensam': ['ensamstående'],
+                'ind_ohalsa': ['ohälsotal', 'ohälsa', 'ohälsotal_50-64', 'ohälsotal_50_64'],
+                'ind_forgym': ['förgymnasial'], 
+                'ind_uvas': ['uvas'],
+                'ind_utrfod': ['utrikes födda', 'utrikes_födda', 'utrikes'], 
+                'ind_utlbak': ['utländsk', 'utländsk_bakgrund'], 
+                'ind_val': ['valdeltagande']
             }
             loaded_cols = ['Namn_clean']
             for ind_key, kws in mappings.items():
@@ -316,6 +328,10 @@ if not pop_df.empty:
         pop_df_valid['Grp_13_15'] = pop_df_valid.get('13-15_år', 0)
         pop_df_valid['Grp_16_18'] = pop_df_valid.get('16-18_år', 0)
         pop_df_valid['Grp_19_64'] = pop_df_valid.get('19-24_år', 0) + pop_df_valid.get('25-34_år', 0) + pop_df_valid.get('35-44_år', 0) + pop_df_valid.get('45-54_år', 0) + pop_df_valid.get('55-64_år', 0)
+        
+        pop_df_valid['Grp_19_34'] = pop_df_valid.get('19-24_år', 0) + pop_df_valid.get('25-34_år', 0)
+        pop_df_valid['Grp_35_64'] = pop_df_valid.get('35-44_år', 0) + pop_df_valid.get('45-54_år', 0) + pop_df_valid.get('55-64_år', 0)
+        
         pop_df_valid['Grp_65_79'] = pop_df_valid.get('65-69_år', 0) + pop_df_valid.get('70-79_år', 0)
         pop_df_valid['Grp_80plus'] = pop_df_valid.get('80+_år', 0)
 
@@ -325,8 +341,14 @@ if not pop_df.empty:
             pop_df_valid['NYKO3_str'] = pop_df_valid['NYKO6_str'].str[:3]
             pop_df_valid['NYKO4_str'] = pop_df_valid['NYKO6_str'].str[:4]
             pop_df_valid['NYKO4_kod'] = pop_df_valid['NYKO4_str'].astype(float)
-        
-        fill_cols = ['Totalt', 'Grp_0_5', 'Grp_6_15', 'Grp_6_9', 'Grp_10_12', 'Grp_13_15', 'Grp_16_18', 'Grp_19_64', 'Grp_65_79', 'Grp_80plus']
+            
+            grp_cols = ['Grp_0_5', 'Grp_6_15', 'Grp_6_9', 'Grp_10_12', 'Grp_13_15', 'Grp_16_18', 'Grp_19_64', 'Grp_19_34', 'Grp_35_64', 'Grp_65_79', 'Grp_80plus']
+            pop_nyko4 = pop_df_valid.groupby('NYKO4_str')[grp_cols].sum().reset_index()
+            nyko4 = nyko4.merge(pop_nyko4, left_on='NYKO_str', right_on='NYKO4_str', how='left')
+            for c in grp_cols:
+                nyko4[c] = nyko4[c].fillna(0).astype(int)
+
+        fill_cols = ['Totalt', 'Grp_0_5', 'Grp_6_15', 'Grp_6_9', 'Grp_10_12', 'Grp_13_15', 'Grp_16_18', 'Grp_19_64', 'Grp_19_34', 'Grp_35_64', 'Grp_65_79', 'Grp_80plus']
         def create_agg_pop(df, group_col):
             df_pop = df[df['Totalt'] > 0].copy()
             result = []
@@ -365,6 +387,7 @@ if not pop_df.empty:
                     'tot': int(row['Totalt']), 'a0_5': int(row['Grp_0_5']), 'a6_15': int(row['Grp_6_15']),
                     'a6_9': int(row['Grp_6_9']), 'a10_12': int(row['Grp_10_12']), 'a13_15': int(row['Grp_13_15']),
                     'a16_18': int(row['Grp_16_18']), 'a19_64': int(row['Grp_19_64']), 
+                    'a19_34': int(row['Grp_19_34']), 'a35_64': int(row['Grp_35_64']),
                     'a65_79': int(row['Grp_65_79']), 'a80': int(row['Grp_80plus'])
                 })
         heat_data_str = json.dumps(heat_data)
@@ -436,24 +459,32 @@ for idx, row in nyko4.iterrows():
         'grp_13_15': int(row.get('Grp_13_15', 0)),
         'grp_16_18': int(row.get('Grp_16_18', 0)),
         'grp_19_64': int(row.get('Grp_19_64', 0)),
+        'grp_19_34': int(row.get('Grp_19_34', 0)),
+        'grp_35_64': int(row.get('Grp_35_64', 0)),
         'grp_65_79': int(row.get('Grp_65_79', 0)),
         'grp_80plus': int(row.get('Grp_80plus', 0))
     })
 nyko4_json_str = json.dumps(nyko4_data)
 
 excel_pois = []
-def extract_excel_pois(sheet_name, name_col, type_col):
+vardboende_colors = {}
+vardboende_palette = ['#e74c3c', '#8e44ad', '#2980b9', '#d35400', '#16a085']
+
+def extract_excel_pois(sheet_name, name_col, type_col, org_col=None):
     try:
         df = pd.read_excel(excel_path, sheet_name=sheet_name)
         for _, row in df.dropna(subset=['Latitud', 'Longitud']).iterrows():
             type_val = str(row[type_col])
             cat = type_val.lower()
+            org_val = str(row[org_col]) if org_col and org_col in df.columns else ""
             
             if sheet_name == 'Skolor':
                 if 'grund' in cat: group, icon, color = 'Grundskolor', 'fa-child', '#3498db'
                 else: group, icon, color = 'Gymnasieskolor', 'fa-graduation-cap', '#9b59b6'
             elif sheet_name == 'Vårdboende': 
-                group, icon, color = 'Vårdboende', 'fa-heartbeat', '#e74c3c'
+                if type_val not in vardboende_colors:
+                    vardboende_colors[type_val] = vardboende_palette[len(vardboende_colors) % len(vardboende_palette)]
+                group, icon, color = 'Vårdboende', 'fa-heartbeat', vardboende_colors[type_val]
             elif sheet_name == 'Platser':
                 if 'centrum' in cat or 'handel' in cat: group, icon, color = 'Handel & Centrum', 'fa-shopping-cart', '#f39c12'
                 elif 'idrottsanläggning' in cat or 'fritid' in cat: group, icon, color = 'Idrott & Fritid', 'fa-running', '#2ecc71'
@@ -462,15 +493,13 @@ def extract_excel_pois(sheet_name, name_col, type_col):
                 elif 'landmärke' in cat or 'näringsliv' in cat: group, icon, color = 'Övriga platser', 'fa-map-marker-alt', '#95a5a6'
                 else: continue
             
-            excel_pois.append({'name': str(row[name_col]), 'type': type_val, 'lat': float(row['Latitud']), 'lon': float(row['Longitud']), 'group': group, 'icon': icon, 'color': color})
+            excel_pois.append({'name': str(row[name_col]), 'type': type_val, 'org': org_val, 'lat': float(row['Latitud']), 'lon': float(row['Longitud']), 'group': group, 'icon': icon, 'color': color})
     except Exception: pass
-extract_excel_pois('Skolor', 'Skola', 'Nivå')
-extract_excel_pois('Platser', 'Plats', 'Kategori')
-extract_excel_pois('Vårdboende', 'Namn', 'Typ')
+
+extract_excel_pois('Skolor', 'Skola', 'Nivå', 'Organisation')
+extract_excel_pois('Platser', 'Plats', 'Kategori', None)
+extract_excel_pois('Vårdboende', 'Namn', 'Typ', 'Organisation')
 excel_poi_json_str = json.dumps(excel_pois)
-vardboende_count = sum(1 for p in excel_pois if p['group'] == 'Vårdboende')
-vard_text = "Vårdboenden" if vardboende_count > 0 else "Vårdboenden (Kommer snart)"
-vard_disabled = "" if vardboende_count > 0 else "disabled"
 
 # --- SKRIV DATA TILL EXTERNA JS-FILER ---
 print("Sparar data till externa JS-filer för att radikalt snabba upp webbläsaren...")
@@ -629,7 +658,7 @@ add_poly_layer(nyko4, 'Andel_Hyresratt', 'Hyresrätt', cmap_pct, 'hyre-polygon')
 # --- E. Områdesgränser ---
 folium.GeoJson(
     nyko4[['NAMN', 'geometry']].copy(), name='Områdesgränser', 
-    style_function=lambda feature: {'fill': False, 'color': '#2c3e50', 'weight': 1, 'className': 'polygon-layer border-polygon'}
+    style_function=lambda feature: {'fill': False, 'color': '#2c3e50', 'weight': 2, 'className': 'polygon-layer border-polygon'}
 ).add_to(m)
 
 # =====================================================================
@@ -663,15 +692,15 @@ ui_html = f"""
 
     .leaflet-control-layers {{ display: none !important; }}
     
-    .tools-panel {{ position: fixed; bottom: 30px; left: 60px; z-index: 9999; background: rgba(255,255,255,0.96); padding: 15px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 310px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; }}
-    .layers-panel {{ position: fixed; top: 20px; right: 20px; z-index: 9999; background: rgba(255,255,255,0.96); padding: 15px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 380px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; }}
+    .tools-panel {{ position: fixed; bottom: 30px; left: 60px; z-index: 9999; background: rgba(255,255,255,0.96); padding: 18px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 310px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; }}
+    .layers-panel {{ position: fixed; top: 20px; right: 20px; z-index: 9999; background: rgba(255,255,255,0.96); padding: 20px; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 380px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; }}
     
-    .layers-panel h6, .tools-panel h6 {{ font-size: 14px !important; margin-top: 10px; margin-bottom: 8px !important; }}
+    .layers-panel h6, .tools-panel h6 {{ font-size: 15px !important; margin-top: 15px; margin-bottom: 10px !important; }}
     .layers-panel .form-check-label {{ font-size: 13px; margin-left: 6px; cursor: pointer; }}
     .layers-panel .form-check-input {{ transform: scale(1.3); margin-top: 5px; cursor: pointer; }}
     .layers-panel input[type="radio"] {{ transform: scale(1.2); margin-right: 5px; cursor: pointer; }}
     
-    .info-panel {{ position: fixed; top: 20px; right: 420px; z-index: 9999; background: rgba(255,255,255,0.98); padding: 15px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.3); width: 320px; max-height: 80vh; overflow-y: auto; font-family: sans-serif; display: none; }}
+    .info-panel {{ position: fixed; top: 20px; right: 420px; z-index: 9999; background: rgba(255,255,255,0.98); padding: 20px; border-radius: 8px; box-shadow: 0 0 20px rgba(0,0,0,0.3); width: 380px; max-height: 85vh; overflow-y: auto; font-family: sans-serif; display: none; }}
     .custom-tooltip {{ font-weight: normal; font-size: 13px; background: rgba(255,255,255,0.95); border: 1px solid #ccc; border-radius: 6px; padding: 8px 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); pointer-events: none; }}
     .leaflet-interactive {{ outline: none; }}
     
@@ -680,12 +709,13 @@ ui_html = f"""
     .legend-container {{ position: fixed; bottom: 30px; right: 20px; z-index: 9998; display: flex; flex-direction: column; gap: 10px; pointer-events: none; max-height: 80vh; overflow-y: auto; }}
     .variable-legend {{ pointer-events: auto; background: white; padding: 10px; border-radius: 5px; box-shadow: 0 0 15px rgba(0,0,0,0.2); width: 220px; display: none; }}
     
-    @media (max-width: 1366px) {{
-        .info-panel {{ right: 350px; width: 300px; max-height: 85vh; }}
-        .layers-panel {{ width: 320px; right: 15px; }}
-        .tools-panel {{ width: 280px; left: 15px; }}
+    /* Responsivitet */
+    @media (max-width: 1200px) {{
+        .tools-panel {{ width: 280px; left: 20px; }}
+        .layers-panel {{ width: 320px; right: 20px; }}
+        .info-panel {{ right: 350px; width: 320px; }}
     }}
-    @media (max-width: 1024px) {{
+    @media (max-width: 768px) {{
         .tools-panel {{ left: 10px; bottom: 10px; width: calc(50vw - 15px); max-height: 45vh; padding: 12px; }}
         .layers-panel {{ right: 10px; top: 10px; width: calc(50vw - 15px); max-height: 45vh; padding: 12px; }}
         .info-panel {{ right: 10px; bottom: 10px; top: auto; width: calc(100vw - 20px); max-height: 40vh; z-index: 10005; }}
@@ -757,6 +787,8 @@ ui_html = f"""
         <option value="a13_15">&nbsp;&nbsp;&nbsp;&nbsp;varav 13-15 år</option>
         <option value="a16_18">Ungdomar i gymnasieålder (16-18 år)</option>
         <option value="a19_64">Vuxna/Arbetsföra (19-64 år)</option>
+        <option value="a19_34">&nbsp;&nbsp;&nbsp;&nbsp;varav 19-34 år</option>
+        <option value="a35_64">&nbsp;&nbsp;&nbsp;&nbsp;varav 35-64 år</option>
         <option value="a65_79">Äldre (65-79 år)</option>
         <option value="a80">Äldst (80+ år)</option>
     </select>
@@ -864,7 +896,7 @@ ui_html = f"""
         <div class="form-check mb-1"><input class="form-check-input poi-toggle" type="checkbox" value="Kultur & Sevärdheter" id="toggle_kultur"><label class="form-check-label" for="toggle_kultur"><i class="fas fa-theater-masks" style="color: #e67e22; width:18px;"></i> Kultur & Sevärdheter</label></div>
         <div class="form-check mb-1"><input class="form-check-input poi-toggle" type="checkbox" value="Samhälle & Infrastruktur" id="toggle_samhalle"><label class="form-check-label" for="toggle_samhalle"><i class="fas fa-building" style="color: #e74c3c; width:18px;"></i> Samhälle & Infrastruktur</label></div>
         <div class="form-check mb-1"><input class="form-check-input poi-toggle" type="checkbox" value="Övriga platser" id="toggle_ovriga"><label class="form-check-label" for="toggle_ovriga"><i class="fas fa-map-marker-alt" style="color: #95a5a6; width:18px;"></i> Övriga platser</label></div>
-        <div class="form-check mb-1"><input class="form-check-input poi-toggle" type="checkbox" value="Vårdboende" id="toggle_vard" {vard_disabled}><label class="form-check-label" for="toggle_vard"><i class="fas fa-heartbeat" style="color: #e74c3c; width:18px;"></i> {vard_text}</label></div>
+        <div class="form-check mb-1"><input class="form-check-input poi-toggle" type="checkbox" value="Vårdboende" id="toggle_vard"><label class="form-check-label" for="toggle_vard"><i class="fas fa-heartbeat" style="color: #e74c3c; width:18px;"></i> Vårdboenden</label></div>
     </div>
     <a href="javascript:void(0);" id="togglePoiBtn" class="d-block mt-1 mb-2" style="font-size: 12px; text-decoration: none; color: #3498db; font-weight: bold;"><i class="fas fa-chevron-down" id="poiIcon"></i> <span id="poiText">Visa fler platser...</span></a>
 
@@ -872,6 +904,8 @@ ui_html = f"""
     <h6 class="fw-bold text-dark">Infrastruktur & Natur</h6>
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleTransport"><label class="form-check-label" for="toggleTransport">🛤️ Transportleder (Väg/Järnväg)</label></div>
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleVatten"><label class="form-check-label" for="toggleVatten">💧 Sjöar & Vattendrag</label></div>
+    
+    <button id="btn-zoom-selected" class="btn btn-outline-secondary w-100 shadow-sm mt-3" style="text-align: left; font-size: 14px; padding: 10px; font-weight: bold;"><i class="fas fa-search-location"></i> Zooma till valda platser</button>
 </div>
 
 <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
@@ -1016,8 +1050,7 @@ ui_html = f"""
             
             var isFlyg = document.getElementById('basemapSelect').value === 'flyg';
             var defaultBorder = isFlyg ? '#ffffff' : '#2c3e50';
-            var bounds = L.latLngBounds(); var found = false;
-
+            
             var lBox = document.getElementById('dynamic-legend');
             if (activeBase === 'none') {{
                 lBox.style.display = 'none';
@@ -1076,6 +1109,8 @@ ui_html = f"""
                 'snitt15': 'snitt15-polygon', 'snitt20': 'snitt20-polygon', 'seichange': 'seichange-polygon'
             }};
 
+            var bounds = L.latLngBounds(); var found = false;
+
             map.eachLayer(function(layer) {{
                 if (layer.options && layer.options.className && layer.options.className.includes('polygon-layer')) {{
                     var name = layer.feature.properties.NAMN;
@@ -1095,7 +1130,7 @@ ui_html = f"""
                     
                     if (cls.includes('border-polygon')) {{
                         isVisible = showBorders && matchesChar;
-                        polyWeight = 1;
+                        polyWeight = 2;
                         polyColor = isVisible ? defaultBorder : 'transparent';
                         layer.setStyle({{ opacity: isVisible ? 1 : 0, fillOpacity: 0, weight: polyWeight, color: polyColor }});
                         layer.mySavedStyle = {{ opacity: isVisible ? 1 : 0, fillOpacity: 0, weight: polyWeight, color: polyColor }};
@@ -1121,8 +1156,56 @@ ui_html = f"""
                 }}
             }});
 
+            if (showBorders) {{
+                map.eachLayer(function(layer) {{
+                    if (layer.options && layer.options.className && layer.options.className.includes('border-polygon')) {{
+                        if (!L.Browser.ie && typeof layer.bringToFront === 'function') layer.bringToFront();
+                    }}
+                }});
+            }}
+
             if (doZoom && found) map.fitBounds(bounds, {{padding: [40,40]}});
         }}
+
+        // Smart Zoom till valda platser
+        document.getElementById('btn-zoom-selected').addEventListener('click', function() {{
+            var bounds = L.latLngBounds();
+            var found = false;
+            
+            // 1. Kolla POI-grupper
+            var poiActive = false;
+            Object.values(poiGroups).forEach(group => {{
+                if (map.hasLayer(group) && group.getLayers().length > 0) {{
+                    bounds.extend(group.getBounds());
+                    found = true;
+                    poiActive = true;
+                }}
+            }});
+
+            // 2. Kolla Polygon-filter
+            var allSeiChecked = document.getElementById('toggleAllSei').checked;
+            var hasCharFilter = activeCharFilter.value !== "";
+            var isTopBotFilter = topBotFilter !== 'all';
+            
+            map.eachLayer(function(layer) {{
+                if (layer.options && layer.options.className && layer.options.className.includes('polygon-layer')) {{
+                    if (layer.options.fillOpacity > 0 || layer.options.weight > 0) {{
+                        if (hasCharFilter || isTopBotFilter || !allSeiChecked || (!poiActive && !hasCharFilter && !isTopBotFilter && allSeiChecked)) {{
+                            if (layer.getBounds) {{
+                                bounds.extend(layer.getBounds());
+                                found = true;
+                            }}
+                        }}
+                    }}
+                }}
+            }});
+
+            if (found) {{
+                map.fitBounds(bounds, {{padding: [40,40]}});
+            }} else {{
+                map.setView([58.4102, 15.6216], 11);
+            }}
+        }});
 
         document.querySelectorAll('.base-toggle').forEach(r => r.addEventListener('change', () => updatePolygonVisibility(false)));
         document.getElementById('toggleBorders').addEventListener('change', () => updatePolygonVisibility(false));
@@ -1275,7 +1358,7 @@ ui_html = f"""
             }}, 150);
         }}
 
-        // Hover & Click logic med DYNAMISK TOOLTIP och KORREKT RESET AV RÖDA KANTER
+        // Hover & Click logic med DYNAMISK TOOLTIP
         setTimeout(function() {{
             var select = document.getElementById('zoomSelect');
             map.eachLayer(function(layer) {{
@@ -1290,7 +1373,6 @@ ui_html = f"""
                         if (layer.mySavedStyle && layer.mySavedStyle.fillOpacity === 0 && layer.mySavedStyle.opacity === 0) return; 
                         var currentOpacity = document.getElementById('opacitySlider').value;
                         
-                        // Fix för spök-kanter: Rensa eventuellt tidigare hovrad yta benhårt!
                         if (window.currentlyHoveredLayer && window.currentlyHoveredLayer !== this && window.currentlyHoveredLayer.mySavedStyle) {{
                             window.currentlyHoveredLayer.setStyle(window.currentlyHoveredLayer.mySavedStyle);
                         }}
@@ -1337,8 +1419,8 @@ ui_html = f"""
                                 else if (activeBase === 'seichange') displayVal = (val !== null && val !== 0) ? val : '-';
                                 else {{
                                     var suffix = ['agan', 'bost', 'hyre', 'ind_syssel', 'ind_arblosa', 'ind_bistand', 'ind_lagekon', 'ind_lagink', 'ind_trang', 'ind_ensam', 'ind_forgym', 'ind_uvas', 'ind_utrfod', 'ind_utlbak', 'ind_val'].includes(activeBase) ? ' %' : '';
-                                    displayVal = (val !== null && val !== undefined && (activeBase === 'seichange' || val > 0)) ? val + suffix : '-';
-                                    if (d.folkmangd > 0 && d.folkmangd < 5) displayVal = '-'; // Göm vid sekretess
+                                    displayVal = (val !== null && val !== undefined && val > 0) ? val + suffix : '-';
+                                    if (d.folkmangd > 0 && d.folkmangd < 5) displayVal = '-'; 
                                 }}
                                 toolTipText += "<br>" + propMap[activeBase].l + ": <span style='color:#e74c3c; font-weight:bold;'>" + displayVal + "</span>";
                             }}
@@ -1382,7 +1464,7 @@ ui_html = f"""
         
         function getDemographicsWithinRadius(lat, lon, radiusKm) {{
             var pt1 = turf.point([lon, lat]);
-            var stats = {{tot:0, a0_5:0, a6_15:0, a6_9:0, a10_12:0, a13_15:0, a16_18:0, a19_64:0, a65_79:0, a80:0}};
+            var stats = {{tot:0, a0_5:0, a6_15:0, a6_9:0, a10_12:0, a13_15:0, a16_18:0, a19_64:0, a19_34:0, a35_64:0, a65_79:0, a80:0}};
             if (typeof heatDataRaw !== 'undefined' && heatDataRaw.length > 0) {{
                 heatDataRaw.forEach(p => {{
                     var pt2 = turf.point([p.lon, p.lat]);
@@ -1395,6 +1477,8 @@ ui_html = f"""
                         stats.a13_15 += p.a13_15 || 0;
                         stats.a16_18 += p.a16_18;
                         stats.a19_64 += p.a19_64;
+                        stats.a19_34 += p.a19_34 || 0;
+                        stats.a35_64 += p.a35_64 || 0;
                         stats.a65_79 += p.a65_79;
                         stats.a80 += p.a80;
                     }}
@@ -1448,6 +1532,8 @@ ui_html = f"""
                 <div style="padding-left:10px; color:#666; font-size:11px; display:flex; justify-content:space-between;"><span>- Varav 13-15 år:</span><span>${{formatSecret(demo.a13_15)}}</span></div>
                 <div style="display:flex; justify-content:space-between;"><span>16-18 år:</span><b>${{formatSecret(demo.a16_18)}}</b></div>
                 <div style="display:flex; justify-content:space-between;"><span>19-64 år:</span><b>${{formatSecret(demo.a19_64)}}</b></div>
+                <div style="padding-left:10px; color:#666; font-size:11px; display:flex; justify-content:space-between;"><span>- Varav 19-34 år:</span><span>${{formatSecret(demo.a19_34)}}</span></div>
+                <div style="padding-left:10px; color:#666; font-size:11px; display:flex; justify-content:space-between;"><span>- Varav 35-64 år:</span><span>${{formatSecret(demo.a35_64)}}</span></div>
                 <div style="display:flex; justify-content:space-between;"><span>65-79 år:</span><b>${{formatSecret(demo.a65_79)}}</b></div>
                 <div style="display:flex; justify-content:space-between;"><span>80+ år:</span><b>${{formatSecret(demo.a80)}}</b></div>
             </div>`;
@@ -1478,7 +1564,7 @@ ui_html = f"""
                     var top3 = neighbors.slice(0, 3);
                     var nHtml = top3.map(n => `<li style="margin-bottom:2px;">${{n.name}} <span style="color:#7f8c8d;">(${{n.dist.toFixed(2)}} km)</span></li>`).join('');
                     
-                    var dispHushall = (d.hushall_visa !== '-' && d.hushall_visa !== '0') ? d.hushall_visa : (d.hushall > 0 ? d.hushall : '-');
+                    var dispHushall = d.hushall_visa;
                     
                     var extra = `
                         <div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Kategori:</span><b>${{d.char1}}</b></div>
@@ -1491,7 +1577,8 @@ ui_html = f"""
                     var areaDemoStats = {{
                         tot: d.folkmangd, a0_5: d.grp_0_5, a6_15: d.grp_6_15, a6_9: d.grp_6_9, 
                         a10_12: d.grp_10_12, a13_15: d.grp_13_15, a16_18: d.grp_16_18, 
-                        a19_64: d.grp_19_64, a65_79: d.grp_65_79, a80: d.grp_80plus
+                        a19_64: d.grp_19_64, a19_34: d.grp_19_34, a35_64: d.grp_35_64, 
+                        a65_79: d.grp_65_79, a80: d.grp_80plus
                     }};
 
                     var popupContent = buildAdvancedPopup("", d.lat, d.lon, extra, areaDemoStats);
@@ -1563,6 +1650,14 @@ ui_html = f"""
                 marker.on('click', function(e) {{
                     if (window.measureModeActive || window.isochroneModeActive || window.drawModeActive) return;
                     var extra = `<div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Grupp:</span><b>${{p.group}}</b></div>`;
+                    
+                    if (p.type && p.type.trim() !== '' && p.type !== 'nan' && p.type !== 'None') {{
+                        extra += `<div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Kategori/Typ:</span><b>${{p.type}}</b></div>`;
+                    }}
+                    
+                    if (p.org && p.org.trim() !== '' && p.org !== 'nan' && p.org !== 'None') {{
+                        extra += `<div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Huvudman:</span><b>${{p.org}}</b></div>`;
+                    }}
                     
                     var popupContent = buildAdvancedPopup("", p.lat, p.lon, extra, null);
                     showInfoPanel(popupContent, "📌 " + p.name);
@@ -1655,7 +1750,8 @@ ui_html = f"""
                     var stats = {{
                         tot: d.Totalt, a0_5: d.Grp_0_5, a6_15: d.Grp_6_15, a6_9: d.Grp_6_9, 
                         a10_12: d.Grp_10_12, a13_15: d.Grp_13_15, a16_18: d.Grp_16_18, 
-                        a19_64: d.Grp_19_64, a65_79: d.Grp_65_79, a80: d.Grp_80plus
+                        a19_64: d.Grp_19_64, a19_34: d.Grp_19_34, a35_64: d.Grp_35_64, 
+                        a65_79: d.Grp_65_79, a80: d.Grp_80plus
                     }};
                     var popupContent = buildAdvancedPopup("", d.lat, d.lon, extra, stats);
                     showInfoPanel(popupContent, "📈 Befolkningstrend: " + areaName);
@@ -1665,7 +1761,7 @@ ui_html = f"""
         }}
         document.getElementById('toggle_pop_rings').addEventListener('change', e => e.target.checked ? popRingsGroup.addTo(map) : map.removeLayer(popRingsGroup));
 
-        // --- 6. MÄTVERKTYG OCH NÅBARHET ---
+        // --- 6. MÄTVERKTYG OCH NÅBARHET OCH RITVERKTYG ---
         var drawLayer = L.featureGroup().addTo(map);
         var storaTorget = [58.4109, 15.6216];
         var measureLine = null; var measureMarker = null;
@@ -1703,7 +1799,7 @@ ui_html = f"""
                 drawLayer.addLayer(layer);
                 
                 var geojsonPoly = layer.toGeoJSON();
-                var stats = {{tot:0, a0_5:0, a6_15:0, a6_9:0, a10_12:0, a13_15:0, a16_18:0, a19_64:0, a65_79:0, a80:0}};
+                var stats = {{tot:0, a0_5:0, a6_15:0, a6_9:0, a10_12:0, a13_15:0, a16_18:0, a19_64:0, a19_34:0, a35_64:0, a65_79:0, a80:0}};
                 
                 if (typeof heatDataRaw !== 'undefined' && heatDataRaw.length > 0) {{
                     heatDataRaw.forEach(pt => {{
@@ -1712,6 +1808,7 @@ ui_html = f"""
                             stats.tot += pt.tot; stats.a0_5 += pt.a0_5; stats.a6_15 += pt.a6_15;
                             stats.a6_9 += pt.a6_9 || 0; stats.a10_12 += pt.a10_12 || 0; stats.a13_15 += pt.a13_15 || 0;
                             stats.a16_18 += pt.a16_18; stats.a19_64 += pt.a19_64;
+                            stats.a19_34 += pt.a19_34 || 0; stats.a35_64 += pt.a35_64 || 0;
                             stats.a65_79 += pt.a65_79; stats.a80 += pt.a80;
                         }}
                     }});
@@ -1821,6 +1918,8 @@ ui_html = f"""
                         <div style="padding-left:10px; color:#666; font-size:11px; display:flex; justify-content:space-between;"><span>- Varav 13-15 år:</span><span>${{formatSecret(bikeStats.a13_15)}}</span></div>
                         <div style="display:flex; justify-content:space-between;"><span>16-18 år:</span><b>${{formatSecret(bikeStats.a16_18)}}</b></div>
                         <div style="display:flex; justify-content:space-between;"><span>19-64 år:</span><b>${{formatSecret(bikeStats.a19_64)}}</b></div>
+                        <div style="padding-left:10px; color:#666; font-size:11px; display:flex; justify-content:space-between;"><span>- Varav 19-34 år:</span><span>${{formatSecret(bikeStats.a19_34)}}</span></div>
+                        <div style="padding-left:10px; color:#666; font-size:11px; display:flex; justify-content:space-between;"><span>- Varav 35-64 år:</span><span>${{formatSecret(bikeStats.a35_64)}}</span></div>
                         <div style="display:flex; justify-content:space-between;"><span>65-79 år:</span><b>${{formatSecret(bikeStats.a65_79)}}</b></div>
                         <div style="display:flex; justify-content:space-between;"><span>80+ år:</span><b>${{formatSecret(bikeStats.a80)}}</b></div>
                     </div>
