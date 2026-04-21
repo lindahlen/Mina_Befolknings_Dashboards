@@ -13,6 +13,7 @@ from shapely.geometry import Point
 
 # =====================================================================
 # 1. GENERELL SETUP & MAPPSTRUKTUR
+# Author: Jimmy Lindahl, Analys & Utredning, Linköpings kommun
 # =====================================================================
 # 
 # 🛑 ÄNDRA ÅRTAL OCH FILNAMN HÄR NÄSTA ÅR! 🛑
@@ -96,8 +97,8 @@ print("Bearbetar Excel-data för SEI (SEI_utdrag.xlsx)...")
 sei_path = os.path.join(excel_filer_dir, 'SEI_utdrag.xlsx')
 
 ind_keys = [
-    'ind_netink', 'ind_forvink', 'ind_syssel', 'ind_arblosa', 'ind_bistand', 
-    'ind_lagekon', 'ind_lagink', 'ind_trang', 'ind_kvm', 'ind_ensam', 'ind_ohalsa', 'ind_forgym', 
+    'ind_netink', 'ind_forvink', 'ind_syssel', 'ind_arblosa', 'ind_ejsjalv', 'ind_bistand', 
+    'ind_barnfattig', 'ind_lagekon', 'ind_lagink', 'ind_trang', 'ind_kvm', 'ind_ensam', 'ind_ohalsa', 'ind_forgym', 
     'ind_uvas', 'ind_utrfod', 'ind_utlbak', 'ind_val'
 ]
 
@@ -141,7 +142,9 @@ if os.path.exists(sei_path):
                 'ind_forvink': ['förvärvsinkomst'], 
                 'ind_syssel': ['sysselsättningsgrad', 'sysselsättning'],
                 'ind_arblosa': ['arbetslösa'], 
+                'ind_ejsjalv': ['ej självförsörjande', 'självförsörjande'],
                 'ind_bistand': ['bistånd'], 
+                'ind_barnfattig': ['barnfattigdom', 'barnfattig'],
                 'ind_lagekon': ['låg_ekonomisk', 'låg ekonomisk'],
                 'ind_lagink': ['inkomststandard', 'låg_inkomst', 'låg inkomst'], 
                 'ind_trang': ['trångbodda'], 
@@ -430,12 +433,14 @@ for idx, row in nyko4.iterrows():
         'bost': float(row.get('Bostadsrätt', 0)),
         'hyre': float(row.get('Hyresrätt', 0)),
         'saknas': float(row.get('Uppgift_saknas', 0)),
-        # Alla 16 Indikatorer
+        # Alla 15 Indikatorer
         'ind_netink': float(row['ind_netink']) if pd.notnull(row.get('ind_netink')) else None,
         'ind_forvink': float(row['ind_forvink']) if pd.notnull(row.get('ind_forvink')) else None,
         'ind_syssel': float(row['ind_syssel']) if pd.notnull(row.get('ind_syssel')) else None,
         'ind_arblosa': float(row['ind_arblosa']) if pd.notnull(row.get('ind_arblosa')) else None,
+        'ind_ejsjalv': float(row['ind_ejsjalv']) if pd.notnull(row.get('ind_ejsjalv')) else None,
         'ind_bistand': float(row['ind_bistand']) if pd.notnull(row.get('ind_bistand')) else None,
+        'ind_barnfattig': float(row['ind_barnfattig']) if pd.notnull(row.get('ind_barnfattig')) else None,
         'ind_lagekon': float(row['ind_lagekon']) if pd.notnull(row.get('ind_lagekon')) else None,
         'ind_lagink': float(row['ind_lagink']) if pd.notnull(row.get('ind_lagink')) else None,
         'ind_trang': float(row['ind_trang']) if pd.notnull(row.get('ind_trang')) else None,
@@ -582,7 +587,9 @@ m_netink, mx_netink = get_min_max(nyko4['ind_netink'])
 m_forvink, mx_forvink = get_min_max(nyko4['ind_forvink'])
 m_syssel, mx_syssel = get_min_max(nyko4['ind_syssel'])
 m_arblosa, mx_arblosa = get_min_max(nyko4['ind_arblosa'])
+m_ejsjalv, mx_ejsjalv = get_min_max(nyko4['ind_ejsjalv'])
 m_bistand, mx_bistand = get_min_max(nyko4['ind_bistand'])
+m_barnfattig, mx_barnfattig = get_min_max(nyko4['ind_barnfattig'])
 m_lagekon, mx_lagekon = get_min_max(nyko4['ind_lagekon'])
 m_lagink, mx_lagink = get_min_max(nyko4['ind_lagink'])
 m_trang, mx_trang = get_min_max(nyko4['ind_trang'])
@@ -609,7 +616,9 @@ ind_settings = [
     ('ind_forvink', 'Förvärvsinkomst', pal_green, 'ind-forvink-polygon', m_forvink, mx_forvink),
     ('ind_syssel', 'Sysselsättningsgrad', pal_blue, 'ind-syssel-polygon', m_syssel, mx_syssel),
     ('ind_arblosa', 'Arbetslösa', pal_red, 'ind-arblosa-polygon', m_arblosa, mx_arblosa),
+    ('ind_ejsjalv', 'Ej självförsörjande', pal_red, 'ind-ejsjalv-polygon', m_ejsjalv, mx_ejsjalv),
     ('ind_bistand', 'Bistånd', pal_red, 'ind-bistand-polygon', m_bistand, mx_bistand),
+    ('ind_barnfattig', 'Barnfattigdom', pal_red, 'ind-barnfattig-polygon', m_barnfattig, mx_barnfattig),
     ('ind_lagekon', 'Låg ekon std', pal_red, 'ind-lagekon-polygon', m_lagekon, mx_lagekon),
     ('ind_lagink', 'Låg ink std', pal_red, 'ind-lagink-polygon', m_lagink, mx_lagink),
     ('ind_trang', 'Trångbodda', pal_red, 'ind-trang-polygon', m_trang, mx_trang),
@@ -835,7 +844,9 @@ ui_html = f"""
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_forvink"> <label class="form-check-label">Förvärvsinkomst (tkr)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_syssel"> <label class="form-check-label">Sysselsättningsgrad (%)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_arblosa"> <label class="form-check-label">Inskrivna arbetslösa (%)</label></div>
+        <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_ejsjalv"> <label class="form-check-label">Ej självförsörjande (%)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_bistand"> <label class="form-check-label">Långv. ekon. bistånd (%)</label></div>
+        <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_barnfattig"> <label class="form-check-label">Barnfattigdom (%)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_lagekon"> <label class="form-check-label">Låg ekonomisk std (%)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_lagink"> <label class="form-check-label">Låg inkomststandard (%)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_trang"> <label class="form-check-label">Trångbodda hushåll (%)</label></div>
@@ -1023,7 +1034,9 @@ ui_html = f"""
             'ind_forvink': {{ title: 'Förvärvsinkomst (tkr)', min: {m_forvink}, max: {mx_forvink}, grad: '{", ".join(pal_green)}' }},
             'ind_syssel': {{ title: 'Sysselsättningsgrad (%)', min: {m_syssel}, max: {mx_syssel}, grad: '{", ".join(pal_blue)}' }},
             'ind_arblosa': {{ title: 'Inskrivna arbetslösa (%)', min: {m_arblosa}, max: {mx_arblosa}, grad: '{", ".join(pal_red)}' }},
+            'ind_ejsjalv': {{ title: 'Ej självförsörjande (%)', min: {m_ejsjalv}, max: {mx_ejsjalv}, grad: '{", ".join(pal_red)}' }},
             'ind_bistand': {{ title: 'Långv. ekon. bistånd (%)', min: {m_bistand}, max: {mx_bistand}, grad: '{", ".join(pal_red)}' }},
+            'ind_barnfattig': {{ title: 'Barnfattigdom (%)', min: {m_barnfattig}, max: {mx_barnfattig}, grad: '{", ".join(pal_red)}' }},
             'ind_lagekon': {{ title: 'Låg ekonomisk std (%)', min: {m_lagekon}, max: {mx_lagekon}, grad: '{", ".join(pal_red)}' }},
             'ind_lagink': {{ title: 'Låg inkomststandard (%)', min: {m_lagink}, max: {mx_lagink}, grad: '{", ".join(pal_red)}' }},
             'ind_trang': {{ title: 'Trångbodda hushåll (%)', min: {m_trang}, max: {mx_trang}, grad: '{", ".join(pal_red)}' }},
@@ -1082,7 +1095,8 @@ ui_html = f"""
                     'pop': 'folkmangd', 'dens': 'inv_per_km2', 'hushall': 'hushall',
                     'agan': 'agan_pct', 'bost': 'bost_pct', 'hyre': 'hyre_pct',
                     'ind_netink': 'ind_netink', 'ind_forvink': 'ind_forvink', 'ind_syssel': 'ind_syssel',
-                    'ind_arblosa': 'ind_arblosa', 'ind_bistand': 'ind_bistand', 'ind_lagekon': 'ind_lagekon',
+                    'ind_arblosa': 'ind_arblosa', 'ind_ejsjalv': 'ind_ejsjalv', 'ind_bistand': 'ind_bistand',
+                    'ind_barnfattig': 'ind_barnfattig', 'ind_lagekon': 'ind_lagekon',
                     'ind_lagink': 'ind_lagink', 'ind_trang': 'ind_trang', 'ind_kvm': 'ind_kvm',
                     'ind_ensam': 'ind_ensam', 'ind_ohalsa': 'ind_ohalsa', 'ind_forgym': 'ind_forgym', 'ind_uvas': 'ind_uvas',
                     'ind_utrfod': 'ind_utrfod', 'ind_utlbak': 'ind_utlbak', 'ind_val': 'ind_val',
@@ -1102,7 +1116,8 @@ ui_html = f"""
                 'pop': 'pop-polygon', 'dens': 'density-polygon', 'hushall': 'hushall-polygon',
                 'agan': 'agan-polygon', 'bost': 'bost-polygon', 'hyre': 'hyre-polygon',
                 'ind_netink': 'ind-netink-polygon', 'ind_forvink': 'ind-forvink-polygon', 'ind_syssel': 'ind-syssel-polygon',
-                'ind_arblosa': 'ind-arblosa-polygon', 'ind_bistand': 'ind-bistand-polygon', 'ind_lagekon': 'ind-lagekon-polygon',
+                'ind_arblosa': 'ind-arblosa-polygon', 'ind_ejsjalv': 'ind-ejsjalv-polygon', 'ind_bistand': 'ind-bistand-polygon',
+                'ind_barnfattig': 'ind-barnfattig-polygon', 'ind_lagekon': 'ind-lagekon-polygon',
                 'ind_lagink': 'ind-lagink-polygon', 'ind_trang': 'ind-trang-polygon', 'ind_kvm': 'ind-kvm-polygon',
                 'ind_ensam': 'ind-ensam-polygon', 'ind_ohalsa': 'ind-ohalsa-polygon', 'ind_forgym': 'ind-forgym-polygon', 'ind_uvas': 'ind-uvas-polygon',
                 'ind_utrfod': 'ind-utrfod-polygon', 'ind_utlbak': 'ind-utlbak-polygon', 'ind_val': 'ind-val-polygon',
@@ -1182,23 +1197,54 @@ ui_html = f"""
                 }}
             }});
 
-            // 2. Kolla Polygon-filter
-            var allSeiChecked = document.getElementById('toggleAllSei').checked;
-            var hasCharFilter = activeCharFilter.value !== "";
-            var isTopBotFilter = topBotFilter !== 'all';
+            // 2. Beräkna exakt vilka ytor som faktiskt är filtrerade
+            var activeBase = document.querySelector('input[name="baseArea"]:checked').value;
+            var tempMatched = [];
+            nykoData.forEach(d => {{
+                var matchesChar = !activeCharFilter.value || d[activeCharFilter.type] === activeCharFilter.value;
+                var cb = document.getElementById('toggleSei_' + Math.round(d.sei_index));
+                var matchesSei = cb ? cb.checked : true;
+                if (matchesChar && matchesSei) tempMatched.push(d);
+            }});
+
+            if (topBotFilter !== 'all' && activeBase !== 'none') {{
+                var propMapKeys = {{
+                    'pop': 'folkmangd', 'dens': 'inv_per_km2', 'hushall': 'hushall',
+                    'agan': 'agan_pct', 'bost': 'bost_pct', 'hyre': 'hyre_pct',
+                    'ind_netink': 'ind_netink', 'ind_forvink': 'ind_forvink', 'ind_syssel': 'ind_syssel',
+                    'ind_arblosa': 'ind_arblosa', 'ind_ejsjalv': 'ind_ejsjalv', 'ind_bistand': 'ind_bistand',
+                    'ind_barnfattig': 'ind_barnfattig', 'ind_lagekon': 'ind_lagekon',
+                    'ind_lagink': 'ind_lagink', 'ind_trang': 'ind_trang', 'ind_kvm': 'ind_kvm',
+                    'ind_ensam': 'ind_ensam', 'ind_ohalsa': 'ind_ohalsa', 'ind_forgym': 'ind_forgym', 'ind_uvas': 'ind_uvas',
+                    'ind_utrfod': 'ind_utrfod', 'ind_utlbak': 'ind_utlbak', 'ind_val': 'ind_val',
+                    'snitt15': 'snitt_15_19', 'snitt20': 'snitt_20_24', 'seichange': 'sei_change'
+                }};
+                var prop = propMapKeys[activeBase];
+                if (prop) {{
+                    var validAreas = tempMatched.filter(a => a[prop] !== null && (prop === 'sei_change' ? true : a[prop] > 0));
+                    validAreas.sort((a, b) => b[prop] - a[prop]); 
+                    if (topBotFilter === 'top10') tempMatched = validAreas.slice(0, 10);
+                    else if (topBotFilter === 'bot10') tempMatched = validAreas.slice(-10);
+                }}
+            }}
             
-            map.eachLayer(function(layer) {{
-                if (layer.options && layer.options.className && layer.options.className.includes('polygon-layer')) {{
-                    if (layer.options.fillOpacity > 0 || layer.options.weight > 0) {{
-                        if (hasCharFilter || isTopBotFilter || !allSeiChecked || (!poiActive && !hasCharFilter && !isTopBotFilter && allSeiChecked)) {{
+            var matchedNames = new Set(tempMatched.map(d => d.namn));
+            var allSeiChecked = document.getElementById('toggleAllSei').checked;
+            var isFilteringPolygons = activeCharFilter.value !== "" || topBotFilter !== 'all' || !allSeiChecked;
+
+            // Om vi filtrerar polygoner aktivt ELLER inte tittar på POI -> Zooma till polygonerna
+            if (isFilteringPolygons || !poiActive) {{
+                map.eachLayer(function(layer) {{
+                    if (layer.options && layer.options.className && layer.options.className.includes('polygon-layer')) {{
+                        if (layer.feature && layer.feature.properties && matchedNames.has(layer.feature.properties.NAMN)) {{
                             if (layer.getBounds) {{
                                 bounds.extend(layer.getBounds());
                                 found = true;
                             }}
                         }}
                     }}
-                }}
-            }});
+                }});
+            }}
 
             if (found) {{
                 map.fitBounds(bounds, {{padding: [40,40]}});
@@ -1307,7 +1353,9 @@ ui_html = f"""
                         <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Förvärvsinkomst:</span><span class="fw-bold">${{d.ind_forvink !== null && d.ind_forvink > 0 ? d.ind_forvink + ' tkr' : '-'}}</span></div>
                         <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Sysselsättningsgrad:</span><span class="fw-bold">${{d.ind_syssel !== null && d.ind_syssel > 0 ? d.ind_syssel + ' %' : '-'}}</span></div>
                         <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Inskrivna arbetslösa:</span><span class="fw-bold">${{d.ind_arblosa !== null && d.ind_arblosa > 0 ? d.ind_arblosa + ' %' : '-'}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Ej självförsörjande:</span><span class="fw-bold">${{d.ind_ejsjalv !== null && d.ind_ejsjalv > 0 ? d.ind_ejsjalv + ' %' : '-'}}</span></div>
                         <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Långv. ekon. bistånd:</span><span class="fw-bold">${{d.ind_bistand !== null && d.ind_bistand > 0 ? d.ind_bistand + ' %' : '-'}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Barnfattigdom:</span><span class="fw-bold">${{d.ind_barnfattig !== null && d.ind_barnfattig > 0 ? d.ind_barnfattig + ' %' : '-'}}</span></div>
                         <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Låg ekonomisk std:</span><span class="fw-bold">${{d.ind_lagekon !== null && d.ind_lagekon > 0 ? d.ind_lagekon + ' %' : '-'}}</span></div>
                         <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Låg inkomststandard:</span><span class="fw-bold">${{d.ind_lagink !== null && d.ind_lagink > 0 ? d.ind_lagink + ' %' : '-'}}</span></div>
                         <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Trångbodda hushåll:</span><span class="fw-bold">${{d.ind_trang !== null && d.ind_trang > 0 ? d.ind_trang + ' %' : '-'}}</span></div>
@@ -1394,7 +1442,9 @@ ui_html = f"""
                                 'ind_forvink': {{p:'ind_forvink', l:'Förvärvsinkomst (tkr)'}},
                                 'ind_syssel': {{p:'ind_syssel', l:'Sysselsättningsgrad'}},
                                 'ind_arblosa': {{p:'ind_arblosa', l:'Inskrivna arbetslösa'}},
+                                'ind_ejsjalv': {{p:'ind_ejsjalv', l:'Ej självförsörjande'}},
                                 'ind_bistand': {{p:'ind_bistand', l:'Långv. ekon. bistånd'}},
+                                'ind_barnfattig': {{p:'ind_barnfattig', l:'Barnfattigdom'}},
                                 'ind_lagekon': {{p:'ind_lagekon', l:'Låg ekon. standard'}},
                                 'ind_lagink': {{p:'ind_lagink', l:'Låg inkomststandard'}},
                                 'ind_trang': {{p:'ind_trang', l:'Trångbodda hushåll'}},
@@ -1418,7 +1468,7 @@ ui_html = f"""
                                 else if (activeBase === 'hushall') displayVal = d.hushall_visa;
                                 else if (activeBase === 'seichange') displayVal = (val !== null && val !== 0) ? val : '-';
                                 else {{
-                                    var suffix = ['agan', 'bost', 'hyre', 'ind_syssel', 'ind_arblosa', 'ind_bistand', 'ind_lagekon', 'ind_lagink', 'ind_trang', 'ind_ensam', 'ind_forgym', 'ind_uvas', 'ind_utrfod', 'ind_utlbak', 'ind_val'].includes(activeBase) ? ' %' : '';
+                                    var suffix = ['agan', 'bost', 'hyre', 'ind_syssel', 'ind_arblosa', 'ind_ejsjalv', 'ind_bistand', 'ind_barnfattig', 'ind_lagekon', 'ind_lagink', 'ind_trang', 'ind_ensam', 'ind_forgym', 'ind_uvas', 'ind_utrfod', 'ind_utlbak', 'ind_val'].includes(activeBase) ? ' %' : '';
                                     displayVal = (val !== null && val !== undefined && val > 0) ? val + suffix : '-';
                                     if (d.folkmangd > 0 && d.folkmangd < 5) displayVal = '-'; 
                                 }}
