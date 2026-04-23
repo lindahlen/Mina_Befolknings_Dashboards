@@ -19,8 +19,8 @@ from shapely.geometry import Point
 # 🛑 ÄNDRA ÅRTAL OCH FILNAMN HÄR NÄSTA ÅR! 🛑
 # --------------------------------------------------
 GEOJSON_NYKO4_FILENAME = 'NYKO4v23.geojson' 
-PUNKT_DATA_FILNAMN = 'BefKoord2025.csv'      
-PUNKT_DATA_AR = "2025"                       
+PUNKT_DATA_FILNAMN = 'BefKoord2025.csv'      # <--- Byt till t.ex. 'BefKoord2026.csv' nästa år!
+PUNKT_DATA_AR = "2025"                       # <--- Byt till "2026"
 EXCLUDE_146300 = True # Ändra till False om 146300 ska inkluderas i framtiden
 # --------------------------------------------------
 
@@ -101,7 +101,7 @@ nyko4['Area_km2'] = nyko4_3006.geometry.area / 1_000_000
 nyko4_4326 = nyko4.to_crs(epsg=4326)
 nyko4_3006_centroids = nyko4_3006.geometry.centroid
 
-# Skapa en enhetlig gräns för HELA den valda staden för att klippa POI
+# Skapa en enhetlig gräns för HELA den valda staden för att klippa POI och Mikroklimat
 staden_geom_4326 = nyko4_4326.geometry.unary_union
 bounds = staden_geom_4326.bounds
 initial_bounds_js = f"[[{bounds[1]}, {bounds[0]}], [{bounds[3]}, {bounds[2]}]]"
@@ -128,6 +128,19 @@ if os.path.exists(stanga_path):
 else:
     stanga_str = '{"type": "FeatureCollection", "features": []}'
 
+# Läs in Mikroklimat
+mikro_path = os.path.join(kart_filer_dir, 'linkoping_mikroklimat_kombinerad.geojson')
+if os.path.exists(mikro_path):
+    try:
+        mikro_gdf = gpd.read_file(mikro_path).to_crs(4326)
+        mikro_gdf = mikro_gdf[mikro_gdf.geometry.intersects(staden_geom_4326)]
+        mikro_str = json.dumps(mikro_gdf.__geo_interface__)
+    except:
+        mikro_str = '{"type": "FeatureCollection", "features": []}'
+else:
+    mikro_str = '{"type": "FeatureCollection", "features": []}'
+
+
 # =====================================================================
 # 3. LÄS IN SEI-DATA, INDIKATORER & KODER (SEI_utdrag.xlsx)
 # =====================================================================
@@ -137,7 +150,7 @@ sei_path = os.path.join(excel_filer_dir, 'SEI_utdrag.xlsx')
 ind_keys = [
     'ind_netink', 'ind_forvink', 'ind_syssel', 'ind_arblosa', 'ind_ejsjalv', 'ind_bistand', 
     'ind_barnfattig', 'ind_lagekon', 'ind_lagink', 'ind_trang', 'ind_kvm', 'ind_kvarboende', 'ind_ensam', 'ind_ohalsa', 'ind_forgym', 
-    'ind_forskola', 'ind_uvas', 'ind_utrfod', 'ind_utlbak', 'ind_val'
+    'ind_forskola', 'ind_behoriga', 'ind_uvas', 'ind_utrfod', 'ind_utlbak', 'ind_val'
 ]
 
 for col in ['SEI_Index', 'Snitt_15_19', 'Snitt_20_24', 'SEI_Change'] + ind_keys:
@@ -181,7 +194,8 @@ if os.path.exists(sei_path):
                 'ind_barnfattig': ['barnfattigdom', 'barnfattig'], 'ind_lagekon': ['låg_ekonomisk', 'låg ekonomisk'],
                 'ind_lagink': ['inkomststandard', 'låg_inkomst', 'låg inkomst'], 'ind_trang': ['trångbodda'], 'ind_kvm': ['kvm'],
                 'ind_kvarboende': ['kvarboende', 'kvarboende_minst_tre_år'], 'ind_ensam': ['ensamstående'], 'ind_ohalsa': ['ohälsotal', 'ohälsa'], 
-                'ind_forgym': ['förgymnasial'], 'ind_forskola': ['inskrivna förskolebarn', 'förskolebarn', 'inskrivna_förskolebarn'], 'ind_uvas': ['uvas'],
+                'ind_forgym': ['förgymnasial'], 'ind_forskola': ['inskrivna förskolebarn', 'förskolebarn', 'inskrivna_förskolebarn'], 
+                'ind_behoriga': ['behöriga_gymnasiets_yrkesprogram', 'behöriga gymn', 'yrkesprogram'], 'ind_uvas': ['uvas'],
                 'ind_utrfod': ['utrikes födda', 'utrikes_födda', 'utrikes'], 'ind_utlbak': ['utländsk', 'utländsk_bakgrund'], 'ind_val': ['valdeltagande']
             }
             loaded_cols = ['Namn_clean']
@@ -414,6 +428,7 @@ if not pop_df.empty:
         dyn_pop4_str = json.dumps(create_agg_pop(pop_df_valid, 'NYKO4_str'))
         dyn_pop6_str = json.dumps(create_agg_pop(pop_df_valid, 'NYKO6_str'))
 
+        # Bygg dictionary med demografiska tyngdpunkter för NYKO4
         if 'NYKO4_str' in pop_df_valid.columns:
             for name, group in pop_df_valid[pop_df_valid['Totalt'] > 0].groupby('NYKO4_str'):
                 tot_pop = group['Totalt'].sum()
@@ -473,7 +488,7 @@ for idx, row in nyko4.iterrows():
         'bost': float(row.get('Bostadsrätt', 0)),
         'hyre': float(row.get('Hyresrätt', 0)),
         'saknas': float(row.get('Uppgift_saknas', 0)),
-        # Alla 20 Indikatorer
+        # Alla 21 Indikatorer
         'ind_netink': float(row['ind_netink']) if pd.notnull(row.get('ind_netink')) else None,
         'ind_forvink': float(row['ind_forvink']) if pd.notnull(row.get('ind_forvink')) else None,
         'ind_syssel': float(row['ind_syssel']) if pd.notnull(row.get('ind_syssel')) else None,
@@ -490,6 +505,7 @@ for idx, row in nyko4.iterrows():
         'ind_ohalsa': float(row['ind_ohalsa']) if pd.notnull(row.get('ind_ohalsa')) else None,
         'ind_forgym': float(row['ind_forgym']) if pd.notnull(row.get('ind_forgym')) else None,
         'ind_forskola': float(row['ind_forskola']) if pd.notnull(row.get('ind_forskola')) else None,
+        'ind_behoriga': float(row['ind_behoriga']) if pd.notnull(row.get('ind_behoriga')) else None,
         'ind_uvas': float(row['ind_uvas']) if pd.notnull(row.get('ind_uvas')) else None,
         'ind_utrfod': float(row['ind_utrfod']) if pd.notnull(row.get('ind_utrfod')) else None,
         'ind_utlbak': float(row['ind_utlbak']) if pd.notnull(row.get('ind_utlbak')) else None,
@@ -556,7 +572,7 @@ vardboende_count = sum(1 for p in excel_pois if p['group'] == 'Vårdboende')
 vard_text = "Vårdboenden" if vardboende_count > 0 else "Vårdboenden (Kommer snart)"
 vard_disabled = "" if vardboende_count > 0 else "disabled"
 
-# --- SKRIV DATA TILL EXTERNA JS-FILER ---
+# --- SKRIV DATA TILL EXTERNA JS-FILER FÖR ATT BOTA HTML-FILEN ---
 print("Sparar data till externa JS-filer för att radikalt snabba upp webbläsaren...")
 with open(os.path.join(kart_data_dir, 'nyko4_data_staden.js'), 'w', encoding='utf-8') as f:
     f.write(f"window.nykoData = {nyko4_json_str};")
@@ -569,14 +585,14 @@ with open(os.path.join(kart_data_dir, 'heat_data_staden.js'), 'w', encoding='utf
 with open(os.path.join(kart_data_dir, 'dyn_pop_data_staden.js'), 'w', encoding='utf-8') as f:
     f.write(f"window.dynPop1 = {dyn_pop1_str};\nwindow.dynPop3 = {dyn_pop3_str};\nwindow.dynPop4 = {dyn_pop4_str};\nwindow.dynPop6 = {dyn_pop6_str};\n")
 with open(os.path.join(kart_data_dir, 'infra_data_staden.js'), 'w', encoding='utf-8') as f:
-    f.write(f"window.transportData = {transport_str};\nwindow.vattenData = {vatten_str};\nwindow.stangaData = {stanga_str};\n")
+    f.write(f"window.transportData = {transport_str};\nwindow.vattenData = {vatten_str};\nwindow.stangaData = {stanga_str};\nwindow.mikroData = {mikro_str};\n")
 
 # =====================================================================
 # 7. KARTBYGGE OCH FÄRGSKALOR
 # =====================================================================
 print("Genererar karta och färgskalor...")
 
-# Hög precision för att undvika glapp
+# Hög precision för att undvika glapp (ÅTERSTÄLLD)
 nyko4['geometry'] = nyko4.geometry.simplify(tolerance=0.00002, preserve_topology=True)
 
 m = folium.Map(location=[58.4102, 15.6216], zoom_start=12, tiles=None, control_scale=True)
@@ -650,6 +666,7 @@ m_ensam, mx_ensam = get_min_max(nyko4['ind_ensam'])
 m_ohalsa, mx_ohalsa = get_min_max(nyko4['ind_ohalsa'])
 m_forgym, mx_forgym = get_min_max(nyko4['ind_forgym'])
 m_forskola, mx_forskola = get_min_max(nyko4['ind_forskola'])
+m_behoriga, mx_behoriga = get_min_max(nyko4['ind_behoriga'])
 m_uvas, mx_uvas = get_min_max(nyko4['ind_uvas'])
 m_utrfod, mx_utrfod = get_min_max(nyko4['ind_utrfod'])
 m_utlbak, mx_utlbak = get_min_max(nyko4['ind_utlbak'])
@@ -681,6 +698,7 @@ ind_settings = [
     ('ind_ohalsa', 'Ohälsotal 50-64 år (dagar)', pal_red, 'ind-ohalsa-polygon', m_ohalsa, mx_ohalsa),
     ('ind_forgym', 'Förgymnasial', pal_orng, 'ind-forgym-polygon', m_forgym, mx_forgym),
     ('ind_forskola', 'Inskrivna förskolebarn (%)', pal_blue, 'ind-forskola-polygon', m_forskola, mx_forskola),
+    ('ind_behoriga', 'Behöriga gymn. yrkesprogr. (%)', pal_blue, 'ind-behoriga-polygon', m_behoriga, mx_behoriga),
     ('ind_uvas', 'UVAS', pal_red, 'ind-uvas-polygon', m_uvas, mx_uvas),
     ('ind_utrfod', 'Utrikes födda', pal_purp, 'ind-utrfod-polygon', m_utrfod, mx_utrfod),
     ('ind_utlbak', 'Utländsk bakgrund', pal_purp, 'ind-utlbak-polygon', m_utlbak, mx_utlbak),
@@ -744,6 +762,8 @@ ui_html = f"""
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://unpkg.com/@turf/turf/turf.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
 <style>
     /* Custom Scrollbars */
@@ -784,7 +804,7 @@ ui_html = f"""
         .tools-panel h6, .layers-panel h6 {{ font-size: 12px !important; }}
         .form-check-label {{ font-size: 11px !important; }}
         .btn {{ font-size: 11px !important; padding: 6px !important; }}
-        #btn-measure, #btn-isochrone {{ font-size: 12px !important; padding: 8px !important; }}
+        #btn-measure, #btn-isochrone, #btn-draw {{ font-size: 12px !important; padding: 8px !important; }}
         .leaflet-control-zoom {{ display: none !important; }}
     }}
 </style>
@@ -873,7 +893,8 @@ ui_html = f"""
     <hr style="margin: 15px 0;">
     <h6 class="fw-bold mb-2" style="font-size: 13px;">Geografiska mätverktyg</h6>
     <button id="btn-measure" class="btn btn-outline-primary w-100 mb-2" style="text-align: left; font-size: 16px; padding: 12px; font-weight: bold;"><i class="fas fa-ruler"></i> Avstånd till Centrum</button>
-    <button id="btn-isochrone" class="btn btn-outline-info w-100" style="text-align: left; font-size: 16px; padding: 12px; font-weight: bold;"><i class="fas fa-stopwatch"></i> 10-min Nåbarhetsanalys</button>
+    <button id="btn-isochrone" class="btn btn-outline-info w-100 mb-2" style="text-align: left; font-size: 16px; padding: 12px; font-weight: bold;"><i class="fas fa-stopwatch"></i> 10-min Nåbarhetsanalys</button>
+    <button id="btn-draw" class="btn btn-outline-success w-100" style="text-align: left; font-size: 16px; padding: 12px; font-weight: bold;"><i class="fas fa-draw-polygon"></i> Rita egen yta</button>
 </div>
 
 <div class="layers-panel">
@@ -923,6 +944,7 @@ ui_html = f"""
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_ohalsa"> <label class="form-check-label">Ohälsotal 50-64 år (dagar)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_forgym"> <label class="form-check-label">Förgymnasial utbildning (%)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_forskola"> <label class="form-check-label">Inskrivna förskolebarn (%)</label></div>
+        <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_behoriga"> <label class="form-check-label">Behöriga gymn. yrkesprogr. (%)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_uvas"> <label class="form-check-label">UVAS (%)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_utrfod"> <label class="form-check-label">Utrikes födda (%)</label></div>
         <div class="form-check mb-1"><input class="form-check-input base-toggle" type="radio" name="baseArea" value="ind_utlbak"> <label class="form-check-label">Utländsk bakgrund (%)</label></div>
@@ -985,6 +1007,7 @@ ui_html = f"""
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleStanga"><label class="form-check-label" for="toggleStanga">🏘️ Stångåstadens områden</label></div>
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleTransport"><label class="form-check-label" for="toggleTransport">🛤️ Transportleder (Väg/Järnväg)</label></div>
     <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleVatten"><label class="form-check-label" for="toggleVatten">💧 Sjöar & Vattendrag</label></div>
+    <div class="form-check mb-1"><input class="form-check-input" type="checkbox" id="toggleMikro"><label class="form-check-label" for="toggleMikro">🌡️ Mikroklimat</label></div>
     
     <button id="btn-zoom-selected" class="btn btn-outline-secondary w-100 shadow-sm mt-3" style="text-align: left; font-size: 14px; padding: 10px; font-weight: bold;"><i class="fas fa-search-location"></i> Zooma till valda platser</button>
 </div>
@@ -1003,10 +1026,14 @@ ui_html = f"""
         map.getPane('analysPane').style.zIndex = 600;
         
         map.createPane('stangaPane'); 
-        map.getPane('stangaPane').style.zIndex = 460;
+        map.getPane('stangaPane').style.zIndex = 460; 
+
+        map.createPane('mikroPane'); 
+        map.getPane('mikroPane').style.zIndex = 455;
 
         window.measureModeActive = false; 
         window.isochroneModeActive = false;
+        window.drawModeActive = false;
 
         var nykoData = window.nykoData || []; 
         var popHistData = window.popHistData || {{}};
@@ -1019,6 +1046,7 @@ ui_html = f"""
         var transportData = window.transportData;
         var vattenData = window.vattenData;
         var stangaData = window.stangaData;
+        var mikroData = window.mikroData;
 
         window.showToast = function(msg) {{
             var t = document.getElementById('toastMessage');
@@ -1118,6 +1146,7 @@ ui_html = f"""
             'ind_ohalsa': {{ title: 'Ohälsotal 50-64 år (dagar)', min: {m_ohalsa}, max: {mx_ohalsa}, grad: '{", ".join(pal_red)}' }},
             'ind_forgym': {{ title: 'Förgymnasial utbildning (%)', min: {m_forgym}, max: {mx_forgym}, grad: '{", ".join(pal_orng)}' }},
             'ind_forskola': {{ title: 'Inskrivna förskolebarn (%)', min: {m_forskola}, max: {mx_forskola}, grad: '{", ".join(pal_blue)}' }},
+            'ind_behoriga': {{ title: 'Behöriga gymn. yrkesprogr. (%)', min: {m_behoriga}, max: {mx_behoriga}, grad: '{", ".join(pal_blue)}' }},
             'ind_uvas': {{ title: 'UVAS (%)', min: {m_uvas}, max: {mx_uvas}, grad: '{", ".join(pal_red)}' }},
             'ind_utrfod': {{ title: 'Utrikes födda (%)', min: {m_utrfod}, max: {mx_utrfod}, grad: '{", ".join(pal_purp)}' }},
             'ind_utlbak': {{ title: 'Utländsk bakgrund (%)', min: {m_utlbak}, max: {mx_utlbak}, grad: '{", ".join(pal_purp)}' }},
@@ -1205,8 +1234,8 @@ ui_html = f"""
                     'ind_arblosa': 'ind_arblosa', 'ind_ejsjalv': 'ind_ejsjalv', 'ind_bistand': 'ind_bistand',
                     'ind_barnfattig': 'ind_barnfattig', 'ind_lagekon': 'ind_lagekon',
                     'ind_lagink': 'ind_lagink', 'ind_trang': 'ind_trang', 'ind_kvm': 'ind_kvm',
-                    'ind_kvarboende': 'ind_kvarboende', 'ind_ensam': 'ind_ensam', 'ind_forgym': 'ind_forgym', 
-                    'ind_forskola': 'ind_forskola', 'ind_uvas': 'ind_uvas',
+                    'ind_kvarboende': 'ind_kvarboende', 'ind_ensam': 'ind_ensam', 'ind_ohalsa': 'ind_ohalsa', 
+                    'ind_forgym': 'ind_forgym', 'ind_forskola': 'ind_forskola', 'ind_behoriga': 'ind_behoriga', 'ind_uvas': 'ind_uvas',
                     'ind_utrfod': 'ind_utrfod', 'ind_utlbak': 'ind_utlbak', 'ind_val': 'ind_val',
                     'snitt15': 'snitt_15_19', 'snitt20': 'snitt_20_24', 'seichange': 'sei_change'
                 }};
@@ -1227,8 +1256,8 @@ ui_html = f"""
                 'ind_arblosa': 'ind-arblosa-polygon', 'ind_ejsjalv': 'ind-ejsjalv-polygon', 'ind_bistand': 'ind-bistand-polygon',
                 'ind_barnfattig': 'ind-barnfattig-polygon', 'ind_lagekon': 'ind-lagekon-polygon',
                 'ind_lagink': 'ind-lagink-polygon', 'ind_trang': 'ind-trang-polygon', 'ind_kvm': 'ind-kvm-polygon',
-                'ind_kvarboende': 'ind-kvarboende-polygon', 'ind_ensam': 'ind-ensam-polygon', 'ind_forgym': 'ind-forgym-polygon', 
-                'ind_forskola': 'ind-forskola-polygon', 'ind_uvas': 'ind-uvas-polygon',
+                'ind_kvarboende': 'ind-kvarboende-polygon', 'ind_ensam': 'ind-ensam-polygon', 'ind_ohalsa': 'ind-ohalsa-polygon', 
+                'ind_forgym': 'ind-forgym-polygon', 'ind_forskola': 'ind-forskola-polygon', 'ind_behoriga': 'ind-behoriga-polygon', 'ind_uvas': 'ind-uvas-polygon',
                 'ind_utrfod': 'ind-utrfod-polygon', 'ind_utlbak': 'ind-utlbak-polygon', 'ind_val': 'ind-val-polygon',
                 'snitt15': 'snitt15-polygon', 'snitt20': 'snitt20-polygon', 'seichange': 'seichange-polygon'
             }};
@@ -1288,8 +1317,6 @@ ui_html = f"""
                     if (layer._path) layer._path.style.pointerEvents = isMatched && (isVisible || cls.includes('border-polygon')) ? 'auto' : 'none';
                 }}
             }});
-
-            if (doZoom && found) map.fitBounds(bounds, {{padding: [40,40]}});
         }}
 
         // ZOOM TILL SPECIFIK KARAKTÄR DIREKT FRÅN RULLISTAN
@@ -1321,97 +1348,97 @@ ui_html = f"""
                     }}
                 }});
                 if (found) map.fitBounds(bounds, {{padding: [40,40]}});
-        }} else {{
-            map.fitBounds(initialBounds);
-        }}
-    }});
-
-    // Smart Zoom till valda platser
-    var btnZoom = document.getElementById('btn-zoom-selected');
-    if (btnZoom) {{
-        btnZoom.addEventListener('click', function() {{
-            var bounds = L.latLngBounds();
-            var found = false;
-            
-            // 1. Kolla POI-grupper
-            var poiActive = false;
-            Object.values(poiGroups).forEach(group => {{
-                if (map.hasLayer(group) && group.getLayers().length > 0) {{
-                    bounds.extend(group.getBounds());
-                    found = true;
-                    poiActive = true;
-                }}
-            }});
-
-            // 2. Beräkna exakt vilka ytor som faktiskt är filtrerade
-            var activeBase = document.querySelector('input[name="baseArea"]:checked').value;
-            var tempMatched = [];
-            nykoData.forEach(d => {{
-                var matchesChar = true;
-                if (activeCharFilter !== "") {{
-                    matchesChar = false;
-                    if (activeCharFilter === "Inre staden" || activeCharFilter === "Yttre staden") {{
-                        matchesChar = (d.char2 === activeCharFilter);
-                    }} else if (districtCodes[activeCharFilter]) {{
-                        matchesChar = districtCodes[activeCharFilter].includes(d.kod);
-                    }} else {{
-                        matchesChar = (d.namn.includes(activeCharFilter) || d.char2 === activeCharFilter);
-                    }}
-                }}
-                var cb = document.getElementById('toggleSei_' + Math.round(d.sei_index));
-                var matchesSei = cb ? cb.checked : true;
-                if (matchesChar && matchesSei) tempMatched.push(d);
-            }});
-
-            if (topBotFilter !== 'all' && activeBase !== 'none') {{
-                var propMapKeys = {{
-                    'pop': 'folkmangd', 'dens': 'inv_per_km2', 'hushall': 'hushall',
-                    'agan': 'agan_pct', 'bost': 'bost_pct', 'hyre': 'hyre_pct',
-                    'ind_netink': 'ind_netink', 'ind_forvink': 'ind_forvink', 'ind_syssel': 'ind_syssel',
-                    'ind_arblosa': 'ind_arblosa', 'ind_ejsjalv': 'ind_ejsjalv', 'ind_bistand': 'ind_bistand',
-                    'ind_barnfattig': 'ind_barnfattig', 'ind_lagekon': 'ind_lagekon',
-                    'ind_lagink': 'ind_lagink', 'ind_trang': 'ind_trang', 'ind_kvm': 'ind_kvm',
-                    'ind_kvarboende': 'ind_kvarboende', 'ind_ensam': 'ind_ensam', 'ind_ohalsa': 'ind_ohalsa', 
-                    'ind_forgym': 'ind_forgym', 'ind_forskola': 'ind_forskola', 'ind_uvas': 'ind_uvas',
-                    'ind_utrfod': 'ind_utrfod', 'ind_utlbak': 'ind_utlbak', 'ind_val': 'ind_val',
-                    'snitt15': 'snitt_15_19', 'snitt20': 'snitt_20_24', 'seichange': 'sei_change'
-                }};
-                var prop = propMapKeys[activeBase];
-                if (prop) {{
-                    var validAreas = tempMatched.filter(a => a[prop] !== null && (prop === 'sei_change' ? true : a[prop] > 0));
-                    validAreas.sort((a, b) => b[prop] - a[prop]); 
-                    if (topBotFilter === 'top10') tempMatched = validAreas.slice(0, 10);
-                    else if (topBotFilter === 'bot10') tempMatched = validAreas.slice(-10);
-                }}
-            }}
-            
-            var matchedNames = new Set(tempMatched.map(d => d.namn));
-            var allSeiChecked = document.getElementById('toggleAllSei').checked;
-            var isFilteringPolygons = activeCharFilter !== "" || topBotFilter !== 'all' || !allSeiChecked;
-
-            // Om vi filtrerar polygoner aktivt ELLER inte tittar på POI -> Zooma till polygonerna
-            if (isFilteringPolygons || !poiActive) {{
-                map.eachLayer(function(layer) {{
-                    if (layer.options && layer.options.className && layer.options.className.includes('polygon-layer') && !layer.options.className.includes('border-polygon')) {{
-                        if (layer.feature && layer.feature.properties && matchedNames.has(layer.feature.properties.NAMN)) {{
-                            if (layer.getBounds) {{
-                                bounds.extend(layer.getBounds());
-                                found = true;
-                            }}
-                        }}
-                    }}
-                }});
-            }}
-
-            if (found) {{
-                map.fitBounds(bounds, {{padding: [40,40]}});
             }} else {{
                 map.fitBounds(initialBounds);
             }}
         }});
-    }}
 
-    document.querySelectorAll('.base-toggle').forEach(r => r.addEventListener('change', () => updatePolygonVisibility(false)));
+        // Smart Zoom till valda platser (Lösningen för att respektera alla valda polygoner)
+        var btnZoom = document.getElementById('btn-zoom-selected');
+        if (btnZoom) {{
+            btnZoom.addEventListener('click', function() {{
+                var bounds = L.latLngBounds();
+                var found = false;
+                
+                // 1. Kolla POI-grupper
+                var poiActive = false;
+                Object.values(poiGroups).forEach(group => {{
+                    if (map.hasLayer(group) && group.getLayers().length > 0) {{
+                        bounds.extend(group.getBounds());
+                        found = true;
+                        poiActive = true;
+                    }}
+                }});
+
+                // 2. Beräkna exakt vilka ytor som faktiskt är filtrerade
+                var activeBase = document.querySelector('input[name="baseArea"]:checked').value;
+                var tempMatched = [];
+                nykoData.forEach(d => {{
+                    var matchesChar = true;
+                    if (activeCharFilter !== "") {{
+                        matchesChar = false;
+                        if (activeCharFilter === "Inre staden" || activeCharFilter === "Yttre staden") {{
+                            matchesChar = (d.char2 === activeCharFilter);
+                        }} else if (districtCodes[activeCharFilter]) {{
+                            matchesChar = districtCodes[activeCharFilter].includes(d.kod);
+                        }} else {{
+                            matchesChar = (d.namn.includes(activeCharFilter) || d.char2 === activeCharFilter);
+                        }}
+                    }}
+                    var cb = document.getElementById('toggleSei_' + Math.round(d.sei_index));
+                    var matchesSei = cb ? cb.checked : true;
+                    if (matchesChar && matchesSei) tempMatched.push(d);
+                }});
+
+                if (topBotFilter !== 'all' && activeBase !== 'none') {{
+                    var propMapKeys = {{
+                        'pop': 'folkmangd', 'dens': 'inv_per_km2', 'hushall': 'hushall',
+                        'agan': 'agan_pct', 'bost': 'bost_pct', 'hyre': 'hyre_pct',
+                        'ind_netink': 'ind_netink', 'ind_forvink': 'ind_forvink', 'ind_syssel': 'ind_syssel',
+                        'ind_arblosa': 'ind_arblosa', 'ind_ejsjalv': 'ind_ejsjalv', 'ind_bistand': 'ind_bistand',
+                        'ind_barnfattig': 'ind_barnfattig', 'ind_lagekon': 'ind_lagekon',
+                        'ind_lagink': 'ind_lagink', 'ind_trang': 'ind_trang', 'ind_kvm': 'ind_kvm',
+                        'ind_kvarboende': 'ind_kvarboende', 'ind_ensam': 'ind_ensam', 'ind_ohalsa': 'ind_ohalsa', 
+                        'ind_forgym': 'ind_forgym', 'ind_forskola': 'ind_forskola', 'ind_behoriga': 'ind_behoriga', 'ind_uvas': 'ind_uvas',
+                        'ind_utrfod': 'ind_utrfod', 'ind_utlbak': 'ind_utlbak', 'ind_val': 'ind_val',
+                        'snitt15': 'snitt_15_19', 'snitt20': 'snitt_20_24', 'seichange': 'sei_change'
+                    }};
+                    var prop = propMapKeys[activeBase];
+                    if (prop) {{
+                        var validAreas = tempMatched.filter(a => a[prop] !== null && (prop === 'sei_change' ? true : a[prop] > 0));
+                        validAreas.sort((a, b) => b[prop] - a[prop]); 
+                        if (topBotFilter === 'top10') tempMatched = validAreas.slice(0, 10);
+                        else if (topBotFilter === 'bot10') tempMatched = validAreas.slice(-10);
+                    }}
+                }}
+                
+                var matchedNames = new Set(tempMatched.map(d => d.namn));
+                var allSeiChecked = document.getElementById('toggleAllSei').checked;
+                var isFilteringPolygons = activeCharFilter !== "" || topBotFilter !== 'all' || !allSeiChecked;
+
+                // Om vi filtrerar polygoner aktivt ELLER inte tittar på POI -> Zooma till polygonerna
+                if (isFilteringPolygons || !poiActive) {{
+                    map.eachLayer(function(layer) {{
+                        if (layer.options && layer.options.className && layer.options.className.includes('polygon-layer') && !layer.options.className.includes('border-polygon')) {{
+                            if (layer.feature && layer.feature.properties && matchedNames.has(layer.feature.properties.NAMN)) {{
+                                if (layer.getBounds) {{
+                                    bounds.extend(layer.getBounds());
+                                    found = true;
+                                }}
+                            }}
+                        }}
+                    }});
+                }}
+
+                if (found) {{
+                    map.fitBounds(bounds, {{padding: [40,40]}});
+                }} else {{
+                    map.fitBounds(initialBounds);
+                }}
+            }});
+        }}
+
+        document.querySelectorAll('.base-toggle').forEach(r => r.addEventListener('change', () => updatePolygonVisibility(false)));
         document.getElementById('toggleBorders').addEventListener('change', () => updatePolygonVisibility(false));
         document.getElementById('opacitySlider').addEventListener('input', () => updatePolygonVisibility(false));
         
@@ -1452,8 +1479,12 @@ ui_html = f"""
             document.getElementById('heatSelect').dispatchEvent(new Event('change'));
             if (window.measureModeActive) document.getElementById('btn-measure').click();
             if (window.isochroneModeActive) document.getElementById('btn-isochrone').click();
+            if (window.drawModeActive) document.getElementById('btn-draw').click();
+            
+            if (typeof drawLayer !== 'undefined') drawLayer.clearLayers(); 
             
             if (document.getElementById('toggleStanga') && document.getElementById('toggleStanga').checked) document.getElementById('toggleStanga').click();
+            if (document.getElementById('toggleMikro') && document.getElementById('toggleMikro').checked) document.getElementById('toggleMikro').click();
             
             map.fitBounds(initialBounds);
             document.getElementById('opacitySlider').value = 0.60;
@@ -1478,11 +1509,37 @@ ui_html = f"""
             var pWidth = d.sei_index ? (d.sei_index/6)*100 : 0;
             
             var hist = popHistData[namn];
-            var isSec = d.folkmangd > 0 && d.folkmangd < 5;
             var dispHushall = (d.hushall_visa !== '-' && d.hushall_visa !== '0') ? d.hushall_visa : (d.hushall > 0 ? d.hushall : '-');
-            
+            var isSec = d.folkmangd > 0 && d.folkmangd < 5;
+
             var chartHtml = (hist && hist.labels && hist.labels.length > 0 && !isSec) ? `<div style="height: 180px; width: 100%; position: relative;"><canvas id="popChartCanvas"></canvas></div>` : `<p style="color:#999; font-style:italic;">Data saknas/Sekretess</p>`;
             var pieHtml = (d.tot_uppl > 0 && !isSec) ? `<div style="height: 180px; width: 100%; position: relative;"><canvas id="upplatelsePieChart"></canvas></div>` : `<p style="color:#999; font-style:italic;">Data saknas/Sekretess</p>`;
+
+            // Säkra alla variabler från att orsaka f-strängskraschar
+            var vNetink = isSec || d.ind_netink == null || d.ind_netink <= 0 ? '-' : d.ind_netink + ' tkr';
+            var vForvink = isSec || d.ind_forvink == null || d.ind_forvink <= 0 ? '-' : d.ind_forvink + ' tkr';
+            var vSyssel = isSec || d.ind_syssel == null || d.ind_syssel <= 0 ? '-' : d.ind_syssel + ' %';
+            var vArblosa = isSec || d.ind_arblosa == null || d.ind_arblosa <= 0 ? '-' : d.ind_arblosa + ' %';
+            var vEjsjalv = isSec || d.ind_ejsjalv == null || d.ind_ejsjalv <= 0 ? '-' : d.ind_ejsjalv + ' %';
+            var vBistand = isSec || d.ind_bistand == null || d.ind_bistand <= 0 ? '-' : d.ind_bistand + ' %';
+            var vBarnfattig = isSec || d.ind_barnfattig == null || d.ind_barnfattig <= 0 ? '-' : d.ind_barnfattig + ' %';
+            var vLagekon = isSec || d.ind_lagekon == null || d.ind_lagekon <= 0 ? '-' : d.ind_lagekon + ' %';
+            var vLagink = isSec || d.ind_lagink == null || d.ind_lagink <= 0 ? '-' : d.ind_lagink + ' %';
+            var vTrang = isSec || d.ind_trang == null || d.ind_trang <= 0 ? '-' : d.ind_trang + ' %';
+            var vKvm = isSec || d.ind_kvm == null || d.ind_kvm <= 0 ? '-' : d.ind_kvm;
+            var vKvarboende = isSec || d.ind_kvarboende == null || d.ind_kvarboende <= 0 ? '-' : d.ind_kvarboende + ' %';
+            var vEnsam = isSec || d.ind_ensam == null || d.ind_ensam <= 0 ? '-' : d.ind_ensam + ' %';
+            var vOhalsa = isSec || d.ind_ohalsa == null || d.ind_ohalsa <= 0 ? '-' : d.ind_ohalsa;
+            var vForgym = isSec || d.ind_forgym == null || d.ind_forgym <= 0 ? '-' : d.ind_forgym + ' %';
+            var vForskola = isSec || d.ind_forskola == null || d.ind_forskola <= 0 ? '-' : d.ind_forskola + ' %';
+            var vBehoriga = isSec || d.ind_behoriga == null || d.ind_behoriga <= 0 ? '-' : d.ind_behoriga + ' %';
+            var vUvas = isSec || d.ind_uvas == null || d.ind_uvas <= 0 ? '-' : d.ind_uvas + ' %';
+            var vUtrfod = isSec || d.ind_utrfod == null || d.ind_utrfod <= 0 ? '-' : d.ind_utrfod + ' %';
+            var vUtlbak = isSec || d.ind_utlbak == null || d.ind_utlbak <= 0 ? '-' : d.ind_utlbak + ' %';
+            var vVal = isSec || d.ind_val == null || d.ind_val <= 0 ? '-' : d.ind_val + ' %';
+            var vHyre = isSec ? '-' : d.hyre_pct + ' %';
+            var vHushall = isSec || dispHushall === '-' ? '-' : dispHushall + ' pers';
+            var vTotUppl = isSec ? '-' : d.tot_uppl;
 
             var tabsHtml = `
                 <div class="mb-2"><span class="badge bg-secondary" style="font-size: 15px; padding: 8px 12px;">Area: ${{d.area}} km²</span></div>
@@ -1500,36 +1557,37 @@ ui_html = f"""
                         
                         <h6 class="fw-bold text-dark border-bottom pb-1 mt-3" style="font-size:13px;">Demografi & Hushåll</h6>
                         <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Folkmängd:</span><span class="fw-bold">${{d.folkmangd_visa}} pers</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Hushållsstorlek:</span><span class="fw-bold">${{isSec || dispHushall === '-' ? '-' : dispHushall + ' pers'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Hyresrätt:</span><span class="fw-bold">${{isSec ? '-' : d.hyre_pct + ' %'}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Hushållsstorlek:</span><span class="fw-bold">${{vHushall}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Hyresrätt:</span><span class="fw-bold">${{vHyre}}</span></div>
                         <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Kategori:</span><span class="fw-bold">${{d.char1}} / ${{d.char2}}</span></div>
                     </div>
                     <div class="tab-pane fade" id="tab-sei">
                         <h6 class="fw-bold text-dark border-bottom pb-1" style="font-size:13px;">SEI-Indikatorer</h6>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Nettoinkomst:</span><span class="fw-bold">${{isSec || d.ind_netink == null || d.ind_netink <= 0 ? '-' : d.ind_netink + ' tkr'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Förvärvsinkomst:</span><span class="fw-bold">${{isSec || d.ind_forvink == null || d.ind_forvink <= 0 ? '-' : d.ind_forvink + ' tkr'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Sysselsättningsgrad:</span><span class="fw-bold">${{isSec || d.ind_syssel == null || d.ind_syssel <= 0 ? '-' : d.ind_syssel + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Inskrivna arbetslösa:</span><span class="fw-bold">${{isSec || d.ind_arblosa == null || d.ind_arblosa <= 0 ? '-' : d.ind_arblosa + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Ej självförsörjande:</span><span class="fw-bold">${{isSec || d.ind_ejsjalv == null || d.ind_ejsjalv <= 0 ? '-' : d.ind_ejsjalv + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Långv. ekon. bistånd:</span><span class="fw-bold">${{isSec || d.ind_bistand == null || d.ind_bistand <= 0 ? '-' : d.ind_bistand + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Barnfattigdom:</span><span class="fw-bold">${{isSec || d.ind_barnfattig == null || d.ind_barnfattig <= 0 ? '-' : d.ind_barnfattig + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Låg ekonomisk std:</span><span class="fw-bold">${{isSec || d.ind_lagekon == null || d.ind_lagekon <= 0 ? '-' : d.ind_lagekon + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Låg inkomststandard:</span><span class="fw-bold">${{isSec || d.ind_lagink == null || d.ind_lagink <= 0 ? '-' : d.ind_lagink + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Trångbodda hushåll:</span><span class="fw-bold">${{isSec || d.ind_trang == null || d.ind_trang <= 0 ? '-' : d.ind_trang + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Kvm per person:</span><span class="fw-bold">${{isSec || d.ind_kvm == null || d.ind_kvm <= 0 ? '-' : d.ind_kvm}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Kvarboende minst tre år:</span><span class="fw-bold">${{isSec || d.ind_kvarboende == null || d.ind_kvarboende <= 0 ? '-' : d.ind_kvarboende + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Ensamstående hushåll:</span><span class="fw-bold">${{isSec || d.ind_ensam == null || d.ind_ensam <= 0 ? '-' : d.ind_ensam + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Ohälsotal 50-64 år (dagar):</span><span class="fw-bold">${{isSec || d.ind_ohalsa == null || d.ind_ohalsa <= 0 ? '-' : d.ind_ohalsa}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Förgymnasial utbildn:</span><span class="fw-bold">${{isSec || d.ind_forgym == null || d.ind_forgym <= 0 ? '-' : d.ind_forgym + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Inskrivna förskolebarn:</span><span class="fw-bold">${{isSec || d.ind_forskola == null || d.ind_forskola <= 0 ? '-' : d.ind_forskola + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>UVAS:</span><span class="fw-bold">${{isSec || d.ind_uvas == null || d.ind_uvas <= 0 ? '-' : d.ind_uvas + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Utrikes födda:</span><span class="fw-bold">${{isSec || d.ind_utrfod == null || d.ind_utrfod <= 0 ? '-' : d.ind_utrfod + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Utländsk bakgrund:</span><span class="fw-bold">${{isSec || d.ind_utlbak == null || d.ind_utlbak <= 0 ? '-' : d.ind_utlbak + ' %'}}</span></div>
-                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Valdeltagande:</span><span class="fw-bold">${{isSec || d.ind_val == null || d.ind_val <= 0 ? '-' : d.ind_val + ' %'}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Nettoinkomst:</span><span class="fw-bold">${{vNetink}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Förvärvsinkomst:</span><span class="fw-bold">${{vForvink}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Sysselsättningsgrad:</span><span class="fw-bold">${{vSyssel}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Inskrivna arbetslösa:</span><span class="fw-bold">${{vArblosa}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Ej självförsörjande:</span><span class="fw-bold">${{vEjsjalv}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Långv. ekon. bistånd:</span><span class="fw-bold">${{vBistand}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Barnfattigdom:</span><span class="fw-bold">${{vBarnfattig}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Låg ekonomisk std:</span><span class="fw-bold">${{vLagekon}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Låg inkomststandard:</span><span class="fw-bold">${{vLagink}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Trångbodda hushåll:</span><span class="fw-bold">${{vTrang}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Kvm per person:</span><span class="fw-bold">${{vKvm}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Kvarboende minst tre år:</span><span class="fw-bold">${{vKvarboende}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Ensamstående hushåll:</span><span class="fw-bold">${{vEnsam}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Ohälsotal 50-64 år (dagar):</span><span class="fw-bold">${{vOhalsa}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Förgymnasial utbildn:</span><span class="fw-bold">${{vForgym}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Inskrivna förskolebarn:</span><span class="fw-bold">${{vForskola}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Behöriga gymn. yrkesprogr.:</span><span class="fw-bold">${{vBehoriga}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>UVAS:</span><span class="fw-bold">${{vUvas}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Utrikes födda:</span><span class="fw-bold">${{vUtrfod}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Utländsk bakgrund:</span><span class="fw-bold">${{vUtlbak}}</span></div>
+                        <div class="d-flex justify-content-between mb-1" style="font-size:12px;"><span>Valdeltagande:</span><span class="fw-bold">${{vVal}}</span></div>
                     </div>
                     <div class="tab-pane fade" id="tab-up">
                         <h6 class="fw-bold text-dark mb-1" style="font-size:13px;">Upplåtelseformer</h6>
-                        <p style="font-size:11px; color:#666;">Totalt hushåll: ${{isSec ? '-' : d.tot_uppl}}</p>
+                        <p style="font-size:11px; color:#666;">Totalt hushåll: ${{vTotUppl}}</p>
                         ${{pieHtml}}
                     </div>
                     <div class="tab-pane fade" id="tab-hi">
@@ -1611,9 +1669,10 @@ ui_html = f"""
                                 'ind_kvm': {{p:'ind_kvm', l:'Kvm per person'}},
                                 'ind_kvarboende': {{p:'ind_kvarboende', l:'Kvarboende minst tre år'}},
                                 'ind_ensam': {{p:'ind_ensam', l:'Ensamstående hushåll'}},
-                                'ind_ohalsa': {{p:'ind_ohalsa', l:'Ohälsotal 50-64 år'}},
+                                'ind_ohalsa': {{p:'ind_ohalsa', l:'Ohälsotal 50-64 år (dagar)'}},
                                 'ind_forgym': {{p:'ind_forgym', l:'Förgymnasial utbildning'}},
                                 'ind_forskola': {{p:'ind_forskola', l:'Inskrivna förskolebarn'}},
+                                'ind_behoriga': {{p:'ind_behoriga', l:'Behöriga gymn. yrkesprogr.'}},
                                 'ind_uvas': {{p:'ind_uvas', l:'UVAS'}},
                                 'ind_utrfod': {{p:'ind_utrfod', l:'Utrikes födda'}},
                                 'ind_utlbak': {{p:'ind_utlbak', l:'Utländsk bakgrund'}},
@@ -1630,7 +1689,7 @@ ui_html = f"""
                                 else if (activeBase === 'hushall') displayVal = d.hushall_visa;
                                 else if (activeBase === 'seichange') displayVal = (val !== null && val !== 0) ? val : '-';
                                 else {{
-                                    var suffix = ['agan', 'bost', 'hyre', 'ind_syssel', 'ind_arblosa', 'ind_ejsjalv', 'ind_bistand', 'ind_barnfattig', 'ind_lagekon', 'ind_lagink', 'ind_trang', 'ind_kvarboende', 'ind_ensam', 'ind_forgym', 'ind_forskola', 'ind_uvas', 'ind_utrfod', 'ind_utlbak', 'ind_val'].includes(activeBase) ? ' %' : '';
+                                    var suffix = ['agan', 'bost', 'hyre', 'ind_syssel', 'ind_arblosa', 'ind_ejsjalv', 'ind_bistand', 'ind_barnfattig', 'ind_lagekon', 'ind_lagink', 'ind_trang', 'ind_kvarboende', 'ind_ensam', 'ind_forgym', 'ind_forskola', 'ind_behoriga', 'ind_uvas', 'ind_utrfod', 'ind_utlbak', 'ind_val'].includes(activeBase) ? ' %' : '';
                                     displayVal = (val !== null && val !== undefined && (activeBase === 'seichange' || val > 0)) ? val + suffix : '-';
                                     if (d.folkmangd > 0 && d.folkmangd < 5) displayVal = '-'; // Göm vid sekretess
                                 }}
@@ -1659,7 +1718,7 @@ ui_html = f"""
                     }});
                     
                     layer.off('click').on('click', function(e) {{ 
-                        if (window.measureModeActive || window.isochroneModeActive) {{
+                        if (window.measureModeActive || window.isochroneModeActive || window.drawModeActive) {{
                             map.fire('click', {{latlng: e.latlng}});
                             return;
                         }}
@@ -1761,7 +1820,7 @@ ui_html = f"""
                 cm.bindTooltip("Klicka för analys av " + d.namn, {{direction: 'top'}});
 
                 cm.on('click', function(e) {{
-                    if (window.measureModeActive || window.isochroneModeActive) return;
+                    if (window.measureModeActive || window.isochroneModeActive || window.drawModeActive) return;
 
                     var neighbors = [];
                     nykoData.forEach(other => {{
@@ -1828,7 +1887,7 @@ ui_html = f"""
                     var markerIcon = L.divIcon({{ html: `<div style="background-color: #3498db; color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 11px; border: 1px solid #fff; opacity: 0.9;">${{displayPop}}</div>`, className: '', iconSize: [24, 24] }});
                     var marker = L.marker([p.lat, p.lon], {{ icon: markerIcon, population: pop }});
                     marker.on('click', function(e) {{
-                        if (window.measureModeActive || window.isochroneModeActive) return;
+                        if (window.measureModeActive || window.isochroneModeActive || window.drawModeActive) return;
                         var extra = `<div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Specifik population:</span><b style="color:#e74c3c;">${{displayPop}} pers</b></div>`;
                         var popupContent = buildAdvancedPopup("", p.lat, p.lon, extra, null);
                         showInfoPanel(popupContent, "🏠 Adressinformation");
@@ -1861,7 +1920,7 @@ ui_html = f"""
                 var marker = L.marker([p.lat, p.lon], {{icon: L.divIcon({{ html: iconHtml, className: '', iconSize: [30, 30], iconAnchor: [15, 15] }})}});
                 
                 marker.on('click', function(e) {{
-                    if (window.measureModeActive || window.isochroneModeActive) return;
+                    if (window.measureModeActive || window.isochroneModeActive || window.drawModeActive) return;
                     var extra = `<div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Grupp:</span><b>${{p.group}}</b></div>`;
                     
                     if (p.type && p.type.trim() !== '' && p.type !== 'nan' && p.type !== 'None') {{
@@ -1906,7 +1965,7 @@ ui_html = f"""
                     layer.bindTooltip("<b>" + name + "</b>", {{sticky: true, className: 'custom-tooltip'}});
                     
                     layer.on('click', function(e) {{
-                        if (window.measureModeActive || window.isochroneModeActive) {{
+                        if (window.measureModeActive || window.isochroneModeActive || window.drawModeActive) {{
                             map.fire('click', {{latlng: e.latlng}});
                             return;
                         }}
@@ -1932,7 +1991,7 @@ ui_html = f"""
                         
                         var extra = `<div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Kategori:</span><b>${{catText}}</b></div>`;
                         
-                        var popupContent = buildAdvancedPopup("", e.latlng.lat, e.latlng.lng, extra, stats);
+                        var popupContent = buildAdvancedPopup("", e.latlng.lat, e.latlng.lng, extra, stats, true);
                         showInfoPanel(popupContent, "🏢 " + name);
                     }});
                 }}
@@ -1942,6 +2001,66 @@ ui_html = f"""
             document.getElementById('toggleStanga').addEventListener('change', function(e) {{
                 if(e.target.checked) stangaLayerGroup.addTo(map);
                 else map.removeLayer(stangaLayerGroup);
+            }});
+        }}
+
+        // --- MIKROKLIMAT (TURF.JS PIP) ---
+        if (typeof mikroData !== 'undefined' && mikroData.features) {{
+            var mikroLayerGroup = L.layerGroup();
+            var mikroLayer = L.geoJSON(mikroData, {{
+                pane: 'mikroPane',
+                style: function(f) {{
+                    var p = f.properties || {{}};
+                    var catRaw = String(p.kategori_kod || "");
+                    var color = '#95a5a6'; 
+                    if (catRaw.startsWith('1')) color = '#1e8449'; // Mörkgrönt
+                    else if (catRaw.startsWith('2')) color = '#2ecc71'; // Ljusgrönt
+                    else if (catRaw.startsWith('3')) color = '#e67e22'; // Orange
+                    else if (catRaw.startsWith('4')) color = '#c0392b'; // Mörkrött
+                    
+                    return {{ color: color, weight: 2, fillOpacity: 0.5 }};
+                }},
+                onEachFeature: function(feature, layer) {{
+                    var p = feature.properties || {{}};
+                    var name = p.omrade || "Okänt område";
+                    var catRaw = p.kategori_kod || "Okänd klass";
+                    var catClean = catRaw.replace(/^\d+[\s\.\-\_]*/, '').trim(); 
+                    
+                    layer.bindTooltip("<b>" + name + "</b><br><span style='font-size:11px; color:#555;'>" + catClean + "</span>", {{sticky: true, className: 'custom-tooltip'}});
+                    
+                    layer.on('click', function(e) {{
+                        if (window.measureModeActive || window.isochroneModeActive || window.drawModeActive) {{
+                            map.fire('click', {{latlng: e.latlng}});
+                            return;
+                        }}
+                        L.DomEvent.stopPropagation(e);
+                        
+                        var stats = {{tot:0, a0_5:0, a6_15:0, a6_9:0, a10_12:0, a13_15:0, a16_18:0, a19_64:0, a19_34:0, a35_64:0, a65_79:0, a80:0}};
+                        if (typeof heatDataRaw !== 'undefined' && heatDataRaw.length > 0) {{
+                            heatDataRaw.forEach(pt => {{
+                                var turfPt = turf.point([pt.lon, pt.lat]);
+                                if (turf.booleanPointInPolygon(turfPt, feature)) {{
+                                    stats.tot += pt.tot; stats.a0_5 += pt.a0_5; stats.a6_15 += pt.a6_15;
+                                    stats.a6_9 += pt.a6_9 || 0; stats.a10_12 += pt.a10_12 || 0; stats.a13_15 += pt.a13_15 || 0;
+                                    stats.a16_18 += pt.a16_18; stats.a19_64 += pt.a19_64;
+                                    stats.a19_34 += pt.a19_34 || 0; stats.a35_64 += pt.a35_64 || 0;
+                                    stats.a65_79 += pt.a65_79; stats.a80 += pt.a80;
+                                }}
+                            }});
+                        }}
+                        
+                        var extra = `<div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Kategori:</span><b>${{catClean}}</b></div>`;
+                        
+                        var popupContent = buildAdvancedPopup("", e.latlng.lat, e.latlng.lng, extra, stats, true);
+                        showInfoPanel(popupContent, "🌡️ " + name);
+                    }});
+                }}
+            }});
+            mikroLayerGroup.addLayer(mikroLayer);
+            
+            document.getElementById('toggleMikro').addEventListener('change', function(e) {{
+                if(e.target.checked) mikroLayerGroup.addTo(map);
+                else map.removeLayer(mikroLayerGroup);
             }});
         }}
 
@@ -1960,7 +2079,7 @@ ui_html = f"""
                 marker.bindTooltip("<b>" + levelName + " (" + d.kod + ")</b><br>Klicka för att zooma in", {{direction: 'top'}});
 
                 marker.on('click', function(e) {{
-                    if (window.measureModeActive || window.isochroneModeActive) return;
+                    if (window.measureModeActive || window.isochroneModeActive || window.drawModeActive) return;
                     map.flyTo([d.lat, d.lon], map.getZoom() + 1);
                 }});
                 marker.addTo(layer);
@@ -2015,7 +2134,7 @@ ui_html = f"""
                 var cm = L.circleMarker([d.lat, d.lon], {{ radius: radius, color: '#2c3e50', fillColor: color, fillOpacity: 0.85, weight: 1.5, pane: 'analysPane' }});
                 
                 cm.on('click', function(e) {{
-                    if (window.measureModeActive || window.isochroneModeActive) return;
+                    if (window.measureModeActive || window.isochroneModeActive || window.drawModeActive) return;
                     var extra = `<div style="text-align:center; color:${{color}};"><b>Befolkningsutveckling sedan föregående period: ` + (color === '#2ecc71' ? 'ÖKAR' : (color === '#e74c3c' ? 'MINSKAR' : 'OFÖRÄNDRAD')) + `</b></div>`;
                     
                     var stats = {{
@@ -2032,15 +2151,76 @@ ui_html = f"""
         }}
         document.getElementById('toggle_pop_rings').addEventListener('change', e => e.target.checked ? popRingsGroup.addTo(map) : map.removeLayer(popRingsGroup));
 
-        // --- 6. MÄTVERKTYG OCH NÅBARHET ---
+        // --- 6. MÄTVERKTYG OCH NÅBARHET OCH RITVERKTYG ---
         var drawLayer = L.featureGroup().addTo(map);
         var storaTorget = [58.4109, 15.6216];
         var measureLine = null; var measureMarker = null;
+
+        var drawPolygonControl = new L.Draw.Polygon(map, {{
+            shapeOptions: {{ color: '#e67e22', weight: 3, fillOpacity: 0.3 }}
+        }});
+
+        document.getElementById('btn-draw').addEventListener('click', function() {{
+            window.drawModeActive = !window.drawModeActive;
+            if (window.drawModeActive) {{
+                window.measureModeActive = false;
+                window.isochroneModeActive = false;
+                document.getElementById('btn-measure').classList.replace('btn-primary', 'btn-outline-primary');
+                document.getElementById('btn-measure').innerHTML = '<i class="fas fa-ruler"></i> Avstånd till Centrum';
+                document.getElementById('btn-isochrone').classList.replace('btn-info', 'btn-outline-info');
+                document.getElementById('btn-isochrone').innerHTML = '<i class="fas fa-stopwatch"></i> 10-min Nåbarhetsanalys';
+                
+                drawLayer.clearLayers();
+                drawPolygonControl.enable();
+                this.classList.replace('btn-outline-success', 'btn-success');
+                this.innerHTML = '<i class="fas fa-times"></i> Avbryt ritning';
+                window.showToast("✏️ Klicka i kartan för att rita en yta. Klicka på första punkten för att avsluta.");
+            }} else {{
+                drawPolygonControl.disable();
+                this.classList.replace('btn-success', 'btn-outline-success');
+                this.innerHTML = '<i class="fas fa-draw-polygon"></i> Rita egen yta';
+            }}
+        }});
+
+        map.on(L.Draw.Event.CREATED, function (e) {{
+            if (e.layerType === 'polygon') {{
+                drawLayer.clearLayers();
+                var layer = e.layer;
+                drawLayer.addLayer(layer);
+                
+                var geojsonPoly = layer.toGeoJSON();
+                var stats = {{tot:0, a0_5:0, a6_15:0, a6_9:0, a10_12:0, a13_15:0, a16_18:0, a19_64:0, a19_34:0, a35_64:0, a65_79:0, a80:0}};
+                
+                if (typeof heatDataRaw !== 'undefined' && heatDataRaw.length > 0) {{
+                    heatDataRaw.forEach(pt => {{
+                        var turfPt = turf.point([pt.lon, pt.lat]);
+                        if (turf.booleanPointInPolygon(turfPt, geojsonPoly)) {{
+                            stats.tot += pt.tot; stats.a0_5 += pt.a0_5; stats.a6_15 += pt.a6_15;
+                            stats.a6_9 += pt.a6_9 || 0; stats.a10_12 += pt.a10_12 || 0; stats.a13_15 += pt.a13_15 || 0;
+                            stats.a16_18 += pt.a16_18; stats.a19_64 += pt.a19_64;
+                            stats.a19_34 += pt.a19_34 || 0; stats.a35_64 += pt.a35_64 || 0;
+                            stats.a65_79 += pt.a65_79; stats.a80 += pt.a80;
+                        }}
+                    }});
+                }}
+                
+                var area = turf.area(geojsonPoly) / 1000000;
+                var extra = `<div style="display:flex; justify-content:space-between; margin-bottom:2px;"><span>Areal:</span><b>${{area.toFixed(2)}} km²</b></div>`;
+                
+                var popupContent = buildAdvancedPopup("", layer.getBounds().getCenter().lat, layer.getBounds().getCenter().lng, extra, stats, true);
+                showInfoPanel(popupContent, "✏️ Egenritad yta");
+                
+                document.getElementById('btn-draw').classList.replace('btn-success', 'btn-outline-success');
+                document.getElementById('btn-draw').innerHTML = '<i class="fas fa-draw-polygon"></i> Rita egen yta';
+                window.drawModeActive = false;
+            }}
+        }});
 
         document.getElementById('btn-measure').addEventListener('click', function() {{
             window.measureModeActive = !window.measureModeActive;
             if (window.measureModeActive) {{
                 window.isochroneModeActive = false; 
+                if (window.drawModeActive) {{ drawPolygonControl.disable(); window.drawModeActive = false; document.getElementById('btn-draw').classList.replace('btn-success', 'btn-outline-success'); document.getElementById('btn-draw').innerHTML = '<i class="fas fa-draw-polygon"></i> Rita egen yta'; }}
                 document.getElementById('btn-isochrone').classList.replace('btn-info', 'btn-outline-info');
                 document.getElementById('btn-isochrone').innerHTML = '<i class="fas fa-stopwatch"></i> 10-min Nåbarhetsanalys';
                 
@@ -2048,6 +2228,7 @@ ui_html = f"""
                 this.innerHTML = '<i class="fas fa-times"></i> Stäng Avståndsmätare';
                 map.getContainer().style.cursor = 'crosshair';
                 
+                drawLayer.clearLayers();
                 measureMarker = L.marker(storaTorget, {{ icon: L.divIcon({{html: '<div style="color:#e74c3c; font-size:24px; text-shadow: 1px 1px 2px #000;"><i class="fas fa-map-marker-alt"></i></div>', className: '', iconSize:[24,24], iconAnchor:[12,24]}}) }}).addTo(drawLayer).bindTooltip("Stora Torget", {{permanent: true, direction: 'top'}});
                 window.showToast("📍 Klicka var som helst på kartan (även på färgade områden) för att mäta från Stora Torget.");
             }} else {{
@@ -2062,13 +2243,14 @@ ui_html = f"""
             window.isochroneModeActive = !window.isochroneModeActive;
             if (window.isochroneModeActive) {{
                 window.measureModeActive = false;
+                if (window.drawModeActive) {{ drawPolygonControl.disable(); window.drawModeActive = false; document.getElementById('btn-draw').classList.replace('btn-success', 'btn-outline-success'); document.getElementById('btn-draw').innerHTML = '<i class="fas fa-draw-polygon"></i> Rita egen yta'; }}
                 document.getElementById('btn-measure').classList.replace('btn-primary', 'btn-outline-primary');
                 document.getElementById('btn-measure').innerHTML = '<i class="fas fa-ruler"></i> Avstånd till Centrum';
-                drawLayer.clearLayers();
-
+                
                 this.classList.replace('btn-outline-info', 'btn-info');
                 this.innerHTML = '<i class="fas fa-times"></i> Stäng Nåbarhet';
                 map.getContainer().style.cursor = 'crosshair';
+                drawLayer.clearLayers();
                 window.showToast("⏱️ Klicka på kartan (även på färgade områden) för att simulera en 10-minuters cykelradie (~2.5 km).");
             }} else {{
                 this.classList.replace('btn-info', 'btn-outline-info');
@@ -2135,39 +2317,6 @@ ui_html = f"""
                 showInfoPanel(popupHtml, "⏱️ 10-min Nåbarhetsanalys");
             }}
         }});
-
-        // Smart Zoom till valda platser
-        var btnZoom = document.getElementById('btn-zoom-selected');
-        if (btnZoom) {{
-            btnZoom.addEventListener('click', function() {{
-                var bounds = L.latLngBounds();
-                var found = false;
-                
-                Object.values(poiGroups).forEach(group => {{
-                    if (map.hasLayer(group) && group.getLayers().length > 0) {{
-                        bounds.extend(group.getBounds());
-                        found = true;
-                    }}
-                }});
-
-                map.eachLayer(function(layer) {{
-                    if (layer.options && layer.options.className && layer.options.className.includes('polygon-layer')) {{
-                        if (layer.mySavedStyle && (layer.mySavedStyle.fillOpacity > 0 || layer.mySavedStyle.weight > 0)) {{
-                            if (layer.getBounds) {{
-                                bounds.extend(layer.getBounds());
-                                found = true;
-                            }}
-                        }}
-                    }}
-                }});
-
-                if (found) {{
-                    map.fitBounds(bounds, {{padding: [40,40]}});
-                }} else {{
-                    map.fitBounds(initialBounds);
-                }}
-            }});
-        }}
 
         // --- 7. INFRASTRUKTUR ---
         var transportLayer = null;
