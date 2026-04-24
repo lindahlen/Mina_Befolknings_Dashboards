@@ -88,10 +88,11 @@ df_main = pd.merge(df_lkpg, df_riket, on=['År', 'Månad'], how='outer')
 df_main = df_main.sort_values(['År', 'Månad']).reset_index(drop=True)
 
 # ---------------------------------------------------------
-# 5. LÄS IN PROGNOSER 
+# 5. LÄS IN PROGNOSER OCH TEXTFIL
 # ---------------------------------------------------------
 print("3. Läser in prognoser...")
 prog_path = hitta_fil("Prognoser_Manad.xlsx")
+inm_path = hitta_fil("Inmatning_Manad.xlsx")
 
 try:
     df_prognos = pd.read_excel(prog_path)
@@ -103,6 +104,68 @@ except Exception:
     pass
 
 # ---------------------------------------------------------
+# 5.5 BERÄKNA STRUKTUR- OCH KONJUNKTURARBETSLÖSHET
+# ---------------------------------------------------------
+print("3.5 Läser in Arbetskraft och beräknar Strukturarbetslöshet...")
+try:
+    df_arb = pd.read_excel(inm_path, sheet_name="Arbetskraften")
+    df_arb = df_arb.replace(['-', '–', '—', '−'], 0).replace(['..', ' ', ''], np.nan)
+
+    df_arb.columns = [str(c).strip() for c in df_arb.columns]
+
+    if 'År' in df_arb.columns and 'Månad' in df_arb.columns:
+        df_arb = df_arb.sort_values(['År', 'Månad']).reset_index(drop=True)
+
+        # Mappning för att få snygga kolumnnamn
+        grp_map = {
+            'TOTALT': 'Totalt',
+            'UTRIKES': 'Utrikes_födda',
+            'INRIKES': 'Inrikes_födda',
+            'UNGDOMAR': 'Ungdomar',
+            'MÄN': 'Män',
+            'KVINNOR': 'Kvinnor',
+            'FÖRGYMN': 'Förgymnasial_utbildning',
+            'GYMN': 'Gymnasial_utbildning',
+            'EFTERGYMN': 'Eftergymnasial_utbildning'
+        }
+        
+        regioner = ['Linköping', 'Riket']
+
+        for grp, grp_namn in grp_map.items():
+            for reg in regioner:
+                col_los = f"{grp}_Arbetslösa_{reg}"
+                col_kraft = f"{grp}_Arbetskraft_{reg}"
+
+                if col_los in df_arb.columns and col_kraft in df_arb.columns:
+                    df_arb[col_los] = pd.to_numeric(df_arb[col_los], errors='coerce')
+                    df_arb[col_kraft] = pd.to_numeric(df_arb[col_kraft], errors='coerce')
+
+                    # 1. Rullande 12
+                    r12_los = df_arb[col_los].rolling(12, min_periods=12).sum()
+                    r12_kraft = df_arb[col_kraft].rolling(12, min_periods=12).sum()
+
+                    # 2. 36 månaders rullande minimum av R12-arbetslösa
+                    r12_los_min36 = r12_los.rolling(36, min_periods=36).min()
+
+                    # 3. Beräkna procent
+                    faktisk_pct = (r12_los / r12_kraft) * 100
+                    struktur_pct = (r12_los_min36 / r12_kraft) * 100
+
+                    prefix = "Riket_" if reg == "Riket" else ""
+                    ind_name = f"Struktur_{grp_namn}"
+
+                    df_arb[f"{prefix}{ind_name}_Faktisk"] = faktisk_pct
+                    df_arb[f"{prefix}{ind_name}_Struktur"] = struktur_pct
+
+        # Slå ihop med df_main (Viktigt: how='right' med df_main säkerställer att vi BARA får ut de årtal som webbsidan vill ha, även om Excel-filen går tillbaka till 2008)
+        cols_to_keep = ['År', 'Månad'] + [c for c in df_arb.columns if '_Faktisk' in c or '_Struktur' in c]
+        df_main = pd.merge(df_main, df_arb[cols_to_keep], on=['År', 'Månad'], how='left')
+
+except Exception as e:
+    print(f"      -> Kunde inte beräkna Strukturarbetslöshet (Kanske saknas fliken 'Arbetskraften'?): {e}")
+
+
+# ---------------------------------------------------------
 # 6. BERÄKNINGAR OCH VATTENFALLSMODELL
 # ---------------------------------------------------------
 print("4. Kör R12-beräkningar och vattenfallsmodell för mål...")
@@ -110,6 +173,11 @@ print("4. Kör R12-beräkningar och vattenfallsmodell för mål...")
 for index, row in df_styrning.iterrows():
     scb_namn = row['SCB_Namn_i_filen']
     dash_namn = row['Dashboard_Namn']
+    
+    # Hoppa över de dynamiska strukturkolumnerna i detta steg eftersom de redan är klara
+    if "Struktur" in dash_namn:
+        continue
+        
     if scb_namn not in df_main.columns: continue
         
     col_utfall = f"{dash_namn}_Manad"
@@ -174,10 +242,7 @@ for index, row in df_styrning.iterrows():
 
     df_main[f"{dash_namn}_Prognos_Slutgiltig"] = np.select(conditions, choices, default=np.nan)
     df_main[f"{dash_namn}_Polaritet"] = row.get('Polaritet', np.nan)
-    
-    # FIX FÖR TRÖSKEL: Hanterar både 'Troskel' och 'Tröskel' för att undvika NaN om man använder å/ä/ö
     df_main[f"{dash_namn}_Troskel"] = row.get('Tröskel', row.get('Troskel', np.nan))
-    
     df_main[f"{dash_namn}_Absolut_R12"] = row.get('Absolut_R12', np.nan)
     df_main[f"{dash_namn}_Minitabell"] = row.get('Minitabell_Kolumn', np.nan)
     df_main[f"{dash_namn}_Minitabell_Sort"] = row.get('Minitabell_Sortering', np.nan)
@@ -188,7 +253,6 @@ for index, row in df_styrning.iterrows():
 # 7. GENERERA RAPPORTTEXT (MÅNADSMOTORN)
 # ---------------------------------------------------------
 print("5. Kollar efter nya AI-fakta för begärda månader i Inmatning_Manad.xlsx...")
-inm_path = hitta_fil("Inmatning_Manad.xlsx")
 
 def safe_int(v):
     try:
@@ -203,14 +267,12 @@ try:
     df_texter = pd.read_excel(inm_path, sheet_name=0)
     df_texter.columns = [str(c).strip() for c in df_texter.columns]
     
-    # 1. Kasta bort 'Stöd_manuell' så att den inte exporteras till CSV
     if 'Stöd_manuell' in df_texter.columns:
         df_texter = df_texter.drop(columns=['Stöd_manuell'])
         
     df_texter = df_texter.loc[:, ~df_texter.columns.duplicated()]
     df_texter = df_texter.fillna('')
     
-    # Lade till Diagram4_syss här så att kolumnen skapas/bevaras
     for col in ['Autogenererad_Fakta', 'Färdig_Analystext', 'Robot_Fakta', 'Rapportvy', 'Diagram4_syss']:
         if col not in df_texter.columns:
             df_texter[col] = ''
@@ -230,7 +292,6 @@ try:
         except (ValueError, TypeError):
             continue
             
-        # Generera endast ny text om koden är "A"
         if robot == 'A':
             mask_nu = (df_main['År'] == s_ar) & (df_main['Månad'] == s_manad)
             df_nu = df_main[mask_nu]
@@ -283,7 +344,6 @@ try:
     if 'År' in df_texter.columns: df_texter['År'] = df_texter['År'].apply(rensa_heltal)
     if 'Månad' in df_texter.columns: df_texter['Månad'] = df_texter['Månad'].apply(rensa_heltal)
     
-    # Städar bort ordet "NAN" om det har sparats i text-kolumnerna
     for c in ['Robot_Fakta', 'Autogenererad_Fakta', 'Färdig_Analystext', 'Rapportvy', 'Diagram4_syss']:
         if c in df_texter.columns:
             df_texter[c] = df_texter[c].astype(str).replace(r'(?i)^nan$', '', regex=True)
@@ -356,7 +416,7 @@ for index, row in df_styrning.iterrows():
     ind_obj = {
         "id": dash_namn,
         "label": label,
-        "drilldown_komponenter": drill_komp,    
+        "drilldown_komponenter": drill_komp,
         "drilldown_farger": drill_farg,
         "drilldown_typ": drill_typ
     }

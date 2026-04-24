@@ -1,0 +1,388 @@
+{
+    "1": [
+        {
+            "id": "Befolkning",
+            "label": "Befolkning",
+            "drilldown_komponenter": [
+                "Befolkning_15-74_år",
+                "Befolkning_20-64_år"
+            ],
+            "drilldown_farger": [
+                "Blå",
+                "Grön"
+            ],
+            "drilldown_typ": "linje"
+        },
+        {
+            "id": "Födda_barn",
+            "label": "Födda barn",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Döda",
+            "label": "Döda",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Inflyttning",
+            "label": "Inflyttning",
+            "drilldown_komponenter": [
+                "Inflyttning_från_eget_län",
+                "Inflyttning_från_annat_län",
+                "Invandring"
+            ],
+            "drilldown_farger": [
+                "Grön",
+                "Blå",
+                "Gul"
+            ],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Utflyttning",
+            "label": "Utflyttning",
+            "drilldown_komponenter": [
+                "Utflyttning_till_eget_län",
+                "Utflyttning_till_annat_län",
+                "Utvandring"
+            ],
+            "drilldown_farger": [
+                "Röd",
+                "Grå",
+                "Lila"
+            ],
+            "drilldown_typ": "stapel"
+        }
+    ],
+    "2": [
+        {
+            "id": "Sysselsatta_dagbefolkning",
+            "label": "Sysselsättning (%), \nförändring ett år",
+            "drilldown_komponenter": [
+                "Sysselsatta_inrikes_födda_dagbefolkning",
+                "Sysselsatta_utrikes_födda_dagbefolkning"
+            ],
+            "drilldown_farger": [
+                "Blå",
+                "Grön"
+            ],
+            "drilldown_typ": "linje"
+        },
+        {
+            "id": "Sysselsatta_nattbefolkning",
+            "label": "Sysselsatta nattbefolkning",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Sysselsatta_Privat_sektor",
+            "label": "Sysselsatta Privat sektor",
+            "drilldown_komponenter": [
+                "Tillverkning",
+                "Byggnadsverksamhet",
+                "Konsumentinriktade_tjänster",
+                "Tjänsteproduktion_mot_företag",
+                "Utbildning",
+                "Vård_Omsorg",
+                "Offentlig_förvaltning"
+            ],
+            "drilldown_farger": [
+                "Grön",
+                "Gul",
+                "Blå",
+                "Grå",
+                "Lila",
+                "Röd",
+                "Orange"
+            ],
+            "drilldown_typ": "cirkel"
+        },
+        {
+            "id": "Sysselsatta_Offentlig_sektor",
+            "label": "Sysselsatta Offentlig sektor",
+            "drilldown_komponenter": [
+                "Tillverkning",
+                "Byggnadsverksamhet",
+                "Konsumentinriktade_tjänster",
+                "Tjänsteproduktion_mot_företag",
+                "Utbildning",
+                "Vård_Omsorg",
+                "Offentlig_förvaltning"
+            ],
+            "drilldown_farger": [
+                "Grön",
+                "Gul",
+                "Blå",
+                "Grå",
+                "Lila",
+                "Röd",
+                "Orange"
+            ],
+            "drilldown_typ": "cirkel"
+        },
+        {
+            "id": "Sysselsatta_Kommun",
+            "label": "Sysselsatta Kommun",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Sysselsatta_Region",
+            "label": "Sysselsatta Region",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Sysselsättningsgrad_20-64_år_%",
+            "label": "Sysselsättningsgrad 20-64 år %",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Konkurser",
+            "label": "Konkurser",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Anställda_berörda_av_konkurser",
+            "label": "Anställda berörda av konkurser",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Kumulativt_antal_konkurser_på_ett_år_per_100_000_sysselsatta",
+            "label": "Konkurser per 100 000 sysselsatta, \nrullande 12",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        }
+    ],
+    "3": [
+        {
+            "id": "Inskrivna_arbetslösa",
+            "label": "Inskrivna arbetslösa",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Funktionshindrade_arbetslösa",
+            "label": "Funktionshindrade arbetslösa",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Inskrivna_arbetslösa_av_arbetskraften_%",
+            "label": "Arbetslöshet (%)",
+            "drilldown_komponenter": [
+                "Inrikes_födda_arbetslösa_av_arbetskraften_%",
+                "Utrikes_födda_arbetslösa_av_arbetskraften_%"
+            ],
+            "drilldown_farger": [
+                "Grön",
+                "Blå"
+            ],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Inskrivna_arbetslösa_ungdomar_av_arbetskraften_%",
+            "label": "Inskrivna arbetslösa ungdomar av arbetskraften %",
+            "drilldown_komponenter": [
+                "Långtidsarbetslösa_ungdomar"
+            ],
+            "drilldown_farger": [
+                "Rosa"
+            ],
+            "drilldown_typ": "linje"
+        },
+        {
+            "id": "Långtidsarbetslösa",
+            "label": "Långtidsarbetslösa",
+            "drilldown_komponenter": [
+                "Långtidsarbetslösa_inrikes_födda",
+                "Långtidsarbetslösa_utrikes_födda"
+            ],
+            "drilldown_farger": [
+                "Grön",
+                "Blå"
+            ],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Långtidsarbetslösa_av_arbetskraften_%",
+            "label": "Långtidsarbetslösa av arbetskraften %",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Långtidsarbetslösa_av_inskrivna_%",
+            "label": "Långtidsarbetslöshet \nav inskrivna (%)",
+            "drilldown_komponenter": [
+                "Långtidsarbetslösa_inrikes_födda_av_inskrivna_%",
+                "Långtidsarbetslösa_utrikes_födda_av_inskrivna_%"
+            ],
+            "drilldown_farger": [
+                "Grön",
+                "Blå"
+            ],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Antal_varsel_i_länet",
+            "label": "Antal varsel i länet",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Totalt",
+            "label": "Arbetslöshetens karaktär: Totalt",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Utrikes_födda",
+            "label": "Arbetslöshetens karaktär: Utrikes födda",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Inrikes_födda",
+            "label": "Arbetslöshetens karaktär: Inrikes födda",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Ungdomar",
+            "label": "Arbetslöshetens karaktär: Ungdomar 18-24 år",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Män",
+            "label": "Arbetslöshetens karaktär: Män",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Kvinnor",
+            "label": "Arbetslöshetens karaktär: Kvinnor",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Förgymnasial_utbildning",
+            "label": "Arbetslöshetens karaktär: Förgymnasial utbildning",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Gymnasial_utbildning",
+            "label": "Arbetslöshetens karaktär: Gymnasial utbildning",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Eftergymnasial_utbildning",
+            "label": "Arbetslöshetens karaktär: Eftergymnasial utbildning",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        }
+    ],
+    "4": [
+        {
+            "id": "Självförsörjande_20-64 år",
+            "label": "Självförsörjande 20-64 år",
+            "drilldown_komponenter": [
+                "Självförsörjande_inrikes_födda_20-64_år",
+                "Självförsörjande_utrikes_födda_20-64_år"
+            ],
+            "drilldown_farger": [
+                "Grön",
+                "Blå"
+            ],
+            "drilldown_typ": "linje"
+        },
+        {
+            "id": "Ej_självförsörjande_20-64_år",
+            "label": "Ej självförsörjande 20-64 år",
+            "drilldown_komponenter": [
+                "Ej_självförsörjande_inrikes_födda_20-64_år",
+                "Ej_självförsörjande_utrikes_födda_20-64_år"
+            ],
+            "drilldown_farger": [
+                "Grön",
+                "Blå"
+            ],
+            "drilldown_typ": "linje"
+        },
+        {
+            "id": "Inskrivna_arbetslösa_svag_konkurrensförmåga",
+            "label": "Inskrivna arbetslösa svag konkurrensförmåga",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Svag_konkurrensförmåga_av_samtliga_inskrivna_%",
+            "label": "Svag konkurrensförmåga \nav inskrivna (%)",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Långtidarbetslösa_svag_konkurrensförmåga_av_inskrivna_%",
+            "label": "Långtidarbetslösa svag konkurrensförmåga av inskrivna %",
+            "drilldown_komponenter": [
+                "Inskrivna_långtidsarbetslösa_svag_konkurrensförmåga"
+            ],
+            "drilldown_farger": [
+                "Rosa"
+            ],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Hushåll_med_ekonomiskt_bistånd",
+            "label": "Hushåll med ekonomiskt bistånd",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Utbetalt_ekonomiskt_bistånd_(tkr)",
+            "label": "Utbetalt ekonomiskt bistånd (tkr)",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Ekonomiskt_bistånd_per_hushåll,_kr_(belopp/ hushåll)",
+            "label": "Ekonomiskt bistånd, \nkr/hushåll",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        }
+    ]
+}

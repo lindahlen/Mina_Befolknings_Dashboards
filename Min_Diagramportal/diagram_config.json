@@ -208,6 +208,19 @@
             "drilldown_typ": "linje"
         },
         {
+            "id": "Utrikes_födda_arbetslösa_av_arbetskraften_%",
+            "label": "Utrikes födda arbetslösa av arbetskraften %",
+            "drilldown_komponenter": [
+                "Inrikes_födda_arbetslösa_av_arbetskraften_%",
+                "Utrikes_födda_arbetslösa_av_arbetskraften_%"
+            ],
+            "drilldown_farger": [
+                "Orange",
+                "Blå"
+            ],
+            "drilldown_typ": "linje"
+        },
+        {
             "id": "Långtidsarbetslösa",
             "label": "Långtidsarbetslösa",
             "drilldown_komponenter": [
@@ -243,6 +256,89 @@
         {
             "id": "Antal_varsel_i_länet",
             "label": "Antal varsel i länet",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Ojämlikhet_Utrikes_vs_Inrikes",
+            "label": "Utrikes vs Inrikes födda",
+            "drilldown_komponenter": [
+                "Inrikes_födda_arbetslösa_av_arbetskraften_%",
+                "Utrikes_födda_arbetslösa_av_arbetskraften_%"
+            ],
+            "drilldown_farger": [
+                "Orange",
+                "Blå"
+            ],
+            "drilldown_typ": "linje"
+        },
+        {
+            "id": "Ojämlikhet_Förgymn_vs_Eftergymn",
+            "label": "Förgymn. vs Eftergymn. U'tb.",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Totalt",
+            "label": "Arbetslöshetens karaktär: Totalt",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Utrikes_födda",
+            "label": "Arbetslöshetens karaktär: Utrikes födda",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Inrikes_födda",
+            "label": "Arbetslöshetens karaktär: Inrikes födda",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Ungdomar",
+            "label": "Arbetslöshetens karaktär: Ungdomar 18-24 år",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Män",
+            "label": "Arbetslöshetens karaktär: Män",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Kvinnor",
+            "label": "Arbetslöshetens karaktär: Kvinnor",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Förgymnasial_utbildning",
+            "label": "Arbetslöshetens karaktär: Förgymnasial utbildning",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Gymnasial_utbildning",
+            "label": "Arbetslöshetens karaktär: Gymnasial utbildning",
+            "drilldown_komponenter": [],
+            "drilldown_farger": [],
+            "drilldown_typ": "stapel"
+        },
+        {
+            "id": "Struktur_Eftergymnasial_utbildning",
+            "label": "Arbetslöshetens karaktär: Eftergymnasial utbildning",
             "drilldown_komponenter": [],
             "drilldown_farger": [],
             "drilldown_typ": "stapel"
