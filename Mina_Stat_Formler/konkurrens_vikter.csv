@@ -22,6 +22,8 @@ Nettopendling, antal;Nettopendling (Beräknad Inpendling-Utpendling);X;X;..;X;H�
 Sysselsättning 15-74 år, förändring per år (%);Sysselsatta (beräknad förändring);..;X;..;0.15;Hög;Tillväxt och dynamik;Visar den procentuella förändringen av andelen sysselsatta i åldern 15-74 år per år
 Sysselsättningsgrad (%), 20-64 år;Sysselsättningsgrad;X;X;..;0.2;Hög;Struktur och kvalitet;Sysselsättningsgrad (%) för personer i åldern 20-64 år.
 Balanserad sysselsättningsgrad mellan könen (%);Syssgrad_kvinnor-män;..;..;..;0.02;Låg;Balans och jämvikt;Balanserad sysselsättningsgrad mellan könen visar i procent hur stor skillnaden i sysselsättningsgrad är mellan män och kvinnor. [inverterat värde]
+Förvärvsarbetande nattbefolkning;Nattbefolkning;X;X;..;..;Hög;Volym och kapacitet;Sysselsatta i åldern 15-74 år med bostad i kommunen eller kommungruppen (Nattbefolkningen).
+Dagbefolkningens andel av nattbefolkningen;Dagbefolkningsandel;X;X;..;X;Hög;Balans och jämvikt;Dagbefolkningens andel (%) av nattbefolkningen
 Nyföretagande per 1000 invånare;Nyföretagande;X;X;..;X;Hög;Tillväxt och dynamik;Nyföretagande per 1000 invånare
 Nettoinkomst 20-64 år, median (tkr);Nettoinkomst_median;0.1;0.1;..;0.05;Hög;Ekonomi och välfärd;Nettoinkomst 20-64 år, median (tkr)
 Nettoinkomst, summerad;Nettoinkomst_belopp_summa;Z;..;..;..;Hög;Ekonomi och välfärd;
