@@ -82,6 +82,7 @@
 
         .boll-gron { background-color: var(--farg-bra); }
         .boll-rod { background-color: var(--farg-dalig); }
+        .boll-gul { background-color: #FFC107; } /* Samma gula som i barometern */
         .boll-gra { background-color: var(--farg-neutral); }
 
         .gauge-container { position: relative; width: 200px; height: 100px; margin: 0 auto; overflow: hidden; }
@@ -725,7 +726,7 @@
                 }
             }
             
-            if (Math.abs(diff) <= tolerans) { el.className = "status-boll boll-gra"; el.innerText = "→"; el.title = customTooltip || "Oförändrat (inom marginalen) jämfört med samma period föregående år."; return 1; } 
+            if (Math.abs(diff) <= tolerans) { el.className = "status-boll boll-gul"; el.innerText = "→"; el.title = customTooltip || "Oförändrat (inom marginalen) jämfört med samma period föregående år."; return 1; } 
             
             let isGood = (polaritet && polaritet.toLowerCase() === "låg") ? (diff < 0) : (diff > 0);
             if(isGood) { el.className = "status-boll boll-gron"; el.innerText = (polaritet && polaritet.toLowerCase() === "låg") ? "↓" : "↑"; el.title = customTooltip || "Positiv utveckling."; return 1; } 
@@ -1062,7 +1063,7 @@
                 }
 
                 if (Math.abs(forandring) <= tolerans) { 
-                    el.className = "status-boll boll-gra"; el.innerText = "→"; el.title = "Neutralt: Flyttnettot är i stort sett oförändrat mot fg. år."; return 1;
+                    el.className = "status-boll boll-gul"; el.innerText = "→"; el.title = "Neutralt: Flyttnettot är i stort sett oförändrat mot fg. år."; return 1;
                 } else if (forandring > 0) {
                     el.className = "status-boll boll-gron"; el.innerText = "↑"; el.title = "Positivt: Flyttnettot har stärkts jämfört med fg. år."; return 1;
                 } else {
@@ -1088,7 +1089,7 @@
                 let netto = in_nu - ut_nu;
                 if(netto > flyttNettoTroskel) { el1.className = "status-boll boll-gron"; el1.innerText = "↑"; poangSumma++; el1.title = "Positivt: Fler flyttar in än ut (Positivt flyttnetto)."; }
                 else if(netto < -flyttNettoTroskel) { el1.className = "status-boll boll-rod"; el1.innerText = "↓"; el1.title = "Negativt: Fler flyttar ut än in (Negativt flyttnetto)."; }
-                else { el1.className = "status-boll boll-gra"; el1.innerText = "→"; poangSumma++; el1.title = "Neutralt: Flyttnettot är stabilt/nära noll."; }
+                else { el1.className = "status-boll boll-gul"; el1.innerText = "→"; poangSumma++; el1.title = "Neutralt: Flyttnettot är stabilt/nära noll."; }
             }
 
             fCharts[0] = new Chart(document.getElementById('canvas-f1').getContext('2d'), {

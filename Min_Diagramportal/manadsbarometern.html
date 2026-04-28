@@ -115,6 +115,7 @@
 
         .boll-gron { background-color: var(--farg-bra); }
         .boll-rod { background-color: var(--farg-dalig); }
+        .boll-gul { background-color: #FFC107; } /* Samma gula som i barometern */
         .boll-gra { background-color: var(--farg-neutral); }
 
         /* Barometer / Gauge */
@@ -743,7 +744,7 @@
             }
             
             if (Math.abs(diff) <= tolerans) { 
-                el.className = "status-boll boll-gra"; 
+                el.className = "status-boll boll-gul"; 
                 el.innerText = "→"; 
                 el.title = customTooltip || "Oförändrat (inom marginalen) jämfört med samma period föregående år.";
                 return 1; 
@@ -953,7 +954,7 @@
                         elGraf2.className = "status-boll boll-rod"; elGraf2.innerText = "↓"; 
                         elGraf2.title = "Negativt: Både privat och offentlig sektor har minskat jämfört med samma månad fg. år.";
                     } else { 
-                        elGraf2.className = "status-boll boll-gra"; elGraf2.innerText = "→"; poangSumma += 1; 
+                        elGraf2.className = "status-boll boll-gul"; elGraf2.innerText = "→"; poangSumma += 1; 
                         elGraf2.title = "Varierad utveckling (ex. en sektor ökar och en minskar). Bedöms som neutralt.";
                     }
                 } else { 
@@ -1040,7 +1041,7 @@
                 if (elGraf4) { elGraf4.className = "status-boll boll-gron"; elGraf4.innerText = "↓"; elGraf4.title = "Manuellt satt till Positivt."; }
                 poangSumma += 1;
             } else if (manuellStatus === "neutralt") {
-                if (elGraf4) { elGraf4.className = "status-boll boll-gra"; elGraf4.innerText = "→"; elGraf4.title = "Manuellt satt till Neutralt."; }
+                if (elGraf4) { elGraf4.className = "status-boll boll-gul"; elGraf4.innerText = "→"; elGraf4.title = "Manuellt satt till Neutralt."; }
                 poangSumma += 1;
             } else if (manuellStatus === "pressat") {
                 if (elGraf4) { elGraf4.className = "status-boll boll-rod"; elGraf4.innerText = "↑"; elGraf4.title = "Manuellt satt till Pressat."; }
@@ -1064,7 +1065,7 @@
                     }
                     
                     if (Math.abs(forandring) <= tolerans) {
-                        elGraf4.className = "status-boll boll-gra"; elGraf4.innerText = "→"; poangSumma += 1;
+                        elGraf4.className = "status-boll boll-gul"; elGraf4.innerText = "→"; poangSumma += 1;
                         elGraf4.title = "Oförändrat: Obalansen (totalt antal arbetslösa minus totalt antal lediga jobb) är i nivå med fg. år.";
                     } else if (forandring < 0) {
                         elGraf4.className = "status-boll boll-gron"; elGraf4.innerText = "↓"; poangSumma += 1;
