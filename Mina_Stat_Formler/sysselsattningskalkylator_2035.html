@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Analys & Utredning, Linköpings kommun">
+    <title>Sysselsättningskalkylator 2035 - Linköpings kommun</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; }
+        .card { background-color: white; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 1rem; }
+        .slider-container { margin-bottom: 0.75rem; }
+        input[type=range] { width: 100%; accent-color: #0ea5e9; } 
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col min-h-screen">
+
+    <header class="bg-slate-900 text-white shadow-md border-b-4 border-sky-500">
+        <div class="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold"><i class="fa-solid fa-bolt mr-2 text-sky-400"></i> Sysselsättningskalkylator 2035</h1>
+                <div class="text-xs font-medium text-slate-300 mt-0.5">Avancerad regionalekonomisk modellering</div>
+            </div>
+            <a href="index.html" class="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-xs sm:text-sm transition flex items-center border border-slate-600">
+                <i class="fa-solid fa-arrow-left mr-1.5"></i> Startmeny
+            </a>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 py-4 md:py-6 flex flex-col gap-4 flex-grow">
+        
+        <div class="bg-white p-3 md:p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col md:flex-row flex-wrap items-center justify-between gap-4">
+            <div id="dataStatus" class="p-1.5 px-3 bg-slate-50 rounded border border-slate-200 text-xs font-medium text-amber-600 text-center">
+                <i class="fa-solid fa-spinner fa-spin"></i> Ansluter...
+            </div>
+
+            <div class="flex flex-col md:flex-row flex-wrap items-center gap-3">
+                <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded px-2 py-1">
+                    <label class="text-[11px] font-bold text-indigo-800 uppercase whitespace-nowrap">Källa:</label>
+                    <select id="popSource" class="bg-transparent border-none text-xs font-medium text-indigo-900 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="if(typeof runSimulation2035 === 'function') runSimulation2035()">
+                        <option value="officiell">Officiell (Styrfil)</option>
+                        <option value="fryst">Fryst befolkning</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 rounded px-2 py-1">
+                    <label class="text-[11px] font-bold text-slate-700 uppercase whitespace-nowrap">Läge:</label>
+                    <select id="simMode" class="bg-transparent border-none text-xs font-medium text-slate-800 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="if(typeof runSimulation2035 === 'function') runSimulation2035()">
+                        <option value="full">Fullständig (Pendling)</option>
+                        <option value="local">Endast Lokal (Fryst)</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded px-2 py-1">
+                    <label class="text-[11px] font-bold text-emerald-800 uppercase whitespace-nowrap">Kausalitet:</label>
+                    <select id="causalityMode" class="bg-transparent border-none text-xs font-medium text-emerald-900 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="if(typeof runSimulation2035 === 'function') runSimulation2035()">
+                        <option value="analytic">Analytisk (Visar Gap)</option>
+                        <option value="dynamic">Dynamisk Jämvikt</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex flex-col md:flex-row gap-4">
+            <aside class="w-full md:w-1/3 xl:w-1/4 flex flex-col gap-4">
+                <div class="card" id="scenarioPanel">
+                    
+                    <div class="mb-4 p-2 bg-slate-50 rounded border border-slate-200">
+                        <div class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 flex justify-between">Ladda Snabbscenario</div>
+                        <div class="flex flex-wrap gap-1">
+                            <button onclick="setScenario('base')" class="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm">Bas</button>
+                            <button onclick="setScenario('high')" class="flex-1 bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm">Hög</button>
+                            <button onclick="setScenario('low')" class="flex-1 bg-white hover:bg-orange-50 text-orange-700 border border-orange-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm">Låg</button>
+                        </div>
+                    </div>
+
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 border-b pb-1">Näringsliv & Utbud</h3>
+
+                    <div class="slider-container bg-emerald-50 p-2 rounded border border-emerald-100 mb-3">
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-emerald-900">
+                            <span title="Appliceras ovanpå Excel-filens branschspecifika baslinje">Lokal Jobbtillväxt (Skalfaktor)</span>
+                            <span id="jobGrowthVal" class="text-emerald-700 font-bold">+0%</span>
+                        </label>
+                        <input type="range" id="jobGrowthSlider" min="-10" max="30" step="1" value="0" oninput="document.getElementById('jobGrowthVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="slider-container mb-1">
+                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                                <span>Sysselsättningsgrad (Generell)</span>
+                                <span id="syssGradVal" class="text-slate-600 font-bold">Oförändrad</span>
+                            </label>
+                            <input type="range" id="syssGradSlider" min="-5" max="5" step="0.5" value="0" oninput="document.getElementById('syssGradVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
+                        </div>
+
+                        <details class="bg-slate-50 border border-slate-200 rounded p-2 text-xs shadow-inner mt-1">
+                            <summary class="font-medium text-slate-700 cursor-pointer outline-none hover:text-sky-600 transition">
+                                <i class="fa-solid fa-sliders mr-1"></i> Detaljstyrning per åldersgrupp
+                            </summary>
+                            <div class="mt-3 flex flex-col gap-2.5 pb-1 px-1">
+                                <div class="flex justify-between items-center"><span class="w-12">16-19</span><input type="range" id="syssAge16_19" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val16_19" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">20-24</span><input type="range" id="syssAge20_24" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val20_24" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">25-29</span><input type="range" id="syssAge25_29" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val25_29" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">30-34</span><input type="range" id="syssAge30_34" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val30_34" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">35-39</span><input type="range" id="syssAge35_39" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val35_39" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">40-44</span><input type="range" id="syssAge40_44" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val40_44" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">45-49</span><input type="range" id="syssAge45_49" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val45_49" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">50-54</span><input type="range" id="syssAge50_54" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val50_54" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">55-59</span><input type="range" id="syssAge55_59" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val55_59" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">60-64</span><input type="range" id="syssAge60_64" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val60_64" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">65-69</span><input type="range" id="syssAge65_69" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val65_69" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                                <div class="flex justify-between items-center"><span class="w-12">70-74</span><input type="range" id="syssAge70_74" min="-15" max="15" step="1" value="0" class="flex-grow mx-2 h-1"><span id="val70_74" class="w-8 text-right font-bold text-slate-500">0</span></div>
+                            </div>
+                        </details>
+                    </div>
+
+                    <div class="slider-container">
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                            <span>Kvarstannandegrad LiU</span>
+                            <span id="studentVal" class="text-slate-600 font-bold">Baslinje</span>
+                        </label>
+                        <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="document.getElementById('studentVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
+                    </div>
+
+                    <div class="slider-container bg-orange-50 p-2 rounded border border-orange-100 mt-3">
+                        <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
+                            <span>Inflyttares syss.grad</span>
+                            <span id="migrantSyssVal" class="text-orange-600 font-bold">+10%-enh</span>
+                        </label>
+                        <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="document.getElementById('migrantSyssVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh';">
+                    </div>
+
+                    <hr class="my-4 border-gray-200">
+                    <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-2 border-b pb-1">Pendling</h3>
+
+                    <div class="slider-container">
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                            <span>Inpendling (Förändring)</span>
+                            <span id="inpendlingVal" class="text-slate-600 font-bold">+0%</span>
+                        </label>
+                        <input type="range" id="inpendlingSlider" min="-50" max="50" step="1" value="0" oninput="document.getElementById('inpendlingVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
+                    </div>
+
+                    <div class="slider-container">
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                            <span>Utpendling (Förändring)</span>
+                            <span id="utpendlingVal" class="text-slate-600 font-bold">+0%</span>
+                        </label>
+                        <input type="range" id="utpendlingSlider" min="-50" max="50" step="1" value="0" oninput="document.getElementById('utpendlingVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
+                    </div>
+
+                    <div class="flex flex-wrap gap-1.5 mt-4">
+                        <button id="simBtn" onclick="if(typeof runSimulation2035 === 'function') runSimulation2035()" class="w-full sm:flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-md text-xs sm:text-sm">
+                            <i class="fa-solid fa-gears mr-1"></i> Kör
+                        </button>
+                        <button onclick="toggleSaveScenario()" id="saveBtn" class="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Spara nuvarande prognos för att jämföra med en ny">
+                            <i class="fa-solid fa-code-compare mr-1"></i> Jämför
+                        </button>
+                        <button onclick="exportData()" class="flex-none bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Exportera data (CSV)">
+                            <i class="fa-solid fa-download"></i>
+                        </button>
+                        <button onclick="resetSimulation()" class="flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Återställ värden">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+
+                </div>
+            </aside>
+
+            <main class="w-full md:w-2/3 xl:w-3/4 flex flex-col gap-4">
+                
+                <div class="flex flex-col gap-2">
+                    <div class="flex justify-between items-end mb-1">
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-lg md:text-xl font-bold text-gray-800">Nyckeltal</h2>
+                            <div id="takWarning" class="hidden flex flex-wrap gap-2 items-center"></div>
+                        </div>
+                        <select id="yearSelect" class="border border-gray-300 rounded p-1 text-xs md:text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="if(typeof renderDashboard === 'function') renderDashboard()">
+                            </select>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 xl:grid-cols-6 gap-2 md:gap-3" id="kpiContainer">
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-sky-500">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Utbud (Natt)</div>
+                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiUtbud">-</div>
+                        </div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-emerald-500">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Efterfrågan (Dag)</div>
+                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiEfterfragan">-</div>
+                        </div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-indigo-500">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Pendlingsnetto</div>
+                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiPendling">-</div>
+                        </div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-amber-500">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Syss.grad (20-64)</div>
+                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiSyssGrad">-</div>
+                        </div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-purple-500" id="kpiBRPContainer">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">BRP/syss</div>
+                            <div class="text-base md:text-lg font-bold text-purple-800" id="kpiBRP">-</div>
+                        </div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-orange-500">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Befolkning (Ny)</div>
+                            <div class="text-base md:text-lg font-bold text-orange-600" id="kpiBefolkning">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card flex-grow flex flex-col mt-1 min-h-[400px]">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3 gap-3">
+                        <h2 class="text-base md:text-lg font-bold" id="trendTitle">Utbud vs Efterfrågan</h2>
+                        
+                        <div class="flex flex-wrap items-center shadow-sm rounded-md border border-gray-300 bg-white overflow-hidden w-full lg:w-auto">
+                            <select id="startYearSelect" class="p-1 md:p-1.5 text-xs md:text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 bg-white" onchange="if(typeof renderDashboard === 'function') renderDashboard()">
+                                <option value="1975">Från 1975</option>
+                                <option value="1990">Från 1990</option>
+                                <option value="2000">Från 2000</option>
+                                <option value="2010">Från 2010</option>
+                                <option value="2015" selected>Från 2015</option>
+                                <option value="2020">Från 2020</option>
+                            </select>
+                            
+                            <select id="chartType" class="p-1 md:p-1.5 text-xs md:text-sm bg-slate-50 outline-none focus:bg-sky-100 font-semibold text-gray-700 border-r border-gray-200" onchange="if(typeof renderDashboard === 'function') renderDashboard()">
+                                <option value="utbud_efterfragan">Utbud vs Efterfrågan</option>
+                                <option value="brp_totalt">Ekonomisk Tillväxt (BRP)</option>
+                                <option disabled>── Detaljvyer ──</option>
+                                <option value="syssgrad_kon">Sysselsättningsgrad (Kön)</option>
+                                <option value="trend_utrikes">Sysselsättning (Inrikes/Utrikes)</option>
+                                <option value="arbetsloshet">Arbetslöshet (Generell)</option>
+                                <option disabled>── Matchning ──</option>
+                                <option value="utb_match">Utbildningsmatchning (Valt år)</option>
+                                <option value="bransch_match">Branschmatchning (Valt år)</option>
+                                <option value="pop_dynamic">Befolkningsutveckling (Dynamisk)</option>
+                            </select>
+                            
+                            <select id="subGroupSelect" class="hidden p-1 md:p-1.5 text-xs md:text-sm bg-indigo-50 outline-none border-r border-gray-200" onchange="if(typeof renderDashboard === 'function') renderDashboard()"></select>
+
+                            <label id="zeroAxisContainer" class="flex items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer px-2">
+                                <input type="checkbox" id="useZeroAxis" onchange="if(typeof renderDashboard === 'function') renderDashboard()" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5">
+                                <span>Utgå från 0</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div id="chartWrapper" class="relative w-full flex-1 min-h-[350px] mt-2">
+                        <canvas id="trendChart"></canvas>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- UI SKRIPT FÖR REGLAGE OCH KNAPPAR -->
+    <script>
+        document.querySelectorAll('input[id^="syssAge"]').forEach(slider => {
+            slider.addEventListener('input', function() {
+                let val = this.value;
+                document.getElementById(this.id.replace('syssAge', 'val')).innerText = (val > 0 ? '+' : '') + val;
+            });
+        });
+
+        const generalSyssSlider = document.getElementById('syssGradSlider');
+        if (generalSyssSlider) {
+            generalSyssSlider.addEventListener('input', function() {
+                let val = this.value;
+                document.querySelectorAll('input[id^="syssAge"]').forEach(slider => {
+                    slider.value = val;
+                    document.getElementById(slider.id.replace('syssAge', 'val')).innerText = (val > 0 ? '+' : '') + val;
+                });
+            });
+        }
+
+        var savedProjectedData = null;
+
+        function resetSimulation() {
+            document.getElementById('simMode').value = 'full';
+            if (document.getElementById('causalityMode')) document.getElementById('causalityMode').value = 'analytic';
+            
+            const sliders = ['jobGrowth', 'syssGrad', 'student', 'migrantSyss', 'inpendling', 'utpendling'];
+            sliders.forEach(id => {
+                const el = document.getElementById(id + 'Slider');
+                if (el) {
+                    el.value = (id === 'migrantSyss') ? 10 : 0;
+                    const valEl = document.getElementById(id + 'Val');
+                    if (valEl) {
+                        if (id === 'migrantSyss') valEl.innerText = '+10%-enh';
+                        else if (id === 'syssGrad' || id === 'student') valEl.innerText = id === 'syssGrad' ? 'Oförändrad' : 'Baslinje';
+                        else valEl.innerText = '+0%';
+                    }
+                }
+            });
+
+            document.querySelectorAll('input[id^="syssAge"]').forEach(slider => {
+                slider.value = 0;
+                document.getElementById(slider.id.replace('syssAge', 'val')).innerText = '0';
+            });
+
+            if (typeof prognos2035 !== 'undefined') prognos2035 = {}; 
+            savedProjectedData = null;
+            
+            const saveBtn = document.getElementById('saveBtn');
+            if (saveBtn) {
+                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
+                saveBtn.className = "flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm";
+            }
+            
+            const startYearSelect = document.getElementById('startYearSelect');
+            if (startYearSelect) startYearSelect.style.display = 'inline-block';
+
+            if (typeof byggaDropdown === 'function') byggaDropdown(baseYear);
+            if (typeof renderDashboard === 'function') renderDashboard();
+        }
+
+        function toggleSaveScenario() {
+            const saveBtn = document.getElementById('saveBtn');
+            const startYearSelect = document.getElementById('startYearSelect');
+            
+            if (!savedProjectedData) {
+                if (typeof prognos2035 === 'undefined' || Object.keys(prognos2035).length === 0) { 
+                    alert("Du måste köra en simulering först."); return; 
+                }
+                savedProjectedData = JSON.parse(JSON.stringify(prognos2035));
+                
+                saveBtn.innerHTML = '<i class="fa-solid fa-times mr-1"></i> Rensa jämförelse';
+                saveBtn.className = "flex-1 bg-red-100 hover:bg-red-200 text-red-800 font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm";
+                if (startYearSelect) startYearSelect.style.display = 'none';
+            } else {
+                savedProjectedData = null;
+                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
+                saveBtn.className = "flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm";
+                if (startYearSelect) startYearSelect.style.display = 'inline-block';
+            }
+            
+            if (typeof renderDashboard === 'function') renderDashboard();
+        }
+
+        function setScenario(type) {
+            if (typeof appData !== 'undefined' && appData.config && appData.config['Scenarier']) {
+                const sc = appData.config['Scenarier'];
+                const getVal = (indikator) => {
+                    let row = sc.find(r => String(r.Indikator).trim() === indikator);
+                    if(row) {
+                        if (type === 'base') return parseFloat(row['Bas']);
+                        if (type === 'high') return parseFloat(row['Hög']);
+                        if (type === 'low') return parseFloat(row['Låg']);
+                        if (type === 'stagnant') return parseFloat(row['Stagnerande']);
+                    } return 0;
+                };
+
+                const setSlider = (id, val, suffix) => {
+                    const sliderEl = document.getElementById(id);
+                    if (sliderEl) { 
+                        sliderEl.value = val || 0; 
+                        const textEl = document.getElementById(id.replace('Slider', 'Val')); 
+                        if (textEl) textEl.innerText = (val > 0 ? '+' : '') + val + suffix; 
+                        
+                        if (id === 'syssGradSlider') {
+                            document.querySelectorAll('input[id^="syssAge"]').forEach(slider => {
+                                slider.value = val || 0;
+                                document.getElementById(slider.id.replace('syssAge', 'val')).innerText = (val > 0 ? '+' : '') + (val || 0);
+                            });
+                        }
+                    }
+                };
+
+                setSlider('jobGrowthSlider', getVal('Jobbtillväxt'), '%');
+                setSlider('syssGradSlider', getVal('Sysselsättningsgrad'), '%-enh');
+                setSlider('studentSlider', getVal('Kvarstannandegrad'), '%-enh');
+                const intVal = getVal('Justering inflyttares syss.grad');
+                setSlider('migrantSyssSlider', intVal, '%-enh');
+                setSlider('inpendlingSlider', getVal('Inpendling'), '%'); 
+                setSlider('utpendlingSlider', getVal('Utpendling'), '%');
+                
+                if (typeof runSimulation2035 === 'function') runSimulation2035();
+            }
+        }
+
+        function exportData() {
+            alert("Exportfunktionen kommer att flyttas över helt från den gamla versionen när matematiken i kalkylatorn är helt fastställd!");
+        }
+    </script>
+
+    <!-- INLÄSNING AV MODULERNA -->
+    <script src="motor_2035.js"></script>
+    <script src="grafer_2035.js"></script>
+
+</body>
+</html>
