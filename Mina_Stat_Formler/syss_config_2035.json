@@ -2,17 +2,17 @@
   "Scenarier": [
     {
       "Indikator": "Jobbtillväxt",
-      "Bas": 2.0,
+      "Bas": 0.0,
       "Hög": 5.0,
-      "Låg": -5.0,
-      "Stagnerande": 0
+      "Låg": -2.0,
+      "Stagnerande": -5
     },
     {
       "Indikator": "Sysselsättningsgrad",
       "Bas": 0.1,
       "Hög": 0.5,
       "Låg": -0.2,
-      "Stagnerande": 0
+      "Stagnerande": -2
     },
     {
       "Indikator": "Kvarstannandegrad",
@@ -51,10 +51,10 @@
     },
     {
       "Indikator": "Bosättningskvot_bransch",
-      "Bas": 0.0,
-      "Hög": 1.0,
-      "Låg": -1.0,
-      "Stagnerande": 0
+      "Bas": 10.0,
+      "Hög": 5.0,
+      "Låg": 10.0,
+      "Stagnerande": "Alla"
     },
     {
       "Indikator": "Bosättningskvot_sektor",
@@ -85,6 +85,13 @@
       "Stagnerande": 0
     },
     {
+      "Indikator": "Näringslivsjustering_skala",
+      "Bas": 100.0,
+      "Hög": 125.0,
+      "Låg": 75.0,
+      "Stagnerande": 0
+    },
+    {
       "Indikator": "Distansarbete",
       "Bas": 5.0,
       "Hög": 15.0,
@@ -97,6 +104,92 @@
       "Hög": 10.0,
       "Låg": 0.0,
       "Stagnerande": 0
+    }
+  ],
+  "Tillväxt": [
+    {
+      "Indikator": "Sysselsättningsgrad_16-19",
+      "Bas": 0.4,
+      "Hög": 0.8,
+      "Låg": -0.2,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_20-24",
+      "Bas": 0.0,
+      "Hög": 0.0,
+      "Låg": 0.0,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_25-29",
+      "Bas": 0.0,
+      "Hög": 0.0,
+      "Låg": 0.0,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_30-34",
+      "Bas": 0.0,
+      "Hög": 0.0,
+      "Låg": 0.0,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_35-39",
+      "Bas": 0.0,
+      "Hög": 0.0,
+      "Låg": 0.0,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_40-44",
+      "Bas": 0.0,
+      "Hög": 0.0,
+      "Låg": 0.0,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_45-49",
+      "Bas": 0.0,
+      "Hög": 0.0,
+      "Låg": 0.0,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_50-54",
+      "Bas": 0.0,
+      "Hög": 0.0,
+      "Låg": 0.0,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_55-59",
+      "Bas": 0.0,
+      "Hög": 0.0,
+      "Låg": 0.0,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_60-64",
+      "Bas": 0.5,
+      "Hög": 0.8,
+      "Låg": 0.0,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_65-69",
+      "Bas": 1.1,
+      "Hög": 1.5,
+      "Låg": -0.1,
+      "Stagnerande": -2
+    },
+    {
+      "Indikator": "Sysselsättningsgrad_70-74",
+      "Bas": 2.0,
+      "Hög": 5.0,
+      "Låg": -0.2,
+      "Stagnerande": -2
     }
   ],
   "Universitet": [
@@ -5493,18 +5586,18 @@
     },
     {
       "SNIbokstav": "Vård och omsorg",
-      "2024": NaN,
-      "2025": NaN,
-      "2026": NaN,
-      "2027": NaN,
-      "2028": NaN,
-      "2029": NaN,
-      "2030": NaN,
-      "2031": NaN,
-      "2032": NaN,
-      "2033": NaN,
-      "2034": NaN,
-      "2035": NaN
+      "2024": 0.0,
+      "2025": 133.33333333333334,
+      "2026": 266.6666666666667,
+      "2027": 400.0,
+      "2028": 533.3333333333334,
+      "2029": 666.6666666666667,
+      "2030": 800.0,
+      "2031": 1000.0,
+      "2032": 1200.0,
+      "2033": 1400.0,
+      "2034": 1600.0,
+      "2035": 1800.0
     },
     {
       "SNIbokstav": "Personliga och kulturella tjänster",

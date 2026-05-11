@@ -882,7 +882,6 @@ html_template = """
                 document.getElementById('h2h-team-a').value = ALL_TIME_TABLE[0].team;
                 updateOpponentDropdown('h2h-team-a', 'h2h-team-b');
                 
-                // Leta upp en giltig motståndare till lag A (om 2an inte har mött 1an väljer den första bästa)
                 let bOpts = Array.from(document.getElementById('h2h-team-b').options);
                 let validB = bOpts.filter(o => !o.disabled && o.value !== "").map(o => o.value);
                 if (validB.includes(ALL_TIME_TABLE[1].team)) {
@@ -893,7 +892,6 @@ html_template = """
             }
             updateRankDisplays();
             
-            // H2H räknas ut och renderas direkt på startskärmen
             calculateH2H();
             
             document.getElementById('h2h-team-a').addEventListener('change', () => { updateOpponentDropdown('h2h-team-a', 'h2h-team-b'); updateRankDisplays(); document.getElementById('h2h-overview').classList.add('hidden'); document.getElementById('h2h-results').classList.add('hidden'); });
@@ -902,13 +900,9 @@ html_template = """
             document.getElementById('table-season').addEventListener('change', (e) => { 
                 const sas = e.target.value; 
                 if (SEASON_INFO[sas] && SEASON_INFO[sas].pts) document.getElementById('table-points').value = SEASON_INFO[sas].pts; 
-                updatePhaseDropdown();
             });
             if (SEASONS.length > 0) document.getElementById('search-season').value = [...SEASONS].reverse()[0];
             
-            updatePhaseDropdown();
-            
-            // Topplistor och sviter räknas ut direkt i bakgrunden så att de syns när man byter flik
             renderRecords(); 
             calculateStreaks(); 
         });
@@ -1472,14 +1466,16 @@ html_template = """
             if (info.merit === 'Till Allsvenskan kval') badges += '<span title="Kval till Allsvenskan" class="cursor-help ml-1 text-emerald-500" style="font-size: 0.9em;">↗️</span>';
             if (info.nya === 'Från Allsvenskan') badges += '<span title="Nedflyttad från Allsvenskan" class="cursor-help ml-1 text-purple-600 font-bold text-[10px] bg-purple-100 rounded px-1">⬇️A</span>';
             if (info.nya === 'Nykomling') badges += '<span title="Nykomling från Div 1" class="cursor-help ml-1 text-blue-600 font-bold text-[10px] bg-blue-100 rounded px-1">NY</span>';
-            if (info.merit === 'Degraderade' || info.merit === 'Degraderade kval') badges += '<span title="Degraderad" class="cursor-help ml-1 text-rose-600 font-bold text-[10px] bg-rose-100 rounded px-1">↓</span>';
+            if (info.merit === 'Degraderade' || info.merit === 'Degraderade kval' || info.merit === 'Degraderade uteslutning') {
+                let hoverText = info.merit === 'Degraderade uteslutning' ? 'Degraderad (Uteslutning)' : 'Degraderad';
+                badges += `<span title="${hoverText}" class="cursor-help ml-1 text-rose-600 font-bold text-[10px] bg-rose-100 rounded px-1">↓</span>`;
+            }
             return badges;
         }
 
         function calculateLeagueTable() {
             const season = document.getElementById('table-season').value; 
             const maxRoundRaw = document.getElementById('table-round').value.trim().toUpperCase();
-            const phase = document.getElementById('table-phase').value;
             const pointsForWin = parseInt(document.getElementById('table-points').value);
             const perspective = document.getElementById('table-perspective').value;
             const pCtx = perspective; 
@@ -1559,6 +1555,7 @@ html_template = """
                     let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][t.team];
                     if (mInfo && mInfo.start_pts !== 0) {
                         let adj = mInfo.start_pts;
+                        if (adj === -3 && pointsForWin === 2) adj = -2;
                         t.pts += adj;
                     }
                 });
@@ -1580,7 +1577,7 @@ html_template = """
                 let origTeamName = seasonTeamNames[r.team] || r.team;
                 let badges = getMeritBadges(r.team, season);
                 let gdCell = r.gd > 0 ? '+'+r.gd : r.gd;
-                let gdColor = r.gd > 0 ? 'text-emerald-600' : r.gd < 0 ? 'text-rose-600' : '';
+                let gdColor = r.gd > 0 ? 'text-emerald-600' : (r.gd < 0 ? 'text-rose-600' : '');
                 
                 return `<tr class="hover:bg-slate-50"><td class="px-4 py-2 font-bold text-slate-500">${i+1}</td><td class="px-4 py-2 font-medium"><div class="flex items-center">${origTeamName}${badges}</div></td><td class="px-4 py-2 text-center bg-slate-50">${r.pld}</td><td class="px-4 py-2 text-center text-emerald-600">${r.w}</td><td class="px-4 py-2 text-center text-slate-500">${r.d}</td><td class="px-4 py-2 text-center text-rose-600">${r.l}</td><td class="px-4 py-2 text-center">${r.gf} - ${r.ga}</td><td class="px-4 py-2 text-center font-bold ${gdColor}">${gdCell}</td><td class="px-4 py-2 text-center font-black bg-blue-50/50">${r.pts}</td></tr>`;
             }).join('');
@@ -1605,7 +1602,7 @@ html_template = """
             // --- TREND DATA ---
             if (pCtx === 'ALL') {
                 globalSeasonRanks = {}; globalSeasonTeams = Object.keys(table); 
-                let sMaxRound = 0; let mRoundsActive = false;
+                let sMaxRound = 0;
                 matches.forEach(m => { 
                     sMaxRound = Math.max(sMaxRound, parseInt(m.Omgång)||0); 
                 });
@@ -1620,6 +1617,7 @@ html_template = """
                         let isAvbrutenO = nTxt.includes("AVBRUTEN; O");
                         if (isNaN(hm) || isNaN(bm)) { hm = 0; bm = 0; }
                         rTable[m.Hemmalag].gf += hm; rTable[m.Bortalag].gf += bm; rTable[m.Hemmalag].gd += (hm - bm); rTable[m.Bortalag].gd += (bm - hm);
+                        
                         if (isWOH) { rTable[m.Hemmalag].pts += pointsForWin; }
                         else if (isWOB) { rTable[m.Bortalag].pts += pointsForWin; }
                         else if (isAvbrutenO) { rTable[m.Hemmalag].pts += 1; rTable[m.Bortalag].pts += 1; }
@@ -1632,6 +1630,7 @@ html_template = """
                         let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][t.team];
                         if (mInfo && mInfo.start_pts < 0) {
                             let adj = mInfo.start_pts;
+                            if (adj === -3 && pointsForWin === 2) adj = -2;
                             t.pts += adj;
                         }
                     });
@@ -1863,8 +1862,6 @@ html_template = """
                         let isWOB = nTxt.includes("W.O; B") || nTxt.includes("AVBRUTEN; F") || nTxt.includes("EJ KVALIFICERAD SPELARE; F");
                         let isO = nTxt.includes("AVBRUTEN; O");
                         
-                        let noteStr = getNoteString(m.Hemmalag_Org || m.Hemmalag, m.Bortalag_Org || m.Bortalag, m.NOT, null);
-                        
                         if(isNaN(hm) || isNaN(bm)) {
                             if(!(isWOH||isWOB)) return; hm=0; bm=0;
                         }
@@ -2035,10 +2032,8 @@ html_template = """
                     let finalTop2 = [leadersPerRound[leadersPerRound.length - 1].top1, leadersPerRound[leadersPerRound.length - 1].top2];
                     let preFinalTop2 = [leadersPerRound[leadersPerRound.length - 2].top1, leadersPerRound[leadersPerRound.length - 2].top2];
 
-                    // Vilka var i Top 2 innan sista, men missade till slut?
                     preFinalTop2.forEach(team => {
                         if (!finalTop2.includes(team)) {
-                            // De missade! Vilka tog deras plats? De i finalTop2 som inte var i preFinalTop2
                             let newlyPromoted = finalTop2.filter(t => !preFinalTop2.includes(t));
                             allSeasonsData.push({ type: 'LATE_DROP', seasonName: getSeasonName(season), dropped: team, passedBy: newlyPromoted.join(', ') });
                         }

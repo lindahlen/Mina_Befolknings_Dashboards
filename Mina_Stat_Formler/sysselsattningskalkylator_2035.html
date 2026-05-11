@@ -3,22 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="author" content="Jimmy Lindahl, Analys & Utredning, Linköpings kommun">
+    <meta name="author" content="Analys & Utredning, Linköpings kommun">
     <title>Sysselsättningskalkylator 2035 - Linköpings kommun</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
         body { font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; }
         .card { background-color: white; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); padding: 1rem; }
         @media (min-width: 768px) { .card { padding: 1.25rem; } }
         .slider-container { margin-bottom: 0.75rem; }
         input[type=range] { width: 100%; accent-color: #0ea5e9; } 
-        .shock-checkbox:checked + label { background-color: #e0f2fe; border-color: #0ea5e9; font-weight: bold; color: #0369a1; }
     </style>
 </head>
 <body class="text-gray-800 flex flex-col min-h-screen">
 
+    <!-- Header -->
     <header class="bg-slate-800 text-white shadow-md">
         <div class="container mx-auto px-4 py-3 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div class="flex items-center gap-4">
@@ -42,9 +47,12 @@
         </div>
     </header>
 
+    <!-- Huvudinnehåll -->
     <div class="container mx-auto px-4 py-4 md:py-6 flex flex-col gap-4 flex-grow">
         
+        <!-- TOPPANEL FÖR GRUNDINSTÄLLNINGAR -->
         <div class="bg-white p-3 md:p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col md:flex-row flex-wrap items-start md:items-center justify-between gap-4">
+            
             <div class="flex items-center gap-2 w-full md:w-auto">
                 <div id="dataStatus" class="p-1.5 px-3 bg-slate-50 rounded border border-slate-200 text-xs font-medium text-amber-600 w-full md:w-auto text-center">
                     <i class="fa-solid fa-spinner fa-spin"></i> Ansluter...
@@ -61,14 +69,18 @@
                     </select>
                     <button id="clearCustomBtn" onclick="clearCustomPop()" class="hidden ml-2 text-red-500 hover:text-red-700 transition" title="Rensa anpassat scenario"><i class="fa-solid fa-times"></i></button>
                 </div>
-                <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 rounded px-2 py-1 flex-1 md:flex-none">
-                    <label class="text-[11px] font-bold text-slate-700 uppercase whitespace-nowrap">Läge:</label>
+
+                <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 rounded px-2 py-1 flex-1 md:flex-none" title="Växla mellan att ta hänsyn till in/ut-pendling eller endast titta på den lokala befolkningen.">
+                    <label class="text-[11px] font-bold text-slate-700 uppercase whitespace-nowrap flex items-center gap-1">Läge:
+                        <span onclick="showInfo('sim_mode')" class="text-slate-400 cursor-pointer hover:text-slate-600 transition"><i class="fa-solid fa-circle-info"></i></span>
+                    </label>
                     <select id="simMode" class="bg-transparent border-none text-xs font-medium text-slate-800 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="toggleSimMode()">
                         <option value="full">Fullständig (Pendling)</option>
                         <option value="local">Endast Lokal (Fryst)</option>
                     </select>
                 </div>
-                <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded px-2 py-1 flex-1 md:flex-none">
+
+                <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded px-2 py-1 flex-1 md:flex-none" title="Analytisk visar gapet mellan utbud och efterfrågan. Dynamisk anpassar automatiskt inflyttningen för att stänga gapet.">
                     <label class="text-[11px] font-bold text-emerald-800 uppercase whitespace-nowrap flex items-center gap-1">Kausalitet:
                         <span onclick="showInfo('kausalitet')" class="text-emerald-400 cursor-pointer hover:text-emerald-600 transition"><i class="fa-solid fa-circle-info"></i></span>
                     </label>
@@ -81,8 +93,11 @@
         </div>
 
         <div class="flex flex-col md:flex-row gap-4">
+            <!-- Vänster kolumn: Kontrollpanel -->
             <aside class="w-full md:w-1/3 xl:w-1/4 flex flex-col gap-4">
+                
                 <div class="card opacity-50 pointer-events-none transition-opacity duration-300" id="scenarioPanel">
+                    
                     <div class="mb-4 p-2 bg-slate-50 rounded border border-slate-200">
                         <div class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 flex justify-between">
                             <span>Snabbscenarier</span>
@@ -102,12 +117,19 @@
                     </div>
 
                     <div class="slider-container">
-                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700"><span>Lokal Jobbtillväxt (Totalt)</span><span id="jobGrowthVal" class="text-slate-600 font-bold">+0%</span></label>
-                        <input type="range" id="jobGrowthSlider" min="-10" max="30" step="1" value="0" oninput="updateSliderVal(this, 'jobGrowthVal', '%')">
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                            <span>Lokal Jobbtillväxt (Totalt)</span>
+                            <span id="jobGrowthVal" class="text-slate-600 font-bold">+0%</span>
+                        </label>
+                        <input type="range" id="jobGrowthSlider" min="-10" max="30" step="1" value="0" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'jobGrowthVal', '%')">
                     </div>
+
                     <div class="slider-container">
-                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700"><span>Sysselsättningsgrad (Förändring)</span><span id="syssGradVal" class="text-slate-600 font-bold">Oförändrad</span></label>
-                        <input type="range" id="syssGradSlider" min="-5" max="5" step="0.5" value="0" oninput="updateSliderVal(this, 'syssGradVal', '%-enh')">
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                            <span>Sysselsättningsgrad (Förändring)</span>
+                            <span id="syssGradVal" class="text-slate-600 font-bold">Oförändrad</span>
+                        </label>
+                        <input type="range" id="syssGradSlider" min="-5" max="5" step="0.5" value="0" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'syssGradVal', '%-enh')">
                     </div>
 
                     <details class="bg-slate-50 border border-slate-200 rounded p-2 text-xs mt-1 mb-3">
@@ -117,33 +139,33 @@
 
                     <div class="slider-container">
                         <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
-                            <span class="flex items-center">Kvarstannandegrad LiU <i id="civIngToggleIcon" class="fa-solid fa-circle-plus text-sky-600 ml-1.5 cursor-pointer hover:text-sky-800 transition" onclick="toggleCivIng()" title="Dela upp på Civilingenjörer och Övriga"></i></span>
+                            <span class="flex items-center">
+                                Kvarstannandegrad LiU
+                                <i id="civIngToggleIcon" class="fa-solid fa-circle-plus text-sky-600 ml-1.5 cursor-pointer hover:text-sky-800 transition" onclick="toggleCivIng()" title="Dela upp på Civilingenjörer och Övriga"></i>
+                            </span>
                             <span id="studentVal" class="text-slate-600 font-bold">Baslinje</span>
                         </label>
-                        <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="updateSliderVal(this, 'studentVal', '%-enh')">
+                        <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'studentVal', '%-enh')">
                     </div>
+
+                    <!-- CIVILINGENJÖRER (Dolt som standard) -->
                     <div id="civIngContainer" class="slider-container hidden bg-sky-50 p-2.5 rounded border border-sky-200 mt-2 mb-3 shadow-inner">
-                        <label class="block text-xs font-medium mb-1 flex justify-between text-sky-900"><span>↳ Därav Civilingenjörer</span><span id="civIngVal" class="text-sky-700 font-bold">Baslinje</span></label>
-                        <input type="range" id="civIngSlider" min="-10" max="40" step="1" value="0" oninput="updateSliderVal(this, 'civIngVal', '%-enh')">
+                        <label class="block text-xs font-medium mb-1 flex justify-between text-sky-900">
+                            <span>↳ Därav Civilingenjörer</span>
+                            <span id="civIngVal" class="text-sky-700 font-bold">Baslinje</span>
+                        </label>
+                        <input type="range" id="civIngSlider" min="-10" max="40" step="1" value="0" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'civIngVal', '%-enh')">
                     </div>
 
                     <div class="slider-container bg-orange-50 p-2 rounded border border-orange-100 mt-3">
                         <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
-                            <span class="flex items-center gap-1">Inflyttares syss.grad <i class="fa-solid fa-circle-info text-orange-400 cursor-pointer hover:text-orange-600 transition" onclick="showInfo('inflyttare')"></i></span>
+                            <span class="flex items-center gap-1">
+                                Inflyttares syss.grad
+                                <i class="fa-solid fa-circle-info text-orange-400 cursor-pointer hover:text-orange-600 transition" onclick="showInfo('inflyttare')"></i>
+                            </span>
                             <span id="migrantSyssVal" class="text-orange-600 font-bold">+10%-enh</span>
                         </label>
-                        <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="updateSliderVal(this, 'migrantSyssVal', '%-enh'); handleYearChange();">
-                    </div>
-
-                    <div id="shocksContainer" class="hidden mt-4 pt-3 border-t border-gray-200">
-                        <div class="flex justify-between items-center mb-2 cursor-pointer group" onclick="toggleShocks()">
-                            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider group-hover:text-sky-700 transition">Specifika Etableringar</h3>
-                            <div class="flex items-center gap-2">
-                                <i id="shocksIcon" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
-                                <span onclick="showInfo('shocker'); event.stopPropagation();" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info"></i></span>
-                            </div>
-                        </div>
-                        <div id="shocksList" class="hidden flex-col gap-1.5 mt-2"></div>
+                        <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'migrantSyssVal', '%-enh'); handleYearChange();">
                     </div>
 
                     <hr class="my-4 border-gray-200">
@@ -153,25 +175,43 @@
                             <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Pendling & Geografi</h3>
                             <span onclick="showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
                         </div>
+
                         <div class="mb-3">
                             <select id="pendlingType" class="w-full border border-gray-300 rounded p-1 text-xs focus:ring-sky-500 focus:border-sky-500 bg-gray-50" onchange="updatePendlingUI()">
-                                <option value="pct">Relativ förändring (%)</option><option value="abs">Absolut förändring (Antal pers)</option>
+                                <option value="pct">Relativ förändring (%)</option>
+                                <option value="abs">Absolut förändring (Antal pers)</option>
                             </select>
                         </div>
+
                         <div class="slider-container">
-                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700"><span>Inpendling (Förändring)</span><span id="inpendlingVal" class="text-slate-600 font-bold">+0%</span></label>
+                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                                <span>Inpendling (Förändring)</span>
+                                <span id="inpendlingVal" class="text-slate-600 font-bold">+0%</span>
+                            </label>
                             <input type="range" id="inpendlingSlider" min="-50" max="50" step="1" value="0" oninput="updatePendlingValue('inpendlingSlider', 'inpendlingVal')">
                         </div>
+
                         <div class="slider-container">
-                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700"><span>Utpendling (Förändring)</span><span id="utpendlingVal" class="text-slate-600 font-bold">+0%</span></label>
+                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                                <span>Utpendling (Förändring)</span>
+                                <span id="utpendlingVal" class="text-slate-600 font-bold">+0%</span>
+                            </label>
                             <input type="range" id="utpendlingSlider" min="-50" max="50" step="1" value="0" oninput="updatePendlingValue('utpendlingSlider', 'utpendlingVal')">
                         </div>
+
                         <div class="slider-container mt-4">
-                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700"><span>Distansarbete (Andel)</span><span id="distansVal" class="text-slate-600 font-bold">Baslinje</span></label>
-                            <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="updateSliderVal(this, 'distansVal', '%')">
+                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                                <span>Distansarbete (Andel)</span>
+                                <span id="distansVal" class="text-slate-600 font-bold">Baslinje</span>
+                            </label>
+                            <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'distansVal', '%')">
                         </div>
+
                         <div class="slider-container">
-                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700"><span>Regionförstoring (Restid)</span><span id="regionVal" class="text-slate-600 font-bold">Dagens nivå</span></label>
+                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
+                                <span>Regionförstoring (Restid)</span>
+                                <span id="regionVal" class="text-slate-600 font-bold">Dagens nivå</span>
+                            </label>
                             <input type="range" id="regionSlider" min="0" max="30" step="1" value="0" oninput="document.getElementById('regionVal').innerText = this.value == 0 ? 'Dagens nivå' : '+' + this.value + ' min'">
                         </div>
                     </div>
@@ -191,9 +231,13 @@
                         </button>
                     </div>
                 </div>
+                
             </aside>
 
+            <!-- Höger kolumn: Grafer och Nyckeltal -->
             <main class="w-full md:w-2/3 xl:w-3/4 flex flex-col gap-4">
+                
+                <!-- Nyckeltal (KPI) -->
                 <div class="flex flex-col gap-2">
                     <div class="flex justify-between items-end mb-1">
                         <div class="flex items-center gap-2">
@@ -201,26 +245,54 @@
                             <span onclick="showInfo('befolkning')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information om nyckeltalen"><i class="fa-solid fa-circle-info"></i></span>
                             <div id="takWarning" class="hidden ml-2 flex flex-wrap gap-2 items-center"></div>
                         </div>
-                        <select id="yearSelect" class="border border-gray-300 rounded p-1 text-xs md:text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="handleYearChange()"><option value="">Laddar...</option></select>
+                        <select id="yearSelect" class="border border-gray-300 rounded p-1 text-xs md:text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="handleYearChange()" title="Välj år för att uppdatera nyckeltalen nedan">
+                            <option value="">Laddar...</option>
+                        </select>
                     </div>
                     
                     <div class="grid grid-cols-3 xl:grid-cols-6 gap-2 md:gap-3" id="kpiContainer">
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-sky-500" id="kpiUtbudContainer" title="Lokalt arbetskraftsutbud"><div class="text-[10px] md:text-xs text-gray-500 font-medium">Utbud (Natt)</div><div class="text-base md:text-lg font-bold text-gray-800" id="kpiUtbud">-</div></div>
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-emerald-500"><div class="text-[10px] md:text-xs text-gray-500 font-medium">Efterfrågan (Dag)</div><div class="text-base md:text-lg font-bold text-gray-800" id="kpiEfterfragan">-</div></div>
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-indigo-500" title="Totalt Pendlingsnetto (In - Ut + Virtuellt utbud)"><div class="text-[10px] md:text-xs text-gray-500 font-medium">Pendlingsnetto</div><div class="text-base md:text-lg font-bold text-gray-800" id="kpiPendling">-</div></div>
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-amber-500" title="Beräknad genomsnittlig sysselsättningsgrad 20-64 år"><div class="text-[10px] md:text-xs text-gray-500 font-medium">Syss.grad (20-64)</div><div class="text-base md:text-lg font-bold text-gray-800" id="kpiSyssGrad">-</div></div>
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-purple-500 cursor-help" id="kpiBRPContainer" title="Bruttoregionalprodukt per sysselsatt (tkr)"><div class="text-[10px] md:text-xs text-gray-500 font-medium">BRP/syss</div><div class="text-base md:text-lg font-bold text-purple-800" id="kpiBRP">-</div></div>
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-orange-500 cursor-help" id="kpiBefolkningContainer" title="Hur rekryteringsgapet påverkar befolkningsutvecklingen"><div class="text-[10px] md:text-xs text-gray-500 font-medium">Befolkning (Ny)</div><div class="text-base md:text-lg font-bold text-orange-600" id="kpiBefolkning">-</div></div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-sky-500" id="kpiUtbudContainer" title="Lokalt arbetskraftsutbud">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Utbud (Natt)</div>
+                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiUtbud">-</div>
+                        </div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-emerald-500">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Efterfrågan (Dag)</div>
+                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiEfterfragan">-</div>
+                        </div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-indigo-500" title="Totalt Pendlingsnetto (In - Ut + Virtuellt utbud)">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Pendlingsnetto</div>
+                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiPendling">-</div>
+                        </div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-amber-500" title="Beräknad genomsnittlig sysselsättningsgrad 20-64 år">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Syss.grad (20-64)</div>
+                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiSyssGrad">-</div>
+                        </div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-purple-500 cursor-help" id="kpiBRPContainer" title="Bruttoregionalprodukt per sysselsatt (tkr)">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">BRP/syss</div>
+                            <div class="text-base md:text-lg font-bold text-purple-800" id="kpiBRP">-</div>
+                        </div>
+                        <div class="card text-center p-2 md:p-3 border-b-4 border-orange-500 cursor-help" id="kpiBefolkningContainer" title="Hur rekryteringsgapet påverkar befolkningsutvecklingen">
+                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Befolkning (Ny)</div>
+                            <div class="text-base md:text-lg font-bold text-orange-600" id="kpiBefolkning">-</div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Historisk trend & Förändringar -->
                 <div class="card flex-grow flex flex-col mt-1 min-h-[400px]">
                     <div id="modeDescription" class="text-xs text-slate-600 mb-2 bg-slate-50 p-2 rounded border border-slate-200 hidden"></div>
+
                     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3 gap-3">
-                        <div class="flex items-center gap-2"><h2 class="text-base md:text-lg font-bold" id="trendTitle">Utbud vs Efterfrågan</h2></div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-base md:text-lg font-bold" id="trendTitle">Utbud vs Efterfrågan</h2>
+                        </div>
+                        
                         <div class="flex flex-wrap items-center shadow-sm rounded-md border border-gray-300 bg-white overflow-hidden w-full lg:w-auto">
                             <span onclick="showInfo('diagram')" class="px-2 py-1 md:py-1.5 text-slate-400 cursor-pointer hover:text-sky-600 transition border-r border-gray-200" title="Information om graferna"><i class="fa-solid fa-circle-info"></i></span>
-                            <select id="startYearSelect" class="p-1 md:p-1.5 text-xs md:text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 transition-colors bg-white w-full sm:w-auto" onchange="updateDashboard(true)"><option value="">Laddar...</option></select>
+                            <select id="startYearSelect" class="p-1 md:p-1.5 text-xs md:text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 transition-colors bg-white w-full sm:w-auto" onchange="updateDashboard(true)">
+                                <option value="">Laddar...</option>
+                            </select>
+                            
                             <select id="chartType" class="p-1 md:p-1.5 text-xs md:text-sm bg-slate-50 outline-none focus:bg-sky-100 transition-colors font-semibold text-gray-700 border-r border-gray-200 flex-grow w-full sm:w-auto" onchange="updateDashboard(true)">
                                 <option value="utbud_efterfragan">Utbud vs Efterfrågan (Trend)</option>
                                 <option value="utbud_efterfragan_delta">Årlig förändring (Utbud/Efterfrågan)</option>
@@ -243,37 +315,72 @@
                                 <option disabled>── Befolkning ──</option>
                                 <option value="pop_dynamic">Befolkningsutveckling (Dynamisk Modell)</option>
                             </select>
+                            
                             <select id="subGroupSelect" class="hidden p-1 md:p-1.5 text-xs md:text-sm bg-indigo-50 outline-none focus:bg-indigo-100 transition-colors font-semibold text-indigo-800 border-r border-gray-200" onchange="updateDashboard(true)"></select>
-                            <button id="exportPopBtn" onclick="exportPopDynamicCSV()" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 cursor-pointer border-r border-gray-200" title="Exportera befolkningstabell för detta scenario"><i class="fa-solid fa-download"></i> CSV</button>
-                            <label id="dualAxesContainer" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer border-r border-gray-200"><input type="checkbox" id="useDualAxes" onchange="updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5" checked><span>Delade axlar</span></label>
-                            <label id="zeroAxisContainer" class="flex items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer px-2"><input type="checkbox" id="useZeroAxis" onchange="updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5"><span>Utgå från 0</span></label>
+
+                            <button id="exportPopBtn" onclick="exportPopDynamicCSV()" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 cursor-pointer border-r border-gray-200" title="Exportera befolkningstabell för detta scenario">
+                                <i class="fa-solid fa-download"></i> CSV
+                            </button>
+
+                            <label id="dualAxesContainer" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer border-r border-gray-200">
+                                <input type="checkbox" id="useDualAxes" onchange="updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5" checked>
+                                <span>Delade axlar</span>
+                            </label>
+
+                            <label id="zeroAxisContainer" class="flex items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer px-2">
+                                <input type="checkbox" id="useZeroAxis" onchange="updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5">
+                                <span>Utgå från 0</span>
+                            </label>
                         </div>
                     </div>
                     
+                    <p id="chartDescription" class="text-xs md:text-sm text-gray-600 mb-2">Grafen visar hur många arbetstillfällen (grönt) som finns i Linköping i relation till hur många kommuninvånare som befinner sig i sysselsättning (blått). Gapet dem emellan utgör det lokala pendlingsnettot.</p>
+                    
                     <div class="flex flex-wrap items-center gap-3 mb-3 pb-2 border-b border-gray-100">
-                        <button id="hideAllBtn" onclick="toggleAllSeries()" class="hidden items-center gap-1 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 py-1 px-3 rounded shadow-sm border border-gray-300 transition" title="Dölj eller visa alla linjer i diagrammet"><i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla</button>
-                        <label id="yGraceContainer" class="hidden items-center gap-1 text-sm font-medium text-gray-600 ml-auto border border-gray-200 bg-gray-50 rounded px-2 py-0.5 transition-all" title="Skapar marginal (luft) mellan linjerna och x-axeln"><i class="fa-solid fa-arrows-up-down text-xs text-gray-400"></i> Marginal: <select id="yGrace" onchange="updateDashboard(true)" class="bg-transparent border-none outline-none font-bold text-sky-700 cursor-pointer p-0 pr-4 focus:ring-0 text-sm"><option value="0%">0%</option><option value="5%">5%</option><option value="10%">10%</option><option value="20%" selected>20%</option></select></label>
+                        <button id="hideAllBtn" onclick="toggleAllSeries()" class="hidden items-center gap-1 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 py-1 px-3 rounded shadow-sm border border-gray-300 transition" title="Dölj eller visa alla linjer i diagrammet">
+                            <i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla
+                        </button>
+                        
+                        <label id="yGraceContainer" class="hidden items-center gap-1 text-sm font-medium text-gray-600 ml-auto border border-gray-200 bg-gray-50 rounded px-2 py-0.5 transition-all" title="Skapar marginal (luft) mellan linjerna och x-axeln">
+                            <i class="fa-solid fa-arrows-up-down text-xs text-gray-400"></i> Marginal:
+                            <select id="yGrace" onchange="updateDashboard(true)" class="bg-transparent border-none outline-none font-bold text-sky-700 cursor-pointer p-0 pr-4 focus:ring-0 text-sm">
+                                <option value="0%">0%</option>
+                                <option value="5%">5%</option>
+                                <option value="10%">10%</option>
+                                <option value="20%" selected>20%</option>
+                            </select>
+                        </label>
                     </div>
 
-                    <div id="chartWrapper" class="relative w-full flex-1 min-h-[300px] mt-2 transition-all duration-300"><canvas id="trendChart"></canvas></div>
+                    <!-- Wrapper för grafen -->
+                    <div id="chartWrapper" class="relative w-full flex-1 min-h-[300px] mt-2 transition-all duration-300">
+                        <canvas id="trendChart"></canvas>
+                    </div>
                 </div>
 
             </main>
         </div>
     </div>
 
-    <!-- Modaler -->
+    <!-- DYNAMISK INFO-MODAL -->
     <div id="infoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col">
-            <div class="flex justify-between items-center p-3 border-b"><h2 class="text-lg font-bold text-gray-800" id="infoModalTitle">Information</h2><button onclick="closeInfoModal()" class="text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-times text-xl"></i></button></div>
+            <div class="flex justify-between items-center p-3 border-b">
+                <h2 class="text-lg font-bold text-gray-800" id="infoModalTitle">Information</h2>
+                <button onclick="closeInfoModal()" class="text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-times text-xl"></i></button>
+            </div>
             <div id="infoModalContent" class="p-4 text-gray-700 text-xs md:text-sm space-y-2 max-h-[70vh] overflow-y-auto"></div>
-            <div class="p-3 border-t bg-gray-50 flex justify-end"><button onclick="closeInfoModal()" class="bg-slate-700 hover:bg-slate-800 text-white font-semibold py-1.5 px-4 rounded shadow-sm text-sm transition">Stäng</button></div>
+            <div class="p-3 border-t bg-gray-50 flex justify-end">
+                <button onclick="closeInfoModal()" class="bg-slate-700 hover:bg-slate-800 text-white font-semibold py-1.5 px-4 rounded shadow-sm text-sm transition">Stäng</button>
+            </div>
         </div>
     </div>
     
-    <footer class="text-center text-xs text-gray-500 mt-4 py-2 border-t border-gray-200">&copy; Utvecklad av Analys & Utredning, Linköpings kommun</footer>
+    <footer class="text-center text-xs text-gray-500 mt-4 py-2 border-t border-gray-200">
+        &copy; Utvecklad av Analys & Utredning, Linköpings kommun
+    </footer>
 
-    <!-- INLÄSNING AV MODULERNA -->
+    <!-- INLÄSNING AV LOGIKEN -->
     <script src="motor_2035.js"></script>
     <script src="grafer_2035.js"></script>
 
