@@ -20,7 +20,6 @@
 </head>
 <body class="text-gray-800 flex flex-col min-h-screen">
 
-    <!-- HEADER -->
     <header class="bg-slate-800 text-white shadow-md">
         <div class="container mx-auto px-4 py-3 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div class="flex items-center gap-4">
@@ -31,7 +30,7 @@
                 </div>
             </div>
             <div class="flex flex-wrap gap-2 self-end lg:self-center justify-end w-full lg:w-auto">
-                <a href="prognoskalkylator.html" class="bg-indigo-700 hover:bg-indigo-600 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-xs sm:text-sm transition flex items-center border border-indigo-600">
+                <a href="prognoskalkylator.html" class="bg-indigo-700 hover:bg-indigo-600 text-white font-semibold py-1.5 px-3 rounded shadow-sm text-xs sm:text-sm transition flex items-center border border-indigo-600" title="Öppna Befolkningsprognos">
                     <i class="fa-solid fa-users mr-1.5"></i> Befolkning
                 </a>
                 <a href="anvandarguide_sysselsattning.html" class="bg-white hover:bg-slate-50 text-slate-800 font-semibold py-1.5 px-3 rounded shadow-sm text-xs sm:text-sm transition flex items-center border border-transparent">
@@ -46,37 +45,40 @@
 
     <div class="container mx-auto px-4 py-4 md:py-6 flex flex-col gap-4 flex-grow">
         
-        <!-- TOPPANEL -->
         <div class="bg-white p-3 md:p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col md:flex-row flex-wrap items-start md:items-center justify-between gap-4">
+            
             <div class="flex items-center gap-2 w-full md:w-auto">
                 <div id="dataStatus" class="p-1.5 px-3 bg-slate-50 rounded border border-slate-200 text-xs font-medium text-amber-600 w-full md:w-auto text-center">
                     <i class="fa-solid fa-spinner fa-spin"></i> Ansluter...
                 </div>
             </div>
+
             <div class="flex flex-col md:flex-row flex-wrap items-start md:items-center gap-3 w-full md:w-auto">
                 <div id="popSourceContainer" class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded px-2 py-1 flex-1 md:flex-none" title="Antar att befolkningen stannar på utgångsårets nivå.">
                     <label class="text-[11px] font-bold text-indigo-800 uppercase whitespace-nowrap flex items-center gap-1">Källa:
-                        <span onclick="window.showInfo('pop_source')" class="text-indigo-400 cursor-pointer hover:text-indigo-600 transition"><i class="fa-solid fa-circle-info"></i></span>
+                        <span onclick="showInfo('pop_source')" class="text-indigo-400 cursor-pointer hover:text-indigo-600 transition"><i class="fa-solid fa-circle-info"></i></span>
                     </label>
-                    <select id="popSource" class="bg-transparent border-none text-xs font-medium text-indigo-900 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="window.updatePopSourceDesc(); window.runSimulation()">
+                    <select id="popSource" class="bg-transparent border-none text-xs font-medium text-indigo-900 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="updatePopSourceDesc(); runSimulation()">
                         <option value="fryst">Fryst befolkning</option>
                     </select>
-                    <button id="clearCustomBtn" onclick="window.clearCustomPop()" class="hidden ml-2 text-red-500 hover:text-red-700 transition" title="Rensa anpassat scenario"><i class="fa-solid fa-times"></i></button>
+                    <button id="clearCustomBtn" onclick="clearCustomPop()" class="hidden ml-2 text-red-500 hover:text-red-700 transition" title="Rensa anpassat scenario"><i class="fa-solid fa-times"></i></button>
                 </div>
+
                 <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 rounded px-2 py-1 flex-1 md:flex-none" title="Växla mellan att ta hänsyn till in/ut-pendling eller endast titta på den lokala befolkningen.">
                     <label class="text-[11px] font-bold text-slate-700 uppercase whitespace-nowrap flex items-center gap-1">Läge:
-                        <span onclick="window.showInfo('sim_mode')" class="text-slate-400 cursor-pointer hover:text-slate-600 transition"><i class="fa-solid fa-circle-info"></i></span>
+                        <span onclick="showInfo('sim_mode')" class="text-slate-400 cursor-pointer hover:text-slate-600 transition"><i class="fa-solid fa-circle-info"></i></span>
                     </label>
-                    <select id="simMode" class="bg-transparent border-none text-xs font-medium text-slate-800 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="window.toggleSimMode()">
+                    <select id="simMode" class="bg-transparent border-none text-xs font-medium text-slate-800 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="toggleSimMode()">
                         <option value="full">Fullständig (Pendling)</option>
                         <option value="local">Endast Lokal (Fryst)</option>
                     </select>
                 </div>
+
                 <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded px-2 py-1 flex-1 md:flex-none" title="Analytisk visar gapet mellan utbud och efterfrågan. Dynamisk anpassar automatiskt inflyttningen för att stänga gapet.">
                     <label class="text-[11px] font-bold text-emerald-800 uppercase whitespace-nowrap flex items-center gap-1">Kausalitet:
-                        <span onclick="window.showInfo('kausalitet')" class="text-emerald-400 cursor-pointer hover:text-emerald-600 transition"><i class="fa-solid fa-circle-info"></i></span>
+                        <span onclick="showInfo('kausalitet')" class="text-emerald-400 cursor-pointer hover:text-emerald-600 transition"><i class="fa-solid fa-circle-info"></i></span>
                     </label>
-                    <select id="causalityMode" class="bg-transparent border-none text-xs font-medium text-emerald-900 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="window.runSimulation()">
+                    <select id="causalityMode" class="bg-transparent border-none text-xs font-medium text-emerald-900 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="runSimulation()">
                         <option value="analytic">Analytisk (Visar Gap)</option>
                         <option value="dynamic">Dynamisk Jämvikt</option>
                     </select>
@@ -85,26 +87,26 @@
         </div>
 
         <div class="flex flex-col md:flex-row gap-4">
-            
-            <!-- KONTROLLPANEL -->
             <aside class="w-full md:w-1/3 xl:w-1/4 flex flex-col gap-4">
+                
                 <div class="card opacity-50 pointer-events-none transition-opacity duration-300" id="scenarioPanel">
+                    
                     <div class="mb-4 p-2 bg-slate-50 rounded border border-slate-200">
                         <div class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 flex justify-between">
                             <span>Snabbscenarier</span>
-                            <span onclick="window.showInfo('scenarios')" class="text-slate-400 font-normal cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
+                            <span onclick="showInfo('scenarios')" class="text-slate-400 font-normal cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
                         </div>
                         <div class="flex flex-wrap gap-1">
-                            <button onclick="window.setScenario('base')" class="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Bas</button>
-                            <button onclick="window.setScenario('high')" class="flex-1 bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Hög</button>
-                            <button onclick="window.setScenario('low')" class="flex-1 bg-white hover:bg-orange-50 text-orange-700 border border-orange-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Låg</button>
-                            <button onclick="window.setScenario('stagnant')" class="flex-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Stagn.</button>
+                            <button onclick="setScenario('base')" class="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Bas</button>
+                            <button onclick="setScenario('high')" class="flex-1 bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Hög</button>
+                            <button onclick="setScenario('low')" class="flex-1 bg-white hover:bg-orange-50 text-orange-700 border border-orange-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Låg</button>
+                            <button onclick="setScenario('stagnant')" class="flex-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Stagn.</button>
                         </div>
                     </div>
 
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Lokal tillväxt & Utbud</h3>
-                        <span onclick="window.showInfo('demografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
+                        <span onclick="showInfo('demografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
                     </div>
 
                     <div class="slider-container">
@@ -112,7 +114,7 @@
                             <span>Lokal Jobbtillväxt (Totalt)</span>
                             <span id="jobGrowthVal" class="text-slate-600 font-bold">+0%</span>
                         </label>
-                        <input type="range" id="jobGrowthSlider" min="-10" max="30" step="1" value="0" oninput="window.updateSliderVal(this, 'jobGrowthVal', '%')">
+                        <input type="range" id="jobGrowthSlider" min="-10" max="30" step="1" value="0" oninput="updateSliderVal(this, 'jobGrowthVal', '%')">
                     </div>
 
                     <div class="slider-container">
@@ -120,25 +122,27 @@
                             <span>Sysselsättningsgrad (Förändring)</span>
                             <span id="syssGradVal" class="text-slate-600 font-bold">Oförändrad</span>
                         </label>
-                        <input type="range" id="syssGradSlider" min="-5" max="5" step="0.5" value="0" oninput="window.updateSliderVal(this, 'syssGradVal', '%-enh')">
+                        <input type="range" id="syssGradSlider" min="-5" max="5" step="0.5" value="0" oninput="updateSliderVal(this, 'syssGradVal', '%-enh')">
                     </div>
 
                     <details class="bg-slate-50 border border-slate-200 rounded p-2 text-xs mt-1 mb-3">
                         <summary class="font-medium text-slate-700 cursor-pointer outline-none hover:text-sky-600 transition">
                             <i class="fa-solid fa-sliders mr-1"></i> Detaljstyrning per åldersgrupp
                         </summary>
-                        <div class="mt-3 flex flex-col gap-2.5 pb-1 px-1" id="ageSlidersContainer"></div>
+                        <div class="mt-3 flex flex-col gap-2.5 pb-1 px-1" id="ageSlidersContainer">
+                            <!-- Genereras via JS -->
+                        </div>
                     </details>
 
                     <div class="slider-container">
                         <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
                             <span class="flex items-center">
                                 Kvarstannandegrad LiU
-                                <i id="civIngToggleIcon" class="fa-solid fa-circle-plus text-sky-600 ml-1.5 cursor-pointer hover:text-sky-800 transition" onclick="window.toggleCivIng()" title="Dela upp på Civilingenjörer och Övriga"></i>
+                                <i id="civIngToggleIcon" class="fa-solid fa-circle-plus text-sky-600 ml-1.5 cursor-pointer hover:text-sky-800 transition" onclick="toggleCivIng()" title="Dela upp på Civilingenjörer och Övriga"></i>
                             </span>
                             <span id="studentVal" class="text-slate-600 font-bold">Baslinje</span>
                         </label>
-                        <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="window.updateSliderVal(this, 'studentVal', '%-enh')">
+                        <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="updateSliderVal(this, 'studentVal', '%-enh')">
                     </div>
 
                     <div id="civIngContainer" class="slider-container hidden bg-sky-50 p-2.5 rounded border border-sky-200 mt-2 mb-3 shadow-inner">
@@ -146,18 +150,18 @@
                             <span>↳ Därav Civilingenjörer</span>
                             <span id="civIngVal" class="text-sky-700 font-bold">Baslinje</span>
                         </label>
-                        <input type="range" id="civIngSlider" min="-10" max="40" step="1" value="0" oninput="window.updateSliderVal(this, 'civIngVal', '%-enh')">
+                        <input type="range" id="civIngSlider" min="-10" max="40" step="1" value="0" oninput="updateSliderVal(this, 'civIngVal', '%-enh')">
                     </div>
 
                     <div class="slider-container bg-orange-50 p-2 rounded border border-orange-100 mt-3">
                         <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
                             <span class="flex items-center gap-1">
                                 Inflyttares syss.grad
-                                <i class="fa-solid fa-circle-info text-orange-400 cursor-pointer hover:text-orange-600 transition" onclick="window.showInfo('inflyttare')"></i>
+                                <i class="fa-solid fa-circle-info text-orange-400 cursor-pointer hover:text-orange-600 transition" onclick="showInfo('inflyttare')"></i>
                             </span>
                             <span id="migrantSyssVal" class="text-orange-600 font-bold">+10%-enh</span>
                         </label>
-                        <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="window.updateSliderVal(this, 'migrantSyssVal', '%-enh'); window.handleYearChange();">
+                        <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="updateSliderVal(this, 'migrantSyssVal', '%-enh'); handleYearChange();">
                     </div>
 
                     <hr class="my-4 border-gray-200">
@@ -165,11 +169,11 @@
                     <div id="geoPanel" class="transition-opacity duration-300">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Pendling & Geografi</h3>
-                            <span onclick="window.showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
+                            <span onclick="showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
                         </div>
 
                         <div class="mb-3">
-                            <select id="pendlingType" class="w-full border border-gray-300 rounded p-1 text-xs focus:ring-sky-500 focus:border-sky-500 bg-gray-50" onchange="window.updatePendlingUI()">
+                            <select id="pendlingType" class="w-full border border-gray-300 rounded p-1 text-xs focus:ring-sky-500 focus:border-sky-500 bg-gray-50" onchange="updatePendlingUI()">
                                 <option value="pct">Relativ förändring (%)</option>
                                 <option value="abs">Absolut förändring (Antal pers)</option>
                             </select>
@@ -180,7 +184,7 @@
                                 <span>Inpendling (Förändring)</span>
                                 <span id="inpendlingVal" class="text-slate-600 font-bold">+0%</span>
                             </label>
-                            <input type="range" id="inpendlingSlider" min="-50" max="50" step="1" value="0" oninput="window.updatePendlingValue('inpendlingSlider', 'inpendlingVal')">
+                            <input type="range" id="inpendlingSlider" min="-50" max="50" step="1" value="0" oninput="updatePendlingValue('inpendlingSlider', 'inpendlingVal')">
                         </div>
 
                         <div class="slider-container">
@@ -188,7 +192,7 @@
                                 <span>Utpendling (Förändring)</span>
                                 <span id="utpendlingVal" class="text-slate-600 font-bold">+0%</span>
                             </label>
-                            <input type="range" id="utpendlingSlider" min="-50" max="50" step="1" value="0" oninput="window.updatePendlingValue('utpendlingSlider', 'utpendlingVal')">
+                            <input type="range" id="utpendlingSlider" min="-50" max="50" step="1" value="0" oninput="updatePendlingValue('utpendlingSlider', 'utpendlingVal')">
                         </div>
 
                         <div class="slider-container mt-4">
@@ -196,7 +200,7 @@
                                 <span>Distansarbete (Andel)</span>
                                 <span id="distansVal" class="text-slate-600 font-bold">Baslinje</span>
                             </label>
-                            <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="window.updateSliderVal(this, 'distansVal', '%')">
+                            <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="updateSliderVal(this, 'distansVal', '%')">
                         </div>
 
                         <div class="slider-container">
@@ -209,33 +213,32 @@
                     </div>
 
                     <div class="flex flex-wrap gap-1.5 mt-4">
-                        <button id="simBtn" onclick="window.runSimulation()" class="w-full sm:flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-md text-xs sm:text-sm">
+                        <button id="simBtn" onclick="runSimulation()" class="w-full sm:flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-md text-xs sm:text-sm">
                             <i class="fa-solid fa-gears mr-1"></i> Kör
                         </button>
-                        <button onclick="window.toggleSaveScenario()" id="saveBtn" class="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Spara nuvarande prognos för att jämföra med en ny">
+                        <button onclick="toggleSaveScenario()" id="saveBtn" class="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Spara nuvarande prognos för att jämföra med en ny">
                             <i class="fa-solid fa-code-compare mr-1"></i> Jämför
                         </button>
-                        <button onclick="window.exportSyssToCSV()" class="flex-none bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Exportera data (CSV)">
+                        <button onclick="exportSyssToCSV()" class="flex-none bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Exportera data (CSV)">
                             <i class="fa-solid fa-download"></i>
                         </button>
-                        <button onclick="window.resetSimulation()" class="flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Återställ värden">
+                        <button onclick="resetSimulation()" class="flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Återställ värden">
                             <i class="fa-solid fa-rotate-left"></i>
                         </button>
                     </div>
                 </div>
             </aside>
 
-            <!-- HÖGER KOLUMN: GRAFER OCH KPI -->
             <main class="w-full md:w-2/3 xl:w-3/4 flex flex-col gap-4">
                 
                 <div class="flex flex-col gap-2">
                     <div class="flex justify-between items-end mb-1">
                         <div class="flex items-center gap-2">
                             <h2 class="text-lg md:text-xl font-bold text-gray-800">Nyckeltal</h2>
-                            <span onclick="window.showInfo('befolkning')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information om nyckeltalen"><i class="fa-solid fa-circle-info"></i></span>
+                            <span onclick="showInfo('befolkning')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information om nyckeltalen"><i class="fa-solid fa-circle-info"></i></span>
                             <div id="takWarning" class="hidden ml-2 flex flex-wrap gap-2 items-center"></div>
                         </div>
-                        <select id="yearSelect" class="border border-gray-300 rounded p-1 text-xs md:text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="window.handleYearChange()" title="Välj år för att uppdatera nyckeltalen nedan">
+                        <select id="yearSelect" class="border border-gray-300 rounded p-1 text-xs md:text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="handleYearChange()" title="Välj år för att uppdatera nyckeltalen nedan">
                             <option value="">Laddar...</option>
                         </select>
                     </div>
@@ -275,13 +278,13 @@
                         </div>
                         
                         <div class="flex flex-wrap items-center shadow-sm rounded-md border border-gray-300 bg-white overflow-hidden w-full lg:w-auto">
-                            <span onclick="window.showInfo('diagram')" class="px-2 py-1 md:py-1.5 text-slate-400 cursor-pointer hover:text-sky-600 transition border-r border-gray-200" title="Information om graferna"><i class="fa-solid fa-circle-info"></i></span>
+                            <span onclick="showInfo('diagram')" class="px-2 py-1 md:py-1.5 text-slate-400 cursor-pointer hover:text-sky-600 transition border-r border-gray-200" title="Information om graferna"><i class="fa-solid fa-circle-info"></i></span>
                             
-                            <select id="startYearSelect" class="p-1 md:p-1.5 text-xs md:text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 transition-colors bg-white w-full sm:w-auto" onchange="window.updateDashboard(true)">
+                            <select id="startYearSelect" class="p-1 md:p-1.5 text-xs md:text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 transition-colors bg-white w-full sm:w-auto" onchange="updateDashboard(true)">
                                 <option value="">Laddar...</option>
                             </select>
                             
-                            <select id="chartType" class="p-1 md:p-1.5 text-xs md:text-sm bg-slate-50 outline-none focus:bg-sky-100 transition-colors font-semibold text-gray-700 border-r border-gray-200 flex-grow w-full sm:w-auto" onchange="window.updateDashboard(true)">
+                            <select id="chartType" class="p-1 md:p-1.5 text-xs md:text-sm bg-slate-50 outline-none focus:bg-sky-100 transition-colors font-semibold text-gray-700 border-r border-gray-200 flex-grow w-full sm:w-auto" onchange="updateDashboard(true)">
                                 <option value="utbud_efterfragan">Utbud vs Efterfrågan (Trend)</option>
                                 <option value="utbud_efterfragan_delta">Årlig förändring (Utbud/Efterfrågan)</option>
                                 <option value="brp_totalt">Ekonomisk Tillväxt (Total BRP)</option>
@@ -307,19 +310,19 @@
                                 <option value="pop_dynamic">Befolkningsutveckling (Dynamisk Modell)</option>
                             </select>
                             
-                            <select id="subGroupSelect" class="hidden p-1 md:p-1.5 text-xs md:text-sm bg-indigo-50 outline-none focus:bg-indigo-100 transition-colors font-semibold text-indigo-800 border-r border-gray-200" onchange="window.updateDashboard(true)"></select>
+                            <select id="subGroupSelect" class="hidden p-1 md:p-1.5 text-xs md:text-sm bg-indigo-50 outline-none focus:bg-indigo-100 transition-colors font-semibold text-indigo-800 border-r border-gray-200" onchange="updateDashboard(true)"></select>
 
-                            <button id="exportPopBtn" onclick="window.exportPopDynamicCSV()" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 cursor-pointer border-r border-gray-200" title="Exportera tabell">
+                            <button id="exportPopBtn" onclick="exportPopDynamicCSV()" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 cursor-pointer border-r border-gray-200" title="Exportera tabell">
                                 <i class="fa-solid fa-download"></i> CSV
                             </button>
 
                             <label id="dualAxesContainer" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer border-r border-gray-200">
-                                <input type="checkbox" id="useDualAxes" onchange="window.updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5" checked>
+                                <input type="checkbox" id="useDualAxes" onchange="updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5" checked>
                                 <span>Delade axlar</span>
                             </label>
 
                             <label id="zeroAxisContainer" class="flex items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer px-2">
-                                <input type="checkbox" id="useZeroAxis" onchange="window.updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5">
+                                <input type="checkbox" id="useZeroAxis" onchange="updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5">
                                 <span>Utgå från 0</span>
                             </label>
                         </div>
@@ -328,13 +331,13 @@
                     <p id="chartDescription" class="text-xs md:text-sm text-gray-600 mb-2">Grafen visar hur många arbetstillfällen (grönt) som finns i relation till hur många kommuninvånare som befinner sig i sysselsättning (blått).</p>
                     
                     <div class="flex flex-wrap items-center gap-3 mb-3 pb-2 border-b border-gray-100">
-                        <button id="hideAllBtn" onclick="window.toggleAllSeries()" class="hidden items-center gap-1 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 py-1 px-3 rounded shadow-sm border border-gray-300 transition" title="Dölj eller visa alla linjer i diagrammet">
+                        <button id="hideAllBtn" onclick="toggleAllSeries()" class="hidden items-center gap-1 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 py-1 px-3 rounded shadow-sm border border-gray-300 transition" title="Dölj eller visa alla linjer i diagrammet">
                             <i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla
                         </button>
                         
                         <label id="yGraceContainer" class="hidden items-center gap-1 text-sm font-medium text-gray-600 ml-auto border border-gray-200 bg-gray-50 rounded px-2 py-0.5 transition-all" title="Skapar marginal (luft) mellan linjerna och x-axeln">
                             <i class="fa-solid fa-arrows-up-down text-xs text-gray-400"></i> Marginal:
-                            <select id="yGrace" onchange="window.updateDashboard(true)" class="bg-transparent border-none outline-none font-bold text-sky-700 cursor-pointer p-0 pr-4 focus:ring-0 text-sm">
+                            <select id="yGrace" onchange="updateDashboard(true)" class="bg-transparent border-none outline-none font-bold text-sky-700 cursor-pointer p-0 pr-4 focus:ring-0 text-sm">
                                 <option value="0%">0%</option>
                                 <option value="5%">5%</option>
                                 <option value="10%">10%</option>
@@ -347,20 +350,20 @@
                         <canvas id="trendChart"></canvas>
                     </div>
                 </div>
+
             </main>
         </div>
     </div>
 
-    <!-- DYNAMISK INFO-MODAL -->
     <div id="infoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col">
             <div class="flex justify-between items-center p-3 border-b">
                 <h2 class="text-lg font-bold text-gray-800" id="infoModalTitle">Information</h2>
-                <button onclick="window.closeInfoModal()" class="text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-times text-xl"></i></button>
+                <button onclick="closeInfoModal()" class="text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-times text-xl"></i></button>
             </div>
             <div id="infoModalContent" class="p-4 text-gray-700 text-xs md:text-sm space-y-2 max-h-[70vh] overflow-y-auto"></div>
             <div class="p-3 border-t bg-gray-50 flex justify-end">
-                <button onclick="window.closeInfoModal()" class="bg-slate-700 hover:bg-slate-800 text-white font-semibold py-1.5 px-4 rounded shadow-sm text-sm transition">Stäng</button>
+                <button onclick="closeInfoModal()" class="bg-slate-700 hover:bg-slate-800 text-white font-semibold py-1.5 px-4 rounded shadow-sm text-sm transition">Stäng</button>
             </div>
         </div>
     </div>
@@ -369,7 +372,6 @@
         &copy; Utvecklad av Analys & Utredning, Linköpings kommun
     </footer>
 
-    <!-- KODEN -->
     <script>
         // GLOBALA VARIABLER
         window.PROGNOS_SLUTAR = 2035;
@@ -652,6 +654,7 @@
                 document.getElementById('dataStatus').className = "p-1.5 px-3 bg-green-50 rounded border border-green-100 text-xs font-medium text-green-600";
 
                 window.updateDashboard(false); 
+                window.updateKPIs(); 
 
             }).catch(error => {
                 document.getElementById('dataStatus').innerHTML = `<b>Krasch under start:</b> ${error.message}`;
@@ -765,8 +768,17 @@
             const s = window.scenarioSettings[type];
             document.getElementById('jobGrowthSlider').value = s.jobGrowth || 0;
             document.getElementById('jobGrowthVal').innerText = (s.jobGrowth > 0 ? '+' : '') + (s.jobGrowth || 0) + '%';
+            
             document.getElementById('syssGradSlider').value = s.syssGrad || 0;
             document.getElementById('syssGradVal').innerText = (s.syssGrad > 0 ? '+' : '') + (s.syssGrad || 0) + '%-enh';
+            
+            // Uppdatera de inre reglagen
+            document.querySelectorAll('input[id^="syssAge"]').forEach(slider => {
+                slider.value = s.syssGrad || 0;
+                let valEl = document.getElementById('val_' + slider.id);
+                if (valEl) valEl.innerText = (s.syssGrad > 0 ? '+' : '') + (s.syssGrad || 0);
+            });
+
             document.getElementById('studentSlider').value = s.student || 0;
             document.getElementById('studentVal').innerText = (s.student > 0 ? '+' : '') + (s.student || 0) + '%-enh';
             
@@ -864,12 +876,12 @@
         };
 
         window.handleYearChange = function() {
-            window.updateKPIs();
+            if (typeof window.updateKPIs === 'function') window.updateKPIs();
             const chartTypeElement = document.getElementById('chartType');
             if (chartTypeElement) {
                 const chartType = chartTypeElement.value;
                 if (['utb_match', 'sektor_match', 'sektor_match_kon', 'bransch_match'].includes(chartType)) {
-                    window.updateDashboard(true);
+                    if (typeof window.updateDashboard === 'function') window.updateDashboard(true);
                 }
             }
         };
@@ -1223,14 +1235,26 @@
             return null;
         };
 
+        function mapToTargetGroup(ageStr) {
+            let s = ageStr.replace(' år', '').trim();
+            if (s === '16-19') return '16-19';
+            if (s === '20-24') return '20-24';
+            if (s === '25-29' || s === '30-34' || s === '25-34') return '25-34';
+            if (s === '35-39' || s === '40-44' || s === '35-44') return '35-44';
+            if (s === '45-49' || s === '50-54' || s === '45-54') return '45-54';
+            if (s === '55-59') return '55-59';
+            if (s === '60-64') return '60-64';
+            if (s === '65-69' || s === '70-74' || s === '65-74') return '65-74';
+            return null;
+        }
+
         window.extractOriginPop = function(datasetPartialName, targetYear) {
             let inr = 0, utr = 0, found = false;
             let dsKey = Object.keys(syssBasdata).find(k => k.toLowerCase().includes(datasetPartialName.toLowerCase()));
             const ds = dsKey ? syssBasdata[dsKey] : [];
             const records = ds.filter(r => extractYear(r) == targetYear);
-
             if (records.length === 0) return null;
-
+            
             let hasTotalRow = records.some(r => getKon(r) === 'totalt' || getKon(r) === 'samtliga');
 
             records.forEach(r => {
@@ -1240,9 +1264,9 @@
                 let isUtr = false, isInr = false;
                 for (let k in r) {
                     if (typeof r[k] === 'string') {
-                        let valStr = r[k].toLowerCase();
-                        if (valStr === 'utrikes född' || (valStr.includes('utrikes') && !valStr.includes('inrikes'))) isUtr = true;
-                        if (valStr === 'inrikes född' || valStr.includes('inrikes') || valStr.includes('sverige')) isInr = true;
+                        let v = r[k].toLowerCase();
+                        if (v === 'utrikes född' || (v.includes('utrikes') && !v.includes('inrikes'))) isUtr = true;
+                        if (v === 'inrikes född' || v.includes('inrikes') || v.includes('sverige')) isInr = true;
                     }
                 }
                 
@@ -1442,83 +1466,94 @@
                     lastKnownBRP = brpPerSyss; lastKnownBRPYear = y; brpHistory.push({year: y, val: brpPerSyss});
                 }
 
+                let arbetsloshetPct = null, arb_inrikes = null, arb_utrikes = null, arb_man = null, arb_kvinna = null;
                 let arb = { tot_num:null, m_num:null, k_num:null, in_num:null, ut_num:null, tot_pct:null, m_pct:null, k_pct:null, in_pct:null, ut_pct:null };
-                if (syssBasdata['Arbetslöshet']) {
-                    const rowsY = syssBasdata['Arbetslöshet'].filter(r => extractYear(r) == y);
-                    if (rowsY.length > 0) {
-                        let rowTot = rowsY.find(r => getKon(r) === 'totalt' || getKon(r) === 'samtliga' || !getKon(r)) || rowsY[0];
-                        arb.tot_pct = getScbVal(rowTot, ['totalt andel av arbetskraften', 'andel av arbetskraften totalt', 'totalt %', '%'], ['inskrivna']);
-                        arb.m_pct = getScbVal(rowTot, ['män andel av arbetskraften', 'män andel', 'män %'], ['inskrivna']);
-                        arb.k_pct = getScbVal(rowTot, ['kvinnor andel av arbetskraften', 'kvinnor andel', 'kvinnor %'], ['inskrivna']);
-                        arb.in_pct = getScbVal(rowTot, ['inrikes födda andel av arbetskraften', 'inrikes andel', 'inrikes %', 'inrikes födda %'], ['inskrivna']);
-                        arb.ut_pct = getScbVal(rowTot, ['utrikes födda andel av arbetskraften', 'utrikes andel', 'utrikes %', 'utrikes födda %'], ['inskrivna']);
+                
+                if(syssBasdata['Arbetslöshet']) {
+                    const arbRow = syssBasdata['Arbetslöshet'].find(r => extractYear(r) == y);
+                    if(arbRow) {
+                        const pctKeys = Object.keys(arbRow).filter(k => String(k).toLowerCase().includes('%') || String(k).toLowerCase().includes('andel'));
+                        if(pctKeys.length > 0) arbetsloshetPct = parseFloat(arbRow[pctKeys[0]]);
+                        
+                        const inKey = pctKeys.find(k => k.toLowerCase().includes('inrikes'));
+                        const utKey = pctKeys.find(k => k.toLowerCase().includes('utrikes'));
+                        if(inKey) arb_inrikes = parseFloat(arbRow[inKey]);
+                        if(utKey) arb_utrikes = parseFloat(arbRow[utKey]);
+
+                        const mKeyArb = pctKeys.find(k => { const kl = k.toLowerCase(); return (kl.includes('män') || kl.includes('man')) && !kl.includes('kvinna'); });
+                        const kKeyArb = pctKeys.find(k => k.toLowerCase().includes('kvinnor') || k.toLowerCase().includes('kvinna'));
+                        if(mKeyArb) arb_man = parseFloat(arbRow[mKeyArb]);
+                        if(kKeyArb) arb_kvinna = parseFloat(arbRow[kKeyArb]);
+                        
+                        arb.tot_pct = getScbVal(arbRow, ['totalt andel av arbetskraften', 'andel av arbetskraften totalt', 'totalt %', '%'], ['inskrivna']);
+                        arb.m_pct = getScbVal(arbRow, ['män andel av arbetskraften', 'män andel', 'män %'], ['inskrivna']);
+                        arb.k_pct = getScbVal(arbRow, ['kvinnor andel av arbetskraften', 'kvinnor andel', 'kvinnor %'], ['inskrivna']);
+                        arb.in_pct = getScbVal(arbRow, ['inrikes födda andel av arbetskraften', 'inrikes andel', 'inrikes %', 'inrikes födda %'], ['inskrivna']);
+                        arb.ut_pct = getScbVal(arbRow, ['utrikes födda andel av arbetskraften', 'utrikes andel', 'utrikes %', 'utrikes födda %'], ['inskrivna']);
                         if (arb.m_pct == null) {
-                            let rM = rowsY.find(r => getKon(r) === 'män');
+                            let rM = syssBasdata['Arbetslöshet'].find(r => extractYear(r) == y && getKon(r) === 'män');
                             arb.m_pct = getScbVal(rM, ['totalt andel', '%', 'andel'], ['inskrivna']);
                         }
                         if (arb.k_pct == null) {
-                            let rK = rowsY.find(r => getKon(r) === 'kvinnor');
+                            let rK = syssBasdata['Arbetslöshet'].find(r => extractYear(r) == y && getKon(r) === 'kvinnor');
                             arb.k_pct = getScbVal(rK, ['totalt andel', '%', 'andel'], ['inskrivna']);
                         }
-                        arb.tot_num = getScbVal(rowTot, ['totalt', 'samtliga', 'antal', 'värde'], ['andel', '%', 'inrikes', 'utrikes', 'män', 'kvinnor']);
-                        arb.m_num = getScbVal(rowTot, ['män', 'man'], ['andel', '%']);
-                        arb.k_num = getScbVal(rowTot, ['kvinnor', 'kvinna'], ['andel', '%']);
-                        arb.in_num = getScbVal(rowTot, ['inrikes', 'inrikes född'], ['andel', '%']);
-                        arb.ut_num = getScbVal(rowTot, ['utrikes', 'utrikes född'], ['andel', '%']);
-                        if (arb.m_num == null) {
-                            let rM = rowsY.find(r => getKon(r) === 'män');
-                            arb.m_num = getScbVal(rM, ['totalt', 'antal', 'värde'], ['andel', '%']);
-                        }
-                        if (arb.k_num == null) {
-                            let rK = rowsY.find(r => getKon(r) === 'kvinnor');
-                            arb.k_num = getScbVal(rK, ['totalt', 'antal', 'värde'], ['andel', '%']);
-                        }
+                        arb.tot_num = getScbVal(arbRow, ['totalt', 'samtliga', 'antal', 'värde'], ['andel', '%', 'inrikes', 'utrikes', 'män', 'kvinnor']);
+                        arb.m_num = getScbVal(arbRow, ['män', 'man'], ['andel', '%']);
+                        arb.k_num = getScbVal(arbRow, ['kvinnor', 'kvinna'], ['andel', '%']);
+                        arb.in_num = getScbVal(arbRow, ['inrikes', 'inrikes född'], ['andel', '%']);
+                        arb.ut_num = getScbVal(arbRow, ['utrikes', 'utrikes född'], ['andel', '%']);
                     }
                 }
 
+                let langtidsPct = null, larb_inrikes = null, larb_utrikes = null, larb_man = null, larb_kvinna = null;
                 let larb = { tot_num:null, m_num:null, k_num:null, in_num:null, ut_num:null, tot_pct:null, m_pct:null, k_pct:null, in_pct:null, ut_pct:null, tot_insk:null, m_insk:null, k_insk:null, in_insk:null, ut_insk:null };
+                
                 let lData = syssBasdata['Långtidsarbetslöshet'] || syssBasdata['Langtidsarbetsloshet'];
                 if (lData) {
-                    const rowsY = lData.filter(r => extractYear(r) == y);
-                    if (rowsY.length > 0) {
-                        let rowTot = rowsY.find(r => getKon(r) === 'totalt' || getKon(r) === 'samtliga' || !getKon(r)) || rowsY[0];
-                        larb.tot_pct = getScbVal(rowTot, ['totalt 16-65 år andel av arbetskraften', 'andel av arbetskraften totalt', 'totalt andel']);
-                        larb.m_pct = getScbVal(rowTot, ['män 16-65 år andel av arbetskraften', 'män andel av arbetskraften']);
-                        larb.k_pct = getScbVal(rowTot, ['kvinnor 16-65 år andel av arbetskraften', 'kvinnor andel av arbetskraften', 'kvinnor 16-65 år andel av arbetskraften']);
-                        larb.in_pct = getScbVal(rowTot, ['inrikes födda 16-65 år andel av arbetskraften', 'inrikes födda 16-65 år andel av arbetskraften']);
-                        larb.ut_pct = getScbVal(rowTot, ['utrikes födda 16-65 år andel av arbetskraften', 'utrikes födda 16-65 år andel av arbetskraften']);
+                    const lRow = lData.find(r => extractYear(r) == y);
+                    if(lRow) {
+                        const pctKeys = Object.keys(lRow).filter(k => String(k).toLowerCase().includes('%') || String(k).toLowerCase().includes('andel'));
+                        if(pctKeys.length > 0) langtidsPct = parseFloat(lRow[pctKeys[0]]);
+                        
+                        const inKey = pctKeys.find(k => k.toLowerCase().includes('inrikes'));
+                        const utKey = pctKeys.find(k => k.toLowerCase().includes('utrikes'));
+                        if(inKey) larb_inrikes = parseFloat(lRow[inKey]);
+                        if(utKey) larb_utrikes = parseFloat(lRow[utKey]);
 
-                        larb.tot_insk = getScbVal(rowTot, ['totalt 16-65 år andel av inskrivna', 'andel av inskrivna totalt']);
-                        larb.m_insk = getScbVal(rowTot, ['män 16-65 år andel av inskrivna', 'män andel av inskrivna']);
-                        larb.k_insk = getScbVal(rowTot, ['kvinnor 16-65 år andel av inskrivna', 'kvinnor andel av inskrivna', 'kvinnor 16-65 år andel av inskrivna']);
-                        larb.in_insk = getScbVal(rowTot, ['inrikes födda 16-65 år andel av inskrivna', 'inrikes födda 16-65 år andel av inskrivna']);
-                        larb.ut_insk = getScbVal(rowTot, ['utrikes födda 16-65 år andel av inskrivna', 'utrikes födda 16-65 år andel av inskrivna']);
+                        const mKeyLarb = pctKeys.find(k => { const kl = k.toLowerCase(); return (kl.includes('män') || kl.includes('man')) && !kl.includes('kvinna'); });
+                        const kKeyLarb = pctKeys.find(k => k.toLowerCase().includes('kvinnor') || k.toLowerCase().includes('kvinna'));
+                        if(mKeyLarb) larb_man = parseFloat(lRow[mKeyLarb]);
+                        if(kKeyLarb) larb_kvinna = parseFloat(lRow[kKeyLarb]);
+                        
+                        larb.tot_pct = getScbVal(lRow, ['totalt 16-65 år andel av arbetskraften', 'andel av arbetskraften totalt', 'totalt andel']);
+                        larb.m_pct = getScbVal(lRow, ['män 16-65 år andel av arbetskraften', 'män andel av arbetskraften']);
+                        larb.k_pct = getScbVal(lRow, ['kvinnor 16-65 år andel av arbetskraften', 'kvinnor andel av arbetskraften', 'kvinnor 16-65 år andel av arbetskraften']);
+                        larb.in_pct = getScbVal(lRow, ['inrikes födda 16-65 år andel av arbetskraften', 'inrikes födda 16-65 år andel av arbetskraften']);
+                        larb.ut_pct = getScbVal(lRow, ['utrikes födda 16-65 år andel av arbetskraften', 'utrikes födda 16-65 år andel av arbetskraften']);
 
+                        larb.tot_insk = getScbVal(lRow, ['totalt 16-65 år andel av inskrivna', 'andel av inskrivna totalt']);
+                        larb.m_insk = getScbVal(lRow, ['män 16-65 år andel av inskrivna', 'män andel av inskrivna']);
+                        larb.k_insk = getScbVal(lRow, ['kvinnor 16-65 år andel av inskrivna', 'kvinnor andel av inskrivna', 'kvinnor 16-65 år andel av inskrivna']);
+                        larb.in_insk = getScbVal(lRow, ['inrikes födda 16-65 år andel av inskrivna', 'inrikes födda 16-65 år andel av inskrivna']);
+                        larb.ut_insk = getScbVal(lRow, ['utrikes födda 16-65 år andel av inskrivna', 'utrikes födda 16-65 år andel av inskrivna']);
+                        
                         if (larb.m_pct == null || larb.m_insk == null) {
-                            let rM = rowsY.find(r => getKon(r) === 'män');
+                            let rM = lData.find(r => extractYear(r) == y && getKon(r) === 'män');
                             larb.m_pct = getScbVal(rM, ['andel av arbetskraften', 'totalt andel']);
                             larb.m_insk = getScbVal(rM, ['andel av inskrivna']);
                         }
                         if (larb.k_pct == null || larb.k_insk == null) {
-                            let rK = rowsY.find(r => getKon(r) === 'kvinnor');
+                            let rK = lData.find(r => extractYear(r) == y && getKon(r) === 'kvinnor');
                             larb.k_pct = getScbVal(rK, ['andel av arbetskraften', 'totalt andel']);
                             larb.k_insk = getScbVal(rK, ['andel av inskrivna']);
                         }
 
-                        larb.tot_num = getScbVal(rowTot, ['totalt', 'samtliga', 'antal', 'värde'], ['andel', '%', 'inrikes', 'utrikes', 'män', 'kvinnor']);
-                        larb.m_num = getScbVal(rowTot, ['män', 'man'], ['andel', '%']);
-                        larb.k_num = getScbVal(rowTot, ['kvinnor', 'kvinna'], ['andel', '%']);
-                        larb.in_num = getScbVal(rowTot, ['inrikes', 'inrikes född'], ['andel', '%']);
-                        larb.ut_num = getScbVal(rowTot, ['utrikes', 'utrikes född'], ['andel', '%']);
-                        
-                        if (larb.m_num == null) {
-                            let rM = rowsY.find(r => getKon(r) === 'män');
-                            larb.m_num = getScbVal(rM, ['totalt', 'antal', 'värde'], ['andel', '%']);
-                        }
-                        if (larb.k_num == null) {
-                            let rK = rowsY.find(r => getKon(r) === 'kvinnor');
-                            larb.k_num = getScbVal(rK, ['totalt', 'antal', 'värde'], ['andel', '%']);
-                        }
+                        larb.tot_num = getScbVal(lRow, ['totalt', 'samtliga', 'antal', 'värde'], ['andel', '%', 'inrikes', 'utrikes', 'män', 'kvinnor']);
+                        larb.m_num = getScbVal(lRow, ['män', 'man'], ['andel', '%']);
+                        larb.k_num = getScbVal(lRow, ['kvinnor', 'kvinna'], ['andel', '%']);
+                        larb.in_num = getScbVal(lRow, ['inrikes', 'inrikes född'], ['andel', '%']);
+                        larb.ut_num = getScbVal(lRow, ['utrikes', 'utrikes född'], ['andel', '%']);
                     }
                 }
 
@@ -1533,21 +1568,44 @@
                 let motorRate = null;
                 if (pop16_74 > 0 && nattTotalt > 0) motorRate = (nattTotalt / pop16_74) * 100;
 
-                let ageRates = null;
+                // ÅLDERSUPPDELNING FÖR MÄN/KVINNOR-TREND
+                let d_man_age = {}, d_kvinna_age = {}, n_man_age = {}, n_kvinna_age = {};
+                const ageLabels = ['16-19', '20-24', '25-34', '35-44', '45-54', '55-59', '60-64', '65-74'];
+                ageLabels.forEach(l => { d_man_age[l] = 0; d_kvinna_age[l] = 0; n_man_age[l] = 0; n_kvinna_age[l] = 0; });
+                
+                const syssAlderData = syssBasdata['Syss_ålder'] || syssBasdata['Syss_alder'] || [];
+                syssAlderData.filter(r => extractYear(r) == y).forEach(r => {
+                    let kon = getKon(r);
+                    if (kon === 'män' || kon === 'kvinnor') {
+                        Object.keys(r).forEach(k => {
+                            let mappedGroup = mapToTargetGroup(k);
+                            if (mappedGroup) {
+                                if (kon === 'män') d_man_age[mappedGroup] += parseFloat(r[k]) || 0;
+                                if (kon === 'kvinnor') d_kvinna_age[mappedGroup] += parseFloat(r[k]) || 0;
+                            }
+                        });
+                    }
+                });
+
                 const nattAlderData = syssBasdata['Natt_ålder'] || syssBasdata['Natt_alder'] || [];
+                let ageRates = null;
+                let nattAlderRow = null;
                 let nattAlderRowsForYear = nattAlderData.filter(r => extractYear(r) == y);
                 
-                let nattAlderRow = null;
                 if (nattAlderRowsForYear.length > 0) {
                     let totRow = nattAlderRowsForYear.find(r => getKon(r) === 'totalt');
-                    if (totRow) {
-                        nattAlderRow = totRow;
-                    } else {
+                    if (totRow) { nattAlderRow = totRow; } 
+                    else {
                         nattAlderRow = {};
                         nattAlderRowsForYear.forEach(r => {
                             let kon = getKon(r);
                             if (kon === 'män' || kon === 'kvinnor') {
                                 Object.keys(r).forEach(k => {
+                                    let mappedGroup = mapToTargetGroup(k);
+                                    if (mappedGroup) {
+                                        if (kon === 'män') n_man_age[mappedGroup] += parseFloat(r[k]) || 0;
+                                        if (kon === 'kvinnor') n_kvinna_age[mappedGroup] += parseFloat(r[k]) || 0;
+                                    }
                                     if (typeof r[k] === 'number' || (!isNaN(parseFloat(r[k])) && String(r[k]).trim() !== '')) {
                                         nattAlderRow[k] = (nattAlderRow[k] || 0) + parseFloat(r[k]);
                                     } else if (k === 'År' || k === 'år' || k === 'ÅR') {
@@ -1614,8 +1672,8 @@
                     extrapolatedBrp: null,
                     arb: arb, 
                     larb: larb,
-                    arbetsloshetPct: arb.tot_pct, 
-                    langtidsPct: larb.tot_pct, 
+                    arbetsloshetPct: arbetsloshetPct, 
+                    langtidsPct: langtidsPct, 
                     n_inrikes: n_inrikes,
                     n_utrikes: n_utrikes,
                     d_inrikes: d_inrikes,
@@ -1624,14 +1682,18 @@
                     d_kvinna: d_kvinna,
                     n_man: n_man,
                     n_kvinna: n_kvinna,
-                    arb_inrikes: arb.in_pct,
-                    arb_utrikes: arb.ut_pct,
-                    larb_inrikes: larb.in_pct,
-                    larb_utrikes: larb.ut_pct,
-                    arb_man: arb.m_pct,
-                    arb_kvinna: arb.k_pct,
-                    larb_man: larb.m_pct,
-                    larb_kvinna: larb.k_pct,
+                    arb_inrikes: arb_inrikes,
+                    arb_utrikes: arb_utrikes,
+                    larb_inrikes: larb_inrikes,
+                    larb_utrikes: larb_utrikes,
+                    arb_man: arb_man,
+                    arb_kvinna: arb_kvinna,
+                    larb_man: larb_man,
+                    larb_kvinna: larb_kvinna,
+                    d_man_age: d_man_age,
+                    d_kvinna_age: d_kvinna_age,
+                    n_man_age: n_man_age,
+                    n_kvinna_age: n_kvinna_age,
                     ageRates: Object.keys(ageRates || {}).length > 0 ? ageRates : null
                 };
             });
@@ -1695,37 +1757,42 @@
                 }
             }
 
-            const avgYears = histYearsGlobal.filter(y => y <= baseYear && y > baseYear - 10);
-            const count = avgYears.length || 1;
+            // VIKTAT GENOMSNITT 10 ÅR FÖR ATT SLIPPA DIPP
+            const avgYears = histYearsGlobal.filter(y => y <= baseYear && y > baseYear - 10).sort((a,b)=>a-b);
+            let totalWeight = 0;
             let sumRate = 0, sumDisplayRate = 0, sumIn = 0, sumUt = 0;
             let sumM = {}, sumK = {}, sumAge = {};
             
-            avgYears.forEach(y => {
+            avgYears.forEach((y, i) => {
+                let w = i + 1; // De senaste åren väger mycket tyngre (linjär vikt)
+                totalWeight += w;
+
                 let d = histDataStore[y];
-                if (d.rate) sumRate += d.rate;
-                if (d.displayRate) sumDisplayRate += d.displayRate;
-                if (d.syss_in_tot) sumIn += d.syss_in_tot;
-                if (d.syss_ut_tot) sumUt += d.syss_ut_tot;
+                if (d.rate) sumRate += d.rate * w;
+                if (d.displayRate) sumDisplayRate += d.displayRate * w;
+                if (d.syss_in_tot) sumIn += d.syss_in_tot * w;
+                if (d.syss_ut_tot) sumUt += d.syss_ut_tot * w;
                 
-                if (d.syssGradM) Object.keys(d.syssGradM).forEach(k => { if (!['år','tid','kön'].includes(k.toLowerCase())) sumM[k] = (sumM[k] || 0) + parseFloat(d.syssGradM[k]||0); });
-                if (d.syssGradK) Object.keys(d.syssGradK).forEach(k => { if (!['år','tid','kön'].includes(k.toLowerCase())) sumK[k] = (sumK[k] || 0) + parseFloat(d.syssGradK[k]||0); });
-                if (d.ageRates) Object.keys(d.ageRates).forEach(k => { sumAge[k] = (sumAge[k] || 0) + parseFloat(d.ageRates[k].rate||0); });
+                if (d.syssGradM) Object.keys(d.syssGradM).forEach(k => { if (!['år','tid','kön'].includes(k.toLowerCase())) sumM[k] = (sumM[k] || 0) + parseFloat(d.syssGradM[k]||0) * w; });
+                if (d.syssGradK) Object.keys(d.syssGradK).forEach(k => { if (!['år','tid','kön'].includes(k.toLowerCase())) sumK[k] = (sumK[k] || 0) + parseFloat(d.syssGradK[k]||0) * w; });
+                if (d.ageRates) Object.keys(d.ageRates).forEach(k => { sumAge[k] = (sumAge[k] || 0) + parseFloat(d.ageRates[k].rate||0) * w; });
             });
             
+            if (totalWeight === 0) totalWeight = 1;
             let avgM = {}, avgK = {}, avgAge = null;
-            Object.keys(sumM).forEach(k => avgM[k] = sumM[k] / count);
-            Object.keys(sumK).forEach(k => avgK[k] = sumK[k] / count);
+            Object.keys(sumM).forEach(k => avgM[k] = sumM[k] / totalWeight);
+            Object.keys(sumK).forEach(k => avgK[k] = sumK[k] / totalWeight);
             
             if (histDataStore[baseYear] && histDataStore[baseYear].ageRates) {
                 avgAge = JSON.parse(JSON.stringify(histDataStore[baseYear].ageRates));
-                Object.keys(avgAge).forEach(k => { if (sumAge[k]) avgAge[k].rate = sumAge[k] / count; });
+                Object.keys(avgAge).forEach(k => { if (sumAge[k]) avgAge[k].rate = sumAge[k] / totalWeight; });
             }
 
             if (histDataStore[baseYear]) {
-                histDataStore[baseYear].avg10_rate = sumRate / count;
-                histDataStore[baseYear].avg10_displayRate = sumDisplayRate / count;
-                histDataStore[baseYear].avg10_syss_in_tot = sumIn / count;
-                histDataStore[baseYear].avg10_syss_ut_tot = sumUt / count;
+                histDataStore[baseYear].avg10_rate = sumRate / totalWeight;
+                histDataStore[baseYear].avg10_displayRate = sumDisplayRate / totalWeight;
+                histDataStore[baseYear].avg10_syss_in_tot = sumIn / totalWeight;
+                histDataStore[baseYear].avg10_syss_ut_tot = sumUt / totalWeight;
                 histDataStore[baseYear].avg10_syssGradM = avgM;
                 histDataStore[baseYear].avg10_syssGradK = avgK;
                 histDataStore[baseYear].avg10_ageRates = avgAge;
@@ -1888,6 +1955,9 @@
                     kpiSyssGrad.innerText = window.formatNumber(d.displayRate, 1) + '%';
                     if (typeof takEffektMaxSyss !== 'undefined' && d.displayRate > takEffektMaxSyss) {
                         kpiSyssGrad.className = "text-base md:text-lg font-bold text-red-600";
+                        warningEl.innerHTML = `<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-[10px] md:text-xs font-bold border cursor-help shadow-sm" title="Sysselsättningsgraden överstiger taket på ${takEffektMaxSyss}%."><i class="fa-solid fa-triangle-exclamation mr-1"></i> Arbetskraftsbrist</span>`;
+                        warningEl.classList.remove('hidden');
+                        warningEl.classList.add('flex');
                     } else if (causalityMode === 'analytic' && !(d.demand != null && d.supply != null && (d.demand - (d.supply + (d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0)) + (d.virtualSupply || 0))) <= -5) ) {
                         kpiSyssGrad.className = "text-base md:text-lg font-bold text-gray-800";
                     }
@@ -2021,6 +2091,7 @@
                 let mKorr = syssGradChangeOverall;
                 let kKorr = syssGradChangeOverall;
 
+                // CATCH-UP EFFEKT FÖR INTEGRATION
                 if (syssGradChangeOverall > 0) {
                     inrikesSyssKorr = syssGradChangeOverall * 0.4; utrikesSyssKorr = syssGradChangeOverall * 2.8; 
                     mKorr = syssGradChangeOverall * 0.8; kKorr = syssGradChangeOverall * 1.2;
@@ -2028,6 +2099,8 @@
                     inrikesSyssKorr = syssGradChangeOverall * 0.4; utrikesSyssKorr = syssGradChangeOverall * 2.8;
                     mKorr = syssGradChangeOverall * 0.8; kKorr = syssGradChangeOverall * 1.2;
                 }
+
+                const ageLabels = ['16-19', '20-24', '25-34', '35-44', '45-54', '55-59', '60-64', '65-74'];
 
                 for (let i = 1; i <= forecastYears; i++) {
                     const forecastYear = baseYear + i;
@@ -2082,8 +2155,10 @@
                                 }
                             });
                             
-                            const specificTargetRate = group.rate + (syssGradChangeOverall / 100); 
+                            let sliderOffset = window.getSliderOffsetForAge ? window.getSliderOffsetForAge(group.min) : syssGradChangeOverall;
+                            const specificTargetRate = group.rate + (sliderOffset / 100); 
                             const currentSpecificRate = group.rate + ((specificTargetRate - group.rate) * (i / forecastYears));
+                            
                             futureSupply += (groupFuturePop * currentSpecificRate);
                             futureSupplyM += (groupFuturePopM * currentSpecificRate);
                             futureSupplyK += (groupFuturePopK * currentSpecificRate);
@@ -2159,8 +2234,22 @@
                         }
                     }
 
+                    let d_man_age = {}, d_kvinna_age = {}, n_man_age = {}, n_kvinna_age = {};
+                    if (base.d_man_age) {
+                        ageLabels.forEach(l => {
+                            if (base.d_man_age[l] != null) d_man_age[l] = base.d_man_age[l] * (base.d_man > 0 ? ((base_d_man * demandGrowthFactor + (syssGradDemandBoostTotal * (i / forecastYears)) * share_d_man) / base.d_man) : 1);
+                            if (base.d_kvinna_age[l] != null) d_kvinna_age[l] = base.d_kvinna_age[l] * (base.d_kvinna > 0 ? ((base_d_kvinna * demandGrowthFactor + (syssGradDemandBoostTotal * (i / forecastYears)) * (1 - share_d_man)) / base.d_kvinna) : 1);
+                            if (base.n_man_age[l] != null) n_man_age[l] = base.n_man_age[l] * (base.n_man > 0 ? (futureSupplyM / base.n_man) : 1);
+                            if (base.n_kvinna_age[l] != null) n_kvinna_age[l] = base.n_kvinna_age[l] * (base.n_kvinna > 0 ? (futureSupplyK / base.n_kvinna) : 1);
+                        });
+                    }
+
                     let blankArb = { tot_num:null, m_num:null, k_num:null, in_num:null, ut_num:null, tot_pct:null, m_pct:null, k_pct:null, in_pct:null, ut_pct:null };
                     let blankLarb = { tot_num:null, m_num:null, k_num:null, in_num:null, ut_num:null, tot_pct:null, m_pct:null, k_pct:null, in_pct:null, ut_pct:null, tot_insk:null, m_insk:null, k_insk:null, in_insk:null, ut_insk:null };
+
+                    let shiftMax = 0.05 * (syssGradChangeOverall / 5); 
+                    let dyn_share_n_ut = share_n_ut + (shiftMax * (i / forecastYears));
+                    let dyn_share_d_ut = share_d_ut + (shiftMax * (i / forecastYears));
 
                     progDataStore[forecastYear] = {
                         demand: futureDemand,
@@ -2180,14 +2269,18 @@
                         syss_ut_tot: base_syss_ut_tot != null ? base_syss_ut_tot + utrikesSyssKorr * (i/forecastYears) : null,
                         syssGradM: fSyssGradM, 
                         syssGradK: fSyssGradK,
-                        n_utrikes: futureSupply * share_n_ut,
-                        n_inrikes: futureSupply * (1 - share_n_ut),
-                        d_utrikes: futureDemand * share_d_ut,
-                        d_inrikes: futureDemand * (1 - share_d_ut),
+                        n_utrikes: futureSupply * dyn_share_n_ut,
+                        n_inrikes: futureSupply * (1 - dyn_share_n_ut),
+                        d_utrikes: futureDemand * dyn_share_d_ut,
+                        d_inrikes: futureDemand * (1 - dyn_share_d_ut),
                         n_man: futureSupplyM,
                         n_kvinna: futureSupplyK,
                         d_man: base_d_man * demandGrowthFactor + (syssGradDemandBoostTotal * (i / forecastYears)) * share_d_man,
                         d_kvinna: base_d_kvinna * demandGrowthFactor + (syssGradDemandBoostTotal * (i / forecastYears)) * (1 - share_d_man),
+                        d_man_age: d_man_age,
+                        d_kvinna_age: d_kvinna_age,
+                        n_man_age: n_man_age,
+                        n_kvinna_age: n_kvinna_age,
                         arbetsloshetPct: null,
                         langtidsPct: null,
                         isAgeWeighted: isAgeWeighted,
@@ -2362,6 +2455,18 @@
                         if (defaultOpt) subGroupSelect.value = defaultOpt.value;
                     }
                     subGroupSelect.setAttribute('data-type', 'syssgrad');
+                }
+                subGroupSelect.classList.remove('hidden');
+                chartTypeElement.classList.remove('rounded-r');
+                subGroupSelect.classList.add('rounded-r');
+            } else if (chartType === 'trend_kon') {
+                if(exportPopBtn) exportPopBtn.classList.replace('flex', 'hidden');
+                if(dualAxesContainer) { dualAxesContainer.classList.add('hidden'); dualAxesContainer.classList.remove('flex'); }
+                if (subGroupSelect.getAttribute('data-type') !== 'trend_kon_age') {
+                    subGroupSelect.innerHTML = '<option value="totalt">Totalt</option>';
+                    const ageLabels = ['16-19', '20-24', '25-34', '35-44', '45-54', '55-59', '60-64', '65-74'];
+                    ageLabels.forEach(k => subGroupSelect.add(new Option(k + " år", k)));
+                    subGroupSelect.setAttribute('data-type', 'trend_kon_age');
                 }
                 subGroupSelect.classList.remove('hidden');
                 chartTypeElement.classList.remove('rounded-r');
@@ -2575,12 +2680,11 @@
                 
                 let h_1=[], h_2=[], h_tot=[];
                 
-                // Filtrera axeln så att den slutar strikt vid basåret (oftast 2024). Inga prognosår ritas ut.
                 labels = activeYears.filter(y => y <= baseYear);
                 
                 labels.forEach(y => {
                     let numericY = Number(y);
-                    if (numericY >= 1985 && typeof histDataStore !== 'undefined' && histDataStore[numericY]) {
+                    if (numericY >= 1985 && histDataStore[numericY]) {
                         let d = histDataStore[numericY];
                         let obj = isLangtid ? d.larb : d.arb;
                         
@@ -2778,11 +2882,13 @@
                 
                 if (chartType === 'utb_match') {
                     if (title) title.innerText = `Utbildningsmatchning (År ${selYearInt})${suffix}`;
-                    labels = ['Förgymnasial', 'Gymnasial', 'Eftergymnasial', 'Okänd'];
+                    labels = ['Förgymnasial', 'Gymnasial', 'Kort eftergymnasial', 'Lång eftergymnasial'];
                     const mapLevel = (l) => {
                         let t = String(l).toLowerCase();
                         if (t.includes('förgymnasial')) return 'Förgymnasial';
-                        if (t.includes('eftergymnasial') || t.includes('forskar')) return 'Eftergymnasial';
+                        if (t.includes('kort eftergymnasial') || (t.includes('eftergymnasial') && t.includes('kort'))) return 'Kort eftergymnasial';
+                        if (t.includes('lång eftergymnasial') || (t.includes('eftergymnasial') && t.includes('lång')) || t.includes('forskar')) return 'Lång eftergymnasial';
+                        if (t.includes('eftergymnasial')) return 'Lång eftergymnasial'; 
                         if (t.includes('gymnasial')) return 'Gymnasial';
                         return 'Okänd';
                     };
@@ -2861,7 +2967,7 @@
             } else if (chartType === 'trend_utrikes' || chartType === 'trend_kon') {
                 isMultiLine = true;
                 startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
-                let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historik)");
+                let suffix = isComparing ? " (Jämförelse)" : (typeof progDataStore !== 'undefined' && progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historik)");
                 
                 let key1_n, key2_n, key1_d, key2_d, lbl1_n, lbl2_n, lbl1_d, lbl2_d, col1, col2;
                 if (chartType === 'trend_utrikes') {
@@ -2878,21 +2984,48 @@
 
                 labels = activeYears;
                 let h_n1=[], h_n2=[], p_n1=[], p_n2=[], h_d1=[], h_d2=[], p_d1=[], p_d2=[];
+                const ageGroup = chartType === 'trend_kon' ? subGroupSelect.value : 'totalt';
 
                 labels.forEach(y => {
                     let numericY = Number(y);
-                    if (y <= baseYear && histDataStore[numericY]) {
-                        h_n1.push(histDataStore[numericY][key1_n]); h_n2.push(histDataStore[numericY][key2_n]);
-                        h_d1.push(histDataStore[numericY][key1_d]); h_d2.push(histDataStore[numericY][key2_d]);
-                    } else { h_n1.push(null); h_n2.push(null); h_d1.push(null); h_d2.push(null); }
-                    
-                    if (y === baseYear && histDataStore[numericY]) {
-                        p_n1.push(histDataStore[numericY][key1_n]); p_n2.push(histDataStore[numericY][key2_n]);
-                        p_d1.push(histDataStore[numericY][key1_d]); p_d2.push(histDataStore[numericY][key2_d]);
-                    } else if (y > baseYear && progDataStore[numericY]) {
-                        p_n1.push(progDataStore[numericY][key1_n]); p_n2.push(progDataStore[numericY][key2_n]);
-                        p_d1.push(progDataStore[numericY][key1_d]); p_d2.push(progDataStore[numericY][key2_d]);
-                    } else { p_n1.push(null); p_n2.push(null); p_d1.push(null); p_d2.push(null); }
+                    if (numericY >= 1985) {
+                        if (y <= baseYear && histDataStore[numericY]) {
+                            if (ageGroup === 'totalt' || chartType === 'trend_utrikes') {
+                                h_n1.push(histDataStore[numericY][key1_n]); h_n2.push(histDataStore[numericY][key2_n]);
+                                h_d1.push(histDataStore[numericY][key1_d]); h_d2.push(histDataStore[numericY][key2_d]);
+                            } else {
+                                h_n1.push(histDataStore[numericY].n_man_age && histDataStore[numericY].n_man_age[ageGroup] !== undefined ? histDataStore[numericY].n_man_age[ageGroup] : null);
+                                h_n2.push(histDataStore[numericY].n_kvinna_age && histDataStore[numericY].n_kvinna_age[ageGroup] !== undefined ? histDataStore[numericY].n_kvinna_age[ageGroup] : null);
+                                h_d1.push(histDataStore[numericY].d_man_age && histDataStore[numericY].d_man_age[ageGroup] !== undefined ? histDataStore[numericY].d_man_age[ageGroup] : null);
+                                h_d2.push(histDataStore[numericY].d_kvinna_age && histDataStore[numericY].d_kvinna_age[ageGroup] !== undefined ? histDataStore[numericY].d_kvinna_age[ageGroup] : null);
+                            }
+                        } else { h_n1.push(null); h_n2.push(null); h_d1.push(null); h_d2.push(null); }
+                        
+                        if (y === baseYear && histDataStore[numericY]) {
+                            if (ageGroup === 'totalt' || chartType === 'trend_utrikes') {
+                                p_n1.push(histDataStore[numericY][key1_n]); p_n2.push(histDataStore[numericY][key2_n]);
+                                p_d1.push(histDataStore[numericY][key1_d]); p_d2.push(histDataStore[numericY][key2_d]);
+                            } else {
+                                p_n1.push(histDataStore[numericY].n_man_age && histDataStore[numericY].n_man_age[ageGroup] !== undefined ? histDataStore[numericY].n_man_age[ageGroup] : null);
+                                p_n2.push(histDataStore[numericY].n_kvinna_age && histDataStore[numericY].n_kvinna_age[ageGroup] !== undefined ? histDataStore[numericY].n_kvinna_age[ageGroup] : null);
+                                p_d1.push(histDataStore[numericY].d_man_age && histDataStore[numericY].d_man_age[ageGroup] !== undefined ? histDataStore[numericY].d_man_age[ageGroup] : null);
+                                p_d2.push(histDataStore[numericY].d_kvinna_age && histDataStore[numericY].d_kvinna_age[ageGroup] !== undefined ? histDataStore[numericY].d_kvinna_age[ageGroup] : null);
+                            }
+                        } else if (y > baseYear && typeof progDataStore !== 'undefined' && progDataStore[numericY]) {
+                            if (ageGroup === 'totalt' || chartType === 'trend_utrikes') {
+                                p_n1.push(progDataStore[numericY][key1_n]); p_n2.push(progDataStore[numericY][key2_n]);
+                                p_d1.push(progDataStore[numericY][key1_d]); p_d2.push(progDataStore[numericY][key2_d]);
+                            } else {
+                                p_n1.push(progDataStore[numericY].n_man_age && progDataStore[numericY].n_man_age[ageGroup] !== undefined ? progDataStore[numericY].n_man_age[ageGroup] : null);
+                                p_n2.push(progDataStore[numericY].n_kvinna_age && progDataStore[numericY].n_kvinna_age[ageGroup] !== undefined ? progDataStore[numericY].n_kvinna_age[ageGroup] : null);
+                                p_d1.push(progDataStore[numericY].d_man_age && progDataStore[numericY].d_man_age[ageGroup] !== undefined ? progDataStore[numericY].d_man_age[ageGroup] : null);
+                                p_d2.push(progDataStore[numericY].d_kvinna_age && progDataStore[numericY].d_kvinna_age[ageGroup] !== undefined ? progDataStore[numericY].d_kvinna_age[ageGroup] : null);
+                            }
+                        } else { p_n1.push(null); p_n2.push(null); p_d1.push(null); p_d2.push(null); }
+                    } else {
+                        h_n1.push(null); h_n2.push(null); h_d1.push(null); h_d2.push(null);
+                        p_n1.push(null); p_n2.push(null); p_d1.push(null); p_d2.push(null);
+                    }
                 });
 
                 datasets = [
@@ -2912,8 +3045,8 @@
 
                 if (useDualAxes && chartType === 'trend_utrikes') {
                     customScale = {
-                        y: { beginAtZero: useZeroAxis, grace: graceVal, type: 'linear', display: true, position: 'left', title: { display: true, text: 'Inrikes (Antal)', color: col1 }, ticks: { callback: val => window.formatNumber(val) } },
-                        y1: { beginAtZero: useZeroAxis, grace: graceVal, type: 'linear', display: true, position: 'right', title: { display: true, text: 'Utrikes (Antal)', color: col2 }, grid: { drawOnChartArea: false }, ticks: { callback: val => window.formatNumber(val) } }
+                        y: { beginAtZero: useZeroAxis, grace: graceVal, type: 'linear', display: true, position: 'left', title: { display: true, text: 'Inrikes', color: col1 }, ticks: { callback: val => window.formatNumber(val) } },
+                        y1: { beginAtZero: useZeroAxis, grace: graceVal, type: 'linear', display: true, position: 'right', title: { display: true, text: 'Utrikes', color: col2 }, grid: { drawOnChartArea: false }, ticks: { callback: val => window.formatNumber(val) } }
                     };
                     datasets.forEach(ds => { ds.yAxisID = ds.label.includes('Utrikes') ? 'y1' : 'y'; });
                 }
@@ -2921,7 +3054,7 @@
             } else if (chartType === 'syssgrad_utrikes' || chartType === 'syssgrad_kon') {
                 isMultiLine = true;
                 startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
-                let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historik)");
+                let suffix = isComparing ? " (Jämförelse)" : (typeof progDataStore !== 'undefined' && progDataStore[allYears[allYears.length-1]] ? " (Prognos)" : " (Historik)");
                 
                 let key1, key2, lbl1, lbl2, col1, col2;
                 if (chartType === 'syssgrad_utrikes') {
@@ -2949,13 +3082,13 @@
                             }
                         }
 
-                        if (y <= baseYear) { h_1.push(v1); h_2.push(v2); h_tot.push(histDataStore[numericY] ? histDataStore[numericY].displayRate : null); } 
+                        if (y <= baseYear) { h_1.push(v1); h_2.push(v2); h_tot.push(typeof histDataStore !== 'undefined' && histDataStore[numericY] ? histDataStore[numericY].displayRate : null); } 
                         else { h_1.push(null); h_2.push(null); h_tot.push(null); }
                         
-                        if (y === baseYear) { p_1.push(v1); p_2.push(v2); p_tot.push(histDataStore[numericY] ? histDataStore[numericY].displayRate : null); } 
-                        else if (y > baseYear && progDataStore[numericY]) {
+                        if (y === baseYear) { p_1.push(v1); p_2.push(v2); p_tot.push(typeof histDataStore !== 'undefined' && histDataStore[numericY] ? histDataStore[numericY].displayRate : null); } 
+                        else if (y > baseYear && typeof progDataStore !== 'undefined' && progDataStore[numericY]) {
                             let base_1 = null, base_2 = null;
-                            if (histDataStore[baseYear]) {
+                            if (typeof histDataStore !== 'undefined' && histDataStore[baseYear]) {
                                 if (chartType === 'syssgrad_utrikes') {
                                     base_1 = histDataStore[baseYear][key1] != null ? parseFloat(histDataStore[baseYear][key1]) : null;
                                     base_2 = histDataStore[baseYear][key2] != null ? parseFloat(histDataStore[baseYear][key2]) : null;
@@ -2964,13 +3097,20 @@
                                     base_2 = histDataStore[baseYear][key2] && histDataStore[baseYear][key2][ageGroup] != null ? parseFloat(histDataStore[baseYear][key2][ageGroup]) : null;
                                 }
                             }
-                            let base_tot = histDataStore[baseYear].displayRate != null ? parseFloat(histDataStore[baseYear].displayRate) : null;
-                            const sliderChange = parseFloat(document.getElementById('syssGradSlider').value);
-                            const step = (numericY - baseYear) / 10;
-                            p_1.push(base_1 != null ? base_1 + sliderChange * step : null);
-                            p_2.push(base_2 != null ? base_2 + sliderChange * step : null);
-                            p_tot.push(base_tot != null ? base_tot + sliderChange * step : null);
+                            let base_tot = typeof histDataStore !== 'undefined' && histDataStore[baseYear].displayRate != null ? parseFloat(histDataStore[baseYear].displayRate) : null;
+                            
+                            if (chartType === 'syssgrad_utrikes') {
+                                p_1.push(progDataStore[numericY].syss_in_tot);
+                                p_2.push(progDataStore[numericY].syss_ut_tot);
+                            } else {
+                                p_1.push(progDataStore[numericY].syssGradM && progDataStore[numericY].syssGradM[ageGroup] != null ? parseFloat(progDataStore[numericY].syssGradM[ageGroup]) : null);
+                                p_2.push(progDataStore[numericY].syssGradK && progDataStore[numericY].syssGradK[ageGroup] != null ? parseFloat(progDataStore[numericY].syssGradK[ageGroup]) : null);
+                            }
+                            p_tot.push(progDataStore[numericY].displayRate);
                         } else { p_1.push(null); p_2.push(null); p_tot.push(null); }
+                    } else {
+                        h_1.push(null); h_2.push(null); h_tot.push(null);
+                        p_1.push(null); p_2.push(null); p_tot.push(null);
                     }
                 });
 
@@ -2996,7 +3136,6 @@
                 }
             }
 
-            // Tillämpa minnet av vilka linjer som gömts
             datasets.forEach(ds => {
                 if (globalChartVisibility[ds.label] !== undefined) ds.hidden = globalChartVisibility[ds.label];
             });
