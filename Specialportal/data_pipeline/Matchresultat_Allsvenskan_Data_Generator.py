@@ -4,6 +4,11 @@ import pandas as pd
 import json
 
 # ==========================================
+# DATA OCH KÄLLMATERIAL
+# Författare till matchinformation och grunddata: Jimmy Lindahl
+# ==========================================
+
+# ==========================================
 # 1. GENERELL SETUP OCH SÖKVÄGAR
 # ==========================================
 try:
@@ -135,7 +140,11 @@ try:
         group = df_tabeller[df_tabeller[col_sasnr] == sas]
         for _, row in group.iterrows():
             team = str(row.get(col_lag, '')).strip()
-            if team == 'Panos Ljungskile SK': team = 'Ljungskile SK'
+            
+            # Hårdkodad justering för att fånga upp Panos Ljungskiles meriter 1997
+            if team == 'Panos Ljungskile SK': 
+                team = 'Ljungskile SK'
+                
             merit = str(row.get(col_merit, '')).strip()
             nya = str(row.get(col_nya, '')).strip()
             if merit == 'nan': merit = ''
@@ -144,7 +153,7 @@ try:
             if col_serie:
                 serie_val = str(row.get(col_serie, '')).strip()
                 if serie_val and 'allsvenskan' not in serie_val.lower():
-                    merit = ''; nya = ''
+                    continue
             
             start_pts = 0.0
             if col_startpts:
@@ -163,8 +172,7 @@ try:
             
             if merit.lower() == 'mästare': current_champions.append(team)
         last_champions = current_champions
-except Exception as e: 
-    print(f"Info: {e}")
+except Exception: pass
 
 # Förbered JSON data
 json_match_data = df.to_json(orient="records", force_ascii=False)
@@ -184,7 +192,7 @@ html_template = """
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard 2 - Allsvenskan Matchhistorik</title>
+    <title>Dashboard - Allsvenskan Matchhistorik</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -395,6 +403,7 @@ html_template = """
                     <div class="border border-slate-200 rounded-lg overflow-hidden">
                         <div class="bg-slate-50 px-4 py-3 border-b border-slate-200"><h3 class="font-bold text-slate-700" id="rec-title-att-low">Lägsta publiksiffrorna (>10)</h3></div>
                         <div class="p-0 overflow-x-auto"><table class="w-full text-left text-sm whitespace-nowrap"><tbody id="rec-list-att-low"></tbody></table></div>
+                        <div class="px-4 py-2 bg-slate-50 text-xs text-slate-500 border-t border-slate-200">* Matcher med 10 åskådare eller färre är exkluderade.</div>
                     </div>
                 </div>
             </div>
@@ -455,7 +464,14 @@ html_template = """
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm whitespace-nowrap">
                                 <thead class="bg-slate-100 text-slate-600 font-medium border-b border-slate-200">
-                                    <tr><th class="p-3 w-10">#</th><th class="p-3">Lag</th><th class="p-3 text-center">Antal Matcher</th><th class="p-3 text-slate-500">Start</th><th class="p-3 text-slate-500">Slut</th><th class="p-3 text-center">Målskillnad</th></tr>
+                                    <tr>
+                                        <th class="p-3 w-10">#</th>
+                                        <th class="p-3">Lag</th>
+                                        <th class="p-3 text-center">Antal Matcher</th>
+                                        <th class="p-3 text-slate-500">Start (Datum / Säsong)</th>
+                                        <th class="p-3 text-slate-500">Slut (Datum / Säsong)</th>
+                                        <th class="p-3 text-center">Målskillnad</th>
+                                    </tr>
                                 </thead>
                                 <tbody id="streak-toplist-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
                             </table>
@@ -502,7 +518,7 @@ html_template = """
                         <div>
                             <label class="block text-sm font-medium text-slate-700 mb-1">Poäng</label>
                             <div class="flex gap-1">
-                                <select id="table-points" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500">
+                                <select id="table-points" onchange="if(!document.getElementById('table-results').classList.contains('hidden')){ if(document.getElementById('table-title').innerText.includes('Maratontabell')) renderDynamicAllTimeTable(); else calculateLeagueTable(); }" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500">
                                     <option value="3">3 p</option><option value="2">2 p</option>
                                 </select>
                                 <button onclick="calculateLeagueTable()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium p-2 rounded-md shadow-sm">Bygg</button>
@@ -528,7 +544,7 @@ html_template = """
                 <div class="bg-slate-50 p-3 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center">
                     <div class="flex items-center gap-4">
                         <h3 class="font-bold text-slate-700" id="table-title">Tabell</h3>
-                        <span id="table-goal-stats" class="text-xs font-semibold text-blue-800 bg-blue-100 px-3 py-1 rounded hidden border border-blue-200 shadow-sm"></span>
+                        <span id="table-goal-stats" class="text-xs font-semibold text-blue-600 bg-blue-100 px-3 py-1 rounded hidden border border-blue-200 shadow-sm"></span>
                     </div>
                     <div id="table-legend" class="text-[10px] text-slate-500 flex flex-wrap gap-3 mt-2 md:mt-0 hidden">
                         <span class="flex items-center"><span class="text-amber-500 mr-1 text-sm">👑</span> Regerande mästare</span>
@@ -708,13 +724,13 @@ html_template = """
                         <h2 class="text-xl font-bold mb-1">Har serien "satt sig"?</h2>
                         <p class="text-slate-500 text-sm max-w-3xl">Mät tabellens förutsägbarhet över tid. Välj mellan att se utvecklingen över en säsong/epok i en graf, eller jämför alla säsonger i en specifik omgång.</p>
                     </div>
-                    <div class="tooltip-container relative cursor-pointer">
+                    <div class="tooltip-container relative cursor-pointer z-50">
                         <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center font-bold font-serif">i</div>
-                        <div class="tooltip-content hidden absolute right-0 top-10 w-80 bg-slate-800 text-white text-xs p-4 rounded shadow-xl z-50">
-                            <p class="font-bold mb-2">Analysmetoder:</p>
-                            <p class="mb-2"><span class="text-blue-300">Positionsfel (MAE):</span> Visar hur många placeringar lagen i snitt ligger ifrån sin slutgiltiga placering. Ett värde på 1.5 betyder att lagen i snitt skiljer sig 1.5 placeringar från facit.</p>
-                            <p><span class="text-blue-300">Spearmans Rangkorrelation:</span> Ett matematiskt mått mellan -1 och 1. Värdet 1.0 betyder att tabellen är 100% identisk med sluttabellen. Allt över 0.8 anses vara ett mycket starkt samband.</p>
-                            <p><span class="text-blue-300">Delstrider (Topp/Botten 3):</span> Rankingen skalas om från 1 till 3 internt för dessa lag innan Spearmans beräknas, för att säkerställa att värdet håller sig strikt inom -1 till 1.</p>
+                        <div class="tooltip-content hidden absolute right-0 top-10 w-80 bg-slate-800 text-white text-xs p-4 rounded shadow-xl">
+                            <p class="font-bold mb-2 text-sm text-blue-300">Analysmetoder:</p>
+                            <p class="mb-2"><span class="font-bold text-emerald-400">Positionsfel (MAE):</span> Visar hur många placeringar lagen i snitt ligger ifrån sin slutgiltiga placering. Ett värde på 1.5 betyder att lagen i snitt skiljer sig 1.5 placeringar från facit.</p>
+                            <p class="mb-2"><span class="font-bold text-emerald-400">Spearmans Rangkorrelation:</span> Ett matematiskt mått mellan -1 och 1. Värdet 1.0 betyder att tabellen är 100% identisk med sluttabellen. Allt över 0.8 anses vara ett mycket starkt samband.</p>
+                            <p><span class="font-bold text-blue-300">Delstrider (Topp/Botten 3):</span> Rankingen skalas om från 1 till 3 internt för dessa lag innan Spearmans beräknas, för att säkerställa att värdet håller sig strikt inom -1 till 1.</p>
                         </div>
                     </div>
                 </div>
@@ -842,13 +858,13 @@ html_template = """
             let nTxt = String(notText).toUpperCase();
             let noteFound = null;
 
-            if (nTxt.includes("W.O; H")) noteFound = "W.O. till hemmalaget.";
+            if (nTxt.includes("EJ KVALIFICERAD SPELARE; V")) noteFound = "Ej kvalificerad spelare, dömt till hemmaseger.";
+            else if (nTxt.includes("EJ KVALIFICERAD SPELARE; F")) noteFound = "Ej kvalificerad spelare, dömt till bortaseger.";
+            else if (nTxt.includes("W.O; H")) noteFound = "W.O. till hemmalaget.";
             else if (nTxt.includes("W.O; B")) noteFound = "W.O. till bortalaget.";
             else if (nTxt.includes("AVBRUTEN; V")) noteFound = "Avbruten, dömt till hemmaseger.";
             else if (nTxt.includes("AVBRUTEN; F")) noteFound = "Avbruten, dömt till bortaseger.";
             else if (nTxt.includes("AVBRUTEN; O")) noteFound = "Avbruten, dömt till en poäng vardera.";
-            else if (nTxt.includes("EJ KVALIFICERAD SPELARE; V")) noteFound = "Ej kvalificerad spelare, dömt till hemmaseger.";
-            else if (nTxt.includes("EJ KVALIFICERAD SPELARE; F")) noteFound = "Ej kvalificerad spelare, dömt till bortaseger.";
             else if (nTxt.includes("AVBRUTEN")) noteFound = "Avbruten match.";
             
             if (noteFound) {
@@ -860,6 +876,7 @@ html_template = """
         function updatePhaseDropdown() {
             const season = document.getElementById('table-season').value;
             const phaseSelect = document.getElementById('table-phase');
+            if (!phaseSelect) return;
             let isM = ["67", "68", "1991", "1992"].includes(String(season));
             Array.from(phaseSelect.options).forEach(opt => {
                 if(opt.value !== "ALL") {
@@ -875,9 +892,19 @@ html_template = """
             if(ALL_TIME_TABLE.length >= 2) {
                 document.getElementById('h2h-team-a').value = ALL_TIME_TABLE[0].team;
                 updateOpponentDropdown('h2h-team-a', 'h2h-team-b');
-                document.getElementById('h2h-team-b').value = ALL_TIME_TABLE[1].team;
+                
+                let bOpts = Array.from(document.getElementById('h2h-team-b').options);
+                let validB = bOpts.filter(o => !o.disabled && o.value !== "").map(o => o.value);
+                if (validB.includes(ALL_TIME_TABLE[1].team)) {
+                    document.getElementById('h2h-team-b').value = ALL_TIME_TABLE[1].team;
+                } else if (validB.length > 0) {
+                    document.getElementById('h2h-team-b').value = validB[0];
+                }
             }
             updateRankDisplays();
+            
+            calculateH2H();
+            
             document.getElementById('h2h-team-a').addEventListener('change', () => { updateOpponentDropdown('h2h-team-a', 'h2h-team-b'); updateRankDisplays(); document.getElementById('h2h-overview').classList.add('hidden'); document.getElementById('h2h-results').classList.add('hidden'); });
             document.getElementById('h2h-team-b').addEventListener('change', () => { updateOpponentDropdown('h2h-team-b', 'h2h-team-a'); updateRankDisplays(); document.getElementById('h2h-overview').classList.add('hidden'); document.getElementById('h2h-results').classList.add('hidden'); });
             document.getElementById('search-season').addEventListener('change', () => { updateSearchTeamDropdown(); });
@@ -887,8 +914,11 @@ html_template = """
                 updatePhaseDropdown();
             });
             if (SEASONS.length > 0) document.getElementById('search-season').value = [...SEASONS].reverse()[0];
+            
             updatePhaseDropdown();
-            renderRecords(); calculateH2H(); setTimeout(() => calculateStreaks(), 200); 
+            
+            renderRecords(); 
+            calculateStreaks(); 
         });
 
         function initAllTimeTable() {
@@ -1045,8 +1075,10 @@ html_template = """
                 let isWOH = notText.includes("W.O; H") || notText.includes("AVBRUTEN; V") || notText.includes("EJ KVALIFICERAD SPELARE; V");
                 let isWOB = notText.includes("W.O; B") || notText.includes("AVBRUTEN; F") || notText.includes("EJ KVALIFICERAD SPELARE; F");
                 
+                let origH = match.Hemmalag_Org || match.Hemmalag;
+                let origB = match.Bortalag_Org || match.Bortalag;
                 let displayDate = formatDate(match.Matchdatum, match.År);
-                let noteStr = getNoteString(match.Hemmalag, match.Bortalag, match.NOT, displayDate);
+                let noteStr = getNoteString(origH, origB, match.NOT, displayDate);
                 if (noteStr) matchNotes.add(noteStr);
 
                 if (isNaN(hm) || isNaN(bm)) {
@@ -1060,7 +1092,7 @@ html_template = """
 
                 const homeBold = hm > bm ? 'font-bold text-blue-600' : (bm > hm ? 'text-rose-600' : 'text-slate-900');
                 const awayBold = bm > hm ? 'font-bold text-blue-600' : (hm > bm ? 'text-rose-600' : 'text-slate-900');
-                tableHTML += `<tr class="hover:bg-slate-50"><td class="px-4 py-2">${getSeasonName(match.Säs)}</td><td class="px-4 py-2 text-slate-500 text-xs">${displayDate}</td><td class="px-4 py-2 text-right ${homeBold}">${match.Hemmalag}</td><td class="px-4 py-2 text-center font-mono bg-slate-50 border-x border-slate-100 font-semibold">${hm} - ${bm}</td><td class="px-4 py-2 ${awayBold}">${match.Bortalag}</td><td class="px-4 py-2 text-right text-slate-500">${match.Publik ? match.Publik.toLocaleString('sv-SE') : '-'}</td></tr>`;
+                tableHTML += `<tr class="hover:bg-slate-50"><td class="px-4 py-2">${getSeasonName(match.Säs)}</td><td class="px-4 py-2 text-slate-500 text-xs">${displayDate}</td><td class="px-4 py-2 text-right ${homeBold}">${origH}</td><td class="px-4 py-2 text-center font-mono bg-slate-50 border-x border-slate-100 font-semibold">${hm} - ${bm}</td><td class="px-4 py-2 ${awayBold}">${origB}</td><td class="px-4 py-2 text-right text-slate-500">${match.Publik ? match.Publik.toLocaleString('sv-SE') : '-'}</td></tr>`;
             });
             document.getElementById('h2h-table-body').innerHTML = tableHTML || '<tr><td colspan="6" class="text-center py-6 text-slate-500">Inga möten hittades.</td></tr>';
             
@@ -1156,7 +1188,9 @@ html_template = """
                 let isWOH = notText.includes("W.O; H") || notText.includes("AVBRUTEN; V") || notText.includes("EJ KVALIFICERAD SPELARE; V");
                 let isWOB = notText.includes("W.O; B") || notText.includes("AVBRUTEN; F") || notText.includes("EJ KVALIFICERAD SPELARE; F");
                 
-                let noteStr = getNoteString(match.Hemmalag, match.Bortalag, match.NOT, displayDate);
+                let origH = match.Hemmalag_Org || match.Hemmalag;
+                let origB = match.Bortalag_Org || match.Bortalag;
+                let noteStr = getNoteString(origH, origB, match.NOT, displayDate);
                 if (noteStr) matchNotes.add(noteStr);
 
                 let homeWon = hm > bm; let awayWon = bm > hm;
@@ -1177,7 +1211,7 @@ html_template = """
                 let homeClass = `${homeColor} ${homeBold}`;
                 let awayClass = `${awayColor} ${awayBold}`;
 
-                tableHTML += `<tr class="hover:bg-slate-50"><td class="px-4 py-2">${getSeasonName(match.Säs)}</td><td class="px-4 py-2 text-slate-500">${match.Omgång || '-'}</td><td class="px-4 py-2 text-slate-500 text-xs">${displayDate}</td><td class="px-4 py-2 text-right ${homeClass}">${match.Hemmalag}</td><td class="px-4 py-2 text-center bg-slate-50 border-x border-slate-100"><span class="font-mono font-bold">${match.HM} - ${match.BM}</span>${htText}</td><td class="px-4 py-2 ${awayClass}">${match.Bortalag}</td><td class="px-4 py-2 text-right text-slate-500">${match.Publik !== "" ? match.Publik.toLocaleString('sv-SE') : '-'}</td></tr>`;
+                tableHTML += `<tr class="hover:bg-slate-50"><td class="px-4 py-2">${getSeasonName(match.Säs)}</td><td class="px-4 py-2 text-slate-500">${match.Omgång || '-'}</td><td class="px-4 py-2 text-slate-500 text-xs">${displayDate}</td><td class="px-4 py-2 text-right ${homeClass}">${origH}</td><td class="px-4 py-2 text-center bg-slate-50 border-x border-slate-100"><span class="font-mono font-bold">${match.HM} - ${match.BM}</span>${htText}</td><td class="px-4 py-2 ${awayClass}">${origB}</td><td class="px-4 py-2 text-right text-slate-500">${match.Publik !== "" ? match.Publik.toLocaleString('sv-SE') : '-'}</td></tr>`;
             });
             
             document.getElementById('search-table-body').innerHTML = tableHTML || '<tr><td colspan="7" class="text-center py-6 text-slate-500">Inga matcher matchade sökningen.</td></tr>';
@@ -1201,9 +1235,11 @@ html_template = """
                 if (matches.length === 0) return `<tr><td colspan="5" class="py-4 text-center text-slate-500 italic">Inga rekord hittades.</td></tr>`;
                 return matches.map(m => {
                     let htText = (m.HMF !== "" && m.BMF !== "") ? `(${m.HMF}-${m.BMF})` : '';
+                    let origH = m.Hemmalag_Org || m.Hemmalag;
+                    let origB = m.Bortalag_Org || m.Bortalag;
                     let hClass = (team && m.Hemmalag === team) ? 'font-bold text-slate-900' : 'text-slate-700';
                     let aClass = (team && m.Bortalag === team) ? 'font-bold text-slate-900' : 'text-slate-700';
-                    return `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="py-2 px-2 text-xs text-slate-500 w-12 font-medium">${extractYear(m.Matchdatum, m.År)}</td><td class="py-2 px-2 text-right ${hClass} truncate max-w-[100px]" title="${m.Hemmalag}">${m.Hemmalag}</td><td class="py-2 px-2 text-center bg-slate-50/50 w-16"><span class="font-mono font-bold text-sm block">${m.HM} - ${m.BM}</span><span class="text-[10px] text-slate-400 block -mt-1">${htText}</span></td><td class="py-2 px-2 ${aClass} truncate max-w-[100px]" title="${m.Bortalag}">${m.Bortalag}</td><td class="py-2 px-2 text-right font-semibold text-blue-600">${valueKeyFn(m)} ${valueLabel}</td></tr>`;
+                    return `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="py-2 px-2 text-xs text-slate-500 w-12 font-medium">${extractYear(m.Matchdatum, m.År)}</td><td class="py-2 px-2 text-right ${hClass} truncate max-w-[100px]" title="${origH}">${origH}</td><td class="py-2 px-2 text-center bg-slate-50/50 w-16"><span class="font-mono font-bold text-sm block">${m.HM} - ${m.BM}</span><span class="text-[10px] text-slate-400 block -mt-1">${htText}</span></td><td class="py-2 px-2 ${aClass} truncate max-w-[100px]" title="${origB}">${origB}</td><td class="py-2 px-2 text-right font-semibold text-blue-600">${valueKeyFn(m)} ${valueLabel}</td></tr>`;
                 }).join('');
             };
             let winsData = team ? teamData.filter(m => (m.Hemmalag === team && parseInt(m.HM) > parseInt(m.BM)) || (m.Bortalag === team && parseInt(m.BM) > parseInt(m.HM))) : MATCH_DATA;
@@ -1419,10 +1455,12 @@ html_template = """
             document.getElementById('modal-title').innerText = `${title}: ${streakObj.team} (${streakObj.len} matcher)`;
             let html = '';
             streakObj.arr.forEach(m => {
+                let origH = m.Hemmalag_Org || m.Hemmalag;
+                let origB = m.Bortalag_Org || m.Bortalag;
                 let hClass = m.Hemmalag === streakObj.team ? 'font-bold text-slate-900' : ''; 
                 let aClass = m.Bortalag === streakObj.team ? 'font-bold text-slate-900' : '';
                 let displayDate = formatDate(m.Matchdatum, m.År);
-                html += `<tr class="border-b hover:bg-slate-50 transition-colors"><td class="p-3 text-slate-600">${getSeasonName(m.Säs)}</td><td class="p-3 text-slate-500 text-xs">${m.Omgång || '-'}</td><td class="p-3 text-slate-500 text-xs">${displayDate}</td><td class="p-3 text-right ${hClass}">${m.Hemmalag}</td><td class="p-3 text-center font-mono font-bold bg-slate-50 border-x border-slate-100">${m.HM} - ${m.BM}</td><td class="p-3 ${aClass}">${m.Bortalag}</td></tr>`;
+                html += `<tr class="border-b hover:bg-slate-50 transition-colors"><td class="p-3 text-slate-600">${getSeasonName(m.Säs)}</td><td class="p-3 text-slate-500 text-xs">${m.Omgång || '-'}</td><td class="p-3 text-slate-500 text-xs">${displayDate}</td><td class="p-3 text-right ${hClass}">${origH}</td><td class="p-3 text-center font-mono font-bold bg-slate-50 border-x border-slate-100">${m.HM} - ${m.BM}</td><td class="p-3 ${aClass}">${origB}</td></tr>`;
             });
             document.getElementById('modal-tbody').innerHTML = html;
             document.getElementById('streak-modal').classList.remove('hidden');
@@ -1433,9 +1471,11 @@ html_template = """
             document.getElementById('modal-title').innerText = `${title}: ${holderTeam} (${matches.length} matcher i rad)`;
             let html = '';
             matches.forEach(m => {
+                let origH = m.Hemmalag_Org || m.Hemmalag;
+                let origB = m.Bortalag_Org || m.Bortalag;
                 let hClass = m.Hemmalag === holderTeam ? 'font-bold text-slate-900' : ''; let aClass = m.Bortalag === holderTeam ? 'font-bold text-slate-900' : '';
                 let displayDate = formatDate(m.Matchdatum, m.År);
-                html += `<tr class="border-b hover:bg-slate-50 transition-colors"><td class="p-3 text-slate-600">${getSeasonName(m.Säs)}</td><td class="p-3 text-slate-500 text-xs">${m.Omgång || '-'}</td><td class="p-3 text-slate-500 text-xs">${displayDate}</td><td class="p-3 text-right ${hClass}">${m.Hemmalag}</td><td class="p-3 text-center font-mono font-bold bg-slate-50 border-x border-slate-100">${m.HM} - ${m.BM}</td><td class="p-3 ${aClass}">${m.Bortalag}</td></tr>`;
+                html += `<tr class="border-b hover:bg-slate-50 transition-colors"><td class="p-3 text-slate-600">${getSeasonName(m.Säs)}</td><td class="p-3 text-slate-500 text-xs">${m.Omgång || '-'}</td><td class="p-3 text-slate-500 text-xs">${displayDate}</td><td class="p-3 text-right ${hClass}">${origH}</td><td class="p-3 text-center font-mono font-bold bg-slate-50 border-x border-slate-100">${m.HM} - ${m.BM}</td><td class="p-3 ${aClass}">${origB}</td></tr>`;
             });
             document.getElementById('modal-tbody').innerHTML = html || '<tr><td colspan="6" class="p-6 text-center text-slate-500">Inga matcher att visa.</td></tr>';
             document.getElementById('streak-modal').classList.remove('hidden');
@@ -1450,7 +1490,10 @@ html_template = """
             if (info.nya === 'Nykomling') badges += '<span title="Nykomling" class="cursor-help ml-1 text-blue-600 font-bold text-[10px] bg-blue-100 rounded px-1">NY</span>';
             if (info.merit === 'Mästare') badges += '<span title="Svenska Mästare" class="cursor-help ml-1 text-yellow-500" style="font-size: 0.9em;">🥇</span>';
             else if (info.merit === 'Medalj') badges += '<span title="Medalj" class="cursor-help ml-1 text-slate-400" style="font-size: 0.9em;">🥈</span>';
-            else if (info.merit === 'Degraderade') badges += '<span title="Degraderade" class="cursor-help ml-1 text-rose-600 font-bold text-[10px] bg-rose-100 rounded px-1">↓</span>';
+            else if (info.merit === 'Degraderade' || info.merit === 'Degraderade uteslutning') {
+                let hoverText = info.merit === 'Degraderade uteslutning' ? 'Degraderad (Uteslutning)' : 'Degraderad';
+                badges += `<span title="${hoverText}" class="cursor-help ml-1 text-rose-600 font-bold text-[10px] bg-rose-100 rounded px-1">↓</span>`;
+            }
             else if (info.merit === 'Degraderade kval') badges += '<span title="Degraderade efter kval" class="cursor-help ml-1 text-rose-500 font-bold text-[10px] bg-rose-100 rounded px-1">↓K</span>';
             else if (info.merit === 'Kval kvar') badges += '<span title="Kvar efter kval" class="cursor-help ml-1 text-emerald-600 font-bold text-[10px] bg-emerald-100 rounded px-1">↔K</span>';
             return badges;
@@ -1498,11 +1541,14 @@ html_template = """
             });
             
             let table = {};
+            let seasonTeamNames = {};
             let notesSet = new Set();
             let totalGoals = 0; let totalMatchesPlayed = 0;
             let totalAttendance = 0; let matchesWithAttendance = 0;
 
             matches.forEach(m => {
+                seasonTeamNames[m.Hemmalag] = m.Hemmalag_Org || m.Hemmalag;
+                seasonTeamNames[m.Bortalag] = m.Bortalag_Org || m.Bortalag;
                 [m.Hemmalag, m.Bortalag].forEach(t => { if(!table[t]) table[t] = { team: t, pld:0, w:0, d:0, l:0, gf:0, ga:0, gd:0, pts:0 }; });
                 
                 let hm, bm;
@@ -1515,7 +1561,7 @@ html_template = """
                 let isWOB = notText.includes("W.O; B") || notText.includes("AVBRUTEN; F") || notText.includes("EJ KVALIFICERAD SPELARE; F");
                 let isAvbrutenO = notText.includes("AVBRUTEN; O");
 
-                let noteStr = getNoteString(m.Hemmalag, m.Bortalag, m.NOT, null);
+                let noteStr = getNoteString(m.Hemmalag_Org || m.Hemmalag, m.Bortalag_Org || m.Bortalag, m.NOT, null);
                 if (noteStr) notesSet.add(noteStr);
 
                 if (isNaN(hm) || isNaN(bm)) {
@@ -1555,11 +1601,8 @@ html_template = """
                     let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][t.team];
                     if (mInfo && mInfo.start_pts !== 0) {
                         let adj = mInfo.start_pts;
-                        if (adj < 0 && adj === -3 && pointsForWin === 2) adj = -2;
-                        
-                        if (isMSeriesSeason) { 
-                            if (phase === "MASTER") t.pts += adj; 
-                        } 
+                        if (adj === -3 && pointsForWin === 2) adj = -2;
+                        if (isMSeriesSeason) { if (phase === "MASTER") t.pts += adj; } 
                         else { t.pts += adj; }
                     }
                 });
@@ -1584,11 +1627,12 @@ html_template = """
             });
 
             let html = tableArr.map((r, i) => {
+                let origTeamName = seasonTeamNames[r.team] || r.team;
                 let badges = getMeritBadges(r.team, season);
                 let gdCell = useGoalRatio ? (r.ga === 0 ? (r.gf > 0 ? 'MAX' : '0.00') : (r.gf / r.ga).toFixed(2)) : (r.gd > 0 ? '+'+r.gd : r.gd);
                 let gdColor = useGoalRatio ? 'text-slate-700' : (r.gd > 0 ? 'text-emerald-600' : r.gd < 0 ? 'text-rose-600' : '');
                 
-                return `<tr class="hover:bg-slate-50"><td class="px-4 py-2 font-bold text-slate-500">${i+1}</td><td class="px-4 py-2 font-medium"><div class="flex items-center">${r.team}${badges}</div></td><td class="px-4 py-2 text-center bg-slate-50">${r.pld}</td><td class="px-4 py-2 text-center text-emerald-600">${r.w}</td><td class="px-4 py-2 text-center text-slate-500">${r.d}</td><td class="px-4 py-2 text-center text-rose-600">${r.l}</td><td class="px-4 py-2 text-center">${r.gf} - ${r.ga}</td><td class="px-4 py-2 text-center font-bold ${gdColor}">${gdCell}</td><td class="px-4 py-2 text-center font-black bg-blue-50/50">${r.pts}</td></tr>`;
+                return `<tr class="hover:bg-slate-50"><td class="px-4 py-2 font-bold text-slate-500">${i+1}</td><td class="px-4 py-2 font-medium"><div class="flex items-center">${origTeamName}${badges}</div></td><td class="px-4 py-2 text-center bg-slate-50">${r.pld}</td><td class="px-4 py-2 text-center text-emerald-600">${r.w}</td><td class="px-4 py-2 text-center text-slate-500">${r.d}</td><td class="px-4 py-2 text-center text-rose-600">${r.l}</td><td class="px-4 py-2 text-center">${r.gf} - ${r.ga}</td><td class="px-4 py-2 text-center font-bold ${gdColor}">${gdCell}</td><td class="px-4 py-2 text-center font-black bg-blue-50/50">${r.pts}</td></tr>`;
             }).join('');
 
             document.getElementById('league-table-body').innerHTML = html || '<tr><td colspan="9" class="text-center py-6 text-slate-500">Inga matcher hittades.</td></tr>';
@@ -1639,8 +1683,9 @@ html_template = """
                             let isAvbrutenO = nTxt.includes("AVBRUTEN; O");
                             if (isNaN(hm) || isNaN(bm)) { hm = 0; bm = 0; }
                             rTable[m.Hemmalag].gf += hm; rTable[m.Bortalag].gf += bm; rTable[m.Hemmalag].gd += (hm - bm); rTable[m.Bortalag].gd += (bm - hm);
-                            if (isWOH || isAvbrutenV) { rTable[m.Hemmalag].pts += pointsForWin; }
-                            else if (isWOB || isAvbrutenF) { rTable[m.Bortalag].pts += pointsForWin; }
+                            
+                            if (isWOH) { rTable[m.Hemmalag].pts += pointsForWin; }
+                            else if (isWOB) { rTable[m.Bortalag].pts += pointsForWin; }
                             else if (isAvbrutenO) { rTable[m.Hemmalag].pts += 1; rTable[m.Bortalag].pts += 1; }
                             else if (hm > bm) rTable[m.Hemmalag].pts += pointsForWin; 
                             else if (hm < bm) rTable[m.Bortalag].pts += pointsForWin;
@@ -1769,7 +1814,7 @@ html_template = """
                 if (!isNaN(pub) && pub > 0) { totalAttendance += pub; matchesWithAttendance++; }
             });
 
-            if (pHalf === 'FULL' && pCtx === 'ALL') {
+            if (pCtx === 'ALL' && pHalf === 'FULL') {
                 Object.values(table).forEach(t => {
                     let totalDeduction = 0;
                     t.seasons.forEach(sas => {
@@ -1850,6 +1895,8 @@ html_template = """
                     if(d1!==d2) return d1-d2; return a.Match_ID - b.Match_ID;
                 });
                 
+                let displayTeamName = tMatches.length > 0 ? (tMatches[0].Hemmalag === team ? (tMatches[0].Hemmalag_Org || tMatches[0].Hemmalag) : (tMatches[0].Bortalag_Org || tMatches[0].Bortalag)) : team;
+                
                 let w=0, d=0, l=0, gf=0, ga=0; let mHtml = '';
                 tMatches.forEach(m => {
                     const isHome = m.Hemmalag === team;
@@ -1864,10 +1911,13 @@ html_template = """
                     else if (isHome && hm>bm || !isHome && bm>hm) resClass = "bg-emerald-100 text-emerald-800";
                     else resClass = "bg-rose-100 text-rose-800";
                     
-                    mHtml += `<div class="flex justify-between items-center text-xs p-2 border-b border-slate-50 hover:bg-slate-50"><span class="w-1/4 text-slate-500">${m.Omgång||'-'} | ${formatDate(m.Matchdatum, m.År)}</span><span class="w-1/4 text-right ${isHome?'font-bold':''}">${m.Hemmalag}</span><span class="w-1/6 text-center font-mono font-bold ${resClass} rounded px-1">${m.HM}-${m.BM}</span><span class="w-1/4 ${!isHome?'font-bold':''}">${m.Bortalag}</span></div>`;
+                    let origH = m.Hemmalag_Org || m.Hemmalag;
+                    let origB = m.Bortalag_Org || m.Bortalag;
+
+                    mHtml += `<div class="flex justify-between items-center text-xs p-2 border-b border-slate-50 hover:bg-slate-50"><span class="w-1/4 text-slate-500">${m.Omgång||'-'} | ${formatDate(m.Matchdatum, m.År)}</span><span class="w-1/4 text-right ${isHome?'font-bold':''}">${origH}</span><span class="w-1/6 text-center font-mono font-bold ${resClass} rounded px-1">${m.HM}-${m.BM}</span><span class="w-1/4 ${!isHome?'font-bold':''}">${origB}</span></div>`;
                 });
                 
-                html += `<div><h4 class="font-bold text-slate-800 mb-2">${team}</h4><div class="flex gap-4 text-sm mb-3"><div class="bg-slate-50 px-3 py-1 rounded border border-slate-100">Matcher: <b>${tMatches.length}</b></div><div class="bg-slate-50 px-3 py-1 rounded border border-slate-100 text-emerald-600">V: <b>${w}</b></div><div class="bg-slate-50 px-3 py-1 rounded border border-slate-100 text-slate-600">O: <b>${d}</b></div><div class="bg-slate-50 px-3 py-1 rounded border border-slate-100 text-rose-600">F: <b>${l}</b></div><div class="bg-slate-50 px-3 py-1 rounded border border-slate-100">Mål: <b>${gf}-${ga}</b></div></div><div class="border border-slate-200 rounded max-h-64 overflow-y-auto custom-scroll">${mHtml}</div></div>`;
+                html += `<div><h4 class="font-bold text-slate-800 mb-2">${displayTeamName}</h4><div class="flex gap-4 text-sm mb-3"><div class="bg-slate-50 px-3 py-1 rounded border border-slate-100">Matcher: <b>${tMatches.length}</b></div><div class="bg-slate-50 px-3 py-1 rounded border border-slate-100 text-emerald-600">V: <b>${w}</b></div><div class="bg-slate-50 px-3 py-1 rounded border border-slate-100 text-slate-600">O: <b>${d}</b></div><div class="bg-slate-50 px-3 py-1 rounded border border-slate-100 text-rose-600">F: <b>${l}</b></div><div class="bg-slate-50 px-3 py-1 rounded border border-slate-100">Mål: <b>${gf}-${ga}</b></div></div><div class="border border-slate-200 rounded max-h-64 overflow-y-auto custom-scroll">${mHtml}</div></div>`;
             });
             html += `</div></div>`; return html;
         }
@@ -1915,7 +1965,6 @@ html_template = """
                         let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][t.team];
                         if (mInfo && mInfo.start_pts < 0) {
                             let adj = mInfo.start_pts;
-                            if (adj === -3 && ptsForWin === 2) adj = -2;
                             t.pts += adj;
                         }
                     });
@@ -2149,8 +2198,8 @@ html_template = """
             let seasonsToAnalyze = [];
 
             if (selection === "ALL_SEASONS") { seasonsToAnalyze = [...SEASONS].reverse(); document.getElementById('analysis-warning').classList.add('hidden'); } 
-            else if (selection.startsWith("EPOCH_CUSTOM_")) { let epoch = selection.replace("EPOCH_CUSTOM_", ""); seasonsToAnalyze = CUSTOM_EPOCHS[epoch]; if (analysisMode === 'chart') { document.getElementById('analysis-warning').innerText = `Analyserar egen epok: ${epoch}. Detta är ett genomsnitt av ${seasonsToAnalyze.length} säsonger.`; document.getElementById('analysis-warning').classList.remove('hidden', 'text-amber-800', 'bg-amber-50'); document.getElementById('analysis-warning').classList.add('text-blue-800', 'bg-blue-50'); } else { document.getElementById('analysis-warning').classList.add('hidden'); } } 
-            else if (selection.startsWith("EPOCH_DECADE_")) { let epoch = selection.replace("EPOCH_DECADE_", ""); seasonsToAnalyze = DECADES[epoch]; if (analysisMode === 'chart') { document.getElementById('analysis-warning').innerText = `Analyserar årtionde: ${epoch}. Detta är ett genomsnitt av ${seasonsToAnalyze.length} säsonger.`; document.getElementById('analysis-warning').classList.remove('hidden', 'text-amber-800', 'bg-amber-50'); document.getElementById('analysis-warning').classList.add('text-blue-800', 'bg-blue-50'); } else { document.getElementById('analysis-warning').classList.add('hidden'); } } 
+            else if (selection.startsWith("EPOCH_CUSTOM_")) { let epoch = selection.replace("EPOCH_CUSTOM_", ""); seasonsToAnalyze = CUSTOM_EPOCHS[epoch]; if (analysisMode === 'chart') { document.getElementById('analysis-warning').innerText = `Analyserar egen epok: ${epoch}. Detta är ett genomsnitt av ${seasonsToAnalyze.length} säsonger.`; document.getElementById('analysis-warning').classList.remove('hidden', 'text-blue-800', 'bg-blue-50'); document.getElementById('analysis-warning').classList.add('text-blue-800', 'bg-blue-50'); } else { document.getElementById('analysis-warning').classList.add('hidden'); } } 
+            else if (selection.startsWith("EPOCH_DECADE_")) { let epoch = selection.replace("EPOCH_DECADE_", ""); seasonsToAnalyze = DECADES[epoch]; if (analysisMode === 'chart') { document.getElementById('analysis-warning').innerText = `Analyserar årtionde: ${epoch}. Detta är ett genomsnitt av ${seasonsToAnalyze.length} säsonger.`; document.getElementById('analysis-warning').classList.remove('hidden', 'text-blue-800', 'bg-blue-50'); document.getElementById('analysis-warning').classList.add('text-blue-800', 'bg-blue-50'); } else { document.getElementById('analysis-warning').classList.add('hidden'); } } 
             else { seasonsToAnalyze = [selection]; document.getElementById('analysis-warning').classList.add('hidden'); }
 
             if (analysisMode === 'table') {

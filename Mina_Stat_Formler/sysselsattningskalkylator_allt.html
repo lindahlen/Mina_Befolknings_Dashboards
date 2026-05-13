@@ -16,11 +16,11 @@
         @media (min-width: 768px) { .card { padding: 1.25rem; } }
         .slider-container { margin-bottom: 0.75rem; }
         input[type=range] { width: 100%; accent-color: #0ea5e9; } 
-        .shock-checkbox:checked + label { background-color: #e0f2fe; border-color: #0ea5e9; font-weight: bold; color: #0369a1; }
     </style>
 </head>
 <body class="text-gray-800 flex flex-col min-h-screen">
 
+    <!-- HEADER -->
     <header class="bg-slate-800 text-white shadow-md">
         <div class="container mx-auto px-4 py-3 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div class="flex items-center gap-4">
@@ -46,6 +46,7 @@
 
     <div class="container mx-auto px-4 py-4 md:py-6 flex flex-col gap-4 flex-grow">
         
+        <!-- TOPPANEL -->
         <div class="bg-white p-3 md:p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col md:flex-row flex-wrap items-start md:items-center justify-between gap-4">
             <div class="flex items-center gap-2 w-full md:w-auto">
                 <div id="dataStatus" class="p-1.5 px-3 bg-slate-50 rounded border border-slate-200 text-xs font-medium text-amber-600 w-full md:w-auto text-center">
@@ -84,6 +85,8 @@
         </div>
 
         <div class="flex flex-col md:flex-row gap-4">
+            
+            <!-- KONTROLLPANEL -->
             <aside class="w-full md:w-1/3 xl:w-1/4 flex flex-col gap-4">
                 <div class="card opacity-50 pointer-events-none transition-opacity duration-300" id="scenarioPanel">
                     <div class="mb-4 p-2 bg-slate-50 rounded border border-slate-200">
@@ -157,19 +160,6 @@
                         <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="window.updateSliderVal(this, 'migrantSyssVal', '%-enh'); window.handleYearChange();">
                     </div>
 
-                    <div id="shocksContainer" class="hidden mt-4 pt-3 border-t border-gray-200">
-                        <div class="flex justify-between items-center mb-2 cursor-pointer group" onclick="window.toggleShocks()">
-                            <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider group-hover:text-sky-700 transition">Specifika Etableringar</h3>
-                            <div class="flex items-center gap-2">
-                                <i id="shocksIcon" class="fa-solid fa-chevron-down text-slate-400 transition-transform"></i>
-                                <span onclick="window.showInfo('shocker'); event.stopPropagation();" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info"></i></span>
-                            </div>
-                        </div>
-                        <div id="shocksList" class="hidden flex-col gap-1.5 mt-2">
-                            <!-- Genereras av JS -->
-                        </div>
-                    </div>
-
                     <hr class="my-4 border-gray-200">
                     
                     <div id="geoPanel" class="transition-opacity duration-300">
@@ -235,7 +225,9 @@
                 </div>
             </aside>
 
+            <!-- HÖGER KOLUMN: GRAFER OCH KPI -->
             <main class="w-full md:w-2/3 xl:w-3/4 flex flex-col gap-4">
+                
                 <div class="flex flex-col gap-2">
                     <div class="flex justify-between items-end mb-1">
                         <div class="flex items-center gap-2">
@@ -359,6 +351,7 @@
         </div>
     </div>
 
+    <!-- DYNAMISK INFO-MODAL -->
     <div id="infoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col">
             <div class="flex justify-between items-center p-3 border-b">
@@ -376,6 +369,7 @@
         &copy; Utvecklad av Analys & Utredning, Linköpings kommun
     </footer>
 
+    <!-- KODEN -->
     <script>
         // GLOBALA VARIABLER
         window.PROGNOS_SLUTAR = 2035;
@@ -459,12 +453,522 @@
             if (r['Samtliga'] != null) return parseFloat(r['Samtliga']);
             let sum = 0;
             Object.keys(r).forEach(k => {
-                if (k.match(/\d+/) && !k.toLowerCase().includes('totalt') && !['År','år','ÅR','Kön','kön','Sektor','Utbildningsnivå','Bransch'].includes(k)) {
+                if (k.match(/\d+/) && !k.toLowerCase().includes('totalt') && !['år','kön','sektor','utbildningsnivå','bransch'].includes(k.toLowerCase())) {
                     sum += parseFloat(r[k]) || 0;
                 }
             });
             return sum;
         }
+
+        window.showInfo = function(topicKey) {
+            const data = infoTexts[topicKey];
+            if(data) {
+                document.getElementById('infoModalTitle').innerText = data.title;
+                document.getElementById('infoModalContent').innerHTML = data.content;
+                document.getElementById('infoModal').classList.remove('hidden');
+            }
+        };
+        
+        window.closeInfoModal = function() { document.getElementById('infoModal').classList.add('hidden'); };
+        
+        window.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('infoModal')) window.closeInfoModal();
+        });
+
+        async function fetchJSON(url) {
+            try {
+                const res = await fetch(url);
+                if (!res.ok && res.status !== 0) return null; 
+                let text = await res.text(); 
+                text = text.replace(/:\s*NaN/g, ': null');
+                return JSON.parse(text);
+            } catch(e) { return null; }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const isLocal = window.location.protocol === 'file:';
+            const cb = isLocal ? '' : '?v=' + new Date().getTime(); 
+            
+            const yGraceContainer = document.getElementById('yGraceContainer');
+            if (yGraceContainer) yGraceContainer.style.display = SHOW_Y_GRACE_UI ? 'flex' : 'none';
+            const yGraceSelect = document.getElementById('yGrace');
+            if (yGraceSelect) yGraceSelect.value = DEFAULT_Y_GRACE;
+
+            const ageContainer = document.getElementById('ageSlidersContainer');
+            if (ageContainer) {
+                let htmlContent = '';
+                ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'].forEach(a => {
+                    let id = 'syssAge' + a.replace('-', '_');
+                    htmlContent += `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="w-12 text-gray-700">${a}</span>
+                        <input type="range" id="${id}" min="-15" max="15" step="0.5" value="0" class="flex-grow mx-2 h-1" oninput="window.updateSliderVal(this, 'val_${id}', '')">
+                        <span id="val_${id}" class="text-right text-xs font-bold w-10 text-slate-500">0</span>
+                    </div>`;
+                });
+                ageContainer.innerHTML = htmlContent;
+            }
+
+            Promise.all([
+                fetchJSON('syss_basdata.json' + cb),
+                fetchJSON('syss_config.json' + cb),
+                fetchJSON('kalkylator_basdata.json' + cb)
+            ]).then(([sBas, sConf, pBas]) => {
+                const statusDiv = document.getElementById('dataStatus');
+                if (!sBas) {
+                    statusDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Hittade inte "syss_basdata.json".';
+                    statusDiv.className = "p-1.5 bg-red-50 rounded border border-red-100 text-xs font-medium text-red-600";
+                    return;
+                }
+
+                syssBasdata = sBas;
+                syssConfig = sConf || {};
+                popData = pBas || [];
+
+                if (syssConfig['Scenarier'] && syssConfig['Scenarier'].length > 0) {
+                    const rows = syssConfig['Scenarier'];
+                    const mapScenario = (colName) => {
+                        return {
+                            jobGrowth: parseFloat(rows.find(r => r.Indikator === 'Jobbtillväxt')?.[colName] || 0),
+                            syssGrad: parseFloat(rows.find(r => r.Indikator === 'Sysselsättningsgrad')?.[colName] || 0),
+                            student: parseFloat(rows.find(r => r.Indikator === 'Kvarstannandegrad')?.[colName] || 0),
+                            inpendling: parseFloat(rows.find(r => r.Indikator === 'Inpendling')?.[colName] || 0),
+                            utpendling: parseFloat(rows.find(r => r.Indikator === 'Utpendling')?.[colName] || 0),
+                            distans: parseFloat(rows.find(r => r.Indikator === 'Distansarbete')?.[colName] || 0),
+                            region: parseFloat(rows.find(r => r.Indikator === 'Regionförstoring')?.[colName] || 0),
+                            migrantSyss: parseFloat(rows.find(r => r.Indikator === 'Justering inflyttares syss.grad')?.[colName] || 10)
+                        };
+                    };
+                    window.scenarioSettings.base = mapScenario('Bas');
+                    window.scenarioSettings.high = mapScenario('Hög');
+                    window.scenarioSettings.low = mapScenario('Låg');
+                    window.scenarioSettings.stagnant = mapScenario('Stagnerande');
+                }
+
+                if (syssConfig['Universitet'] && syssConfig['Universitet'].length > 0) {
+                    syssConfig['Universitet'].forEach(r => {
+                        let y = extractYear(r);
+                        if (y) {
+                            let studentVal = r['Examinerade_Studenter'] !== undefined ? r['Examinerade_Studenter'] : r['Examinerade_studenter'];
+                            if (studentVal !== undefined && studentVal !== null) annualStudentsMap[y] = parseFloat(studentVal);
+                            if (r['Examinerade_Civilingenjörer'] !== undefined && r['Examinerade_Civilingenjörer'] !== null) annualCivIngMap[y] = parseFloat(r['Examinerade_Civilingenjörer']);
+                        }
+                    });
+                    const stYears = Object.keys(annualStudentsMap).map(Number).sort((a,b)=>a-b);
+                    if (stYears.length > 0) avgAnnualStudents = annualStudentsMap[stYears[stYears.length - 1]];
+                    const civYears = Object.keys(annualCivIngMap).map(Number).sort((a,b)=>a-b);
+                    if (civYears.length > 0) avgAnnualCivIng = annualCivIngMap[civYears[civYears.length - 1]];
+                }
+
+                if (syssConfig['Tak_effekten'] && syssConfig['Tak_effekten'].length > 0) {
+                    syssConfig['Tak_effekten'].forEach(r => {
+                        const keys = Object.keys(r);
+                        if (keys.length >= 2) {
+                            const keyStr = String(r[keys[0]] || '').toLowerCase();
+                            const val = parseFloat(r[keys[1]]);
+                            if (!isNaN(val)) {
+                                if (keyStr.includes('lägsta friktionsarbetslöshet')) takEffekter.minArbetsloshet = val;
+                                if (keyStr.includes('max_sysselsättningsgrad') && !keyStr.includes('äldre')) { takEffekter.maxSyssGrad = val; takEffektMaxSyss = val; }
+                                if (keyStr.includes('kärna_långtidsarbetslösa')) takEffekter.karnaLangtidsarbetslosa = val;
+                                if (keyStr.includes('max_inpendlingsandel')) takEffekter.maxInpendlingsandel = val;
+                                if (keyStr.includes('kapacitetstak_infrastruktur')) takEffekter.kapacitetstakInfrastruktur = val;
+                            }
+                        }
+                    });
+                }
+
+                const subGroupSelect = document.getElementById('subGroupSelect');
+                if (syssConfig['SNIgrupper'] && syssConfig['SNIgrupper'].length > 0) {
+                    const firstRow = syssConfig['SNIgrupper'][0];
+                    const keys = Object.keys(firstRow);
+                    const groupCols = keys.slice(1);
+                    subGroupSelect.innerHTML = '<option value="all">Alla branscher (SNI)</option>';
+                    groupCols.forEach(col => { subGroupSelect.add(new Option(col, col)); });
+                    subGroupSelect.setAttribute('data-type', 'bransch');
+                }
+
+                let offData = syssConfig['Officiell_befolkningsprognos'] || syssConfig['officiell_prognos'];
+                if (offData && offData.length > 0) {
+                    let hasYearRows = offData.some(r => extractYear(r) !== null);
+                    if (!hasYearRows) {
+                        let yearCols = Object.keys(offData[0]).filter(k => k.match(/^(19|20)\d{2}$/));
+                        yearCols.forEach(y => {
+                            let tidStr = `${y} (Prognos)`;
+                            let totalPop = 0;
+                            offData.forEach(row => {
+                                const rawSex = String(row['Kön'] || row['kön'] || 'Totalt').trim().toLowerCase();
+                                let sex = 'Totalt';
+                                if (rawSex.startsWith('m')) sex = 'Män';
+                                else if (rawSex.startsWith('k')) sex = 'Kvinnor';
+                                
+                                const ageMatch = String(row['Ålder'] || row['ålder'] || '').match(/\d+/);
+                                if (ageMatch) {
+                                    const age = parseInt(ageMatch[0]);
+                                    let val = parseFloat(row[y]);
+                                    if (!isNaN(val)) {
+                                        popData.push({ tid: tidStr, kön: sex, ålder: age === 100 ? "100+ år" : `${age} år`, Befolkning: val });
+                                        if (sex !== 'Totalt') totalPop += val;
+                                    }
+                                }
+                            });
+                            popData.push({ tid: tidStr, kön: 'Totalt', ålder: "Totalt", Befolkning: totalPop });
+                        });
+                    } else {
+                        offData.forEach(row => {
+                            const year = extractYear(row);
+                            if (!year) return;
+                            const rawSex = String(row['Kön'] || row['kön'] || 'Totalt').trim().toLowerCase();
+                            let sex = 'Totalt';
+                            if (rawSex.startsWith('m')) sex = 'Män';
+                            else if (rawSex.startsWith('k')) sex = 'Kvinnor';
+                            
+                            const tidStr = `${year} (Prognos)`; 
+                            let totalPop = 0;
+                            for (let age = 0; age <= 100; age++) {
+                                let val = row[String(age)] !== undefined ? row[String(age)] : (row[age] !== undefined ? row[age] : null);
+                                if (val !== undefined && val !== null) {
+                                    let popVal = parseFloat(val);
+                                    popData.push({ tid: tidStr, kön: sex, ålder: age === 100 ? "100+ år" : `${age} år`, Befolkning: popVal });
+                                    totalPop += popVal;
+                                }
+                            }
+                            popData.push({ tid: tidStr, kön: sex, ålder: "Totalt", Befolkning: totalPop });
+                        });
+                    }
+                }
+
+                document.getElementById('scenarioPanel').classList.remove('opacity-50', 'pointer-events-none');
+                
+                window.checkSharedScenario(); 
+                window.extractHistoricalData();
+                window.calculateMigrantEmploymentRate(); 
+                window.buildDropdowns(); 
+                
+                const ySel = document.getElementById('yearSelect');
+                if (ySel && baseYear > 0) ySel.value = baseYear;
+
+                let popStatus = (popData.length > 0 || customPopData !== null) ? "Befolkning kopplad." : "VARNING: Saknar befolkning!";
+                document.getElementById('dataStatus').innerHTML = `<i class="fa-solid fa-circle-check"></i> Redo. <b>${popStatus}</b>`;
+                document.getElementById('dataStatus').className = "p-1.5 px-3 bg-green-50 rounded border border-green-100 text-xs font-medium text-green-600";
+
+                window.updateDashboard(false); 
+
+            }).catch(error => {
+                document.getElementById('dataStatus').innerHTML = `<b>Krasch under start:</b> ${error.message}`;
+                document.getElementById('dataStatus').className = "p-1.5 bg-red-50 rounded text-red-600 text-xs";
+            });
+        });
+
+        window.updateSliderVal = function(el, textId, suffix) {
+            let val = parseFloat(el.value);
+            let textEl = document.getElementById(textId);
+            if (textEl) textEl.innerText = (val > 0 ? '+' : '') + val + suffix;
+            
+            if (el.id === 'syssGradSlider') {
+                document.querySelectorAll('input[id^="syssAge"]').forEach(slider => {
+                    slider.value = val;
+                    let valEl = document.getElementById('val_' + slider.id);
+                    if (valEl) valEl.innerText = (val > 0 ? '+' : '') + val;
+                });
+            }
+        };
+
+        window.toggleSimMode = function() {
+            const mode = document.getElementById('simMode').value;
+            const geoPanel = document.getElementById('geoPanel');
+            if (geoPanel) {
+                if (mode === 'local') geoPanel.classList.add('opacity-40', 'pointer-events-none');
+                else geoPanel.classList.remove('opacity-40', 'pointer-events-none');
+            }
+            window.updateDashboard(true); 
+        };
+
+        window.updatePendlingUI = function() {
+            const type = document.getElementById('pendlingType').value;
+            const inSlider = document.getElementById('inpendlingSlider');
+            const utSlider = document.getElementById('utpendlingSlider');
+            if (inSlider && utSlider) {
+                if (type === 'pct') {
+                    inSlider.min = -50; inSlider.max = 50; inSlider.step = 1;
+                    utSlider.min = -50; utSlider.max = 50; utSlider.step = 1;
+                } else {
+                    inSlider.min = -5000; inSlider.max = 5000; inSlider.step = 50;
+                    utSlider.min = -5000; utSlider.max = 5000; utSlider.step = 50;
+                }
+                window.updatePendlingValue('inpendlingSlider', 'inpendlingVal');
+                window.updatePendlingValue('utpendlingSlider', 'utpendlingVal');
+            }
+        };
+
+        window.updatePendlingValue = function(sliderId, textId) {
+            const el = document.getElementById(sliderId);
+            const typeEl = document.getElementById('pendlingType');
+            if (el && typeEl) {
+                const val = el.value;
+                const prefix = val > 0 ? '+' : '';
+                const suffix = typeEl.value === 'pct' ? '%' : ' pers';
+                const textEl = document.getElementById(textId);
+                if (textEl) textEl.innerText = prefix + val + suffix;
+            }
+        };
+
+        window.toggleCivIng = function() {
+            const container = document.getElementById('civIngContainer');
+            const icon = document.getElementById('civIngToggleIcon');
+            useSpecificCivIng = !useSpecificCivIng;
+            
+            if (useSpecificCivIng) {
+                container.classList.remove('hidden');
+                icon.classList.replace('fa-circle-plus', 'fa-circle-minus');
+                icon.classList.replace('text-sky-600', 'text-red-500');
+                icon.title = "Återgå till gemensam Kvarstannandegrad";
+            } else {
+                container.classList.add('hidden');
+                icon.classList.replace('fa-circle-minus', 'fa-circle-plus');
+                icon.classList.replace('text-red-500', 'text-sky-600');
+                icon.title = "Dela upp på Civilingenjörer och Övriga";
+                document.getElementById('civIngSlider').value = 0;
+                document.getElementById('civIngVal').innerText = 'Baslinje';
+            }
+            window.runSimulation();
+        };
+
+        window.toggleSaveScenario = function() {
+            const saveBtn = document.getElementById('saveBtn');
+            const startYearSelect = document.getElementById('startYearSelect');
+            
+            if (!savedProjectedData) {
+                if (Object.keys(progDataStore).length === 0) { alert("Du måste köra en simulering först innan du kan spara och jämföra."); return; }
+                savedProjectedData = JSON.parse(JSON.stringify(progDataStore));
+                if (saveBtn) {
+                    saveBtn.innerHTML = '<i class="fa-solid fa-times mr-1"></i> Rensa jämförelse';
+                    saveBtn.classList.replace('bg-indigo-100', 'bg-red-100');
+                    saveBtn.classList.replace('text-indigo-800', 'text-red-800');
+                    saveBtn.classList.replace('hover:bg-indigo-200', 'hover:bg-red-200');
+                }
+                if (startYearSelect) startYearSelect.classList.add('hidden'); 
+                window.updateDashboard(false);
+            } else {
+                savedProjectedData = null;
+                if (saveBtn) {
+                    saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
+                    saveBtn.classList.replace('bg-red-100', 'bg-indigo-100');
+                    saveBtn.classList.replace('text-red-800', 'text-indigo-800');
+                    saveBtn.classList.replace('hover:bg-red-200', 'hover:bg-indigo-200');
+                }
+                if (startYearSelect) startYearSelect.classList.remove('hidden'); 
+                window.updateDashboard(false);
+            }
+        };
+
+        window.setScenario = function(type) {
+            const s = window.scenarioSettings[type];
+            document.getElementById('jobGrowthSlider').value = s.jobGrowth || 0;
+            document.getElementById('jobGrowthVal').innerText = (s.jobGrowth > 0 ? '+' : '') + (s.jobGrowth || 0) + '%';
+            document.getElementById('syssGradSlider').value = s.syssGrad || 0;
+            document.getElementById('syssGradVal').innerText = (s.syssGrad > 0 ? '+' : '') + (s.syssGrad || 0) + '%-enh';
+            document.getElementById('studentSlider').value = s.student || 0;
+            document.getElementById('studentVal').innerText = (s.student > 0 ? '+' : '') + (s.student || 0) + '%-enh';
+            
+            const migrantSyssSlider = document.getElementById('migrantSyssSlider');
+            if(migrantSyssSlider) {
+                migrantSyssSlider.value = s.migrantSyss !== undefined ? s.migrantSyss : 10;
+                document.getElementById('migrantSyssVal').innerText = (s.migrantSyss > 0 ? '+' : '') + (s.migrantSyss !== undefined ? s.migrantSyss : 10) + '%-enh';
+            }
+
+            const civIngSlider = document.getElementById('civIngSlider');
+            if(civIngSlider) {
+                civIngSlider.value = 0;
+                document.getElementById('civIngVal').innerText = 'Baslinje';
+            }
+
+            const pendType = document.getElementById('pendlingType');
+            if (pendType) pendType.value = 'pct';
+            window.updatePendlingUI();
+            
+            const inSlider = document.getElementById('inpendlingSlider');
+            if (inSlider) {
+                inSlider.value = s.inpendling || 0;
+                window.updatePendlingValue('inpendlingSlider', 'inpendlingVal');
+            }
+            const utSlider = document.getElementById('utpendlingSlider');
+            if (utSlider) {
+                utSlider.value = s.utpendling || 0;
+                window.updatePendlingValue('utpendlingSlider', 'utpendlingVal');
+            }
+            
+            document.getElementById('distansSlider').value = s.distans || 0;
+            document.getElementById('distansVal').innerText = (s.distans > 0 ? '+' : '') + (s.distans || 0) + '%';
+            document.getElementById('regionSlider').value = s.region || 0;
+            document.getElementById('regionVal').innerText = (s.region == 0 || !s.region) ? 'Dagens nivå' : '+' + s.region + ' min';
+            
+            window.runSimulation();
+        };
+
+        window.resetSimulation = function() {
+            const simMode = document.getElementById('simMode');
+            if (simMode) {
+                simMode.value = 'full';
+                window.toggleSimMode();
+            }
+            
+            document.getElementById('jobGrowthSlider').value = 0;
+            document.getElementById('jobGrowthVal').innerText = '+0%';
+            document.getElementById('syssGradSlider').value = 0;
+            document.getElementById('syssGradVal').innerText = 'Oförändrad';
+            document.getElementById('studentSlider').value = 0;
+            document.getElementById('studentVal').innerText = 'Baslinje';
+            
+            if (useSpecificCivIng) window.toggleCivIng(); 
+            
+            const pendType = document.getElementById('pendlingType');
+            if (pendType) pendType.value = 'pct';
+            window.updatePendlingUI();
+            
+            const inSlider = document.getElementById('inpendlingSlider');
+            if (inSlider) {
+                inSlider.value = 0;
+                document.getElementById('inpendlingVal').innerText = '+0%';
+            }
+            const utSlider = document.getElementById('utpendlingSlider');
+            if (utSlider) {
+                utSlider.value = 0;
+                document.getElementById('utpendlingVal').innerText = '+0%';
+            }
+            
+            document.getElementById('distansSlider').value = 0;
+            document.getElementById('distansVal').innerText = 'Baslinje';
+            document.getElementById('regionSlider').value = 0;
+            document.getElementById('regionVal').innerText = 'Dagens nivå';
+
+            progDataStore = {}; 
+            savedProjectedData = null;
+            
+            const saveBtn = document.getElementById('saveBtn');
+            if(saveBtn) {
+                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
+                saveBtn.classList.remove('bg-red-100', 'text-red-800', 'hover:bg-red-200');
+                saveBtn.classList.add('bg-indigo-100', 'text-indigo-800', 'hover:bg-indigo-200');
+            }
+            const startYearSelect = document.getElementById('startYearSelect');
+            if (startYearSelect) startYearSelect.classList.remove('hidden');
+
+            document.querySelectorAll('input[id^="syssAge"]').forEach(slider => {
+                slider.value = 0;
+                let valEl = document.getElementById('val_' + slider.id);
+                if (valEl) valEl.innerText = '0';
+            });
+
+            window.buildDropdowns();
+            window.updateDashboard(false);
+        };
+
+        window.handleYearChange = function() {
+            window.updateKPIs();
+            const chartTypeElement = document.getElementById('chartType');
+            if (chartTypeElement) {
+                const chartType = chartTypeElement.value;
+                if (['utb_match', 'sektor_match', 'sektor_match_kon', 'bransch_match'].includes(chartType)) {
+                    window.updateDashboard(true);
+                }
+            }
+        };
+
+        window.checkSharedScenario = function() {
+            const popSelect = document.getElementById('popSource');
+            if (!popSelect) return;
+            
+            while (popSelect.options.length > 1) { popSelect.remove(1); }
+
+            let hasOfficial = false;
+            if (syssConfig['Officiell_befolkningsprognos'] && syssConfig['Officiell_befolkningsprognos'].length > 0) {
+                popSelect.add(new Option("Officiell (Styrfil)", "officiell"));
+                hasOfficial = true;
+            }
+
+            try {
+                const shared = localStorage.getItem('linkoping_shared_pop_scenario');
+                if (shared) {
+                    customPopData = JSON.parse(shared);
+                    popSelect.add(new Option("Anpassad (Prognoskalkylatorn)", "custom"));
+                    popSelect.value = "custom";
+                    const btn = document.getElementById('clearCustomBtn');
+                    if (btn) btn.classList.remove('hidden');
+                    useCustomPop = true;
+                } else if (hasOfficial) {
+                    popSelect.value = "officiell";
+                } else {
+                    popSelect.value = "fryst";
+                }
+            } catch(e) { console.error("Kunde inte läsa in anpassat scenario", e); }
+            
+            window.updatePopSourceDesc();
+        };
+
+        window.updatePopSourceDesc = function() {
+            const val = document.getElementById('popSource').value;
+            const container = document.getElementById('popSourceContainer');
+            if (container) {
+                if (val === 'fryst') container.title = "Antar att befolkningen (16-74 år) stannar på utgångsårets nivå.";
+                else if (val === 'officiell') container.title = "Använder kommunens officiella framskrivning av befolkningen.";
+                else if (val === 'custom') container.title = "Använder ditt egna, importerade scenario från Prognoskalkylatorn.";
+            }
+            useCustomPop = (val === 'custom');
+        };
+
+        window.clearCustomPop = function() {
+            localStorage.removeItem('linkoping_shared_pop_scenario');
+            customPopData = null;
+            useCustomPop = false;
+            const btn = document.getElementById('clearCustomBtn');
+            if (btn) btn.classList.add('hidden');
+            window.checkSharedScenario();
+            window.runSimulation();
+        };
+
+        window.calculateMigrantEmploymentRate = function() {
+            let totalInf = 0; let workingInf = 0;
+            const migrantData = syssConfig['Andel_förvarb_inflytt_över_län'];
+            let rateCol = null;
+            
+            if (migrantData && migrantData.length > 0) {
+                const keys = Object.keys(migrantData[0]);
+                rateCol = keys.find(k => k.includes('Förvärvsarbetande_Totalt_In_Snitt')) ||
+                          keys.find(k => k.includes('Förvärvsarbetande_Totalt_In_2024')) ||
+                          keys.find(k => k.includes('Förvärvsarbetande'));
+            }
+
+            if (popData && popData.length > 0 && rateCol) {
+                let bYearData = popData.filter(r => String(r.tid).trim() === String(baseYear) && !String(r.ålder).includes('Totalt'));
+                if (bYearData.length === 0) {
+                     const aYears = [...new Set(popData.map(r => parseInt(String(r.tid).substring(0,4))))].filter(y => !isNaN(y)).sort();
+                     if(aYears.length > 0) {
+                         const latestY = aYears[aYears.length - 1];
+                         bYearData = popData.filter(r => String(r.tid).trim() === String(latestY) && !String(r.ålder).includes('Totalt'));
+                     }
+                }
+
+                for (let age = 0; age <= 100; age++) {
+                    let inflyttThisAge = 0;
+                    bYearData.forEach(r => {
+                        const match = String(r.ålder).match(/\d+/);
+                        if (match && parseInt(match[0]) === age) { inflyttThisAge += (r.Inflyttade || 0); }
+                    });
+                    
+                    let rate = 0;
+                    const mRow = migrantData.find(r => {
+                        const m = String(r['Ålder']).match(/\d+/);
+                        return m && parseInt(m[0]) === age;
+                    });
+                    if (mRow && mRow[rateCol]) rate = parseFloat(mRow[rateCol]) / 100;
+                    
+                    totalInf += inflyttThisAge;
+                    workingInf += inflyttThisAge * rate;
+                }
+            }
+            if (totalInf > 0 && workingInf > 0) globalMigrantEmploymentRate = workingInf / totalInf;
+            else globalMigrantEmploymentRate = 0.50; 
+        };
 
         window.getPopForYear = function(dataset, year) {
             let pop = 0;
@@ -707,483 +1211,6 @@
             document.body.removeChild(link);
         };
 
-        window.showInfo = function(topicKey) {
-            const data = infoTexts[topicKey];
-            if(data) {
-                document.getElementById('infoModalTitle').innerText = data.title;
-                document.getElementById('infoModalContent').innerHTML = data.content;
-                document.getElementById('infoModal').classList.remove('hidden');
-            }
-        };
-        
-        window.closeInfoModal = function() { document.getElementById('infoModal').classList.add('hidden'); };
-        
-        window.addEventListener('click', (e) => {
-            if (e.target === document.getElementById('infoModal')) window.closeInfoModal();
-        });
-
-        async function fetchJSON(url) {
-            try {
-                const res = await fetch(url);
-                if (!res.ok && res.status !== 0) return null; 
-                let text = await res.text(); 
-                text = text.replace(/:\s*NaN/g, ': null');
-                return JSON.parse(text);
-            } catch(e) { return null; }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            const isLocal = window.location.protocol === 'file:';
-            const cb = isLocal ? '' : '?v=' + new Date().getTime(); 
-            
-            const yGraceContainer = document.getElementById('yGraceContainer');
-            if (yGraceContainer) yGraceContainer.style.display = SHOW_Y_GRACE_UI ? 'flex' : 'none';
-            const yGraceSelect = document.getElementById('yGrace');
-            if (yGraceSelect) yGraceSelect.value = DEFAULT_Y_GRACE;
-
-            const ageContainer = document.getElementById('ageSlidersContainer');
-            if (ageContainer) {
-                let htmlContent = '';
-                ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'].forEach(a => {
-                    let id = 'syssAge' + a.replace('-', '_');
-                    htmlContent += `
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="w-12 text-gray-700">${a}</span>
-                        <input type="range" id="${id}" min="-15" max="15" step="0.5" value="0" class="flex-grow mx-2 h-1" oninput="window.updateSliderVal(this, 'val_${id}', '')">
-                        <span id="val_${id}" class="text-right text-xs font-bold w-10 text-slate-500">0</span>
-                    </div>`;
-                });
-                ageContainer.innerHTML = htmlContent;
-            }
-
-            Promise.all([
-                fetchJSON('syss_basdata.json' + cb),
-                fetchJSON('syss_config.json' + cb),
-                fetchJSON('kalkylator_basdata.json' + cb)
-            ]).then(([sBas, sConf, pBas]) => {
-                const statusDiv = document.getElementById('dataStatus');
-                if (!sBas) {
-                    statusDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Hittade inte "syss_basdata.json".';
-                    statusDiv.className = "p-1.5 bg-red-50 rounded border border-red-100 text-xs font-medium text-red-600";
-                    return;
-                }
-
-                syssBasdata = sBas;
-                syssConfig = sConf || {};
-                popData = pBas || [];
-
-                if (syssConfig['Scenarier'] && syssConfig['Scenarier'].length > 0) {
-                    const rows = syssConfig['Scenarier'];
-                    const mapScenario = (colName) => {
-                        return {
-                            jobGrowth: parseFloat(rows.find(r => r.Indikator === 'Jobbtillväxt')?.[colName] || 0),
-                            syssGrad: parseFloat(rows.find(r => r.Indikator === 'Sysselsättningsgrad')?.[colName] || 0),
-                            student: parseFloat(rows.find(r => r.Indikator === 'Kvarstannandegrad')?.[colName] || 0),
-                            inpendling: parseFloat(rows.find(r => r.Indikator === 'Inpendling')?.[colName] || 0),
-                            utpendling: parseFloat(rows.find(r => r.Indikator === 'Utpendling')?.[colName] || 0),
-                            distans: parseFloat(rows.find(r => r.Indikator === 'Distansarbete')?.[colName] || 0),
-                            region: parseFloat(rows.find(r => r.Indikator === 'Regionförstoring')?.[colName] || 0),
-                            migrantSyss: parseFloat(rows.find(r => r.Indikator === 'Justering inflyttares syss.grad')?.[colName] || 10)
-                        };
-                    };
-                    window.scenarioSettings.base = mapScenario('Bas');
-                    window.scenarioSettings.high = mapScenario('Hög');
-                    window.scenarioSettings.low = mapScenario('Låg');
-                    window.scenarioSettings.stagnant = mapScenario('Stagnerande');
-                }
-
-                if (syssConfig['Universitet'] && syssConfig['Universitet'].length > 0) {
-                    syssConfig['Universitet'].forEach(r => {
-                        let y = extractYear(r);
-                        if (y) {
-                            let studentVal = r['Examinerade_Studenter'] !== undefined ? r['Examinerade_Studenter'] : r['Examinerade_studenter'];
-                            if (studentVal !== undefined && studentVal !== null) annualStudentsMap[y] = parseFloat(studentVal);
-                            if (r['Examinerade_Civilingenjörer'] !== undefined && r['Examinerade_Civilingenjörer'] !== null) annualCivIngMap[y] = parseFloat(r['Examinerade_Civilingenjörer']);
-                        }
-                    });
-                    const stYears = Object.keys(annualStudentsMap).map(Number).sort((a,b)=>a-b);
-                    if (stYears.length > 0) avgAnnualStudents = annualStudentsMap[stYears[stYears.length - 1]];
-                    const civYears = Object.keys(annualCivIngMap).map(Number).sort((a,b)=>a-b);
-                    if (civYears.length > 0) avgAnnualCivIng = annualCivIngMap[civYears[civYears.length - 1]];
-                }
-
-                if (syssConfig['Tak_effekten'] && syssConfig['Tak_effekten'].length > 0) {
-                    syssConfig['Tak_effekten'].forEach(r => {
-                        const keys = Object.keys(r);
-                        if (keys.length >= 2) {
-                            const keyStr = String(r[keys[0]] || '').toLowerCase();
-                            const val = parseFloat(r[keys[1]]);
-                            if (!isNaN(val)) {
-                                if (keyStr.includes('lägsta friktionsarbetslöshet')) takEffekter.minArbetsloshet = val;
-                                if (keyStr.includes('max_sysselsättningsgrad') && !keyStr.includes('äldre')) { takEffekter.maxSyssGrad = val; takEffektMaxSyss = val; }
-                                if (keyStr.includes('kärna_långtidsarbetslösa')) takEffekter.karnaLangtidsarbetslosa = val;
-                                if (keyStr.includes('max_inpendlingsandel')) takEffekter.maxInpendlingsandel = val;
-                                if (keyStr.includes('kapacitetstak_infrastruktur')) takEffekter.kapacitetstakInfrastruktur = val;
-                            }
-                        }
-                    });
-                }
-
-                const shocksContainer = document.getElementById('shocksContainer');
-                const shocksList = document.getElementById('shocksList');
-                if (syssConfig['Etableringschocker'] && syssConfig['Etableringschocker'].length > 0) {
-                    syssConfig['Etableringschocker'].forEach((shock, index) => {
-                        if (!shock['År'] || !shock['Händelsenamn']) return;
-                        const div = document.createElement('div');
-                        const isPos = parseFloat(shock['Antal_Jobb']) >= 0;
-                        const colorClass = isPos ? 'text-emerald-700 bg-emerald-50' : 'text-red-700 bg-red-50';
-                        const sign = isPos ? '+' : '';
-                        div.innerHTML = `
-                            <input type="checkbox" id="shock_${index}" class="hidden shock-checkbox" value="${index}" onchange="runSimulation()">
-                            <label for="shock_${index}" class="flex justify-between items-center p-2 rounded border border-gray-200 cursor-pointer hover:bg-gray-50 transition text-xs text-gray-600">
-                                <span><b>${shock['År']}:</b> ${shock['Händelsenamn']}</span>
-                                <span class="font-bold ${colorClass} px-1.5 py-0.5 rounded text-[10px]">${sign}${shock['Antal_Jobb']}</span>
-                            </label>
-                        `;
-                        shocksList.appendChild(div);
-                    });
-                    shocksContainer.classList.remove('hidden');
-                }
-
-                const subGroupSelect = document.getElementById('subGroupSelect');
-                if (syssConfig['SNIgrupper'] && syssConfig['SNIgrupper'].length > 0) {
-                    const firstRow = syssConfig['SNIgrupper'][0];
-                    const keys = Object.keys(firstRow);
-                    const groupCols = keys.slice(1);
-                    subGroupSelect.innerHTML = '<option value="all">Alla branscher (SNI)</option>';
-                    groupCols.forEach(col => { subGroupSelect.add(new Option(col, col)); });
-                    subGroupSelect.setAttribute('data-type', 'bransch');
-                }
-
-                let offData = syssConfig['Officiell_befolkningsprognos'] || syssConfig['officiell_prognos'];
-                if (offData && offData.length > 0) {
-                    let hasYearRows = offData.some(r => extractYear(r) !== null);
-                    if (!hasYearRows) {
-                        let yearCols = Object.keys(offData[0]).filter(k => k.match(/^(19|20)\d{2}$/));
-                        yearCols.forEach(y => {
-                            let tidStr = `${y} (Prognos)`;
-                            let totalPop = 0;
-                            offData.forEach(row => {
-                                const rawSex = String(row['Kön'] || row['kön'] || 'Totalt').trim().toLowerCase();
-                                let sex = 'Totalt';
-                                if (rawSex.startsWith('m')) sex = 'Män';
-                                else if (rawSex.startsWith('k')) sex = 'Kvinnor';
-                                
-                                const ageMatch = String(row['Ålder'] || row['ålder'] || '').match(/\d+/);
-                                if (ageMatch) {
-                                    const age = parseInt(ageMatch[0]);
-                                    let val = parseFloat(row[y]);
-                                    if (!isNaN(val)) {
-                                        popData.push({ tid: tidStr, kön: sex, ålder: age === 100 ? "100+ år" : `${age} år`, Befolkning: val });
-                                        if (sex !== 'Totalt') totalPop += val;
-                                    }
-                                }
-                            });
-                            popData.push({ tid: tidStr, kön: 'Totalt', ålder: "Totalt", Befolkning: totalPop });
-                        });
-                    } else {
-                        offData.forEach(row => {
-                            const year = extractYear(row);
-                            if (!year) return;
-                            const rawSex = String(row['Kön'] || row['kön'] || 'Totalt').trim().toLowerCase();
-                            let sex = 'Totalt';
-                            if (rawSex.startsWith('m')) sex = 'Män';
-                            else if (rawSex.startsWith('k')) sex = 'Kvinnor';
-                            
-                            const tidStr = `${year} (Prognos)`; 
-                            let totalPop = 0;
-                            for (let age = 0; age <= 100; age++) {
-                                let val = row[String(age)] !== undefined ? row[String(age)] : (row[age] !== undefined ? row[age] : null);
-                                if (val !== undefined && val !== null) {
-                                    let popVal = parseFloat(val);
-                                    popData.push({ tid: tidStr, kön: sex, ålder: age === 100 ? "100+ år" : `${age} år`, Befolkning: popVal });
-                                    totalPop += popVal;
-                                }
-                            }
-                            popData.push({ tid: tidStr, kön: sex, ålder: "Totalt", Befolkning: totalPop });
-                        });
-                    }
-                }
-
-                document.getElementById('scenarioPanel').classList.remove('opacity-50', 'pointer-events-none');
-                
-                window.checkSharedScenario(); 
-                window.extractHistoricalData();
-                window.calculateMigrantEmploymentRate(); 
-                window.buildDropdowns(); 
-                
-                const ySel = document.getElementById('yearSelect');
-                if (ySel && baseYear > 0) ySel.value = baseYear;
-
-                let popStatus = (popData.length > 0 || customPopData !== null) ? "Befolkning kopplad." : "VARNING: Saknar befolkning!";
-                document.getElementById('dataStatus').innerHTML = `<i class="fa-solid fa-circle-check"></i> Redo. <b>${popStatus}</b>`;
-                document.getElementById('dataStatus').className = "p-1.5 px-3 bg-green-50 rounded border border-green-100 text-xs font-medium text-green-600";
-
-                window.updateDashboard(false); 
-
-            }).catch(error => {
-                document.getElementById('dataStatus').innerHTML = `<b>Krasch under start:</b> ${error.message}`;
-                document.getElementById('dataStatus').className = "p-1.5 bg-red-50 rounded text-red-600 text-xs";
-            });
-        });
-
-        window.updateSliderVal = function(el, textId, suffix) {
-            let val = parseFloat(el.value);
-            let textEl = document.getElementById(textId);
-            if (textEl) textEl.innerText = (val > 0 ? '+' : '') + val + suffix;
-            
-            if (el.id === 'syssGradSlider') {
-                document.querySelectorAll('input[id^="syssAge"]').forEach(slider => {
-                    slider.value = val;
-                    let valEl = document.getElementById('val_' + slider.id);
-                    if (valEl) valEl.innerText = (val > 0 ? '+' : '') + val;
-                });
-            }
-        };
-
-        window.toggleSimMode = function() {
-            const mode = document.getElementById('simMode').value;
-            const geoPanel = document.getElementById('geoPanel');
-            if (geoPanel) {
-                if (mode === 'local') geoPanel.classList.add('opacity-40', 'pointer-events-none');
-                else geoPanel.classList.remove('opacity-40', 'pointer-events-none');
-            }
-            window.updateDashboard(true); 
-        };
-
-        window.updatePendlingUI = function() {
-            const type = document.getElementById('pendlingType').value;
-            const inSlider = document.getElementById('inpendlingSlider');
-            const utSlider = document.getElementById('utpendlingSlider');
-            if (inSlider && utSlider) {
-                if (type === 'pct') {
-                    inSlider.min = -50; inSlider.max = 50; inSlider.step = 1;
-                    utSlider.min = -50; utSlider.max = 50; utSlider.step = 1;
-                } else {
-                    inSlider.min = -5000; inSlider.max = 5000; inSlider.step = 50;
-                    utSlider.min = -5000; utSlider.max = 5000; utSlider.step = 50;
-                }
-                window.updatePendlingValue('inpendlingSlider', 'inpendlingVal');
-                window.updatePendlingValue('utpendlingSlider', 'utpendlingVal');
-            }
-        };
-
-        window.updatePendlingValue = function(sliderId, textId) {
-            const el = document.getElementById(sliderId);
-            const typeEl = document.getElementById('pendlingType');
-            if (el && typeEl) {
-                const val = el.value;
-                const prefix = val > 0 ? '+' : '';
-                const suffix = typeEl.value === 'pct' ? '%' : ' pers';
-                const textEl = document.getElementById(textId);
-                if (textEl) textEl.innerText = prefix + val + suffix;
-            }
-        };
-
-        window.toggleSaveScenario = function() {
-            const saveBtn = document.getElementById('saveBtn');
-            const startYearSelect = document.getElementById('startYearSelect');
-            
-            if (!savedProjectedData) {
-                if (Object.keys(progDataStore).length === 0) { alert("Du måste köra en simulering först."); return; }
-                savedProjectedData = JSON.parse(JSON.stringify(progDataStore));
-                if (saveBtn) {
-                    saveBtn.innerHTML = '<i class="fa-solid fa-times mr-1"></i> Rensa jämförelse';
-                    saveBtn.classList.replace('bg-indigo-100', 'bg-red-100');
-                    saveBtn.classList.replace('text-indigo-800', 'text-red-800');
-                    saveBtn.classList.replace('hover:bg-indigo-200', 'hover:bg-red-200');
-                }
-                if (startYearSelect) startYearSelect.classList.add('hidden'); 
-                window.updateDashboard(false);
-            } else {
-                savedProjectedData = null;
-                if (saveBtn) {
-                    saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
-                    saveBtn.classList.replace('bg-red-100', 'bg-indigo-100');
-                    saveBtn.classList.replace('text-red-800', 'text-indigo-800');
-                    saveBtn.classList.replace('hover:bg-red-200', 'hover:bg-indigo-200');
-                }
-                if (startYearSelect) startYearSelect.classList.remove('hidden'); 
-                window.updateDashboard(false);
-            }
-        };
-
-        window.setScenario = function(type) {
-            const s = window.scenarioSettings[type];
-            document.getElementById('jobGrowthSlider').value = s.jobGrowth || 0;
-            document.getElementById('jobGrowthVal').innerText = (s.jobGrowth > 0 ? '+' : '') + (s.jobGrowth || 0) + '%';
-            document.getElementById('syssGradSlider').value = s.syssGrad || 0;
-            document.getElementById('syssGradVal').innerText = (s.syssGrad > 0 ? '+' : '') + (s.syssGrad || 0) + '%-enh';
-            document.getElementById('studentSlider').value = s.student || 0;
-            document.getElementById('studentVal').innerText = (s.student > 0 ? '+' : '') + (s.student || 0) + '%-enh';
-            
-            const migrantSyssSlider = document.getElementById('migrantSyssSlider');
-            if(migrantSyssSlider) {
-                migrantSyssSlider.value = s.migrantSyss !== undefined ? s.migrantSyss : 10;
-                document.getElementById('migrantSyssVal').innerText = (s.migrantSyss > 0 ? '+' : '') + (s.migrantSyss !== undefined ? s.migrantSyss : 10) + '%-enh';
-            }
-
-            document.getElementById('pendlingType').value = 'pct';
-            window.updatePendlingUI();
-            
-            document.getElementById('inpendlingSlider').value = s.inpendling || 0;
-            window.updatePendlingValue('inpendlingSlider', 'inpendlingVal');
-            document.getElementById('utpendlingSlider').value = s.utpendling || 0;
-            window.updatePendlingValue('utpendlingSlider', 'utpendlingVal');
-            
-            document.getElementById('distansSlider').value = s.distans || 0;
-            document.getElementById('distansVal').innerText = (s.distans > 0 ? '+' : '') + (s.distans || 0) + '%';
-            document.getElementById('regionSlider').value = s.region || 0;
-            document.getElementById('regionVal').innerText = (s.region == 0 || !s.region) ? 'Dagens nivå' : '+' + s.region + ' min';
-
-            window.runSimulation();
-        };
-
-        window.resetSimulation = function() {
-            const simMode = document.getElementById('simMode');
-            if (simMode) {
-                simMode.value = 'full';
-                window.toggleSimMode();
-            }
-            
-            document.getElementById('jobGrowthSlider').value = 0;
-            document.getElementById('jobGrowthVal').innerText = '+0%';
-            document.getElementById('syssGradSlider').value = 0;
-            document.getElementById('syssGradVal').innerText = 'Oförändrad';
-            document.getElementById('studentSlider').value = 0;
-            document.getElementById('studentVal').innerText = 'Baslinje';
-            
-            document.getElementById('pendlingType').value = 'pct';
-            window.updatePendlingUI();
-            
-            document.getElementById('inpendlingSlider').value = 0;
-            document.getElementById('inpendlingVal').innerText = '+0%';
-            document.getElementById('utpendlingSlider').value = 0;
-            document.getElementById('utpendlingVal').innerText = '+0%';
-            
-            document.getElementById('distansSlider').value = 0;
-            document.getElementById('distansVal').innerText = 'Baslinje';
-            document.getElementById('regionSlider').value = 0;
-            document.getElementById('regionVal').innerText = 'Dagens nivå';
-
-            progDataStore = {}; 
-            savedProjectedData = null;
-            
-            const saveBtn = document.getElementById('saveBtn');
-            if(saveBtn) {
-                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
-                saveBtn.classList.remove('bg-red-100', 'text-red-800', 'hover:bg-red-200');
-                saveBtn.classList.add('bg-indigo-100', 'text-indigo-800', 'hover:bg-indigo-200');
-            }
-            const startYearSelect = document.getElementById('startYearSelect');
-            if (startYearSelect) startYearSelect.classList.remove('hidden');
-
-            document.querySelectorAll('input[id^="syssAge"]').forEach(slider => {
-                slider.value = 0;
-                let valEl = document.getElementById('val_' + slider.id);
-                if (valEl) valEl.innerText = '0';
-            });
-
-            window.buildDropdowns();
-            window.updateDashboard(false);
-        };
-
-        window.checkSharedScenario = function() {
-            const popSelect = document.getElementById('popSource');
-            if (!popSelect) return;
-            
-            while (popSelect.options.length > 1) { popSelect.remove(1); }
-
-            let hasOfficial = false;
-            if (syssConfig['Officiell_befolkningsprognos'] && syssConfig['Officiell_befolkningsprognos'].length > 0) {
-                popSelect.add(new Option("Officiell (Styrfil)", "officiell"));
-                hasOfficial = true;
-            }
-
-            try {
-                const shared = localStorage.getItem('linkoping_shared_pop_scenario');
-                if (shared) {
-                    customPopData = JSON.parse(shared);
-                    popSelect.add(new Option("Anpassad (Prognoskalkylatorn)", "custom"));
-                    popSelect.value = "custom";
-                    const btn = document.getElementById('clearCustomBtn');
-                    if (btn) btn.classList.remove('hidden');
-                    useCustomPop = true;
-                } else if (hasOfficial) {
-                    popSelect.value = "officiell";
-                } else {
-                    popSelect.value = "fryst";
-                }
-            } catch(e) { console.error("Kunde inte läsa in anpassat scenario", e); }
-            
-            window.updatePopSourceDesc();
-        };
-
-        window.updatePopSourceDesc = function() {
-            const val = document.getElementById('popSource').value;
-            const container = document.getElementById('popSourceContainer');
-            if (container) {
-                if (val === 'fryst') container.title = "Antar att befolkningen (16-74 år) stannar på utgångsårets nivå.";
-                else if (val === 'officiell') container.title = "Använder kommunens officiella framskrivning av befolkningen.";
-                else if (val === 'custom') container.title = "Använder ditt egna, importerade scenario från Prognoskalkylatorn.";
-            }
-            useCustomPop = (val === 'custom');
-        };
-
-        window.clearCustomPop = function() {
-            localStorage.removeItem('linkoping_shared_pop_scenario');
-            customPopData = null;
-            useCustomPop = false;
-            const btn = document.getElementById('clearCustomBtn');
-            if (btn) btn.classList.add('hidden');
-            window.checkSharedScenario();
-            window.runSimulation();
-        };
-
-        window.calculateMigrantEmploymentRate = function() {
-            let totalInf = 0; let workingInf = 0;
-            const migrantData = syssConfig['Andel_förvarb_inflytt_över_län'];
-            let rateCol = null;
-            
-            if (migrantData && migrantData.length > 0) {
-                const keys = Object.keys(migrantData[0]);
-                rateCol = keys.find(k => k.includes('Förvärvsarbetande_Totalt_In_Snitt')) ||
-                          keys.find(k => k.includes('Förvärvsarbetande_Totalt_In_2024')) ||
-                          keys.find(k => k.includes('Förvärvsarbetande'));
-            }
-
-            if (popData && popData.length > 0 && rateCol) {
-                let bYearData = popData.filter(r => String(r.tid).trim() === String(baseYear) && !String(r.ålder).includes('Totalt'));
-                if (bYearData.length === 0) {
-                     const aYears = [...new Set(popData.map(r => parseInt(String(r.tid).substring(0,4))))].filter(y => !isNaN(y)).sort();
-                     if(aYears.length > 0) {
-                         const latestY = aYears[aYears.length - 1];
-                         bYearData = popData.filter(r => String(r.tid).trim() === String(latestY) && !String(r.ålder).includes('Totalt'));
-                     }
-                }
-
-                for (let age = 0; age <= 100; age++) {
-                    let inflyttThisAge = 0;
-                    bYearData.forEach(r => {
-                        const match = String(r.ålder).match(/\d+/);
-                        if (match && parseInt(match[0]) === age) { inflyttThisAge += (r.Inflyttade || 0); }
-                    });
-                    
-                    let rate = 0;
-                    const mRow = migrantData.find(r => {
-                        const m = String(r['Ålder']).match(/\d+/);
-                        return m && parseInt(m[0]) === age;
-                    });
-                    if (mRow && mRow[rateCol]) rate = parseFloat(mRow[rateCol]) / 100;
-                    
-                    totalInf += inflyttThisAge;
-                    workingInf += inflyttThisAge * rate;
-                }
-            }
-            if (totalInf > 0 && workingInf > 0) globalMigrantEmploymentRate = workingInf / totalInf;
-            else globalMigrantEmploymentRate = 0.50; 
-        };
-
         const getScbVal = (row, searchTerms, excludeTerms=[]) => {
             if (!row) return null;
             for(let key of Object.keys(row)) {
@@ -1201,22 +1228,36 @@
             let dsKey = Object.keys(syssBasdata).find(k => k.toLowerCase().includes(datasetPartialName.toLowerCase()));
             const ds = dsKey ? syssBasdata[dsKey] : [];
             const records = ds.filter(r => extractYear(r) == targetYear);
+
             if (records.length === 0) return null;
-            
-            let hasTotalRow = records.some(r => getKon(r) === 'totalt');
+
+            let hasTotalRow = records.some(r => getKon(r) === 'totalt' || getKon(r) === 'samtliga');
 
             records.forEach(r => {
                 let kon = getKon(r);
-                if (hasTotalRow && kon !== 'totalt' && kon !== null) return; 
+                if (kon && hasTotalRow && kon !== 'totalt' && kon !== 'samtliga') return; 
 
-                Object.keys(r).forEach(k => {
-                    let kl = k.toLowerCase().replace(/_/g, ' ');
-                    if (kl === 'inrikes född' || kl.includes('inrikes')) {
-                        inr += parseFloat(r[k]) || 0; found = true;
-                    } else if (kl === 'utrikes född' || kl.includes('utrikes')) {
-                        utr += parseFloat(r[k]) || 0; found = true;
+                let isUtr = false, isInr = false;
+                for (let k in r) {
+                    if (typeof r[k] === 'string') {
+                        let valStr = r[k].toLowerCase();
+                        if (valStr === 'utrikes född' || (valStr.includes('utrikes') && !valStr.includes('inrikes'))) isUtr = true;
+                        if (valStr === 'inrikes född' || valStr.includes('inrikes') || valStr.includes('sverige')) isInr = true;
                     }
-                });
+                }
+                
+                if (isUtr || isInr) {
+                    found = true;
+                    let rowTot = getRowTotal(r);
+                    if (isUtr) utr += rowTot;
+                    if (isInr) inr += rowTot;
+                } else {
+                    for (let k in r) {
+                        let kl = k.toLowerCase().replace(/_/g, ' ');
+                        if (kl.includes('utrikes')) { utr += parseFloat(r[k]) || 0; found = true; }
+                        if (kl.includes('inrikes') || kl.includes('sverige')) { inr += parseFloat(r[k]) || 0; found = true; }
+                    }
+                }
             });
             return found ? { inr, utr } : null;
         };
@@ -1401,76 +1442,83 @@
                     lastKnownBRP = brpPerSyss; lastKnownBRPYear = y; brpHistory.push({year: y, val: brpPerSyss});
                 }
 
-                let arbetsloshetPct = null, arb_inrikes = null, arb_utrikes = null, arb_man = null, arb_kvinna = null;
                 let arb = { tot_num:null, m_num:null, k_num:null, in_num:null, ut_num:null, tot_pct:null, m_pct:null, k_pct:null, in_pct:null, ut_pct:null };
-                
-                if(syssBasdata['Arbetslöshet']) {
-                    const arbRow = syssBasdata['Arbetslöshet'].find(r => extractYear(r) == y);
-                    if(arbRow) {
-                        const pctKeys = Object.keys(arbRow).filter(k => String(k).toLowerCase().includes('%') || String(k).toLowerCase().includes('andel'));
-                        if(pctKeys.length > 0) arbetsloshetPct = parseFloat(arbRow[pctKeys[0]]);
-                        
-                        const inKey = pctKeys.find(k => k.toLowerCase().includes('inrikes'));
-                        const utKey = pctKeys.find(k => k.toLowerCase().includes('utrikes'));
-                        if(inKey) arb_inrikes = parseFloat(arbRow[inKey]);
-                        if(utKey) arb_utrikes = parseFloat(arbRow[utKey]);
-
-                        const mKeyArb = pctKeys.find(k => { const kl = k.toLowerCase(); return (kl.includes('män') || kl.includes('man')) && !kl.includes('kvinna'); });
-                        const kKeyArb = pctKeys.find(k => k.toLowerCase().includes('kvinnor') || k.toLowerCase().includes('kvinna'));
-                        if(mKeyArb) arb_man = parseFloat(arbRow[mKeyArb]);
-                        if(kKeyArb) arb_kvinna = parseFloat(arbRow[kKeyArb]);
-                        
-                        arb.tot_pct = getScbVal(arbRow, ['totalt andel av arbetskraften', 'andel av arbetskraften totalt', 'totalt %', '%'], ['inskrivna']);
-                        arb.m_pct = getScbVal(arbRow, ['män andel av arbetskraften', 'män andel', 'män %'], ['inskrivna']);
-                        arb.k_pct = getScbVal(arbRow, ['kvinnor andel av arbetskraften', 'kvinnor andel', 'kvinnor %'], ['inskrivna']);
-                        arb.in_pct = getScbVal(arbRow, ['inrikes födda andel av arbetskraften', 'inrikes andel', 'inrikes %', 'inrikes födda %'], ['inskrivna']);
-                        arb.ut_pct = getScbVal(arbRow, ['utrikes födda andel av arbetskraften', 'utrikes andel', 'utrikes %', 'utrikes födda %'], ['inskrivna']);
-                        
-                        arb.tot_num = getScbVal(arbRow, ['totalt', 'samtliga', 'antal', 'värde'], ['andel', '%', 'inrikes', 'utrikes', 'män', 'kvinnor']);
-                        arb.m_num = getScbVal(arbRow, ['män', 'man'], ['andel', '%']);
-                        arb.k_num = getScbVal(arbRow, ['kvinnor', 'kvinna'], ['andel', '%']);
-                        arb.in_num = getScbVal(arbRow, ['inrikes', 'inrikes född'], ['andel', '%']);
-                        arb.ut_num = getScbVal(arbRow, ['utrikes', 'utrikes född'], ['andel', '%']);
+                if (syssBasdata['Arbetslöshet']) {
+                    const rowsY = syssBasdata['Arbetslöshet'].filter(r => extractYear(r) == y);
+                    if (rowsY.length > 0) {
+                        let rowTot = rowsY.find(r => getKon(r) === 'totalt' || getKon(r) === 'samtliga' || !getKon(r)) || rowsY[0];
+                        arb.tot_pct = getScbVal(rowTot, ['totalt andel av arbetskraften', 'andel av arbetskraften totalt', 'totalt %', '%'], ['inskrivna']);
+                        arb.m_pct = getScbVal(rowTot, ['män andel av arbetskraften', 'män andel', 'män %'], ['inskrivna']);
+                        arb.k_pct = getScbVal(rowTot, ['kvinnor andel av arbetskraften', 'kvinnor andel', 'kvinnor %'], ['inskrivna']);
+                        arb.in_pct = getScbVal(rowTot, ['inrikes födda andel av arbetskraften', 'inrikes andel', 'inrikes %', 'inrikes födda %'], ['inskrivna']);
+                        arb.ut_pct = getScbVal(rowTot, ['utrikes födda andel av arbetskraften', 'utrikes andel', 'utrikes %', 'utrikes födda %'], ['inskrivna']);
+                        if (arb.m_pct == null) {
+                            let rM = rowsY.find(r => getKon(r) === 'män');
+                            arb.m_pct = getScbVal(rM, ['totalt andel', '%', 'andel'], ['inskrivna']);
+                        }
+                        if (arb.k_pct == null) {
+                            let rK = rowsY.find(r => getKon(r) === 'kvinnor');
+                            arb.k_pct = getScbVal(rK, ['totalt andel', '%', 'andel'], ['inskrivna']);
+                        }
+                        arb.tot_num = getScbVal(rowTot, ['totalt', 'samtliga', 'antal', 'värde'], ['andel', '%', 'inrikes', 'utrikes', 'män', 'kvinnor']);
+                        arb.m_num = getScbVal(rowTot, ['män', 'man'], ['andel', '%']);
+                        arb.k_num = getScbVal(rowTot, ['kvinnor', 'kvinna'], ['andel', '%']);
+                        arb.in_num = getScbVal(rowTot, ['inrikes', 'inrikes född'], ['andel', '%']);
+                        arb.ut_num = getScbVal(rowTot, ['utrikes', 'utrikes född'], ['andel', '%']);
+                        if (arb.m_num == null) {
+                            let rM = rowsY.find(r => getKon(r) === 'män');
+                            arb.m_num = getScbVal(rM, ['totalt', 'antal', 'värde'], ['andel', '%']);
+                        }
+                        if (arb.k_num == null) {
+                            let rK = rowsY.find(r => getKon(r) === 'kvinnor');
+                            arb.k_num = getScbVal(rK, ['totalt', 'antal', 'värde'], ['andel', '%']);
+                        }
                     }
                 }
 
-                let langtidsPct = null, larb_inrikes = null, larb_utrikes = null, larb_man = null, larb_kvinna = null;
                 let larb = { tot_num:null, m_num:null, k_num:null, in_num:null, ut_num:null, tot_pct:null, m_pct:null, k_pct:null, in_pct:null, ut_pct:null, tot_insk:null, m_insk:null, k_insk:null, in_insk:null, ut_insk:null };
-                
-                if(syssBasdata['Långtidsarbetslöshet'] || syssBasdata['Langtidsarbetsloshet']) {
-                    const lData = syssBasdata['Långtidsarbetslöshet'] || syssBasdata['Langtidsarbetsloshet'];
-                    const lRow = lData.find(r => extractYear(r) == y);
-                    if(lRow) {
-                        const pctKeys = Object.keys(lRow).filter(k => String(k).toLowerCase().includes('%') || String(k).toLowerCase().includes('andel'));
-                        if(pctKeys.length > 0) langtidsPct = parseFloat(lRow[pctKeys[0]]);
-                        
-                        const inKey = pctKeys.find(k => k.toLowerCase().includes('inrikes'));
-                        const utKey = pctKeys.find(k => k.toLowerCase().includes('utrikes'));
-                        if(inKey) larb_inrikes = parseFloat(lRow[inKey]);
-                        if(utKey) larb_utrikes = parseFloat(lRow[utKey]);
+                let lData = syssBasdata['Långtidsarbetslöshet'] || syssBasdata['Langtidsarbetsloshet'];
+                if (lData) {
+                    const rowsY = lData.filter(r => extractYear(r) == y);
+                    if (rowsY.length > 0) {
+                        let rowTot = rowsY.find(r => getKon(r) === 'totalt' || getKon(r) === 'samtliga' || !getKon(r)) || rowsY[0];
+                        larb.tot_pct = getScbVal(rowTot, ['totalt 16-65 år andel av arbetskraften', 'andel av arbetskraften totalt', 'totalt andel']);
+                        larb.m_pct = getScbVal(rowTot, ['män 16-65 år andel av arbetskraften', 'män andel av arbetskraften']);
+                        larb.k_pct = getScbVal(rowTot, ['kvinnor 16-65 år andel av arbetskraften', 'kvinnor andel av arbetskraften', 'kvinnor 16-65 år andel av arbetskraften']);
+                        larb.in_pct = getScbVal(rowTot, ['inrikes födda 16-65 år andel av arbetskraften', 'inrikes födda 16-65 år andel av arbetskraften']);
+                        larb.ut_pct = getScbVal(rowTot, ['utrikes födda 16-65 år andel av arbetskraften', 'utrikes födda 16-65 år andel av arbetskraften']);
 
-                        const mKeyLarb = pctKeys.find(k => { const kl = k.toLowerCase(); return (kl.includes('män') || kl.includes('man')) && !kl.includes('kvinna'); });
-                        const kKeyLarb = pctKeys.find(k => k.toLowerCase().includes('kvinnor') || k.toLowerCase().includes('kvinna'));
-                        if(mKeyLarb) larb_man = parseFloat(lRow[mKeyLarb]);
-                        if(kKeyLarb) larb_kvinna = parseFloat(lRow[kKeyLarb]);
-                        
-                        larb.tot_pct = getScbVal(lRow, ['totalt 16-65 år andel av arbetskraften', 'andel av arbetskraften totalt', 'totalt andel']);
-                        larb.m_pct = getScbVal(lRow, ['män 16-65 år andel av arbetskraften', 'män andel av arbetskraften']);
-                        larb.k_pct = getScbVal(lRow, ['kvinnor 16-65 år andel av arbetskraften', 'kvinnor andel av arbetskraften', 'kvinnor 16-65 år andel av arbetskraften']);
-                        larb.in_pct = getScbVal(lRow, ['inrikes födda 16-65 år andel av arbetskraften', 'inrikes födda 16-65 år andel av arbetskraften']);
-                        larb.ut_pct = getScbVal(lRow, ['utrikes födda 16-65 år andel av arbetskraften', 'utrikes födda 16-65 år andel av arbetskraften']);
+                        larb.tot_insk = getScbVal(rowTot, ['totalt 16-65 år andel av inskrivna', 'andel av inskrivna totalt']);
+                        larb.m_insk = getScbVal(rowTot, ['män 16-65 år andel av inskrivna', 'män andel av inskrivna']);
+                        larb.k_insk = getScbVal(rowTot, ['kvinnor 16-65 år andel av inskrivna', 'kvinnor andel av inskrivna', 'kvinnor 16-65 år andel av inskrivna']);
+                        larb.in_insk = getScbVal(rowTot, ['inrikes födda 16-65 år andel av inskrivna', 'inrikes födda 16-65 år andel av inskrivna']);
+                        larb.ut_insk = getScbVal(rowTot, ['utrikes födda 16-65 år andel av inskrivna', 'utrikes födda 16-65 år andel av inskrivna']);
 
-                        larb.tot_insk = getScbVal(lRow, ['totalt 16-65 år andel av inskrivna', 'andel av inskrivna totalt']);
-                        larb.m_insk = getScbVal(lRow, ['män 16-65 år andel av inskrivna', 'män andel av inskrivna']);
-                        larb.k_insk = getScbVal(lRow, ['kvinnor 16-65 år andel av inskrivna', 'kvinnor andel av inskrivna', 'kvinnor 16-65 år andel av inskrivna']);
-                        larb.in_insk = getScbVal(lRow, ['inrikes födda 16-65 år andel av inskrivna', 'inrikes födda 16-65 år andel av inskrivna']);
-                        larb.ut_insk = getScbVal(lRow, ['utrikes födda 16-65 år andel av inskrivna', 'utrikes födda 16-65 år andel av inskrivna']);
+                        if (larb.m_pct == null || larb.m_insk == null) {
+                            let rM = rowsY.find(r => getKon(r) === 'män');
+                            larb.m_pct = getScbVal(rM, ['andel av arbetskraften', 'totalt andel']);
+                            larb.m_insk = getScbVal(rM, ['andel av inskrivna']);
+                        }
+                        if (larb.k_pct == null || larb.k_insk == null) {
+                            let rK = rowsY.find(r => getKon(r) === 'kvinnor');
+                            larb.k_pct = getScbVal(rK, ['andel av arbetskraften', 'totalt andel']);
+                            larb.k_insk = getScbVal(rK, ['andel av inskrivna']);
+                        }
+
+                        larb.tot_num = getScbVal(rowTot, ['totalt', 'samtliga', 'antal', 'värde'], ['andel', '%', 'inrikes', 'utrikes', 'män', 'kvinnor']);
+                        larb.m_num = getScbVal(rowTot, ['män', 'man'], ['andel', '%']);
+                        larb.k_num = getScbVal(rowTot, ['kvinnor', 'kvinna'], ['andel', '%']);
+                        larb.in_num = getScbVal(rowTot, ['inrikes', 'inrikes född'], ['andel', '%']);
+                        larb.ut_num = getScbVal(rowTot, ['utrikes', 'utrikes född'], ['andel', '%']);
                         
-                        larb.tot_num = getScbVal(lRow, ['totalt', 'samtliga', 'antal', 'värde'], ['andel', '%', 'inrikes', 'utrikes', 'män', 'kvinnor']);
-                        larb.m_num = getScbVal(lRow, ['män', 'man'], ['andel', '%']);
-                        larb.k_num = getScbVal(lRow, ['kvinnor', 'kvinna'], ['andel', '%']);
-                        larb.in_num = getScbVal(lRow, ['inrikes', 'inrikes född'], ['andel', '%']);
-                        larb.ut_num = getScbVal(lRow, ['utrikes', 'utrikes född'], ['andel', '%']);
+                        if (larb.m_num == null) {
+                            let rM = rowsY.find(r => getKon(r) === 'män');
+                            larb.m_num = getScbVal(rM, ['totalt', 'antal', 'värde'], ['andel', '%']);
+                        }
+                        if (larb.k_num == null) {
+                            let rK = rowsY.find(r => getKon(r) === 'kvinnor');
+                            larb.k_num = getScbVal(rK, ['totalt', 'antal', 'värde'], ['andel', '%']);
+                        }
                     }
                 }
 
@@ -1566,8 +1614,8 @@
                     extrapolatedBrp: null,
                     arb: arb, 
                     larb: larb,
-                    arbetsloshetPct: arbetsloshetPct, 
-                    langtidsPct: langtidsPct, 
+                    arbetsloshetPct: arb.tot_pct, 
+                    langtidsPct: larb.tot_pct, 
                     n_inrikes: n_inrikes,
                     n_utrikes: n_utrikes,
                     d_inrikes: d_inrikes,
@@ -1576,14 +1624,14 @@
                     d_kvinna: d_kvinna,
                     n_man: n_man,
                     n_kvinna: n_kvinna,
-                    arb_inrikes: arb_inrikes,
-                    arb_utrikes: arb_utrikes,
-                    larb_inrikes: larb_inrikes,
-                    larb_utrikes: larb_utrikes,
-                    arb_man: arb_man,
-                    arb_kvinna: arb_kvinna,
-                    larb_man: larb_man,
-                    larb_kvinna: larb_kvinna,
+                    arb_inrikes: arb.in_pct,
+                    arb_utrikes: arb.ut_pct,
+                    larb_inrikes: larb.in_pct,
+                    larb_utrikes: larb.ut_pct,
+                    arb_man: arb.m_pct,
+                    arb_kvinna: arb.k_pct,
+                    larb_man: larb.m_pct,
+                    larb_kvinna: larb.k_pct,
                     ageRates: Object.keys(ageRates || {}).length > 0 ? ageRates : null
                 };
             });
@@ -1596,12 +1644,26 @@
                 if (yearsDiff > 0 && first.val > 0) { brpCAGR = Math.pow(last.val / first.val, 1 / yearsDiff) - 1; }
             }
 
+            let lastKnown = {};
             sortedYears.forEach(y => {
-                if (histDataStore[y].brp === null && lastKnownBRP !== null && y > lastKnownBRPYear) {
+                let d = histDataStore[y];
+                if (!d) return;
+                ['displayRate','syss_in_tot','syss_ut_tot','n_inrikes','n_utrikes','d_inrikes','d_utrikes','n_man','n_kvinna','d_man','d_kvinna','ageRates'].forEach(k => {
+                    if (d[k] != null) lastKnown[k] = (typeof d[k] === 'object') ? JSON.parse(JSON.stringify(d[k])) : d[k];
+                    else if (lastKnown[k] != null) d[k] = (typeof lastKnown[k] === 'object') ? JSON.parse(JSON.stringify(lastKnown[k])) : lastKnown[k];
+                });
+                
+                if(d.arb.tot_pct == null && lastKnown.arb_tot_pct != null) { d.arb.tot_pct = lastKnown.arb_tot_pct; d.arbetsloshetPct = lastKnown.arb_tot_pct; }
+                else if (d.arb.tot_pct != null) lastKnown.arb_tot_pct = d.arb.tot_pct;
+                
+                if(d.larb.tot_pct == null && lastKnown.larb_tot_pct != null) { d.larb.tot_pct = lastKnown.larb_tot_pct; d.langtidsPct = lastKnown.larb_tot_pct; }
+                else if (d.larb.tot_pct != null) lastKnown.larb_tot_pct = d.larb.tot_pct;
+
+                if (d.brp === null && lastKnownBRP !== null && y > lastKnownBRPYear) {
                     let yearsAhead = y - lastKnownBRPYear;
-                    histDataStore[y].extrapolatedBrp = lastKnownBRP * Math.pow(1 + brpCAGR, yearsAhead);
+                    d.extrapolatedBrp = lastKnownBRP * Math.pow(1 + brpCAGR, yearsAhead);
                 } else {
-                    histDataStore[y].extrapolatedBrp = histDataStore[y].brp;
+                    d.extrapolatedBrp = d.brp;
                 }
             });
 
@@ -1668,47 +1730,51 @@
                 histDataStore[baseYear].avg10_syssGradK = avgK;
                 histDataStore[baseYear].avg10_ageRates = avgAge;
             }
-        }
+        };
 
         window.buildDropdowns = function() {
             const progYears = Object.keys(progDataStore).map(Number);
             allYears = [...new Set([...histYearsGlobal, ...progYears])].sort((a,b)=>a-b);
 
             const yearSelect = document.getElementById('yearSelect');
-            const prevYearVal = yearSelect.value;
-            while (yearSelect.firstChild) { yearSelect.removeChild(yearSelect.firstChild); }
-            
-            if (allYears.length === 0) {
-                yearSelect.add(new Option("Data saknas", ""));
-            } else {
-                [...allYears].reverse().forEach(y => {
-                    let text = y > baseYear ? y + " (Prognos)" : y.toString();
-                    let opt = new Option(text, y);
-                    if(y > baseYear) opt.className = "text-sky-700 font-bold bg-sky-50";
-                    yearSelect.add(opt);
-                });
+            if(yearSelect) {
+                const prevYearVal = yearSelect.value;
+                while (yearSelect.firstChild) { yearSelect.removeChild(yearSelect.firstChild); }
                 
-                if (prevYearVal && allYears.includes(parseInt(prevYearVal))) yearSelect.value = prevYearVal;
-                else yearSelect.value = baseYear; 
+                if (allYears.length === 0) {
+                    yearSelect.add(new Option("Data saknas", ""));
+                } else {
+                    [...allYears].reverse().forEach(y => {
+                        let text = y > baseYear ? y + " (Prognos)" : y.toString();
+                        let opt = new Option(text, y);
+                        if(y > baseYear) opt.className = "text-sky-700 font-bold bg-sky-50";
+                        yearSelect.add(opt);
+                    });
+                    
+                    if (prevYearVal && allYears.includes(parseInt(prevYearVal))) yearSelect.value = prevYearVal;
+                    else yearSelect.value = baseYear; 
+                }
             }
 
             const startYearSelect = document.getElementById('startYearSelect');
-            const prevStartVal = startYearSelect.value;
-            startYearSelect.innerHTML = '';
+            if(startYearSelect) {
+                const prevStartVal = startYearSelect.value;
+                while (startYearSelect.firstChild) { startYearSelect.removeChild(startYearSelect.firstChild); }
 
-            if (histYearsGlobal.length === 0) {
-                startYearSelect.add(new Option("Data saknas", ""));
-            } else {
-                const specificYears = [1975, 1990, 2000, 2010, 2020, baseYear - 10, baseYear];
-                const validYears = [...new Set(specificYears)].filter(y => histYearsGlobal.includes(y)).sort((a,b)=>a-b);
-                
-                validYears.reverse().forEach(y => startYearSelect.add(new Option('Från ' + y, y)));
-                
-                let defaultStart = baseYear - 10;
-                if (!validYears.includes(defaultStart) && validYears.length > 0) defaultStart = validYears[validYears.length-1];
-                
-                if (prevStartVal && validYears.includes(parseInt(prevStartVal))) startYearSelect.value = prevStartVal;
-                else startYearSelect.value = defaultStart; 
+                if (histYearsGlobal.length === 0) {
+                    startYearSelect.add(new Option("Data saknas", ""));
+                } else {
+                    const specificYears = [1975, 1990, 2000, 2010, 2020, baseYear - 10, baseYear];
+                    const validYears = [...new Set(specificYears)].filter(y => histYearsGlobal.includes(y)).sort((a,b)=>a-b);
+                    
+                    validYears.reverse().forEach(y => startYearSelect.add(new Option('Från ' + y, y)));
+                    
+                    let defaultStart = baseYear - 10;
+                    if (!validYears.includes(defaultStart) && validYears.length > 0) defaultStart = validYears[validYears.length-1];
+                    
+                    if (prevStartVal && validYears.includes(parseInt(prevStartVal))) startYearSelect.value = prevStartVal;
+                    else startYearSelect.value = defaultStart; 
+                }
             }
         };
 
@@ -1722,12 +1788,16 @@
 
             document.getElementById('kpiEfterfragan').innerText = d.demand != null ? window.formatNumber(d.demand, 0) : 'Data saknas';
             
-            if (d.isAgeWeighted) {
-                document.getElementById('kpiUtbud').innerHTML = `${window.formatNumber(d.supply, 0)} <span class="text-xs text-sky-400" title="Åldersviktad beräkning aktiv">*</span>`;
-                document.getElementById('kpiUtbudContainer').title = "Lokalt arbetskraftsutbud (Åldersviktad beräkning)";
-            } else {
-                document.getElementById('kpiUtbud').innerText = d.supply != null ? window.formatNumber(d.supply, 0) : 'Data saknas';
-                document.getElementById('kpiUtbudContainer').title = "Lokalt arbetskraftsutbud";
+            const kpiUtbud = document.getElementById('kpiUtbud');
+            const kpiUtbudContainer = document.getElementById('kpiUtbudContainer');
+            if (kpiUtbud && kpiUtbudContainer) {
+                if (d.isAgeWeighted) {
+                    kpiUtbud.innerHTML = `${window.formatNumber(d.supply, 0)} <span class="text-xs text-sky-400" title="Åldersviktad beräkning aktiv">*</span>`;
+                    kpiUtbudContainer.title = "Lokalt arbetskraftsutbud (Åldersviktad beräkning)";
+                } else {
+                    kpiUtbud.innerText = d.supply != null ? window.formatNumber(d.supply, 0) : 'Data saknas';
+                    kpiUtbudContainer.title = "Lokalt arbetskraftsutbud";
+                }
             }
             
             const kpiBef = document.getElementById('kpiBefolkning');
@@ -1746,81 +1816,111 @@
                 let virtualExt = d.virtualSupply || 0;
                 const totalPendling = showCommuting ? (explNetto + virtualExt) : 0;
                 
-                document.getElementById('kpiPendling').innerText = (totalPendling > 0 ? '+' : '') + window.formatNumber(totalPendling, 0);
-                document.getElementById('kpiPendling').className = "text-base md:text-lg font-bold " + (totalPendling > 0 ? "text-indigo-600" : (showCommuting ? "text-emerald-600" : "text-gray-400"));
-                
-                if (!showCommuting) {
-                    document.getElementById('kpiPendling').title = "Pendling inaktiverad i läget 'Endast Lokal'.";
-                    document.getElementById('kpiPendling').innerText = '-';
-                } else if (virtualExt > 0) {
-                    const komText = d.antalKommunerBeraknade ? ` för ${d.antalKommunerBeraknade} grannkommuner` : '';
-                    document.getElementById('kpiPendling').title = `Faktisk pendling: ${window.formatNumber(explNetto, 0)}.\nVirtuellt Pendlingsutbud: ${window.formatNumber(virtualExt, 0)} ${komText}.`;
-                } else {
-                    document.getElementById('kpiPendling').title = "Totalt Pendlingsnetto";
+                const kpiPendling = document.getElementById('kpiPendling');
+                if(kpiPendling) {
+                    kpiPendling.innerText = (totalPendling > 0 ? '+' : '') + window.formatNumber(totalPendling, 0);
+                    kpiPendling.className = "text-base md:text-lg font-bold " + (totalPendling > 0 ? "text-indigo-600" : (showCommuting ? "text-emerald-600" : "text-gray-400"));
+                    
+                    if (!showCommuting) {
+                        kpiPendling.title = "Pendling inaktiverad i läget 'Endast Lokal'.";
+                        kpiPendling.innerText = '-';
+                    } else if (virtualExt > 0) {
+                        const komText = d.antalKommunerBeraknade ? ` för ${d.antalKommunerBeraknade} grannkommuner` : '';
+                        kpiPendling.title = `Faktisk pendling: ${window.formatNumber(explNetto, 0)}.\nVirtuellt Pendlingsutbud: ${window.formatNumber(virtualExt, 0)} ${komText}.`;
+                    } else {
+                        kpiPendling.title = "Totalt Pendlingsnetto";
+                    }
                 }
 
                 if (causalityMode === 'dynamic' && d.inducedPop !== undefined) {
                     if (d.inducedPop > 0) {
-                        kpiBef.innerText = '+' + window.formatNumber(d.inducedPop, 0);
-                        kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
-                        kpiBefContainer.title = `Dynamisk jämvikt:\n${window.formatNumber(d.inducedPop, 0)} nya invånare har simulerats flytta in.`;
+                        if(kpiBef) {
+                            kpiBef.innerText = '+' + window.formatNumber(d.inducedPop, 0);
+                            kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
+                            if(kpiBefContainer) kpiBefContainer.title = `Dynamisk jämvikt:\n${window.formatNumber(d.inducedPop, 0)} nya invånare har simulerats flytta in.`;
+                        }
                     } else {
-                        kpiBef.innerText = 'Balans';
-                        kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
-                        kpiBefContainer.title = "Dynamisk jämvikt: Utbud och pendling täcker behovet.";
+                        if(kpiBef) {
+                            kpiBef.innerText = 'Balans';
+                            kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
+                            if(kpiBefContainer) kpiBefContainer.title = "Dynamisk jämvikt: Utbud och pendling täcker behovet.";
+                        }
                     }
                 } else {
                     const omatchatGap = d.demand - (d.supply + totalPendling);
                     if (omatchatGap > 5) {
-                        const userSyssAdjustment = parseFloat(document.getElementById('migrantSyssSlider').value) / 100;
-                        const employmentRate = window.globalMigrantEmploymentRate + userSyssAdjustment;
+                        const migrantSyssSlider = document.getElementById('migrantSyssSlider');
+                        const userSyssAdjustment = migrantSyssSlider ? parseFloat(migrantSyssSlider.value) / 100 : 0.10;
+                        const employmentRate = (typeof globalMigrantEmploymentRate !== 'undefined' ? globalMigrantEmploymentRate : 0.50) + userSyssAdjustment;
                         let totalPopNeeded = omatchatGap / Math.max(0.01, employmentRate); 
 
-                        kpiBef.innerText = '+' + window.formatNumber(totalPopNeeded, 0);
-                        kpiBef.className = "text-base md:text-lg font-bold text-orange-600";
-                        kpiBefContainer.title = `Analys av gap:\nDet kvarstår ett gap på ${window.formatNumber(omatchatGap, 0)} jobb.\nFör att fylla detta krävs inflyttning av ca ${window.formatNumber(totalPopNeeded, 0)} nya invånare.`;
+                        if(kpiBef) {
+                            kpiBef.innerText = '+' + window.formatNumber(totalPopNeeded, 0);
+                            kpiBef.className = "text-base md:text-lg font-bold text-orange-600";
+                            if(kpiBefContainer) kpiBefContainer.title = `Analys av gap:\nDet kvarstår ett gap på ${window.formatNumber(omatchatGap, 0)} jobb.\nFör att fylla detta krävs inflyttning av ca ${window.formatNumber(totalPopNeeded, 0)} nya invånare.`;
+                        }
                     } else if (omatchatGap < -5) {
-                        kpiBef.innerText = 'Överskott';
-                        kpiBef.className = "text-base md:text-lg font-bold text-sky-600";
-                        kpiBefContainer.title = `Lokalt utbud är ${window.formatNumber(Math.abs(omatchatGap), 0)} personer högre än tillgängliga jobb.`;
+                        if(kpiBef) {
+                            kpiBef.innerText = 'Överskott';
+                            kpiBef.className = "text-base md:text-lg font-bold text-sky-600";
+                            if(kpiBefContainer) kpiBefContainer.title = `Lokalt utbud är ${window.formatNumber(Math.abs(omatchatGap), 0)} personer högre än tillgängliga jobb.`;
+                        }
                     } else {
-                        kpiBef.innerText = 'Balans';
-                        kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
-                        kpiBefContainer.title = "Perfekt matchning. Inget kvarstående rekryteringsgap.";
+                        if(kpiBef) {
+                            kpiBef.innerText = 'Balans';
+                            kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
+                            if(kpiBefContainer) kpiBefContainer.title = "Perfekt matchning. Inget kvarstående rekryteringsgap.";
+                        }
                     }
                 }
             } else {
-                document.getElementById('kpiPendling').innerText = 'Data saknas';
-                document.getElementById('kpiPendling').className = "text-base md:text-lg font-bold text-gray-400";
-                kpiBef.innerText = '-';
+                const kpiPendling = document.getElementById('kpiPendling');
+                if(kpiPendling) {
+                    kpiPendling.innerText = 'Data saknas';
+                    kpiPendling.className = "text-base md:text-lg font-bold text-gray-400";
+                }
+                if(kpiBef) kpiBef.innerText = '-';
             }
             
-            if (d.displayRate != null) {
-                document.getElementById('kpiSyssGrad').innerText = window.formatNumber(d.displayRate, 1) + '%';
-                if (d.displayRate > takEffektMaxSyss) {
-                    document.getElementById('kpiSyssGrad').className = "text-base md:text-lg font-bold text-red-600";
-                    warningEl.innerHTML = `<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-[10px] md:text-xs font-bold border cursor-help shadow-sm" title="Sysselsättningsgraden överstiger taket på ${takEffektMaxSyss}%."><i class="fa-solid fa-triangle-exclamation mr-1"></i> Arbetskraftsbrist</span>`;
-                    warningEl.classList.remove('hidden');
-                    warningEl.classList.add('flex');
+            const kpiSyssGrad = document.getElementById('kpiSyssGrad');
+            if (kpiSyssGrad) {
+                if (d.displayRate != null) {
+                    kpiSyssGrad.innerText = window.formatNumber(d.displayRate, 1) + '%';
+                    if (typeof takEffektMaxSyss !== 'undefined' && d.displayRate > takEffektMaxSyss) {
+                        kpiSyssGrad.className = "text-base md:text-lg font-bold text-red-600";
+                    } else if (causalityMode === 'analytic' && !(d.demand != null && d.supply != null && (d.demand - (d.supply + (d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0)) + (d.virtualSupply || 0))) <= -5) ) {
+                        kpiSyssGrad.className = "text-base md:text-lg font-bold text-gray-800";
+                    }
                 } else {
-                    document.getElementById('kpiSyssGrad').className = "text-base md:text-lg font-bold text-gray-800";
+                    kpiSyssGrad.innerText = 'Data saknas';
                 }
-            } else {
-                document.getElementById('kpiSyssGrad').innerText = 'Data saknas';
             }
 
             let displayBrp = d.brp || d.extrapolatedBrp;
             const kpiBox = document.getElementById('kpiBRPContainer');
+            const kpiBRP = document.getElementById('kpiBRP');
 
-            if (displayBrp != null) {
-                let tkrText = window.formatNumber(displayBrp, 1) + ' tkr';
-                if (d.brp === null && d.extrapolatedBrp != null && y <= baseYear) {
-                    document.getElementById('kpiBRP').innerHTML = `<span class="text-slate-400 italic" title="Extrapolerat värde">${tkrText}*</span>`;
+            if (kpiBRP && kpiBox) {
+                if (displayBrp != null) {
+                    let tkrText = window.formatNumber(displayBrp, 1) + ' tkr';
+                    let totalBrpMkr = d.totalBrpMkr;
+                    if (!totalBrpMkr && d.demand) totalBrpMkr = (displayBrp * d.demand) / 1000;
+
+                    if (d.brp === null && d.extrapolatedBrp != null && y <= baseYear) {
+                        kpiBRP.innerHTML = `<span class="text-slate-400 italic" title="Extrapolerat värde (SCB-data saknas ännu)">${tkrText}*</span>`;
+                    } else {
+                        kpiBRP.innerText = tkrText;
+                    }
+
+                    if (totalBrpMkr) {
+                        kpiBox.title = `Total Regional Ekonomi (BRP): ca ${window.formatNumber(totalBrpMkr, 0)} Mkr\n(Beräknat som BRP/syss × Dagbefolkning)`;
+                    } else {
+                        kpiBox.title = "Bruttoregionalprodukt per sysselsatt (tkr)";
+                    }
                 } else {
-                    document.getElementById('kpiBRP').innerText = tkrText;
+                    kpiBRP.innerText = 'Data saknas';
+                    kpiBox.title = "Bruttoregionalprodukt per sysselsatt (tkr)";
                 }
-            } else {
-                document.getElementById('kpiBRP').innerText = 'Data saknas';
             }
         };
 
@@ -1840,9 +1940,9 @@
                 const causalityMode = document.getElementById('causalityMode') ? document.getElementById('causalityMode').value : 'analytic';
                 const pendlingType = document.getElementById('pendlingType').value;
 
-                const jobGrowthPct = parseFloat(document.getElementById('jobGrowthSlider').value); 
-                const syssGradChangeOverall = parseFloat(document.getElementById('syssGradSlider').value);
-                const studentChange = parseFloat(document.getElementById('studentSlider').value);
+                const jobGrowthPct = parseFloat(document.getElementById('jobGrowthSlider')?.value) || 0; 
+                const syssGradChangeOverall = parseFloat(document.getElementById('syssGradSlider')?.value) || 0;
+                const studentChange = parseFloat(document.getElementById('studentSlider')?.value) || 0;
                 
                 let inpendlingChange = 0, utpendlingChange = 0, distansChange = 0, regionChangeMin = 0;
                 
@@ -2205,7 +2305,7 @@
                 subGroupSelect.classList.remove('hidden');
                 chartTypeElement.classList.remove('rounded-r');
                 subGroupSelect.classList.add('rounded-r');
-           } else if (chartType.includes('arbetsloshet') || chartType.includes('langtidsarb')) {
+            } else if (chartType.includes('arbetsloshet') || chartType.includes('langtidsarb')) {
                 if(exportPopBtn) exportPopBtn.classList.replace('flex', 'hidden');
                 if(dualAxesContainer && chartType.includes('_utrikes')) { dualAxesContainer.classList.remove('hidden'); dualAxesContainer.classList.add('flex'); }
                 else if (dualAxesContainer) { dualAxesContainer.classList.add('hidden'); dualAxesContainer.classList.remove('flex'); }
@@ -2475,12 +2575,12 @@
                 
                 let h_1=[], h_2=[], h_tot=[];
                 
-                // Filtrerar axeln så den slutar vid basåret (t.ex. 2024). Visar inga prognosår.
+                // Filtrera axeln så att den slutar strikt vid basåret (oftast 2024). Inga prognosår ritas ut.
                 labels = activeYears.filter(y => y <= baseYear);
                 
                 labels.forEach(y => {
                     let numericY = Number(y);
-                    if (numericY >= 1985 && histDataStore[numericY]) {
+                    if (numericY >= 1985 && typeof histDataStore !== 'undefined' && histDataStore[numericY]) {
                         let d = histDataStore[numericY];
                         let obj = isLangtid ? d.larb : d.arb;
                         
@@ -2529,7 +2629,7 @@
                     ];
                     if (groupStr === 'kon') datasets.push({ label: 'Totalt' + lblSuffix, data: h_tot, borderColor: '#64748b', backgroundColor: 'transparent', borderWidth: 2, borderDash: [2,2], pointStyle: 'rect', spanGaps: true, hidden: true });
                 }
-                
+
                 if (useDualAxes && groupStr === 'utrikes' && typeVal !== 'num') {
                     let col1 = '#0ea5e9'; let col2 = '#f97316';
                     customScale = {
@@ -2673,12 +2773,11 @@
                     return key ? syssBasdata[key] : [];
                 };
 
-                const refYear = selYearInt > baseYear ? baseYear : selYearInt;
+                const refYear = isProgYear ? baseYear : selYearInt;
                 let suffix = isProgYear ? " (Prognos)" : "";
                 
                 if (chartType === 'utb_match') {
                     if (title) title.innerText = `Utbildningsmatchning (År ${selYearInt})${suffix}`;
-                    if (desc) desc.innerHTML = isProgYear ? `Visar en uppskattning för framtiden (uppskalat från basåret ${baseYear}). Den röda linjen visar <b>Kompetensgapet</b>.` : `Staplarna visar kraven från företagen ställt mot vad invånarna har för utbildning. Den röda linjen visar <b>Kompetensgapet</b>.`;
                     labels = ['Förgymnasial', 'Gymnasial', 'Eftergymnasial', 'Okänd'];
                     const mapLevel = (l) => {
                         let t = String(l).toLowerCase();
@@ -2692,14 +2791,12 @@
                 
                 } else if (chartType === 'sektor_match') {
                     if (title) title.innerText = `Sektormatchning (År ${selYearInt})${suffix}`;
-                    if (desc) desc.innerHTML = isProgYear ? `Sektor för invånarna jämfört med sektor för jobben (uppskalat från basåret ${baseYear}).` : `Sektor för invånarna jämfört med sektor för jobben.`;
                     labels = ['Privat sektor', 'Offentlig sektor'];
                     dagData = window.aggregateMatchData(getDataset('Syss_sektor'), refYear, labels, 'Sektor');
                     nattData = window.aggregateMatchData(getDataset('Natt_sektor'), refYear, labels, 'Sektor');
                 
                 } else if (chartType === 'sektor_match_kon') {
                     if (title) title.innerText = `Sektormatchning: Män och Kvinnor (År ${selYearInt})${suffix}`;
-                    if (desc) desc.innerHTML = isProgYear ? `Sektor uppdelat på kön (uppskalat från basåret ${baseYear}).` : `Sektor för invånarna jämfört med sektor för jobben, uppdelat på kön.`;
                     labels = ['Privat sektor', 'Offentlig sektor'];
                     isGenderSplit = true;
                     let d_m = { 'Privat sektor': 0, 'Offentlig sektor': 0 }, d_k = { 'Privat sektor': 0, 'Offentlig sektor': 0 };
@@ -2718,7 +2815,6 @@
 
                 } else if (chartType === 'bransch_match') {
                     if (title) title.innerText = `Branschmatchning (År ${selYearInt})${suffix}`;
-                    if (desc) desc.innerHTML = isProgYear ? `Detaljerad matchning per bransch (uppskalat från basåret ${baseYear}). Röda markeringar (<0) visar lokalt underskott.` : `Detaljerad matchning per näringsgren/bransch. Röda markeringar (<0) visar lokalt underskott.`;
                     isHorizontal = true;
                     const dfDag = getDataset('Syss_bransch');
                     const dfNatt = getDataset('Natt_bransch');
@@ -2816,8 +2912,8 @@
 
                 if (useDualAxes && chartType === 'trend_utrikes') {
                     customScale = {
-                        y: { beginAtZero: useZeroAxis, grace: graceVal, type: 'linear', display: true, position: 'left', title: { display: true, text: 'Inrikes', color: col1 }, ticks: { callback: val => window.formatNumber(val) } },
-                        y1: { beginAtZero: useZeroAxis, grace: graceVal, type: 'linear', display: true, position: 'right', title: { display: true, text: 'Utrikes', color: col2 }, grid: { drawOnChartArea: false }, ticks: { callback: val => window.formatNumber(val) } }
+                        y: { beginAtZero: useZeroAxis, grace: graceVal, type: 'linear', display: true, position: 'left', title: { display: true, text: 'Inrikes (Antal)', color: col1 }, ticks: { callback: val => window.formatNumber(val) } },
+                        y1: { beginAtZero: useZeroAxis, grace: graceVal, type: 'linear', display: true, position: 'right', title: { display: true, text: 'Utrikes (Antal)', color: col2 }, grid: { drawOnChartArea: false }, ticks: { callback: val => window.formatNumber(val) } }
                     };
                     datasets.forEach(ds => { ds.yAxisID = ds.label.includes('Utrikes') ? 'y1' : 'y'; });
                 }

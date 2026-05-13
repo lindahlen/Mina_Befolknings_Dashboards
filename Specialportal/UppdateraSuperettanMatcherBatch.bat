@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 > nul
-title Skapar Allsvensk Match-Dashboard...
+title Skapar Superettans Match-Dashboard...
 
 echo ========================================================
 echo   Kör Matchdata Dashboard Generator...
@@ -8,11 +8,8 @@ echo   Laddar Anaconda-miljon 'gis-env' och bygger HTML.
 echo ========================================================
 echo.
 
-:: Aktivera Anaconda-miljön (gis-env)
-call conda activate gis-env
-
 :: Kör python-skriptet som ligger i undermappen data_pipeline
-python data_pipeline\Matchresultat_Allsvenskan_Data_Generator.py
+python data_pipeline\views_superettan.py
 
 echo.
 echo ========================================================
