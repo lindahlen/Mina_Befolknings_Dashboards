@@ -6,11 +6,30 @@
     <meta name="author" content="Analys & Utredning, Linköpings kommun">
     <title>Sysselsättningskalkylator 2035 - Linköpings kommun</title>
     
-    <!-- Tailwind CSS -->
+    <!-- GLOBALT FELHANTERINGSSYSTEM DIREKT I HTML -->
+    <script>
+        window.addEventListener('error', function(e) {
+            window.onload = function() {
+                var ds = document.getElementById('dataStatus');
+                if (ds) {
+                    ds.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> <b>Kritiskt fel:</b> ' + e.message + '<br>(Fil: ' + e.filename + ' Rad: ' + e.lineno + ')';
+                    ds.className = 'p-2 bg-red-50 border border-red-200 rounded text-red-700 text-xs font-bold';
+                }
+            };
+        });
+        window.addEventListener('unhandledrejection', function(e) {
+            window.onload = function() {
+                var ds = document.getElementById('dataStatus');
+                if (ds) {
+                    ds.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> <b>Laddningsfel:</b> ' + (e.reason.message || e.reason);
+                    ds.className = 'p-2 bg-red-50 border border-red-200 rounded text-red-700 text-xs font-bold';
+                }
+            };
+        });
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
@@ -23,7 +42,6 @@
 </head>
 <body class="text-gray-800 flex flex-col min-h-screen">
 
-    <!-- Header -->
     <header class="bg-slate-800 text-white shadow-md">
         <div class="container mx-auto px-4 py-3 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div class="flex items-center gap-4">
@@ -47,10 +65,8 @@
         </div>
     </header>
 
-    <!-- Huvudinnehåll -->
     <div class="container mx-auto px-4 py-4 md:py-6 flex flex-col gap-4 flex-grow">
         
-        <!-- TOPPANEL FÖR GRUNDINSTÄLLNINGAR -->
         <div class="bg-white p-3 md:p-4 rounded-lg shadow-sm border border-gray-200 flex flex-col md:flex-row flex-wrap items-start md:items-center justify-between gap-4">
             
             <div class="flex items-center gap-2 w-full md:w-auto">
@@ -62,19 +78,19 @@
             <div class="flex flex-col md:flex-row flex-wrap items-start md:items-center gap-3 w-full md:w-auto">
                 <div id="popSourceContainer" class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 rounded px-2 py-1 flex-1 md:flex-none" title="Antar att befolkningen stannar på utgångsårets nivå.">
                     <label class="text-[11px] font-bold text-indigo-800 uppercase whitespace-nowrap flex items-center gap-1">Källa:
-                        <span onclick="showInfo('pop_source')" class="text-indigo-400 cursor-pointer hover:text-indigo-600 transition"><i class="fa-solid fa-circle-info"></i></span>
+                        <span onclick="if(window.showInfo) window.showInfo('pop_source')" class="text-indigo-400 cursor-pointer hover:text-indigo-600 transition"><i class="fa-solid fa-circle-info"></i></span>
                     </label>
-                    <select id="popSource" class="bg-transparent border-none text-xs font-medium text-indigo-900 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="updatePopSourceDesc(); runSimulation()">
+                    <select id="popSource" class="bg-transparent border-none text-xs font-medium text-indigo-900 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="if(window.updatePopSourceDesc) window.updatePopSourceDesc(); if(window.runSimulation) window.runSimulation()">
                         <option value="fryst">Fryst befolkning</option>
                     </select>
-                    <button id="clearCustomBtn" onclick="clearCustomPop()" class="hidden ml-2 text-red-500 hover:text-red-700 transition" title="Rensa anpassat scenario"><i class="fa-solid fa-times"></i></button>
+                    <button id="clearCustomBtn" onclick="if(window.clearCustomPop) window.clearCustomPop()" class="hidden ml-2 text-red-500 hover:text-red-700 transition" title="Rensa anpassat scenario"><i class="fa-solid fa-times"></i></button>
                 </div>
 
                 <div class="flex items-center gap-2 bg-slate-100 border border-slate-200 rounded px-2 py-1 flex-1 md:flex-none" title="Växla mellan att ta hänsyn till in/ut-pendling eller endast titta på den lokala befolkningen.">
                     <label class="text-[11px] font-bold text-slate-700 uppercase whitespace-nowrap flex items-center gap-1">Läge:
-                        <span onclick="showInfo('sim_mode')" class="text-slate-400 cursor-pointer hover:text-slate-600 transition"><i class="fa-solid fa-circle-info"></i></span>
+                        <span onclick="if(window.showInfo) window.showInfo('sim_mode')" class="text-slate-400 cursor-pointer hover:text-slate-600 transition"><i class="fa-solid fa-circle-info"></i></span>
                     </label>
-                    <select id="simMode" class="bg-transparent border-none text-xs font-medium text-slate-800 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="toggleSimMode()">
+                    <select id="simMode" class="bg-transparent border-none text-xs font-medium text-slate-800 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="if(window.toggleSimMode) window.toggleSimMode()">
                         <option value="full">Fullständig (Pendling)</option>
                         <option value="local">Endast Lokal (Fryst)</option>
                     </select>
@@ -82,9 +98,9 @@
 
                 <div class="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded px-2 py-1 flex-1 md:flex-none" title="Analytisk visar gapet mellan utbud och efterfrågan. Dynamisk anpassar automatiskt inflyttningen för att stänga gapet.">
                     <label class="text-[11px] font-bold text-emerald-800 uppercase whitespace-nowrap flex items-center gap-1">Kausalitet:
-                        <span onclick="showInfo('kausalitet')" class="text-emerald-400 cursor-pointer hover:text-emerald-600 transition"><i class="fa-solid fa-circle-info"></i></span>
+                        <span onclick="if(window.showInfo) window.showInfo('kausalitet')" class="text-emerald-400 cursor-pointer hover:text-emerald-600 transition"><i class="fa-solid fa-circle-info"></i></span>
                     </label>
-                    <select id="causalityMode" class="bg-transparent border-none text-xs font-medium text-emerald-900 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="runSimulation()">
+                    <select id="causalityMode" class="bg-transparent border-none text-xs font-medium text-emerald-900 focus:ring-0 outline-none cursor-pointer p-0 pr-4" onchange="if(window.runSimulation) window.runSimulation()">
                         <option value="analytic">Analytisk (Visar Gap)</option>
                         <option value="dynamic">Dynamisk Jämvikt</option>
                     </select>
@@ -93,7 +109,6 @@
         </div>
 
         <div class="flex flex-col md:flex-row gap-4">
-            <!-- Vänster kolumn: Kontrollpanel -->
             <aside class="w-full md:w-1/3 xl:w-1/4 flex flex-col gap-4">
                 
                 <div class="card opacity-50 pointer-events-none transition-opacity duration-300" id="scenarioPanel">
@@ -101,19 +116,19 @@
                     <div class="mb-4 p-2 bg-slate-50 rounded border border-slate-200">
                         <div class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 flex justify-between">
                             <span>Snabbscenarier</span>
-                            <span onclick="showInfo('scenarios')" class="text-slate-400 font-normal cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
+                            <span onclick="if(window.showInfo) window.showInfo('scenarios')" class="text-slate-400 font-normal cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
                         </div>
                         <div class="flex flex-wrap gap-1">
-                            <button onclick="setScenario('base')" class="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Bas</button>
-                            <button onclick="setScenario('high')" class="flex-1 bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Hög</button>
-                            <button onclick="setScenario('low')" class="flex-1 bg-white hover:bg-orange-50 text-orange-700 border border-orange-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Låg</button>
-                            <button onclick="setScenario('stagnant')" class="flex-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Stagn.</button>
+                            <button onclick="if(window.setScenario) window.setScenario('base')" class="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Bas</button>
+                            <button onclick="if(window.setScenario) window.setScenario('high')" class="flex-1 bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Hög</button>
+                            <button onclick="if(window.setScenario) window.setScenario('low')" class="flex-1 bg-white hover:bg-orange-50 text-orange-700 border border-orange-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Låg</button>
+                            <button onclick="if(window.setScenario) window.setScenario('stagnant')" class="flex-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Stagn.</button>
                         </div>
                     </div>
 
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Lokal tillväxt & Utbud</h3>
-                        <span onclick="showInfo('demografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
+                        <span onclick="if(window.showInfo) window.showInfo('demografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
                     </div>
 
                     <div class="slider-container">
@@ -121,7 +136,7 @@
                             <span>Lokal Jobbtillväxt (Totalt)</span>
                             <span id="jobGrowthVal" class="text-slate-600 font-bold">+0%</span>
                         </label>
-                        <input type="range" id="jobGrowthSlider" min="-10" max="30" step="1" value="0" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'jobGrowthVal', '%')">
+                        <input type="range" id="jobGrowthSlider" min="-10" max="30" step="1" value="0" oninput="document.getElementById('jobGrowthVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
                     </div>
 
                     <div class="slider-container">
@@ -129,11 +144,13 @@
                             <span>Sysselsättningsgrad (Förändring)</span>
                             <span id="syssGradVal" class="text-slate-600 font-bold">Oförändrad</span>
                         </label>
-                        <input type="range" id="syssGradSlider" min="-5" max="5" step="0.5" value="0" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'syssGradVal', '%-enh')">
+                        <input type="range" id="syssGradSlider" min="-5" max="5" step="0.5" value="0" oninput="document.getElementById('syssGradVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
                     </div>
 
                     <details class="bg-slate-50 border border-slate-200 rounded p-2 text-xs mt-1 mb-3">
-                        <summary class="font-medium text-slate-700 cursor-pointer outline-none hover:text-sky-600 transition"><i class="fa-solid fa-sliders mr-1"></i> Detaljstyrning per åldersgrupp</summary>
+                        <summary class="font-medium text-slate-700 cursor-pointer outline-none hover:text-sky-600 transition">
+                            <i class="fa-solid fa-sliders mr-1"></i> Detaljstyrning per åldersgrupp
+                        </summary>
                         <div class="mt-3 flex flex-col gap-2.5 pb-1 px-1" id="ageSlidersContainer"></div>
                     </details>
 
@@ -141,31 +158,27 @@
                         <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
                             <span class="flex items-center">
                                 Kvarstannandegrad LiU
-                                <i id="civIngToggleIcon" class="fa-solid fa-circle-plus text-sky-600 ml-1.5 cursor-pointer hover:text-sky-800 transition" onclick="toggleCivIng()" title="Dela upp på Civilingenjörer och Övriga"></i>
+                                <i id="civIngToggleIcon" class="fa-solid fa-circle-plus text-sky-600 ml-1.5 cursor-pointer hover:text-sky-800 transition" onclick="if(window.toggleCivIng) window.toggleCivIng()" title="Dela upp på Civilingenjörer och Övriga"></i>
                             </span>
                             <span id="studentVal" class="text-slate-600 font-bold">Baslinje</span>
                         </label>
-                        <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'studentVal', '%-enh')">
+                        <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="document.getElementById('studentVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
                     </div>
 
-                    <!-- CIVILINGENJÖRER (Dolt som standard) -->
                     <div id="civIngContainer" class="slider-container hidden bg-sky-50 p-2.5 rounded border border-sky-200 mt-2 mb-3 shadow-inner">
                         <label class="block text-xs font-medium mb-1 flex justify-between text-sky-900">
                             <span>↳ Därav Civilingenjörer</span>
                             <span id="civIngVal" class="text-sky-700 font-bold">Baslinje</span>
                         </label>
-                        <input type="range" id="civIngSlider" min="-10" max="40" step="1" value="0" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'civIngVal', '%-enh')">
+                        <input type="range" id="civIngSlider" min="-10" max="40" step="1" value="0" oninput="document.getElementById('civIngVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
                     </div>
 
                     <div class="slider-container bg-orange-50 p-2 rounded border border-orange-100 mt-3">
                         <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
-                            <span class="flex items-center gap-1">
-                                Inflyttares syss.grad
-                                <i class="fa-solid fa-circle-info text-orange-400 cursor-pointer hover:text-orange-600 transition" onclick="showInfo('inflyttare')"></i>
-                            </span>
+                            <span class="flex items-center gap-1">Inflyttares syss.grad <i class="fa-solid fa-circle-info text-orange-400 cursor-pointer hover:text-orange-600 transition" onclick="if(window.showInfo) window.showInfo('inflyttare')"></i></span>
                             <span id="migrantSyssVal" class="text-orange-600 font-bold">+10%-enh</span>
                         </label>
-                        <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'migrantSyssVal', '%-enh'); handleYearChange();">
+                        <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="document.getElementById('migrantSyssVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'; if(window.handleYearChange) window.handleYearChange();">
                     </div>
 
                     <hr class="my-4 border-gray-200">
@@ -173,11 +186,11 @@
                     <div id="geoPanel" class="transition-opacity duration-300">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Pendling & Geografi</h3>
-                            <span onclick="showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
+                            <span onclick="if(window.showInfo) window.showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
                         </div>
 
                         <div class="mb-3">
-                            <select id="pendlingType" class="w-full border border-gray-300 rounded p-1 text-xs focus:ring-sky-500 focus:border-sky-500 bg-gray-50" onchange="updatePendlingUI()">
+                            <select id="pendlingType" class="w-full border border-gray-300 rounded p-1 text-xs focus:ring-sky-500 focus:border-sky-500 bg-gray-50" onchange="if(window.updatePendlingUI) window.updatePendlingUI()">
                                 <option value="pct">Relativ förändring (%)</option>
                                 <option value="abs">Absolut förändring (Antal pers)</option>
                             </select>
@@ -188,7 +201,7 @@
                                 <span>Inpendling (Förändring)</span>
                                 <span id="inpendlingVal" class="text-slate-600 font-bold">+0%</span>
                             </label>
-                            <input type="range" id="inpendlingSlider" min="-50" max="50" step="1" value="0" oninput="updatePendlingValue('inpendlingSlider', 'inpendlingVal')">
+                            <input type="range" id="inpendlingSlider" min="-50" max="50" step="1" value="0" oninput="if(window.updatePendlingValue) window.updatePendlingValue('inpendlingSlider', 'inpendlingVal')">
                         </div>
 
                         <div class="slider-container">
@@ -196,7 +209,7 @@
                                 <span>Utpendling (Förändring)</span>
                                 <span id="utpendlingVal" class="text-slate-600 font-bold">+0%</span>
                             </label>
-                            <input type="range" id="utpendlingSlider" min="-50" max="50" step="1" value="0" oninput="updatePendlingValue('utpendlingSlider', 'utpendlingVal')">
+                            <input type="range" id="utpendlingSlider" min="-50" max="50" step="1" value="0" oninput="if(window.updatePendlingValue) window.updatePendlingValue('utpendlingSlider', 'utpendlingVal')">
                         </div>
 
                         <div class="slider-container mt-4">
@@ -204,7 +217,7 @@
                                 <span>Distansarbete (Andel)</span>
                                 <span id="distansVal" class="text-slate-600 font-bold">Baslinje</span>
                             </label>
-                            <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="if(typeof window.updateSliderVal === 'function') window.updateSliderVal(this, 'distansVal', '%')">
+                            <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="document.getElementById('distansVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
                         </div>
 
                         <div class="slider-container">
@@ -217,35 +230,31 @@
                     </div>
 
                     <div class="flex flex-wrap gap-1.5 mt-4">
-                        <button id="simBtn" onclick="runSimulation()" class="w-full sm:flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-md text-xs sm:text-sm">
+                        <button id="simBtn" onclick="if(window.runSimulation) window.runSimulation()" class="w-full sm:flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-md text-xs sm:text-sm">
                             <i class="fa-solid fa-gears mr-1"></i> Kör
                         </button>
-                        <button onclick="toggleSaveScenario()" id="saveBtn" class="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Spara nuvarande prognos för att jämföra med en ny">
+                        <button onclick="if(window.toggleSaveScenario) window.toggleSaveScenario()" id="saveBtn" class="flex-1 bg-indigo-100 hover:bg-indigo-200 text-indigo-800 font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Spara nuvarande prognos för att jämföra med en ny">
                             <i class="fa-solid fa-code-compare mr-1"></i> Jämför
                         </button>
-                        <button onclick="exportSyssToCSV()" class="flex-none bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Exportera data (CSV)">
+                        <button onclick="if(window.exportSyssToCSV) window.exportSyssToCSV()" class="flex-none bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Exportera data (CSV)">
                             <i class="fa-solid fa-download"></i>
                         </button>
-                        <button onclick="resetSimulation()" class="flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Återställ värden">
+                        <button onclick="if(window.resetSimulation) window.resetSimulation()" class="flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Återställ värden">
                             <i class="fa-solid fa-rotate-left"></i>
                         </button>
                     </div>
                 </div>
-                
             </aside>
 
-            <!-- Höger kolumn: Grafer och Nyckeltal -->
             <main class="w-full md:w-2/3 xl:w-3/4 flex flex-col gap-4">
-                
-                <!-- Nyckeltal (KPI) -->
                 <div class="flex flex-col gap-2">
                     <div class="flex justify-between items-end mb-1">
                         <div class="flex items-center gap-2">
                             <h2 class="text-lg md:text-xl font-bold text-gray-800">Nyckeltal</h2>
-                            <span onclick="showInfo('befolkning')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information om nyckeltalen"><i class="fa-solid fa-circle-info"></i></span>
+                            <span onclick="if(window.showInfo) window.showInfo('befolkning')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information om nyckeltalen"><i class="fa-solid fa-circle-info"></i></span>
                             <div id="takWarning" class="hidden ml-2 flex flex-wrap gap-2 items-center"></div>
                         </div>
-                        <select id="yearSelect" class="border border-gray-300 rounded p-1 text-xs md:text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="handleYearChange()" title="Välj år för att uppdatera nyckeltalen nedan">
+                        <select id="yearSelect" class="border border-gray-300 rounded p-1 text-xs md:text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="if(window.handleYearChange) window.handleYearChange()" title="Välj år för att uppdatera nyckeltalen nedan">
                             <option value="">Laddar...</option>
                         </select>
                     </div>
@@ -278,25 +287,26 @@
                     </div>
                 </div>
 
-                <!-- Historisk trend & Förändringar -->
                 <div class="card flex-grow flex flex-col mt-1 min-h-[400px]">
-                    <div id="modeDescription" class="text-xs text-slate-600 mb-2 bg-slate-50 p-2 rounded border border-slate-200 hidden"></div>
-
                     <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-3 gap-3">
                         <div class="flex items-center gap-2">
                             <h2 class="text-base md:text-lg font-bold" id="trendTitle">Utbud vs Efterfrågan</h2>
                         </div>
                         
                         <div class="flex flex-wrap items-center shadow-sm rounded-md border border-gray-300 bg-white overflow-hidden w-full lg:w-auto">
-                            <span onclick="showInfo('diagram')" class="px-2 py-1 md:py-1.5 text-slate-400 cursor-pointer hover:text-sky-600 transition border-r border-gray-200" title="Information om graferna"><i class="fa-solid fa-circle-info"></i></span>
-                            <select id="startYearSelect" class="p-1 md:p-1.5 text-xs md:text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 transition-colors bg-white w-full sm:w-auto" onchange="updateDashboard(true)">
+                            <span onclick="if(window.showInfo) window.showInfo('diagram')" class="px-2 py-1 md:py-1.5 text-slate-400 cursor-pointer hover:text-sky-600 transition border-r border-gray-200" title="Information om graferna"><i class="fa-solid fa-circle-info"></i></span>
+                            
+                            <select id="startYearSelect" class="p-1 md:p-1.5 text-xs md:text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 transition-colors bg-white w-full sm:w-auto" onchange="if(window.updateDashboard) window.updateDashboard(true)">
                                 <option value="">Laddar...</option>
                             </select>
                             
-                            <select id="chartType" class="p-1 md:p-1.5 text-xs md:text-sm bg-slate-50 outline-none focus:bg-sky-100 transition-colors font-semibold text-gray-700 border-r border-gray-200 flex-grow w-full sm:w-auto" onchange="updateDashboard(true)">
+                            <select id="chartType" class="p-1 md:p-1.5 text-xs md:text-sm bg-slate-50 outline-none focus:bg-sky-100 transition-colors font-semibold text-gray-700 border-r border-gray-200 flex-grow w-full sm:w-auto" onchange="if(window.updateDashboard) window.updateDashboard(true)">
                                 <option value="utbud_efterfragan">Utbud vs Efterfrågan (Trend)</option>
                                 <option value="utbud_efterfragan_delta">Årlig förändring (Utbud/Efterfrågan)</option>
                                 <option value="brp_totalt">Ekonomisk Tillväxt (Total BRP)</option>
+                                <optgroup label="── Pendling ──">
+                                    <option value="pendling_detalj">In- och utpendling (Kommungräns)</option>
+                                </optgroup>
                                 <option disabled>── Kön ──</option>
                                 <option value="trend_kon">Utbud & Efterfrågan (Män/Kvinnor)</option>
                                 <option value="syssgrad_kon">Sysselsättningsgrad (Män/Kvinnor)</option>
@@ -312,38 +322,39 @@
                                 <option value="utb_match">Utbildningsmatchning (Valt år)</option>
                                 <option value="sektor_match">Sektormatchning (Valt år)</option>
                                 <option value="sektor_match_kon">Sektormatchning (Män/Kvinnor)</option>
-                                <option disabled>── Befolkning ──</option>
+                                <option disabled>── Välfärd & Demografi ──</option>
                                 <option value="pop_dynamic">Befolkningsutveckling (Dynamisk Modell)</option>
+                                <option value="medfoljande_behov">Välfärdsbehov (Medföljande barn)</option>
                             </select>
                             
-                            <select id="subGroupSelect" class="hidden p-1 md:p-1.5 text-xs md:text-sm bg-indigo-50 outline-none focus:bg-indigo-100 transition-colors font-semibold text-indigo-800 border-r border-gray-200" onchange="updateDashboard(true)"></select>
+                            <select id="subGroupSelect" class="hidden p-1 md:p-1.5 text-xs md:text-sm bg-indigo-50 outline-none focus:bg-indigo-100 transition-colors font-semibold text-indigo-800 border-r border-gray-200" onchange="if(window.updateDashboard) window.updateDashboard(true)"></select>
 
-                            <button id="exportPopBtn" onclick="exportPopDynamicCSV()" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 cursor-pointer border-r border-gray-200" title="Exportera befolkningstabell för detta scenario">
+                            <button id="exportPopBtn" onclick="if(window.exportPopDynamicCSV) window.exportPopDynamicCSV()" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-emerald-700 bg-emerald-50 hover:bg-emerald-100 cursor-pointer border-r border-gray-200" title="Exportera tabell">
                                 <i class="fa-solid fa-download"></i> CSV
                             </button>
 
                             <label id="dualAxesContainer" class="hidden items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer border-r border-gray-200">
-                                <input type="checkbox" id="useDualAxes" onchange="updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5" checked>
+                                <input type="checkbox" id="useDualAxes" onchange="if(window.updateDashboard) window.updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5" checked>
                                 <span>Delade axlar</span>
                             </label>
 
                             <label id="zeroAxisContainer" class="flex items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer px-2">
-                                <input type="checkbox" id="useZeroAxis" onchange="updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5">
+                                <input type="checkbox" id="useZeroAxis" onchange="if(window.updateDashboard) window.updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5">
                                 <span>Utgå från 0</span>
                             </label>
                         </div>
                     </div>
                     
-                    <p id="chartDescription" class="text-xs md:text-sm text-gray-600 mb-2">Grafen visar hur många arbetstillfällen (grönt) som finns i Linköping i relation till hur många kommuninvånare som befinner sig i sysselsättning (blått). Gapet dem emellan utgör det lokala pendlingsnettot.</p>
+                    <p id="chartDescription" class="text-xs md:text-sm text-gray-600 mb-2">Grafen visar hur många arbetstillfällen (grönt) som finns i relation till hur många kommuninvånare som befinner sig i sysselsättning (blått).</p>
                     
                     <div class="flex flex-wrap items-center gap-3 mb-3 pb-2 border-b border-gray-100">
-                        <button id="hideAllBtn" onclick="toggleAllSeries()" class="hidden items-center gap-1 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 py-1 px-3 rounded shadow-sm border border-gray-300 transition" title="Dölj eller visa alla linjer i diagrammet">
+                        <button id="hideAllBtn" onclick="if(window.toggleAllSeries) window.toggleAllSeries()" class="hidden items-center gap-1 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 py-1 px-3 rounded shadow-sm border border-gray-300 transition" title="Dölj eller visa alla linjer i diagrammet">
                             <i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla
                         </button>
                         
                         <label id="yGraceContainer" class="hidden items-center gap-1 text-sm font-medium text-gray-600 ml-auto border border-gray-200 bg-gray-50 rounded px-2 py-0.5 transition-all" title="Skapar marginal (luft) mellan linjerna och x-axeln">
                             <i class="fa-solid fa-arrows-up-down text-xs text-gray-400"></i> Marginal:
-                            <select id="yGrace" onchange="updateDashboard(true)" class="bg-transparent border-none outline-none font-bold text-sky-700 cursor-pointer p-0 pr-4 focus:ring-0 text-sm">
+                            <select id="yGrace" onchange="if(window.updateDashboard) window.updateDashboard(true)" class="bg-transparent border-none outline-none font-bold text-sky-700 cursor-pointer p-0 pr-4 focus:ring-0 text-sm">
                                 <option value="0%">0%</option>
                                 <option value="5%">5%</option>
                                 <option value="10%">10%</option>
@@ -352,26 +363,23 @@
                         </label>
                     </div>
 
-                    <!-- Wrapper för grafen -->
                     <div id="chartWrapper" class="relative w-full flex-1 min-h-[300px] mt-2 transition-all duration-300">
                         <canvas id="trendChart"></canvas>
                     </div>
                 </div>
-
             </main>
         </div>
     </div>
 
-    <!-- DYNAMISK INFO-MODAL -->
     <div id="infoModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex justify-center items-center p-4">
         <div class="bg-white rounded-lg shadow-xl w-full max-w-md flex flex-col">
             <div class="flex justify-between items-center p-3 border-b">
                 <h2 class="text-lg font-bold text-gray-800" id="infoModalTitle">Information</h2>
-                <button onclick="closeInfoModal()" class="text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-times text-xl"></i></button>
+                <button onclick="if(window.closeInfoModal) window.closeInfoModal()" class="text-gray-400 hover:text-gray-800 transition"><i class="fa-solid fa-times text-xl"></i></button>
             </div>
             <div id="infoModalContent" class="p-4 text-gray-700 text-xs md:text-sm space-y-2 max-h-[70vh] overflow-y-auto"></div>
             <div class="p-3 border-t bg-gray-50 flex justify-end">
-                <button onclick="closeInfoModal()" class="bg-slate-700 hover:bg-slate-800 text-white font-semibold py-1.5 px-4 rounded shadow-sm text-sm transition">Stäng</button>
+                <button onclick="if(window.closeInfoModal) window.closeInfoModal()" class="bg-slate-700 hover:bg-slate-800 text-white font-semibold py-1.5 px-4 rounded shadow-sm text-sm transition">Stäng</button>
             </div>
         </div>
     </div>
@@ -380,9 +388,259 @@
         &copy; Utvecklad av Analys & Utredning, Linköpings kommun
     </footer>
 
-    <!-- INLÄSNING AV LOGIKEN -->
-    <script src="motor_2035.js"></script>
-    <script src="grafer_2035.js"></script>
+    <!-- Fel-hantering för fil-inläsningen i webbläsaren -->
+    <script src="motor_2035.js" onerror="document.getElementById('dataStatus').innerHTML='<i class=\'fa-solid fa-triangle-exclamation\'></i> <b>Laddningsfel:</b> Hittade inte filen <i>motor_2035.js</i>. Ligger den i samma mapp som html-filen?'; document.getElementById('dataStatus').className='p-2 bg-red-50 border border-red-200 rounded text-red-700 text-xs font-bold';"></script>
+    <script src="grafer_2035.js" onerror="document.getElementById('dataStatus').innerHTML='<i class=\'fa-solid fa-triangle-exclamation\'></i> <b>Laddningsfel:</b> Hittade inte filen <i>grafer_2035.js</i>. Ligger den i samma mapp som html-filen?'; document.getElementById('dataStatus').className='p-2 bg-red-50 border border-red-200 rounded text-red-700 text-xs font-bold';"></script>
 
+    <script>
+        // Startsekvens efter all kod laddats
+        window.addEventListener('DOMContentLoaded', () => {
+            const cb = '?v=' + new Date().getTime(); 
+            
+            const yGraceContainer = document.getElementById('yGraceContainer');
+            if (yGraceContainer) yGraceContainer.style.display = (typeof window.SHOW_Y_GRACE_UI !== 'undefined' && window.SHOW_Y_GRACE_UI) ? 'flex' : 'none';
+            const yGraceSelect = document.getElementById('yGrace');
+            if (yGraceSelect) yGraceSelect.value = (typeof window.DEFAULT_Y_GRACE !== 'undefined') ? window.DEFAULT_Y_GRACE : '20%';
+
+            const ageContainer = document.getElementById('ageSlidersContainer');
+            if (ageContainer) {
+                let htmlContent = '';
+                ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'].forEach(a => {
+                    let id = 'syssAge' + a.replace('-', '_');
+                    htmlContent += `
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="w-12 text-gray-700">${a}</span>
+                        <input type="range" id="${id}" min="-15" max="15" step="0.5" value="0" class="flex-grow mx-2 h-1" oninput="document.getElementById('val_${id}').innerText = (this.value > 0 ? '+' : '') + this.value">
+                        <span id="val_${id}" class="text-right text-xs font-bold w-10 text-slate-500">0</span>
+                    </div>`;
+                });
+                ageContainer.innerHTML = htmlContent;
+            }
+
+            async function fetchJSON(url) {
+                try {
+                    const res = await fetch(url);
+                    if (!res.ok && res.status !== 0) {
+                        throw new Error(`Kunde inte hitta filen ${url} (HTTP ${res.status})`);
+                    }
+                    let text = await res.text(); 
+                    text = text.replace(/:\s*NaN/g, ': null');
+                    return JSON.parse(text);
+                } catch(e) { 
+                    throw e;
+                }
+            }
+
+            // Visa att vi laddar
+            const statusDiv = document.getElementById('dataStatus');
+            if (statusDiv) {
+                statusDiv.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Laddar data och bygger motor...';
+            }
+
+            // Kontrollera om motorn finns
+            if (typeof window.extractHistoricalData !== 'function') {
+                if (statusDiv) {
+                    statusDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> <b>Kritiskt fel:</b> Motorn laddades inte in korrekt (syntaxfel i motor_2035.js).';
+                    statusDiv.className = "p-2 bg-red-50 border border-red-200 rounded text-red-700 text-xs font-bold";
+                }
+                return;
+            }
+
+            Promise.all([
+                fetchJSON('syss_basdata_2035.json' + cb),
+                fetchJSON('syss_config_2035.json' + cb),
+                fetchJSON('kalkylator_basdata.json' + cb).catch(e => { console.warn("Saknar kalkylator_basdata.json", e); return null; })
+            ]).then(([sBas, sConf, pBas]) => {
+                if (!sBas) {
+                    if (statusDiv) {
+                        statusDiv.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Hittade inte "syss_basdata_2035.json". Låg den i rätt mapp?';
+                        statusDiv.className = "p-2 bg-red-50 border border-red-200 rounded text-red-700 text-xs font-bold";
+                    }
+                    return;
+                }
+
+                window.syssBasdata = sBas;
+                window.syssConfig = sConf || {};
+                window.popData = pBas || [];
+
+                if (window.syssConfig['Scenarier'] && window.syssConfig['Scenarier'].length > 0) {
+                    const rows = window.syssConfig['Scenarier'];
+                    const tillvRows = window.syssConfig['Tillväxt'] || window.syssConfig['Tillvaxt'] || [];
+                    
+                    const mapScenario = (colName) => {
+                        let scen = {
+                            jobGrowth: parseFloat(rows.find(r => r.Indikator === 'Jobbtillväxt')?.[colName] || 0),
+                            syssGrad: parseFloat(rows.find(r => r.Indikator === 'Sysselsättningsgrad')?.[colName] || 0),
+                            student: parseFloat(rows.find(r => r.Indikator === 'Kvarstannandegrad')?.[colName] || 0),
+                            inpendling: parseFloat(rows.find(r => r.Indikator === 'Inpendling')?.[colName] || 0),
+                            utpendling: parseFloat(rows.find(r => r.Indikator === 'Utpendling')?.[colName] || 0),
+                            distans: parseFloat(rows.find(r => r.Indikator === 'Distansarbete')?.[colName] || 0),
+                            region: parseFloat(rows.find(r => r.Indikator === 'Regionförstoring')?.[colName] || 0),
+                            migrantSyss: parseFloat(rows.find(r => r.Indikator === 'Justering inflyttares syss.grad')?.[colName] || 10),
+                            naringSkala: parseFloat(rows.find(r => r.Indikator === 'Näringslivsjustering_skala')?.[colName] || 1.0)
+                        };
+
+                        const ageLabelsArr = ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'];
+                        ageLabelsArr.forEach(a => {
+                            let indName = 'Sysselsättningsgrad_' + a;
+                            let r = tillvRows.find(row => String(row.Indikator).trim() === indName);
+                            if (r && r[colName] !== undefined && r[colName] !== null && String(r[colName]).trim() !== "") {
+                                scen['syssAge_' + a.replace('-','_')] = parseFloat(r[colName]);
+                            }
+                        });
+                        return scen;
+                    };
+                    if (window.scenarioSettings) {
+                        window.scenarioSettings.base = mapScenario('Bas');
+                        window.scenarioSettings.high = mapScenario('Hög');
+                        window.scenarioSettings.low = mapScenario('Låg');
+                        window.scenarioSettings.stagnant = mapScenario('Stagnerande');
+                    }
+                }
+
+                if (window.syssConfig['Universitet'] && window.syssConfig['Universitet'].length > 0) {
+                    window.syssConfig['Universitet'].forEach(r => {
+                        let y = window.extractYear ? window.extractYear(r) : null;
+                        if (y) {
+                            let studentVal = r['Examinerade_Studenter'] !== undefined ? r['Examinerade_Studenter'] : r['Examinerade_studenter'];
+                            if (studentVal !== undefined && studentVal !== null) window.annualStudentsMap[y] = parseFloat(studentVal);
+                            if (r['Examinerade_Civilingenjörer'] !== undefined && r['Examinerade_Civilingenjörer'] !== null) window.annualCivIngMap[y] = parseFloat(r['Examinerade_Civilingenjörer']);
+                        }
+                    });
+                    const stYears = Object.keys(window.annualStudentsMap).map(Number).sort((a,b)=>a-b);
+                    if (stYears.length > 0) window.avgAnnualStudents = window.annualStudentsMap[stYears[stYears.length - 1]];
+                    const civYears = Object.keys(window.annualCivIngMap).map(Number).sort((a,b)=>a-b);
+                    if (civYears.length > 0) window.avgAnnualCivIng = window.annualCivIngMap[civYears[civYears.length - 1]];
+                }
+
+                if (window.syssConfig['Tak_effekten'] && window.syssConfig['Tak_effekten'].length > 0) {
+                    window.syssConfig['Tak_effekten'].forEach(r => {
+                        const keys = Object.keys(r);
+                        if (keys.length >= 2) {
+                            const keyStr = String(r[keys[0]] || '').toLowerCase();
+                            const val = parseFloat(r[keys[1]]);
+                            if (!isNaN(val)) {
+                                if (keyStr.includes('lägsta friktionsarbetslöshet')) window.takEffekter.minArbetsloshet = val;
+                                if (keyStr.includes('max_sysselsättningsgrad') && !keyStr.includes('äldre')) { window.takEffekter.maxSyssGrad = val; window.takEffektMaxSyss = val; }
+                                if (keyStr.includes('kärna_långtidsarbetslösa')) window.takEffekter.karnaLangtidsarbetslosa = val;
+                                if (keyStr.includes('max_inpendlingsandel')) window.takEffekter.maxInpendlingsandel = val;
+                                if (keyStr.includes('kapacitetstak_infrastruktur')) window.takEffekter.kapacitetstakInfrastruktur = val;
+                            }
+                        }
+                    });
+                }
+
+                const subGroupSelect = document.getElementById('subGroupSelect');
+                if (window.syssConfig['SNIgrupper'] && window.syssConfig['SNIgrupper'].length > 0 && subGroupSelect) {
+                    const firstRow = window.syssConfig['SNIgrupper'][0];
+                    const keys = Object.keys(firstRow);
+                    const groupCols = keys.slice(1);
+                    subGroupSelect.innerHTML = '<option value="all">Alla branscher (SNI)</option>';
+                    groupCols.forEach(col => { subGroupSelect.add(new Option(col, col)); });
+                    subGroupSelect.setAttribute('data-type', 'bransch');
+                }
+
+                let offData = window.syssConfig['Officiell_befolkningsprognos'] || window.syssConfig['officiell_prognos'];
+                if (offData && offData.length > 0) {
+                    offData.forEach(row => {
+                        const year = window.extractYear ? window.extractYear(row) : null;
+                        if (!year) return;
+                        const rawSex = String(row['Kön'] || row['kön'] || 'Totalt').trim().toLowerCase();
+                        let sex = 'Totalt';
+                        if (rawSex.startsWith('m')) sex = 'Män';
+                        else if (rawSex.startsWith('k')) sex = 'Kvinnor';
+                        
+                        const tidStr = `${year} (Prognos)`; 
+                        let totalPop = 0;
+                        for (let age = 0; age <= 100; age++) {
+                            let val = row[String(age)] !== undefined ? row[String(age)] : (row[age] !== undefined ? row[age] : null);
+                            if (val !== undefined && val !== null) {
+                                let popVal = parseFloat(val);
+                                window.popData.push({ tid: tidStr, kön: sex, ålder: age === 100 ? "100+ år" : `${age} år`, Befolkning: popVal });
+                                totalPop += popVal;
+                            }
+                        }
+                        window.popData.push({ tid: tidStr, kön: sex, ålder: "Totalt", Befolkning: totalPop });
+                    });
+                }
+
+                document.getElementById('scenarioPanel').classList.remove('opacity-50', 'pointer-events-none');
+                
+                if(typeof window.checkSharedScenario === 'function') window.checkSharedScenario(); 
+
+                let popStatus = (window.popData.length > 0 || window.customPopData !== null) ? "Befolkning kopplad." : "VARNING: Saknar befolkning!";
+                if (statusDiv) {
+                    statusDiv.innerHTML = `<i class="fa-solid fa-circle-check"></i> Redo. <b>${popStatus}</b>`;
+                    statusDiv.className = "p-1.5 px-3 bg-green-50 rounded border border-green-100 text-xs font-medium text-green-600";
+                }
+
+                if(typeof window.extractHistoricalData === 'function') window.extractHistoricalData();
+                if(typeof window.calculateMigrantEmploymentRate === 'function') window.calculateMigrantEmploymentRate(); 
+                if(typeof window.buildDropdowns === 'function') window.buildDropdowns(); 
+                
+                const ySel = document.getElementById('yearSelect');
+                if (ySel && window.baseYear > 0) ySel.value = window.baseYear;
+
+                if(typeof window.updateDashboard === 'function') window.updateDashboard(false); 
+                if(typeof window.updateKPIs === 'function') window.updateKPIs(); 
+
+            }).catch(error => {
+                const ds = document.getElementById('dataStatus');
+                if(ds) {
+                    ds.innerHTML = `<b>Krasch (Promise):</b> ${error.message}`;
+                    ds.className = "p-2 bg-red-50 border border-red-200 rounded text-red-700 text-xs font-bold";
+                }
+            });
+        });
+
+        // -----------------------------------------------------------------------------
+        // HÄR LIGGER DEN UPPDATERADE FUNKTIONEN FÖR ATT INTE SKRIVA ÖVER ÅLDERSREGLAGEN
+        // -----------------------------------------------------------------------------
+        function setScenario(type) {
+            const s = window.scenarioSettings[type];
+            document.getElementById('jobGrowthSlider').value = s.jobGrowth || 0;
+            document.getElementById('jobGrowthVal').innerText = (s.jobGrowth > 0 ? '+' : '') + (s.jobGrowth || 0) + '%';
+            
+            const syssGradSlider = document.getElementById('syssGradSlider');
+            if (syssGradSlider) {
+                syssGradSlider.value = s.syssGrad || 0;
+                const valEl = document.getElementById('syssGradVal');
+                if (valEl) valEl.innerText = (s.syssGrad > 0 ? '+' : '') + s.syssGrad + '%-enh';
+                // VIKTIGT: Vi skickar INTE ett event här längre, för det nollställer åldersreglagen!
+            }
+            
+            const ageLabelsArr = ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'];
+            ageLabelsArr.forEach(a => {
+                let id = 'syssAge' + a.replace('-', '_');
+                let el = document.getElementById(id);
+                if (el) {
+                    let specVal = s[`syssAge_${a.replace('-','_')}`];
+                    el.value = (specVal !== undefined && !isNaN(specVal)) ? specVal : (s.syssGrad || 0);
+                    let valEl = document.getElementById('val_' + id);
+                    if (valEl) valEl.innerText = (el.value > 0 ? '+' : '') + el.value;
+                }
+            });
+            
+            window.currentNaringSkala = s.naringSkala !== undefined ? s.naringSkala : 1.0;
+
+            document.getElementById('studentSlider').value = s.student || 0;
+            document.getElementById('studentVal').innerText = (s.student > 0 ? '+' : '') + (s.student || 0) + '%-enh';
+            if(document.getElementById('migrantSyssSlider')) { document.getElementById('migrantSyssSlider').value = s.migrantSyss !== undefined ? s.migrantSyss : 10; document.getElementById('migrantSyssVal').innerText = (s.migrantSyss > 0 ? '+' : '') + (s.migrantSyss !== undefined ? s.migrantSyss : 10) + '%-enh'; }
+            if(document.getElementById('civIngSlider')) { document.getElementById('civIngSlider').value = 0; document.getElementById('civIngVal').innerText = 'Baslinje'; }
+            
+            document.getElementById('pendlingType').value = 'pct';
+            if(window.updatePendlingUI) window.updatePendlingUI();
+            document.getElementById('inpendlingSlider').value = s.inpendling || 0;
+            if(window.updatePendlingValue) window.updatePendlingValue('inpendlingSlider', 'inpendlingVal');
+            document.getElementById('utpendlingSlider').value = s.utpendling || 0;
+            if(window.updatePendlingValue) window.updatePendlingValue('utpendlingSlider', 'utpendlingVal');
+            document.getElementById('distansSlider').value = s.distans || 0;
+            document.getElementById('distansVal').innerText = (s.distans > 0 ? '+' : '') + (s.distans || 0) + '%';
+            document.getElementById('regionSlider').value = s.region || 0;
+            document.getElementById('regionVal').innerText = (s.region == 0 || !s.region) ? 'Dagens nivå' : '+' + s.region + ' min';
+            
+            if (typeof window.runSimulation === 'function') window.runSimulation();
+        }
+    </script>
 </body>
 </html>

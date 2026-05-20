@@ -3,105 +3,105 @@
     {
       "Indikator": "Jobbtillväxt",
       "Bas": 0.0,
-      "Hög": 5.0,
+      "Hög": 5,
       "Låg": -2.0,
       "Stagnerande": -5
     },
     {
       "Indikator": "Sysselsättningsgrad",
-      "Bas": 0.1,
-      "Hög": 0.5,
-      "Låg": -0.2,
+      "Bas": 0.5,
+      "Hög": 1,
+      "Låg": -0.5,
       "Stagnerande": -2
     },
     {
       "Indikator": "Kvarstannandegrad",
       "Bas": 0.0,
-      "Hög": 2.0,
-      "Låg": -2.0,
+      "Hög": 2,
+      "Låg": -1.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Justering inflyttares syss.grad",
       "Bas": 10.0,
-      "Hög": 15.0,
+      "Hög": 15,
       "Låg": 5.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Inpendling",
       "Bas": 1.0,
-      "Hög": 5.0,
+      "Hög": 5,
       "Låg": -5.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Utpendling",
       "Bas": 1.0,
-      "Hög": 5.0,
+      "Hög": 5,
       "Låg": -5.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Rekryteringskvot_bransch",
       "Bas": 0.0,
-      "Hög": 1.0,
+      "Hög": 1,
       "Låg": -1.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Bosättningskvot_bransch",
       "Bas": 10.0,
-      "Hög": 5.0,
+      "Hög": 5,
       "Låg": 10.0,
       "Stagnerande": "Alla"
     },
     {
       "Indikator": "Bosättningskvot_sektor",
       "Bas": 0.0,
-      "Hög": 1.0,
+      "Hög": 1,
       "Låg": -1.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Bosättningskvot_utbildningsnivå",
       "Bas": 0.0,
-      "Hög": 1.0,
+      "Hög": 1,
       "Låg": -1.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Matchningskvot",
       "Bas": 0.0,
-      "Hög": 1.0,
+      "Hög": 1,
       "Låg": -1.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Branschglidning",
       "Bas": 0.0,
-      "Hög": 1.0,
+      "Hög": 1,
       "Låg": -1.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Näringslivsjustering_skala",
       "Bas": 100.0,
-      "Hög": 125.0,
+      "Hög": 125,
       "Låg": 75.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Distansarbete",
       "Bas": 5.0,
-      "Hög": 15.0,
+      "Hög": 15,
       "Låg": 0.0,
       "Stagnerande": 0
     },
     {
       "Indikator": "Regionförstoring",
       "Bas": 5.0,
-      "Hög": 10.0,
+      "Hög": 10,
       "Låg": 0.0,
       "Stagnerande": 0
     }
@@ -109,86 +109,86 @@
   "Tillväxt": [
     {
       "Indikator": "Sysselsättningsgrad_16-19",
-      "Bas": 0.4,
-      "Hög": 0.8,
+      "Bas": 1.4,
+      "Hög": 1.8,
       "Låg": -0.2,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_20-24",
-      "Bas": 0.0,
-      "Hög": 0.0,
-      "Låg": 0.0,
+      "Bas": 0.5,
+      "Hög": 1.0,
+      "Låg": -0.5,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_25-29",
-      "Bas": 0.0,
-      "Hög": 0.0,
-      "Låg": 0.0,
+      "Bas": 0.5,
+      "Hög": 1.0,
+      "Låg": -0.5,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_30-34",
-      "Bas": 0.0,
-      "Hög": 0.0,
-      "Låg": 0.0,
+      "Bas": 0.5,
+      "Hög": 1.0,
+      "Låg": -0.5,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_35-39",
-      "Bas": 0.0,
-      "Hög": 0.0,
-      "Låg": 0.0,
+      "Bas": 0.5,
+      "Hög": 1.0,
+      "Låg": -0.5,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_40-44",
-      "Bas": 0.0,
-      "Hög": 0.0,
-      "Låg": 0.0,
+      "Bas": 0.5,
+      "Hög": 1.0,
+      "Låg": -0.5,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_45-49",
-      "Bas": 0.0,
-      "Hög": 0.0,
-      "Låg": 0.0,
+      "Bas": 0.5,
+      "Hög": 1.0,
+      "Låg": -0.5,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_50-54",
-      "Bas": 0.0,
-      "Hög": 0.0,
-      "Låg": 0.0,
+      "Bas": 0.5,
+      "Hög": 1.0,
+      "Låg": -0.5,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_55-59",
-      "Bas": 0.0,
-      "Hög": 0.0,
-      "Låg": 0.0,
+      "Bas": 0.5,
+      "Hög": 1.0,
+      "Låg": -0.5,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_60-64",
-      "Bas": 0.5,
-      "Hög": 0.8,
-      "Låg": 0.0,
+      "Bas": 1.0,
+      "Hög": 1.8,
+      "Låg": -0.5,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_65-69",
-      "Bas": 1.1,
-      "Hög": 1.5,
-      "Låg": -0.1,
+      "Bas": 1.6,
+      "Hög": 2.5,
+      "Låg": -0.8,
       "Stagnerande": -2
     },
     {
       "Indikator": "Sysselsättningsgrad_70-74",
-      "Bas": 2.0,
+      "Bas": 2.5,
       "Hög": 5.0,
-      "Låg": -0.2,
+      "Låg": -1.0,
       "Stagnerande": -2
     }
   ],
@@ -4640,6 +4640,24 @@
       "Andel_Övriga_Män_In_Snitt_19_24": 25.445973095737248,
       "Andel_Övriga_Kvinnor_In_Snitt_19_24": 25.543632585969682,
       "Andel_Övriga_Totalt_In_Snitt_19_24": 25.491522888683033
+    }
+  ],
+  "Medföljande": [
+    {
+      "Skolform_Ålder": "Förskola (0-5 år)",
+      "Kvot": 0.369
+    },
+    {
+      "Skolform_Ålder": "Grundskola F-3 (6-9 år)",
+      "Kvot": 0.195
+    },
+    {
+      "Skolform_Ålder": "Grundskola 4-9 (10-15 år)",
+      "Kvot": 0.153
+    },
+    {
+      "Skolform_Ålder": "Gymnasium (16-18 år)",
+      "Kvot": 0.158
     }
   ],
   "Inom_en_timme": [

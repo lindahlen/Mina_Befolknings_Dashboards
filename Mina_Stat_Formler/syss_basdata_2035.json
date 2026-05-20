@@ -31225,19 +31225,6 @@
       "Kvinnor_Andel_av_arbetskraften": 5.9,
       "Inrikes_födda_Andel_av_arbetskraften": 3.3,
       "Utrikes_födda_Andel_av_arbetskraften": 15.4
-    },
-    {
-      "År": 2026,
-      "Totalt_Antal": 5065,
-      "Män_Antal": 2630,
-      "Kvinnor_Antal": 2435,
-      "Inrikes_födda_Antal": 2144.0,
-      "Utrikes_födda_Antal": 2921.0,
-      "Totalt_Andel_av_arbetskraften": 5.8,
-      "Män_Andel_av_arbetskraften": 5.9,
-      "Kvinnor_Andel_av_arbetskraften": 5.8,
-      "Inrikes_födda_Andel_av_arbetskraften": 3.2,
-      "Utrikes_födda_Andel_av_arbetskraften": 15.2
     }
   ],
   "Långtidsarbetslöshet": [
@@ -31600,24 +31587,6 @@
       "Kvinnor_16-65_år_Andel_av_inskrivna": 47.8,
       "Utrikes_födda_16-65_år_Andel_av_inskrivna": 52.1,
       "Inrikes_födda_16-65 år_Andel_av_inskrivna": 36.0
-    },
-    {
-      "År": 2026,
-      "Totalt_16-65_år_Antal": 2353,
-      "Män_16-65_år_Antal": 1147,
-      "Kvinnor_16-65 år_Antal": 1206,
-      "Utrikes_födda_16-65_år_Antal": 1539,
-      "Inrikes_födda_16-65 år_Antal": 814,
-      "Totalt_16-65_år_Andel_av_arbetskraften": 2.8,
-      "Män_16-65_år_Andel_av_arbetskraften": 2.6,
-      "Kvinnor_16-65 år_Andel_av_arbetskraften": 3.0,
-      "Utrikes_födda_16-65_år_Andel_av_arbetskraften": 8.5,
-      "Inrikes_födda_16-65 år_Andel_av_arbetskraften": 1.2,
-      "Totalt_16-65_år_Andel_av_inskrivna": 46.5,
-      "Män_16-65_år_Andel_av_inskrivna": 43.6,
-      "Kvinnor_16-65_år_Andel_av_inskrivna": 49.5,
-      "Utrikes_födda_16-65_år_Andel_av_inskrivna": 52.7,
-      "Inrikes_födda_16-65 år_Andel_av_inskrivna": 38.0
     }
   ],
   "BRP": [
