@@ -88,32 +88,54 @@ window.drawMatchChart = function(year, labels, dagData, nattData, splitGender, u
             });
         });
 
-        if (window.currentShocks && window.currentShocks.length > 0) {
-            window.currentShocks.forEach(shock => {
-                if (parseInt(shock['År']) <= year && shock['Bransch']) {
-                    const bName = String(shock['Bransch']).trim();
-                    const val = parseFloat(shock['Antal_Jobb']) || 0;
-                    if (dagData['totalt'] && dagData['totalt'][bName] !== undefined) {
-                        dagData['totalt'][bName] += val;
-                        
+        // --- UPPDATERA GRAF-DATA MED NÄRINGSLIVSJUSTERING OCH BRANSCHGLIDNING ---
+        if (window.syssConfig['Näringslivsjustering']) {
+            window.syssConfig['Näringslivsjustering'].forEach(row => {
+                let ar = parseInt(row['År']);
+                if (ar && ar <= year) { // Ackumuleras upp till det valda året i grafen
+                    let bransch = String(row['Bransch'] || '').trim();
+                    let naringSkala = window.currentNaringSkala !== undefined ? window.currentNaringSkala : 1.0;
+                    let val = (parseFloat(row['Antal_Jobb'] || row['Sysselsatta'] || row['Förändring'] || 0) * naringSkala);
+                    
+                    if (bransch && val !== 0 && dagData['totalt'] && dagData['totalt'][bransch] !== undefined) {
                         let mShare = 0.5; 
-                        if (shock['Andel_Män'] !== undefined && shock['Andel_Män'] !== null && String(shock['Andel_Män']).trim() !== '') {
-                            let andelMStr = String(shock['Andel_Män']).trim();
-                            let parsed = parseFloat(andelMStr.replace('%', '').replace(',', '.'));
-                            if (!isNaN(parsed)) {
-                                mShare = andelMStr.includes('%') || parsed > 1 ? parsed / 100 : parsed;
-                                if (mShare > 1) mShare = 1;
-                                if (mShare < 0) mShare = 0;
-                            }
+                        if (row['Andel_Män'] !== undefined && row['Andel_Män'] !== null && String(row['Andel_Män']).trim() !== '') {
+                            let parsed = parseFloat(String(row['Andel_Män']).trim().replace('%', '').replace(',', '.'));
+                            if (!isNaN(parsed)) mShare = parsed > 1 ? parsed / 100 : parsed;
+                            mShare = Math.min(1, Math.max(0, mShare));
                         }
-                        
-                        if(dagData['män']) dagData['män'][bName] += val * mShare;
-                        if(dagData['kvinnor']) dagData['kvinnor'][bName] += val * (1 - mShare);
+
+                        // 1. Lägg till jobben i den växande branschen
+                        dagData['totalt'][bransch] += val;
+                        if(dagData['män']) dagData['män'][bransch] += val * mShare;
+                        if(dagData['kvinnor']) dagData['kvinnor'][bransch] += val * (1 - mShare);
 
                         if (causalityMode === 'dynamic') {
-                            nattData['totalt'][bName] += val;
-                            if(nattData['män']) nattData['män'][bName] += val * mShare;
-                            if(nattData['kvinnor']) nattData['kvinnor'][bName] += val * (1 - mShare);
+                            nattData['totalt'][bransch] += val;
+                            if(nattData['män']) nattData['män'][bransch] += val * mShare;
+                            if(nattData['kvinnor']) nattData['kvinnor'][bransch] += val * (1 - mShare);
+                        }
+
+                        // 2. Applicera Branschglidning (Dra bort jobben från de drabbade branscherna)
+                        if (val > 0 && window.syssConfig['Branschglidning']) {
+                            let glidningar = window.syssConfig['Branschglidning'].filter(g => String(g['Växande_Bransch']).trim() === bransch);
+                            glidningar.forEach(g => {
+                                let drabbad = String(g['Drabbad_Bransch']).trim();
+                                let faktor = parseFloat(g['Överföringsfaktor']) || 0;
+                                let tapp = val * faktor;
+                                
+                                if (tapp > 0 && dagData['totalt'][drabbad] !== undefined) {
+                                    dagData['totalt'][drabbad] -= tapp;
+                                    if(dagData['män']) dagData['män'][drabbad] -= tapp * mShare;
+                                    if(dagData['kvinnor']) dagData['kvinnor'][drabbad] -= tapp * (1 - mShare);
+
+                                    if (causalityMode === 'dynamic') {
+                                        nattData['totalt'][drabbad] -= tapp;
+                                        if(nattData['män']) nattData['män'][drabbad] -= tapp * mShare;
+                                        if(nattData['kvinnor']) nattData['kvinnor'][drabbad] -= tapp * (1 - mShare);
+                                    }
+                                }
+                            });
                         }
                     }
                 }
@@ -986,22 +1008,16 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 
                 if (y === window.baseYear) { p_1.push(v1); p_2.push(v2); p_tot.push(window.histDataStore[numericY] ? window.histDataStore[numericY].displayRate : null); } 
                 else if (y > window.baseYear && window.progDataStore[numericY]) {
-                    let base_1 = null, base_2 = null;
-                    if (window.histDataStore[window.baseYear]) {
-                        if (chartType === 'syssgrad_utrikes') {
-                            base_1 = window.histDataStore[window.baseYear][key1] != null ? parseFloat(window.histDataStore[window.baseYear][key1]) : null;
-                            base_2 = window.histDataStore[window.baseYear][key2] != null ? parseFloat(window.histDataStore[window.baseYear][key2]) : null;
-                        } else {
-                            base_1 = window.histDataStore[window.baseYear][key1] && window.histDataStore[window.baseYear][key1][ageGroup] != null ? parseFloat(window.histDataStore[window.baseYear][key1][ageGroup]) : null;
-                            base_2 = window.histDataStore[window.baseYear][key2] && window.histDataStore[window.baseYear][key2][ageGroup] != null ? parseFloat(window.histDataStore[window.baseYear][key2][ageGroup]) : null;
-                        }
+                    // Hämta värdena DIREKT från kalkylatormotorns uträkning istället för att lägga på samma genomsnitt på båda!
+                    if (chartType === 'syssgrad_utrikes') {
+                        p_1.push(window.progDataStore[numericY][key1] != null ? window.progDataStore[numericY][key1] : null);
+                        p_2.push(window.progDataStore[numericY][key2] != null ? window.progDataStore[numericY][key2] : null);
+                    } else {
+                        p_1.push(window.progDataStore[numericY][key1] && window.progDataStore[numericY][key1][ageGroup] != null ? window.progDataStore[numericY][key1][ageGroup] : null);
+                        p_2.push(window.progDataStore[numericY][key2] && window.progDataStore[numericY][key2][ageGroup] != null ? window.progDataStore[numericY][key2][ageGroup] : null);
                     }
-                    let base_tot = window.histDataStore[window.baseYear].displayRate != null ? parseFloat(window.histDataStore[window.baseYear].displayRate) : null;
-                    const sliderChange = parseFloat(document.getElementById('syssGradSlider').value);
-                    const step = (numericY - window.baseYear) / 10;
-                    p_1.push(base_1 != null ? base_1 + sliderChange * step : null);
-                    p_2.push(base_2 != null ? base_2 + sliderChange * step : null);
-                    p_tot.push(base_tot != null ? base_tot + sliderChange * step : null);
+                    p_tot.push(window.progDataStore[numericY].displayRate != null ? window.progDataStore[numericY].displayRate : null);
+           
                 } else { p_1.push(null); p_2.push(null); p_tot.push(null); }
             }
         });

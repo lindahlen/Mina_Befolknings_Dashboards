@@ -477,7 +477,8 @@
                             distans: parseFloat(rows.find(r => r.Indikator === 'Distansarbete')?.[colName] || 0),
                             region: parseFloat(rows.find(r => r.Indikator === 'Regionförstoring')?.[colName] || 0),
                             migrantSyss: parseFloat(rows.find(r => r.Indikator === 'Justering inflyttares syss.grad')?.[colName] || 10),
-                            naringSkala: parseFloat(rows.find(r => r.Indikator === 'Näringslivsjustering_skala')?.[colName] || 1.0)
+                            naringSkala: parseFloat(rows.find(r => r.Indikator === 'Näringslivsjustering_skala')?.[colName] || 1.0),
+                            bosattningsJustering: parseFloat(rows.find(r => r.Indikator === 'Bosättningskvot_bransch')?.[colName] || 1.0)
                         };
 
                         const ageLabelsArr = ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'];
@@ -622,6 +623,7 @@
             });
             
             window.currentNaringSkala = s.naringSkala !== undefined ? s.naringSkala : 1.0;
+            window.currentBosattningsJustering = s.bosattningsJustering !== undefined ? s.bosattningsJustering : 0;
 
             document.getElementById('studentSlider').value = s.student || 0;
             document.getElementById('studentVal').innerText = (s.student > 0 ? '+' : '') + (s.student || 0) + '%-enh';

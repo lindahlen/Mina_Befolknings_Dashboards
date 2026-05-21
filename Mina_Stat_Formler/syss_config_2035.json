@@ -3,107 +3,107 @@
     {
       "Indikator": "Jobbtillväxt",
       "Bas": 0.0,
-      "Hög": 5,
+      "Hög": 5.0,
       "Låg": -2.0,
-      "Stagnerande": -5
+      "Stagnerande": -5.0
     },
     {
       "Indikator": "Sysselsättningsgrad",
       "Bas": 0.5,
-      "Hög": 1,
+      "Hög": 1.0,
       "Låg": -0.5,
-      "Stagnerande": -2
+      "Stagnerande": -2.0
     },
     {
       "Indikator": "Kvarstannandegrad",
       "Bas": 0.0,
-      "Hög": 2,
+      "Hög": 2.0,
       "Låg": -1.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     },
     {
       "Indikator": "Justering inflyttares syss.grad",
       "Bas": 10.0,
-      "Hög": 15,
+      "Hög": 15.0,
       "Låg": 5.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     },
     {
       "Indikator": "Inpendling",
       "Bas": 1.0,
-      "Hög": 5,
+      "Hög": 5.0,
       "Låg": -5.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     },
     {
       "Indikator": "Utpendling",
       "Bas": 1.0,
-      "Hög": 5,
+      "Hög": 5.0,
       "Låg": -5.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     },
     {
       "Indikator": "Rekryteringskvot_bransch",
       "Bas": 0.0,
-      "Hög": 1,
+      "Hög": 1.0,
       "Låg": -1.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     },
     {
-      "Indikator": "Bosättningskvot_bransch",
-      "Bas": 10.0,
-      "Hög": 5,
-      "Låg": 10.0,
-      "Stagnerande": "Alla"
+      "Indikator": "Bosättningskvot_justering",
+      "Bas": 3.0,
+      "Hög": 5.0,
+      "Låg": 0.0,
+      "Stagnerande": 0.0
     },
     {
       "Indikator": "Bosättningskvot_sektor",
       "Bas": 0.0,
-      "Hög": 1,
+      "Hög": 1.0,
       "Låg": -1.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     },
     {
       "Indikator": "Bosättningskvot_utbildningsnivå",
       "Bas": 0.0,
-      "Hög": 1,
+      "Hög": 1.0,
       "Låg": -1.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     },
     {
       "Indikator": "Matchningskvot",
       "Bas": 0.0,
-      "Hög": 1,
+      "Hög": 1.0,
       "Låg": -1.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     },
     {
       "Indikator": "Branschglidning",
       "Bas": 0.0,
-      "Hög": 1,
+      "Hög": 1.0,
       "Låg": -1.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     },
     {
       "Indikator": "Näringslivsjustering_skala",
-      "Bas": 100.0,
-      "Hög": 125,
-      "Låg": 75.0,
-      "Stagnerande": 0
+      "Bas": 1.0,
+      "Hög": 1.25,
+      "Låg": 0.75,
+      "Stagnerande": 0.75
     },
     {
       "Indikator": "Distansarbete",
       "Bas": 5.0,
-      "Hög": 15,
+      "Hög": 15.0,
       "Låg": 0.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     },
     {
       "Indikator": "Regionförstoring",
       "Bas": 5.0,
-      "Hög": 10,
+      "Hög": 10.0,
       "Låg": 0.0,
-      "Stagnerande": 0
+      "Stagnerande": 0.0
     }
   ],
   "Tillväxt": [
@@ -5410,7 +5410,7 @@
     {
       "SNIbokstav": "Jordbruk, skogsbruk och fiske",
       "2024": NaN,
-      "2025": NaN,
+      "2025": -15,
       "2026": NaN,
       "2027": NaN,
       "2028": NaN,
@@ -5425,11 +5425,11 @@
     {
       "SNIbokstav": "Tillverkning och utvinning",
       "2024": 0.0,
-      "2025": 229.33333333333334,
-      "2026": 458.6666666666667,
-      "2027": 688.0,
-      "2028": 917.3333333333334,
-      "2029": 1146.6666666666667,
+      "2025": 808,
+      "2026": 921.6,
+      "2027": 1150.9333333333334,
+      "2028": 1380.2666666666667,
+      "2029": 1609.6,
       "2030": 1376.0,
       "2031": 1686.6,
       "2032": 1997.1999999999998,
@@ -5440,7 +5440,7 @@
     {
       "SNIbokstav": "Energi och miljö",
       "2024": NaN,
-      "2025": NaN,
+      "2025": 38,
       "2026": NaN,
       "2027": NaN,
       "2028": NaN,
@@ -5455,11 +5455,11 @@
     {
       "SNIbokstav": "Byggverksamhet",
       "2024": 0.0,
-      "2025": -57.666666666666664,
-      "2026": -115.33333333333333,
-      "2027": -173.0,
-      "2028": -230.66666666666666,
-      "2029": -288.3333333333333,
+      "2025": 289,
+      "2026": 162.0,
+      "2027": 104.33333333333334,
+      "2028": 46.66666666666668,
+      "2029": -10.999999999999986,
       "2030": -346.0,
       "2031": -268.4,
       "2032": -190.79999999999998,
@@ -5470,11 +5470,11 @@
     {
       "SNIbokstav": "Handel",
       "2024": 0.0,
-      "2025": 0.6666666666666666,
-      "2026": 1.3333333333333333,
-      "2027": 2.0,
-      "2028": 2.6666666666666665,
-      "2029": 3.333333333333333,
+      "2025": 32,
+      "2026": 26.4,
+      "2027": 27.066666666666666,
+      "2028": 27.733333333333334,
+      "2029": 28.400000000000002,
       "2030": 4.0,
       "2031": 4.8,
       "2032": 5.6,
@@ -5485,7 +5485,7 @@
     {
       "SNIbokstav": "Transport",
       "2024": NaN,
-      "2025": NaN,
+      "2025": 16,
       "2026": NaN,
       "2027": NaN,
       "2028": NaN,
@@ -5500,7 +5500,7 @@
     {
       "SNIbokstav": "Hotell och restauranger",
       "2024": NaN,
-      "2025": NaN,
+      "2025": 111,
       "2026": NaN,
       "2027": NaN,
       "2028": NaN,
@@ -5515,11 +5515,11 @@
     {
       "SNIbokstav": "Information och kommunikation",
       "2024": 0.0,
-      "2025": 205.83333333333334,
-      "2026": 411.6666666666667,
-      "2027": 617.5,
-      "2028": 823.3333333333334,
-      "2029": 1029.1666666666667,
+      "2025": 60,
+      "2026": 295.0,
+      "2027": 500.83333333333337,
+      "2028": 706.6666666666667,
+      "2029": 912.5000000000001,
       "2030": 1235.0,
       "2031": 1551.0,
       "2032": 1867.0,
@@ -5530,7 +5530,7 @@
     {
       "SNIbokstav": "Kreditinstitut och försäkringsbolag",
       "2024": NaN,
-      "2025": NaN,
+      "2025": -5,
       "2026": NaN,
       "2027": NaN,
       "2028": NaN,
@@ -5545,7 +5545,7 @@
     {
       "SNIbokstav": "Fastighetsverksamhet",
       "2024": NaN,
-      "2025": NaN,
+      "2025": 52,
       "2026": NaN,
       "2027": NaN,
       "2028": NaN,
@@ -5560,11 +5560,11 @@
     {
       "SNIbokstav": "Företagstjänster",
       "2024": 0.0,
-      "2025": 81.83333333333333,
-      "2026": 163.66666666666666,
-      "2027": 245.5,
-      "2028": 327.3333333333333,
-      "2029": 409.16666666666663,
+      "2025": 150,
+      "2026": 218.2,
+      "2027": 300.0333333333333,
+      "2028": 381.8666666666666,
+      "2029": 463.69999999999993,
       "2030": 491.0,
       "2031": 614.6,
       "2032": 738.2,
@@ -5575,7 +5575,7 @@
     {
       "SNIbokstav": "Offentlig förvaltning",
       "2024": NaN,
-      "2025": NaN,
+      "2025": 258,
       "2026": NaN,
       "2027": NaN,
       "2028": NaN,
@@ -5590,7 +5590,7 @@
     {
       "SNIbokstav": "Utbildning",
       "2024": NaN,
-      "2025": NaN,
+      "2025": -228,
       "2026": NaN,
       "2027": NaN,
       "2028": NaN,
@@ -5605,11 +5605,11 @@
     {
       "SNIbokstav": "Vård och omsorg",
       "2024": 0.0,
-      "2025": 133.33333333333334,
-      "2026": 266.6666666666667,
-      "2027": 400.0,
-      "2028": 533.3333333333334,
-      "2029": 666.6666666666667,
+      "2025": 362,
+      "2026": 449.6,
+      "2027": 582.9333333333334,
+      "2028": 716.2666666666668,
+      "2029": 849.6000000000001,
       "2030": 800.0,
       "2031": 1000.0,
       "2032": 1200.0,
@@ -5620,7 +5620,7 @@
     {
       "SNIbokstav": "Personliga och kulturella tjänster",
       "2024": NaN,
-      "2025": NaN,
+      "2025": 40,
       "2026": NaN,
       "2027": NaN,
       "2028": NaN,
@@ -5635,7 +5635,7 @@
     {
       "SNIbokstav": "Okänd bransch",
       "2024": NaN,
-      "2025": NaN,
+      "2025": -16,
       "2026": NaN,
       "2027": NaN,
       "2028": NaN,
@@ -5646,6 +5646,48 @@
       "2033": NaN,
       "2034": NaN,
       "2035": NaN
+    }
+  ],
+  "Tak_effekten": [
+    {
+      "Parameter": "Lägsta friktionsarbetslöshet",
+      "Värde": 3.5,
+      "Beskrivning": "Procentnivå. Den lägsta nivå arbetslösheten teoretiskt kan nå innan marknaden stannar."
+    },
+    {
+      "Parameter": "Max_Integration_Utrikes_Födda",
+      "Värde": 8.5,
+      "Beskrivning": "Procentnivå. Den lägsta nivå arbetslösheten teoretiskt kan nå för utrikes födda innan marknaden stannar."
+    },
+    {
+      "Parameter": "Max_Sysselsättningsgrad",
+      "Värde": 80.0,
+      "Beskrivning": "Procent. Det absoluta taket för hur många i åldern 20-64 år som kan förvärvsarbeta."
+    },
+    {
+      "Parameter": "Kärna_Långtidsarbetslösa",
+      "Värde": 3.0,
+      "Beskrivning": "Procent av totala arbetskraften som är >12 mån arbetslösa och extremt svåra att matcha."
+    },
+    {
+      "Parameter": "Max_Inpendlingsandel:",
+      "Värde": 25.0,
+      "Beskrivning": null
+    },
+    {
+      "Parameter": "Max_Sysselsättningsgrad_Äldre",
+      "Värde": 25.0,
+      "Beskrivning": null
+    },
+    {
+      "Parameter": "Kapacitetstak_Infrastruktur",
+      "Värde": 30000.0,
+      "Beskrivning": null
+    },
+    {
+      "Parameter": "Student_Absorptions_Tak",
+      "Värde": 50.0,
+      "Beskrivning": null
     }
   ],
   "Syssgrad_detaljer_kön": [
@@ -6838,48 +6880,6 @@
       "Just_Utrikes_född_20-64_år_Totalt": 1,
       "Just_Utrikes_född_20-64_år_Män": 1.005,
       "Just_Utrikes_född_20-64_år_Kvinnor": 1.005
-    }
-  ],
-  "Tak_effekten": [
-    {
-      "Parameter": "Lägsta friktionsarbetslöshet",
-      "Värde": 3.5,
-      "Beskrivning": "Procentnivå. Den lägsta nivå arbetslösheten teoretiskt kan nå innan marknaden stannar."
-    },
-    {
-      "Parameter": "Max_Integration_Utrikes_Födda",
-      "Värde": 8.5,
-      "Beskrivning": "Procentnivå. Den lägsta nivå arbetslösheten teoretiskt kan nå för utrikes födda innan marknaden stannar."
-    },
-    {
-      "Parameter": "Max_Sysselsättningsgrad",
-      "Värde": 80.0,
-      "Beskrivning": "Procent. Det absoluta taket för hur många i åldern 20-64 år som kan förvärvsarbeta."
-    },
-    {
-      "Parameter": "Kärna_Långtidsarbetslösa",
-      "Värde": 3.0,
-      "Beskrivning": "Procent av totala arbetskraften som är >12 mån arbetslösa och extremt svåra att matcha."
-    },
-    {
-      "Parameter": "Max_Inpendlingsandel:",
-      "Värde": 25.0,
-      "Beskrivning": null
-    },
-    {
-      "Parameter": "Max_Sysselsättningsgrad_Äldre",
-      "Värde": 25.0,
-      "Beskrivning": null
-    },
-    {
-      "Parameter": "Kapacitetstak_Infrastruktur",
-      "Värde": 30000.0,
-      "Beskrivning": null
-    },
-    {
-      "Parameter": "Student_Absorptions_Tak",
-      "Värde": 50.0,
-      "Beskrivning": null
     }
   ],
   "Officiell_befolkningsprognos": [
@@ -11800,6 +11800,248 @@
       "Eftersläpning första barnet": 0,
       "Antal_hushåll": 5968,
       "Antal_boende": 9767
+    }
+  ],
+  "SNIframskrivning": [
+    {
+      "Unnamed: 0": null,
+      "Unnamed: 1": NaN,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "region, näringsgren SNI 2007, tabellinnehåll och kvartal",
+      "Unnamed: 5": null,
+      "Unnamed: 6": null,
+      "Unnamed: 7": NaN
+    },
+    {
+      "Unnamed: 0": null,
+      "Unnamed: 1": NaN,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": null,
+      "Unnamed: 5": "Sysselsatta efter ",
+      "Unnamed: 6": null,
+      "Unnamed: 7": NaN
+    },
+    {
+      "Unnamed: 0": null,
+      "Unnamed: 1": NaN,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": null,
+      "Unnamed: 5": "arbetsställets belägenhet",
+      "Unnamed: 6": null,
+      "Unnamed: 7": NaN
+    },
+    {
+      "Unnamed: 0": "Förvärvsarbetande efter typ, näringsgren och tid",
+      "Unnamed: 1": NaN,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": null,
+      "Unnamed: 5": null,
+      "Unnamed: 6": null,
+      "Unnamed: 7": NaN
+    },
+    {
+      "Unnamed: 0": null,
+      "Unnamed: 1": 2024.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "    0580 Linköping",
+      "Unnamed: 5": null,
+      "Unnamed: 6": null,
+      "Unnamed: 7": NaN
+    },
+    {
+      "Unnamed: 0": "Dagbefolkning",
+      "Unnamed: 1": NaN,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": null,
+      "Unnamed: 5": "2024K4",
+      "Unnamed: 6": "2025K4",
+      "Unnamed: 7": NaN
+    },
+    {
+      "Unnamed: 0": "Jordbruk, skogsbruk och fiske",
+      "Unnamed: 1": 1291.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      A företag inom jordbruk, skogsbruk och fiske",
+      "Unnamed: 5": 1092,
+      "Unnamed: 6": 1077,
+      "Unnamed: 7": -15.0
+    },
+    {
+      "Unnamed: 0": "Tillverkning och utvinning",
+      "Unnamed: 1": 11362.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      B+C tillverkningsindustri; gruvor och mineralutvinningsindustri",
+      "Unnamed: 5": 11345,
+      "Unnamed: 6": 12153,
+      "Unnamed: 7": 808.0
+    },
+    {
+      "Unnamed: 0": "Energi och miljö",
+      "Unnamed: 1": 1222.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      D+E företag inom energi och miljö",
+      "Unnamed: 5": 1268,
+      "Unnamed: 6": 1306,
+      "Unnamed: 7": 38.0
+    },
+    {
+      "Unnamed: 0": "Byggverksamhet",
+      "Unnamed: 1": 4883.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      F byggindustri",
+      "Unnamed: 5": 4875,
+      "Unnamed: 6": 5164,
+      "Unnamed: 7": 289.0
+    },
+    {
+      "Unnamed: 0": "Handel",
+      "Unnamed: 1": 7868.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      G handel; serviceverkstäder för motorfordon och motorcyklar",
+      "Unnamed: 5": 7632,
+      "Unnamed: 6": 7664,
+      "Unnamed: 7": 32.0
+    },
+    {
+      "Unnamed: 0": "Transport",
+      "Unnamed: 1": 3042.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      H transport- och magasineringsföretag",
+      "Unnamed: 5": 2913,
+      "Unnamed: 6": 2929,
+      "Unnamed: 7": 16.0
+    },
+    {
+      "Unnamed: 0": "Hotell och restauranger",
+      "Unnamed: 1": 3203.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      I hotell och restauranger",
+      "Unnamed: 5": 3127,
+      "Unnamed: 6": 3238,
+      "Unnamed: 7": 111.0
+    },
+    {
+      "Unnamed: 0": "Information och kommunikation",
+      "Unnamed: 1": 7228.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      J informations- och kommunikationsföretag",
+      "Unnamed: 5": 7141,
+      "Unnamed: 6": 7201,
+      "Unnamed: 7": 60.0
+    },
+    {
+      "Unnamed: 0": "Kreditinstitut och försäkringsbolag",
+      "Unnamed: 1": 1664.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      K kreditinstitut och försäkringsbolag m.m.",
+      "Unnamed: 5": 1681,
+      "Unnamed: 6": 1676,
+      "Unnamed: 7": -5.0
+    },
+    {
+      "Unnamed: 0": "Fastighetsverksamhet",
+      "Unnamed: 1": 1926.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      L fastighetsbolag och fastighetsförvaltare",
+      "Unnamed: 5": 1934,
+      "Unnamed: 6": 1986,
+      "Unnamed: 7": 52.0
+    },
+    {
+      "Unnamed: 0": "Företagstjänster",
+      "Unnamed: 1": 15699.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      M+N företag inom juridik, ekonomi, vetenskap och teknik; företag inom uthyrning, fastighetsservice, resetjänster",
+      "Unnamed: 5": 15156,
+      "Unnamed: 6": 15306,
+      "Unnamed: 7": 150.0
+    },
+    {
+      "Unnamed: 0": "Civila myndigheter och försvaret",
+      "Unnamed: 1": 7738.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      O civila myndigheter och försvaret",
+      "Unnamed: 5": 7383,
+      "Unnamed: 6": 7641,
+      "Unnamed: 7": 258.0
+    },
+    {
+      "Unnamed: 0": "Utbildning",
+      "Unnamed: 1": 8010.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      P utbildningsväsendet",
+      "Unnamed: 5": 8189,
+      "Unnamed: 6": 7961,
+      "Unnamed: 7": -228.0
+    },
+    {
+      "Unnamed: 0": "Vård och omsorg",
+      "Unnamed: 1": 16360.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      Q enheter för vård och omsorg, socialtjänst",
+      "Unnamed: 5": 16308,
+      "Unnamed: 6": 16670,
+      "Unnamed: 7": 362.0
+    },
+    {
+      "Unnamed: 0": "Personliga och kulturella tjänster m.m.",
+      "Unnamed: 1": 3372.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      R+S+T+U enheter för kultur, nöje och fritid; andra serviceföretag m.m.",
+      "Unnamed: 5": 3212,
+      "Unnamed: 6": 3252,
+      "Unnamed: 7": 40.0
+    },
+    {
+      "Unnamed: 0": "Okänd bransch",
+      "Unnamed: 1": 139.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      US uppgift saknas",
+      "Unnamed: 5": 102,
+      "Unnamed: 6": 86,
+      "Unnamed: 7": -16.0
+    },
+    {
+      "Unnamed: 0": "Samtliga",
+      "Unnamed: 1": 95007.0,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": "      A-U+US Total",
+      "Unnamed: 5": 93361,
+      "Unnamed: 6": 95315,
+      "Unnamed: 7": 1954.0
+    },
+    {
+      "Unnamed: 0": "Kontaktperson Jimmy Lindahl, Analys och Utredning",
+      "Unnamed: 1": NaN,
+      "Unnamed: 2": NaN,
+      "Unnamed: 3": NaN,
+      "Sysselsatta 15-74 år. Preliminär statistik efter kön, födelseregion,": null,
+      "Unnamed: 5": null,
+      "Unnamed: 6": null,
+      "Unnamed: 7": NaN
     }
   ]
 }

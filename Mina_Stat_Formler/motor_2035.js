@@ -93,15 +93,15 @@ window.infoTexts = {
         title: '2. Läge (Geografisk Avgränsning)', 
         content: `<p>Välj huruvida Linköping ska betraktas som en sluten eller öppen arbetsmarknadsregion.</p>
                   <ul class="list-disc pl-5 space-y-2">
-                  <li><b>Fullständig:</b> Inkluderar all pendling. Detta är det mest realistiska läget.</li>
-                  <li><b>Endast Lokal:</b> Kapar bort pendlingsnettot helt från beräkningen. Perfekt om du vill se hur robust den "egna" invånarpoolen är.</li></ul>` 
+                  <li><b>Fullständig:</b> Inkluderar både den historiska in/utpendlingen och framtida pendlingsutveckling (inkl. effekter av branschspecifika bosättningskvoter). . Detta är det mest realistiska läget.</li>
+                  <li><b>Endast Lokal:</b> Kapar bort pendlingsnettot helt från beräkningen. Perfekt om du vill analysera hur robust den "egna" invånarpoolen är i förhållande till de lokala jobben.</li></ul>` 
     },
     'kausalitet': { 
         title: '3. Kausalitet (Jämviktsmodell)', 
         content: `<p>Hur ska kalkylatorn hantera lokala obalanser mellan utbud och efterfrågan?</p>
                   <ul class="list-disc pl-5 space-y-2">
-                  <li><b>Analytisk:</b> Modellen låter gapet mellan jobb och invånare stå öppet (visas som rött i diagrammen). Det är upp till dig att stänga det via reglagen.</li>
-                  <li><b>Dynamisk Jämvikt:</b> Modellen fyller gapet automatiskt! Om företagen växer räknar motorn omedelbart ut hur mycket "inducerad befolkning" som måste flytta in, och lägger till dessa i grafer och tabeller.</li></ul>` 
+                  <li><b>Analytisk:</b> Modellen låter gapet mellan jobb och invånare stå öppet (visas som rött i diagrammen). Det är upp till dig att stänga det via reglagen  (t.ex. genom ökad sysselsättningsgrad eller pendling).</li>
+                  <li><b>Dynamisk Jämvikt:</b> Modellen fyller gapet automatiskt! Om företagen växer räknar motorn omedelbart ut hur mycket "inducerad befolkning" (arbetskraftsinflyttare) som måste flytta in. Den lägger till dessa i utbudet och räknar fram välfärdsbehovet för deras medföljande barn och tar med dessa i grafer och tabeller.</li></ul>` 
     },
     'scenarios': { 
         title: 'Snabbscenarier', 
@@ -113,22 +113,30 @@ window.infoTexts = {
                   <ul class="list-disc pl-5 space-y-2">
                   <li><b>Lokal Jobbtillväxt:</b> Företagens rekryteringsbehov över hela perioden (0-100%). Driver Efterfrågan uppåt.</li>
                   <li><b>Sysselsättningsgrad:</b> Hur stor andel av Linköpingsborna som arbetar. En ökning här fyller lokala jobb med lokal kompetens (ökar Utbudet). Kalkylatorn tillämpar en "Catch-up effekt" där underrepresenterade grupper (kvinnor och utrikes födda) växer snabbare än snittet.</li>
-                  <li><b>Kvarstannandegrad LiU:</b> Att simulera ett tillskott av nya akademiker som väljer att stanna i kommunen efter examen.</li></ul>` 
+                  <li><b>Kvarstannandegrad LiU:</b> Att simulera ett ackumulerat årligt tillskott av nya akademiker som väljer att stanna i kommunen efter examen.</li></ul>` 
     },
     'inflyttare': { 
         title: 'Inflyttares Sysselsättningsgrad', 
-        content: `<p>Detta reglage påverkar inte arbetsmarknadsdiagrammen, utan korrigerar endast nyckeltalet <b>Befolkning (Ny)</b>.</p><p>SCB mäter sysselsättning året <i>innan</i> flytt. Genom att dra upp detta reglage (+10%) korrigerar du för mörkertalet av inflyttare som flyttar in specifikt för att börja ett jobb. Ju högre andel som jobbar, desto färre bostäder behöver byggas för att stänga ett kompetensgap.</p>` 
+        content: `<p>Detta reglage påverkar inte arbetsmarknadsdiagrammen, utan korrigerar endast nyckeltalet <b>Befolkning (Ny)</b>.</p><p>SCB mäter sysselsättning året <i>innan</i> flytt. Genom att dra upp detta reglage (+10%) korrigerar du för mörkertalet av inflyttare som flyttar in specifikt för att börja ett jobb. Ju högre andel av inflyttarna som de facto tar ett jobb, desto färre "extra" vuxna och barn behöver flytta in till kommunen för att stänga rekryteringsgapet, vilket medför att färre bostäder behöver byggas för att stänga ett kompetensgap.</p>` 
     },
     'geografi': { 
         title: 'Pendling & Geografi', 
         content: `<p>Här kan du påverka det externa arbetskraftsutbudet.</p>
                   <ul class="list-disc pl-5 space-y-2">
                   <li><b>Typ av förändring:</b> Välj mellan % eller absoluta tal (antal personer) för pendlingsreglagen.</li>
-                  <li><b>Regionförstoring:</b> En tyngdkraftsmodell. Genom att dra ner restiden (ex. Ostlänken) räknar modellen ut hur många tusen kransinvånare som plötsligt hamnar inom pendlingströskeln för ett jobb i Linköping.</li></ul>` 
+                  <li><b>Pendling:</b> Manuella justeringar utöver det historiska snittet och bransch-simuleringarna.</li>
+                  <li><b>Regionförstoring:</b> Bygger på en tyngdkraftsmodell. Om du minskar restiden (t.ex. -10 min via Ostlänken), räknar modellen om avståndet till kranskommunerna och tillgängliggör automatiskt tusentals "virtuella" arbetstagare som nu hamnar inom pendlingsbart avstånd.</li></ul>` 
     },
     'shocker': { 
         title: 'Näringslivsjustering & Branschglidning', 
-        content: `<p>Näringslivets strukturomvandling styrs via fliken <em>Näringslivsjustering</em> i Excel, och skalanivån (hur stor genomslaget är) styrs via parametern <em>Näringslivsjustering_skala</em> i scenariefliken.</p><p><b>Branschglidning:</b> Systemet är förberett för att tillämpa "kannibalisering" mellan branscher. Om en bransch växer snabbt kan den framöver dra till sig utbud (personal) från andra definierade branscher enligt styrfilen.</p>` 
+        content: `<p>Näringslivets strukturomvandling är ett avancerat simuleringsblock som styrs via två separata flikar <em>Näringslivsjustering</em> i Excel-filen, och skalanivån (hur stor genomslaget är) styrs via parametern <em>Näringslivsjustering_skala</em> i scenariefliken.</p><p><b>Branschglidning:</b> Systemet är förberett för att tillämpa "                  <ul class="list-disc pl-5 space-y-2">
+                  <ul class="list-disc pl-5 space-y-2">
+                  <li><b>Bosättningskvot:</b> Kalkylatorn tittar på vilken bransch som växer, analyserar dess historiska 10-årssnitt för hur stor andel av personalen som bor i Linköping, och delar automatiskt upp de nya jobben i "Lokal Efterfrågan" vs "Ny Inpendling". Skalfaktorn i scenariot kan påverka denna kvot.</li>
+                  <li><b>Branschglidning (Kannibalisering):</b> Om Bransch A växer kraftigt, räknar systemet ut hur stor andel personal den "stjäl" från Bransch B, och gör automatiskt ett avdrag från Bransch B:s total.</li></ul>` 
+    },
+    'diagram': { 
+        title: 'Utvecklingsdiagram & Analys', 
+        content: `<p>I rullistan kan du djupdyka i arbetsmarknaden (Utbildningsnivå, Kön, Ursprung, Bransch). Använd kryssrutorna för att få grafen att utgå från 0 (mer visuell korrekthet) eller för att dela y-axeln på vänster/höger sida för lättare jämförelse mellan stora och små volymer.</p>` 
     },
     'diagram': { 
         title: 'Utvecklingsdiagram & Analys', 
@@ -137,6 +145,10 @@ window.infoTexts = {
     'befolkning': { 
         title: 'Demografisk Effekt (Befolkningsbehov)', 
         content: `<p>Visar hur mycket befolkning (vuxna och barn) som behöver flytta in för att täcka det omatchade rekryteringsgapet.</p>` 
+    },
+     'befolkning': { 
+        title: 'Nyckeltal: Befolkning (Ny)', 
+        content: `<p>Visar konsekvensen av arbetsmarknaden översatt i faktiska människor (demografi). Siffran anger hur många extra vuxna och medföljande barn som behöver flytta in till kommunen utöver den normala befolkningsprognosen, för att företagens skapade rekryteringsgap ska täckas helt.</p>` 
     }
 };
 
@@ -951,6 +963,42 @@ window.extractHistoricalData = function() {
         window.histDataStore[window.baseYear].avg10_syssGradK = avgK;
         window.histDataStore[window.baseYear].avg10_ageRates = avgAge;
     }
+
+
+    // --- BERÄKNA 10-ÅRIGT SNITT FÖR BOSÄTTNINGSKVOT BRANSCH ---
+    window.avgBosattningskvot = {};
+    const dfBosattning = window.syssBasdata['Bosättningskvot_bransch'] || window.syssBasdata['Bosattningskvot_bransch'] || [];
+    
+    if (dfBosattning.length > 0) {
+        let bSums = {};
+        let bWeights = {};
+
+        avgYears.forEach((y, i) => {
+            let w = i + 1; // Viktning där senare år får högre värde
+            let row = dfBosattning.find(r => window.extractYear(r) == y);
+            
+            if (row) {
+                Object.keys(row).forEach(k => {
+                    if (!['År', 'år', 'ÅR', 'Totalt', 'Samtliga'].includes(k)) {
+                        let val = parseFloat(row[k]);
+                        // EXTREMVÄRDES-FILTRERING: Acceptera enbart värden mellan 0% (0.0) och 150% (1.5)
+                        if (!isNaN(val) && val >= 0.0 && val <= 1.5) {
+                            if (!bSums[k]) { bSums[k] = 0; bWeights[k] = 0; }
+                            bSums[k] += val * w;
+                            bWeights[k] += w;
+                        }
+                    }
+                });
+            }
+        });
+
+        // Sammanställ det rensade, viktade snittet
+        Object.keys(bSums).forEach(k => {
+            if (bWeights[k] > 0) {
+                window.avgBosattningskvot[k] = bSums[k] / bWeights[k];
+            }
+        });
+    }
 };
 
 // ==========================================
@@ -1071,6 +1119,7 @@ window.runSimulation = function() {
             // Hämta skalan för näringslivsjustering
             let naringSkala = window.currentNaringSkala !== undefined ? window.currentNaringSkala : 1.0;
             let totalNaringDemandExtra = 0;
+            let totalNaringInpendlingExtra = 0;
             let totalNaringDemandExtraM = 0;
             let totalNaringDemandExtraK = 0;
 
@@ -1079,22 +1128,61 @@ window.runSimulation = function() {
                 
                 // Hantera Näringslivsjustering 
                 let naringDemandThisYear = 0;
+                let naringInpendlingThisYear = 0;
                 let naringDemandThisYearM = 0;
                 let naringDemandThisYearK = 0;
 
+                // --- BRANSCHSPECIFIK LOGIK MED BOSÄTTNINGSKVOT OCH BRANSCHGLIDNING ---
                 if (window.syssConfig['Näringslivsjustering']) {
                     window.syssConfig['Näringslivsjustering'].forEach(row => {
                         let ar = parseInt(row['År']);
                         if (ar && ar === forecastYear) {
                             let val = (parseFloat(row['Antal_Jobb'] || row['Sysselsatta'] || row['Förändring'] || 0) * naringSkala);
+                            let bransch = String(row['Bransch'] || '').trim();
+
+                            // 1. Hämta snittet för den VÄXANDE branschen
+                            let baseKvot = 0.50; 
+                            if (bransch && window.avgBosattningskvot[bransch] !== undefined) {
+                                baseKvot = window.avgBosattningskvot[bransch];
+                            }
+                            let finalKvot = Math.min(1.0, Math.max(0.0, baseKvot + (bosattningsJusteringPct / 100)));
+
+                            // 2. Lägg till den växande branschens värden i årets pott
                             naringDemandThisYear += val;
+                            naringInpendlingThisYear += val * (1 - finalKvot);
                             naringDemandThisYearM += val * share_d_man;
                             naringDemandThisYearK += val * (1 - share_d_man);
+
+                            // 3. BRANSCHGLIDNING (Kannibalisering från drabbade branscher)
+                            if (val > 0 && window.syssConfig['Branschglidning']) {
+                                let glidningar = window.syssConfig['Branschglidning'].filter(g => String(g['Växande_Bransch']).trim() === bransch);
+                                glidningar.forEach(g => {
+                                    let drabbad = String(g['Drabbad_Bransch']).trim();
+                                    let faktor = parseFloat(g['Överföringsfaktor']) || 0;
+                                    let tapp = val * faktor;
+                                    
+                                    if (tapp > 0) {
+                                        // Räkna ut bosättningskvot för den DRABBADE branschen (eftersom dessa jobb försvinner)
+                                        let drabbadKvot = 0.50;
+                                        if (drabbad && window.avgBosattningskvot[drabbad] !== undefined) {
+                                            drabbadKvot = window.avgBosattningskvot[drabbad];
+                                        }
+                                        let finalDrabbadKvot = Math.min(1.0, Math.max(0.0, drabbadKvot + (bosattningsJusteringPct / 100)));
+
+                                        // Dra bort tappet från årets pott
+                                        naringDemandThisYear -= tapp;
+                                        naringInpendlingThisYear -= tapp * (1 - finalDrabbadKvot);
+                                        naringDemandThisYearM -= tapp * share_d_man;
+                                        naringDemandThisYearK -= tapp * (1 - share_d_man);
+                                    }
+                                });
+                            }
                         }
                     });
                 }
                 
                 totalNaringDemandExtra += naringDemandThisYear;
+                totalNaringInpendlingExtra += naringInpendlingThisYear; // Byggs på över åren
                 totalNaringDemandExtraM += naringDemandThisYearM;
                 totalNaringDemandExtraK += naringDemandThisYearK;
 
@@ -1103,7 +1191,7 @@ window.runSimulation = function() {
 
                 let activePopData = popSource === 'fryst' ? [] : (window.useCustomPop && window.customPopData ? window.customPopData : window.popData);
                 let futurePop = 0;
-                let hasPopDataForYear = false; 
+                let hasPopDataForYear = false;  
                 
                 if (popSource === 'fryst' || activePopData.length === 0) {
                     futurePop = base.pop != null ? Number(base.pop) : 0;
@@ -1188,6 +1276,8 @@ window.runSimulation = function() {
                         futureInpendling = Math.max(0, futureInpendlingBase + (inpendlingChange * (i/forecastYears)));
                         futureUtpendling = Math.max(0, futureUtpendlingBase + (utpendlingChange * (i/forecastYears)));
                     }
+                // Addera de branschspecifika inpendlarna till den totala inpendlingspoolen
+                    futureInpendling += totalNaringInpendlingExtra; 
                 }
 
                 const explicitNetCommuting = futureInpendling - futureUtpendling;
