@@ -478,7 +478,7 @@
                             region: parseFloat(rows.find(r => r.Indikator === 'Regionförstoring')?.[colName] || 0),
                             migrantSyss: parseFloat(rows.find(r => r.Indikator === 'Justering inflyttares syss.grad')?.[colName] || 10),
                             naringSkala: parseFloat(rows.find(r => r.Indikator === 'Näringslivsjustering_skala')?.[colName] || 1.0),
-                            bosattningsJustering: parseFloat(rows.find(r => r.Indikator === 'Bosättningskvot_bransch')?.[colName] || 1.0)
+                            bosattningsJustering: parseFloat(rows.find(r => r.Indikator === 'Bosättningskvot_justering')?.[colName] || 1.0)
                         };
 
                         const ageLabelsArr = ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'];

@@ -1117,7 +1117,9 @@ window.runSimulation = function() {
             }
 
             // Hämta skalan för näringslivsjustering
-            let naringSkala = window.currentNaringSkala !== undefined ? window.currentNaringSkala : 1.0;
+            let naringSkala = typeof window.currentNaringSkala !== 'undefined' ? window.currentNaringSkala : 1.0;
+            let bosattningsJusteringPct = typeof window.currentBosattningsJustering !== 'undefined' ? window.currentBosattningsJustering : 0;
+        
             let totalNaringDemandExtra = 0;
             let totalNaringInpendlingExtra = 0;
             let totalNaringDemandExtraM = 0;
@@ -1132,44 +1134,53 @@ window.runSimulation = function() {
                 let naringDemandThisYearM = 0;
                 let naringDemandThisYearK = 0;
 
-                // --- BRANSCHSPECIFIK LOGIK MED BOSÄTTNINGSKVOT OCH BRANSCHGLIDNING ---
+                // --- BRANSCHSPECIFIK LOGIK (ÅRTAL SOM KOLUMNER) ---
                 if (window.syssConfig['Näringslivsjustering']) {
                     window.syssConfig['Näringslivsjustering'].forEach(row => {
-                        let ar = parseInt(row['År']);
-                        if (ar && ar === forecastYear) {
-                            let val = (parseFloat(row['Antal_Jobb'] || row['Sysselsatta'] || row['Förändring'] || 0) * naringSkala);
-                            let bransch = String(row['Bransch'] || '').trim();
+                        // 1. Hittar kolumnen för branschnamnet uttryckligen (t.ex. "SNIbokstav")
+                        let branschCol = Object.keys(row).find(k => {
+                            let kl = String(k).toLowerCase().replace(/\s/g, '');
+                            return ['bransch', 'sninamn', 'näringsgren', 'sni', 'snibokstav'].includes(kl);
+                        }) || Object.keys(row)[0];
+                        
+                        let bransch = String(row[branschCol] || '').trim();
 
-                            // 1. Hämta snittet för den VÄXANDE branschen
+                        // 2. Spärr: Ignorera summeringsraden i botten på arket!
+                        if (bransch.toLowerCase() === 'totalt' || bransch.toLowerCase() === 'summa' || bransch === '') return;
+
+                        // 3. Läs värdet exakt för det aktuella prognosåret (t.ex. kolumn "2025")
+                        let valStr = row[String(forecastYear)] !== undefined ? row[String(forecastYear)] : (row[forecastYear] !== undefined ? row[forecastYear] : 0);
+                        let val = (parseFloat(valStr) || 0) * naringSkala;
+
+                        if (val !== 0) {
+                            // Hämta snittet för den VÄXANDE branschen
                             let baseKvot = 0.50; 
-                            if (bransch && window.avgBosattningskvot[bransch] !== undefined) {
+                            if (bransch && window.avgBosattningskvot !== undefined && window.avgBosattningskvot[bransch] !== undefined) {
                                 baseKvot = window.avgBosattningskvot[bransch];
                             }
                             let finalKvot = Math.min(1.0, Math.max(0.0, baseKvot + (bosattningsJusteringPct / 100)));
 
-                            // 2. Lägg till den växande branschens värden i årets pott
+                            // Lägg till den växande branschens värden i årets pott
                             naringDemandThisYear += val;
                             naringInpendlingThisYear += val * (1 - finalKvot);
                             naringDemandThisYearM += val * share_d_man;
                             naringDemandThisYearK += val * (1 - share_d_man);
 
-                            // 3. BRANSCHGLIDNING (Kannibalisering från drabbade branscher)
+                            // BRANSCHGLIDNING (Kannibalisering från drabbade branscher)
                             if (val > 0 && window.syssConfig['Branschglidning']) {
-                                let glidningar = window.syssConfig['Branschglidning'].filter(g => String(g['Växande_Bransch']).trim() === bransch);
+                                let glidningar = window.syssConfig['Branschglidning'].filter(g => String(g['Växande_Bransch'] || g['Växande bransch']).trim() === bransch);
                                 glidningar.forEach(g => {
-                                    let drabbad = String(g['Drabbad_Bransch']).trim();
-                                    let faktor = parseFloat(g['Överföringsfaktor']) || 0;
+                                    let drabbad = String(g['Drabbad_Bransch'] || g['Drabbad bransch']).trim();
+                                    let faktor = parseFloat(g['Överföringsfaktor'] || g['Kvot']) || 0;
                                     let tapp = val * faktor;
                                     
                                     if (tapp > 0) {
-                                        // Räkna ut bosättningskvot för den DRABBADE branschen (eftersom dessa jobb försvinner)
                                         let drabbadKvot = 0.50;
-                                        if (drabbad && window.avgBosattningskvot[drabbad] !== undefined) {
+                                        if (drabbad && window.avgBosattningskvot !== undefined && window.avgBosattningskvot[drabbad] !== undefined) {
                                             drabbadKvot = window.avgBosattningskvot[drabbad];
                                         }
                                         let finalDrabbadKvot = Math.min(1.0, Math.max(0.0, drabbadKvot + (bosattningsJusteringPct / 100)));
 
-                                        // Dra bort tappet från årets pott
                                         naringDemandThisYear -= tapp;
                                         naringInpendlingThisYear -= tapp * (1 - finalDrabbadKvot);
                                         naringDemandThisYearM -= tapp * share_d_man;
@@ -1500,38 +1511,29 @@ window.handleYearChange = function() {
 };
 
 window.updateKPIs = function() {
-    const yearSelect = document.getElementById('yearSelect');
-    if (!yearSelect) return;
-    const yearStr = yearSelect.value;
+    const yearStr = document.getElementById('yearSelect').value;
     if(!yearStr) return;
     const y = parseInt(yearStr);
 
     let d = y <= window.baseYear ? window.histDataStore[y] : (window.progDataStore[y] || window.histDataStore[y]);
     if (!d) return;
 
-    const kpiEfterfragan = document.getElementById('kpiEfterfragan');
-    if (kpiEfterfragan) kpiEfterfragan.innerText = d.demand != null ? window.formatNumber(d.demand, 0) : 'Data saknas';
+    document.getElementById('kpiEfterfragan').innerText = d.demand != null ? window.formatNumber(d.demand, 0) : 'Data saknas';
     
-    const kpiUtbud = document.getElementById('kpiUtbud');
-    const kpiUtbudContainer = document.getElementById('kpiUtbudContainer');
-    if (kpiUtbud && kpiUtbudContainer) {
-        if (d.isAgeWeighted) {
-            kpiUtbud.innerHTML = `${window.formatNumber(d.supply, 0)} <span class="text-xs text-sky-400" title="Åldersviktad beräkning aktiv">*</span>`;
-            kpiUtbudContainer.title = "Lokalt arbetskraftsutbud (Åldersviktad beräkning)";
-        } else {
-            kpiUtbud.innerText = d.supply != null ? window.formatNumber(d.supply, 0) : 'Data saknas';
-            kpiUtbudContainer.title = "Lokalt arbetskraftsutbud";
-        }
+    if (d.isAgeWeighted) {
+        document.getElementById('kpiUtbud').innerHTML = `${window.formatNumber(d.supply, 0)} <span class="text-xs text-sky-400" title="Åldersviktad beräkning aktiv">*</span>`;
+        document.getElementById('kpiUtbudContainer').title = "Lokalt arbetskraftsutbud (Åldersviktad beräkning)";
+    } else {
+        document.getElementById('kpiUtbud').innerText = d.supply != null ? window.formatNumber(d.supply, 0) : 'Data saknas';
+        document.getElementById('kpiUtbudContainer').title = "Lokalt arbetskraftsutbud";
     }
     
     const kpiBef = document.getElementById('kpiBefolkning');
     const kpiBefContainer = document.getElementById('kpiBefolkningContainer');
     const warningEl = document.getElementById('takWarning');
-    const causalityModeEl = document.getElementById('causalityMode');
-    const causalityMode = causalityModeEl ? causalityModeEl.value : 'analytic';
+    const causalityMode = document.getElementById('causalityMode') ? document.getElementById('causalityMode').value : 'analytic';
     
-    const simModeEl = document.getElementById('simMode');
-    const simMode = simModeEl ? simModeEl.value : 'full';
+    const simMode = document.getElementById('simMode').value;
     const showCommuting = simMode === 'full';
 
     const warnings = [];
@@ -1547,114 +1549,99 @@ window.updateKPIs = function() {
         let virtualExt = d.virtualSupply || 0;
         const totalPendling = showCommuting ? (explNetto + virtualExt) : 0;
         
-        const kpiPendling = document.getElementById('kpiPendling');
-        if(kpiPendling) {
-            kpiPendling.innerText = (totalPendling > 0 ? '+' : '') + window.formatNumber(totalPendling, 0);
-            kpiPendling.className = "text-base md:text-lg font-bold " + (totalPendling > 0 ? "text-indigo-600" : (showCommuting ? "text-emerald-600" : "text-gray-400"));
-            
-            if (!showCommuting) {
-                kpiPendling.title = "Pendling inaktiverad i läget 'Endast Lokal'.";
-                kpiPendling.innerText = '-';
+        // --- HÄR ÄR DEN NYA PENDLINGSLOGIKEN ---
+        const omatchatGap = d.demand - (d.supply + totalPendling);
+        let pendlingHtml = (totalPendling > 0 ? '+' : '') + window.formatNumber(totalPendling, 0);
+
+        if (!showCommuting) {
+            document.getElementById('kpiPendling').title = "Pendling inaktiverad i läget 'Endast Lokal'.";
+            document.getElementById('kpiPendling').innerHTML = '-';
+            document.getElementById('kpiPendling').className = "text-base md:text-lg font-bold text-gray-400";
+        } else {
+            if (causalityMode === 'analytic' && Math.abs(omatchatGap) > 5) {
+                const kravtNetto = totalPendling + omatchatGap;
+                document.getElementById('kpiPendling').title = `Simulerat pendlingsnetto: ${window.formatNumber(totalPendling, 0)}\nKrävt pendlingsnetto för balans: ${window.formatNumber(kravtNetto, 0)}\n(Saknas/Överskott: ${window.formatNumber(omatchatGap, 0)})`;
+                pendlingHtml += ` <span class="text-[10px] md:text-xs text-orange-500 ml-1 font-bold" title="Krävt pendlingsnetto för balans: ${window.formatNumber(kravtNetto, 0)}">(${omatchatGap > 0 ? '+' : ''}${window.formatNumber(omatchatGap, 0)})</span>`;
+                document.getElementById('kpiPendling').className = "text-base md:text-lg font-bold text-orange-600";
             } else if (virtualExt > 0) {
                 const komText = d.antalKommunerBeraknade ? ` för ${d.antalKommunerBeraknade} grannkommuner` : '';
-                kpiPendling.title = `Faktisk pendling: ${window.formatNumber(explNetto, 0)}.\nVirtuellt Pendlingsutbud: ${window.formatNumber(virtualExt, 0)} ${komText}.`;
+                document.getElementById('kpiPendling').title = `Faktisk pendling: ${window.formatNumber(explNetto, 0)}.\nVirtuellt Pendlingsutbud: ${window.formatNumber(virtualExt, 0)} ${komText}.`;
+                document.getElementById('kpiPendling').className = "text-base md:text-lg font-bold " + (totalPendling > 0 ? "text-indigo-600" : "text-emerald-600");
             } else {
-                kpiPendling.title = "Totalt Pendlingsnetto";
+                document.getElementById('kpiPendling').title = "Totalt Pendlingsnetto";
+                document.getElementById('kpiPendling').className = "text-base md:text-lg font-bold " + (totalPendling > 0 ? "text-indigo-600" : "text-emerald-600");
             }
+            document.getElementById('kpiPendling').innerHTML = pendlingHtml;
         }
+        // ----------------------------------------
 
-        if (typeof window.takEffekter !== 'undefined') {
-            let inpendlingAndel = (d.inpendling != null && d.demand > 0) ? (d.inpendling / d.demand) * 100 : 0;
-            if (inpendlingAndel > window.takEffekter.maxInpendlingsandel) {
-                warnings.push({icon: 'fa-car-side', color: 'amber', text: 'Hög inpendlingsandel', title: `Varning: Inpendlingsandel (${window.formatNumber(inpendlingAndel, 1)}%) överstiger ${window.takEffekter.maxInpendlingsandel}%.`});
-            }
-            
-            let totalPendlingFysisk = (d.inpendling || 0) + (d.utpendling || 0);
-            if (totalPendlingFysisk > window.takEffekter.kapacitetstakInfrastruktur) {
-                warnings.push({icon: 'fa-train', color: 'red', text: 'Infrastruktur överbelastad', title: `Varning: Fysisk pendling (${window.formatNumber(totalPendlingFysisk, 0)} resor/dag) överstiger taket på ${window.formatNumber(window.takEffekter.kapacitetstakInfrastruktur, 0)}.`});
-            }
+        let inpendlingAndel = (d.inpendling != null && d.demand > 0) ? (d.inpendling / d.demand) * 100 : 0;
+        if (inpendlingAndel > window.takEffekter.maxInpendlingsandel) {
+            warnings.push({icon: 'fa-car-side', color: 'amber', text: 'Hög inpendlingsandel', title: `Varning: Inpendlingsandel (${window.formatNumber(inpendlingAndel, 1)}%) överstiger ${window.takEffekter.maxInpendlingsandel}%.`});
+        }
+        
+        let totalPendlingFysisk = (d.inpendling || 0) + (d.utpendling || 0);
+        if (totalPendlingFysisk > window.takEffekter.kapacitetstakInfrastruktur) {
+            warnings.push({icon: 'fa-train', color: 'red', text: 'Infrastruktur överbelastad', title: `Varning: Fysisk pendling (${window.formatNumber(totalPendlingFysisk, 0)} resor/dag) överstiger taket på ${window.formatNumber(window.takEffekter.kapacitetstakInfrastruktur, 0)}.`});
         }
 
         if (causalityMode === 'dynamic' && d.inducedPop !== undefined) {
             if (d.inducedPop > 0) {
-                if(kpiBef) {
-                    let barnText = d.medfoljande_totalt ? ` <span class="text-[11px] font-normal text-emerald-800 block leading-tight">(+${window.formatNumber(d.medfoljande_totalt, 0)} barn)</span>` : '';
-                    kpiBef.innerHTML = '+' + window.formatNumber(d.inducedPop, 0) + barnText;
-                    kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
-                    if(kpiBefContainer) kpiBefContainer.title = `Dynamisk jämvikt:\n${window.formatNumber(d.inducedPop, 0)} nya vuxna har simulerats flytta in (samt uppskattningsvis ${window.formatNumber(d.medfoljande_totalt||0, 0)} medföljande barn).`;
-                }
+                kpiBef.innerText = '+' + window.formatNumber(d.inducedPop, 0);
+                kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
+                kpiBefContainer.title = `Dynamisk jämvikt:\n${window.formatNumber(d.inducedPop, 0)} nya invånare har simulerats flytta in.`;
+                
                 if (d.reqForeignLabor > 0) {
                     warnings.push({icon: 'fa-globe', color: 'amber', text: 'Arbetskraftsinv. behövs', title: `Ca ${window.formatNumber(d.reqForeignLabor, 0)} arbetare måste rekryteras internationellt pga demografiska gränser.`});
                 }
             } else {
-                if(kpiBef) {
-                    kpiBef.innerText = 'Balans';
-                    kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
-                    if(kpiBefContainer) kpiBefContainer.title = "Dynamisk jämvikt: Utbud och pendling täcker behovet.";
-                }
+                kpiBef.innerText = 'Balans';
+                kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
+                kpiBefContainer.title = "Dynamisk jämvikt: Utbud och pendling täcker behovet.";
             }
         } else {
-            const omatchatGap = d.demand - (d.supply + totalPendling);
             if (omatchatGap > 5) {
-                const migrantSyssSlider = document.getElementById('migrantSyssSlider');
-                const userSyssAdjustment = migrantSyssSlider ? parseFloat(migrantSyssSlider.value) / 100 : 0.10;
-                const employmentRate = (typeof window.globalMigrantEmploymentRate !== 'undefined' ? window.globalMigrantEmploymentRate : 0.50) + userSyssAdjustment;
+                let userSyssAdjustment = 0;
+                if (document.getElementById('migrantSyssSlider')) {
+                    userSyssAdjustment = parseFloat(document.getElementById('migrantSyssSlider').value) / 100;
+                }
+                const employmentRate = (window.globalMigrantEmploymentRate || 0.5) + userSyssAdjustment;
                 let totalPopNeeded = omatchatGap / Math.max(0.01, employmentRate); 
-                
-                let totalBarnNeeded = 0;
-                if (typeof window.syssConfig !== 'undefined' && window.syssConfig['Medföljande']) {
-                    window.syssConfig['Medföljande'].forEach(row => {
-                        totalBarnNeeded += totalPopNeeded * (parseFloat(row['Kvot']) || 0);
-                    });
-                }
 
-                if(kpiBef) {
-                    let barnText = totalBarnNeeded > 0 ? ` <span class="text-[11px] font-normal text-orange-800 block leading-tight">(+${window.formatNumber(totalBarnNeeded, 0)} barn)</span>` : '';
-                    kpiBef.innerHTML = '+' + window.formatNumber(totalPopNeeded, 0) + barnText;
-                    kpiBef.className = "text-base md:text-lg font-bold text-orange-600";
-                    if(kpiBefContainer) kpiBefContainer.title = `Analys av gap:\nDet kvarstår ett gap på ${window.formatNumber(omatchatGap, 0)} jobb.\nFör att fylla detta krävs inflyttning av ca ${window.formatNumber(totalPopNeeded, 0)} nya vuxna (samt ${window.formatNumber(totalBarnNeeded, 0)} medföljande barn).`;
-                }
+                kpiBef.innerText = '+' + window.formatNumber(totalPopNeeded, 0);
+                kpiBef.className = "text-base md:text-lg font-bold text-orange-600";
+                kpiBefContainer.title = `Analys av gap:\nDet kvarstår ett gap på ${window.formatNumber(omatchatGap, 0)} jobb.\nFör att fylla detta krävs inflyttning av ca ${window.formatNumber(totalPopNeeded, 0)} nya invånare.`;
             } else if (omatchatGap < -5) {
-                if(kpiBef) {
-                    kpiBef.innerText = 'Överskott';
-                    kpiBef.className = "text-base md:text-lg font-bold text-sky-600";
-                    if(kpiBefContainer) kpiBefContainer.title = `Lokalt utbud är ${window.formatNumber(Math.abs(omatchatGap), 0)} personer högre än tillgängliga jobb.`;
-                }
+                kpiBef.innerText = 'Överskott';
+                kpiBef.className = "text-base md:text-lg font-bold text-sky-600";
+                kpiBefContainer.title = `Lokalt utbud är ${window.formatNumber(Math.abs(omatchatGap), 0)} personer högre än tillgängliga jobb.`;
                 warnings.push({icon: 'fa-leaf', color: 'green', text: 'Arbetskraftsöverskott', title: `Lokalt utbud överstiger efterfrågan.`});
             } else {
-                if(kpiBef) {
-                    kpiBef.innerText = 'Balans';
-                    kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
-                    if(kpiBefContainer) kpiBefContainer.title = "Perfekt matchning. Inget kvarstående rekryteringsgap.";
-                }
+                kpiBef.innerText = 'Balans';
+                kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
+                kpiBefContainer.title = "Perfekt matchning. Inget kvarstående rekryteringsgap.";
                 warnings.push({icon: 'fa-check', color: 'green', text: 'Arbetsmarknad i balans', title: `Utbud och Efterfrågan möts perfekt.`});
             }
         }
     } else {
-        const kpiPendling = document.getElementById('kpiPendling');
-        if(kpiPendling) {
-            kpiPendling.innerText = 'Data saknas';
-            kpiPendling.className = "text-base md:text-lg font-bold text-gray-400";
-        }
-        if(kpiBef) kpiBef.innerText = '-';
+        document.getElementById('kpiPendling').innerText = 'Data saknas';
+        document.getElementById('kpiPendling').className = "text-base md:text-lg font-bold text-gray-400";
+        kpiBef.innerText = '-';
     }
     
-    const kpiSyssGrad = document.getElementById('kpiSyssGrad');
-    if (kpiSyssGrad) {
-        if (d.displayRate != null) {
-            kpiSyssGrad.innerText = window.formatNumber(d.displayRate, 1) + '%';
-            if (typeof window.takEffekter !== 'undefined' && d.displayRate > window.takEffektMaxSyss) {
-                kpiSyssGrad.className = "text-base md:text-lg font-bold text-red-600";
-                warnings.push({icon: 'fa-triangle-exclamation', color: 'red', text: 'Arbetskraftsbrist', title: `Varning: Sysselsättningsgraden (${window.formatNumber(d.displayRate, 1)}%) överstiger taket på ${window.takEffektMaxSyss}%.`});
-            } else if (causalityMode === 'analytic' && !(d.demand != null && d.supply != null && (d.demand - (d.supply + (d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0)) + (d.virtualSupply || 0))) <= -5) ) {
-                kpiSyssGrad.className = "text-base md:text-lg font-bold text-gray-800";
-            }
-        } else {
-            kpiSyssGrad.innerText = 'Data saknas';
+    if (d.displayRate != null) {
+        document.getElementById('kpiSyssGrad').innerText = window.formatNumber(d.displayRate, 1) + '%';
+        if (d.displayRate > window.takEffektMaxSyss) {
+            document.getElementById('kpiSyssGrad').className = "text-base md:text-lg font-bold text-red-600";
+            warnings.push({icon: 'fa-triangle-exclamation', color: 'red', text: 'Arbetskraftsbrist', title: `Varning: Sysselsättningsgraden (${window.formatNumber(d.displayRate, 1)}%) överstiger taket på ${window.takEffektMaxSyss}%.`});
+        } else if (causalityMode === 'analytic' && !(d.demand != null && d.supply != null && (d.demand - (d.supply + (d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0)) + (d.virtualSupply || 0))) <= -5) ) {
+            document.getElementById('kpiSyssGrad').className = "text-base md:text-lg font-bold text-gray-800";
         }
+    } else {
+        document.getElementById('kpiSyssGrad').innerText = 'Data saknas';
     }
 
-    if (d.arbetsloshetPct != null && typeof window.takEffekter !== 'undefined' && d.arbetsloshetPct < window.takEffekter.minArbetsloshet) {
+    if (d.arbetsloshetPct != null && d.arbetsloshetPct < window.takEffekter.minArbetsloshet) {
         warnings.push({icon: 'fa-fire', color: 'orange', text: 'Under friktionsgräns', title: `Varning: Arbetslösheten (${window.formatNumber(d.arbetsloshetPct, 1)}%) är lägre än friktionsgränsen på ${window.takEffekter.minArbetsloshet}%.`});
     }
     
@@ -1678,29 +1665,26 @@ window.updateKPIs = function() {
 
     let displayBrp = d.brp || d.extrapolatedBrp;
     const kpiBox = document.getElementById('kpiBRPContainer');
-    const kpiBRP = document.getElementById('kpiBRP');
 
-    if (kpiBRP && kpiBox) {
-        if (displayBrp != null) {
-            let tkrText = window.formatNumber(displayBrp, 1) + ' tkr';
-            let totalBrpMkr = d.totalBrpMkr;
-            if (!totalBrpMkr && d.demand) totalBrpMkr = (displayBrp * d.demand) / 1000;
+    if (displayBrp != null) {
+        let tkrText = window.formatNumber(displayBrp, 1) + ' tkr';
+        let totalBrpMkr = d.totalBrpMkr;
+        if (!totalBrpMkr && d.demand) totalBrpMkr = (displayBrp * d.demand) / 1000;
 
-            if (d.brp === null && d.extrapolatedBrp != null && y <= window.baseYear) {
-                kpiBRP.innerHTML = `<span class="text-slate-400 italic" title="Extrapolerat värde (SCB-data saknas ännu)">${tkrText}*</span>`;
-            } else {
-                kpiBRP.innerText = tkrText;
-            }
-
-            if (totalBrpMkr) {
-                kpiBox.title = `Total Regional Ekonomi (BRP): ca ${window.formatNumber(totalBrpMkr, 0)} Mkr\n(Beräknat som BRP/syss × Dagbefolkning)`;
-            } else {
-                kpiBox.title = "Bruttoregionalprodukt per sysselsatt (tkr)";
-            }
+        if (d.brp === null && d.extrapolatedBrp != null && y <= window.baseYear) {
+            document.getElementById('kpiBRP').innerHTML = `<span class="text-slate-400 italic" title="Extrapolerat värde (SCB-data saknas ännu)">${tkrText}*</span>`;
         } else {
-            kpiBRP.innerText = 'Data saknas';
+            document.getElementById('kpiBRP').innerText = tkrText;
+        }
+
+        if (totalBrpMkr) {
+            kpiBox.title = `Total Regional Ekonomi (BRP): ca ${window.formatNumber(totalBrpMkr, 0)} Mkr\n(Beräknat som BRP/syss × Dagbefolkning)`;
+        } else {
             kpiBox.title = "Bruttoregionalprodukt per sysselsatt (tkr)";
         }
+    } else {
+        document.getElementById('kpiBRP').innerText = 'Data saknas';
+        kpiBox.title = "Bruttoregionalprodukt per sysselsatt (tkr)";
     }
 };
 

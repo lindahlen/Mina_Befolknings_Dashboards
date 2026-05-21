@@ -88,55 +88,62 @@ window.drawMatchChart = function(year, labels, dagData, nattData, splitGender, u
             });
         });
 
-        // --- UPPDATERA GRAF-DATA MED NÄRINGSLIVSJUSTERING OCH BRANSCHGLIDNING ---
+        // --- UPPDATERA GRAF-DATA (ÅRTAL SOM KOLUMNER) ---
         if (window.syssConfig['Näringslivsjustering']) {
             window.syssConfig['Näringslivsjustering'].forEach(row => {
-                let ar = parseInt(row['År']);
-                if (ar && ar <= year) { // Ackumuleras upp till det valda året i grafen
-                    let bransch = String(row['Bransch'] || '').trim();
-                    let naringSkala = window.currentNaringSkala !== undefined ? window.currentNaringSkala : 1.0;
-                    let val = (parseFloat(row['Antal_Jobb'] || row['Sysselsatta'] || row['Förändring'] || 0) * naringSkala);
+                let branschCol = Object.keys(row).find(k => {
+                    let kl = String(k).toLowerCase().replace(/\s/g, '');
+                    return ['bransch', 'sninamn', 'näringsgren', 'sni', 'snibokstav'].includes(kl);
+                }) || Object.keys(row)[0];
+                
+                let bransch = String(row[branschCol] || '').trim();
+                
+                // Spärr: Ignorera summeringsraden
+                if (bransch.toLowerCase() === 'totalt' || bransch.toLowerCase() === 'summa' || bransch === '') return;
+
+                // Ackumulera deltan från basåret fram tills det valda året i grafen
+                let ackumuleratVal = 0;
+                for (let y = window.baseYear + 1; y <= year; y++) {
+                     let valStr = row[String(y)] !== undefined ? row[String(y)] : (row[y] !== undefined ? row[y] : 0);
+                     ackumuleratVal += (parseFloat(valStr) || 0);
+                }
+                
+                let naringSkala = window.currentNaringSkala !== undefined ? window.currentNaringSkala : 1.0;
+                let val = ackumuleratVal * naringSkala;
+                
+                if (bransch && val !== 0 && dagData['totalt'] && dagData['totalt'][bransch] !== undefined) {
+                    let mShare = 0.5; // Grafen får använda 50/50 om kön saknas för chocken
                     
-                    if (bransch && val !== 0 && dagData['totalt'] && dagData['totalt'][bransch] !== undefined) {
-                        let mShare = 0.5; 
-                        if (row['Andel_Män'] !== undefined && row['Andel_Män'] !== null && String(row['Andel_Män']).trim() !== '') {
-                            let parsed = parseFloat(String(row['Andel_Män']).trim().replace('%', '').replace(',', '.'));
-                            if (!isNaN(parsed)) mShare = parsed > 1 ? parsed / 100 : parsed;
-                            mShare = Math.min(1, Math.max(0, mShare));
-                        }
+                    dagData['totalt'][bransch] += val;
+                    if(dagData['män']) dagData['män'][bransch] += val * mShare;
+                    if(dagData['kvinnor']) dagData['kvinnor'][bransch] += val * (1 - mShare);
 
-                        // 1. Lägg till jobben i den växande branschen
-                        dagData['totalt'][bransch] += val;
-                        if(dagData['män']) dagData['män'][bransch] += val * mShare;
-                        if(dagData['kvinnor']) dagData['kvinnor'][bransch] += val * (1 - mShare);
+                    if (causalityMode === 'dynamic') {
+                        nattData['totalt'][bransch] += val;
+                        if(nattData['män']) nattData['män'][bransch] += val * mShare;
+                        if(nattData['kvinnor']) nattData['kvinnor'][bransch] += val * (1 - mShare);
+                    }
 
-                        if (causalityMode === 'dynamic') {
-                            nattData['totalt'][bransch] += val;
-                            if(nattData['män']) nattData['män'][bransch] += val * mShare;
-                            if(nattData['kvinnor']) nattData['kvinnor'][bransch] += val * (1 - mShare);
-                        }
+                    // Applicera branschglidning i grafen
+                    if (val > 0 && window.syssConfig['Branschglidning']) {
+                        let glidningar = window.syssConfig['Branschglidning'].filter(g => String(g['Växande_Bransch'] || g['Växande bransch']).trim() === bransch);
+                        glidningar.forEach(g => {
+                            let drabbad = String(g['Drabbad_Bransch'] || g['Drabbad bransch']).trim();
+                            let faktor = parseFloat(g['Överföringsfaktor'] || g['Kvot']) || 0;
+                            let tapp = val * faktor;
+                            
+                            if (tapp > 0 && dagData['totalt'][drabbad] !== undefined) {
+                                dagData['totalt'][drabbad] -= tapp;
+                                if(dagData['män']) dagData['män'][drabbad] -= tapp * mShare;
+                                if(dagData['kvinnor']) dagData['kvinnor'][drabbad] -= tapp * (1 - mShare);
 
-                        // 2. Applicera Branschglidning (Dra bort jobben från de drabbade branscherna)
-                        if (val > 0 && window.syssConfig['Branschglidning']) {
-                            let glidningar = window.syssConfig['Branschglidning'].filter(g => String(g['Växande_Bransch']).trim() === bransch);
-                            glidningar.forEach(g => {
-                                let drabbad = String(g['Drabbad_Bransch']).trim();
-                                let faktor = parseFloat(g['Överföringsfaktor']) || 0;
-                                let tapp = val * faktor;
-                                
-                                if (tapp > 0 && dagData['totalt'][drabbad] !== undefined) {
-                                    dagData['totalt'][drabbad] -= tapp;
-                                    if(dagData['män']) dagData['män'][drabbad] -= tapp * mShare;
-                                    if(dagData['kvinnor']) dagData['kvinnor'][drabbad] -= tapp * (1 - mShare);
-
-                                    if (causalityMode === 'dynamic') {
-                                        nattData['totalt'][drabbad] -= tapp;
-                                        if(nattData['män']) nattData['män'][drabbad] -= tapp * mShare;
-                                        if(nattData['kvinnor']) nattData['kvinnor'][drabbad] -= tapp * (1 - mShare);
-                                    }
+                                if (causalityMode === 'dynamic') {
+                                    nattData['totalt'][drabbad] -= tapp;
+                                    if(nattData['män']) nattData['män'][drabbad] -= tapp * mShare;
+                                    if(nattData['kvinnor']) nattData['kvinnor'][drabbad] -= tapp * (1 - mShare);
                                 }
-                            });
-                        }
+                            }
+                        });
                     }
                 }
             });
