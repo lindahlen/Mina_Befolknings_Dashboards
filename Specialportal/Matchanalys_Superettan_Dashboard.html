@@ -265,6 +265,8 @@
                             <option value="draw">Flest Oavgjorda i rad</option>
                             <option value="cs">Flest Hållna Nollor i rad</option>
                             <option value="ns">Längsta Måltorka i rad</option>
+                            <option value="scored">Flest matcher med gjorda mål i rad</option>
+                            <option value="conceded">Flest matcher med insläppta mål i rad</option>
                         </select>
                     </div>
                     
@@ -1027,10 +1029,10 @@
             const fromStart = document.getElementById('streak-from-start').checked; const sameSeason = document.getElementById('streak-same-season').checked;
             document.getElementById('streaks-placeholder').classList.add('hidden');
             let teamsToProcess = teamFilter === "ALL" ? TEAMS : [teamFilter];
-            let absoluteMax = { win: { len: 0, arr: [], team: "" }, unb: { len: 0, arr: [], team: "" }, loss: { len: 0, arr: [], team: "" }, winless: { len: 0, arr: [], team: "" }, draw: { len: 0, arr: [], team: "" }, cs: { len: 0, arr: [], team: "" }, ns: { len: 0, arr: [], team: "" } };
+            let absoluteMax = { win: { len: 0, arr: [], team: "" }, unb: { len: 0, arr: [], team: "" }, loss: { len: 0, arr: [], team: "" }, winless: { len: 0, arr: [], team: "" }, draw: { len: 0, arr: [], team: "" }, cs: { len: 0, arr: [], team: "" }, ns: { len: 0, arr: [], team: "" }, scored: { len: 0, arr: [], team: "" }, conceded: { len: 0, arr: [], team: "" } };
             
             let seasonMax = { w:0, wS:"", wT:"", l:0, lS:"", lT:"", gf:0, gfS:"", gfT:"", ga:0, gaS:"", gaT:"" };
-            globalAllStreaks = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
+            globalAllStreaks = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
 
             teamsToProcess.forEach(team => {
                 let matches = MATCH_DATA.filter(m => m.Hemmalag === team || m.Bortalag === team);
@@ -1044,9 +1046,9 @@
                     return a.Match_ID - b.Match_ID;
                 });
 
-                let max = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
-                let cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
-                let valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true }; 
+                let max = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
+                let cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
+                let valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true, scored:true, conceded:true }; 
 
                 const processMatch = (m) => {
                     const isHome = m.Hemmalag === team;
@@ -1063,7 +1065,7 @@
                     else if (gf < ga) matchLost = true;
                     else matchDrawn = true;
 
-                    const c = { win: matchWon, unb: matchWon || matchDrawn, loss: matchLost, winless: matchLost || matchDrawn, draw: matchDrawn, cs: ga === 0, ns: gf === 0 };
+                    const c = { win: matchWon, unb: matchWon || matchDrawn, loss: matchLost, winless: matchLost || matchDrawn, draw: matchDrawn, cs: ga === 0, ns: gf === 0, scored: gf > 0, conceded: ga > 0 };
                     Object.keys(c).forEach(k => {
                         if (c[k]) { if (valid[k]) cur[k].push(m); } else {
                             if (cur[k].length > 0) globalAllStreaks[k].push({ team: team, len: cur[k].length, arr: [...cur[k]] });
@@ -1076,8 +1078,8 @@
                 let seasonMap = {}; matches.forEach(m => { if (!seasonMap[m.Säs]) seasonMap[m.Säs] = []; seasonMap[m.Säs].push(m); });
                 if (sameSeason || fromStart) {
                     Object.values(seasonMap).forEach(sMatches => {
-                        cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
-                        if (fromStart) valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true };
+                        cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
+                        if (fromStart) valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true, scored:true, conceded:true };
                         
                         let sW=0, sL=0, sGf=0, sGa=0;
 
