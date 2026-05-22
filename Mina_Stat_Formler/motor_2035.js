@@ -67,8 +67,9 @@ window.globalMigrantEmploymentRate = 0.50;
 window.takEffektMaxSyss = 100; 
 
 window.takEffekter = {
-    maxSyssGrad: 85.0, minArbetsloshet: 3.5, karnaLangtidsarbetslosa: 3.0, maxInpendlingsandel: 25.0, maxSyssGradAldre: 25.0, kapacitetstakInfrastruktur: 30000, studentAbsorptionsTak: 50
-};
+            maxSyssGrad: 85.0, minArbetsloshet: 3.5, karnaLangtidsarbetslosa: 3.0, maxInpendlingsandel: 25.0, maxSyssGradAldre: 25.0, kapacitetstakInfrastruktur: 30000, studentAbsorptionsTak: 50,
+            maxIntegration: 85.0, maxBostadsproduktion: 1500
+        };
 
 window.scenarioSettings = {
     base: { jobGrowth: 5, syssGrad: 0.5, student: 2, inpendling: 0, utpendling: 0, distans: 0, region: 0, migrantSyss: 10, naringSkala: 1.0 },
@@ -451,41 +452,70 @@ window.setScenario = function(type) {
 };
 
 window.resetSimulation = function() {
-    document.getElementById('simMode').value = 'full'; window.toggleSimMode();
-    document.getElementById('jobGrowthSlider').value = 0; document.getElementById('jobGrowthVal').innerText = '+0%';
-    
-    const syssGradSlider = document.getElementById('syssGradSlider');
-    if (syssGradSlider) {
-        syssGradSlider.value = 0;
-        const event = new Event('input', { bubbles: true });
-        syssGradSlider.dispatchEvent(event);
-    }
-    
-    window.currentNaringSkala = 1.0;
+            // Återställ UI-element tyst (utan att trigga nya simuleringar i bakgrunden)
+            document.getElementById('simMode').value = 'full';
+            const geoPanel = document.getElementById('geoPanel');
+            if (geoPanel) geoPanel.classList.remove('opacity-40', 'pointer-events-none');
+            
+            document.getElementById('jobGrowthSlider').value = 0;
+            document.getElementById('jobGrowthVal').innerText = '+0%';
+            
+            const syssGradSlider = document.getElementById('syssGradSlider');
+            if (syssGradSlider) {
+                syssGradSlider.value = 0;
+                document.getElementById('syssGradVal').innerText = 'Oförändrad';
+            }
+            
+            window.currentNaringSkala = 1.0;
 
-    document.getElementById('studentSlider').value = 0; document.getElementById('studentVal').innerText = 'Baslinje';
-    if (window.useSpecificCivIng) window.toggleCivIng(); 
-    document.getElementById('pendlingType').value = 'pct'; window.updatePendlingUI();
-    document.getElementById('inpendlingSlider').value = 0; document.getElementById('inpendlingVal').innerText = '+0%';
-    document.getElementById('utpendlingSlider').value = 0; document.getElementById('utpendlingVal').innerText = '+0%';
-    document.getElementById('distansSlider').value = 0; document.getElementById('distansVal').innerText = 'Baslinje';
-    document.getElementById('regionSlider').value = 0; document.getElementById('regionVal').innerText = 'Dagens nivå';
-    
-    window.progDataStore = {}; 
-    window.savedProjectedData = null;
-    
-    const saveBtn = document.getElementById('saveBtn');
-    if (saveBtn) {
-        saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
-        saveBtn.classList.remove('bg-red-100', 'text-red-800', 'hover:bg-red-200');
-        saveBtn.classList.add('bg-indigo-100', 'text-indigo-800', 'hover:bg-indigo-200');
-    }
-    const startYearSelect = document.getElementById('startYearSelect');
-    if(startYearSelect) startYearSelect.classList.remove('hidden');
+            document.getElementById('studentSlider').value = 0; 
+            document.getElementById('studentVal').innerText = 'Baslinje';
+            
+            // Hantera CivIng-knappen manuellt utan att anropa toggleCivIng() (som kör simulering)
+            if (window.useSpecificCivIng) {
+                window.useSpecificCivIng = false;
+                const container = document.getElementById('civIngContainer');
+                const icon = document.getElementById('civIngToggleIcon');
+                if (container) container.classList.add('hidden');
+                if (icon) {
+                    icon.classList.replace('fa-circle-minus', 'fa-circle-plus');
+                    icon.classList.replace('text-red-500', 'text-sky-600');
+                }
+                document.getElementById('civIngSlider').value = 0;
+                document.getElementById('civIngVal').innerText = 'Baslinje';
+            }
+            
+            document.getElementById('pendlingType').value = 'pct'; 
+            if (typeof window.updatePendlingUI === 'function') window.updatePendlingUI();
+            
+            document.getElementById('inpendlingSlider').value = 0; 
+            document.getElementById('inpendlingVal').innerText = '+0%';
+            document.getElementById('utpendlingSlider').value = 0; 
+            document.getElementById('utpendlingVal').innerText = '+0%';
+            document.getElementById('distansSlider').value = 0; 
+            document.getElementById('distansVal').innerText = 'Baslinje';
+            document.getElementById('regionSlider').value = 0; 
+            document.getElementById('regionVal').innerText = 'Dagens nivå';
+            document.querySelectorAll('.shock-checkbox').forEach(cb => cb.checked = false);
 
-    if(typeof window.buildDropdowns === 'function') window.buildDropdowns();
-    if(typeof window.updateDashboard === 'function') window.updateDashboard(false);
-};
+            // Rensa global data RÄTT (med window. framför)
+            window.progDataStore = {}; 
+            window.savedProjectedData = null;
+            
+            const saveBtn = document.getElementById('saveBtn');
+            if (saveBtn) {
+                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
+                saveBtn.classList.remove('bg-red-100', 'text-red-800', 'hover:bg-red-200');
+                saveBtn.classList.add('bg-indigo-100', 'text-indigo-800', 'hover:bg-indigo-200');
+            }
+            const startYearSelect = document.getElementById('startYearSelect');
+            if(startYearSelect) startYearSelect.classList.remove('hidden');
+
+            // Bygg om gränssnittet utan prognosår
+            if(typeof window.buildDropdowns === 'function') window.buildDropdowns();
+            if(typeof window.updateDashboard === 'function') window.updateDashboard(false);
+            if(typeof window.updateKPIs === 'function') window.updateKPIs();
+        };
 
 // ==========================================
 // SCB-HISTORIK & DATATVÄTT
@@ -1098,6 +1128,45 @@ window.runSimulation = function() {
             let futureInpendlingBase = base.inpendling != null ? Number(base.inpendling) : 0;
             let futureUtpendlingBase = base.utpendling != null ? Number(base.utpendling) : 0;
 
+            // --- NY LOGIK: Demografisk profil för inflyttare (för medföljande barn) ---
+            let inMigrantsTotal = 0;
+            let inMigrantsWorkers30_39 = 0;
+            let inMigrantsWorkers40_55 = 0;
+
+            let bYearDataPop = window.popData.filter(r => String(r.tid).trim() === String(window.baseYear) && !String(r.ålder).includes('Totalt'));
+            if (bYearDataPop.length === 0 && window.popData.length > 0) {
+                 const aYears = [...new Set(window.popData.map(r => parseInt(String(r.tid).substring(0,4))))].filter(y => !isNaN(y)).sort();
+                 if(aYears.length > 0) bYearDataPop = window.popData.filter(r => String(r.tid).trim() === String(aYears[aYears.length - 1]) && !String(r.ålder).includes('Totalt'));
+            }
+            const migrantDataArr = window.syssConfig['Andel_förvarb_inflytt_över_län'] || [];
+            let rCol = null;
+            if (migrantDataArr.length > 0) rCol = Object.keys(migrantDataArr[0]).find(k => k.includes('Förvärvsarbetande'));
+
+            for (let age = 0; age <= 100; age++) {
+                let infThisAge = 0;
+                bYearDataPop.forEach(r => {
+                    const m = String(r.ålder).match(/\d+/);
+                    if (m && parseInt(m[0]) === age) infThisAge += (r.Inflyttade || 0);
+                });
+
+                let eRate = 0.5; // fallback
+                if (rCol) {
+                    let mRow = migrantDataArr.find(r => {
+                        const m = String(r['Ålder']).match(/\d+/);
+                        return m && parseInt(m[0]) === age;
+                    });
+                    if (mRow && mRow[rCol]) eRate = parseFloat(mRow[rCol]) / 100;
+                }
+                
+                inMigrantsTotal += infThisAge;
+                if (age >= 30 && age <= 39) inMigrantsWorkers30_39 += (infThisAge * eRate);
+                if (age >= 40 && age <= 55) inMigrantsWorkers40_55 += (infThisAge * eRate);
+            }
+            // Andel förvärvsarbetande i de specifika åldersgrupperna sett till TOTALA antalet inflyttare
+            let shareWorkers30_39 = inMigrantsTotal > 0 ? (inMigrantsWorkers30_39 / inMigrantsTotal) : 0;
+            let shareWorkers40_55 = inMigrantsTotal > 0 ? (inMigrantsWorkers40_55 / inMigrantsTotal) : 0;
+            // -------------------------------------------------------------------------
+
             // --- CATCH-UP EFFEKT ---
             let inrikesSyssKorr = syssGradChangeOverall;
             let utrikesSyssKorr = syssGradChangeOverall;
@@ -1107,13 +1176,13 @@ window.runSimulation = function() {
             if (syssGradChangeOverall > 0) {
                 inrikesSyssKorr = syssGradChangeOverall * 0.4;  
                 utrikesSyssKorr = syssGradChangeOverall * 2.8;  
-                mKorr = syssGradChangeOverall * 0.8;
-                kKorr = syssGradChangeOverall * 1.2;
+                mKorr = syssGradChangeOverall * 0.9;
+                kKorr = syssGradChangeOverall * 1.1;
             } else if (syssGradChangeOverall < 0) {
                 inrikesSyssKorr = syssGradChangeOverall * 0.4;
                 utrikesSyssKorr = syssGradChangeOverall * 2.8;
-                mKorr = syssGradChangeOverall * 0.8;
-                kKorr = syssGradChangeOverall * 1.2;
+                mKorr = syssGradChangeOverall * 0.9;
+                kKorr = syssGradChangeOverall * 1.1;
             }
 
             // Hämta skalan för näringslivsjustering
@@ -1323,22 +1392,38 @@ window.runSimulation = function() {
                     }
                 }
 
+                 // --- NY LOGIK FÖR MEDFÖLJANDE BARN (ÅLDERSSPECIFIK) ---
                 let medfoljande = {};
                 let medfoljande_totalt = 0;
+                // Den totala bruttobefolkningen som måste flytta in
                 let basePopForChildren = causalityMode === 'dynamic' ? inducedPopThisYear : hypotheticalPopNeed;
                 
-                // --- JUSTERING: Se till att medföljande ALLTID beräknas (även om 0) för att inte bryta diagrammen ---
+                // Räkna fram hur många av dessa som statistiskt sett är FÖRVÄRVSARBETANDE i just dessa åldrar
+                let workingAdults30_39 = basePopForChildren * shareWorkers30_39;
+                let workingAdults40_55 = basePopForChildren * shareWorkers40_55;
+                
                 if (window.syssConfig && window.syssConfig['Medföljande']) {
                     window.syssConfig['Medföljande'].forEach(row => {
                         let kategori = row['Skolform_Ålder'];
                         let kvot = parseFloat(row['Kvot']) || 0;
                         if (kategori) {
-                            let antal = basePopForChildren > 0 ? basePopForChildren * kvot : 0;
+                            // Huvudregel: Kvoten i Excel appliceras fullt ut på förvärvsarbetande inflyttare 40-55 år
+                            let antal = workingAdults40_55 * kvot;
+
+                            // Specialregel för 30-39 åringar (koden letar efter "0-5" och "6-9" i namnet i Excel-kolumnen)
+                            let katStr = String(kategori).toLowerCase();
+                            if (katStr.includes('0-5') || katStr.includes('förskola')) {
+                                antal += (workingAdults30_39 * kvot * 0.25);
+                            } else if (katStr.includes('6-9') || katStr.includes('f-3') || katStr.includes('f–3')) {
+                                antal += (workingAdults30_39 * kvot * 0.15);
+                            }
+
                             medfoljande[kategori] = antal;
                             medfoljande_totalt += antal;
                         }
                     });
                 }
+                // ------------------------------------------------------
 
                 const displayTarget = baseDisplayRate + syssGradChangeOverall;
                 const futureDisplayRate = baseDisplayRate + ((displayTarget - baseDisplayRate) * (i / forecastYears));
@@ -1644,6 +1729,37 @@ window.updateKPIs = function() {
     if (d.arbetsloshetPct != null && d.arbetsloshetPct < window.takEffekter.minArbetsloshet) {
         warnings.push({icon: 'fa-fire', color: 'orange', text: 'Under friktionsgräns', title: `Varning: Arbetslösheten (${window.formatNumber(d.arbetsloshetPct, 1)}%) är lägre än friktionsgränsen på ${window.takEffekter.minArbetsloshet}%.`});
     }
+    // Nya aktiverade varningar (Bostäder, Integration, Kärnarbetslöshet, Studenter)
+        if (d.syss_ut_tot != null && d.syss_ut_tot > window.takEffekter.maxIntegration) {
+            warnings.push({icon: 'fa-users-rays', color: 'orange', text: 'Orealistisk integration', title: `Varning: Sysselsättningsgraden för utrikes födda (${window.formatNumber(d.syss_ut_tot, 1)}%) överstiger taket på ${window.takEffekter.maxIntegration}%.`});
+        }
+
+        if (d.langtidsPct != null && d.langtidsPct < window.takEffekter.karnaLangtidsarbetslosa) {
+            warnings.push({icon: 'fa-anchor', color: 'orange', text: 'Under strukturell kärna', title: `Varning: Långtidsarbetslösheten (${window.formatNumber(d.langtidsPct, 1)}%) har tryckts ner under den svårmatchade kärnan på ${window.takEffekter.karnaLangtidsarbetslosa}%.`});
+        }
+
+        const studentSlid = document.getElementById('studentSlider');
+        if (studentSlid && parseFloat(studentSlid.value) > window.takEffekter.studentAbsorptionsTak) {
+            warnings.push({icon: 'fa-graduation-cap', color: 'amber', text: 'LiU-retention i taket', title: `Varning: Att öka kvarstannandet av studenter så här mycket bedöms som historiskt osannolikt p.g.a. kommunens branschstruktur.`});
+        }
+        
+        let totalPopNeeded = 0;
+        if (causalityMode === 'dynamic' && d.inducedPop > 0) {
+            totalPopNeeded = d.inducedPop;
+        } else if (causalityMode === 'analytic') {
+            const omatchatGap = d.demand - (d.supply + (showCommuting ? ((d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0)) + (d.virtualSupply || 0)) : 0));
+            if (omatchatGap > 5) {
+                let userSyssAdj = document.getElementById('migrantSyssSlider') ? parseFloat(document.getElementById('migrantSyssSlider').value) / 100 : 0.10;
+                totalPopNeeded = omatchatGap / Math.max(0.01, (window.globalMigrantEmploymentRate || 0.5) + userSyssAdj);
+            }
+        }
+        
+        if (totalPopNeeded > 0) {
+            let krävdaBostader = totalPopNeeded / 2.1; // Divideras med snitthushållets storlek
+            if (krävdaBostader > window.takEffekter.maxBostadsproduktion) {
+                warnings.push({icon: 'fa-house-crack', color: 'red', text: 'Bostadskris', title: `Varning: Det krävs byggnation av ca ${window.formatNumber(krävdaBostader, 0)} bostäder detta år, vilket överstiger det historiska kapacitetstaket på ${window.takEffekter.maxBostadsproduktion} bostäder/år.`});
+            }
+        }
     
     if (warningEl) {
         warningEl.innerHTML = '';

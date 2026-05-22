@@ -5656,8 +5656,8 @@
     },
     {
       "Parameter": "Max_Integration_Utrikes_Födda",
-      "Värde": 8.5,
-      "Beskrivning": "Procentnivå. Den lägsta nivå arbetslösheten teoretiskt kan nå för utrikes födda innan marknaden stannar."
+      "Värde": 74.5,
+      "Beskrivning": "Procentnivå. Den sysselsättningsgrad som gör det mindre troligt att det går fylla på med fler för att marknaden inte ska stanna."
     },
     {
       "Parameter": "Max_Sysselsättningsgrad",
@@ -5666,11 +5666,11 @@
     },
     {
       "Parameter": "Kärna_Långtidsarbetslösa",
-      "Värde": 3.0,
+      "Värde": 2.5,
       "Beskrivning": "Procent av totala arbetskraften som är >12 mån arbetslösa och extremt svåra att matcha."
     },
     {
-      "Parameter": "Max_Inpendlingsandel:",
+      "Parameter": "Max_Inpendlingsandel",
       "Värde": 25.0,
       "Beskrivning": null
     },
@@ -5681,12 +5681,22 @@
     },
     {
       "Parameter": "Kapacitetstak_Infrastruktur",
-      "Värde": 29000.0,
+      "Värde": 35000.0,
       "Beskrivning": null
     },
     {
       "Parameter": "Student_Absorptions_Tak",
       "Värde": 50.0,
+      "Beskrivning": null
+    },
+    {
+      "Parameter": "Max_Årlig_Bostadsproduktion",
+      "Värde": 1500.0,
+      "Beskrivning": null
+    },
+    {
+      "Parameter": "Max_Distansarbetsandel",
+      "Värde": 20.0,
       "Beskrivning": null
     }
   ],
