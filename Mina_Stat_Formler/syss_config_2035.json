@@ -10,7 +10,7 @@
     {
       "Indikator": "Sysselsättningsgrad",
       "Bas": 0.5,
-      "Hög": 1.0,
+      "Hög": 0.5,
       "Låg": -0.5,
       "Stagnerande": -2.0
     },
