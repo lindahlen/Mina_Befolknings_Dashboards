@@ -452,26 +452,58 @@ window.setScenario = function(type) {
 };
 
 window.resetSimulation = function() {
-            // Återställ UI-element tyst (utan att trigga nya simuleringar i bakgrunden)
-            document.getElementById('simMode').value = 'full';
+            // 1. Återställ toppmenyn till standard (F5-läge)
+            const causalitySelect = document.getElementById('causalityMode');
+            if(causalitySelect) causalitySelect.value = 'analytic';
+            
+            const simModeSelect = document.getElementById('simMode');
+            if(simModeSelect) simModeSelect.value = 'full';
+            
+            const popSelect = document.getElementById('popSource');
+            if(popSelect) {
+                let defaultPop = 'fryst';
+                for (let i = 0; i < popSelect.options.length; i++) {
+                    if (popSelect.options[i].value === 'officiell') {
+                        defaultPop = 'officiell'; break;
+                    }
+                }
+                popSelect.value = defaultPop;
+            }
+            
+            if(typeof window.updatePopSourceDesc === 'function') window.updatePopSourceDesc();
+            if(typeof window.toggleSimMode === 'function') window.toggleSimMode();
+
+            // 2. Återställ UI och reglage tyst
             const geoPanel = document.getElementById('geoPanel');
             if (geoPanel) geoPanel.classList.remove('opacity-40', 'pointer-events-none');
             
-            document.getElementById('jobGrowthSlider').value = 0;
-            document.getElementById('jobGrowthVal').innerText = '+0%';
+            if(document.getElementById('jobGrowthSlider')) document.getElementById('jobGrowthSlider').value = 0;
+            if(document.getElementById('jobGrowthVal')) document.getElementById('jobGrowthVal').innerText = '+0%';
             
             const syssGradSlider = document.getElementById('syssGradSlider');
             if (syssGradSlider) {
                 syssGradSlider.value = 0;
-                document.getElementById('syssGradVal').innerText = 'Oförändrad';
+                const syssGradVal = document.getElementById('syssGradVal');
+                if(syssGradVal) syssGradVal.innerText = 'Oförändrad';
             }
             
+            // Nollställ eventuella detaljerade åldersreglage
+            const ageLabelsArr = ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'];
+            ageLabelsArr.forEach(a => {
+                let id = 'syssAge' + a.replace('-', '_');
+                let el = document.getElementById(id);
+                if (el) {
+                    el.value = 0;
+                    let valEl = document.getElementById('val_' + id);
+                    if (valEl) valEl.innerText = '0';
+                }
+            });
+
             window.currentNaringSkala = 1.0;
 
-            document.getElementById('studentSlider').value = 0; 
-            document.getElementById('studentVal').innerText = 'Baslinje';
+            if(document.getElementById('studentSlider')) document.getElementById('studentSlider').value = 0; 
+            if(document.getElementById('studentVal')) document.getElementById('studentVal').innerText = 'Baslinje';
             
-            // Hantera CivIng-knappen manuellt utan att anropa toggleCivIng() (som kör simulering)
             if (window.useSpecificCivIng) {
                 window.useSpecificCivIng = false;
                 const container = document.getElementById('civIngContainer');
@@ -481,24 +513,24 @@ window.resetSimulation = function() {
                     icon.classList.replace('fa-circle-minus', 'fa-circle-plus');
                     icon.classList.replace('text-red-500', 'text-sky-600');
                 }
-                document.getElementById('civIngSlider').value = 0;
-                document.getElementById('civIngVal').innerText = 'Baslinje';
+                if(document.getElementById('civIngSlider')) document.getElementById('civIngSlider').value = 0;
+                if(document.getElementById('civIngVal')) document.getElementById('civIngVal').innerText = 'Baslinje';
             }
             
-            document.getElementById('pendlingType').value = 'pct'; 
+            if(document.getElementById('pendlingType')) document.getElementById('pendlingType').value = 'pct'; 
             if (typeof window.updatePendlingUI === 'function') window.updatePendlingUI();
             
-            document.getElementById('inpendlingSlider').value = 0; 
-            document.getElementById('inpendlingVal').innerText = '+0%';
-            document.getElementById('utpendlingSlider').value = 0; 
-            document.getElementById('utpendlingVal').innerText = '+0%';
-            document.getElementById('distansSlider').value = 0; 
-            document.getElementById('distansVal').innerText = 'Baslinje';
-            document.getElementById('regionSlider').value = 0; 
-            document.getElementById('regionVal').innerText = 'Dagens nivå';
+            if(document.getElementById('inpendlingSlider')) document.getElementById('inpendlingSlider').value = 0; 
+            if(document.getElementById('inpendlingVal')) document.getElementById('inpendlingVal').innerText = '+0%';
+            if(document.getElementById('utpendlingSlider')) document.getElementById('utpendlingSlider').value = 0; 
+            if(document.getElementById('utpendlingVal')) document.getElementById('utpendlingVal').innerText = '+0%';
+            if(document.getElementById('distansSlider')) document.getElementById('distansSlider').value = 0; 
+            if(document.getElementById('distansVal')) document.getElementById('distansVal').innerText = 'Baslinje';
+            if(document.getElementById('regionSlider')) document.getElementById('regionSlider').value = 0; 
+            if(document.getElementById('regionVal')) document.getElementById('regionVal').innerText = 'Dagens nivå';
             document.querySelectorAll('.shock-checkbox').forEach(cb => cb.checked = false);
 
-            // Rensa global data RÄTT (med window. framför)
+            // 3. Rensa global data
             window.progDataStore = {}; 
             window.savedProjectedData = null;
             
@@ -511,7 +543,7 @@ window.resetSimulation = function() {
             const startYearSelect = document.getElementById('startYearSelect');
             if(startYearSelect) startYearSelect.classList.remove('hidden');
 
-            // Bygg om gränssnittet utan prognosår
+            // 4. Bygg om gränssnittet utan prognosår
             if(typeof window.buildDropdowns === 'function') window.buildDropdowns();
             if(typeof window.updateDashboard === 'function') window.updateDashboard(false);
             if(typeof window.updateKPIs === 'function') window.updateKPIs();
@@ -1396,7 +1428,7 @@ window.runSimulation = function() {
                 let medfoljande = {};
                 let medfoljande_totalt = 0;
                 // Den totala bruttobefolkningen som måste flytta in
-                let basePopForChildren = causalityMode === 'dynamic' ? inducedPopThisYear : hypotheticalPopNeed;
+                let basePopForChildren = causalityMode === 'dynamic' ? inducedPopThisYear : 0;
                 
                 // Räkna fram hur många av dessa som statistiskt sett är FÖRVÄRVSARBETANDE i just dessa åldrar
                 let workingAdults30_39 = basePopForChildren * shareWorkers30_39;
