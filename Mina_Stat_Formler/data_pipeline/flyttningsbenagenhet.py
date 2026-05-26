@@ -1,0 +1,795 @@
+# -*- coding: utf-8 -*-
+import os
+import sys
+import re
+import json
+import math
+import pandas as pd
+
+# ==========================================
+# 1. GENERELL SETUP
+# ==========================================
+try:
+    current_folder = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(current_folder)
+except NameError:
+    current_folder = os.getcwd()
+
+encoding_fix = {
+    'Ã¥': 'å', 'Ã¤': 'ä', 'Ã¶': 'ö', 'Ã…': 'Å', 'Ã„': 'Ä', 'Ã–': 'Ö',
+    'Ã©': 'é', 'Ãè': 'è', 'Ã‰': 'É', "Ã\x85": "Å", "Ã\x90": "Ä", "Ã\x96": "Ö"
+}
+
+def fix_text(text):
+    if not isinstance(text, str): return text
+    for bad, good in encoding_fix.items():
+        text = text.replace(bad, good)
+    return text
+
+# ==========================================
+# 2. GENERISK OCH ROBUST PX-PARSER
+# ==========================================
+def parse_generic_px(filepath):
+    print(f" -> Tolkar {os.path.basename(filepath)}...")
+    with open(filepath, 'r', encoding='latin1') as f:
+        content = f.read()
+
+    stub_match = re.search(r'STUB=([^;]+);', content)
+    heading_match = re.search(r'HEADING=([^;]+);', content)
+
+    stubs = [x.strip('"') for x in stub_match.group(1).split(',')] if stub_match else []
+    headings = [x.strip('"') for x in heading_match.group(1).split(',')] if heading_match else []
+    dimensions = stubs + headings
+
+    dim_values = {}
+    for dim in dimensions:
+        val_match = re.search(rf'VALUES\("{dim}"\)=\s*([^;]+);', content, re.IGNORECASE | re.DOTALL)
+        if val_match:
+            vals = re.findall(r'"([^"]*)"', val_match.group(1))
+            dim_values[dim] = [fix_text(v).strip() for v in vals]
+
+    data_match = re.search(r'DATA=\s*([^;]+);', content, re.DOTALL)
+    data_str = data_match.group(1).split()
+    
+    data_series = pd.Series(data_str).str.replace('"', '')
+    data_values = pd.to_numeric(data_series, errors='coerce').values
+
+    levels = [dim_values[dim] for dim in dimensions]
+    index = pd.MultiIndex.from_product(levels, names=[d for d in dimensions])
+
+    df = pd.DataFrame({'Antal': data_values}, index=index).reset_index()
+    
+    # Standardisera kolumnnamn
+    rename_dict = {}
+    for col in df.columns:
+        clower = col.lower()
+        if clower in ['tid', 'år', 'year']: rename_dict[col] = 'Tid'
+        elif 'ålder' in clower or 'age' in clower: rename_dict[col] = 'Ålder'
+        elif 'kön' in clower or 'sex' in clower: rename_dict[col] = 'Kön'
+        elif 'riktning' in clower: rename_dict[col] = 'Riktning'
+        elif 'relation' in clower: rename_dict[col] = 'Relation'
+        elif 'flyttningsrelation' in clower: rename_dict[col] = 'Relation'
+        
+    df.rename(columns=rename_dict, inplace=True)
+    return df
+
+# ==========================================
+# 3. KATEGORISERING & DATA MERGE
+# ==========================================
+def extract_age(age_str):
+    s = str(age_str).lower()
+    if 'totalt' in s: return -1
+    match = re.search(r'(\d+)', s)
+    return int(match.group(1)) if match else -1
+
+def map_detailed_age_group(age):
+    if age < 0: return 'Övriga'
+    if 0 <= age <= 5: return '0-5 år'
+    if 6 <= age <= 9: return '6-9 år'
+    if 10 <= age <= 15: return '10-15 år'
+    if 16 <= age <= 18: return '16-18 år'
+    if 19 <= age <= 29: return '19-29 år (Studenter/Unga)'
+    if 30 <= age <= 39: return '30-39 år'
+    if 40 <= age <= 55: return '40-55 år (Kärnfamilj)'
+    if 56 <= age <= 64: return '56-64 år'
+    if age >= 65: return '65+ år (Pensionärer)'
+    return 'Övriga'
+
+def clean_population_df(df, name):
+    if 'Kön' in df.columns:
+        df['Kön'] = df['Kön'].astype(str).str.title()
+        df['Kön'] = df['Kön'].replace({'Båda Könen': 'Totalt', 'Båda könen': 'Totalt'})
+    else:
+        df['Kön'] = 'Totalt'
+        
+    df['Ålder_Int'] = df['Ålder'].apply(extract_age)
+    df['Tid'] = df['Tid'].astype(str).str.extract(r'(\d{4})')[0].astype(int)
+    return df
+
+def prepare_merged_data(df_mig, df_riket, df_ostg, df_lkpg):
+    print("Preppar flyttdata och summerar Män/Kvinnor till Totalt...")
+    
+    df_mig['Ålder_Int'] = df_mig['Ålder'].apply(extract_age)
+    df_mig['Åldersgrupp'] = df_mig['Ålder_Int'].apply(map_detailed_age_group)
+    df_mig['Tid'] = df_mig['Tid'].astype(str).str.extract(r'(\d{4})')[0].astype(int)
+    
+    if 'Kön' in df_mig.columns:
+        df_mig['Kön'] = df_mig['Kön'].astype(str).str.title()
+        if 'Totalt' not in df_mig['Kön'].unique():
+            df_tot = df_mig.groupby(['Tid', 'Åldersgrupp', 'Riktning', 'Relation'])['Antal'].sum().reset_index()
+            df_tot['Kön'] = 'Totalt'
+            df_mig = pd.concat([df_mig, df_tot], ignore_index=True)
+    else:
+        df_mig['Kön'] = 'Totalt'
+
+    df_mig_agg = df_mig[df_mig['Åldersgrupp'] != 'Övriga'].groupby(['Tid', 'Kön', 'Riktning', 'Relation', 'Åldersgrupp'])['Antal'].sum().reset_index()
+    df_mig_agg.rename(columns={'Antal': 'Antal_Flyttande'}, inplace=True)
+
+    print("Samkör riskpopulationer (Sverige, Östergötland, Resten av Sverige, Linköping m.fl.)...")
+    df_riket = clean_population_df(df_riket, 'Riket')
+    df_ostg = clean_population_df(df_ostg, 'Ostg')
+    df_lkpg = clean_population_df(df_lkpg, 'Lkpg')
+
+    riket_idx = df_riket.set_index(['Tid', 'Kön', 'Ålder_Int'])['Antal']
+    ostg_idx = df_ostg.set_index(['Tid', 'Kön', 'Ålder_Int'])['Antal']
+    rest_idx = riket_idx.sub(ostg_idx, fill_value=0).clip(lower=0)
+    df_rest = rest_idx.reset_index()
+    df_rest.rename(columns={'Antal': 'Antal'}, inplace=True)
+    
+    lkpg_idx = df_lkpg.set_index(['Tid', 'Kön', 'Ålder_Int'])['Antal']
+    ostg_rest_idx = ostg_idx.sub(lkpg_idx, fill_value=0).clip(lower=0)
+    df_ostg_rest = ostg_rest_idx.reset_index()
+    df_ostg_rest.rename(columns={'Antal': 'Antal'}, inplace=True)
+    
+    pop_bases = {
+        'Sverige': df_riket,
+        'Östergötlands län': df_ostg,
+        'Sverige exkl. Östergötland': df_rest,
+        'Östergötlands län exkl. Linköping': df_ostg_rest,
+        'Linköpings kommun': df_lkpg
+    }
+
+    all_merged_frames = []
+    future_pop_dict = {}
+    latest_year = df_riket['Tid'].max()
+
+    for pop_name, df_p in pop_bases.items():
+        future_pop_dict[pop_name] = {}
+        df_p_latest = df_p[(df_p['Tid'] == latest_year) & (df_p['Ålder_Int'] >= 0)].copy()
+        
+        for y_ahead in range(1, 11):
+            df_fut = df_p_latest.copy()
+            df_fut['Ålder_Int'] = df_fut['Ålder_Int'] + y_ahead
+            df_fut['Åldersgrupp'] = df_fut['Ålder_Int'].apply(map_detailed_age_group)
+            
+            grp = df_fut[df_fut['Åldersgrupp'] != 'Övriga'].groupby(['Kön', 'Åldersgrupp'])['Antal'].sum().reset_index()
+            future_pop_dict[pop_name][y_ahead] = {}
+            for k in grp['Kön'].unique():
+                future_pop_dict[pop_name][y_ahead][k] = grp[grp['Kön'] == k].set_index('Åldersgrupp')['Antal'].to_dict()
+
+        df_p_curr = df_p.copy()
+        df_p_curr['Åldersgrupp'] = df_p_curr['Ålder_Int'].apply(map_detailed_age_group)
+        df_curr_agg = df_p_curr[df_p_curr['Åldersgrupp'] != 'Övriga'].groupby(['Tid', 'Kön', 'Åldersgrupp'])['Antal'].sum().reset_index()
+        df_curr_agg.rename(columns={'Antal': 'Antal_Pop'}, inplace=True)
+        
+        df_p_lag = df_p[df_p['Ålder_Int'] >= 0].copy()
+        df_p_lag['Tid'] = df_p_lag['Tid'] + 10
+        df_p_lag['Ålder_Int'] = df_p_lag['Ålder_Int'] + 10
+        df_p_lag['Åldersgrupp'] = df_p_lag['Ålder_Int'].apply(map_detailed_age_group)
+        df_lag_agg = df_p_lag[df_p_lag['Åldersgrupp'] != 'Övriga'].groupby(['Tid', 'Kön', 'Åldersgrupp'])['Antal'].sum().reset_index()
+        df_lag_agg.rename(columns={'Antal': 'Antal_Pop_Lag10'}, inplace=True)
+
+        df_m = pd.merge(df_mig_agg, df_curr_agg, on=['Tid', 'Kön', 'Åldersgrupp'], how='inner')
+        df_m = pd.merge(df_m, df_lag_agg, on=['Tid', 'Kön', 'Åldersgrupp'], how='left')
+        df_m['Pop_Bas'] = pop_name
+        
+        all_merged_frames.append(df_m)
+
+    df_final = pd.concat(all_merged_frames, ignore_index=True)
+    return df_final, future_pop_dict, latest_year
+
+# ==========================================
+# 4. SÄKER STATISTISK ANALYS
+# ==========================================
+def safe_math_regression(x, y):
+    n = len(x)
+    if n < 2: return 0.0, 0.0, 0.0, 0.0
+    x_mean = sum(x) / n
+    y_mean = sum(y) / n
+    numerator = sum((xi - x_mean) * (yi - y_mean) for xi, yi in zip(x, y))
+    sum_sq_x = sum((xi - x_mean)**2 for xi in x)
+    sum_sq_y = sum((yi - y_mean)**2 for yi in y)
+    if sum_sq_x == 0 or sum_sq_y == 0: return 0.0, 0.0, 0.0, 0.0
+    r = numerator / math.sqrt(sum_sq_x * sum_sq_y)
+    r_squared = r**2
+    m = numerator / sum_sq_x
+    b = y_mean - m * x_mean
+    return float(r), float(r_squared), float(m), float(b)
+
+def perform_analysis(df_merged):
+    print("Beräknar flyttningsbenägenhet och regressionsmodeller...")
+    
+    age_groups = [
+        '0-5 år', '6-9 år', '10-15 år', '16-18 år', 
+        '19-29 år (Studenter/Unga)', '30-39 år', 
+        '40-55 år (Kärnfamilj)', '56-64 år', '65+ år (Pensionärer)'
+    ]
+    
+    riktningar = ['Inflyttning', 'Utflyttning']
+    relationer = df_merged['Relation'].unique().tolist()
+    koner = df_merged['Kön'].unique().tolist()
+    pop_bases = df_merged['Pop_Bas'].unique().tolist()
+    
+    pop_phases = {
+        'Aktuell befolkning': 'Antal_Pop',
+        'Befolkning 10 år tidigare': 'Antal_Pop_Lag10'
+    }
+    
+    time_windows = {
+        'Alla år': 0, 'Senaste 25 åren': 25, 'Senaste 10 åren': 10, 'Senaste 5 åren': 5,
+        '1970-1994': (1970, 1994), '1980-2004': (1980, 2004), '1990-2014': (1990, 2014), '2000-2024': (2000, 2024)
+    }
+    
+    charts_data = []
+
+    for riktning in riktningar:
+        for relation in relationer:
+            for kon in koner:
+                for pop_base in pop_bases:
+                    df_sub = df_merged[
+                        (df_merged['Riktning'] == riktning) & 
+                        (df_merged['Relation'] == relation) & 
+                        (df_merged['Kön'] == kon) & 
+                        (df_merged['Pop_Bas'] == pop_base)
+                    ]
+                    if df_sub.empty: continue
+                    
+                    for pop_phase_name, pop_col in pop_phases.items():
+                        for age_grp in age_groups:
+                            df_age = df_sub[df_sub['Åldersgrupp'] == age_grp]
+                            if df_age.empty: continue
+                            
+                            max_year = df_age['Tid'].max()
+                            
+                            for period_name, config in time_windows.items():
+                                if isinstance(config, tuple):
+                                    df_period = df_age[(df_age['Tid'] >= config[0]) & (df_age['Tid'] <= config[1])]
+                                elif config > 0:
+                                    df_period = df_age[df_age['Tid'] > (max_year - config)]
+                                else:
+                                    df_period = df_age
+                                    
+                                valid_data = df_period[['Tid', pop_col, 'Antal_Flyttande']].dropna()
+                                if len(valid_data) < 2: continue
+                                    
+                                tid_list = valid_data['Tid'].tolist()
+                                x_list = valid_data[pop_col].tolist()
+                                y_list = valid_data['Antal_Flyttande'].tolist()
+                                
+                                r, r_squared, m, b = safe_math_regression(x_list, y_list)
+                                
+                                scatter_pts = [{'x': float(xv), 'y': float(yv), 'year': int(tv)} for xv, yv, tv in zip(x_list, y_list, tid_list)]
+                                min_x, max_x = float(min(x_list)), float(max(x_list))
+                                line_pts = [{'x': min_x, 'y': float(m * min_x + b)}, {'x': max_x, 'y': float(m * max_x + b)}]
+                                
+                                charts_data.append({
+                                    'riktning': riktning,
+                                    'relation': relation,
+                                    'kon': kon,
+                                    'pop_base': pop_base,
+                                    'pop_phase': pop_phase_name,
+                                    'age_group': age_grp,
+                                    'period': period_name,
+                                    'scatter': scatter_pts,
+                                    'line': line_pts,
+                                    'r2': f"{r_squared:.3f}",
+                                    'r': f"{r:.3f}",
+                                    'slope': f"{m:.5f}",
+                                    'intercept': f"{b:.2f}"
+                                })
+
+    return charts_data, list(time_windows.keys()), relationer, koner, pop_bases, list(pop_phases.keys())
+
+# ==========================================
+# 5. SKAPA HTML-DASHBOARD OCH EXTERN DATA (.JS)
+# ==========================================
+def generate_html_report(charts_data, periods, relationer, koner, pop_bases, pop_phases, age_groups, future_pop_dict, latest_year):
+    print("Genererar extern datafil (.js) och dynamisk HTML Dashboard...")
+    
+    # 1. SKAPA EXTERN DATAFIL (.js för att kringgå lokala CORS-blockeringar)
+    js_data_content = f"""// Automatiskt genererad datafil för flyttningsbenägenhet
+const chartData = {json.dumps(charts_data)};
+const ageGroups = {json.dumps(age_groups)};
+const futurePop = {json.dumps(future_pop_dict)};
+const latestYear = {latest_year};
+"""
+    data_path = os.path.join(current_folder, "flyttbenagenhet_data.js")
+    with open(data_path, "w", encoding="utf-8") as f:
+        f.write(js_data_content)
+    print(f" -> Data sparad i '{data_path}'")
+
+    # 2. SKAPA EXTREMT LÄTTVIKTIG HTML
+    def make_opts(items, default=None):
+        return "\n".join([f'<option value="{i}" {"selected" if i == default else ""}>{i}</option>' for i in items])
+
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="sv">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Demografisk Prognos: Flyttningsbenägenhet</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+        <!-- HÄR LADDAS DATAN IN SEPARAT -->
+        <script src="flyttbenagenhet_data.js"></script>
+        
+        <style>
+            body {{ background-color: #f8f9fa; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }}
+            .card {{ box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: none; }}
+            .header-main {{ background-color: #8e44ad; color: white; padding: 10px; border-radius: 5px 5px 0 0; }}
+            .control-panel {{ background-color: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #8e44ad; }}
+            h2.section-title {{ color: #8e44ad; margin-top: 20px; margin-bottom: 20px; border-bottom: 2px solid #8e44ad; padding-bottom: 5px; }}
+            .table-responsive {{ max-height: 400px; overflow-y: auto; }}
+            thead th {{ position: sticky; top: 0; background-color: #8e44ad; color: white; }}
+            .table th, .table td {{ text-align: left !important; vertical-align: middle; }}
+            .trend-text {{ color: #e74c3c; font-weight: bold; margin-top: 5px; font-size: 0.9em; }}
+            .extrapolate-box {{ background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.95em; }}
+            canvas {{ min-height: 250px; }}
+            
+            /* Smarta responsiva filterfält */
+            .filter-wrapper {{ display: flex; flex-wrap: wrap; gap: 1rem; }}
+            .filter-item {{ flex: 1 1 180px; max-width: 250px; }}
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <!-- TILLBAKA-KNAPPAR -->
+            <div class="mb-3 d-flex flex-wrap gap-2">
+                <a href="../prognoskalkylator.html" class="btn btn-outline-secondary">&larr; Tillbaka till Prognoskalkylatorn</a>
+                <a href="flyttanalys_dashboard.html" class="btn btn-outline-info" style="color: #8e44ad; border-color: #8e44ad;">Gå till Barn vs Vuxna-analys</a>
+                <a href="fruktsamhet_dashboard.html" class="btn btn-outline-success">Gå till Fruktsamhetsanalys</a>
+            </div>
+            
+            <h1 class="mb-3" style="color: #8e44ad;">Avancerad Prediktion av Flyttningsbenägenhet</h1>
+            <p class="lead">Matcha flyttströmmar mot valfri riskpopulation, uppdelat på kön och tidsperioder.</p>
+            
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="header-main">
+                            <h5 class="m-0">Korrekt matchning av Riskpopulation</h5>
+                        </div>
+                        <div class="card-body">
+                            <p>För att få en träffsäker prognos är det avgörande att dela antalet flyttare med rätt riskpopulation. Exempel på smarta filterkombinationer:</p>
+                            <ul>
+                                <li><strong>Inrikes totalt</strong> → Matchas bäst mot <strong>Sverige</strong>.</li>
+                                <li><strong>Eget län</strong> → Matchas bäst mot <strong>Östergötlands län</strong>.</li>
+                                <li><strong>Annat län</strong> → Matchas bäst mot <strong>Sverige exkl. Östergötland</strong>.</li>
+                                <li><strong>Utflyttning (alla val)</strong> → Bäst R² ges oftast av att matchas mot kommunens egen bas, <strong>Linköpings kommun</strong>.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KONTROLLPANEL FÖR GRAFER -->
+            <div class="control-panel">
+                <h5 class="mb-3">Filter och Inställningar:</h5>
+                <div class="filter-wrapper align-items-end">
+                    <div class="filter-item">
+                        <label class="form-label fw-bold">In/Utflyttning:</label>
+                        <select id="select-riktning" class="form-select border-secondary">
+                            <option value="Inflyttning">Inflyttning</option>
+                            <option value="Utflyttning">Utflyttning</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label class="form-label fw-bold">Flyttningsrelation:</label>
+                        <select id="select-relation" class="form-select border-secondary">
+                            {make_opts(relationer, 'Inrikes totalt')}
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label class="form-label fw-bold">Kön:</label>
+                        <select id="select-kon" class="form-select border-secondary">
+                            {make_opts(koner, 'Totalt')}
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label class="form-label fw-bold">Riskpop. (X-axel):</label>
+                        <select id="select-popbase" class="form-select border-secondary">
+                            {make_opts(pop_bases, 'Sverige')}
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label class="form-label fw-bold">Riskpop. Fas:</label>
+                        <select id="select-popphase" class="form-select border-secondary">
+                            {make_opts(pop_phases, 'Aktuell befolkning')}
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label class="form-label fw-bold">Historisk Trend:</label>
+                        <select id="select-period" class="form-select border-secondary">
+                            {make_opts(periods, 'Senaste 10 åren')}
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label class="form-label fw-bold text-primary">Diagramtyp:</label>
+                        <select id="select-charttype" class="form-select border-primary" style="background-color: #f0f8ff;">
+                            <option value="scatter">Samband (Scatterplot)</option>
+                            <option value="timeseries">Utveckling över tid (Linje)</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label class="form-label fw-bold" style="color: #d35400;">Analysläge:</label>
+                        <select id="select-mode" class="form-select border-warning" style="background-color: #fff9e6;">
+                            <option value="historical">Historisk utveckling</option>
+                            <option value="forecast">Extrapolera framåt</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Dold låda för specifika Extrapolerings-inställningar -->
+                <div id="forecast-row" style="display: none;">
+                    <hr class="mt-4 mb-3" style="border-top: 1px solid #8e44ad; opacity: 0.3;">
+                    <div class="filter-wrapper align-items-center">
+                        <div class="filter-item">
+                            <label class="form-label fw-bold" style="color: #d35400;">Välj prognosår:</label>
+                            <select id="select-forecast-year" class="form-select border-warning" style="background-color: #fff9e6;">
+                                <!-- JS fyller denna -->
+                            </select>
+                        </div>
+                        <div class="filter-item" style="flex: 1 1 300px; max-width: none;">
+                            <small class="text-muted d-block mt-4">
+                                <i style="color: #d35400;">Prognos: Systemet åldrar automatiskt riskpopulationen med det valda antalet år.</i>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <h2 class="section-title" id="chart-section-title">Grafer laddas...</h2>
+            <div class="row" id="charts-container"></div>
+
+            <div class="row mt-5 mb-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="header-main">
+                            <h5 class="m-0">Data för vald kombination</h5>
+                        </div>
+                        <div class="card-body table-responsive">
+                            <table class="table table-striped table-hover table-sm">
+                                <thead id="dynamic-table-head"></thead>
+                                <tbody id="dynamic-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let chartInstances = {{}};
+
+            // Initiera rullistan för Prognosår
+            const forecastSelect = document.getElementById('select-forecast-year');
+            
+            function renderCharts() {{
+                if (typeof chartData === 'undefined') {{
+                    setTimeout(renderCharts, 100);
+                    return;
+                }}
+                
+                if (forecastSelect.options.length === 0) {{
+                    for(let i=1; i<=10; i++) {{
+                        let opt = document.createElement('option');
+                        opt.value = i;
+                        opt.text = (latestYear + i) + (i === 10 ? ' (Standard)' : ' år framåt');
+                        if(i === 10) opt.selected = true;
+                        forecastSelect.appendChild(opt);
+                    }}
+                }}
+
+                const riktning = document.getElementById('select-riktning').value;
+                const relation = document.getElementById('select-relation').value;
+                const kon = document.getElementById('select-kon').value;
+                const popBase = document.getElementById('select-popbase').value;
+                const popPhase = document.getElementById('select-popphase').value;
+                const period = document.getElementById('select-period').value;
+                const chartType = document.getElementById('select-charttype').value;
+                
+                const mode = document.getElementById('select-mode').value;
+                const yearsAhead = parseInt(document.getElementById('select-forecast-year').value);
+                const targetYear = typeof latestYear !== 'undefined' ? latestYear + yearsAhead : 2035;
+                
+                const konStr = kon === 'Totalt' ? '' : ` (${{kon}})`;
+                document.getElementById('chart-section-title').innerText = `${{riktning}}${{konStr}} (${{relation}}) relaterat till ${{popBase}} | ${{period}}`;
+
+                const container = document.getElementById('charts-container');
+                const tableHead = document.getElementById('dynamic-table-head');
+                const tableBody = document.getElementById('dynamic-table-body');
+                
+                let theadHTML = `<tr>
+                    <th>Riktning</th><th>Relation</th><th>Kön</th><th>Riskpopulation</th>
+                    <th>Åldersgrupp</th><th>Period</th><th>r</th><th>R²</th><th>Trend</th>`;
+                if(mode === 'forecast') {{
+                    theadHTML += `<th>Prognosår</th><th>Framskriven Riskpop.</th><th>Est. Flyttare</th>`;
+                }}
+                theadHTML += `</tr>`;
+                tableHead.innerHTML = theadHTML;
+
+                if(!document.getElementById('chart_0')) {{
+                    container.innerHTML = ''; 
+                    ageGroups.forEach((age, i) => {{
+                        container.innerHTML += `
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100" style="border: 1px solid #8e44ad;">
+                                <div class="card-header text-center bg-light">
+                                    <strong class="fs-5">${{age}}</strong><br>
+                                    <div id="stats_${{i}}" class="mt-2">Laddar...</div>
+                                    <div id="extra_${{i}}" class="extrapolate-box d-none"></div>
+                                </div>
+                                <div class="card-body p-2 position-relative">
+                                    <canvas id="chart_${{i}}"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    }});
+                }}
+
+                let tableHTML = '';
+
+                ageGroups.forEach((age, i) => {{
+                    const dataObj = chartData.find(d => 
+                        d.riktning === riktning && d.relation === relation && 
+                        d.kon === kon && d.pop_base === popBase && 
+                        d.pop_phase === popPhase && d.age_group === age && d.period === period
+                    );
+                    
+                    const extraBox = document.getElementById(`extra_${{i}}`);
+                    const canvas = document.getElementById(`chart_${{i}}`);
+                    const ctx = canvas.getContext('2d');
+                    
+                    if(chartInstances[i]) {{
+                        chartInstances[i].destroy();
+                        delete chartInstances[i];
+                    }}
+                    
+                    if(dataObj) {{
+                        document.getElementById(`stats_${{i}}`).innerHTML = `
+                            <span class="badge" style="background-color: #8e44ad;">R² = ${{dataObj.r2}} | r = ${{dataObj.r}}</span>
+                            <div class="trend-text">→ Est. flyttbenägenhet: ${{dataObj.slope}}</div>
+                        `;
+                        
+                        let scatterPoints = [];
+                        let linePoints = [];
+                        let forecastPoints = [];
+                        let predictedY = "-";
+                        let popValueStr = "-";
+                        
+                        if(mode === 'forecast') {{
+                            const popValue = futurePop[popBase][yearsAhead][kon][age];
+                            if(popValue && popValue > 0) {{
+                                predictedY = Math.round(parseFloat(dataObj.slope) * popValue + parseFloat(dataObj.intercept));
+                                popValueStr = popValue.toLocaleString('sv-SE');
+                                extraBox.classList.remove('d-none');
+                                extraBox.innerHTML = `<strong>Prognos (År ${{targetYear}}):</strong> Vid framskriven population ${{popValueStr}} förväntas <strong>${{predictedY}}</strong> flytta.`;
+                                
+                                if(chartType === 'timeseries') {{
+                                    forecastPoints = [{{x: targetYear, y: predictedY}}];
+                                }} else {{
+                                    forecastPoints = [{{x: popValue, y: predictedY, year: targetYear + " (Prognos)"}}];
+                                }}
+                            }} else {{
+                                extraBox.classList.remove('d-none');
+                                extraBox.innerHTML = `<span class="text-muted"><em>Kan ej projiceras (Årskull ej född).</em></span>`;
+                            }}
+                        }} else {{
+                            extraBox.classList.add('d-none');
+                        }}
+
+                        let datasets = [];
+                        let scalesConfig = {{}};
+                        let tooltipConfig = {{}};
+                        
+                        if(chartType === 'timeseries') {{
+                            const timeData = dataObj.scatter.map(d => ({{x: d.year, y: d.y}})).sort((a,b) => a.x - b.x);
+                            
+                            datasets.push({{
+                                type: 'line',
+                                label: 'Historisk Utveckling',
+                                data: timeData,
+                                backgroundColor: 'rgba(142, 68, 173, 0.1)',
+                                borderColor: 'rgba(142, 68, 173, 0.9)',
+                                borderWidth: 2,
+                                pointRadius: mode === 'historical' ? 4 : 3,
+                                pointHoverRadius: 6,
+                                fill: true,
+                                tension: 0.1
+                            }});
+                            
+                            if(mode === 'forecast' && forecastPoints.length > 0) {{
+                                const lastHistorical = timeData[timeData.length - 1];
+                                datasets.push({{
+                                    type: 'line',
+                                    label: 'Prognos',
+                                    data: [lastHistorical, forecastPoints[0]],
+                                    borderColor: '#e67e22',
+                                    borderWidth: 2,
+                                    borderDash: [5, 5],
+                                    pointRadius: [0, 8],
+                                    pointStyle: ['circle', 'star'],
+                                    pointHoverRadius: 12,
+                                    fill: false
+                                }});
+                            }}
+                            
+                            scalesConfig = {{
+                                x: {{ 
+                                    type: 'linear',
+                                    title: {{ display: true, text: 'Årtal', font: {{weight: 'bold'}} }},
+                                    ticks: {{ stepSize: 1, callback: function(value) {{ return value.toString().replace(/,/g, ''); }} }}
+                                }},
+                                y: {{ title: {{ display: true, text: 'Antal flyttande (' + relation + ')', font: {{weight: 'bold'}} }} }}
+                            }};
+                            
+                            tooltipConfig = {{
+                                callbacks: {{
+                                    label: function(c) {{
+                                        if (c.dataset.label === 'Prognos' && c.dataIndex === 0) return null;
+                                        return `År ${{c.raw.x}} | Flyttande: ${{c.raw.y}}`;
+                                    }}
+                                }}
+                            }};
+                            
+                        }} else {{
+                            datasets.push({{
+                                type: 'scatter',
+                                label: 'Observationer',
+                                data: dataObj.scatter,
+                                backgroundColor: 'rgba(52, 152, 219, 0.6)',
+                                borderColor: 'rgba(41, 128, 185, 0.9)',
+                                pointRadius: mode === 'historical' ? 5 : 3,
+                                pointHoverRadius: 8
+                            }});
+                            
+                            if(mode === 'forecast' && forecastPoints.length > 0) {{
+                                datasets.push({{
+                                    type: 'scatter',
+                                    label: 'Prognos',
+                                    data: forecastPoints,
+                                    backgroundColor: '#f1c40f',
+                                    borderColor: '#e67e22',
+                                    pointRadius: 8,
+                                    pointHoverRadius: 12,
+                                    pointStyle: 'star'
+                                }});
+                            }}
+                            
+                            datasets.push({{
+                                type: 'line',
+                                label: 'Trendlinje',
+                                data: dataObj.line,
+                                borderColor: 'rgba(44, 62, 80, 1)',
+                                borderWidth: 2,
+                                fill: false,
+                                pointRadius: 0,
+                                pointHitRadius: 0
+                            }});
+                            
+                            scalesConfig = {{
+                                x: {{ title: {{ display: true, text: 'Befolkning (' + popBase + ')', font: {{weight: 'bold'}} }} }},
+                                y: {{ title: {{ display: true, text: 'Antal flyttande (' + relation + ')', font: {{weight: 'bold'}} }} }}
+                            }};
+                            
+                            tooltipConfig = {{
+                                callbacks: {{
+                                    label: function(c) {{
+                                        if (c.dataset.type === 'line') return 'Trendlinje';
+                                        return `År ${{c.raw.year}} | Riskpop: ${{c.parsed.x.toLocaleString('sv-SE')}} | Flyttande: ${{c.parsed.y}}`;
+                                    }}
+                                }}
+                            }};
+                        }}
+
+                        let rowHtml = `<tr>
+                            <td>${{dataObj.riktning}}</td><td>${{dataObj.relation}}</td><td>${{dataObj.kon}}</td><td>${{dataObj.pop_base}}</td>
+                            <td><strong>${{dataObj.age_group}}</strong></td><td>${{dataObj.period}}</td>
+                            <td>${{dataObj.r}}</td><td>${{dataObj.r2}}</td><td><strong>${{dataObj.slope}}</strong></td>`;
+                            
+                        if(mode === 'forecast') {{
+                            if(predictedY !== "-") rowHtml += `<td>${{targetYear}}</td><td>${{popValueStr}}</td><td><strong>${{predictedY}}</strong></td>`;
+                            else rowHtml += `<td colspan="3" class="text-muted">Kan ej projiceras</td>`;
+                        }}
+                        rowHtml += `</tr>`;
+                        tableHTML += rowHtml;
+
+                        chartInstances[i] = new Chart(ctx, {{
+                            type: chartType === 'timeseries' ? 'line' : 'scatter',
+                            data: {{ datasets: datasets }},
+                            options: {{
+                                responsive: true, maintainAspectRatio: false,
+                                plugins: {{
+                                    legend: {{ display: false }},
+                                    tooltip: tooltipConfig
+                                }},
+                                scales: scalesConfig
+                            }}
+                        }});
+                    }} else {{
+                         document.getElementById(`stats_${{i}}`).innerHTML = "<span class='badge bg-secondary'>Datan saknas (Kombination ogiltig)</span>";
+                         extraBox.classList.add('d-none');
+                         
+                         ctx.clearRect(0, 0, canvas.width, canvas.height);
+                         ctx.fillStyle = '#bdc3c7';
+                         ctx.font = 'bold 22px "Segoe UI", sans-serif';
+                         ctx.textAlign = 'center';
+                         ctx.textBaseline = 'middle';
+                         const h = canvas.height > 100 ? canvas.height : 250;
+                         ctx.fillText('Data saknas', canvas.width / 2, h / 2);
+                    }}
+                }});
+
+                tableBody.innerHTML = tableHTML === '' ? `<tr><td colspan="${{mode === 'forecast' ? 12 : 9}}" class="text-center text-muted">Ingen data tillgänglig för det valda filtret.</td></tr>` : tableHTML;
+            }}
+
+            document.getElementById('select-mode').addEventListener('change', function() {{
+                document.getElementById('forecast-row').style.display = this.value === 'forecast' ? 'block' : 'none';
+                renderCharts();
+            }});
+
+            const selectors = ['select-riktning', 'select-relation', 'select-kon', 'select-popbase', 'select-popphase', 'select-period', 'select-charttype', 'select-forecast-year', 'select-mode'];
+            selectors.forEach(id => document.getElementById(id).addEventListener('change', renderCharts));
+            
+            renderCharts();
+        </script>
+    </body>
+    </html>
+    """
+    
+    html_path = os.path.join(current_folder, "flyttbenagenhet_dashboard.html")
+    with open(html_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print(f"Dashboard sparad som '{html_path}'")
+
+# ==========================================
+# MAIN EXECUTION
+# ==========================================
+if __name__ == "__main__":
+    px_mig = os.path.join(current_folder, 'px_filer', 'fl01vk.px')
+    px_pop_rik = os.path.join(current_folder, 'px_filer', 'RiketsAlder.px')
+    px_pop_ostg = os.path.join(current_folder, 'px_filer', 'OstergotlandAlder.px')
+    px_pop_lkpg = os.path.join(current_folder, 'px_filer', 'be01.px')
+    
+    missing = [f for f in [px_mig, px_pop_rik, px_pop_ostg, px_pop_lkpg] if not os.path.exists(f)]
+    
+    if missing:
+        print(f"FEL: Saknar filer i 'px_filer' mappen: {[os.path.basename(m) for m in missing]}")
+    else:
+        df_mig = parse_generic_px(px_mig)
+        df_pop_rik = parse_generic_px(px_pop_rik)
+        df_pop_ostg = parse_generic_px(px_pop_ostg)
+        df_pop_lkpg = parse_generic_px(px_pop_lkpg)
+        
+        df_merged, future_pop_dict, latest_year = prepare_merged_data(df_mig, df_pop_rik, df_pop_ostg, df_pop_lkpg)
+        
+        excel_path = os.path.join(current_folder, "Samkord_Grand_Model.xlsx")
+        df_merged.to_excel(excel_path, index=False)
+        print(f"Rådata sparad till '{excel_path}'")
+        
+        age_groups = [
+            '0-5 år', '6-9 år', '10-15 år', '16-18 år', 
+            '19-29 år (Studenter/Unga)', '30-39 år', 
+            '40-55 år (Kärnfamilj)', '56-64 år', '65+ år (Pensionärer)'
+        ]
+        
+        charts_data, periods, relationer, koner, pop_bases, pop_phases = perform_analysis(df_merged)
+        
+        generate_html_report(charts_data, periods, relationer, koner, pop_bases, pop_phases, age_groups, future_pop_dict, latest_year)
+        
+        print("\n=== KLAR ===")
+        print("Analysen är klar. Öppna 'flyttbenagenhet_dashboard.html' i din webbläsare!")

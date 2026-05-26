@@ -1,0 +1,530 @@
+
+    <!DOCTYPE html>
+    <html lang="sv">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Demografisk Analys: Fruktsamhet</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        
+        <!-- HÄR LADDAS DATAN IN SEPARAT -->
+        <script src="fruktsamhet_data.js"></script>
+        
+        <style>
+            body { background-color: #f8f9fa; padding: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+            .card { box-shadow: 0 4px 6px rgba(0,0,0,0.1); border: none; }
+            .header-main { background-color: #27ae60; color: white; padding: 10px; border-radius: 5px 5px 0 0; }
+            .control-panel { background-color: #e9ecef; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 5px solid #27ae60; }
+            h2.section-title { color: #27ae60; margin-top: 20px; margin-bottom: 20px; border-bottom: 2px solid #27ae60; padding-bottom: 5px; }
+            .trend-text { color: #e74c3c; font-weight: bold; margin-top: 5px; font-size: 0.9em; }
+            
+            /* Smarta responsiva filterfält */
+            .filter-wrapper { display: flex; flex-wrap: wrap; gap: 1rem; }
+            .filter-item { flex: 1 1 180px; max-width: 280px; }
+            
+            /* Dubbla grafer i korten */
+            .dual-chart-container { display: flex; flex-direction: column; gap: 15px; }
+            .main-canvas { height: 280px; width: 100%; }
+            .mini-canvas { height: 120px; width: 100%; border-top: 1px dashed #ccc; padding-top: 10px; }
+            
+            /* Styling för dragspel (i-knapp) */
+            .accordion-button:not(.collapsed) { background-color: #e8f8f5; color: #27ae60; }
+            .accordion-button:focus { box-shadow: none; border-color: rgba(39, 174, 96, 0.5); }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <!-- TILLBAKA-KNAPPAR -->
+            <div class="mb-3 d-flex flex-wrap gap-2">
+                <a href="../prognoskalkylator.html" class="btn btn-outline-secondary">&larr; Tillbaka till Prognoskalkylatorn</a>
+                <a href="flyttbenagenhet_dashboard.html" class="btn btn-outline-info" style="color: #8e44ad; border-color: #8e44ad;">Gå till Flyttningsbenägenhet (Inrikes)</a>
+            </div>
+            
+            <h1 class="mb-3" style="color: #27ae60;">Analys av Fruktsamhet och Flyttningsmönster</h1>
+            <p class="lead">Undersök kommunens barnafödande samt hur inflyttningen av unga vuxna påverkar BB-statistiken.</p>
+            
+            <!-- UTVIDGAD INFO-PANEL (ACCORDION) -->
+            <div class="accordion mb-4" id="infoAccordion">
+              <div class="accordion-item" style="border: 1px solid #27ae60;">
+                <h2 class="accordion-header" id="headingInfo">
+                  <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo" aria-expanded="false" aria-controls="collapseInfo" style="color: #27ae60;">
+                    ℹ️ Läsguide: Så tolkar du analyserna och diagrammen (Klicka för att fälla ut)
+                  </button>
+                </h2>
+                <div id="collapseInfo" class="accordion-collapse collapse" aria-labelledby="headingInfo" data-bs-parent="#infoAccordion">
+                  <div class="accordion-body" style="font-size: 1.05em; line-height: 1.6;">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 style="color: #27ae60;">Fördröjd Fruktsamhet (Inkubationstid)</h5>
+                            <p>Ofta dröjer det en tid från det att unga vuxna flyttar till kommunen tills de bildar familj. Denna vy kopplar ihop <strong>inflyttade kvinnor</strong> ett visst år, med antalet <strong>födda barn</strong> upp till 5 år senare.</p>
+                            <ul>
+                                <li><strong>Huvudgraf (Spridning):</strong> Varje punkt är ett kalenderår. Grafen visar korrelationen mellan volymen inflyttare och volymen barn X år senare.</li>
+                                <li><strong>Inkubationsgraf (Staplar):</strong> Visar hur starkt sambandet (R²) är vid de olika fördröjningarna. Den <span style="color: #2980b9; font-weight:bold;">blå stapeln</span> är det starkaste sambandet, och den <span style="color: #e74c3c; font-weight:bold;">röda stapeln</span> är det år du har valt att visa ovan.</li>
+                                <li><strong>Trend (Lutning):</strong> Ett trendvärde på <code>0.12</code> innebär att 100 extra inflyttade kvinnor ger ca 12 extra barn under den valda tidsfördröjningen.</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6 border-start">
+                            <h5 style="color: #2980b9;">Summerad Fruktsamhet (TFR)</h5>
+                            <p>TFR (Total Fertility Rate) är det klassiska demografiska måttet. Det visar hur många barn en kvinna i genomsnitt förväntas föda under sin livstid, baserat på det aktuella årets fruktsamhetsmönster.</p>
+                            <ul>
+                                <li>Du kan nu filtrera TFR på specifika åldersgrupper för att se de underliggande trenderna (t.ex. att äldre kvinnors barnafödande ökat medan yngres minskat).</li>
+                                <li>För att befolkningen ska hållas konstant på sikt krävs ett totalt TFR på ca <strong>2.1 barn per kvinna</strong>.</li>
+                                <li><strong>Tips:</strong> Använd <em>Y-axel Inställningar</em> för att låsa skalan eller lägga till marginal så att jämförelser blir enklare.</li>
+                            </ul>
+                            <h5 class="mt-4" style="color: #8e44ad;">Totalt Antal Födda Barn</h5>
+                            <p>Till skillnad från TFR är detta den <em>faktiska volymen</em> barn som fötts. Genom att byta målgrupp kan du se exakt hur många barn som fötts av mödrar i olika åldersintervall över tid.</p>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- KONTROLLPANEL FÖR GRAFER (ALLT PÅ EN FLYTANDE RAD) -->
+            <div class="control-panel">
+                <h5 class="mb-3">Filter och Inställningar:</h5>
+                <div class="filter-wrapper align-items-end">
+                    
+                    <div class="filter-item">
+                        <label class="form-label fw-bold text-primary">Diagramtyp / Vy:</label>
+                        <select id="select-charttype" class="form-select border-primary" style="background-color: #f0f8ff;">
+                            <option value="lag">Fördröjd fruktsamhet (Inkubationstid)</option>
+                            <option value="tfr">Summerad fruktsamhet (TFR) över tid</option>
+                            <option value="births">Totalt antal födda barn över tid</option>
+                        </select>
+                    </div>
+
+                    <!-- Tidsperiod (Gäller ALLA grafer) -->
+                    <div class="filter-item">
+                        <label class="form-label fw-bold" style="color: #d35400;">Tidsperiod (Epok):</label>
+                        <select id="select-period" class="form-select border-warning" style="background-color: #fff9e6;">
+                            <option value="Alla år" selected>Alla år</option>
+<option value="1968-1994" >1968-1994</option>
+<option value="1995-Nu" >1995-Nu</option>
+<option value="1968-1999" >1968-1999</option>
+<option value="2000-Nu" >2000-Nu</option>
+<option value="Senaste 25 åren" >Senaste 25 åren</option>
+<option value="Senaste 10 åren" >Senaste 10 åren</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Fält enbart för Tidsserier (TFR/Födda) -->
+                    <div class="filter-item ts-control" style="display: none;">
+                        <label class="form-label fw-bold text-primary">Målgrupp (Mödrar):</label>
+                        <select id="select-ts-age" class="form-select border-primary">
+                            <option value="Mödrar 25-29 år" >Mödrar 25-29 år</option>
+<option value="Mödrar 30-34 år" >Mödrar 30-34 år</option>
+<option value="Mödrar 35+ år" >Mödrar 35+ år</option>
+<option value="Mödrar under 25 år" >Mödrar under 25 år</option>
+<option value="Totalt antal födda" selected>Totalt antal födda</option>
+                        </select>
+                    </div>
+
+                    <!-- Kryssrutor för Skala & Marginal -->
+                    <div class="filter-item ts-control" style="display: none; max-width: 150px;">
+                        <label class="form-label fw-bold text-primary">Y-axel Inställningar:</label>
+                        <div class="form-check mt-1">
+                            <input class="form-check-input border-primary" type="checkbox" id="check-ts-zero">
+                            <label class="form-check-label text-primary" for="check-ts-zero" style="font-size: 0.9em;">Utgå från 0</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input border-primary" type="checkbox" id="check-ts-fixed">
+                            <label class="form-check-label text-primary" for="check-ts-fixed" style="font-size: 0.9em;" title="Låser skalan utifrån din nuvarande vy">Fast skala</label>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-item ts-control" style="display: none; max-width: 120px;">
+                        <label class="form-label fw-bold text-primary">Marginal:</label>
+                        <select id="select-ts-grace" class="form-select border-primary">
+                            <option value="0%">0%</option>
+                            <option value="5%" selected>5%</option>
+                            <option value="10%">10%</option>
+                            <option value="20%">20%</option>
+                        </select>
+                    </div>
+
+                    <!-- Följande tre är enbart för Fördröjd Fruktsamhet -->
+                    <div class="filter-item lag-control">
+                        <label class="form-label fw-bold">Geografisk Relation:</label>
+                        <select id="select-relation" class="form-select border-success">
+                            <option value="Annat land" >Annat land</option>
+<option value="Inrikes totalt" selected>Inrikes totalt</option>
+<option value="Totalt" >Totalt</option>
+<option value="Annat län" >Annat län</option>
+<option value="Eget län" >Eget län</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-item lag-control">
+                        <label class="form-label fw-bold">Inflyttade (X-axel):</label>
+                        <select id="select-miggroup" class="form-select border-success">
+                            <option value="Kvinnor 20-24 år" >Kvinnor 20-24 år</option>
+<option value="Kvinnor 20-29 år" selected>Kvinnor 20-29 år</option>
+<option value="Kvinnor 20-34 år" >Kvinnor 20-34 år</option>
+<option value="Kvinnor 25-29 år" >Kvinnor 25-29 år</option>
+<option value="Kvinnor 30-34 år" >Kvinnor 30-34 år</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-item lag-control">
+                        <label class="form-label fw-bold" style="color: #c0392b;">Tidsfördröjning (Lags):</label>
+                        <select id="select-lag" class="form-select" style="border-color: #e74c3c; background-color: #fdedec;">
+                            <option value="0">Ingen fördröjning (Samma år)</option>
+                            <option value="1">1 år senare</option>
+                            <option value="2" selected>2 år senare</option>
+                            <option value="3">3 år senare</option>
+                            <option value="4">4 år senare</option>
+                            <option value="5">5 år senare</option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+
+            <h2 class="section-title" id="chart-section-title">Grafer laddas...</h2>
+            
+            <div class="row" id="charts-container">
+                <!-- Javascript skapar rutorna dynamiskt -->
+            </div>
+
+        </div>
+
+        <script>
+            // Datan (chartData, tfrTimeSeries, birthsTimeSeries, birthGroups) läses nu in via fruktsamhet_data.js
+            
+            let mainChartInstances = {};
+            let miniChartInstances = {};
+            
+            let lockedYMin = null;
+            let lockedYMax = null;
+
+            document.getElementById('select-charttype').addEventListener('change', function(e) {
+                if (e.target.value === 'births') {
+                    document.getElementById('check-ts-zero').checked = true;
+                } else if (e.target.value === 'tfr') {
+                    document.getElementById('check-ts-zero').checked = false;
+                }
+                document.getElementById('check-ts-fixed').checked = false;
+            });
+
+            function renderCharts() {
+                // Fallback om datafilen laddar långsammare (mycket ovanligt lokalt, men säkert)
+                if (typeof chartData === 'undefined') {
+                    setTimeout(renderCharts, 100);
+                    return;
+                }
+
+                const chartType = document.getElementById('select-charttype').value;
+                const periodVal = document.getElementById('select-period').value;
+                const container = document.getElementById('charts-container');
+                
+                const lagControls = document.querySelectorAll('.lag-control');
+                const tsControls = document.querySelectorAll('.ts-control');
+                
+                if(chartType === 'lag') {
+                    lagControls.forEach(el => el.style.display = 'block');
+                    tsControls.forEach(el => el.style.display = 'none');
+                } else {
+                    lagControls.forEach(el => el.style.display = 'none');
+                    tsControls.forEach(el => el.style.display = 'block');
+                }
+
+                Object.values(mainChartInstances).forEach(c => c.destroy());
+                Object.values(miniChartInstances).forEach(c => c.destroy());
+                mainChartInstances = {};
+                miniChartInstances = {};
+                container.innerHTML = '';
+
+                // RITA STORA TIDSSERIE-DIAGRAM (TFR eller Födda)
+                if (chartType === 'tfr' || chartType === 'births') {
+                    const isTfr = chartType === 'tfr';
+                    const tsAge = document.getElementById('select-ts-age').value;
+                    
+                    const isZero = document.getElementById('check-ts-zero').checked;
+                    const isFixed = document.getElementById('check-ts-fixed').checked;
+                    const graceStr = document.getElementById('select-ts-grace').value;
+                    
+                    if (!isFixed) {
+                        lockedYMin = null;
+                        lockedYMax = null;
+                    }
+                    
+                    const titleText = isTfr ? 'Summerad Fruktsamhet (TFR)' : 'Totalt Antal Födda Barn';
+                    document.getElementById('chart-section-title').innerText = `${titleText} | ${tsAge} (${periodVal})`;
+                    
+                    container.innerHTML = `
+                    <div class="col-12 mb-4">
+                        <div class="card" style="border: 2px solid ${isTfr ? '#2980b9' : '#8e44ad'};">
+                            <div class="card-header bg-light text-center">
+                                <strong class="fs-4" style="color: ${isTfr ? '#2980b9' : '#8e44ad'};">${titleText}: ${tsAge}</strong>
+                            </div>
+                            <div class="card-body p-4">
+                                <div style="height: 500px; width: 100%;"><canvas id="chart_main_ts"></canvas></div>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                    
+                    const ctx = document.getElementById('chart_main_ts').getContext('2d');
+                    const tsDataMap = isTfr ? tfrTimeSeries : birthsTimeSeries;
+                    let tsData = tsDataMap[tsAge] || [];
+                    
+                    if (periodVal !== 'Alla år') {
+                        if (periodVal.includes('-')) {
+                            const parts = periodVal.split('-');
+                            const start = parseInt(parts[0]);
+                            const end = parts[1] === 'Nu' ? 2100 : parseInt(parts[1]);
+                            tsData = tsData.filter(d => d.x >= start && d.x <= end);
+                        } else if (periodVal.includes('Senaste')) {
+                            const years = parseInt(periodVal.match(/\d+/)[0]);
+                            const maxYear = Math.max(...tsData.map(d => d.x));
+                            tsData = tsData.filter(d => d.x > (maxYear - years));
+                        }
+                    }
+                    
+                    if (isFixed && lockedYMin === null && tsData.length > 0) {
+                        const yVals = tsData.map(d => d.y);
+                        const minVal = Math.min(...yVals);
+                        const maxVal = Math.max(...yVals);
+                        const range = (maxVal - minVal) || 1;
+                        const gPct = parseInt(graceStr.replace('%','')) / 100;
+                        
+                        lockedYMax = maxVal + (range * gPct);
+                        
+                        if (isZero) {
+                            lockedYMin = 0;
+                        } else {
+                            lockedYMin = minVal - (range * gPct);
+                            if (minVal >= 0 && lockedYMin < 0) lockedYMin = 0;
+                        }
+                    }
+
+                    let yConfig = {
+                        title: { display: true, text: isTfr ? 'Bidrag till TFR / Barn per kvinna' : 'Antal barn', font: {weight: 'bold', size: 12} },
+                        beginAtZero: isZero,
+                        grace: isFixed ? undefined : graceStr
+                    };
+
+                    if (isFixed && lockedYMin !== null) {
+                        yConfig.min = lockedYMin;
+                        yConfig.max = lockedYMax;
+                    }
+                    
+                    const lineColor = isTfr ? 'rgba(41, 128, 185, 1)' : 'rgba(142, 68, 173, 1)';
+                    const fillColor = isTfr ? 'rgba(41, 128, 185, 0.15)' : 'rgba(142, 68, 173, 0.15)';
+                    
+                    if(tsData.length > 0) {
+                        mainChartInstances[0] = new Chart(ctx, {
+                            type: 'line',
+                            data: {
+                                datasets: [{
+                                    label: isTfr ? 'TFR' : 'Födda barn',
+                                    data: tsData,
+                                    borderColor: lineColor,
+                                    backgroundColor: fillColor,
+                                    borderWidth: 3,
+                                    fill: true,
+                                    pointRadius: 4,
+                                    pointHoverRadius: 8,
+                                    tension: 0.15
+                                }]
+                            },
+                            options: {
+                                responsive: true, maintainAspectRatio: false,
+                                plugins: { 
+                                    legend: { display: false },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(c) {
+                                                const val = isTfr ? c.raw.y.toFixed(3) : c.raw.y.toLocaleString('sv-SE');
+                                                return `År ${c.raw.x}: ${val}`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: { 
+                                        type: 'linear', 
+                                        title: { display: true, text: 'Årtal', font: {weight: 'bold', size: 12} },
+                                        ticks: { stepSize: 2, callback: v => v.toString().replace(/,/g, '') } 
+                                    },
+                                    y: yConfig
+                                }
+                            }
+                        });
+                    } else {
+                        ctx.fillStyle = '#bdc3c7';
+                        ctx.font = 'bold 24px "Segoe UI", sans-serif';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('Data saknas för vald epok och målgrupp', ctx.canvas.width / 2, ctx.canvas.height / 2);
+                    }
+                } 
+                
+                // RITA "FÖRDRÖJD FRUKTSAMHET" GRID (Scatter + Bar)
+                else if (chartType === 'lag') {
+                    const relation = document.getElementById('select-relation').value;
+                    const migGroup = document.getElementById('select-miggroup').value;
+                    const lagVal = parseInt(document.getElementById('select-lag').value);
+                    
+                    document.getElementById('chart-section-title').innerText = `Samband: Inflyttade ${migGroup} mot Födda barn | Fördröjning: ${lagVal} år | Epok: ${periodVal}`;
+
+                    birthGroups.forEach((bGrp, i) => {
+                        container.innerHTML += `
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100 border-success">
+                                <div class="card-header text-center bg-light">
+                                    <strong class="fs-5">${bGrp} (Y-axel)</strong><br>
+                                    <div id="stats_${i}" class="mt-2">Laddar...</div>
+                                </div>
+                                <div class="card-body p-2 dual-chart-container">
+                                    <div class="main-canvas"><canvas id="chart_main_${i}"></canvas></div>
+                                    <div class="mini-canvas"><canvas id="chart_mini_${i}"></canvas></div>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                    });
+
+                    birthGroups.forEach((bGrp, i) => {
+                        const dataObj = chartData.find(d => 
+                            d.relation === relation && 
+                            d.mig_group === migGroup && 
+                            d.birth_group === bGrp && 
+                            d.period === periodVal &&
+                            d.lag === lagVal
+                        );
+                        
+                        const mainCtx = document.getElementById(`chart_main_${i}`).getContext('2d');
+                        const miniCtx = document.getElementById(`chart_mini_${i}`).getContext('2d');
+                        
+                        if(dataObj) {
+                            document.getElementById(`stats_${i}`).innerHTML = `
+                                <span class="badge" style="background-color: #27ae60;">R² = ${dataObj.r2} | r = ${dataObj.r}</span>
+                                <div class="trend-text">→ Trend (Nya barn per inflyttad): ${dataObj.slope}</div>
+                            `;
+                            
+                            // HUVUDGRAF
+                            mainChartInstances[i] = new Chart(mainCtx, {
+                                type: 'scatter',
+                                data: {
+                                    datasets: [
+                                        {
+                                            label: 'Observationer',
+                                            data: dataObj.scatter,
+                                            backgroundColor: 'rgba(39, 174, 96, 0.6)',
+                                            borderColor: 'rgba(34, 153, 84, 0.9)',
+                                            pointRadius: 5,
+                                            pointHoverRadius: 8
+                                        },
+                                        {
+                                            type: 'line',
+                                            label: 'Trendlinje',
+                                            data: dataObj.line,
+                                            borderColor: 'rgba(192, 57, 43, 1)',
+                                            borderWidth: 2,
+                                            fill: false,
+                                            pointRadius: 0,
+                                            pointHitRadius: 0
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true, maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: { display: false },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function(c) {
+                                                    if (c.dataset.type === 'line') return 'Trendlinje';
+                                                    return `Inflytt: ${c.raw.mig_year} | Födda: ${c.raw.birth_year} | X: ${c.parsed.x} | Y: ${c.parsed.y}`;
+                                                }
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        x: { title: { display: true, text: 'Inflyttade (' + migGroup + ')', font: {weight: 'bold', size: 10} } },
+                                        y: { title: { display: true, text: 'Födda barn (' + bGrp + ')', font: {weight: 'bold', size: 10} } }
+                                    }
+                                }
+                            });
+
+                            // INKUBATIONSGRAF MED SMARTA FÄRGER
+                            const maxR2 = Math.max(...dataObj.lag_profile);
+                            const maxIdx = dataObj.lag_profile.indexOf(maxR2);
+
+                            const barColors = dataObj.lag_profile.map((val, idx) => {
+                                if (idx === lagVal && idx === maxIdx) return 'rgba(231, 76, 60, 0.9)'; // Röd (Både vald och högst)
+                                if (idx === lagVal) return 'rgba(231, 76, 60, 0.6)'; // Ljusröd (Endast vald)
+                                if (idx === maxIdx) return 'rgba(41, 128, 185, 0.8)'; // Blå (Högst men ej vald)
+                                return 'rgba(149, 165, 166, 0.4)'; // Grå (Övriga)
+                            });
+                            
+                            const barBorders = dataObj.lag_profile.map((val, idx) => {
+                                if (idx === maxIdx) return '#2c3e50'; // Mörk kant på den högsta stapeln
+                                return 'transparent';
+                            });
+                            
+                            const barBorderWidths = dataObj.lag_profile.map((val, idx) => idx === maxIdx ? 2 : 0);
+                            
+                            miniChartInstances[i] = new Chart(miniCtx, {
+                                type: 'bar',
+                                data: {
+                                    labels: ['+0 år', '+1 år', '+2 år', '+3 år', '+4 år', '+5 år'],
+                                    datasets: [{
+                                        label: 'R² (Förklaringsgrad)',
+                                        data: dataObj.lag_profile,
+                                        backgroundColor: barColors,
+                                        borderColor: barBorders,
+                                        borderWidth: barBorderWidths,
+                                        borderRadius: 3
+                                    }]
+                                },
+                                options: {
+                                    responsive: true, maintainAspectRatio: false,
+                                    plugins: {
+                                        legend: { display: false },
+                                        title: { display: true, text: 'R² Profil (Högst markerad blå, Röd = valt år)', font: {size: 11}, padding: {top: 0, bottom: 5} },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: function(c) { return `R²: ${c.raw}`; }
+                                            }
+                                        }
+                                    },
+                                    scales: {
+                                        x: { grid: { display: false }, ticks: {font: {size: 10}} },
+                                        y: { beginAtZero: true, max: 1.0, ticks: {font: {size: 9}, stepSize: 0.5} }
+                                    }
+                                }
+                            });
+                            
+                        } else {
+                             document.getElementById(`stats_${i}`).innerHTML = "<span class='badge bg-secondary'>Datan saknas för tidsperioden</span>";
+                             
+                             mainCtx.clearRect(0, 0, mainCtx.canvas.width, mainCtx.canvas.height);
+                             mainCtx.fillStyle = '#bdc3c7';
+                             mainCtx.font = 'bold 20px "Segoe UI", sans-serif';
+                             mainCtx.textAlign = 'center';
+                             mainCtx.fillText('Data saknas', mainCtx.canvas.width / 2, mainCtx.canvas.height / 2);
+                             
+                             miniCtx.clearRect(0, 0, miniCtx.canvas.width, miniCtx.canvas.height);
+                        }
+                    });
+                }
+            }
+
+            const selectors = [
+                'select-charttype', 'select-period', 'select-ts-age', 'select-relation', 'select-miggroup', 'select-lag',
+                'select-ts-grace', 'check-ts-zero', 'check-ts-fixed'
+            ];
+            selectors.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', renderCharts);
+            });
+            
+            renderCharts();
+        </script>
+    </body>
+    </html>
+    
