@@ -2,6 +2,260 @@
 // Grafer & UI 2035 - Visuell representation
 // ==========================================
 
+// --- FUNKTIONER FÖR FAST SKALA ---
+window.savedScaleMin = null;
+window.savedScaleMax = null;
+
+window.toggleFixedScale = function() {
+    const isChecked = document.getElementById('useFixedScale') ? document.getElementById('useFixedScale').checked : false;
+    
+    if (isChecked && window.trendChartInstance) {
+        // Läs av den just nu aktiva grafens skala och spara den
+        let currentAxis = window.trendChartInstance.options.indexAxis === 'y' ? 'x' : 'y';
+        window.savedScaleMin = window.trendChartInstance.scales[currentAxis].min;
+        window.savedScaleMax = window.trendChartInstance.scales[currentAxis].max;
+    } else {
+        // Återställ auto-skalning
+        window.savedScaleMin = null;
+        window.savedScaleMax = null;
+    }
+    
+    // Uppdatera grafen omedelbart med/utan den låsta skalan
+    if (typeof window.updateDashboard === 'function') window.updateDashboard(false); 
+};
+// ---------------------------------
+
+// --- SAKNADE HJÄLPFUNKTIONER (Befolkningsgruppering & Export) ---
+
+window.getGroupDefinitions = function(popGroupVal) {
+    let groups = [];
+    if (popGroupVal === 'func') {
+        groups = [
+            { label: '16-19 år', sex: null, min: 16, max: 19, color: '#0284c7' },
+            { label: '20-24 år', sex: null, min: 20, max: 24, color: '#10b981' },
+            { label: '25-64 år', sex: null, min: 25, max: 64, color: '#8b5cf6' },
+            { label: '65-74 år', sex: null, min: 65, max: 74, color: '#f59e0b' }
+        ];
+    } else if (popGroupVal === '5yr') {
+        const colors = ['#0284c7', '#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#14b8a6', '#f97316', '#84cc16', '#64748b', '#d946ef'];
+        groups.push({ label: '16-19 år', sex: null, min: 16, max: 19, color: colors[0] });
+        let colorIdx = 1;
+        for (let i = 20; i <= 70; i += 5) {
+            let end = (i === 70) ? 74 : i+4;
+            groups.push({ label: `${i}-${end} år`, sex: null, min: i, max: end, color: colors[colorIdx % colors.length] });
+            colorIdx++;
+        }
+    }
+    return groups;
+};
+
+// NY SMART FUNKTION: Hämtar befolkning från ny Excel-flik ELLER skalar SCB-data
+window.getPopForGroupGlobal = function(yStr, group, causalityMode) {
+    let pop = 0;
+    let numericY = parseInt(yStr);
+    let isProg = yStr.includes('Prognos');
+    const currentPopData = (window.useCustomPop && window.customPopData) ? window.customPopData : window.popData;
+
+    // 1. Kolla om året finns i Excel-fliken "Befutv" eller "Befolkning_historik" (Kollar oavsett om det är prognosår eller ej)
+    let histSheetKey = Object.keys(window.syssBasdata || {}).find(k => k.toLowerCase().includes('befutv') || k.toLowerCase().includes('befolkning_historik'));
+    
+    if (histSheetKey && window.syssBasdata[histSheetKey]) {
+        let row = window.syssBasdata[histSheetKey].find(r => {
+            let y = r['År'] !== undefined ? r['År'] : (r['år'] !== undefined ? r['år'] : r['ÅR']);
+            return parseInt(y) === numericY;
+        });
+        
+        if (row) {
+            Object.keys(row).forEach(k => {
+                if (k.toLowerCase() === 'år') return;
+                let m = String(k).match(/(\d+)\s*-\s*(\d+)/);
+                if (m) {
+                    let cMin = parseInt(m[1]), cMax = parseInt(m[2]);
+                    // Om kolumnen ryms inom den efterfrågade gruppen
+                    if (cMin >= group.min && cMax <= group.max) {
+                        pop += parseFloat(row[k]) || 0;
+                    }
+                }
+            });
+            if (pop > 0) return pop; 
+        }
+    }
+
+    // 2. Annars, Fallback till SCB 1-årsdata med skalning
+    let records = currentPopData.filter(r => String(r.tid).trim() === yStr);
+    if (records.length === 0) records = currentPopData.filter(r => String(r.tid).trim() === yStr.replace(' (Prognos)', ''));
+    if (records.length === 0) records = currentPopData.filter(r => String(r.tid).trim() === String(window.baseYear)); 
+    if (records.length === 0) records = currentPopData.filter(r => String(r.tid).trim() === `${window.baseYear} (Prognos)`);
+    if (records.length === 0 && currentPopData.length > 0) {
+        let allTid = [...new Set(currentPopData.map(r => String(r.tid)))];
+        records = currentPopData.filter(r => String(r.tid) === allTid[allTid.length - 1]);
+    }
+    
+    let useGender = records.some(r => String(r.kön).trim().toLowerCase() === 'män' || String(r.kön).trim().toLowerCase() === 'kvinnor');
+    let rawGroupPop = 0; let rawTotal16_74 = 0;
+    
+    records.forEach(r => {
+        if (!String(r.ålder).toLowerCase().includes('totalt')) {
+            let konStr = String(r.kön).trim().toLowerCase();
+            if (useGender && konStr !== 'män' && konStr !== 'kvinnor') return;
+            if (group.sex && konStr !== group.sex) return;
+
+            const match = String(r.ålder).match(/\d+/);
+            if (match) {
+                const age = parseInt(match[0]);
+                let minAge = group.min !== undefined ? group.min : 0;
+                let maxAge = group.max !== undefined ? group.max : 999;
+                
+                if (age >= minAge && age <= maxAge) rawGroupPop += (r.Befolkning || 0);
+                if (age >= 16 && age <= 74) rawTotal16_74 += (r.Befolkning || 0);
+            }
+        }
+    });
+
+    let targetTotalPop = 0;
+    if (!isNaN(numericY)) {
+        if (isProg && window.progDataStore && window.progDataStore[numericY]) {
+            targetTotalPop = window.progDataStore[numericY].pop - (causalityMode === 'dynamic' ? (window.progDataStore[numericY].inducedPop || 0) : 0);
+        } else if (!isProg && window.histDataStore && window.histDataStore[numericY]) {
+            targetTotalPop = window.histDataStore[numericY].pop;
+        }
+    }
+
+    if (targetTotalPop > 0 && rawTotal16_74 > 0) {
+        pop = rawGroupPop * (targetTotalPop / rawTotal16_74);
+    } else {
+        pop = rawGroupPop;
+    }
+
+    return pop;
+};
+
+window.exportPopDynamicCSV = function() {
+    const popGroupSelect = document.getElementById('subGroupSelect');
+    const popGroupVal = popGroupSelect ? popGroupSelect.value : 'total';
+    const causalityMode = document.getElementById('causalityMode') ? document.getElementById('causalityMode').value : 'analytic';
+    
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
+    csvContent += "År;Källa;Grupp;Basbefolkning;Tillskott (Dynamisk Jämvikt);Total Befolkning\n";
+    
+    if (popGroupVal === 'total') {
+        window.allYears.forEach(y => {
+            let numericY = Number(y);
+            let isProg = numericY > window.baseYear;
+            let source = isProg ? 'Prognos' : 'Historik';
+            
+            if (!isProg && window.histDataStore[numericY]) {
+                csvContent += `"${numericY}";"${source}";"Totalt 16-74 år";${Math.round(window.histDataStore[numericY].pop)};0;${Math.round(window.histDataStore[numericY].pop)}\n`;
+            } else if (isProg && window.progDataStore[numericY]) {
+                let d = window.progDataStore[numericY];
+                let induced = causalityMode === 'dynamic' ? (d.inducedPop || 0) : 0;
+                let base = d.pop - induced;
+                csvContent += `"${numericY}";"${source}";"Totalt 16-74 år";${Math.round(base)};${Math.round(induced)};${Math.round(d.pop)}\n`;
+            }
+        });
+    } else {
+        const groups = window.getGroupDefinitions(popGroupVal);
+        window.allYears.forEach(y => {
+            let numericY = Number(y);
+            let isProg = numericY > window.baseYear;
+            let source = isProg ? 'Prognos' : 'Historik';
+            let searchStr = isProg ? `${numericY} (Prognos)` : `${numericY}`;
+            
+            let totalBase16_74 = window.getPopForGroupGlobal(searchStr, { min: 16, max: 74 }, causalityMode);
+            
+            groups.forEach(g => {
+                let groupBase = window.getPopForGroupGlobal(searchStr, g, causalityMode);
+                let induced = 0;
+                
+                if (isProg && window.progDataStore[numericY] && causalityMode === 'dynamic') {
+                    let totalInduced = window.progDataStore[numericY].inducedPop || 0;
+                    induced = totalBase16_74 > 0 ? totalInduced * (groupBase / totalBase16_74) : 0;
+                }
+                
+                let totalPop = groupBase + induced;
+                
+                if (!isProg && window.histDataStore[numericY]) {
+                    csvContent += `"${numericY}";"${source}";"${g.label}";${Math.round(groupBase)};0;${Math.round(groupBase)}\n`;
+                } else if (isProg && window.progDataStore[numericY]) {
+                    csvContent += `"${numericY}";"${source}";"${g.label}";${Math.round(groupBase)};${Math.round(induced)};${Math.round(totalPop)}\n`;
+                }
+            });
+        });
+    }
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Dynamisk_Befolkningsutveckling.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+
+window.exportSyssToCSV = function() {
+    if (Object.keys(window.progDataStore || {}).length === 0 && Object.keys(window.histDataStore || {}).length === 0) {
+        alert("Ingen data finns att exportera.");
+        return;
+    }
+    
+    let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
+    csvContent += "År;Källa;Efterfrågan (Jobb);Lokalt Utbud (Nattbef.);Inpendling;Utpendling;Pendlingsnetto;Virtuellt Utbud;Totalt Utbud (Inkl. Pendling);Omatchat Gap;Befolkningsbehov;Sysselsättningsgrad (%);BRP per sysselsatt (tkr);Total BRP (Mkr);Arbetslöshet (%);Långtidsarbetslöshet (%)\n";
+    
+    const migrantSyssSlider = document.getElementById('migrantSyssSlider');
+    const userSyssAdjustment = migrantSyssSlider ? parseFloat(migrantSyssSlider.value) / 100 : 0.10;
+    const baseEmploymentRate = window.globalMigrantEmploymentRate || 0.50;
+    const employmentRate = baseEmploymentRate + userSyssAdjustment;
+    const simMode = document.getElementById('simMode') ? document.getElementById('simMode').value : 'full';
+    const showCommuting = simMode === 'full';
+
+    const addRow = (y, d, isProg) => {
+        if (!d) return;
+        const source = isProg ? "Prognos" : "Historik";
+        const dem = d.demand != null ? Number(d.demand) : 0;
+        const sup = d.supply != null ? Number(d.supply) : 0;
+        const inP = d.inpendling != null ? Number(d.inpendling) : 0;
+        const utP = d.utpendling != null ? Number(d.utpendling) : 0;
+        const explicitNet = d.explicitNetCommuting != null ? Number(d.explicitNetCommuting) : 0;
+        const netP = d.netCommuting != null ? Number(d.netCommuting) : explicitNet;
+        const vSup = d.virtualSupply != null ? Number(d.virtualSupply) : 0;
+        const totPend = showCommuting ? (netP + vSup) : 0;
+        const totSup = sup + totPend;
+        const gap = dem - totSup;
+        
+        let befBehov = 0;
+        if (gap > 5) befBehov = gap / Math.max(0.01, employmentRate);
+        else if (gap < -5) befBehov = -Math.abs(gap); 
+        
+        const syssGrad = d.displayRate || 0;
+        const brp = d.brp || d.extrapolatedBrp || 0;
+        let totBrp = d.totalBrpMkr || 0;
+        if (!totBrp && dem) totBrp = (brp * dem) / 1000;
+        const arb = d.arbetsloshetPct !== null && d.arbetsloshetPct !== undefined ? d.arbetsloshetPct : "";
+        const larb = d.langtidsPct !== null && d.langtidsPct !== undefined ? d.langtidsPct : "";
+
+        csvContent += `"${y}";"${source}";${Math.round(dem)};${Math.round(sup)};${Math.round(inP)};${Math.round(utP)};${Math.round(netP)};${Math.round(vSup)};${Math.round(totSup)};${Math.round(gap)};${Math.round(befBehov)};${syssGrad.toFixed(2).replace('.', ',')};${brp.toFixed(1).replace('.', ',')};${Math.round(totBrp)};${arb !== "" ? arb.toFixed(2).replace('.', ',') : ""};${larb !== "" ? larb.toFixed(2).replace('.', ',') : ""}\n`;
+    };
+
+    const progYears = Object.keys(window.progDataStore || {}).map(Number).sort((a,b)=>a-b);
+    let histYears = Object.keys(window.histDataStore || {}).map(Number).sort((a,b)=>a-b);
+    
+    if (progYears.length > 0) {
+        histYears = histYears.slice(-5);
+    }
+
+    histYears.forEach(y => addRow(y, window.histDataStore[y], false));
+    progYears.forEach(y => addRow(y, window.progDataStore[y], true));
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "Sysselsattningsprognos_Linkoping.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+};
+// ----------------------------------------------------------------
+
 window.aggregateMatchData = function(dataset, refYear, labels, keyField, mapFn = null) {
     let result = { 'män': {}, 'kvinnor': {}, 'totalt': {} };
     labels.forEach(l => { result['män'][l] = 0; result['kvinnor'][l] = 0; result['totalt'][l] = 0; });
@@ -89,66 +343,72 @@ window.drawMatchChart = function(year, labels, dagData, nattData, splitGender, u
         });
 
         // --- UPPDATERA GRAF-DATA (ÅRTAL SOM KOLUMNER) ---
-        if (window.syssConfig['Näringslivsjustering']) {
-            window.syssConfig['Näringslivsjustering'].forEach(row => {
-                let branschCol = Object.keys(row).find(k => {
-                    let kl = String(k).toLowerCase().replace(/\s/g, '');
-                    return ['bransch', 'sninamn', 'näringsgren', 'sni', 'snibokstav'].includes(kl);
-                }) || Object.keys(row)[0];
-                
-                let bransch = String(row[branschCol] || '').trim();
-                
-                // Spärr: Ignorera summeringsraden
-                if (bransch.toLowerCase() === 'totalt' || bransch.toLowerCase() === 'summa' || bransch === '') return;
+        // --- NY LOGIK FÖR GRAFEN (BÅDA EXCEL-FLIKARNA) ---
+            let activeNaringTab = 'Näringslivsjustering';
+            let naringSkala = window.currentNaringSkala !== undefined ? window.currentNaringSkala : 1.0;
 
-                // Ackumulera deltan från basåret fram tills det valda året i grafen
-                let ackumuleratVal = 0;
-                for (let y = window.baseYear + 1; y <= year; y++) {
-                     let valStr = row[String(y)] !== undefined ? row[String(y)] : (row[y] !== undefined ? row[y] : 0);
-                     ackumuleratVal += (parseFloat(valStr) || 0);
-                }
-                
-                let naringSkala = window.currentNaringSkala !== undefined ? window.currentNaringSkala : 1.0;
-                let val = ackumuleratVal * naringSkala;
-                
-                if (bransch && val !== 0 && dagData['totalt'] && dagData['totalt'][bransch] !== undefined) {
-                    let mShare = 0.5; // Grafen får använda 50/50 om kön saknas för chocken
+            if (window.currentActiveScenario === 'high' && window.syssConfig['Näringslivsjustering_hög']) {
+                activeNaringTab = 'Näringslivsjustering_hög';
+                naringSkala = 1.0;
+            }
+
+            if (window.syssConfig[activeNaringTab]) {
+                window.syssConfig[activeNaringTab].forEach(row => {
+                    let branschCol = Object.keys(row).find(k => {
+                        let kl = String(k).toLowerCase().replace(/\s/g, '');
+                        return ['bransch', 'sninamn', 'näringsgren', 'sni', 'snibokstav'].includes(kl);
+                    }) || Object.keys(row)[0];
                     
-                    dagData['totalt'][bransch] += val;
-                    if(dagData['män']) dagData['män'][bransch] += val * mShare;
-                    if(dagData['kvinnor']) dagData['kvinnor'][bransch] += val * (1 - mShare);
+                    let bransch = String(row[branschCol] || '').trim();
+                    if (bransch.toLowerCase() === 'totalt' || bransch.toLowerCase() === 'summa' || bransch === '') return;
 
-                    if (causalityMode === 'dynamic') {
-                        nattData['totalt'][bransch] += val;
-                        if(nattData['män']) nattData['män'][bransch] += val * mShare;
-                        if(nattData['kvinnor']) nattData['kvinnor'][bransch] += val * (1 - mShare);
+                    let ackumuleratVal = 0;
+                    for (let y = window.baseYear + 1; y <= year; y++) {
+                         let valStr = row[String(y)] !== undefined ? row[String(y)] : (row[y] !== undefined ? row[y] : 0);
+                         ackumuleratVal += (parseFloat(valStr) || 0);
                     }
+                    
+                    let val = ackumuleratVal * naringSkala;
+                    
+                    if (bransch && val !== 0 && dagData['totalt'] && dagData['totalt'][bransch] !== undefined) {
+                        let mShare = 0.5; 
+                        
+                        dagData['totalt'][bransch] += val;
+                        if(dagData['män']) dagData['män'][bransch] += val * mShare;
+                        if(dagData['kvinnor']) dagData['kvinnor'][bransch] += val * (1 - mShare);
 
-                    // Applicera branschglidning i grafen
-                    if (val > 0 && window.syssConfig['Branschglidning']) {
-                        let glidningar = window.syssConfig['Branschglidning'].filter(g => String(g['Växande_Bransch'] || g['Växande bransch']).trim() === bransch);
-                        glidningar.forEach(g => {
-                            let drabbad = String(g['Drabbad_Bransch'] || g['Drabbad bransch']).trim();
-                            let faktor = parseFloat(g['Överföringsfaktor'] || g['Kvot']) || 0;
-                            let tapp = val * faktor;
-                            
-                            if (tapp > 0 && dagData['totalt'][drabbad] !== undefined) {
-                                dagData['totalt'][drabbad] -= tapp;
-                                if(dagData['män']) dagData['män'][drabbad] -= tapp * mShare;
-                                if(dagData['kvinnor']) dagData['kvinnor'][drabbad] -= tapp * (1 - mShare);
+                        if (causalityMode === 'dynamic') {
+                            nattData['totalt'][bransch] += val;
+                            if(nattData['män']) nattData['män'][bransch] += val * mShare;
+                            if(nattData['kvinnor']) nattData['kvinnor'][bransch] += val * (1 - mShare);
+                        }
+                        
+                        // Applicera branschglidning i grafen
+                        if (val > 0 && window.syssConfig['Branschglidning']) {
+                            let glidningar = window.syssConfig['Branschglidning'].filter(g => String(g['Växande_Bransch'] || g['Växande bransch'] || g['Växande']).trim() === bransch);
+                            glidningar.forEach(g => {
+                                let drabbad = String(g['Drabbad_Bransch'] || g['Drabbad bransch'] || g['Drabbad']).trim();
+                                let faktor = parseFloat(g['Överföringsfaktor'] || g['Kvot']) || 0;
+                                let tapp = val * faktor;
+                                
+                                if (tapp > 0 && dagData['totalt'][drabbad] !== undefined) {
+                                    dagData['totalt'][drabbad] -= tapp;
+                                    if(dagData['män']) dagData['män'][drabbad] -= tapp * mShare;
+                                    if(dagData['kvinnor']) dagData['kvinnor'][drabbad] -= tapp * (1 - mShare);
 
-                                if (causalityMode === 'dynamic') {
-                                    nattData['totalt'][drabbad] -= tapp;
-                                    if(nattData['män']) nattData['män'][drabbad] -= tapp * mShare;
-                                    if(nattData['kvinnor']) nattData['kvinnor'][drabbad] -= tapp * (1 - mShare);
+                                    if (causalityMode === 'dynamic') {
+                                        nattData['totalt'][drabbad] -= tapp;
+                                        if(nattData['män']) nattData['män'][drabbad] -= tapp * mShare;
+                                        if(nattData['kvinnor']) nattData['kvinnor'][drabbad] -= tapp * (1 - mShare);
+                                    }
                                 }
-                            }
-                        });
+                            });
+                        }
                     }
-                }
-            });
+                });
+            }
+            // --- SLUT PÅ DET NYA BLOCKET ---
         }
-    }
 
     let datasets = [];
     
@@ -208,6 +468,16 @@ window.drawMatchChart = function(year, labels, dagData, nattData, splitGender, u
 };
 
 window.updateDashboard = function(calledFromDropdown = true) {
+    // --- LÄGG TILL DETTA HÄR: ---
+        if (calledFromDropdown) {
+            const fixedScaleCb = document.getElementById('useFixedScale');
+            if (fixedScaleCb && fixedScaleCb.checked) {
+                fixedScaleCb.checked = false;
+                window.savedScaleMin = null;
+                window.savedScaleMax = null;
+            }
+        }
+        // ----------------------------
     const chartTypeElement = document.getElementById('chartType');
     const subGroupSelect = document.getElementById('subGroupSelect');
     if (!chartTypeElement || !subGroupSelect) return;
@@ -418,69 +688,47 @@ window.updateDashboard = function(calledFromDropdown = true) {
             }
             isStacked = hasProg;
         } else {
-            isMultiLine = true;
-            const getPopForGroup = (yStr, group) => {
-                let pop = 0;
-                let records = currentPopData.filter(r => String(r.tid).trim() === yStr);
-                if (records.length === 0) records = currentPopData.filter(r => String(r.tid).trim() === yStr.replace(' (Prognos)', ''));
-                if (records.length === 0) records = currentPopData.filter(r => String(r.tid).trim() === String(window.baseYear)); 
-                let useGender = records.some(r => String(r.kön).trim().toLowerCase() === 'män' || String(r.kön).trim().toLowerCase() === 'kvinnor');
-                records.forEach(r => {
-                    if (!String(r.ålder).toLowerCase().includes('totalt')) {
-                        let konStr = String(r.kön).trim().toLowerCase();
-                        if (useGender && konStr !== 'män' && konStr !== 'kvinnor') return;
-                        if (group.sex && konStr !== group.sex) return;
-                        const match = String(r.ålder).match(/\d+/);
-                        if (match) {
-                            const age = parseInt(match[0]);
-                            if (age >= group.min && age <= group.max) pop += (r.Befolkning || 0);
+                isMultiLine = true;
+                let groups = window.getGroupDefinitions(popGroupVal);
+                
+                groups.forEach((g, idx) => {
+                    let h_data = [], p_data = [];
+                    labels.forEach((yStr) => {
+                        let numericY = Number(yStr);
+                        let isProg = numericY > baseYear;
+                        let searchStr = isProg ? `${numericY} (Prognos)` : `${numericY}`;
+                        
+                        // ANVÄNDER NYA GLOBALA FUNKTIONEN FÖR RÄTT HISTORIK!
+                        let groupBase = window.getPopForGroupGlobal(searchStr, g, causalityMode);
+                        let totalBase16_74 = window.getPopForGroupGlobal(searchStr, { min: 16, max: 74 }, causalityMode);
+                        
+                        let finalPop = groupBase;
+                        if (isProg && progDataStore[numericY] && causalityMode === 'dynamic') {
+                            let induced = progDataStore[numericY].inducedPop || 0;
+                            let groupInduced = totalBase16_74 > 0 ? induced * (groupBase / totalBase16_74) : 0;
+                            finalPop += groupInduced;
                         }
-                    }
-                });
-                if (pop === 0 && yStr.includes('Prognos')) {
-                    let fallbackRecords = currentPopData.filter(r => String(r.tid).trim() === String(window.baseYear));
-                    let fallbackUseGender = fallbackRecords.some(r => String(r.kön).trim().toLowerCase() === 'män' || String(r.kön).trim().toLowerCase() === 'kvinnor');
-                    fallbackRecords.forEach(r => {
-                        if (!String(r.ålder).toLowerCase().includes('totalt')) {
-                            let konStr = String(r.kön).trim().toLowerCase();
-                            if (fallbackUseGender && konStr !== 'män' && konStr !== 'kvinnor') return;
-                            if (group.sex && konStr !== group.sex) return;
-                            const match = String(r.ålder).match(/\d+/);
-                            if (match) {
-                                const age = parseInt(match[0]);
-                                let minAge = group.min !== undefined ? group.min : 0;
-                                let maxAge = group.max !== undefined ? group.max : 999;
-                                if (age >= minAge && age <= maxAge) pop += (r.Befolkning || 0);
-                            }
+                        
+                        if (isProg) { 
+                            h_data.push(null); 
+                            p_data.push(finalPop); 
+                            hasProg = true; 
+                        } else { 
+                            h_data.push(finalPop); 
+                            p_data.push(null); 
                         }
                     });
-                }
-                return pop;
-            };
-
-            let groups = window.getGroupDefinitions(popGroupVal);
-            groups.forEach((g, idx) => {
-                let h_data = [], p_data = [];
-                labels.forEach((yStr) => {
-                    let numericY = Number(yStr);
-                    let isProg = numericY > window.baseYear;
-                    let searchStr = isProg ? `${numericY} (Prognos)` : `${numericY}`;
-                    let groupBase = getPopForGroup(searchStr, g);
-                    let totalBase16_74 = getPopForGroup(searchStr, { min: 16, max: 74 });
-                    let finalPop = groupBase;
-                    if (isProg && window.progDataStore && window.progDataStore[numericY] && causalityMode === 'dynamic') {
-                        let induced = window.progDataStore[numericY].inducedPop || 0;
-                        let groupInduced = totalBase16_74 > 0 ? induced * (groupBase / totalBase16_74) : 0;
-                        finalPop += groupInduced;
+                    
+                    labels.forEach((yStr, idx2) => { 
+                        if (Number(yStr) === baseYear && idx2 < labels.length - 1) p_data[idx2] = h_data[idx2]; 
+                    });
+                    
+                    datasets.push({ label: g.label, data: h_data, borderColor: g.color, backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true });
+                    if (p_data.some(v => v !== null)) {
+                        datasets.push({ label: g.label + ' (Prognos)', data: p_data, borderColor: g.color, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
                     }
-                    if (isProg) { h_data.push(null); p_data.push(finalPop); hasProg = true; } 
-                    else { h_data.push(finalPop); p_data.push(null); }
                 });
-                labels.forEach((yStr, idx2) => { if (Number(yStr) === window.baseYear && idx2 < labels.length - 1) p_data[idx2] = h_data[idx2]; });
-                datasets.push({ label: g.label, data: h_data, borderColor: g.color, backgroundColor: 'transparent', borderWidth: 3, pointStyle: 'circle', spanGaps: true });
-                if (p_data.some(v => v !== null)) datasets.push({ label: g.label + ' (Prognos)', data: p_data, borderColor: g.color, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
-            });
-        }
+            }
 
     } else if (chartType === 'medfoljande_behov') {
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
@@ -1107,6 +1355,19 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 } 
             }
         };
+        // --- LÄGG TILL DETTA FÖR FAST SKALA ---
+            const useFixedScale = document.getElementById('useFixedScale') ? document.getElementById('useFixedScale').checked : false;
+            if (useFixedScale && window.savedScaleMax !== null) {
+                if (finalOptions.scales.y) {
+                    finalOptions.scales.y.min = window.savedScaleMin;
+                    finalOptions.scales.y.max = window.savedScaleMax;
+                }
+                if (finalOptions.scales.y1) {
+                    finalOptions.scales.y1.min = window.savedScaleMin;
+                    finalOptions.scales.y1.max = window.savedScaleMax;
+                }
+            }
+            // --------------------------------------
 
         window.trendChartInstance = new Chart(ctx, {
             type: 'line',
@@ -1136,6 +1397,18 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 y: { stacked: true, beginAtZero: useZeroAxis, grace: graceVal, ticks: { callback: val => window.formatNumber(val, 0), font: { size: 10 } } }
             };
         }
+        // --- LÄGG TILL DETTA FÖR FAST SKALA ---
+                const useFixedScaleBar = document.getElementById('useFixedScale') ? document.getElementById('useFixedScale').checked : false;
+                if (useFixedScaleBar && window.savedScaleMax !== null) {
+                    if (isHorizontal && scaleConfig.x) {
+                        scaleConfig.x.min = window.savedScaleMin;
+                        scaleConfig.x.max = window.savedScaleMax;
+                    } else if (!isHorizontal && scaleConfig.y) {
+                        scaleConfig.y.min = window.savedScaleMin;
+                        scaleConfig.y.max = window.savedScaleMax;
+                    }
+                }
+                // --------------------------------------
 
         window.trendChartInstance = new Chart(ctx, {
             type: 'bar',

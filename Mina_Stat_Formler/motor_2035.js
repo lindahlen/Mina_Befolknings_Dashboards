@@ -272,15 +272,50 @@ window.calculateMigrantEmploymentRate = function() {
 };
 
 window.getPopForYear = function(dataset, year) {
+    // --- NY LOGIK: Använd "Befutv" om den finns (löser 2025) ---
+    let histSheetKey = Object.keys(window.syssBasdata || {}).find(k => k.toLowerCase().includes('befutv') || k.toLowerCase().includes('befolkning_historik'));
+    
+    if (histSheetKey && window.syssBasdata[histSheetKey]) {
+        let row = window.syssBasdata[histSheetKey].find(r => {
+            let y = r['År'] !== undefined ? r['År'] : (r['år'] !== undefined ? r['år'] : r['ÅR']);
+            return parseInt(y) === parseInt(year);
+        });
+        
+        if (row) {
+            let popSum = 0;
+            Object.keys(row).forEach(k => {
+                if (k.toLowerCase() === 'år') return;
+                let m = String(k).match(/(\d+)\s*-\s*(\d+)/);
+                if (m) {
+                    let cMin = parseInt(m[1]), cMax = parseInt(m[2]);
+                    // Summera enbart åldrarna 16 till 74 för arbetskraften
+                    if (cMin >= 16 && cMax <= 74) {
+                        popSum += parseFloat(row[k]) || 0;
+                    }
+                }
+            });
+            if (popSum > 0) return popSum; 
+        }
+    }
+    // --- SLUT NY LOGIK ---
+
     let pop = 0;
     let records = dataset.filter(r => String(r.tid).trim() === `${year} (Prognos)`);
     if (records.length === 0) records = dataset.filter(r => String(r.tid).trim() === String(year));
+    
     let useGender = records.some(r => String(r.kön).trim().toLowerCase() === 'män' || String(r.kön).trim().toLowerCase() === 'kvinnor');
+
     records.forEach(r => {
         if (!String(r.ålder).toLowerCase().includes('totalt')) {
             if (useGender && String(r.kön).trim().toLowerCase() !== 'män' && String(r.kön).trim().toLowerCase() !== 'kvinnor') return;
-            const ageMatch = String(r.ålder).match(/\d+/);
-            if (ageMatch) { const age = parseInt(ageMatch[0]); if (age >= 16 && age <= 74) { pop += (r.Befolkning || 0); } }
+            
+            const match = String(r.ålder).match(/\d+/);
+            if (match) {
+                const age = parseInt(match[0]);
+                if (age >= 16 && age <= 74) {
+                    pop += (r.Befolkning || 0);
+                }
+            }
         }
     });
     return pop;
@@ -452,6 +487,7 @@ window.setScenario = function(type) {
 };
 
 window.resetSimulation = function() {
+            window.currentActiveScenario = 'base'; // Återställer till bas
             // 1. Återställ toppmenyn till standard (F5-läge)
             const causalitySelect = document.getElementById('causalityMode');
             if(causalitySelect) causalitySelect.value = 'analytic';
@@ -1104,7 +1140,7 @@ window.runSimulation = function() {
             let extraRegionSupplyTotal = 0;
             let beraknadeKommuner = 0;
             
-            if (regionChangeMin > 0 && window.syssConfig['Inom_en_timme']) {
+            if (regionChangeMin !== 0 && window.syssConfig['Inom_en_timme']) {
                 window.syssConfig['Inom_en_timme'].forEach(row => {
                     let inpendling = parseFloat(row['Inpendling_2024']) || 0;
                     let bilMin = parseFloat(row['Bil_minuter']);
@@ -1236,67 +1272,71 @@ window.runSimulation = function() {
                 let naringDemandThisYearK = 0;
 
                 // --- BRANSCHSPECIFIK LOGIK (ÅRTAL SOM KOLUMNER) ---
-                if (window.syssConfig['Näringslivsjustering']) {
-                    window.syssConfig['Näringslivsjustering'].forEach(row => {
-                        // 1. Hittar kolumnen för branschnamnet uttryckligen (t.ex. "SNIbokstav")
-                        let branschCol = Object.keys(row).find(k => {
-                            let kl = String(k).toLowerCase().replace(/\s/g, '');
-                            return ['bransch', 'sninamn', 'näringsgren', 'sni', 'snibokstav'].includes(kl);
-                        }) || Object.keys(row)[0];
-                        
-                        let bransch = String(row[branschCol] || '').trim();
+               // --- NY LOGIK FÖR BÅDA EXCEL-FLIKARNA ---
+                        let activeNaringTab = 'Näringslivsjustering';
+                        let naringSkala = window.currentNaringSkala !== undefined ? window.currentNaringSkala : 1.0;
 
-                        // 2. Spärr: Ignorera summeringsraden i botten på arket!
-                        if (bransch.toLowerCase() === 'totalt' || bransch.toLowerCase() === 'summa' || bransch === '') return;
-
-                        // 3. Läs värdet exakt för det aktuella prognosåret (t.ex. kolumn "2025")
-                        let valStr = row[String(forecastYear)] !== undefined ? row[String(forecastYear)] : (row[forecastYear] !== undefined ? row[forecastYear] : 0);
-                        let val = (parseFloat(valStr) || 0) * naringSkala;
-
-                        if (val !== 0) {
-                            // Hämta snittet för den VÄXANDE branschen
-                            let baseKvot = 0.50; 
-                            if (bransch && window.avgBosattningskvot !== undefined && window.avgBosattningskvot[bransch] !== undefined) {
-                                baseKvot = window.avgBosattningskvot[bransch];
-                            }
-                            let finalKvot = Math.min(1.0, Math.max(0.0, baseKvot + (bosattningsJusteringPct / 100)));
-
-                            // Lägg till den växande branschens värden i årets pott
-                            naringDemandThisYear += val;
-                            naringInpendlingThisYear += val * (1 - finalKvot);
-                            naringDemandThisYearM += val * share_d_man;
-                            naringDemandThisYearK += val * (1 - share_d_man);
-
-                            // BRANSCHGLIDNING (Kannibalisering från drabbade branscher)
-                            if (val > 0 && window.syssConfig['Branschglidning']) {
-                                let glidningar = window.syssConfig['Branschglidning'].filter(g => String(g['Växande_Bransch'] || g['Växande bransch']).trim() === bransch);
-                                glidningar.forEach(g => {
-                                    let drabbad = String(g['Drabbad_Bransch'] || g['Drabbad bransch']).trim();
-                                    let faktor = parseFloat(g['Överföringsfaktor'] || g['Kvot']) || 0;
-                                    let tapp = val * faktor;
-                                    
-                                    if (tapp > 0) {
-                                        let drabbadKvot = 0.50;
-                                        if (drabbad && window.avgBosattningskvot !== undefined && window.avgBosattningskvot[drabbad] !== undefined) {
-                                            drabbadKvot = window.avgBosattningskvot[drabbad];
-                                        }
-                                        let finalDrabbadKvot = Math.min(1.0, Math.max(0.0, drabbadKvot + (bosattningsJusteringPct / 100)));
-
-                                        naringDemandThisYear -= tapp;
-                                        naringInpendlingThisYear -= tapp * (1 - finalDrabbadKvot);
-                                        naringDemandThisYearM -= tapp * share_d_man;
-                                        naringDemandThisYearK -= tapp * (1 - share_d_man);
-                                    }
-                                });
-                            }
+                        // Om användaren klickat på "Hög" och fliken finns i Excel, kör vi den istället och ignorerar skalan
+                        if (window.currentActiveScenario === 'high' && window.syssConfig['Näringslivsjustering_hög']) {
+                            activeNaringTab = 'Näringslivsjustering_hög';
+                            naringSkala = 1.0; 
                         }
-                    });
-                }
-                
-                totalNaringDemandExtra += naringDemandThisYear;
-                totalNaringInpendlingExtra += naringInpendlingThisYear; // Byggs på över åren
-                totalNaringDemandExtraM += naringDemandThisYearM;
-                totalNaringDemandExtraK += naringDemandThisYearK;
+
+                        if (window.syssConfig[activeNaringTab]) {
+                            window.syssConfig[activeNaringTab].forEach(row => {
+                                let branschCol = Object.keys(row).find(k => {
+                                    let kl = String(k).toLowerCase().replace(/\s/g, '');
+                                    return ['bransch', 'sninamn', 'näringsgren', 'sni', 'snibokstav'].includes(kl);
+                                }) || Object.keys(row)[0];
+                                
+                                let bransch = String(row[branschCol] || '').trim();
+                                if (bransch.toLowerCase() === 'totalt' || bransch.toLowerCase() === 'summa' || bransch === '') return;
+
+                                let valStr = row[String(forecastYear)] !== undefined ? row[String(forecastYear)] : (row[forecastYear] !== undefined ? row[forecastYear] : 0);
+                                let val = (parseFloat(valStr) || 0) * naringSkala;
+
+                                if (val !== 0) {
+                                    let baseKvot = 0.50; 
+                                    if (bransch && window.avgBosattningskvot !== undefined && window.avgBosattningskvot[bransch] !== undefined) {
+                                        baseKvot = window.avgBosattningskvot[bransch];
+                                    }
+                                    let finalKvot = Math.min(1.0, Math.max(0.0, baseKvot + (bosattningsJusteringPct / 100)));
+
+                                    naringDemandThisYear += val;
+                                    naringInpendlingThisYear += val * (1 - finalKvot);
+                                    naringDemandThisYearM += val * share_d_man;
+                                    naringDemandThisYearK += val * (1 - share_d_man);
+
+                                    if (val > 0 && window.syssConfig['Branschglidning']) {
+                                        let glidningar = window.syssConfig['Branschglidning'].filter(g => String(g['Växande_Bransch'] || g['Växande bransch'] || g['Växande']).trim() === bransch);
+                                        glidningar.forEach(g => {
+                                            let drabbad = String(g['Drabbad_Bransch'] || g['Drabbad bransch'] || g['Drabbad']).trim();
+                                            let faktor = parseFloat(g['Överföringsfaktor'] || g['Kvot']) || 0;
+                                            let tapp = val * faktor;
+                                            
+                                            if (tapp > 0) {
+                                                let drabbadKvot = 0.50;
+                                                if (drabbad && window.avgBosattningskvot !== undefined && window.avgBosattningskvot[drabbad] !== undefined) {
+                                                    drabbadKvot = window.avgBosattningskvot[drabbad];
+                                                }
+                                                let finalDrabbadKvot = Math.min(1.0, Math.max(0.0, drabbadKvot + (bosattningsJusteringPct / 100)));
+
+                                                naringDemandThisYear -= tapp;
+                                                naringInpendlingThisYear -= tapp * (1 - finalDrabbadKvot);
+                                                naringDemandThisYearM -= tapp * share_d_man;
+                                                naringDemandThisYearK -= tapp * (1 - share_d_man);
+                                            }
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        // ----------------------------------------
+                        
+                        totalNaringDemandExtra += naringDemandThisYear;
+                        totalNaringInpendlingExtra += naringInpendlingThisYear; 
+                        totalNaringDemandExtraM += naringDemandThisYearM;
+                        totalNaringDemandExtraK += naringDemandThisYearK;
 
                 const demandGrowthFactor = 1 + ((jobGrowthPct / 100) * (i / forecastYears));
                 const futureDemand = (baselineDemand * demandGrowthFactor) + (syssGradDemandBoostTotal * (i / forecastYears)) + totalNaringDemandExtra;
@@ -1329,43 +1369,77 @@ window.runSimulation = function() {
                 let isAgeWeighted = false;
                 
                 if (ageRates && popSource !== 'fryst' && activePopData.length > 0 && hasPopDataForYear) {
-                    isAgeWeighted = true;
-                    Object.values(ageRates).forEach(group => {
-                        let groupFuturePop = 0, groupFuturePopM = 0, groupFuturePopK = 0;
+                            isAgeWeighted = true;
+                            Object.values(ageRates).forEach(group => {
+                                let groupFuturePop = 0;
+                                let groupFuturePopM = 0;
+                                let groupFuturePopK = 0;
+                                let foundInBefutv = false;
 
-                        let records = activePopData.filter(r => String(r.tid).trim() === `${forecastYear} (Prognos)`);
-                        if (records.length === 0) records = activePopData.filter(r => String(r.tid).trim() === String(forecastYear));
-                        
-                        let useGender = records.some(r => String(r.kön).trim().toLowerCase() === 'män' || String(r.kön).trim().toLowerCase() === 'kvinnor');
-                        records.forEach(r => {
-                            if (!String(r.ålder).toLowerCase().includes('totalt')) {
-                                if (useGender && String(r.kön).trim().toLowerCase() !== 'män' && String(r.kön).trim().toLowerCase() !== 'kvinnor') return;
-                                const ageMatch = String(r.ålder).match(/\d+/);
-                                if (ageMatch) {
-                                    const a = parseInt(ageMatch[0]);
-                                    if (a >= group.min && a <= group.max) {
-                                        groupFuturePop += (r.Befolkning || 0);
-                                        if (String(r.kön).trim().toLowerCase() === 'män') groupFuturePopM += (r.Befolkning || 0);
-                                        else if (String(r.kön).trim().toLowerCase() === 'kvinnor') groupFuturePopK += (r.Befolkning || 0);
-                                        else { 
-                                            groupFuturePopM += (r.Befolkning || 0) * share_n_man; 
-                                            groupFuturePopK += (r.Befolkning || 0) * (1 - share_n_man); 
+                                // 1. Leta först efter åldersgruppen i Excel-fliken "Befutv"
+                                let histSheetKey = Object.keys(window.syssBasdata || {}).find(k => k.toLowerCase().includes('befutv') || k.toLowerCase().includes('befolkning_historik'));
+                                if (histSheetKey && window.syssBasdata[histSheetKey]) {
+                                    let row = window.syssBasdata[histSheetKey].find(r => {
+                                        let y = r['År'] !== undefined ? r['År'] : (r['år'] !== undefined ? r['år'] : r['ÅR']);
+                                        return parseInt(y) === forecastYear;
+                                    });
+                                    if (row) {
+                                        Object.keys(row).forEach(k => {
+                                            if (k.toLowerCase() === 'år') return;
+                                            let m = String(k).match(/(\d+)\s*-\s*(\d+)/);
+                                            if (m) {
+                                                let cMin = parseInt(m[1]), cMax = parseInt(m[2]);
+                                                if (cMin >= group.min && cMax <= group.max) {
+                                                    groupFuturePop += parseFloat(row[k]) || 0;
+                                                    foundInBefutv = true;
+                                                }
+                                            }
+                                        });
+                                        if (foundInBefutv) {
+                                            groupFuturePopM = groupFuturePop * share_n_man;
+                                            groupFuturePopK = groupFuturePop * (1 - share_n_man);
                                         }
                                     }
                                 }
-                            }
-                        });
-                        
-                        let sliderOffset = syssGradChangeOverall;
-                        let sliderEl = document.getElementById(`syssAge${group.min}_${group.max}`);
-                        if (sliderEl) sliderOffset = parseFloat(sliderEl.value) || 0;
 
-                        const specificTargetRate = group.rate + (sliderOffset / 100); 
-                        const currentSpecificRate = group.rate + ((specificTargetRate - group.rate) * (i / forecastYears));
-                        futureSupply += (groupFuturePop * currentSpecificRate);
-                        futureSupplyM += (groupFuturePopM * currentSpecificRate);
-                        futureSupplyK += (groupFuturePopK * currentSpecificRate);
-                    });
+                                // 2. Om året inte fanns i Excel, använd SCB-databasen
+                                if (!foundInBefutv) {
+                                    let records = activePopData.filter(r => String(r.tid).trim() === `${forecastYear} (Prognos)`);
+                                    if (records.length === 0) records = activePopData.filter(r => String(r.tid).trim() === String(forecastYear));
+                                    // Fallback: Om 2025 saknas helt i SCB (börjar 2026), kopiera befolkningen från 2024
+                                    if (records.length === 0) records = activePopData.filter(r => String(r.tid).trim() === String(window.baseYear)); 
+                                    
+                                    let useGender = records.some(r => String(r.kön).trim().toLowerCase() === 'män' || String(r.kön).trim().toLowerCase() === 'kvinnor');
+                                    records.forEach(r => {
+                                        if (!String(r.ålder).toLowerCase().includes('totalt')) {
+                                            if (useGender && String(r.kön).trim().toLowerCase() !== 'män' && String(r.kön).trim().toLowerCase() !== 'kvinnor') return;
+                                            const aMatch = String(r.ålder).match(/\d+/);
+                                            if (aMatch) {
+                                                const a = parseInt(aMatch[0]);
+                                                if (a >= group.min && a <= group.max) {
+                                                    groupFuturePop += (r.Befolkning || 0);
+                                                    if (String(r.kön).trim().toLowerCase() === 'män') groupFuturePopM += (r.Befolkning || 0);
+                                                    else if (String(r.kön).trim().toLowerCase() === 'kvinnor') groupFuturePopK += (r.Befolkning || 0);
+                                                    else { 
+                                                        groupFuturePopM += (r.Befolkning || 0) * share_n_man; 
+                                                        groupFuturePopK += (r.Befolkning || 0) * (1 - share_n_man); 
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                                
+                                let sliderOffset = syssGradChangeOverall;
+                                let sliderEl = document.getElementById(`syssAge${group.min}_${group.max}`);
+                                if (sliderEl) sliderOffset = parseFloat(sliderEl.value) || 0;
+
+                                const specificTargetRate = group.rate + (sliderOffset / 100); 
+                                const currentSpecificRate = group.rate + ((specificTargetRate - group.rate) * (i / forecastYears));
+                                futureSupply += (groupFuturePop * currentSpecificRate);
+                                futureSupplyM += (groupFuturePopM * currentSpecificRate);
+                                futureSupplyK += (groupFuturePopK * currentSpecificRate);
+                            });
                     futureSupply += cumulativeExtraStudents;
                     futureSupplyM += cumulativeExtraStudents * share_n_man;
                     futureSupplyK += cumulativeExtraStudents * (1 - share_n_man);
@@ -1653,6 +1727,10 @@ window.updateKPIs = function() {
     const simMode = document.getElementById('simMode').value;
     const showCommuting = simMode === 'full';
 
+    // BYT UT DESSA TEXTER MOT VAD NI VILL SKA STÅ I KPI-RUTAN
+            const TEXT_BALANS = 'Balans';
+            const TEXT_OVERSKOTT = 'Överskott';
+
     const warnings = [];
     const colorClasses = {
         'red': 'bg-red-100 text-red-800 border-red-300',
@@ -1712,7 +1790,7 @@ window.updateKPIs = function() {
                     warnings.push({icon: 'fa-globe', color: 'amber', text: 'Arbetskraftsinv. behövs', title: `Ca ${window.formatNumber(d.reqForeignLabor, 0)} arbetare måste rekryteras internationellt pga demografiska gränser.`});
                 }
             } else {
-                kpiBef.innerText = 'Balans';
+                kpiBef.innerText = TEXT_BALANS; // <--- HÄR LÄSER DEN AV DIN VARIABEL
                 kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
                 kpiBefContainer.title = "Dynamisk jämvikt: Utbud och pendling täcker behovet.";
             }
@@ -1729,12 +1807,12 @@ window.updateKPIs = function() {
                 kpiBef.className = "text-base md:text-lg font-bold text-orange-600";
                 kpiBefContainer.title = `Analys av gap:\nDet kvarstår ett gap på ${window.formatNumber(omatchatGap, 0)} jobb.\nFör att fylla detta krävs inflyttning av ca ${window.formatNumber(totalPopNeeded, 0)} nya invånare.`;
             } else if (omatchatGap < -5) {
-                kpiBef.innerText = 'Överskott';
+                kpiBef.innerText = TEXT_OVERSKOTT; // <--- HÄR LÄSER DEN AV DIN VARIABEL
                 kpiBef.className = "text-base md:text-lg font-bold text-sky-600";
                 kpiBefContainer.title = `Lokalt utbud är ${window.formatNumber(Math.abs(omatchatGap), 0)} personer högre än tillgängliga jobb.`;
                 warnings.push({icon: 'fa-leaf', color: 'green', text: 'Arbetskraftsöverskott', title: `Lokalt utbud överstiger efterfrågan.`});
             } else {
-                kpiBef.innerText = 'Balans';
+                kpiBef.innerText = TEXT_BALANS; // <--- HÄR LÄSER DEN AV DIN VARIABEL
                 kpiBef.className = "text-base md:text-lg font-bold text-emerald-600";
                 kpiBefContainer.title = "Perfekt matchning. Inget kvarstående rekryteringsgap.";
                 warnings.push({icon: 'fa-check', color: 'green', text: 'Arbetsmarknad i balans', title: `Utbud och Efterfrågan möts perfekt.`});

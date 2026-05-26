@@ -225,7 +225,7 @@
                                 <span>Regionförstoring (Restid)</span>
                                 <span id="regionVal" class="text-slate-600 font-bold">Dagens nivå</span>
                             </label>
-                            <input type="range" id="regionSlider" min="0" max="30" step="1" value="0" oninput="document.getElementById('regionVal').innerText = this.value == 0 ? 'Dagens nivå' : '+' + this.value + ' min'">
+                            <input type="range" id="regionSlider" min="-10" max="30" step="1" value="0" oninput="document.getElementById('regionVal').innerText = this.value == 0 ? 'Dagens nivå' : (this.value > 0 ? '+' + this.value + ' min' : this.value + ' min')">
                         </div>
                     </div>
 
@@ -341,6 +341,10 @@
                             <label id="zeroAxisContainer" class="flex items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer px-2">
                                 <input type="checkbox" id="useZeroAxis" onchange="if(window.updateDashboard) window.updateDashboard(true)" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5">
                                 <span>Utgå från 0</span>
+                            </label>
+                            <label id="fixedScaleContainer" class="flex items-center gap-1.5 p-1 md:p-1.5 text-xs md:text-sm font-medium text-slate-700 bg-white cursor-pointer px-2 border-l border-gray-200">
+                                <input type="checkbox" id="useFixedScale" onchange="if(window.toggleFixedScale) window.toggleFixedScale()" class="rounded text-sky-600 focus:ring-sky-500 w-3.5 h-3.5" title="Lås y-axeln till dess nuvarande max- och minvärden">
+                                <span>Fast skala</span>
                             </label>
                         </div>
                     </div>
@@ -601,6 +605,7 @@
         // HÄR LIGGER DEN UPPDATERADE FUNKTIONEN FÖR ATT INTE SKRIVA ÖVER ÅLDERSREGLAGEN
         // -----------------------------------------------------------------------------
         function setScenario(type) {
+            window.currentActiveScenario = type; // Sparar vilket scenario vi är i
             const s = window.scenarioSettings[type];
             document.getElementById('jobGrowthSlider').value = s.jobGrowth || 0;
             document.getElementById('jobGrowthVal').innerText = (s.jobGrowth > 0 ? '+' : '') + (s.jobGrowth || 0) + '%';
