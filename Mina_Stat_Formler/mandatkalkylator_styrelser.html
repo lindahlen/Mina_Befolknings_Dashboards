@@ -1,0 +1,1553 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Jimmy Lindahl, Analys & Utredning, Linköpings kommun">
+    <title>Mandatkalkylator Nämnder & KF - Linköpings Kommun</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js för Parlamentsbågen -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Author: Jimmy Lindahl, Analys & Utredning, Linköpings kommun */
+        .linkoping-blue { background-color: #004D8C; }
+        .party-S { border-left-color: #E8112d; }
+        .party-M { border-left-color: #52BDEC; }
+        .party-SD { border-left-color: #DDDD00; }
+        .party-C { border-left-color: #009933; }
+        .party-V { border-left-color: #DA291C; }
+        .party-KD { border-left-color: #000077; }
+        .party-L { border-left-color: #006AB3; }
+        .party-MP { border-left-color: #83CF39; }
+        .party-LL { border-left-color: #808080; }
+        .party-ÖVR { border-left-color: #9CA3AF; } /* Grå för Övriga */
+        
+        .tab-active { border-bottom: 2px solid #004D8C; color: #004D8C; font-weight: bold; }
+        .tab-inactive { border-bottom: 2px solid transparent; color: #6b7280; font-weight: 500; }
+        .tab-inactive:hover { color: #374151; }
+
+        /* Utskriftsformat (PDF/Papper) */
+        @media print {
+            body { background-color: white !important; margin: 0; padding: 0; }
+            header, .mb-6, .print-hide, button, select, input { display: none !important; }
+            
+            /* Tvinga ENBART fram jämförelsefliken vid utskrift från den fliken */
+            body.print-comparison #tab-comp { display: block !important; }
+            body.print-comparison #tab-calc, body.print-comparison #tab-kf { display: none !important; }
+            
+            .shadow-sm { box-shadow: none !important; }
+            .border { border-color: #000 !important; }
+            .bg-white { background-color: transparent !important; }
+            .print-header { display: block !important; margin-bottom: 20px; }
+
+            /* Undvik sidbrytningar inuti rader i tabellen */
+            table { page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            thead { display: table-header-group; }
+            tfoot { display: table-footer-group; }
+        }
+        .print-header { display: none; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-800">
+
+    <!-- Utskriftsrubrik -->
+    <div class="print-header text-center">
+        <h1 class="text-2xl font-bold">Analys & Utredning - Nämnd- & KF-fördelning</h1>
+        <p class="text-sm">Linköpings kommun</p>
+        <hr class="mt-4 mb-4 border-gray-400">
+    </div>
+
+    <!-- Header -->
+    <header class="linkoping-blue text-white p-6 shadow-md">
+        <div class="max-w-7xl mx-auto flex items-center justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+                <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" class="h-12 object-contain">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">Mandatkalkylator & Valanalys</h1>
+                    <p class="text-blue-200 mt-1">Analys & Utredning, Linköpings kommun</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 print-hide">
+                <!-- Förberedd Tillbaka-knapp (Dold med class "hidden". Ta bort "hidden" för att visa den) -->
+                <a href="index.html" class="hidden bg-blue-800 hover:bg-blue-900 text-white border border-blue-700 font-bold px-4 py-2 rounded shadow flex items-center transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Tillbaka
+                </a>
+                
+                <a href="Kartor/Valdeltagande_2026.html" target="_blank" class="bg-white text-blue-900 hover:bg-blue-50 font-bold px-4 py-2 rounded shadow flex items-center transition-colors">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                    Karta över valdistrikt 2026
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigationsflikar -->
+    <div class="bg-white border-b shadow-sm mb-6 print-hide">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center overflow-x-auto">
+            <div class="flex space-x-6">
+                <button onclick="switchTab('calc')" id="tabBtn-calc" class="py-3 tab-active focus:outline-none transition-colors whitespace-nowrap">1. Nämndkalkylator</button>
+                <button onclick="switchTab('kf')" id="tabBtn-kf" class="py-3 tab-inactive focus:outline-none transition-colors whitespace-nowrap">2. KF-Kalkylator (Röster)</button>
+                <button onclick="switchTab('comp')" id="tabBtn-comp" class="py-3 tab-inactive focus:outline-none transition-colors flex items-center whitespace-nowrap">
+                    3. Jämför Nämndscenarier <span id="compareBadge" class="ml-2 bg-blue-100 text-blue-800 text-xs font-bold px-2 py-0.5 rounded-full hidden">0</span>
+                </button>
+            </div>
+            <button onclick="document.getElementById('helpModal').classList.remove('hidden')" class="py-2 px-4 bg-blue-50 hover:bg-blue-100 text-blue-800 rounded shadow-sm text-sm font-bold flex items-center transition-colors">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Hjälp & Info
+            </button>
+        </div>
+    </div>
+
+    <!-- FLIK 1: Kalkylator Nämnder -->
+    <main id="tab-calc" class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8 block">
+        <!-- Vänster: Kontrollpanel -->
+        <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm border border-gray-200 relative">
+            <h2 class="text-xl font-semibold mb-4 border-b pb-2">Inställningar Nämnd</h2>
+            
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Välj basdata (Kommunfullmäktige)</label>
+                <select id="scenarioSelect" class="w-full border-gray-300 rounded shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500" onchange="loadScenario()">
+                    <option value="egen">Egen inmatning / Överförd från KF-flik</option>
+                    <option value="2030" hidden>Framtidsprognos (Val 2030)</option> 
+                    <option value="2026" selected>Prognos (Val 2026)</option>
+                    <option value="2022">Nuvarande (Val 2022)</option>
+                    <option value="2018">Historik (Val 2018)</option>
+                </select>
+            </div>
+
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Antal platser i nämnden</label>
+                <input type="number" id="seatsInput" value="11" min="3" max="31" step="2" class="w-full border-gray-300 rounded shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <!-- Snabbval för Karteller -->
+            <div class="mb-5 bg-blue-50 p-4 rounded border border-blue-100">
+                <label class="block text-sm font-semibold text-blue-900 mb-2">Snabbval: Formering</label>
+                <div class="flex flex-col gap-2">
+                    <div class="flex gap-2">
+                        <select id="quickCartelSelect" class="flex-1 border-gray-300 rounded shadow-sm p-2 border text-sm">
+                            <!-- Fylls via JS -->
+                        </select>
+                        <button onclick="saveCustomQuickCartel()" class="bg-white border border-gray-300 hover:bg-gray-100 text-gray-700 px-3 py-2 rounded shadow-sm text-sm font-medium transition-colors" title="Spara nuvarande formering som ett nytt snabbval">
+                            + Spara
+                        </button>
+                    </div>
+                    <button onclick="applyQuickCartel()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded shadow-sm text-sm font-medium transition-colors">Applicera Formering</button>
+                </div>
+            </div>
+
+            <div class="mb-2 flex justify-between items-end border-b pb-1">
+                <h3 class="font-medium text-gray-800">Partiernas KF-mandat</h3>
+                <span id="totalMandatesBadge" class="text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-800">Totalt: 79 mandat</span>
+            </div>
+
+            <div id="partiesContainer" class="space-y-3 mb-6 max-h-[35vh] overflow-y-auto pr-2">
+                <!-- Partier injiceras här via JS -->
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <button onclick="calculate()" class="w-full linkoping-blue hover:bg-blue-800 text-white font-bold py-3 px-4 rounded shadow transition duration-150">
+                    Kör Fördelningsberäkning (d'Hondt)
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="saveCurrentScenario()" class="w-1/2 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded shadow transition duration-150 flex justify-center items-center text-sm" title="Spara nuvarande storlek till Jämförelse">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                        Spara (Jämför)
+                    </button>
+                    <!-- Ny knapp för att auto-spara flera storlekar samtidigt -->
+                    <button onclick="promptMultipleSizes()" class="w-1/2 bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-3 rounded shadow transition duration-150 flex justify-center items-center text-sm" title="Automatisera sparande av flera storlekar (t.ex. 9, 11, 13)">
+                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        Flera storlekar
+                    </button>
+                </div>
+                <button onclick="generateShareLink()" class="w-full bg-gray-100 border border-gray-300 hover:bg-gray-200 text-gray-700 font-bold py-2 px-2 rounded shadow-sm transition duration-150 flex justify-center items-center text-sm" title="Kopiera länk för att dela exakt detta scenario">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                    Dela länk
+                </button>
+            </div>
+        </div>
+
+        <!-- Höger: Resultat -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Sammanfattning & Parlamentsbåge -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200 relative">
+                <h2 class="text-xl font-semibold mb-6 border-b pb-2">Slutgiltig Mandatfördelning i Nämnden</h2>
+                
+                <!-- Båge: Parlamentsvisning -->
+                <div class="relative w-full max-w-sm mx-auto mb-8 hidden" id="chartContainer">
+                    <canvas id="parliamentChart"></canvas>
+                    <div id="majorityLineText" class="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-[11px] font-bold text-gray-500 bg-white px-2 rounded shadow-sm">Majoritet: X platser</div>
+                </div>
+
+                <!-- Boxar -->
+                <div id="summaryResults" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <p class="text-gray-500 italic col-span-2 md:col-span-4">Klicka på beräkna för att se resultat...</p>
+                </div>
+                <p id="summaryDisclaimer" class="text-xs text-gray-500 mt-4 italic hidden">
+                    * Observera: Mandaten ovan tillfaller formellt respektive kartell/samverkan som helhet. Vilka specifika partier inom en kartell som i praktiken tar platsen på den enskilda nämnden kan variera och bygger på partiernas interna förhandlingar.
+                </p>
+            </div>
+
+            <!-- Kartellfördelning detaljer -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2">Fördelning per Valteknisk Samverkan (Kartell)</h2>
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-left">
+                        <thead class="bg-gray-100 text-gray-600">
+                            <tr>
+                                <th class="py-2 px-3 font-semibold">Gruppering / Parti</th>
+                                <th class="py-2 px-3 font-semibold text-right">Mandat i KF</th>
+                                <th class="py-2 px-3 font-semibold text-right">Platser i Nämnd</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cartelResultsTable" class="divide-y divide-gray-200">
+                            <!-- Innehåll -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Beräkningslogg & Marginaler -->
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-xl font-semibold mb-4 border-b pb-2 flex justify-between">
+                    <span>Beräkningslogg (Högsta Jämförelsetal)</span>
+                    <span class="text-sm font-normal text-gray-500">Divisorer: 1, 2, 3, 4...</span>
+                </h2>
+                
+                <div class="overflow-y-auto max-h-64 border rounded mb-4">
+                    <table class="min-w-full text-sm text-left relative">
+                        <thead class="bg-gray-50 text-gray-600 sticky top-0 shadow-sm">
+                            <tr>
+                                <th class="py-2 px-3 font-semibold">Plats nr</th>
+                                <th class="py-2 px-3 font-semibold">Tilldelas</th>
+                                <th class="py-2 px-3 font-semibold text-right">Jämförelsetal</th>
+                                <th class="py-2 px-3 font-semibold">Notering</th>
+                            </tr>
+                        </thead>
+                        <tbody id="calculationLogTable" class="divide-y divide-gray-100">
+                            <!-- Innehåll -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Marginaler (Vem var närmast?) -->
+                <div id="marginInfo" class="p-4 bg-blue-50 text-blue-900 text-sm rounded border border-blue-200 shadow-inner hidden">
+                    <!-- Injiceras via JS -->
+                </div>
+                
+                <p id="tieWarning" class="text-red-600 text-xs mt-3 hidden font-semibold bg-red-50 p-2 rounded border border-red-100"></p>
+            </div>
+        </div>
+    </main>
+
+    <!-- FLIK 2: Kommunfullmäktige -->
+    <main id="tab-kf" class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8 hidden">
+        <!-- Vänster: Kontrollpanel -->
+        <div class="lg:col-span-1 bg-white p-6 rounded-lg shadow-sm border border-gray-200 relative">
+            <h2 class="text-xl font-semibold mb-4 border-b pb-2">Röstinmatning (KF)</h2>
+            <p class="text-sm text-gray-600 mb-4">Mata in antal röster per parti för att beräkna mandaten i Kommunfullmäktige enligt <b>Jämkade uddatalsmetoden (1.2, 3, 5...)</b>.</p>
+            
+            <div class="mb-5">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Välj valresultat för inmatning</label>
+                <select id="kfScenarioSelect" class="w-full border-gray-300 rounded shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500" onchange="loadKFScenario()">
+                    <option value="egen">Egen inmatning</option>
+                    <option value="2030" hidden>Framtidsprognos (Val 2030)</option> 
+                    <option value="2026" hidden>Prognos (Val 2026)</option>
+                    <option value="2022">Resultat (Val 2022)</option>
+                </select>
+            </div>
+            
+            <div id="kfPartiesContainer" class="space-y-3 mb-6 max-h-[50vh] overflow-y-auto pr-2">
+                <!-- KF-röster injiceras här via JS -->
+            </div>
+
+            <div class="mb-4 p-3 bg-gray-50 rounded border flex justify-between font-bold text-gray-800">
+                <span>Summa giltiga röster:</span>
+                <span id="kfTotalVotesLabel">0</span>
+            </div>
+            <div class="mb-6 p-3 bg-blue-50 rounded border border-blue-100 flex justify-between text-sm text-blue-900 shadow-inner">
+                <span>3%-spärr (valkretsar):</span>
+                <span id="kfThresholdLabel" class="font-bold">0 st</span>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <button onclick="calculateKF()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-4 rounded shadow transition duration-150">
+                    Beräkna KF-mandat
+                </button>
+                <button onclick="transferKFMandatesToNämnd()" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 rounded shadow transition duration-150 flex justify-center items-center text-sm" id="btnTransferKF" style="display: none;">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                    Använd mandat i Nämndkalkylatorn
+                </button>
+            </div>
+        </div>
+
+        <!-- Höger: Resultat KF -->
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                <h2 class="text-xl font-semibold mb-6 border-b pb-2">Mandat i Kommunfullmäktige (79 platser)</h2>
+                
+                <div class="relative w-full max-w-sm mx-auto mb-8 hidden" id="kfChartContainer">
+                    <canvas id="kfParliamentChart"></canvas>
+                    <div class="absolute bottom-1 left-1/2 transform -translate-x-1/2 text-[11px] font-bold text-gray-500 bg-white px-2 rounded shadow-sm">Majoritet: 40 platser</div>
+                </div>
+
+                <!-- Marginal / Sista mandatet -->
+                <div id="kfMarginAlert" class="mb-6 hidden">
+                    <!-- Injiceras via JS -->
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full text-sm text-left border">
+                        <thead class="bg-gray-100 text-gray-600">
+                            <tr>
+                                <th class="py-2 px-3 font-semibold">Parti</th>
+                                <th class="py-2 px-3 font-semibold text-right">Röster</th>
+                                <th class="py-2 px-3 font-semibold text-right">Andel %</th>
+                                <th class="py-2 px-3 font-semibold text-right text-blue-900">Mandat</th>
+                                <th class="py-2 px-3 font-semibold text-right bg-blue-50" title="Antal röster partiet behövt för att ta ytterligare ett mandat (givet att inga andra röster ändras)">Röster till +1 mandat</th>
+                            </tr>
+                        </thead>
+                        <tbody id="kfResultsTable" class="divide-y divide-gray-200">
+                            <tr><td colspan="5" class="py-4 text-center text-gray-500 italic">Klicka på beräkna för att se resultat...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- FLIK 3: Jämförelse -->
+    <main id="tab-comp" class="max-w-7xl mx-auto p-6 hidden">
+        <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b pb-4 gap-4 print-hide">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-800">Jämförelse av Nämndscenarier</h2>
+                    <p class="text-gray-500 text-sm mt-1">Här sparas dina sparade uträkningar sida vid sida för enkel jämförelse.</p>
+                </div>
+                <!-- Export och Rensning -->
+                <div class="flex gap-2">
+                    <button onclick="printComparison()" class="text-gray-700 bg-white hover:bg-gray-50 px-3 py-2 border border-gray-300 rounded shadow-sm transition-colors text-sm font-medium flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2-2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                        PDF / Skriv ut
+                    </button>
+                    <button onclick="exportToCSV()" class="text-gray-700 bg-white hover:bg-gray-50 px-3 py-2 border border-gray-300 rounded shadow-sm transition-colors text-sm font-medium flex items-center">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        Exportera CSV
+                    </button>
+                    <button onclick="clearScenarios()" class="text-red-600 bg-white hover:bg-red-50 px-3 py-2 border border-red-200 rounded shadow-sm transition-colors text-sm font-medium">Rensa</button>
+                </div>
+            </div>
+            
+            <div id="comparisonContainer" class="overflow-x-auto">
+                <p class="text-gray-500 italic py-8 text-center print-hide">Du har inte sparat några scenarier ännu. Gå till Nämndkalkylatorn och klicka på "Spara (Jämför)".</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- UI för Modaler/Meddelanden -->
+    <div id="customModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden print-hide">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-sm w-full">
+            <h3 id="modalTitle" class="text-lg font-bold mb-2">Meddelande</h3>
+            <p id="modalMessage" class="text-sm text-gray-700 mb-4"></p>
+            <div id="modalButtons" class="flex justify-end gap-2">
+                <!-- Knappar injiceras här -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Nytt: Hjälp- och Informationsmodal -->
+    <div id="helpModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden print-hide">
+        <div class="bg-white rounded-lg shadow-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="text-2xl font-bold text-blue-900">Så fungerar kalkylatorn</h3>
+                <button onclick="document.getElementById('helpModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-800 text-3xl font-bold">&times;</button>
+            </div>
+            <div class="text-sm text-gray-700 space-y-4">
+                <div>
+                    <h4 class="font-bold text-lg text-gray-900">1. Nämndkalkylatorn (d'Hondts metod)</h4>
+                    <p>Enligt kommunallagen används <b>d'Hondts metod</b> (heltal som divisorer: 1, 2, 3, 4 osv.) vid proportionella val till kommunens nämnder. I flik 1 bygger du valteknisk samverkan (karteller) via rullistorna. Verktyget fördelar mandaten till kartellen som helhet. <br><br><i>Observera:</i> Den interna fördelningen av platser <i>mellan</i> partierna i en kartell hanteras i verktyget rent matematiskt, men i verkligheten är detta en förhandlingsfråga partierna emellan. Skulle det uppstå lottning (lika jämförelsetal) internt i en kartell låter kalkylatorn ett parti få platsen för att kartellens totala platser ska stämma. Uppstår däremot lottning <i>mellan</i> olika karteller för det allra sista mandatet varnar verktyget och lägger det i potten "LOTTNING".</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg text-gray-900">2. KF-Kalkylatorn (Jämkade uddatalsmetoden / Sainte-Laguë)</h4>
+                    <p>Vid valet till kommunfullmäktige används den jämkade uddatalsmetoden (internationellt känd som <b>Modified Sainte-Laguë</b>). Denna metod använder divisorn 1.2 för första mandatet, därefter 3, 5, 7 osv. I Linköping, som är valkretsindelat, tillämpas en <b>3%-spärr</b>. KF-fliken räknar automatiskt ut spärren baserat på de inmatade rösterna och visar hur nära partierna är att ta nästa mandat.</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-lg text-gray-900">3. Smarta funktioner</h4>
+                    <ul class="list-disc pl-5 space-y-1 mt-1">
+                        <li><b>Spara & Jämför:</b> Spara flera scenarier för att jämföra dem sida vid sida, eller använd knappen "Flera storlekar" för att direkt jämföra t.ex. 9, 11 och 13 platser.</li>
+                        <li><b>Skapa egna snabbval:</b> Om du hittar en spännande kartellformering kan du spara den som ett snabbval. Den sparas lokalt i din webbläsare för framtida bruk.</li>
+                        <li><b>Dela länk:</b> Skapar en webblänk med exakt de siffror och inställningar du gjort, perfekt för att skicka till kollegor för diskussion.</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end border-t pt-4">
+                <button onclick="document.getElementById('helpModal').classList.add('hidden')" class="px-5 py-2 bg-blue-600 text-white font-bold rounded hover:bg-blue-700">Stäng</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data och Konfiguration
+        // ÖVR = Övriga partier. De är med för att summan giltiga röster ska bli korrekt i KF-fliken.
+        const partyConfigs = [
+            { id: 'S', name: 'Socialdemokraterna', bg: 'party-S', hex: '#E8112d' },
+            { id: 'M', name: 'Moderaterna', bg: 'party-M', hex: '#52BDEC' },
+            { id: 'SD', name: 'Sverigedemokraterna', bg: 'party-SD', hex: '#DDDD00' },
+            { id: 'C', name: 'Centerpartiet', bg: 'party-C', hex: '#009933' },
+            { id: 'V', name: 'Vänsterpartiet', bg: 'party-V', hex: '#DA291C' },
+            { id: 'KD', name: 'Kristdemokraterna', bg: 'party-KD', hex: '#000077' },
+            { id: 'L', name: 'Liberalerna', bg: 'party-L', hex: '#006AB3' },
+            { id: 'MP', name: 'Miljöpartiet', bg: 'party-MP', hex: '#83CF39' },
+            { id: 'LL', name: 'Linköpingslistan', bg: 'party-LL', hex: '#808080' },
+            { id: 'ÖVR', name: 'Övriga anmälda partier', bg: 'party-ÖVR', hex: '#9CA3AF' }
+        ];
+
+        // Databas KF-mandat
+        let historicalData = {
+            '2030': { 'S': 0, 'M': 0, 'SD': 0, 'LL': 0, 'C': 0, 'V': 0, 'MP': 0, 'KD': 0, 'L': 0, 'ÖVR': 0 },
+            '2026': { 'S': 0, 'M': 0, 'SD': 0, 'LL': 0, 'C': 0, 'V': 0, 'MP': 0, 'KD': 0, 'L': 0, 'ÖVR': 0 },
+            '2022': { 'S': 22, 'M': 16, 'SD': 10, 'LL': 7, 'C': 6, 'V': 5, 'MP': 5, 'KD': 4, 'L': 4, 'ÖVR': 0 },
+            '2018': { 'S': 22, 'M': 18, 'SD': 8, 'C': 8, 'L': 7, 'KD': 6, 'V': 5, 'MP': 5, 'LL': 0, 'ÖVR': 0 }
+        };
+
+        // Röstdatabas (KF-fliken) - Hårdkodade siffror från din inmatning
+        const kfVotesDatabase = {
+            '2030': { 'S': 0, 'M': 0, 'SD': 0, 'LL': 0, 'C': 0, 'V': 0, 'MP': 0, 'KD': 0, 'L': 0, 'ÖVR': 0 },
+            '2026': { 'S': 0, 'M': 0, 'SD': 0, 'LL': 0, 'C': 0, 'V': 0, 'MP': 0, 'KD': 0, 'L': 0, 'ÖVR': 0 },
+            '2022': { 'S': 29856, 'M': 21368, 'SD': 12707, 'LL': 9512, 'C': 7368, 'V': 7109, 'MP': 6166, 'KD': 5416, 'L': 5405, 'ÖVR': 753 }
+        };
+
+        let kfVotesData = {...kfVotesDatabase['2022']};
+
+        const cartels = ['Ingen', 'Kartell A', 'Kartell B', 'Kartell C', 'Kartell D'];
+
+        // Grundläggande Snabbval
+        const quickCartelConfigs = {
+            "Återställ (Inga karteller)": {},
+            "Tillsammans för Linköping vs splittrad opp.": { 'S': 'Kartell A', 'M': 'Kartell A' },
+            "Tillsammans för Linköping vs enad Allians-opp.": { 'S': 'Kartell A', 'M': 'Kartell A', 'C': 'Kartell B', 'KD': 'Kartell B', 'L': 'Kartell B' },
+            "Traditionell Allians vs Rödgröna (2 block)": { 'M': 'Kartell A', 'C': 'Kartell A', 'KD': 'Kartell A', 'L': 'Kartell A', 'S': 'Kartell B', 'V': 'Kartell B', 'MP': 'Kartell B' },
+            "Mittenstyre vs Vänster/Höger-ytterkanter": { 'S': 'Kartell A', 'C': 'Kartell A', 'MP': 'Kartell A', 'M': 'Kartell B', 'KD': 'Kartell B', 'L': 'Kartell B', 'SD': 'Kartell B', 'V': 'Kartell C' },
+            "Majoritet S+V+MP vs Högeropposition": { 'S': 'Kartell A', 'V': 'Kartell A', 'MP': 'Kartell A', 'M': 'Kartell B', 'SD': 'Kartell B', 'KD': 'Kartell B', 'L': 'Kartell B', 'C': 'Kartell B' }
+        };
+
+        let currentCalculationResult = null;
+        let currentKFMandatesResult = null; 
+        let savedScenarios = [];
+        let parliamentChartInst = null; 
+        let kfParliamentChartInst = null; 
+
+        // --- Modaler ---
+        function showModal(title, message, type = 'alert', onConfirm = null) {
+            const modal = document.getElementById('customModal');
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalMessage').innerHTML = message;
+            
+            const btnContainer = document.getElementById('modalButtons');
+            btnContainer.innerHTML = '';
+            
+            if (type === 'confirm') {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300';
+                cancelBtn.innerText = 'Avbryt';
+                cancelBtn.onclick = () => { modal.classList.add('hidden'); };
+                
+                const okBtn = document.createElement('button');
+                okBtn.className = 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700';
+                okBtn.innerText = 'Fortsätt';
+                okBtn.onclick = () => { 
+                    modal.classList.add('hidden'); 
+                    if (onConfirm) onConfirm(); 
+                };
+                
+                btnContainer.appendChild(cancelBtn);
+                btnContainer.appendChild(okBtn);
+            } else if (type === 'prompt') {
+                 const inputField = document.createElement('input');
+                 inputField.type = 'text';
+                 inputField.id = 'modalPromptInput';
+                 inputField.className = 'w-full border p-2 mb-4 rounded';
+                 inputField.value = onConfirm.defaultValue || ''; 
+                 
+                 document.getElementById('modalMessage').appendChild(document.createElement('br'));
+                 document.getElementById('modalMessage').appendChild(inputField);
+
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300';
+                cancelBtn.innerText = 'Avbryt';
+                cancelBtn.onclick = () => { modal.classList.add('hidden'); };
+                
+                const okBtn = document.createElement('button');
+                okBtn.className = 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700';
+                okBtn.innerText = 'Spara';
+                okBtn.onclick = () => { 
+                    const val = document.getElementById('modalPromptInput').value;
+                    modal.classList.add('hidden'); 
+                    if (onConfirm.callback) onConfirm.callback(val); 
+                };
+                
+                btnContainer.appendChild(cancelBtn);
+                btnContainer.appendChild(okBtn);
+            } else {
+                const okBtn = document.createElement('button');
+                okBtn.className = 'px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700';
+                okBtn.innerText = 'OK';
+                okBtn.onclick = () => { modal.classList.add('hidden'); };
+                btnContainer.appendChild(okBtn);
+            }
+            
+            modal.classList.remove('hidden');
+            if(type === 'prompt') {
+                setTimeout(() => document.getElementById('modalPromptInput').focus(), 100);
+            }
+        }
+
+        function generateShareLink() {
+            const urlParams = new URLSearchParams();
+            urlParams.set('seats', document.getElementById('seatsInput').value);
+            urlParams.set('year', document.getElementById('scenarioSelect').value);
+            partyConfigs.forEach(p => {
+                if(p.id !== 'ÖVR') {
+                    urlParams.set(`v_${p.id}`, document.getElementById(`votes_${p.id}`).value);
+                    urlParams.set(`c_${p.id}`, document.getElementById(`cartel_${p.id}`).value);
+                }
+            });
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + urlParams.toString();
+            navigator.clipboard.writeText(newUrl).then(() => {
+                showModal('Länk kopierad!', 'En direktlänk till denna uträkning har kopierats till dina urklipp.<br><br><span class="text-xs text-gray-500 break-all">' + newUrl + '</span>');
+            }).catch(err => {
+                showModal('Dela länk', `Kopiera denna länk manuellt:<br><br><input type="text" class="w-full border p-2 text-xs" value="${newUrl}" onclick="this.select()">`);
+            });
+        }
+
+        function parseUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('seats')) {
+                document.getElementById('seatsInput').value = params.get('seats');
+                document.getElementById('scenarioSelect').value = params.get('year') || '2026';
+                
+                partyConfigs.forEach(p => {
+                    if(p.id !== 'ÖVR') {
+                        if (params.has(`v_${p.id}`)) {
+                            document.getElementById(`votes_${p.id}`).value = params.get(`v_${p.id}`);
+                        }
+                        if (params.has(`c_${p.id}`)) {
+                            document.getElementById(`cartel_${p.id}`).value = params.get(`c_${p.id}`);
+                        }
+                    }
+                });
+                
+                document.getElementById('quickCartelSelect').value = "Återställ (Inga karteller)";
+                updateTotal();
+                return true; 
+            }
+            return false;
+        }
+
+        function printComparison() {
+            if (savedScenarios.length === 0) {
+                showModal('Varning', 'Du måste spara minst ett scenario innan du kan skriva ut jämförelsen.');
+                return;
+            }
+            // Sätt body class för att isolera just denna tabell i utskriften
+            document.body.classList.add('print-comparison');
+            window.print();
+            // Rensa efteråt så man kan printa andra flikar som vanligt via webbläsaren
+            setTimeout(() => { document.body.classList.remove('print-comparison'); }, 500);
+        }
+
+        function exportToCSV() {
+            if (savedScenarios.length === 0) {
+                showModal('Varning', 'Du måste spara minst ett scenario innan du kan exportera.');
+                return;
+            }
+            let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
+            let headers = ["Parti (Intern fördelning)"];
+            savedScenarios.forEach(sc => headers.push(sc.name));
+            csvContent += headers.join(";") + "\r\n";
+            
+            partyConfigs.forEach(party => {
+                if(party.id === 'ÖVR') return; 
+                let row = [party.name];
+                savedScenarios.forEach(sc => {
+                    row.push(sc.data.partySeats[party.name].seats);
+                });
+                csvContent += row.join(";") + "\r\n";
+            });
+            
+            let hasLottning = savedScenarios.some(sc => sc.data.lottningSeats > 0);
+            if(hasLottning) {
+                let row = ["LOTTNING / OAVGJORT"];
+                savedScenarios.forEach(sc => row.push(sc.data.lottningSeats || 0));
+                csvContent += row.join(";") + "\r\n";
+            }
+
+            csvContent += "\r\nResultat per Formering (Kartell)\r\n";
+            let cartelRow = ["Beskrivning"];
+            savedScenarios.forEach(sc => {
+                let cStrings = [];
+                sc.data.cartelSetup.forEach(c => {
+                    if(c.seats > 0) cStrings.push(`${c.name} (${c.seats} mandat)`);
+                });
+                cartelRow.push(cStrings.join(" | "));
+            });
+            csvContent += cartelRow.join(";") + "\r\n";
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "Nämndprognos_Linköping.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // --- LocalStorage ---
+        function loadFromLocalStorage() {
+            try {
+                const saved2026 = localStorage.getItem('mandat_2026');
+                if (saved2026) historicalData['2026'] = JSON.parse(saved2026);
+                
+                const saved2030 = localStorage.getItem('mandat_2030');
+                if (saved2030) historicalData['2030'] = JSON.parse(saved2030);
+
+                const savedCustomCartels = localStorage.getItem('customQuickCartels');
+                if (savedCustomCartels) {
+                    const parsed = JSON.parse(savedCustomCartels);
+                    Object.assign(quickCartelConfigs, parsed);
+                }
+
+                const savedKFVotes = localStorage.getItem('kf_votes');
+                if (savedKFVotes) {
+                    kfVotesData = JSON.parse(savedKFVotes);
+                    document.getElementById('kfScenarioSelect').value = 'egen';
+                }
+            } catch (e) {
+                console.error("Kunde inte läsa från localStorage", e);
+            }
+        }
+
+        function saveToLocalStorage() {
+            const year = document.getElementById('scenarioSelect').value;
+            if (year === '2026' || year === '2030' || year === 'egen') {
+                const currentData = {};
+                partyConfigs.forEach(p => {
+                    if(p.id !== 'ÖVR') {
+                        currentData[p.id] = parseInt(document.getElementById(`votes_${p.id}`).value) || 0;
+                    }
+                });
+                if(year !== 'egen') {
+                    historicalData[year] = currentData;
+                    localStorage.setItem(`mandat_${year}`, JSON.stringify(currentData));
+                }
+            }
+        }
+
+        function saveKFVotesToLocal() {
+            const currentVotes = {};
+            partyConfigs.forEach(p => {
+                currentVotes[p.id] = parseInt(document.getElementById(`kf_votes_${p.id}`).value) || 0;
+            });
+            kfVotesData = currentVotes;
+            localStorage.setItem('kf_votes', JSON.stringify(currentVotes));
+        }
+
+        function saveCustomQuickCartel() {
+            showModal('Spara ny Formering', 'Ange ett namn för ditt nya snabbval:', 'prompt', {
+                callback: (name) => {
+                    if (name) {
+                        const newConfig = {};
+                        partyConfigs.forEach(p => {
+                            if(p.id !== 'ÖVR') {
+                                const val = document.getElementById(`cartel_${p.id}`).value;
+                                if (val !== 'Ingen') newConfig[p.id] = val;
+                            }
+                        });
+                        
+                        quickCartelConfigs[name] = newConfig;
+                        
+                        let customSaved = {};
+                        try { customSaved = JSON.parse(localStorage.getItem('customQuickCartels') || '{}'); } catch(e) {}
+                        customSaved[name] = newConfig;
+                        localStorage.setItem('customQuickCartels', JSON.stringify(customSaved));
+                        
+                        const quickSelect = document.getElementById('quickCartelSelect');
+                        quickSelect.innerHTML += `<option value="${name}">${name}</option>`;
+                        quickSelect.value = name;
+                        
+                        showModal('Sparat', `Formeringen "${name}" är nu sparad.`);
+                    }
+                }
+            });
+        }
+
+        // --- Ny Funktion: Spara flera storlekar samtidigt ---
+        function promptMultipleSizes() {
+            if(!currentCalculationResult) {
+                showModal('Varning', 'Du måste klicka på "Kör Fördelningsberäkning" först för att ladda in scenariot.');
+                return;
+            }
+
+            showModal('Jämför flera storlekar', 'Ange de nämndstorlekar du vill spara för detta scenario, separerade med komma (t.ex. 9, 11, 13):', 'prompt', {
+                defaultValue: '9, 11, 13',
+                callback: (input) => {
+                    if(!input) return;
+                    const sizes = input.split(',').map(s => parseInt(s.trim())).filter(s => !isNaN(s) && s > 0);
+                    if(sizes.length === 0) {
+                        showModal('Fel', 'Inga giltiga siffror inmatade.');
+                        return;
+                    }
+                    
+                    const originalSize = document.getElementById('seatsInput').value;
+                    const cartelSelect = document.getElementById('quickCartelSelect');
+                    const cartelName = cartelSelect.options[cartelSelect.selectedIndex].text;
+                    const baseName = cartelName && !cartelName.includes("Återställ") ? cartelName : "Egen formering";
+
+                    sizes.forEach(size => {
+                        document.getElementById('seatsInput').value = size;
+                        // Kör beräkningen i bakgrunden (uppdaterar currentCalculationResult)
+                        performCalculation(); 
+                        
+                        savedScenarios.push({
+                            name: `${baseName} (${size} pl)`,
+                            data: JSON.parse(JSON.stringify(currentCalculationResult))
+                        });
+                    });
+                    
+                    // Återställ gränssnittet till ursprungsstorleken
+                    document.getElementById('seatsInput').value = originalSize;
+                    performCalculation();
+                    
+                    const badge = document.getElementById('compareBadge');
+                    badge.innerText = savedScenarios.length;
+                    badge.classList.remove('hidden');
+                    
+                    showModal('Klart!', `Lade till jämförelser för ${sizes.join(', ')} platser i Jämförelse-fliken.`);
+                }
+            });
+        }
+
+        // --- Initiering ---
+        function initUI() {
+            loadFromLocalStorage();
+
+            const container = document.getElementById('partiesContainer');
+            container.innerHTML = '';
+            
+            const kfContainer = document.getElementById('kfPartiesContainer');
+            kfContainer.innerHTML = '';
+
+            partyConfigs.forEach(party => {
+                if (party.id !== 'ÖVR') {
+                    let cartelOptions = cartels.map(c => `<option value="${c}">${c}</option>`).join('');
+                    const row = document.createElement('div');
+                    row.className = `flex gap-2 items-center p-2 bg-gray-50 border-l-4 rounded shadow-sm ${party.bg}`;
+                    row.innerHTML = `
+                        <div class="w-12 font-bold text-gray-700">${party.id}</div>
+                        <input type="number" id="votes_${party.id}" class="w-16 p-1 border rounded text-center party-vote-input" min="0" onchange="handleVoteChange()">
+                        <select id="cartel_${party.id}" class="flex-1 p-1 border rounded text-sm bg-white">
+                            ${cartelOptions}
+                        </select>
+                    `;
+                    container.appendChild(row);
+                }
+
+                const kfRow = document.createElement('div');
+                kfRow.className = `flex gap-4 items-center p-2 bg-white border-b border-gray-100`;
+                kfRow.innerHTML = `
+                    <div class="w-8 h-8 rounded flex items-center justify-center font-bold text-white text-xs ${party.bg.replace('border-left-color', 'bg')}">${party.id}</div>
+                    <div class="flex-1 font-medium text-gray-700 text-sm truncate">${party.name}</div>
+                    <input type="number" id="kf_votes_${party.id}" value="${kfVotesData[party.id] || 0}" class="w-24 p-2 border border-gray-300 rounded text-right shadow-inner focus:ring-blue-500 focus:border-blue-500" min="0" onchange="updateKFTotalVotes()">
+                `;
+                kfContainer.appendChild(kfRow);
+            });
+
+            const quickSelect = document.getElementById('quickCartelSelect');
+            quickSelect.innerHTML = '';
+            Object.keys(quickCartelConfigs).forEach(key => {
+                quickSelect.innerHTML += `<option value="${key}">${key}</option>`;
+            });
+
+            updateKFTotalVotes();
+
+            const isShared = parseUrlParams();
+            if(!isShared) {
+                loadScenario();
+            } else {
+                setTimeout(performCalculation, 200);
+            }
+        }
+
+        function handleVoteChange() {
+            updateTotal();
+            saveToLocalStorage();
+        }
+
+        function updateKFTotalVotes() {
+            let sum = 0;
+            partyConfigs.forEach(p => {
+                sum += parseInt(document.getElementById(`kf_votes_${p.id}`).value) || 0;
+            });
+            document.getElementById('kfTotalVotesLabel').innerText = sum.toLocaleString('sv-SE') + " st";
+            
+            // Uppdatera 3%-spärren
+            let threshold = Math.ceil(sum * 0.03);
+            let thresholdEl = document.getElementById('kfThresholdLabel');
+            if(thresholdEl) thresholdEl.innerText = threshold.toLocaleString('sv-SE') + " st";
+
+            saveKFVotesToLocal();
+        }
+
+        function switchTab(tab) {
+            document.getElementById('tab-calc').classList.add('hidden');
+            document.getElementById('tab-comp').classList.add('hidden');
+            document.getElementById('tab-kf').classList.add('hidden');
+            
+            document.getElementById('tabBtn-calc').className = 'py-3 tab-inactive focus:outline-none transition-colors whitespace-nowrap';
+            document.getElementById('tabBtn-comp').className = 'py-3 tab-inactive focus:outline-none transition-colors flex items-center whitespace-nowrap';
+            document.getElementById('tabBtn-kf').className = 'py-3 tab-inactive focus:outline-none transition-colors whitespace-nowrap';
+            
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            
+            if(tab === 'comp') {
+                document.getElementById(`tabBtn-comp`).className = 'py-3 tab-active focus:outline-none transition-colors flex items-center whitespace-nowrap';
+                renderComparison();
+            } else {
+                document.getElementById(`tabBtn-${tab}`).className = 'py-3 tab-active focus:outline-none transition-colors whitespace-nowrap';
+            }
+        }
+
+        function loadKFScenario() {
+            const year = document.getElementById('kfScenarioSelect').value;
+            if (year === 'egen') return;
+
+            const data = kfVotesDatabase[year];
+            partyConfigs.forEach(party => {
+                const inputEl = document.getElementById(`kf_votes_${party.id}`);
+                if (inputEl) inputEl.value = data[party.id] || 0;
+            });
+            
+            updateKFTotalVotes();
+            calculateKF();
+        }
+
+        function loadScenario() {
+            const year = document.getElementById('scenarioSelect').value;
+            if (year === 'egen') return;
+
+            const data = historicalData[year];
+            partyConfigs.forEach(party => {
+                if(party.id !== 'ÖVR') {
+                    document.getElementById(`votes_${party.id}`).value = data[party.id] || 0;
+                    document.getElementById(`cartel_${party.id}`).value = 'Ingen';
+                }
+            });
+            
+            if (year === '2022') document.getElementById('quickCartelSelect').value = "Tillsammans för Linköping vs splittrad opp.";
+            else document.getElementById('quickCartelSelect').value = "Återställ (Inga karteller)";
+            
+            applyQuickCartel();
+            updateTotal();
+        }
+
+        function applyQuickCartel() {
+            const selectedKey = document.getElementById('quickCartelSelect').value;
+            const config = quickCartelConfigs[selectedKey] || {};
+            
+            partyConfigs.forEach(p => {
+                if(p.id !== 'ÖVR') {
+                    document.getElementById(`cartel_${p.id}`).value = 'Ingen';
+                }
+            });
+
+            for (const [partyId, cartelName] of Object.entries(config)) {
+                let selectElem = document.getElementById(`cartel_${partyId}`);
+                if(selectElem) selectElem.value = cartelName;
+            }
+        }
+
+        function updateTotal() {
+            let total = 0;
+            document.querySelectorAll('.party-vote-input').forEach(input => {
+                total += parseInt(input.value) || 0;
+            });
+            const badge = document.getElementById('totalMandatesBadge');
+            badge.innerText = `Totalt: ${total} mandat (KF)`;
+            if(total !== 79 && total !== 0) {
+                badge.className = "text-xs font-bold px-2 py-1 rounded bg-red-100 text-red-800";
+                return total;
+            } else if (total === 79) {
+                badge.className = "text-xs font-bold px-2 py-1 rounded bg-green-100 text-green-800";
+                return total;
+            } else {
+                badge.className = "text-xs font-bold px-2 py-1 rounded bg-gray-200 text-gray-800";
+                return total;
+            }
+        }
+
+        // ==========================================
+        // FLIK 2 LOGIK: JÄMKADE UDDATALSMETODEN (KF)
+        // ==========================================
+        function calculateKF() {
+            const totalKFSeats = 79;
+            let partiesVotes = [];
+            let totalVotes = 0;
+
+            partyConfigs.forEach(p => {
+                let v = parseInt(document.getElementById(`kf_votes_${p.id}`).value) || 0;
+                partiesVotes.push({ id: p.id, name: p.name, votes: v, hex: p.hex });
+                totalVotes += v;
+            });
+
+            if(totalVotes === 0) {
+                showModal("Info", "Du måste skriva in röster för att beräkna mandat.");
+                return;
+            }
+
+            let seats = {};
+            let log = [];
+            partiesVotes.forEach(p => seats[p.id] = 0);
+            
+            // Beräkna 3%-spärren (Gäller för valkretsindelade kommuner)
+            let thresholdVotes = Math.ceil(totalVotes * 0.03);
+
+            for (let i = 0; i < totalKFSeats; i++) {
+                let maxQ = -1;
+                let winner = null;
+
+                partiesVotes.forEach(p => {
+                    if (p.votes <= 0 || p.votes < thresholdVotes || p.id === 'ÖVR') return; // Spärr appliceras, Övriga blockeras
+                    let divisor = seats[p.id] === 0 ? 1.2 : (2 * seats[p.id] + 1);
+                    let q = p.votes / divisor;
+                    
+                    if (q > maxQ) {
+                        maxQ = q;
+                        winner = p.id;
+                    }
+                });
+
+                if (!winner) break;
+                seats[winner]++;
+                log.push({ seatNumber: i + 1, winner: winner, quotient: maxQ });
+            }
+
+            let lastSeat = log[log.length - 1];
+            let lwq = lastSeat ? lastSeat.quotient : 0;
+            let lwqWinner = lastSeat ? lastSeat.winner : null;
+
+            let secondLastSeat = log.length > 1 ? log[log.length - 2] : null;
+            let secondLwq = secondLastSeat ? secondLastSeat.quotient : lwq;
+
+            let margins = {};
+            partiesVotes.forEach(p => {
+                if (p.votes <= 0 || p.id === 'ÖVR') {
+                    margins[p.id] = { needed: "-", margin: "-" };
+                    return;
+                }
+                
+                let nextDivisor = seats[p.id] === 0 ? 1.2 : (2 * seats[p.id] + 1);
+                let targetQ = (p.id === lwqWinner) ? secondLwq : lwq;
+                
+                let neededVotesForQuotient = Math.floor(targetQ * nextDivisor) + 1;
+                let neededVotes = neededVotesForQuotient;
+
+                // Om de är under spärren (0 mandat) måste de nå BÅDE spärren OCH ett tillräckligt högt jämförelsetal
+                if (seats[p.id] === 0) {
+                    neededVotes = Math.max(neededVotesForQuotient, thresholdVotes);
+                }
+                
+                let margin = neededVotes - p.votes;
+                margins[p.id] = { needed: neededVotes, margin: margin };
+            });
+
+            let closestParty = null;
+            let smallestMargin = Infinity;
+            partiesVotes.forEach(p => {
+                if(p.id !== lwqWinner && p.id !== 'ÖVR' && margins[p.id].margin !== "-" && margins[p.id].margin < smallestMargin) {
+                    smallestMargin = margins[p.id].margin;
+                    closestParty = p.id;
+                }
+            });
+
+            currentKFMandatesResult = seats; 
+
+            renderKF(partiesVotes, seats, lwqWinner, closestParty, smallestMargin, margins, totalVotes, thresholdVotes);
+            document.getElementById('btnTransferKF').style.display = 'flex';
+        }
+
+        function renderKF(partiesVotes, seats, lwqWinner, closestParty, smallestMargin, margins, totalVotes, thresholdVotes) {
+            const alertDiv = document.getElementById('kfMarginAlert');
+            if(lwqWinner && closestParty) {
+                alertDiv.innerHTML = `
+                    <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded text-blue-900 shadow-sm">
+                        <div class="font-bold flex items-center mb-1">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Marginalanalys: Sista mandatet (79:e)
+                        </div>
+                        <p class="text-sm">Det sista mandatet gick till <b>${partyConfigs.find(p=>p.id===lwqWinner).name}</b>. 
+                        Partiet närmast att ta detta mandat var <b>${partyConfigs.find(p=>p.id===closestParty).name}</b>, som hade behövt <b>${smallestMargin.toLocaleString('sv-SE')} fler röster</b> (givet att övriga röster var oförändrade).</p>
+                    </div>
+                `;
+                alertDiv.classList.remove('hidden');
+            } else {
+                alertDiv.classList.add('hidden');
+            }
+
+            const tbody = document.getElementById('kfResultsTable');
+            tbody.innerHTML = '';
+            
+            let sortedParties = [...partiesVotes].sort((a,b) => {
+                if(seats[b.id] !== seats[a.id]) return seats[b.id] - seats[a.id];
+                return b.votes - a.votes;
+            });
+
+            sortedParties.forEach(p => {
+                let s = seats[p.id];
+                let percNum = totalVotes > 0 ? (p.votes / totalVotes) * 100 : 0;
+                let perc = percNum.toFixed(1) + '%';
+                
+                let mData = margins[p.id] || { margin: "-" };
+                let marginText = mData.margin !== "-" ? `+${mData.margin.toLocaleString('sv-SE')}` : "-";
+                
+                let isWinner = p.id === lwqWinner ? '<span class="text-xs text-gray-400 ml-1" title="Fick sista mandatet i uträkningen">(sista)</span>' : '';
+                
+                // Visuell varning om de är spärrade
+                let blockedByThreshold = (s === 0 && p.votes > 0 && p.votes < thresholdVotes && p.id !== 'ÖVR') ? '<br><span class="text-xs text-red-500 font-semibold">&lt; 3% spärr</span>' : '';
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50 border-b">
+                        <td class="py-2 px-3 flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full" style="background-color: ${p.hex}"></div>
+                            <span class="font-medium">${p.id}</span>
+                            <span class="text-gray-500 text-xs truncate max-w-[120px] hidden sm:inline">${p.name}</span>
+                        </td>
+                        <td class="py-2 px-3 text-right font-mono">${p.votes.toLocaleString('sv-SE')}</td>
+                        <td class="py-2 px-3 text-right text-gray-600">${perc} ${blockedByThreshold}</td>
+                        <td class="py-2 px-3 text-right font-bold text-blue-900 text-lg">${s} ${isWinner}</td>
+                        <td class="py-2 px-3 text-right bg-blue-50 text-blue-800 font-mono text-xs font-semibold">${marginText}</td>
+                    </tr>
+                `;
+            });
+
+            const chartDiv = document.getElementById('kfChartContainer');
+            chartDiv.classList.remove('hidden');
+            const ctx = document.getElementById('kfParliamentChart').getContext('2d');
+            
+            let labels = [];
+            let data = [];
+            let bgColors = [];
+
+            sortedParties.forEach(p => {
+                if(seats[p.id] > 0) {
+                    labels.push(p.id);
+                    data.push(seats[p.id]);
+                    bgColors.push(p.hex);
+                }
+            });
+
+            if(kfParliamentChartInst) kfParliamentChartInst.destroy();
+
+            kfParliamentChartInst = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{ data: data, backgroundColor: bgColors, borderWidth: 1, borderColor: '#ffffff' }]
+                },
+                options: {
+                    rotation: -90,
+                    circumference: 180,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { callbacks: { label: function(context) { return ` ${context.label}: ${context.raw} mandat`; } } }
+                    }
+                }
+            });
+        }
+
+        function transferKFMandatesToNämnd() {
+            if(!currentKFMandatesResult) return;
+            
+            document.getElementById('scenarioSelect').value = 'egen';
+
+            partyConfigs.forEach(p => {
+                if(p.id !== 'ÖVR') { 
+                    document.getElementById(`votes_${p.id}`).value = currentKFMandatesResult[p.id] || 0;
+                }
+            });
+            updateTotal();
+            saveToLocalStorage();
+            
+            showModal('Kopierat!', 'Mandaten har överförts till Nämndkalkylatorn. Du skickas dit nu.', 'alert', () => {
+                switchTab('calc');
+            });
+        }
+
+        // ==========================================
+        // FLIK 1 LOGIK: d'HONDT (NÄMNDER)
+        // ==========================================
+        function runDHondt(entities, seatsToAllocate, isInternal = false) {
+            let seats = {};
+            let log = [];
+            let hadTie = false;
+            let tieDetails = []; 
+            
+            entities.forEach(e => seats[e.name] = 0);
+            seats['Lottning'] = 0; 
+
+            for (let i = 0; i < seatsToAllocate; i++) {
+                let maxQ = -1;
+                let winners = [];
+
+                entities.forEach(e => {
+                    if (e.votes === 0) return;
+                    let q = e.votes / (seats[e.name] + 1); 
+                    
+                    if (Math.abs(q - maxQ) < 0.000001) {
+                        winners.push(e.name);
+                    } else if (q > maxQ) {
+                        maxQ = q;
+                        winners = [e.name];
+                    }
+                });
+
+                if (winners.length === 0) break; 
+                
+                let remainingSeats = seatsToAllocate - i;
+                if (winners.length > 1 && winners.length > remainingSeats) {
+                    if (!isInternal) {
+                        // Verklig lottning mellan karteller bryter loopen och flaggar LOTTNING
+                        hadTie = true;
+                        for(let k = 0; k < remainingSeats; k++) {
+                            log.push({ seatNumber: i + 1 + k, winner: "LOTTNING (Oavgjort)", quotient: maxQ, tie: true, tiedEntities: winners.join(', ') });
+                        }
+                        seats['Lottning'] += remainingSeats;
+                        tieDetails.push({ seats: remainingSeats, entities: winners });
+                        break;
+                    }
+                    // Är isInternal = true (inom en kartell) undviker vi lottnings-blockeringen, 
+                    // partierna förhandlar ändå internt, men vi behöver hålla kartellens platser intakta.
+                }
+
+                let chosenWinner = winners[0]; 
+                seats[chosenWinner]++;
+                log.push({ seatNumber: i + 1, winner: chosenWinner, quotient: maxQ, tie: winners.length > 1, tiedEntities: winners.length > 1 ? winners.join(', ') : '' });
+            }
+
+            let runnerUpQuotient = -1;
+            let runnerUpName = "";
+            let runnerUpVotes = 0;
+            let runnerUpSeats = 0;
+
+            entities.forEach(e => {
+                if (e.votes === 0) return;
+                let q = e.votes / (seats[e.name] + 1);
+                if (q > runnerUpQuotient) {
+                    runnerUpQuotient = q;
+                    runnerUpName = e.name;
+                    runnerUpVotes = e.votes;
+                    runnerUpSeats = seats[e.name];
+                }
+            });
+
+            let minWinningQ = 0;
+            for(let i = log.length - 1; i >= 0; i--) {
+                if (!log[i].tie) {
+                    minWinningQ = log[i].quotient;
+                    break;
+                }
+            }
+
+            let marginInfo = null;
+            if (minWinningQ > 0 && runnerUpQuotient > 0 && !hadTie) {
+                let neededVotes = Math.floor(minWinningQ * (runnerUpSeats + 1)) + 1;
+                let margin = neededVotes - runnerUpVotes;
+                marginInfo = { name: runnerUpName, margin: margin, votes: runnerUpVotes };
+            }
+
+            return { seats, log, hadTie, tieDetails, marginInfo };
+        }
+
+        function calculate() {
+            const currentTotal = updateTotal();
+            if (currentTotal !== 79 && currentTotal !== 0) {
+                showModal('Varning: Antal mandat', 
+                    `Summan av partiernas mandat i KF är <b>${currentTotal}</b>, men Linköpings kommunfullmäktige ska ha exakt <b>79</b> mandat.<br><br>Vill du fortsätta beräkningen ändå?`, 
+                    'confirm', 
+                    performCalculation
+                );
+            } else {
+                performCalculation();
+            }
+        }
+
+        function performCalculation() {
+            const totalSeats = parseInt(document.getElementById('seatsInput').value) || 11;
+            
+            let activeCartels = {};
+            let allParties = [];
+
+            partyConfigs.forEach(party => {
+                if(party.id !== 'ÖVR') {
+                    let votes = parseInt(document.getElementById(`votes_${party.id}`).value) || 0;
+                    let cartelSelection = document.getElementById(`cartel_${party.id}`).value;
+                    let cartelName = cartelSelection === 'Ingen' ? party.name : cartelSelection;
+                    
+                    allParties.push({ id: party.id, name: party.name, votes: votes, cartel: cartelName });
+
+                    if (!activeCartels[cartelName]) {
+                        activeCartels[cartelName] = { name: cartelName, votes: 0, parties: [] };
+                    }
+                    activeCartels[cartelName].votes += votes;
+                    activeCartels[cartelName].parties.push({ name: party.name, id: party.id, votes: votes });
+                }
+            });
+
+            const cartelArray = Object.values(activeCartels).filter(c => c.votes > 0);
+            const cartelResult = runDHondt(cartelArray, totalSeats);
+
+            let finalPartySeats = {};
+            partyConfigs.forEach(p => { if(p.id !== 'ÖVR') finalPartySeats[p.name] = { id: p.id, seats: 0 }; });
+            finalPartySeats['Lottning'] = { id: 'LOTTNING', name: 'Lottning', seats: 0 };
+            
+            let allTieDetails = []; 
+
+            cartelArray.forEach(cartel => {
+                let seatsWon = cartelResult.seats[cartel.name] || 0;
+                if (seatsWon > 0) {
+                    if (cartel.parties.length === 1) {
+                        finalPartySeats[cartel.parties[0].name].seats += seatsWon;
+                    } else {
+                        // Skickar in true som 3:e parameter för att visa att detta är internt förhandlade platser
+                        const internalResult = runDHondt(cartel.parties, seatsWon, true);
+                        cartel.parties.forEach(p => {
+                            finalPartySeats[p.name].seats += internalResult.seats[p.name] || 0;
+                        });
+                        if (internalResult.seats['Lottning'] > 0) {
+                            finalPartySeats['Lottning'].seats += internalResult.seats['Lottning'];
+                            allTieDetails = allTieDetails.concat(internalResult.tieDetails);
+                        }
+                    }
+                }
+            });
+
+            if (cartelResult.seats['Lottning'] > 0) {
+                finalPartySeats['Lottning'].seats += cartelResult.seats['Lottning'];
+                allTieDetails = allTieDetails.concat(cartelResult.tieDetails);
+            }
+
+            let tieText = "";
+            if (allTieDetails.length > 0) {
+                tieText = allTieDetails.map(t => `${t.seats} plats(er) lottas mellan: ${t.entities.join(' och ')}`).join(' | ');
+            }
+            finalPartySeats['Lottning'].tieText = tieText;
+
+            let displayedYearText = document.getElementById('scenarioSelect').options[document.getElementById('scenarioSelect').selectedIndex].text;
+            if(document.getElementById('scenarioSelect').value === 'egen') displayedYearText = "Egen inmatning";
+
+            currentCalculationResult = {
+                totalSeats: totalSeats,
+                year: displayedYearText,
+                partySeats: finalPartySeats, 
+                cartelSetup: cartelArray.map(c => ({ name: c.name, parties: c.parties.map(p=>p.id), votes: c.votes, seats: cartelResult.seats[c.name]||0 })),
+                lottningSeats: finalPartySeats['Lottning'].seats,
+                tieText: tieText
+            };
+
+            renderResults(cartelArray, cartelResult, finalPartySeats, totalSeats);
+        }
+
+        function renderNämndChart(cartelArray, cartelResult, totalSeats) {
+            const chartDiv = document.getElementById('chartContainer');
+            if(totalSeats === 0 || cartelArray.length === 0) { chartDiv.classList.add('hidden'); return; }
+            chartDiv.classList.remove('hidden');
+
+            const ctx = document.getElementById('parliamentChart').getContext('2d');
+            let labels = [], data = [], bgColors = [];
+            let sortedCartels = [...cartelArray].sort((a,b) => (cartelResult.seats[b.name] || 0) - (cartelResult.seats[a.name] || 0));
+
+            sortedCartels.forEach(c => {
+                let s = cartelResult.seats[c.name] || 0;
+                if(s > 0) {
+                    labels.push(c.name);
+                    data.push(s);
+                    let primaryParty = partyConfigs.find(p => p.id === c.parties[0].id);
+                    bgColors.push(primaryParty ? primaryParty.hex : '#9CA3AF');
+                }
+            });
+
+            if(cartelResult.seats['Lottning'] > 0) {
+                labels.push('Lottning'); data.push(cartelResult.seats['Lottning']); bgColors.push('#EF4444'); 
+            }
+
+            if(parliamentChartInst) { parliamentChartInst.destroy(); }
+
+            parliamentChartInst = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: labels, datasets: [{ data: data, backgroundColor: bgColors, borderWidth: 1, borderColor: '#ffffff' }] },
+                options: {
+                    rotation: -90, circumference: 180, cutout: '60%',
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(context) { return ` ${context.label}: ${context.raw} platser`; } } } }
+                }
+            });
+
+            let majority = Math.floor(totalSeats / 2) + 1;
+            document.getElementById('majorityLineText').innerText = `Majoritet: ${majority} platser`;
+        }
+
+        function renderResults(cartelArray, cartelResult, finalPartySeats, totalSeats) {
+            const summaryDiv = document.getElementById('summaryResults');
+            const summaryDisclaimer = document.getElementById('summaryDisclaimer');
+            summaryDiv.innerHTML = '';
+            
+            let hasVotes = false;
+            let hasCartels = false;
+            cartelArray.forEach(c => { 
+                if (cartelResult.seats[c.name] > 0) hasVotes = true; 
+                if (c.parties.length > 1 && cartelResult.seats[c.name] > 0) hasCartels = true;
+            });
+            if (finalPartySeats['Lottning'] && finalPartySeats['Lottning'].seats > 0) hasVotes = true;
+
+            renderNämndChart(cartelArray, cartelResult, totalSeats);
+
+            if (!hasVotes) {
+                summaryDiv.innerHTML = '<p class="text-gray-500 italic">Inga mandat att fördela än.</p>';
+                summaryDisclaimer.style.display = 'none';
+                document.getElementById('marginInfo').classList.add('hidden');
+            } else {
+                cartelArray.sort((a,b) => (cartelResult.seats[b.name] || 0) - (cartelResult.seats[a.name] || 0)).forEach(c => {
+                    let seats = cartelResult.seats[c.name] || 0;
+                    if(seats > 0) {
+                        let isSingleParty = c.parties.length === 1;
+                        let displayTitle = isSingleParty ? c.parties[0].id : c.name; 
+                        let partyNamesString = c.parties.map(p => p.id).join(' + ');
+                        let subText = isSingleParty ? '' : partyNamesString;
+                        let bgClass = isSingleParty ? partyConfigs.find(p => p.id === c.parties[0].id).bg : 'border-l-4 border-gray-600 bg-gray-50';
+                        if(!isSingleParty) bgClass += ' bg-gray-100'; 
+
+                        summaryDiv.innerHTML += `
+                            <div class="border border-gray-200 p-3 rounded text-center shadow-sm flex flex-col justify-center h-full ${bgClass}">
+                                <div class="text-2xl font-bold text-blue-900">${seats}</div>
+                                <div class="text-[13px] font-bold text-gray-800 truncate px-1" title="${displayTitle}">${displayTitle}</div>
+                                <div class="text-[10px] font-semibold text-gray-500 tracking-wider h-3">${subText}</div>
+                            </div>
+                        `;
+                    }
+                });
+
+                if (finalPartySeats['Lottning'] && finalPartySeats['Lottning'].seats > 0) {
+                    summaryDiv.innerHTML += `
+                        <div class="bg-red-50 border border-red-200 p-3 rounded text-center shadow-sm col-span-2 md:col-span-4 mt-2">
+                            <div class="text-2xl font-bold text-red-700">${finalPartySeats['Lottning'].seats}</div>
+                            <div class="text-xs font-semibold text-red-600 uppercase tracking-wider mb-1">LOTTNING</div>
+                            <div class="text-xs text-red-800 font-medium">${finalPartySeats['Lottning'].tieText}</div>
+                        </div>
+                    `;
+                    document.getElementById('tieWarning').innerHTML = `* Varning: Exakt lika jämförelsetal uppstod. Lottning krävs:<br><span class="text-red-800">${finalPartySeats['Lottning'].tieText}</span>`;
+                    document.getElementById('tieWarning').style.display = 'block';
+                } else {
+                    document.getElementById('tieWarning').style.display = 'none';
+                }
+
+                summaryDisclaimer.style.display = hasCartels ? 'block' : 'none';
+
+                const marginDiv = document.getElementById('marginInfo');
+                if (cartelResult.marginInfo && cartelResult.marginInfo.margin > 0) {
+                    const m = cartelResult.marginInfo;
+                    marginDiv.innerHTML = `
+                        <div class="font-bold flex items-center mb-1">
+                            <svg class="w-4 h-4 mr-1 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Marginal till sista mandatet i nämnden
+                        </div>
+                        För att ta nästa mandat i nämnden hade <b>${m.name}</b> behövt <b>${m.margin}</b> ytterligare mandat i Kommunfullmäktige (förutsatt att övriga låg kvar).
+                    `;
+                    marginDiv.classList.remove('hidden');
+                } else {
+                    marginDiv.classList.add('hidden');
+                }
+            }
+
+            const cartelTable = document.getElementById('cartelResultsTable');
+            cartelTable.innerHTML = '';
+            cartelArray.sort((a,b) => (cartelResult.seats[b.name] || 0) - (cartelResult.seats[a.name] || 0)).forEach(c => {
+                let seatsWon = cartelResult.seats[c.name] || 0;
+                let partyNames = c.parties.map(p => p.id).join(' + ');
+                cartelTable.innerHTML += `
+                    <tr>
+                        <td class="py-2 px-3 border-b border-gray-100">
+                            <span class="font-medium">${c.name}</span> 
+                            ${c.parties.length > 1 ? `<span class="text-xs text-gray-500 ml-1">(${partyNames})</span>` : ''}
+                        </td>
+                        <td class="py-2 px-3 text-right border-b border-gray-100">${c.votes}</td>
+                        <td class="py-2 px-3 text-right font-bold text-blue-800 border-b border-gray-100">${seatsWon}</td>
+                    </tr>
+                `;
+            });
+
+            if (cartelResult.seats['Lottning'] > 0) {
+                let tieInfo = cartelResult.tieDetails.map(t => t.entities.join(' vs ')).join(', ');
+                cartelTable.innerHTML += `
+                    <tr class="bg-red-50">
+                        <td class="py-2 px-3 border-b border-red-100 font-medium text-red-700">Oavgjort <span class="text-xs font-normal">(${tieInfo})</span></td>
+                        <td class="py-2 px-3 text-right border-b border-red-100">-</td>
+                        <td class="py-2 px-3 text-right font-bold text-red-700 border-b border-red-100">${cartelResult.seats['Lottning']}</td>
+                    </tr>
+                `;
+            }
+
+            const logTable = document.getElementById('calculationLogTable');
+            logTable.innerHTML = '';
+            cartelResult.log.forEach(step => {
+                let isTie = step.tie ? `<span class="text-red-500 font-bold" title="Lika jämförelsetal för: ${step.tiedEntities}">*Lottning</span>` : '';
+                let rowClass = step.winner.includes('LOTTNING') ? 'bg-red-50' : 'hover:bg-gray-50';
+                
+                logTable.innerHTML += `
+                    <tr class="${rowClass}">
+                        <td class="py-1 px-3 border-b border-gray-100">${step.seatNumber}</td>
+                        <td class="py-1 px-3 border-b border-gray-100 font-medium">${step.winner}</td>
+                        <td class="py-1 px-3 text-right border-b border-gray-100 font-mono text-xs">${step.quotient.toFixed(4)}</td>
+                        <td class="py-1 px-3 border-b border-gray-100">${isTie}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        // --- Hantering av sparade scenarier ---
+        function saveCurrentScenario() {
+            if(!currentCalculationResult) {
+                showModal('Varning', 'Kör en beräkning först innan du sparar.');
+                return;
+            }
+            const defaultName = `Scenario ${savedScenarios.length + 1} (${currentCalculationResult.totalSeats} platser)`;
+            
+            showModal('Spara scenario', 'Namnge detta scenario för jämförelse:', 'prompt', {
+                defaultValue: defaultName,
+                callback: (scenarioName) => {
+                    if(scenarioName) {
+                        savedScenarios.push({ name: scenarioName, data: JSON.parse(JSON.stringify(currentCalculationResult)) });
+                        
+                        const badge = document.getElementById('compareBadge');
+                        badge.innerText = savedScenarios.length;
+                        badge.classList.remove('hidden');
+                        
+                        showModal('Sparat!', `"${scenarioName}" har sparats till Jämförelsefliken.`);
+                    }
+                }
+            });
+        }
+
+        function clearScenarios() {
+            showModal('Bekräfta', 'Är du säker på att du vill rensa alla sparade scenarier?', 'confirm', () => {
+                savedScenarios = [];
+                document.getElementById('compareBadge').classList.add('hidden');
+                renderComparison();
+            });
+        }
+
+        function renderComparison() {
+            const container = document.getElementById('comparisonContainer');
+            if (savedScenarios.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 italic py-8 text-center print-hide">Du har inte sparat några scenarier ännu. Gå till Nämndkalkylatorn och klicka på "Spara (Jämför)".</p>';
+                return;
+            }
+
+            let html = `
+                <table class="min-w-full text-sm text-left bg-white border border-gray-200 shadow-sm">
+                    <thead class="bg-gray-100 text-gray-700">
+                        <tr>
+                            <th class="py-3 px-4 font-bold border-b border-r w-48">Parti (Intern fördelning)</th>
+            `;
+            savedScenarios.forEach(sc => {
+                // Ta bort "(X pl)" ur namnet i kolumnrubriken eftersom vi visar platserna nedanför
+                let cleanName = sc.name.replace(/\(\d+ pl\)/g, '').trim(); 
+                html += `<th class="py-3 px-4 font-bold border-b border-r text-center min-w-[120px]">
+                            <div class="text-blue-900">${cleanName}</div>
+                            <div class="text-xs font-normal text-gray-500 mt-1">${sc.data.year} | ${sc.data.totalSeats} platser</div>
+                        </th>`;
+            });
+            html += `</tr></thead><tbody class="divide-y divide-gray-200">`;
+
+            partyConfigs.forEach(party => {
+                if(party.id === 'ÖVR') return; // Visa inte ÖVR i nämndernas jämförelsetabell
+
+                html += `<tr>
+                            <td class="py-2 px-4 border-r bg-gray-50 font-medium flex items-center gap-2" title="Teoretisk proportionalitet inom eventuell kartell">
+                                <div class="w-2 h-full rounded ${party.bg} border-l-4"></div>
+                                ${party.id}
+                            </td>`;
+                savedScenarios.forEach(sc => {
+                    let seats = sc.data.partySeats[party.name].seats;
+                    let isZero = seats === 0 ? 'text-gray-300' : 'text-gray-900 font-bold';
+                    html += `<td class="py-2 px-4 border-r text-center ${isZero} text-lg">${seats}</td>`;
+                });
+                html += `</tr>`;
+            });
+            
+            let hasLottningInAny = savedScenarios.some(sc => sc.data.lottningSeats > 0);
+            if (hasLottningInAny) {
+                html += `<tr>
+                            <td class="py-2 px-4 border-r bg-red-50 text-red-700 font-bold flex items-center gap-2">
+                                <div class="w-2 h-full rounded bg-red-500 border-l-4"></div>
+                                LOTTNING
+                            </td>`;
+                savedScenarios.forEach(sc => {
+                    let seats = sc.data.lottningSeats || 0;
+                    let isZero = seats === 0 ? 'text-gray-300' : 'text-red-700 font-bold';
+                    html += `<td class="py-2 px-4 border-r text-center ${isZero} text-lg">${seats}</td>`;
+                });
+                html += `</tr>`;
+            }
+            
+            html += `<tr class="bg-blue-50 border-t-2 border-blue-200">
+                        <td class="py-3 px-4 border-r font-bold text-blue-900">Resultat per Formering (Kartell)</td>`;
+            
+            savedScenarios.forEach(sc => {
+                html += `<td class="py-3 px-4 border-r align-top">`;
+                
+                let overpopulated = [];
+                
+                sc.data.cartelSetup.forEach(c => {
+                    if (c.seats > 0) {
+                        html += `<div class="mb-2">
+                                    <div class="font-bold text-sm text-gray-800">${c.name} <span class="text-blue-700">(${c.seats})</span></div>
+                                    <div class="text-xs text-gray-600">${c.parties.join('+')}</div>
+                                 </div>`;
+                                 
+                        // Kontrollera om kartellen har fler partier än tilldelade mandat
+                        if (c.parties.length > c.seats) {
+                            overpopulated.push(`${c.name}`);
+                        }
+                    }
+                });
+                if (sc.data.lottningSeats && sc.data.lottningSeats > 0) {
+                    html += `<div class="mt-3 p-2 bg-red-50 rounded border border-red-100">
+                                <div class="font-bold text-xs text-red-700">Oavgjort <span class="text-red-900">(${sc.data.lottningSeats})</span></div>
+                                <div class="text-[10px] leading-tight text-red-800 mt-1">${sc.data.tieText}</div>
+                             </div>`;
+                }
+                
+                // Om vi har en eller flera karteller med platsbrist, lägg till den avvikande blå/indigorosa rutan
+                if (overpopulated.length > 0) {
+                    html += `<div class="mt-3 p-2 bg-indigo-50 rounded border border-indigo-200 shadow-sm">
+                                <div class="font-bold text-xs text-indigo-800">Platsbrist i kartell</div>
+                                <div class="text-[10px] leading-tight text-indigo-900 mt-1">Fler partier än mandat i:<br><b>${overpopulated.join(', ')}</b></div>
+                             </div>`;
+                }
+                
+                html += `</td>`;
+            });
+
+            html += `</tr></tbody></table>`;
+            html += `<p class="text-xs text-gray-500 mt-4 italic">* Observera: Tabellen visar även en teoretisk intern fördelning per parti enligt d'Hondt. Vid en verklig valteknisk samverkan avgörs ofta den exakta fördelningen av personplatser mellan partier inom kartellen genom förhandlingar.</p>`;
+            
+            container.innerHTML = html;
+        }
+
+        window.onload = initUI;
+    </script>
+</body>
+</html>
