@@ -186,8 +186,16 @@
                     <div id="geoPanel" class="transition-opacity duration-300">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Pendling & Geografi</h3>
-                            <span onclick="if(window.showInfo) window.showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
-                        </div>
+    
+                            <div class="flex items-center gap-2.5">
+                                <span onclick="showRegionalPotential()" class="text-sky-500 cursor-pointer hover:text-sky-700 transition" title="Klicka för att se grannkommunernas demografiska utveckling">
+                                    <i class="fa-solid fa-chart-line text-sm"></i>
+                                </span>
+                                <span onclick="if(window.showInfo) window.showInfo('geografi')" class="text-slate-400 cursor-pointer hover:text-slate-600 transition" title="Information om reglagen">
+                                    <i class="fa-solid fa-circle-info text-sm"></i>
+                                </span>
+                            </div>
+                    </div>
 
                         <div class="mb-3">
                             <select id="pendlingType" class="w-full border border-gray-300 rounded p-1 text-xs focus:ring-sky-500 focus:border-sky-500 bg-gray-50" onchange="if(window.updatePendlingUI) window.updatePendlingUI()">
@@ -482,7 +490,8 @@
                             region: parseFloat(rows.find(r => r.Indikator === 'Regionförstoring')?.[colName] || 0),
                             migrantSyss: parseFloat(rows.find(r => r.Indikator === 'Justering inflyttares syss.grad')?.[colName] || 10),
                             naringSkala: parseFloat(rows.find(r => r.Indikator === 'Näringslivsjustering_skala')?.[colName] || 1.0),
-                            bosattningsJustering: parseFloat(rows.find(r => r.Indikator === 'Bosättningskvot_justering')?.[colName] || 1.0)
+                            bosattningsJustering: parseFloat(rows.find(r => r.Indikator === 'Bosättningskvot_justering')?.[colName] || 1.0),
+                            popSource: String(rows.find(r => r.Indikator === 'Befolkningskälla')?.[colName] || '').toLowerCase() // <--- NY RAD
                         };
 
                         const ageLabelsArr = ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'];
@@ -533,6 +542,8 @@
                                 if (keyStr.includes('student') || keyStr.includes('student_absorptions_tak')) window.takEffekter.studentAbsorptionsTak = val;
                                 if (keyStr.includes('max_integration')) window.takEffekter.maxIntegration = val;
                                 if (keyStr.includes('bostadsproduktion') || keyStr.includes('max_årlig_bostadsproduktion')) window.takEffekter.maxBostadsproduktion = val;
+                                if (keyStr.includes('pendlingslarm') || keyStr.includes('gränsvärde_pendlingslarm')) window.takEffektPendlingsLarm = val;
+                                if (keyStr.includes('maxdomesticnetworkers') || keyStr.includes('inrikes_flytt')) window.takEffekter.maxDomesticNetWorkers = val;
                             }
                         }
                     });
@@ -547,6 +558,7 @@
                     groupCols.forEach(col => { subGroupSelect.add(new Option(col, col)); });
                     subGroupSelect.setAttribute('data-type', 'bransch');
                 }
+                // --- LÄS IN OFFICIELL PROGNOS ---
 
                 let offData = window.syssConfig['Officiell_befolkningsprognos'] || window.syssConfig['officiell_prognos'];
                 if (offData && offData.length > 0) {
@@ -571,6 +583,33 @@
                         window.popData.push({ tid: tidStr, kön: sex, ålder: "Totalt", Befolkning: totalPop });
                     });
                 }
+                
+                // --- NYTT: LÄS IN REDUCERAD PROGNOS ---
+                window.reducedPopData = [];
+                let redData = window.syssConfig['Reducerad_Prognos'] || window.syssConfig['reducerad_prognos'];
+                if (redData && redData.length > 0) {
+                    redData.forEach(row => {
+                        const year = window.extractYear ? window.extractYear(row) : null;
+                        if (!year) return;
+                        const rawSex = String(row['Kön'] || row['kön'] || 'Totalt').trim().toLowerCase();
+                        let sex = 'Totalt';
+                        if (rawSex.startsWith('m')) sex = 'Män';
+                        else if (rawSex.startsWith('k')) sex = 'Kvinnor';
+                        
+                        const tidStr = `${year} (Prognos)`; 
+                        let totalPop = 0;
+                        for (let age = 0; age <= 100; age++) {
+                            let val = row[String(age)] !== undefined ? row[String(age)] : (row[age] !== undefined ? row[age] : null);
+                            if (val !== undefined && val !== null) {
+                                let popVal = parseFloat(val);
+                                window.reducedPopData.push({ tid: tidStr, kön: sex, ålder: age === 100 ? "100+ år" : `${age} år`, Befolkning: popVal });
+                                totalPop += popVal;
+                            }
+                        }
+                        window.reducedPopData.push({ tid: tidStr, kön: sex, ålder: "Totalt", Befolkning: totalPop });
+                    });
+                }    
+                // --------------------------------------
 
                 document.getElementById('scenarioPanel').classList.remove('opacity-50', 'pointer-events-none');
                 
@@ -647,7 +686,28 @@
             document.getElementById('distansSlider').value = s.distans || 0;
             document.getElementById('distansVal').innerText = (s.distans > 0 ? '+' : '') + (s.distans || 0) + '%';
             document.getElementById('regionSlider').value = s.region || 0;
-            document.getElementById('regionVal').innerText = (s.region == 0 || !s.region) ? 'Dagens nivå' : '+' + s.region + ' min';
+            document.getElementById('regionVal').innerText = (s.region == 0 || !s.region) ? 'Dagens nivå' : (s.region > 0 ? '+' + s.region + ' min' : s.region + ' min');
+            // --- NYTT: SÄTT BEFOLKNINGSKÄLLA FRÅN EXCEL ---
+            if (s.popSource) {
+                const popSelect = document.getElementById('popSource');
+                let targetVal = 'officiell'; // Default fallback
+                
+                if (s.popSource.includes('reducerad') && window.reducedPopData && window.reducedPopData.length > 0) {
+                    targetVal = 'reducerad';
+                } else if (s.popSource.includes('anpassad') && window.useCustomPop) {
+                    targetVal = 'custom';
+                } else if (s.popSource.includes('fryst')) {
+                    targetVal = 'fryst';
+                }
+                
+                // Ändra enbart om valet faktiskt existerar i rullistan (skyddsnät)
+                let optionExists = Array.from(popSelect.options).some(opt => opt.value === targetVal);
+                if (optionExists) {
+                    popSelect.value = targetVal;
+                    if(typeof window.updatePopSourceDesc === 'function') window.updatePopSourceDesc();
+                }
+            }
+            // ----------------------------------------------
             
             if (typeof window.runSimulation === 'function') window.runSimulation();
         }
