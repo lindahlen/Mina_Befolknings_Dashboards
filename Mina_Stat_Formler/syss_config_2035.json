@@ -5950,12 +5950,12 @@
     },
     {
       "Parameter": "Gränsvärde_pendlingslarm",
-      "Värde": 600.0,
+      "Värde": 700.0,
       "Beskrivning": null
     },
     {
       "Parameter": "maxDomesticNetWorkers",
-      "Värde": 400.0,
+      "Värde": 500.0,
       "Beskrivning": null
     }
   ],
