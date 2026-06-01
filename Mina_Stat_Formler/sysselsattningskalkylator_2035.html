@@ -114,9 +114,12 @@
                 <div class="card opacity-50 pointer-events-none transition-opacity duration-300" id="scenarioPanel">
                     
                     <div class="mb-4 p-2 bg-slate-50 rounded border border-slate-200">
-                        <div class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 flex justify-between">
+                        <div class="text-[10px] font-bold text-slate-500 uppercase mb-1.5 flex justify-between items-center">
                             <span>Snabbscenarier</span>
-                            <span onclick="if(window.showInfo) window.showInfo('scenarios')" class="text-slate-400 font-normal cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
+                            <div class="flex gap-2">
+                                <span id="demoBtn" onclick="if(window.runPresentationDemo) window.runPresentationDemo()" class="text-indigo-400 cursor-pointer hover:text-indigo-600 transition" title="Starta presentations-demo (Klicka för nästa steg)"><i class="fa-solid fa-person-chalkboard text-sm"></i></span>
+                                <span onclick="if(window.showInfo) window.showInfo('scenarios')" class="text-slate-400 font-normal cursor-pointer hover:text-sky-600 transition"><i class="fa-solid fa-circle-info text-sm"></i></span>
+                            </div>
                         </div>
                         <div class="flex flex-wrap gap-1">
                             <button onclick="if(window.setScenario) window.setScenario('base')" class="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Bas</button>
@@ -188,6 +191,9 @@
                             <h3 class="text-xs font-bold text-gray-700 uppercase tracking-wider">Pendling & Geografi</h3>
     
                             <div class="flex items-center gap-2.5">
+                                <span onclick="showBenchmarking()" class="text-indigo-500 cursor-pointer hover:text-indigo-700 transition" title="Benchmarking: Jämför med andra kommuner (Absolut/Index)">
+                                    <i class="fa-solid fa-scale-balanced text-sm"></i>
+                                </span>
                                 <span onclick="showRegionalPotential()" class="text-sky-500 cursor-pointer hover:text-sky-700 transition" title="Klicka för att se grannkommunernas demografiska utveckling">
                                     <i class="fa-solid fa-chart-line text-sm"></i>
                                 </span>
@@ -267,32 +273,51 @@
                         </select>
                     </div>
                     
-                    <div class="grid grid-cols-3 xl:grid-cols-6 gap-2 md:gap-3" id="kpiContainer">
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-sky-500" id="kpiUtbudContainer" title="Lokalt arbetskraftsutbud">
-                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Utbud (Natt)</div>
-                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiUtbud">-</div>
-                        </div>
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-emerald-500">
-                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Efterfrågan (Dag)</div>
-                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiEfterfragan">-</div>
-                        </div>
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-indigo-500" title="Totalt Pendlingsnetto (In - Ut + Virtuellt utbud)">
-                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Pendlingsnetto</div>
-                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiPendling">-</div>
-                        </div>
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-amber-500" title="Beräknad genomsnittlig sysselsättningsgrad 20-64 år">
-                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Syss.grad (20-64)</div>
-                            <div class="text-base md:text-lg font-bold text-gray-800" id="kpiSyssGrad">-</div>
-                        </div>
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-purple-500 cursor-help" id="kpiBRPContainer" title="Bruttoregionalprodukt per sysselsatt (tkr)">
-                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">BRP/syss</div>
-                            <div class="text-base md:text-lg font-bold text-purple-800" id="kpiBRP">-</div>
-                        </div>
-                        <div class="card text-center p-2 md:p-3 border-b-4 border-orange-500 cursor-help" id="kpiBefolkningContainer" title="Hur rekryteringsgapet påverkar befolkningsutvecklingen">
-                            <div class="text-[10px] md:text-xs text-gray-500 font-medium">Befolkning (Ny)</div>
-                            <div class="text-base md:text-lg font-bold text-orange-600" id="kpiBefolkning">-</div>
-                        </div>
-                    </div>
+                    <<div class="grid grid-cols-3 xl:grid-cols-6 gap-2 md:gap-3" id="kpiContainer">
+    
+    <div class="card text-center p-2 md:p-3 border-b-4 border-sky-500 cursor-help" id="kpiUtbudContainer" title="Lokalt arbetskraftsutbud (Personer boende i kommunen) [Nattbefolkning]">
+        <div class="flex items-center justify-center gap-1 text-[10px] md:text-xs text-gray-500 font-medium">
+            Utbud (Natt) <i class="fa-regular fa-circle-question text-slate-400 opacity-70"></i>
+        </div>
+        <div class="text-base md:text-lg font-bold text-gray-800" id="kpiUtbud">-</div>
+    </div>
+    
+    <div class="card text-center p-2 md:p-3 border-b-4 border-emerald-500 cursor-help" title="Lokal efterfrågan på arbetskraft (Jobb i kommunen) [Dagbefolkning]">
+        <div class="flex items-center justify-center gap-1 text-[10px] md:text-xs text-gray-500 font-medium">
+            Efterfrågan (Dag) <i class="fa-regular fa-circle-question text-slate-400 opacity-70"></i>
+        </div>
+        <div class="text-base md:text-lg font-bold text-gray-800" id="kpiEfterfragan">-</div>
+    </div>
+    
+    <div class="card text-center p-2 md:p-3 border-b-4 border-indigo-500 cursor-help" title="Totalt Pendlingsnetto (Inpendling - Utpendling + Virtuellt utbud)">
+        <div class="flex items-center justify-center gap-1 text-[10px] md:text-xs text-gray-500 font-medium">
+            Pendlingsnetto <i class="fa-regular fa-circle-question text-slate-400 opacity-70"></i>
+        </div>
+        <div class="text-base md:text-lg font-bold text-gray-800" id="kpiPendling">-</div>
+    </div>
+    
+    <div class="card text-center p-2 md:p-3 border-b-4 border-amber-500 cursor-help" title="Beräknad genomsnittlig sysselsättningsgrad 20-64 år">
+        <div class="flex items-center justify-center gap-1 text-[10px] md:text-xs text-gray-500 font-medium">
+            Syss.grad (20-64) <i class="fa-regular fa-circle-question text-slate-400 opacity-70"></i>
+        </div>
+        <div class="text-base md:text-lg font-bold text-gray-800" id="kpiSyssGrad">-</div>
+    </div>
+    
+    <div class="card text-center p-2 md:p-3 border-b-4 border-purple-500 cursor-help" id="kpiBRPContainer" title="Bruttoregionalprodukt per sysselsatt (tkr)">
+        <div class="flex items-center justify-center gap-1 text-[10px] md:text-xs text-gray-500 font-medium">
+            BRP/syss <i class="fa-regular fa-circle-question text-slate-400 opacity-70"></i>
+        </div>
+        <div class="text-base md:text-lg font-bold text-purple-800" id="kpiBRP">-</div>
+    </div>
+    
+    <div class="card text-center p-2 md:p-3 border-b-4 border-orange-500 cursor-help" id="kpiBefolkningContainer" title="Hur rekryteringsgapet påverkar befolkningsutvecklingen i Dynamisk Jämvikt">
+        <div class="flex items-center justify-center gap-1 text-[10px] md:text-xs text-gray-500 font-medium">
+            Befolkning (Ny) <i class="fa-regular fa-circle-question text-slate-400 opacity-70"></i>
+        </div>
+        <div class="text-base md:text-lg font-bold text-orange-600" id="kpiBefolkning">-</div>
+    </div>
+
+</div>
                 </div>
 
                 <div class="card flex-grow flex flex-col mt-1 min-h-[400px]">
@@ -302,8 +327,15 @@
                         </div>
                         
                         <div class="flex flex-wrap items-center shadow-sm rounded-md border border-gray-300 bg-white overflow-hidden w-full lg:w-auto">
-                            <span onclick="if(window.showInfo) window.showInfo('diagram')" class="px-2 py-1 md:py-1.5 text-slate-400 cursor-pointer hover:text-sky-600 transition border-r border-gray-200" title="Information om graferna"><i class="fa-solid fa-circle-info"></i></span>
-                            
+    
+                            <span onclick="if(window.exportMainChart) window.exportMainChart()" class="px-2.5 py-1 md:py-1.5 text-slate-400 cursor-pointer hover:text-indigo-600 transition border-r border-gray-200" title="Ladda ner aktuellt diagram som bild (PNG)">
+                                <i class="fa-solid fa-camera"></i>
+                            </span>
+
+                            <span onclick="if(window.showInfo) window.showInfo('diagram')" class="px-2.5 py-1 md:py-1.5 text-slate-400 cursor-pointer hover:text-sky-600 transition border-r border-gray-200" title="Information om graferna">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </span>
+    
                             <select id="startYearSelect" class="p-1 md:p-1.5 text-xs md:text-sm font-medium border-r border-gray-200 outline-none focus:bg-slate-50 transition-colors bg-white w-full sm:w-auto" onchange="if(window.updateDashboard) window.updateDashboard(true)">
                                 <option value="">Laddar...</option>
                             </select>

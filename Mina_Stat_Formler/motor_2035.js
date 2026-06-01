@@ -1,5 +1,5 @@
 // ==========================================
-// Kalkylator Motor 2035 - Kärnlogik & Databearbetning
+// Kalkylator Motor - Kärnlogik & Databearbetning
 // ==========================================
 
 // --- GLOBALT FELHANTERINGSSYSTEM ---
@@ -108,7 +108,12 @@ window.infoTexts = {
     },
     'scenarios': { 
         title: 'Snabbscenarier', 
-        content: `<p>Dessa knappar laddar in en "förinställd korg" av värden för alla reglage, till exempel vad som definieras som Hög eller Låg tillväxt.</p><p>Själva värdena bakom knapparna styr du i Excel-filens flik <em>Scenarier</em>. Om du i fliken <em>Tillväxt</em> har specificerat värden för enskilda åldersklasser laddas även de in automatiskt.</p>` 
+        content: `<p>Dessa knappar laddar in en "förinställd korg" av värden för alla reglage, till exempel vad som definieras som Hög eller Låg tillväxt.</p>
+                  <p>Själva värdena bakom knapparna styr du i Excel-filens flik <em>Scenarier</em>. Om du i fliken <em>Tillväxt</em> har specificerat värden för enskilda åldersklasser laddas även de in automatiskt.</p>
+                  <p class="mt-3 pt-2 border-t border-slate-200 text-xs text-indigo-600">
+                      <i class="fa-solid fa-person-chalkboard mr-1"></i> <strong>Presentations-demo:</strong> 
+                      Klicka på ikonen med griffeltavlan bredvid rubriken Snabbscenarier för att starta en guidad visning. Kalkylatorn stegar då automatiskt igenom modellens regionalekonomiska logik i 5 pedagogiska steg.
+                  </p>` 
     },
     'demografi': { 
         title: 'Lokal Tillväxt & Utbud', 
@@ -128,7 +133,8 @@ window.infoTexts = {
                   <ul class="list-disc pl-5 space-y-2">
                   <li><b>Typ av förändring:</b> Välj mellan % eller absoluta tal (antal personer) för pendlingsreglagen.</li>
                   <li><b>Pendling:</b> Manuella justeringar utöver det historiska snittet och bransch-simuleringarna.</li>
-                  <li><b>Grannkommuner:</b> Klicka på den lilla diagram-ikonen här bredvid för att analysera grannkommunernas demografiska potential fram till 2035.</li>
+                  <li><b>Grannkommuner:</b> Klicka på den närmaste lilla diagram-ikonen här bredvid för att analysera grannkommunernas demografiska potential fram till ${window.PROGNOS_SLUTAR}. Uppgifter från SCB:s regionala prognos</li>
+                  <li><b>Jämförelsekommuner:</b> Klicka på den lila vågskåls-ikonen för att analysera några jämförelsekommuners demografiska potential fram till ${window.PROGNOS_SLUTAR}. Uppgifter från SCB:s regionala prognos.</li>
                   <li><b>Regionförstoring:</b> Bygger på en tyngdkraftsmodell. Om du minskar restiden (t.ex. -10 min via Ostlänken), räknar modellen om avståndet till kranskommunerna och tillgängliggör automatiskt tusentals "virtuella" arbetstagare som nu hamnar inom pendlingsbart avstånd.</li></ul>` 
     },
     'shocker': { 
@@ -583,6 +589,185 @@ function showRegionalPotential() {
             }
         };
 
+        // Globala tillstånd för benchmarking-diagrammet
+        window.benchmarkMode = 'abs'; 
+        window.benchmarkChartHidden = false;
+
+        function showBenchmarking() {
+            let rows = window.syssConfig['Jämförelsekommuner'] || window.syssConfig['jämförelsekommuner'] || [];
+            if (rows.length === 0) {
+                alert("Kunde inte hitta fliken 'Jämförelsekommuner' i den inladdade styrfilen. Kontrollera namnet i Excel.");
+                return;
+            }
+
+            let sortedRows = [...rows].sort((a, b) => {
+                let ya = a['År'] || a['år'] || a['ÅR'] || 0;
+                let yb = b['År'] || b['år'] || b['ÅR'] || 0;
+                return ya - yb;
+            });
+
+            let labels = sortedRows.map(r => String(r['År'] || r['år'] || r['ÅR']));
+            let sampleRow = sortedRows[0];
+            let munKeys = Object.keys(sampleRow).filter(k => !['år', 'åre', 'tid'].includes(k.trim().toLowerCase()));
+
+            const colors = ['#6366f1', '#10b981', '#0ea5e9', '#f59e0b', '#ec4899', '#8b5cf6', '#14b8a6', '#f43f5e', '#64748b'];
+
+            // Hitta raden för basåret 2025 (det sista året med faktiskt utfall för befolkningen)
+            const baseIndexYear = 2025;
+            const baseRow = sortedRows.find(r => (r['År'] || r['år'] || r['ÅR']) == baseIndexYear) || sortedRows[sortedRows.length - 1];
+            
+            // Bygg serierna dynamiskt utifrån valt läge (Absolut eller Index)
+            let datasets = munKeys.map((key, idx) => {
+                let baseValue = baseRow ? parseFloat(baseRow[key]) || 0 : 0;
+                
+                let dataPoints = sortedRows.map(r => {
+                    let val = parseFloat(r[key]) || 0;
+                    if (window.benchmarkMode === 'index') {
+                        return baseValue > 0 ? (val / baseValue) * 100 : 100;
+                    }
+                    return val;
+                });
+
+                return {
+                    label: key,
+                    data: dataPoints,
+                    borderColor: colors[idx % colors.length],
+                    backgroundColor: colors[idx % colors.length],
+                    borderWidth: 2,
+                    pointRadius: 1.5,
+                    fill: false,
+                    tension: 0.15
+                };
+            });
+
+            document.getElementById('infoModalTitle').innerText = "Strukturell Benchmarking (Ålder 20-64 år)";
+            
+            document.getElementById('infoModalContent').innerHTML = `
+                <p class="text-xs text-gray-600 mb-2 leading-relaxed">
+                    Diagrammet jämför arbetskraftspotentialens utveckling mot valda jämförelsekommuner. 
+                    Växla till Indexerat läge för att se den relativa tillväxttakten oberoende av kommunstorlek.
+                </p>
+                <div class="flex justify-between items-center mb-2">
+                    <div class="flex bg-slate-100 p-0.5 rounded border border-slate-200">
+                        <button onclick="setBenchmarkMode('abs')" class="text-[10px] font-semibold px-2 py-1 rounded transition ${window.benchmarkMode === 'abs' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">Absoluta tal</button>
+                        <button onclick="setBenchmarkMode('index')" class="text-[10px] font-semibold px-2 py-1 rounded transition ${window.benchmarkMode === 'index' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-800'}">Index (2025 = 100)</button>
+                    </div>
+                    <button onclick="toggleBenchmarkChartVisibility()" id="benchToggleBtn" class="text-[10px] bg-white hover:bg-slate-50 text-slate-700 font-semibold py-1 px-2 border border-slate-300 rounded shadow-sm transition">
+                        <i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla
+                    </button>
+                </div>
+                <div class="relative w-full" style="height: 280px;">
+                    <canvas id="benchmarkChart"></canvas>
+                </div>
+            `;
+
+            document.getElementById('infoModal').classList.remove('hidden');
+
+            let ctx = document.getElementById('benchmarkChart').getContext('2d');
+            if (window.benchmarkChartInstance) {
+                window.benchmarkChartInstance.destroy();
+            }
+
+            // Plugin för att rita och skugga prognoshorisonten (från 2026)
+            const forecastPlugin = {
+                id: 'forecastBackgroundBench',
+                beforeDraw: (chart) => {
+                    const { ctx, chartArea: { top, bottom, left, right }, scales: { x } } = chart;
+                    const splitIndex = chart.data.labels.findIndex(l => String(l).includes('2026'));
+                    
+                    if (splitIndex !== -1) {
+                        const startX = x.getPixelForValue(splitIndex);
+                        ctx.save();
+                        ctx.fillStyle = 'rgba(241, 245, 249, 0.7)'; 
+                        ctx.fillRect(startX, top, right - startX, bottom - top);
+                        
+                        ctx.beginPath();
+                        ctx.strokeStyle = '#94a3b8';
+                        ctx.lineWidth = 1.5;
+                        ctx.setLineDash([4, 4]);
+                        ctx.moveTo(startX, top);
+                        ctx.lineTo(startX, bottom);
+                        ctx.stroke();
+                        
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                        ctx.fillRect(startX + 2, top + 2, 62, 16);
+
+                        ctx.fillStyle = '#64748b';
+                        ctx.font = 'bold 9px "Segoe UI", sans-serif';
+                        ctx.fillText('PROGNOS ➔', startX + 6, top + 13);
+                        ctx.restore();
+                    }
+                }
+            };
+
+            window.benchmarkChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { 
+                            grace: window.benchmarkMode === 'index' ? '5%' : '15%',
+                            ticks: { 
+                                font: { size: 9 }, 
+                                callback: value => window.benchmarkMode === 'index' ? value.toFixed(1) + ' %' : value.toLocaleString('sv-SE') 
+                            }, 
+                            grid: { color: '#e2e8f0' } 
+                        },
+                        x: { ticks: { font: { size: 9 }, maxRotation: 45, autoSkip: true, autoSkipPadding: 15 }, grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8, font: { size: 9, weight: 'bold' } } },
+                        tooltip: { 
+                            mode: 'index', 
+                            intersect: false, 
+                            callbacks: { 
+                                label: context => context.dataset.label + ': ' + (window.benchmarkMode === 'index' ? context.parsed.y.toFixed(1) + ' % (Ref: 2025)' : context.parsed.y.toLocaleString('sv-SE') + ' pers') 
+                            } 
+                        }
+                    }
+                },
+                plugins: [forecastPlugin]
+            });
+
+            // Om användaren klickat på "Dölj alla", behåll den inställningen vid lägesväxlingar
+            if (window.benchmarkChartHidden) {
+                window.benchmarkChartInstance.data.datasets.forEach((ds, i) => {
+                    window.benchmarkChartInstance.getDatasetMeta(i).hidden = true;
+                });
+                window.benchmarkChartInstance.update();
+                document.getElementById('benchToggleBtn').innerHTML = '<i class="fa-solid fa-eye mr-1"></i> Visa alla';
+            }
+        }
+
+        // Funktion för att växla mellan absoluta tal och index 100
+        window.setBenchmarkMode = function(mode) {
+            window.benchmarkMode = mode;
+            showBenchmarking();
+        };
+
+        // Funktion för att tända/släcka alla jämförelsekommuner samtidigt
+        window.toggleBenchmarkChartVisibility = function() {
+            if (!window.benchmarkChartInstance) return;
+            window.benchmarkChartHidden = !window.benchmarkChartHidden;
+            const btn = document.getElementById('benchToggleBtn');
+            
+            window.benchmarkChartInstance.data.datasets.forEach((ds, i) => {
+                window.benchmarkChartInstance.getDatasetMeta(i).hidden = window.benchmarkChartHidden;
+            });
+            window.benchmarkChartInstance.update();
+            
+            if (window.benchmarkChartHidden) {
+                btn.innerHTML = '<i class="fa-solid fa-eye mr-1"></i> Visa alla';
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-eye-slash mr-1"></i> Dölj alla';
+            }
+        };
+
 window.toggleSaveScenario = function() {
     const saveBtn = document.getElementById('saveBtn');
     const startYearSelect = document.getElementById('startYearSelect');
@@ -749,6 +934,188 @@ window.resetSimulation = function() {
             if(typeof window.buildDropdowns === 'function') window.buildDropdowns();
             if(typeof window.updateDashboard === 'function') window.updateDashboard(false);
             if(typeof window.updateKPIs === 'function') window.updateKPIs();
+        };
+
+       window.demoStep = 0;
+
+        // Hjälpfunktion för att visa en svävande förklaringstext
+        function showDemoToast(title, text) {
+            let toast = document.getElementById('demoToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'demoToast';
+                // NY DESIGN: Bredare (w-[550px]) och luftigare (px-8 py-6)
+                toast.className = 'fixed bottom-8 right-8 bg-slate-800 text-white px-8 py-6 rounded-lg shadow-2xl z-50 w-[550px] transition-opacity duration-300 pointer-events-none border border-slate-600';
+                document.body.appendChild(toast);
+            }
+            // NY TEXTSTORLEK: Något större rubrik och brödtext (text-base istället för text-sm)
+            toast.innerHTML = `<h3 class="text-sky-400 font-bold text-lg uppercase mb-2 flex items-center"><i class="fa-solid fa-person-chalkboard mr-2"></i> ${title}</h3><p class="text-base leading-relaxed">${text}</p>`;
+            toast.style.opacity = '1';
+        }
+
+        window.runPresentationDemo = function() {
+            const demoBtnIcon = document.querySelector('#demoBtn i');
+            
+            // --- NYTT: Smarta robot-funktioner som simulerar äkta mänskliga klick ---
+            const setSlider = (id, val) => {
+                let el = document.getElementById(id);
+                if(el) {
+                    el.value = val;
+                    el.dispatchEvent(new Event('input'));  
+                    el.dispatchEvent(new Event('change')); 
+                }
+            };
+            const setSelect = (id, val) => {
+                let el = document.getElementById(id);
+                if(el) {
+                    el.value = val;
+                    el.dispatchEvent(new Event('change')); 
+                }
+            };
+
+            const showDemandLine = () => {
+                Object.values(Chart.instances).forEach(chart => {
+                    chart.data.datasets.forEach((ds, i) => {
+                        if(ds.label && ds.label.toLowerCase().includes('efterfrågan')) {
+                            chart.getDatasetMeta(i).hidden = false;
+                        }
+                    });
+                    chart.update();
+                });
+            };
+
+            if (window.demoStep === 0) {
+                // STEG 1: Nolläget
+                setSelect('popSource', 'fryst');
+                setSelect('causalityMode', 'analytic');
+                setSlider('jobGrowthSlider', 0);
+                setSlider('syssGradSlider', 0);
+                setSlider('inpendlingSlider', 0);
+                
+                if(window.baseYear) setSelect('yearSelect', String(window.baseYear)); 
+                
+                showDemoToast(
+                    "Steg 1: Nolläget", 
+                    "Vi börjar med en <strong>fryst befolkning</strong> och ingen tillväxt. Linjerna är platta och systemet är i perfekt balans. Detta är vår bottenplatta."
+                );
+                
+                demoBtnIcon.className = "fa-solid fa-forward-step text-sm";
+                document.getElementById('demoBtn').title = "Steg 2: Slå på åldrande befolkning";
+                window.demoStep++;
+                
+            } else if (window.demoStep === 1) {
+                // STEG 2: Demografin slår till
+                setSelect('popSource', 'officiell');
+                setSelect('yearSelect', String(window.PROGNOS_SLUTAR)); 
+                
+                showDemandLine(); 
+                
+                showDemoToast(
+                    "Steg 2: Den demografiska utmaningen", 
+                    "Vi slår på den officiella prognosen. Befolkningen växer visserligen, men eftersom andelen äldre ökar snabbt hänger inte arbetskraftsutbudet med i samma takt. Ett rekryteringsgap börjar sakta öppna sig."
+                );
+                
+                document.getElementById('demoBtn').title = "Steg 3: Företagen växer";
+                window.demoStep++;
+                
+            } else if (window.demoStep === 2) {
+                // STEG 3: Företagens behov ökar kraftigt
+                setSlider('jobGrowthSlider', 15);
+                
+                showDemoToast(
+                    "Steg 3: Näringslivet växer", 
+                    "Företagen nyanställer (+15%). Den <strong>gröna linjen (efterfrågan)</strong> skjuter nu kraftigt i höjden. Ett tydligt, rött rekryteringsgap öppnar sig mot det lokala utbudet."
+                );
+                
+                document.getElementById('demoBtn').title = "Steg 4: Politiska åtgärder";
+                window.demoStep++;
+                
+            } else if (window.demoStep === 3) {
+                // STEG 4: Den lokala lösningen
+                setSlider('syssGradSlider', 2.0);
+                setSlider('inpendlingSlider', 15);
+                
+                showDemoToast(
+                    "Steg 4: Lokala åtgärder", 
+                    "Vi drar upp sysselsättningsgraden (+2%) och inpendlingen (+15%). Vi lyckas stänga en stor del av gapet, men vi slår i taket och pendlingslarmet tänds."
+                );
+                
+                document.getElementById('demoBtn').title = "Steg 5: Dynamisk Jämvikt (Bostadsbyggande)";
+                window.demoStep++;
+                
+            } else if (window.demoStep === 4) {
+                // STEG 5: Lösningen (Dynamisk jämvikt)
+                setSelect('causalityMode', 'dynamic');
+                
+                showDemoToast(
+                    "Steg 5: Dynamisk Jämvikt", 
+                    "Vi tvingar fram en lösning (ex. bostadsbyggande). <strong>När den lila linjen fångar in den gröna är marknaden åter i balans!</strong> Men titta på befolkningsgrafen – det krävdes massiv inflyttning för att lyckas."
+                );
+                
+                demoBtnIcon.className = "fa-solid fa-rotate-left text-sm";
+                document.getElementById('demoBtn').title = "Avsluta demo";
+                window.demoStep++;
+                
+            } else {
+                // AVSLUTA: Återställ allt
+                if(typeof window.resetSimulation === 'function') window.resetSimulation();
+                demoBtnIcon.className = "fa-solid fa-person-chalkboard text-sm";
+                document.getElementById('demoBtn').title = "Starta presentations-demo";
+                
+                let toast = document.getElementById('demoToast');
+                if (toast) toast.style.opacity = '0';
+                
+                window.demoStep = 0;
+                return;
+            }
+            // --- NYTT: Tvinga motorn att rita om graferna för VARJE steg! ---
+            if(typeof window.runSimulation === 'function') {
+                window.runSimulation();
+            }
+
+            // OBS: Vi behöver inte längre anropa update-funktionerna manuellt, 
+            // eftersom dispatchEvent('input') gör det åt oss!
+        };
+
+        window.exportMainChart = function() {
+            // Hitta huvuddiagrammet
+            let mainChart = null;
+            Object.values(Chart.instances).forEach(chart => {
+                if (chart.canvas && chart.canvas.id !== 'benchmarkChart') {
+                    mainChart = chart;
+                }
+            });
+            
+            if (!mainChart) {
+                alert("Kunde inte hitta det aktiva diagrammet för export.");
+                return;
+            }
+            
+            const originalCanvas = mainChart.canvas;
+            
+            // 1. Skapa en temporär målarduk
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = originalCanvas.width;
+            tempCanvas.height = originalCanvas.height;
+            const ctx = tempCanvas.getContext('2d');
+            
+            // 2. Fyll stenhårt med vitt (inga transparenta pixlar tillåtna)
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // 3. Stämpla dit diagrammet ovanpå
+            ctx.drawImage(originalCanvas, 0, 0);
+            
+            // 4. NYTT: Spara som JPEG för att tvinga bort all genomskinlighet!
+            const imageURI = tempCanvas.toDataURL('image/jpeg', 1.0);
+            
+            // Skapa länk och ladda ner
+            const link = document.createElement('a');
+            link.download = `Kalkylator_Scenario_${new Date().toISOString().slice(0,10)}.jpg`;
+            link.href = imageURI;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         };
 
 // ==========================================
@@ -1659,27 +2026,33 @@ window.runSimulation = function() {
                     const userSyssAdjustment = migrantEl ? parseFloat(migrantEl.value) / 100 : 0.10;
                     const empRate = Math.max(0.01, window.globalMigrantEmploymentRate + userSyssAdjustment);
                     hypotheticalPopNeed = currentGap / empRate;
-                }
-
-                if (causalityMode === 'dynamic') {
-                    if (currentGap > 0) {
-                        inducedLaborThisYear = currentGap;
-                        inducedPopThisYear = hypotheticalPopNeed;
-                        
-                        futureSupply += inducedLaborThisYear;
-                        futureTotalSupply += inducedLaborThisYear;
-                        futurePop += inducedPopThisYear;
-                        dynPopAccumulated += inducedPopThisYear;
-                        
-                        futureSupplyM += inducedLaborThisYear * share_n_man;
-                        futureSupplyK += inducedLaborThisYear * (1 - share_n_man);
-                        
-                    const maxDomesticNetWorkers = window.takEffekter.maxDomesticNetWorkers !== undefined ? window.takEffekter.maxDomesticNetWorkers : 500; 
-                        if (inducedLaborThisYear > maxDomesticNetWorkers) {
-                            reqForeignLabor = inducedLaborThisYear - maxDomesticNetWorkers;
-                        }
+    
+                    // --- AUTOMATISKT LÅS: Nollställ befolkningsbehovet för övergångsåret (året efter senaste SCB-data) ---
+                    if (forecastYear <= baseYear + 1) {
+                        hypotheticalPopNeed = 0;
                     }
                 }
+
+            if (causalityMode === 'dynamic') {
+                // --- AUTOMATISKT LÅS: Tillåt bara dynamisk inflyttning för år som ligger EFTER övergångsåret ---
+                if (currentGap > 0 && forecastYear > baseYear + 1) {
+                    inducedLaborThisYear = currentGap;
+                    inducedPopThisYear = hypotheticalPopNeed;
+        
+                    futureSupply += inducedLaborThisYear;
+                    futureTotalSupply += inducedLaborThisYear;
+                    futurePop += inducedPopThisYear;
+                    dynPopAccumulated += inducedPopThisYear;
+        
+                    futureSupplyM += inducedLaborThisYear * share_n_man;
+                    futureSupplyK += inducedLaborThisYear * (1 - share_n_man);
+        
+                    const maxDomesticNetWorkers = window.takEffekter.maxDomesticNetWorkers !== undefined ? window.takEffekter.maxDomesticNetWorkers : 500; 
+                    if (inducedLaborThisYear > maxDomesticNetWorkers) {
+                        reqForeignLabor = inducedLaborThisYear - maxDomesticNetWorkers;
+                    }
+                }
+            }
                  // --- NY LOGIK FÖR MEDFÖLJANDE BARN (ÅLDERSSPECIFIK) ---
                 let medfoljande = {};
                 let medfoljande_totalt = 0;
@@ -1895,10 +2268,10 @@ window.updateKPIs = function() {
     
     if (d.isAgeWeighted) {
         document.getElementById('kpiUtbud').innerHTML = `${window.formatNumber(d.supply, 0)} <span class="text-xs text-sky-400" title="Åldersviktad beräkning aktiv">*</span>`;
-        document.getElementById('kpiUtbudContainer').title = "Lokalt arbetskraftsutbud (Åldersviktad beräkning)";
+        document.getElementById('kpiUtbudContainer').title = "Lokalt arbetskraftsutbud (Åldersviktad beräkning) [Nattbefolkning]";
     } else {
         document.getElementById('kpiUtbud').innerText = d.supply != null ? window.formatNumber(d.supply, 0) : 'Data saknas';
-        document.getElementById('kpiUtbudContainer').title = "Lokalt arbetskraftsutbud";
+        document.getElementById('kpiUtbudContainer').title = "Lokalt arbetskraftsutbud (Personer boende i kommunen) [Nattbefolkning]";
     }
     
     const kpiBef = document.getElementById('kpiBefolkning');
