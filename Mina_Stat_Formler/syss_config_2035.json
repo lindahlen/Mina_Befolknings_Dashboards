@@ -4,8 +4,8 @@
       "Indikator": "Jobbtillväxt",
       "Bas": 0,
       "Hög": 0,
-      "Låg": -2,
-      "Stagnerande": -5
+      "Låg": -25,
+      "Stagnerande": -50
     },
     {
       "Indikator": "Sysselsättningsgrad",
@@ -32,15 +32,15 @@
       "Indikator": "Inpendling",
       "Bas": 1,
       "Hög": 2,
-      "Låg": -5,
-      "Stagnerande": 0
+      "Låg": -10,
+      "Stagnerande": -10
     },
     {
       "Indikator": "Utpendling",
       "Bas": 1,
       "Hög": 2,
       "Låg": -5,
-      "Stagnerande": 0
+      "Stagnerande": 5
     },
     {
       "Indikator": "Rekryteringskvot_bransch",
