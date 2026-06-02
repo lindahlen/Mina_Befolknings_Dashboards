@@ -2264,6 +2264,41 @@ window.updateKPIs = function() {
     let d = y <= window.baseYear ? window.histDataStore[y] : (window.progDataStore[y] || window.histDataStore[y]);
     if (!d) return;
 
+    // --- SÄKERSTÄLLER ATT ALLA LARMGRÄNSER FINNS ---
+    // Motorn hämtar standardvärden först, men går sedan direkt in i Excel-datan 
+    // och skriver över dem om de finns i "Tak_effekten"-fliken.
+    let tak = {
+        maxInpendlingsandel: window.takEffekter?.maxInpendlingsandel || 25.0,
+        kapacitetstakInfrastruktur: window.takEffekter?.kapacitetstakInfrastruktur || 30000,
+        maxSyssGrad: window.takEffektMaxSyss || window.takEffekter?.maxSyssGrad || 85.0,
+        minArbetsloshet: window.takEffekter?.minArbetsloshet || 3.5,
+        maxIntegration: window.takEffekter?.maxIntegration || 71.0,
+        karnaLangtidsarbetslosa: window.takEffekter?.karnaLangtidsarbetslosa || 3.0,
+        studentAbsorptionsTak: window.takEffekter?.studentAbsorptionsTak || 50,
+        maxBostadsproduktion: window.takEffekter?.maxBostadsproduktion || 1500
+    };
+
+    if (window.syssConfig && window.syssConfig['Tak_effekten']) {
+        window.syssConfig['Tak_effekten'].forEach(r => {
+            const keys = Object.keys(r);
+            if (keys.length >= 2) {
+                const kStr = String(r[keys[0]] || '').toLowerCase();
+                const val = parseFloat(r[keys[1]]);
+                if (!isNaN(val)) {
+                    if (kStr.includes('max_integration')) tak.maxIntegration = val;
+                    if (kStr.includes('bostadsproduktion') || kStr.includes('max_årlig_bostadsproduktion')) tak.maxBostadsproduktion = val;
+                    if (kStr.includes('student')) tak.studentAbsorptionsTak = val;
+                    if (kStr.includes('lägsta friktionsarbetslöshet')) tak.minArbetsloshet = val;
+                    if (kStr.includes('kärna_långtidsarbetslösa')) tak.karnaLangtidsarbetslosa = val;
+                    if (kStr.includes('max_inpendlingsandel')) tak.maxInpendlingsandel = val;
+                    if (kStr.includes('kapacitetstak_infrastruktur')) tak.kapacitetstakInfrastruktur = val;
+                    if (kStr.includes('max_sysselsättningsgrad') && !kStr.includes('äldre')) tak.maxSyssGrad = val;
+                }
+            }
+        });
+    }
+    // -----------------------------------------------
+
     document.getElementById('kpiEfterfragan').innerText = d.demand != null ? window.formatNumber(d.demand, 0) : 'Data saknas';
     
     if (d.isAgeWeighted) {
@@ -2332,7 +2367,9 @@ window.updateKPIs = function() {
         
         let totalPendlingFysisk = (d.inpendling || 0) + (d.utpendling || 0);
         if (totalPendlingFysisk > window.takEffekter.kapacitetstakInfrastruktur) {
-            warnings.push({icon: 'fa-train', color: 'red', text: 'Infrastruktur överbelastad', title: `Varning: Fysisk pendling (${window.formatNumber(totalPendlingFysisk, 0)} resor/dag) överstiger taket på ${window.formatNumber(window.takEffekter.kapacitetstakInfrastruktur, 0)}.`});
+            warnings.push({icon: 'fa-train-tram', color: 'red', text: 'Infrastruktur överbelastad', title: `Varning: Fysisk pendling (${window.formatNumber(totalPendlingFysisk, 0)} resor/dag) överstiger taket på ${window.formatNumber(window.takEffekter.kapacitetstakInfrastruktur, 0)}.`});
+        } else if (totalPendlingFysisk >= (window.takEffekter.kapacitetstakInfrastruktur * 0.9)) {
+            warnings.push({icon: 'fa-car', color: 'amber', text: 'Infrastruktur ansträngd', title: `Förvarning: Fysisk pendling närmar sig maxkapaciteten på ${window.formatNumber(window.takEffekter.kapacitetstakInfrastruktur, 0)}.`});
         }
 
         if (causalityMode === 'dynamic' && d.inducedPop !== undefined) {
@@ -2390,11 +2427,15 @@ window.updateKPIs = function() {
         kpiBef.innerText = '-';
     }
     
+    // TVÅSTEGSLARM 3: Arbetskraftsbrist
     if (d.displayRate != null) {
         document.getElementById('kpiSyssGrad').innerText = window.formatNumber(d.displayRate, 1) + '%';
-        if (d.displayRate > window.takEffektMaxSyss) {
+        if (d.displayRate > tak.maxSyssGrad) {
             document.getElementById('kpiSyssGrad').className = "text-base md:text-lg font-bold text-red-600";
-            warnings.push({icon: 'fa-triangle-exclamation', color: 'red', text: 'Arbetskraftsbrist', title: `Varning: Sysselsättningsgraden (${window.formatNumber(d.displayRate, 1)}%) överstiger taket på ${window.takEffektMaxSyss}%.`});
+            warnings.push({icon: 'fa-triangle-exclamation', color: 'red', text: 'Arbetskraftsbrist', title: `Varning: Sysselsättningsgraden (${window.formatNumber(d.displayRate, 1)}%) överstiger taket på ${tak.maxSyssGrad}%.`});
+        } else if (d.displayRate >= (tak.maxSyssGrad - 2.0)) {
+            document.getElementById('kpiSyssGrad').className = "text-base md:text-lg font-bold text-amber-600";
+            warnings.push({icon: 'fa-triangle-exclamation', color: 'amber', text: 'Hög press på utbudet', title: `Förvarning: Sysselsättningsgraden (${window.formatNumber(d.displayRate, 1)}%) närmar sig maxkapaciteten på ${tak.maxSyssGrad}%.`});
         } else if (causalityMode === 'analytic' && !(d.demand != null && d.supply != null && (d.demand - (d.supply + (d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0)) + (d.virtualSupply || 0))) <= -5) ) {
             document.getElementById('kpiSyssGrad').className = "text-base md:text-lg font-bold text-gray-800";
         }
@@ -2402,32 +2443,38 @@ window.updateKPIs = function() {
         document.getElementById('kpiSyssGrad').innerText = 'Data saknas';
     }
 
-    if (d.arbetsloshetPct != null && d.arbetsloshetPct < window.takEffekter.minArbetsloshet) {
-        warnings.push({icon: 'fa-fire', color: 'orange', text: 'Under friktionsgräns', title: `Varning: Arbetslösheten (${window.formatNumber(d.arbetsloshetPct, 1)}%) är lägre än friktionsgränsen på ${window.takEffekter.minArbetsloshet}%.`});
+    if (d.arbetsloshetPct != null && d.arbetsloshetPct < tak.minArbetsloshet) {
+        warnings.push({icon: 'fa-fire', color: 'orange', text: 'Under friktionsgräns', title: `Varning: Arbetslösheten (${window.formatNumber(d.arbetsloshetPct, 1)}%) är lägre än friktionsgränsen på ${tak.minArbetsloshet}%.`});
     }
-    // Nya aktiverade varningar (Bostäder, Integration, Kärnarbetslöshet, Studenter)
-        if (d.syss_ut_tot != null && d.syss_ut_tot > window.takEffekter.maxIntegration) {
-            warnings.push({icon: 'fa-users-rays', color: 'orange', text: 'Orealistisk integration', title: `Varning: Sysselsättningsgraden för utrikes födda (${window.formatNumber(d.syss_ut_tot, 1)}%) överstiger taket på ${window.takEffekter.maxIntegration}%.`});
-        }
 
-        if (d.langtidsPct != null && d.langtidsPct < window.takEffekter.karnaLangtidsarbetslosa) {
-            warnings.push({icon: 'fa-anchor', color: 'orange', text: 'Under strukturell kärna', title: `Varning: Långtidsarbetslösheten (${window.formatNumber(d.langtidsPct, 1)}%) har tryckts ner under den svårmatchade kärnan på ${window.takEffekter.karnaLangtidsarbetslosa}%.`});
+   // TVÅSTEGSLARM: Integration av utrikes födda
+    if (d.syss_ut_tot != null) {
+        if (d.syss_ut_tot > tak.maxIntegration) {
+            warnings.push({icon: 'fa-users-rays', color: 'red', text: 'Orealistisk integration', title: `Varning: Sysselsättningsgraden för utrikes födda (${window.formatNumber(d.syss_ut_tot, 1)}%) överstiger taket på ${tak.maxIntegration}%.`});
+        } else if (d.syss_ut_tot >= (tak.maxIntegration - 2.0)) {
+            warnings.push({icon: 'fa-users-rays', color: 'amber', text: 'Extrem integrationstakt', title: `Förvarning: Sysselsättningsgraden för utrikes födda (${window.formatNumber(d.syss_ut_tot, 1)}%) närmar sig det teoretiska taket på ${tak.maxIntegration}%.`});
         }
+    }
 
-        const studentSlid = document.getElementById('studentSlider');
-        if (studentSlid && parseFloat(studentSlid.value) > window.takEffekter.studentAbsorptionsTak) {
-            warnings.push({icon: 'fa-graduation-cap', color: 'amber', text: 'LiU-retention i taket', title: `Varning: Att öka kvarstannandet av studenter så här mycket bedöms som historiskt osannolikt p.g.a. kommunens branschstruktur.`});
-        }
-        
-        let totalPopNeeded = 0;
-        if (causalityMode === 'dynamic' && d.inducedPop > 0) {
-            totalPopNeeded = d.inducedPop;
-        } else if (causalityMode === 'analytic') {
-            const omatchatGap = d.demand - (d.supply + (showCommuting ? ((d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0)) + (d.virtualSupply || 0)) : 0));
-            
-            if (omatchatGap > 5) {
-                let userSyssAdj = document.getElementById('migrantSyssSlider') ? parseFloat(document.getElementById('migrantSyssSlider').value) / 100 : 0.10;
-                totalPopNeeded = omatchatGap / Math.max(0.01, (window.globalMigrantEmploymentRate || 0.5) + userSyssAdj);
+    // Fasta varningar (Kärnarbetslöshet, Studenter)
+
+    if (d.langtidsPct != null && d.langtidsPct < tak.karnaLangtidsarbetslosa) {
+        warnings.push({icon: 'fa-anchor', color: 'orange', text: 'Under strukturell kärna', title: `Varning: Långtidsarbetslösheten (${window.formatNumber(d.langtidsPct, 1)}%) har tryckts ner under den svårmatchade kärnan på ${tak.karnaLangtidsarbetslosa}%.`});
+    }
+
+    const studentSlid = document.getElementById('studentSlider');
+    if (studentSlid && parseFloat(studentSlid.value) > tak.studentAbsorptionsTak) {
+        warnings.push({icon: 'fa-graduation-cap', color: 'amber', text: 'LiU-retention i taket', title: `Varning: Att öka kvarstannandet av studenter så här mycket bedöms som historiskt osannolikt p.g.a. kommunens branschstruktur.`});
+    }
+    
+    let totalPopNeeded = 0;
+    if (causalityMode === 'dynamic' && d.inducedPop > 0) {
+        totalPopNeeded = d.inducedPop;
+    } else if (causalityMode === 'analytic') {
+        const omatchatGap = d.demand - (d.supply + (showCommuting ? ((d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0)) + (d.virtualSupply || 0)) : 0));
+        if (omatchatGap > 5) {
+            let userSyssAdj = document.getElementById('migrantSyssSlider') ? parseFloat(document.getElementById('migrantSyssSlider').value) / 100 : 0.10;
+            totalPopNeeded = omatchatGap / Math.max(0.01, (window.globalMigrantEmploymentRate || 0.5) + userSyssAdj);
                 
                 // --- NY KOD: Larm för stort pendlingsbehov i Analytiskt läge ---
                 let pendlingsGrans = window.takEffektPendlingsLarm !== undefined ? window.takEffektPendlingsLarm : 500;
@@ -2443,13 +2490,17 @@ window.updateKPIs = function() {
             }
         }
         
-        if (totalPopNeeded > 0) {
-            let krävdaBostader = totalPopNeeded / 2.1; // Divideras med snitthushållets storlek
-            if (krävdaBostader > window.takEffekter.maxBostadsproduktion) {
-                warnings.push({icon: 'fa-house-crack', color: 'red', text: 'Bostadskris', title: `Varning: Det krävs byggnation av ca ${window.formatNumber(krävdaBostader, 0)} bostäder detta år, vilket överstiger det historiska kapacitetstaket på ${window.takEffekter.maxBostadsproduktion} bostäder/år.`});
-            }
+    // TVÅSTEGSLARM 4: Bostäder
+    if (totalPopNeeded > 0) {
+        let krävdaBostader = totalPopNeeded / 2.1; // Divideras med snitthushållets storlek
+        if (krävdaBostader > tak.maxBostadsproduktion) {
+            warnings.push({icon: 'fa-house-crack', color: 'red', text: 'Bostadskris', title: `Varning: Det krävs byggnation av ca ${window.formatNumber(krävdaBostader, 0)} bostäder detta år, vilket överstiger det historiska kapacitetstaket på ${tak.maxBostadsproduktion} bostäder/år.`});
+        } else if (krävdaBostader >= (tak.maxBostadsproduktion * 0.8)) {
+            warnings.push({icon: 'fa-house', color: 'amber', text: 'Ansträngd bostadsmarknad', title: `Förvarning: Inflyttningstakten kräver ca ${window.formatNumber(krävdaBostader, 0)} bostäder/år, vilket närmar sig kommunens byggkapacitet.`});
         }
+    }
     
+    // --- SKRIVER UT ALLA LARM ---
     if (warningEl) {
         warningEl.innerHTML = '';
         if (warnings.length > 0) {

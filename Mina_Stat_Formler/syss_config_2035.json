@@ -5605,34 +5605,24 @@
     {
       "Växande_Bransch": "Tillverkning och utvinning",
       "Drabbad_Bransch": "Byggverksamhet",
-      "Överföringsfaktor": 0.04
+      "Överföringsfaktor": 0.01
     },
     {
       "Växande_Bransch": "Vård och omsorg",
       "Drabbad_Bransch": "Utbildning",
-      "Överföringsfaktor": 0.08
-    },
-    {
-      "Växande_Bransch": "Företagstjänster",
-      "Drabbad_Bransch": "Hotell och restauranger",
-      "Överföringsfaktor": 0.06
-    },
-    {
-      "Växande_Bransch": "Information och kommunikation",
-      "Drabbad_Bransch": "Offentlig förvaltning",
-      "Överföringsfaktor": 0.04
+      "Överföringsfaktor": 0.02
     },
     {
       "Växande_Bransch": "Information och kommunikation",
       "Drabbad_Bransch": "Företagstjänster",
-      "Överföringsfaktor": 0.05
+      "Överföringsfaktor": 0.01
     }
   ],
   "Näringslivsjustering": [
     {
       "SNIbokstav": "Jordbruk, skogsbruk och fiske",
       "2024": NaN,
-      "2025": -15,
+      "2025": -15.0,
       "2026": 16.92,
       "2027": 16.92,
       "2028": 16.92,
@@ -5647,7 +5637,7 @@
     {
       "SNIbokstav": "Tillverkning och utvinning",
       "2024": 0.0,
-      "2025": 808,
+      "2025": 808.0,
       "2026": 192.69,
       "2027": 192.69,
       "2028": 192.69,
@@ -5662,7 +5652,7 @@
     {
       "SNIbokstav": "Energi och miljö",
       "2024": NaN,
-      "2025": 38,
+      "2025": 38.0,
       "2026": 37.53,
       "2027": 37.53,
       "2028": 37.53,
@@ -5677,7 +5667,7 @@
     {
       "SNIbokstav": "Byggverksamhet",
       "2024": 0.0,
-      "2025": 289,
+      "2025": 289.0,
       "2026": 19.62,
       "2027": 19.62,
       "2028": 19.62,
@@ -5692,7 +5682,7 @@
     {
       "SNIbokstav": "Handel",
       "2024": 0.0,
-      "2025": 32,
+      "2025": 32.0,
       "2026": 30.6,
       "2027": 30.6,
       "2028": 30.6,
@@ -5707,7 +5697,7 @@
     {
       "SNIbokstav": "Transport",
       "2024": NaN,
-      "2025": 16,
+      "2025": 16.0,
       "2026": 3.7800000000000002,
       "2027": 3.7800000000000002,
       "2028": 3.7800000000000002,
@@ -5722,7 +5712,7 @@
     {
       "SNIbokstav": "Hotell och restauranger",
       "2024": NaN,
-      "2025": 111,
+      "2025": 111.0,
       "2026": 69.12,
       "2027": 69.12,
       "2028": 69.12,
@@ -5737,7 +5727,7 @@
     {
       "SNIbokstav": "Information och kommunikation",
       "2024": 0.0,
-      "2025": 60,
+      "2025": 60.0,
       "2026": 252.35999999999999,
       "2027": 252.35999999999999,
       "2028": 252.35999999999999,
@@ -5752,7 +5742,7 @@
     {
       "SNIbokstav": "Kreditinstitut och försäkringsbolag",
       "2024": NaN,
-      "2025": -5,
+      "2025": -5.0,
       "2026": 23.220000000000002,
       "2027": 23.220000000000002,
       "2028": 23.220000000000002,
@@ -5767,7 +5757,7 @@
     {
       "SNIbokstav": "Fastighetsverksamhet",
       "2024": NaN,
-      "2025": 52,
+      "2025": 52.0,
       "2026": 60.21000000000001,
       "2027": 60.21000000000001,
       "2028": 60.21000000000001,
@@ -5782,7 +5772,7 @@
     {
       "SNIbokstav": "Företagstjänster",
       "2024": 0.0,
-      "2025": 150,
+      "2025": 150.0,
       "2026": 180.0,
       "2027": 180.0,
       "2028": 180.0,
@@ -5797,7 +5787,7 @@
     {
       "SNIbokstav": "Offentlig förvaltning",
       "2024": NaN,
-      "2025": 258,
+      "2025": 258.0,
       "2026": 287.28,
       "2027": 287.28,
       "2028": 287.28,
@@ -5812,7 +5802,7 @@
     {
       "SNIbokstav": "Utbildning",
       "2024": NaN,
-      "2025": -228,
+      "2025": -228.0,
       "2026": 39.690000000000005,
       "2027": 39.690000000000005,
       "2028": 39.690000000000005,
@@ -5827,7 +5817,7 @@
     {
       "SNIbokstav": "Vård och omsorg",
       "2024": 0.0,
-      "2025": 362,
+      "2025": 362.0,
       "2026": 234.54000000000002,
       "2027": 234.54000000000002,
       "2028": 234.54000000000002,
@@ -5842,7 +5832,7 @@
     {
       "SNIbokstav": "Personliga och kulturella tjänster",
       "2024": NaN,
-      "2025": 40,
+      "2025": 40.0,
       "2026": 25.740000000000002,
       "2027": 25.740000000000002,
       "2028": 25.740000000000002,
@@ -5857,7 +5847,7 @@
     {
       "SNIbokstav": "Okänd bransch",
       "2024": NaN,
-      "2025": -16,
+      "2025": -16.0,
       "2026": -35.190000000000005,
       "2027": -35.190000000000005,
       "2028": -35.190000000000005,
@@ -5868,6 +5858,201 @@
       "2033": -35.190000000000005,
       "2034": -35.190000000000005,
       "2035": -35.190000000000005
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": NaN,
+      "2027": NaN,
+      "2028": NaN,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": NaN,
+      "2027": NaN,
+      "2028": NaN,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": NaN,
+      "2027": NaN,
+      "2028": NaN,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": NaN,
+      "2027": NaN,
+      "2028": NaN,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": NaN,
+      "2027": NaN,
+      "2028": NaN,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": NaN,
+      "2027": NaN,
+      "2028": NaN,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": 1400.0,
+      "2027": NaN,
+      "2028": NaN,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": 200.0,
+      "2027": NaN,
+      "2028": 200.0,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": 20.0,
+      "2027": NaN,
+      "2028": 200.0,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": 220.0,
+      "2027": NaN,
+      "2028": 20.0,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": 1180.0,
+      "2027": NaN,
+      "2028": 40.0,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": NaN,
+      "2027": NaN,
+      "2028": 460.0,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
+    },
+    {
+      "SNIbokstav": null,
+      "2024": NaN,
+      "2025": NaN,
+      "2026": NaN,
+      "2027": NaN,
+      "2028": 940.0,
+      "2029": NaN,
+      "2030": NaN,
+      "2031": NaN,
+      "2032": NaN,
+      "2033": NaN,
+      "2034": NaN,
+      "2035": NaN
     }
   ],
   "Näringslivsjustering_hög": [
@@ -6120,7 +6305,7 @@
     },
     {
       "Parameter": "Max_Integration_Utrikes_Födda",
-      "Värde": 71.0,
+      "Värde": 72.5,
       "Beskrivning": "Procentnivå. Den sysselsättningsgrad som gör det mindre troligt att det går fylla på med fler för att marknaden inte ska stanna."
     },
     {
@@ -6145,7 +6330,7 @@
     },
     {
       "Parameter": "Kapacitetstak_Infrastruktur",
-      "Värde": 35000.0,
+      "Värde": 38000.0,
       "Beskrivning": null
     },
     {
@@ -6155,7 +6340,7 @@
     },
     {
       "Parameter": "Max_Årlig_Bostadsproduktion",
-      "Värde": 1500.0,
+      "Värde": 2000.0,
       "Beskrivning": null
     },
     {
