@@ -6120,7 +6120,7 @@
     },
     {
       "Parameter": "Max_Integration_Utrikes_Födda",
-      "Värde": 72.5,
+      "Värde": 71.0,
       "Beskrivning": "Procentnivå. Den sysselsättningsgrad som gör det mindre troligt att det går fylla på med fler för att marknaden inte ska stanna."
     },
     {
@@ -18692,7 +18692,7 @@
     {
       "År": 2000,
       "Stockholm": 477663.0,
-      "Uppsala": 118478.0,
+      "Uppsala": 110888.0,
       "Linköping": 80584.0,
       "Norrköping": 71752.0,
       "Jönköping": 67185.0,
@@ -18707,7 +18707,7 @@
     {
       "År": 2001,
       "Stockholm": 482976.0,
-      "Uppsala": 119778.0,
+      "Uppsala": 112312.0,
       "Linköping": 81386.0,
       "Norrköping": 72518.0,
       "Jönköping": 67804.0,
