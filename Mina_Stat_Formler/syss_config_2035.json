@@ -5,112 +5,128 @@
       "Bas": 0,
       "Hög": 0,
       "Låg": -25,
-      "Stagnerande": 0
+      "Stagnerande": 0,
+      "Grund": 0
     },
     {
       "Indikator": "Sysselsättningsgrad",
       "Bas": "0.5",
       "Hög": "0.5",
       "Låg": "-0.5",
-      "Stagnerande": -2
+      "Stagnerande": -2,
+      "Grund": 0
     },
     {
       "Indikator": "Kvarstannandegrad",
       "Bas": 0,
       "Hög": 1,
       "Låg": -1,
-      "Stagnerande": -1
+      "Stagnerande": -1,
+      "Grund": 0
     },
     {
       "Indikator": "Justering inflyttares syss.grad",
       "Bas": 5,
       "Hög": 10,
       "Låg": 5,
-      "Stagnerande": 0
+      "Stagnerande": 0,
+      "Grund": 0
     },
     {
       "Indikator": "Inpendling",
       "Bas": 1,
-      "Hög": 2,
+      "Hög": 4,
       "Låg": -10,
-      "Stagnerande": -10
+      "Stagnerande": -10,
+      "Grund": 0
     },
     {
       "Indikator": "Utpendling",
       "Bas": 1,
-      "Hög": 2,
+      "Hög": 4,
       "Låg": -5,
-      "Stagnerande": 5
+      "Stagnerande": 5,
+      "Grund": 0
     },
     {
       "Indikator": "Rekryteringskvot_bransch",
       "Bas": 0,
       "Hög": 1,
       "Låg": -1,
-      "Stagnerande": 0
+      "Stagnerande": 0,
+      "Grund": 0
     },
     {
       "Indikator": "Bosättningskvot_justering",
       "Bas": 3,
       "Hög": 3,
       "Låg": 0,
-      "Stagnerande": 0
+      "Stagnerande": 0,
+      "Grund": 0
     },
     {
       "Indikator": "Bosättningskvot_sektor",
       "Bas": 0,
       "Hög": 1,
       "Låg": -1,
-      "Stagnerande": 0
+      "Stagnerande": 0,
+      "Grund": 0
     },
     {
       "Indikator": "Bosättningskvot_utbildningsnivå",
       "Bas": 0,
       "Hög": 1,
       "Låg": -1,
-      "Stagnerande": 0
+      "Stagnerande": 0,
+      "Grund": 0
     },
     {
       "Indikator": "Matchningskvot",
       "Bas": 0,
       "Hög": 1,
       "Låg": -1,
-      "Stagnerande": 0
+      "Stagnerande": 0,
+      "Grund": 0
     },
     {
       "Indikator": "Branschglidning",
       "Bas": 0,
       "Hög": 1,
       "Låg": -1,
-      "Stagnerande": 0
+      "Stagnerande": 0,
+      "Grund": 0
     },
     {
       "Indikator": "Näringslivsjustering_skala",
       "Bas": 1,
       "Hög": 1,
       "Låg": 1,
-      "Stagnerande": "0.01"
+      "Stagnerande": "0.01",
+      "Grund": 0
     },
     {
       "Indikator": "Distansarbete",
       "Bas": 5,
       "Hög": 5,
       "Låg": 0,
-      "Stagnerande": 0
+      "Stagnerande": 0,
+      "Grund": 0
     },
     {
       "Indikator": "Regionförstoring",
       "Bas": 5,
       "Hög": 5,
       "Låg": -5,
-      "Stagnerande": 0
+      "Stagnerande": 0,
+      "Grund": 0
     },
     {
       "Indikator": "Befolkningskälla",
       "Bas": "Officiell",
       "Hög": "Officiell",
       "Låg": "Reducerad",
-      "Stagnerande": "Reducerad"
+      "Stagnerande": "Reducerad",
+      "Grund": "Officiell"
     }
   ],
   "Tillväxt": [

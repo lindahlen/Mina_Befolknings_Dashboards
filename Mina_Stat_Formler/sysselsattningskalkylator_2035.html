@@ -273,7 +273,7 @@
                         </select>
                     </div>
                     
-                    <<div class="grid grid-cols-3 xl:grid-cols-6 gap-2 md:gap-3" id="kpiContainer">
+                    <div class="grid grid-cols-3 xl:grid-cols-6 gap-2 md:gap-3" id="kpiContainer">
     
     <div class="card text-center p-2 md:p-3 border-b-4 border-sky-500 cursor-help" id="kpiUtbudContainer" title="Lokalt arbetskraftsutbud (Personer boende i kommunen) [Nattbefolkning]">
         <div class="flex items-center justify-center gap-1 text-[10px] md:text-xs text-gray-500 font-medium">
@@ -522,7 +522,6 @@
                             region: parseFloat(rows.find(r => r.Indikator === 'Regionförstoring')?.[colName] || 0),
                             migrantSyss: parseFloat(rows.find(r => r.Indikator === 'Justering inflyttares syss.grad')?.[colName] || 10),
                             naringSkala: parseFloat(rows.find(r => r.Indikator === 'Näringslivsjustering_skala')?.[colName] || 1.0),
-                            bosattningsJustering: parseFloat(rows.find(r => r.Indikator === 'Bosättningskvot_justering')?.[colName] || 1.0),
                             popSource: String(rows.find(r => r.Indikator === 'Befolkningskälla')?.[colName] || '').toLowerCase() // <--- NY RAD
                         };
 
@@ -536,7 +535,9 @@
                         });
                         return scen;
                     };
+                    
                     if (window.scenarioSettings) {
+                        window.scenarioSettings.grund = mapScenario('Grund'); // <--- NY RAD
                         window.scenarioSettings.base = mapScenario('Bas');
                         window.scenarioSettings.high = mapScenario('Hög');
                         window.scenarioSettings.low = mapScenario('Låg');
@@ -660,8 +661,8 @@
                 const ySel = document.getElementById('yearSelect');
                 if (ySel && window.baseYear > 0) ySel.value = window.baseYear;
 
-                if(typeof window.updateDashboard === 'function') window.updateDashboard(false); 
-                if(typeof window.updateKPIs === 'function') window.updateKPIs(); 
+                // --- NYTT: LÄS IN "GRUND" OCH RITA UPP SIDAN AUTOMATISKT VID F5 ---
+                if(typeof window.resetSimulation === 'function') window.resetSimulation(); 
 
             }).catch(error => {
                 const ds = document.getElementById('dataStatus');

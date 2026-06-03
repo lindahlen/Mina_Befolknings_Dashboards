@@ -838,28 +838,134 @@ window.setScenario = function(type) {
 };
 
 window.resetSimulation = function() {
-            window.currentActiveScenario = 'base'; // Återställer till bas
-            // 1. Återställ toppmenyn till standard (F5-läge)
-            const causalitySelect = document.getElementById('causalityMode');
-            if(causalitySelect) causalitySelect.value = 'analytic';
+            // Hämta värden från Grund-kolumnen (finns den inte blir det 0)
+            const s = window.scenarioSettings && window.scenarioSettings.grund ? window.scenarioSettings.grund : {};
+            window.currentActiveScenario = 'grund';
+
+            document.getElementById('simMode').value = 'full';
+            if(typeof window.toggleSimMode === 'function') window.toggleSimMode();
             
-            const simModeSelect = document.getElementById('simMode');
-            if(simModeSelect) simModeSelect.value = 'full';
-            
+            const geoPanel = document.getElementById('geoPanel');
+            if (geoPanel) geoPanel.classList.remove('opacity-40', 'pointer-events-none');
+
+            // --- 1. SÄTT BEFOLKNINGSKÄLLA FRÅN GRUND ---
             const popSelect = document.getElementById('popSource');
-            if(popSelect) {
-                let defaultPop = 'fryst';
-                for (let i = 0; i < popSelect.options.length; i++) {
-                    if (popSelect.options[i].value === 'officiell') {
-                        defaultPop = 'officiell'; break;
-                    }
+            if (popSelect) {
+                let targetVal = 'officiell'; // Default fallback
+                
+                if (s.popSource) {
+                    if (s.popSource.includes('reducerad') && window.reducedPopData && window.reducedPopData.length > 0) targetVal = 'reducerad';
+                    else if (s.popSource.includes('anpassad') && window.useCustomPop) targetVal = 'custom';
+                    else if (s.popSource.includes('fryst')) targetVal = 'fryst';
+                } else {
+                    let hasOfficiell = Array.from(popSelect.options).some(opt => opt.value === 'officiell');
+                    targetVal = hasOfficiell ? 'officiell' : 'fryst';
                 }
-                popSelect.value = defaultPop;
+                
+                let optionExists = Array.from(popSelect.options).some(opt => opt.value === targetVal);
+                if (optionExists) popSelect.value = targetVal;
+                if(typeof window.updatePopSourceDesc === 'function') window.updatePopSourceDesc();
+            }
+            // -------------------------------------------
+            
+            // 2. Sätt reglage
+            if(document.getElementById('jobGrowthSlider')) {
+                document.getElementById('jobGrowthSlider').value = s.jobGrowth || 0;
+                document.getElementById('jobGrowthVal').innerText = (s.jobGrowth > 0 ? '+' : '') + (s.jobGrowth || 0) + '%';
             }
             
-            if(typeof window.updatePopSourceDesc === 'function') window.updatePopSourceDesc();
-            if(typeof window.toggleSimMode === 'function') window.toggleSimMode();
+            const syssGradSlider = document.getElementById('syssGradSlider');
+            if (syssGradSlider) {
+                syssGradSlider.value = s.syssGrad || 0;
+                const valEl = document.getElementById('syssGradVal');
+                if (valEl) valEl.innerText = (s.syssGrad > 0 ? '+' : '') + (s.syssGrad || 0) + '%-enh';
+            }
+            
+            const ageLabelsArr = ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'];
+            ageLabelsArr.forEach(a => {
+                let id = 'syssAge' + a.replace('-', '_');
+                let el = document.getElementById(id);
+                if (el) {
+                    let specVal = s[`syssAge_${a.replace('-','_')}`];
+                    el.value = (specVal !== undefined && !isNaN(specVal)) ? specVal : (s.syssGrad || 0);
+                    let valEl = document.getElementById('val_' + id);
+                    if (valEl) valEl.innerText = (el.value > 0 ? '+' : '') + el.value;
+                }
+            });
 
+            window.currentNaringSkala = s.naringSkala !== undefined ? s.naringSkala : 0.0;
+
+            if(document.getElementById('studentSlider')) {
+                document.getElementById('studentSlider').value = s.student || 0;
+                document.getElementById('studentVal').innerText = (s.student > 0 ? '+' : '') + (s.student || 0) + '%-enh';
+            }
+            
+            if(document.getElementById('migrantSyssSlider')) {
+                document.getElementById('migrantSyssSlider').value = s.migrantSyss !== undefined ? s.migrantSyss : 10;
+                document.getElementById('migrantSyssVal').innerText = (s.migrantSyss > 0 ? '+' : '') + (s.migrantSyss !== undefined ? s.migrantSyss : 10) + '%-enh';
+            }
+
+            if (window.useSpecificCivIng) {
+                window.useSpecificCivIng = false;
+                const container = document.getElementById('civIngContainer');
+                const icon = document.getElementById('civIngToggleIcon');
+                if (container) container.classList.add('hidden');
+                if (icon) {
+                    icon.classList.replace('fa-circle-minus', 'fa-circle-plus');
+                    icon.classList.replace('text-red-500', 'text-sky-600');
+                }
+                if(document.getElementById('civIngSlider')) {
+                    document.getElementById('civIngSlider').value = 0;
+                    document.getElementById('civIngVal').innerText = 'Baslinje';
+                }
+            }
+            
+            if(document.getElementById('pendlingType')) document.getElementById('pendlingType').value = 'pct';
+            if(typeof window.updatePendlingUI === 'function') window.updatePendlingUI();
+            
+            if(document.getElementById('inpendlingSlider')) {
+                document.getElementById('inpendlingSlider').value = s.inpendling || 0;
+                if(typeof window.updatePendlingValue === 'function') window.updatePendlingValue('inpendlingSlider', 'inpendlingVal');
+            }
+            
+            if(document.getElementById('utpendlingSlider')) {
+                document.getElementById('utpendlingSlider').value = s.utpendling || 0;
+                if(typeof window.updatePendlingValue === 'function') window.updatePendlingValue('utpendlingSlider', 'utpendlingVal');
+            }
+            
+            if(document.getElementById('distansSlider')) {
+                document.getElementById('distansSlider').value = s.distans || 0;
+                document.getElementById('distansVal').innerText = (s.distans > 0 ? '+' : '') + (s.distans || 0) + '%';
+            }
+            
+            if(document.getElementById('regionSlider')) {
+                document.getElementById('regionSlider').value = s.region || 0;
+                document.getElementById('regionVal').innerText = (s.region == 0 || !s.region) ? 'Dagens nivå' : '+' + s.region + ' min';
+            }
+
+            document.querySelectorAll('.shock-checkbox').forEach(cb => cb.checked = false);
+
+            window.progDataStore = {}; 
+            window.savedProjectedData = null;
+            
+            const saveBtn = document.getElementById('saveBtn');
+            if(saveBtn) {
+                saveBtn.innerHTML = '<i class="fa-solid fa-code-compare mr-1"></i> Jämför';
+                saveBtn.classList.remove('bg-red-100', 'text-red-800', 'hover:bg-red-200');
+                saveBtn.classList.add('bg-indigo-100', 'text-indigo-800', 'hover:bg-indigo-200');
+            }
+            
+            const startYearSelect = document.getElementById('startYearSelect');
+            if(startYearSelect) startYearSelect.classList.remove('hidden');
+
+            if(typeof window.buildDropdowns === 'function') window.buildDropdowns();
+            
+            // 3. RITA BARA UPP GRÄNSSNITTET (Kör ingen prognos förrän användaren klickar på Kör)
+            if(typeof window.buildDropdowns === 'function') window.buildDropdowns();
+            if(typeof window.updateDashboard === 'function') window.updateDashboard(false);
+            if(typeof window.updateKPIs === 'function') window.updateKPIs();
+        }
+        
             // 2. Återställ UI och reglage tyst
             const geoPanel = document.getElementById('geoPanel');
             if (geoPanel) geoPanel.classList.remove('opacity-40', 'pointer-events-none');
@@ -934,7 +1040,7 @@ window.resetSimulation = function() {
             if(typeof window.buildDropdowns === 'function') window.buildDropdowns();
             if(typeof window.updateDashboard === 'function') window.updateDashboard(false);
             if(typeof window.updateKPIs === 'function') window.updateKPIs();
-        };
+        
 
        window.demoStep = 0;
 
