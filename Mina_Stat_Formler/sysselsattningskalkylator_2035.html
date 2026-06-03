@@ -512,17 +512,25 @@
                     const tillvRows = window.syssConfig['Tillväxt'] || window.syssConfig['Tillvaxt'] || [];
                     
                     const mapScenario = (colName) => {
+                        // Smart hjälpfunktion som respekterar 0, men fångar upp tomma celler
+                        const getVal = (indikator, fallback) => {
+                            let val = rows.find(r => String(r.Indikator).trim() === indikator)?.[colName];
+                            if (val === undefined || val === null || String(val).trim() === '') return fallback;
+                            let parsed = parseFloat(val);
+                            return isNaN(parsed) ? fallback : parsed;
+                        };
+
                         let scen = {
-                            jobGrowth: parseFloat(rows.find(r => r.Indikator === 'Jobbtillväxt')?.[colName] || 0),
-                            syssGrad: parseFloat(rows.find(r => r.Indikator === 'Sysselsättningsgrad')?.[colName] || 0),
-                            student: parseFloat(rows.find(r => r.Indikator === 'Kvarstannandegrad')?.[colName] || 0),
-                            inpendling: parseFloat(rows.find(r => r.Indikator === 'Inpendling')?.[colName] || 0),
-                            utpendling: parseFloat(rows.find(r => r.Indikator === 'Utpendling')?.[colName] || 0),
-                            distans: parseFloat(rows.find(r => r.Indikator === 'Distansarbete')?.[colName] || 0),
-                            region: parseFloat(rows.find(r => r.Indikator === 'Regionförstoring')?.[colName] || 0),
-                            migrantSyss: parseFloat(rows.find(r => r.Indikator === 'Justering inflyttares syss.grad')?.[colName] || 10),
-                            naringSkala: parseFloat(rows.find(r => r.Indikator === 'Näringslivsjustering_skala')?.[colName] || 1.0),
-                            popSource: String(rows.find(r => r.Indikator === 'Befolkningskälla')?.[colName] || '').toLowerCase() // <--- NY RAD
+                            jobGrowth: getVal('Jobbtillväxt', 0),
+                            syssGrad: getVal('Sysselsättningsgrad', 0),
+                            student: getVal('Kvarstannandegrad', 0),
+                            inpendling: getVal('Inpendling', 0),
+                            utpendling: getVal('Utpendling', 0),
+                            distans: getVal('Distansarbete', 0),
+                            region: getVal('Regionförstoring', 0),
+                            migrantSyss: getVal('Justering inflyttares syss.grad', 10),
+                            naringSkala: getVal('Näringslivsjustering_skala', 1.0),
+                            popSource: String(rows.find(r => String(r.Indikator).trim() === 'Befolkningskälla')?.[colName] || '').toLowerCase()
                         };
 
                         const ageLabelsArr = ['16-19','20-24','25-29','30-34','35-39','40-44','45-49','50-54','55-59','60-64','65-69','70-74'];

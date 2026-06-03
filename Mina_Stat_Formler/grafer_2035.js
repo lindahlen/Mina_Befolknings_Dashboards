@@ -654,7 +654,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
     // ==================
     if (chartType === 'pop_dynamic') {
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
-        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Prognos)" : " (Historik)");
+        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : " (Historik)");
         if (title) title.innerText = "Framtida Befolkning 16-74 år (Dynamisk)" + suffix;
         if (desc) desc.innerText = "Visar kommunens basbefolkning i åldern 16-74 år. Om du har den dynamiska modellen aktiverad visar grafen även det simulerade befolkningstillskottet för motsvarande åldrar.";
 
@@ -732,7 +732,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
 
     } else if (chartType === 'medfoljande_behov') {
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
-        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Prognos)" : "");
+        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : "");
         if (title) title.innerText = "Välfärdsbehov (Medföljande barn)" + suffix;
         if (desc) desc.innerText = causalityMode === 'dynamic' 
             ? "Visar uppskattat behov av nya förskole- och skolplatser som genereras av arbetskraftsinflyttningen varje år (beräknas via kvoter i styrfilen)."
@@ -776,7 +776,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
     } else if (chartType === 'utbud_efterfragan') {
         isMultiLine = true;
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
-        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Prognos)" : " (Historik)");
+        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : " (Historik)");
         if (title) title.innerText = "Utbud vs Efterfrågan" + suffix;
         if (desc) {
             if (causalityMode === 'dynamic') desc.innerHTML = "I <b>Dynamiskt läge</b> anpassar sig utbudet (den blå och lila linjen) automatiskt efter företagens efterfrågan. Grafen visar den slutgiltiga balansen.";
@@ -813,9 +813,9 @@ window.updateDashboard = function(calledFromDropdown = true) {
             if (showCommuting) datasets.push({ label: 'Totalt Utbud (Inkl. Pendling)', data: hTotalSupply, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 3, borderDash: [2, 2], pointStyle: 'triangle', spanGaps: true });
             
             if (hasProg) {
-                datasets.push({ label: 'Efterfrågan (Prognos)', data: pDemand, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'rect' });
-                datasets.push({ label: 'Lokalt Utbud (Prognos)', data: pSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'circle' });
-                if (showCommuting) datasets.push({ label: 'Totalt Utbud (Prognos)', data: pTotalSupply, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'triangle' });
+                datasets.push({ label: 'Efterfrågan (Scenario)', data: pDemand, borderColor: '#10b981', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'rect' });
+                datasets.push({ label: 'Lokalt Utbud (Scenario)', data: pSupply, borderColor: '#0ea5e9', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'circle' });
+                if (showCommuting) datasets.push({ label: 'Totalt Utbud (Scenario)', data: pTotalSupply, borderColor: '#8b5cf6', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'triangle' });
             }
         } else {
             datasets = [
@@ -922,7 +922,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
 
     } else if (chartType === 'brp_totalt') {
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
-        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Prognos)" : " (Historik)");
+        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : " (Historik)");
         if (title) title.innerText = "Ekonomisk Tillväxt" + suffix;
 
         let hBRP = [], pBRP = [], sBRP = [];
@@ -954,7 +954,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
         if (!isComparing) {
             datasets = [
                 { label: 'Total BRP (Mkr) - Historik', data: hBRP, borderColor: '#a855f7', backgroundColor: 'rgba(168, 85, 247, 0.2)', borderWidth: 3, pointStyle: 'rect', fill: true, spanGaps: true },
-                { label: 'Total BRP (Mkr) - Prognos', data: pBRP, borderColor: '#a855f7', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'rect', fill: false }
+                { label: 'Total BRP (Mkr) - Scenario', data: pBRP, borderColor: '#a855f7', backgroundColor: 'transparent', borderWidth: 3, borderDash: [5, 5], pointStyle: 'rect', fill: false }
             ];
         } else {
              datasets = [
@@ -1034,9 +1034,9 @@ window.updateDashboard = function(calledFromDropdown = true) {
         
         const hasProg = pIn.some((v, idx) => v !== null && labels[idx] > window.baseYear);
         if (hasProg && !isComparing) {
-            datasets.push({ type: 'bar', label: 'Inpendling (Prognos)', data: pIn, backgroundColor: 'rgba(14, 165, 233, 0.4)', order: 2 });
-            datasets.push({ type: 'bar', label: 'Utpendling (Prognos)', data: pUt, backgroundColor: 'rgba(239, 68, 68, 0.4)', order: 3 });
-            datasets.push({ type: 'line', label: 'Pendlingsnetto (Prognos)', data: pNet, borderColor: '#94a3b8', borderWidth: 3, borderDash: [5,5], fill: false, pointStyle: 'rect', order: 1 });
+            datasets.push({ type: 'bar', label: 'Inpendling (Scenario)', data: pIn, backgroundColor: 'rgba(14, 165, 233, 0.4)', order: 2 });
+            datasets.push({ type: 'bar', label: 'Utpendling (Scenario)', data: pUt, backgroundColor: 'rgba(239, 68, 68, 0.4)', order: 3 });
+            datasets.push({ type: 'line', label: 'Pendlingsnetto (Scenario)', data: pNet, borderColor: '#94a3b8', borderWidth: 3, borderDash: [5,5], fill: false, pointStyle: 'rect', order: 1 });
         }
 
     } else if (['utb_match', 'sektor_match', 'sektor_match_kon', 'bransch_match'].includes(chartType)) {
@@ -1051,7 +1051,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
         };
 
         const refYear = isProgYear ? window.baseYear : selYearInt;
-        let suffix = isProgYear ? " (Prognos)" : "";
+        let suffix = isProgYear ? " (Scenario)" : "";
         
         if (chartType === 'utb_match') {
             if (title) title.innerText = `Utbildningsmatchning (År ${selYearInt})${suffix}`;
@@ -1140,7 +1140,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
     } else if (chartType === 'trend_utrikes' || chartType === 'trend_kon') {
         isMultiLine = true;
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
-        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Prognos)" : " (Historik)");
+        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : " (Historik)");
         
         let key1_n, key2_n, key1_d, key2_d, lbl1_n, lbl2_n, lbl1_d, lbl2_d, col1, col2;
         if (chartType === 'trend_utrikes') {
@@ -1210,10 +1210,10 @@ window.updateDashboard = function(calledFromDropdown = true) {
         
         const hasProg = p_n1.some((v, idx) => v !== null && labels[idx] > window.baseYear);
         if(hasProg && !isComparing) {
-            datasets.push({ label: lbl1_n.replace('Lokalt ', '') + ' (Prog)', data: p_n1, borderColor: col1, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
-            datasets.push({ label: lbl2_n.replace('Lokalt ', '') + ' (Prog)', data: p_n2, borderColor: col2, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
-            datasets.push({ label: lbl1_d + ' (Prog)', data: p_d1, borderColor: chartType === 'trend_utrikes' ? '#10b981' : '#0284c7', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointStyle: 'rect' });
-            datasets.push({ label: lbl2_d + ' (Prog)', data: p_d2, borderColor: chartType === 'trend_utrikes' ? '#8b5cf6' : '#be185d', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointStyle: 'rect' });
+            datasets.push({ label: lbl1_n.replace('Lokalt ', '') + ' (Scen)', data: p_n1, borderColor: col1, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
+            datasets.push({ label: lbl2_n.replace('Lokalt ', '') + ' (Scen)', data: p_n2, borderColor: col2, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
+            datasets.push({ label: lbl1_d + ' (Scen)', data: p_d1, borderColor: chartType === 'trend_utrikes' ? '#10b981' : '#0284c7', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointStyle: 'rect' });
+            datasets.push({ label: lbl2_d + ' (Scen)', data: p_d2, borderColor: chartType === 'trend_utrikes' ? '#8b5cf6' : '#be185d', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointStyle: 'rect' });
         }
 
         if (useDualAxes && (chartType === 'trend_utrikes' || chartType === 'trend_kon')) {
@@ -1230,7 +1230,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
     } else if (chartType === 'syssgrad_utrikes' || chartType === 'syssgrad_kon') {
         isMultiLine = true;
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
-        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Prognos)" : " (Historik)");
+        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : " (Historik)");
         
         let key1, key2, lbl1, lbl2, col1, col2;
         if (chartType === 'syssgrad_utrikes') {
@@ -1285,9 +1285,9 @@ window.updateDashboard = function(calledFromDropdown = true) {
 
         const hasProg = p_1.some((v, idx) => v !== null && labels[idx] > window.baseYear);
         if (hasProg) {
-            datasets.push({ label: `${lbl1} % (Prognos)`, data: p_1, borderColor: col1, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle', fill: false });
-            datasets.push({ label: `${lbl2} % (Prognos)`, data: p_2, borderColor: col2, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle', fill: false });
-            if (chartType === 'syssgrad_kon') datasets.push({ label: 'Totalt % (Prognos)', data: p_tot, borderColor: '#64748b', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointStyle: 'rect', fill: false, hidden: true });
+            datasets.push({ label: `${lbl1} % (Scenario)`, data: p_1, borderColor: col1, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle', fill: false });
+            datasets.push({ label: `${lbl2} % (Scenario)`, data: p_2, borderColor: col2, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle', fill: false });
+            if (chartType === 'syssgrad_kon') datasets.push({ label: 'Totalt % (Scenario)', data: p_tot, borderColor: '#64748b', backgroundColor: 'transparent', borderWidth: 2, borderDash: [5,5], pointStyle: 'rect', fill: false, hidden: true });
         }
 
         if (useDualAxes && (chartType === 'syssgrad_utrikes' || chartType === 'syssgrad_kon')) {
@@ -1371,7 +1371,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
 
         window.trendChartInstance = new Chart(ctx, {
             type: 'line',
-            data: { labels: labels.map(l => String(l).replace(' (Prognos)', '')), datasets: datasets },
+            data: { labels: labels.map(l => String(l).replace(' (Prognos)', '').replace(' (Scenario)', '')), datasets: datasets },
             options: finalOptions
         });
     } else if (isBarChart && datasets.length > 0) {
@@ -1412,7 +1412,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
 
         window.trendChartInstance = new Chart(ctx, {
             type: 'bar',
-            data: { labels: labels.map(l => String(l).replace(' (Prognos)', '')), datasets: datasets },
+            data: { labels: labels.map(l => String(l).replace(' (Prognos)', '').replace(' (Scenario)', '')), datasets: datasets },
             options: {
                 indexAxis: isHorizontal ? 'y' : 'x', 
                 responsive: true, maintainAspectRatio: false,

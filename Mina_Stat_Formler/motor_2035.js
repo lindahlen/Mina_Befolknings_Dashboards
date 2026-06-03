@@ -2104,18 +2104,33 @@ window.runSimulation = function() {
                     futureSupplyM = futureSupply * share_n_man;
                     futureSupplyK = futureSupply * (1 - share_n_man);
                 }
-                
+              
                 let futureInpendling = futureInpendlingBase;
-                let futureUtpendling = futureUtpendlingBase;
+
+                // --- NY LOGIK: Befolkningsstyrd Utpendling (80% Elasticitet) ---
+                let outCommutingElasticity = 0.80; // Ändra till 1.0 för 100% genomslag
+                let demografiskUtpendling = futureUtpendlingBase;
+                
+                // Kontrollera att befolkningen finns så vi inte delar med noll
+                if (base.pop && base.pop > 0 && futurePop > 0) {
+                    let popFactor = futurePop / base.pop;
+                    let effectiveFactor = 1.0 + ((popFactor - 1.0) * outCommutingElasticity);
+                    demografiskUtpendling = futureUtpendlingBase * effectiveFactor;
+                }
+                
+                let futureUtpendling = demografiskUtpendling;
 
                 if (simMode === 'full') {
                     if (pendlingType === 'pct') {
                         futureInpendling = futureInpendlingBase * (1 + ((inpendlingChange/100) * (i/forecastYears)));
-                        futureUtpendling = futureUtpendlingBase * (1 + ((utpendlingChange/100) * (i/forecastYears)));
+                        // Här använder vi den nya demografiska utpendlingen som bas för reglagen
+                        futureUtpendling = demografiskUtpendling * (1 + ((utpendlingChange/100) * (i/forecastYears)));
                     } else {
                         futureInpendling = Math.max(0, futureInpendlingBase + (inpendlingChange * (i/forecastYears)));
-                        futureUtpendling = Math.max(0, futureUtpendlingBase + (utpendlingChange * (i/forecastYears)));
-                    }
+                        // Här använder vi den nya demografiska utpendlingen som bas för reglagen
+                        futureUtpendling = Math.max(0, demografiskUtpendling + (utpendlingChange * (i/forecastYears)));
+                    } 
+
                 // Addera de branschspecifika inpendlarna till den totala inpendlingspoolen
                     futureInpendling += totalNaringInpendlingExtra; 
                 }
@@ -2318,7 +2333,7 @@ window.buildDropdowns = function() {
             yearSelect.add(new Option("Data saknas", ""));
         } else {
             [...window.allYears].reverse().forEach(y => {
-                let text = y > window.baseYear ? y + " (Prognos)" : y.toString();
+                let text = y > window.baseYear ? y + " (Scenario)" : y.toString();
                 let opt = new Option(text, y);
                 if(y > window.baseYear) opt.className = "text-sky-700 font-bold bg-sky-50";
                 yearSelect.add(opt);
@@ -2600,9 +2615,9 @@ window.updateKPIs = function() {
     if (totalPopNeeded > 0) {
         let krävdaBostader = totalPopNeeded / 2.1; // Divideras med snitthushållets storlek
         if (krävdaBostader > tak.maxBostadsproduktion) {
-            warnings.push({icon: 'fa-house-crack', color: 'red', text: 'Bostadskris', title: `Varning: Det krävs byggnation av ca ${window.formatNumber(krävdaBostader, 0)} bostäder detta år, vilket överstiger det historiska kapacitetstaket på ${tak.maxBostadsproduktion} bostäder/år.`});
+            warnings.push({icon: 'fa-house-crack', color: 'red', text: 'Ansträngd bostadsmarknad', title: `Varning: Det krävs byggnation av ca ${window.formatNumber(krävdaBostader, 0)} bostäder detta år, vilket överstiger det historiska kapacitetstaket på ${tak.maxBostadsproduktion} bostäder/år.`});
         } else if (krävdaBostader >= (tak.maxBostadsproduktion * 0.8)) {
-            warnings.push({icon: 'fa-house', color: 'amber', text: 'Ansträngd bostadsmarknad', title: `Förvarning: Inflyttningstakten kräver ca ${window.formatNumber(krävdaBostader, 0)} bostäder/år, vilket närmar sig kommunens byggkapacitet.`});
+            warnings.push({icon: 'fa-house', color: 'amber', text: 'Stort byggbehov', title: `Förvarning: Inflyttningstakten kräver ca ${window.formatNumber(krävdaBostader, 0)} bostäder/år, vilket närmar sig kommunens byggkapacitet.`});
         }
     }
     
