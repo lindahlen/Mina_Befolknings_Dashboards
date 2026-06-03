@@ -1113,7 +1113,10 @@ window.resetSimulation = function() {
                 // STEG 2: Demografin slår till
                 setSelect('popSource', 'officiell');
                 setSelect('yearSelect', String(window.PROGNOS_SLUTAR)); 
-                
+                // STEG 3: Företagens behov ökar (Via andel av Näringslivsjustering)
+                // Aktivera 50% av den tillväxt ni skrivit in i Excel-fliken "Näringslivsjustering"
+                window.currentNaringSkala = 0.6; 
+
                 showDemandLine(); 
                 
                 showDemoToast(
@@ -1130,7 +1133,7 @@ window.resetSimulation = function() {
                 
                 showDemoToast(
                     "Steg 3: Näringslivet växer", 
-                    "Företagen nyanställer (+15%). Den <strong>gröna linjen (efterfrågan)</strong> skjuter nu kraftigt i höjden. Ett tydligt, rött rekryteringsgap öppnar sig mot det lokala utbudet."
+                    "Företagen nyanställer (+15%). Den <strong>gröna linjen (efterfrågan)</strong> skjuter nu kraftigt i höjden. Ett tydligt rekryteringsgap öppnar sig mot det lokala utbudet."
                 );
                 
                 document.getElementById('demoBtn').title = "Steg 4: Politiska åtgärder";
@@ -1155,7 +1158,19 @@ window.resetSimulation = function() {
                 
                 showDemoToast(
                     "Steg 5: Dynamisk Jämvikt", 
-                    "Vi tvingar fram en lösning (ex. bostadsbyggande). <strong>När den lila linjen fångar in den gröna är marknaden åter i balans!</strong> Men titta på befolkningsgrafen – det krävdes massiv inflyttning för att lyckas."
+                    "Vi tvingar fram en lösning (ex. bostadsbyggande) och går över till dynamisk jämvikt. <strong>När den lila linjen fångar in den gröna är marknaden åter i balans!</strong> Men titta på det lokala utbudet – det krävdes massiv inflyttning för att lyckas."
+                );
+                
+                document.getElementById('demoBtn').title = "Steg 6: Den demografiska effekten";
+                window.demoStep++;
+                
+            } else if (window.demoStep === 5) {
+                // STEG 6: Byt vy till befolkningen
+                setSelect('chartType', 'pop_dynamic');
+                
+                showDemoToast(
+                    "6. Den demografiska effekten", 
+                    "Men vad krävdes för att nå dit? Och vad innebär detta för framtidens bostadsbyggande? Vi har nu bytt vy för att se den exakta <strong>befolkningseffekten</strong> av expansionen!"
                 );
                 
                 demoBtnIcon.className = "fa-solid fa-rotate-left text-sm";
@@ -1170,6 +1185,10 @@ window.resetSimulation = function() {
                 
                 let toast = document.getElementById('demoToast');
                 if (toast) toast.style.opacity = '0';
+                
+                // Återställ grafen och skalan till standard
+                setSelect('chartType', 'utbud_efterfragan');
+                window.currentNaringSkala = 1.0; 
                 
                 window.demoStep = 0;
                 return;
@@ -2675,6 +2694,18 @@ window.exportPopDynamicCSV = function() {
     const currentPopData = (window.useCustomPop && window.customPopData) ? window.customPopData : window.popData;
     
     let csvContent = "data:text/csv;charset=utf-8,\uFEFF"; 
+    // --- NYTT: METADATA FÖR SPÅRBARHET ---
+        const d = new Date();
+        const ySel = document.getElementById('yearSelect');
+        const pSel = document.getElementById('popSource');
+        
+        csvContent += `"# EXPORT METADATA"\n`;
+        csvContent += `"# Datum:",${d.toISOString().split('T')[0]}\n`;
+        csvContent += `"# Scenario (År):",${ySel ? ySel.options[ySel.selectedIndex].text : ''}\n`;
+        csvContent += `"# Befolkningskälla:",${pSel ? pSel.options[pSel.selectedIndex].text : ''}\n`;
+        csvContent += `"# Manuella reglage:",Jobbtillväxt: ${document.getElementById('jobGrowthSlider')?.value}%; Syss.grad: ${document.getElementById('syssGradSlider')?.value}%\n`;
+        csvContent += `\n`; // Tom rad innan datan börjar
+        // -------------------------------------
     csvContent += "År;Källa;Grupp;Basbefolkning;Tillskott (Dynamisk Jämvikt);Total Befolkning\n";
     
     if (popGroupVal === 'total') {

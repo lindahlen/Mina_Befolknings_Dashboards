@@ -328,6 +328,9 @@
                         
                         <div class="flex flex-wrap items-center shadow-sm rounded-md border border-gray-300 bg-white overflow-hidden w-full lg:w-auto">
     
+                            <span onclick="shareScenarioUrl()" class="text-slate-400 hover:text-indigo-600 transition" title="Kopiera länk till detta scenario">
+                                <i class="fa-solid fa-link"></i>
+                            </span>
                             <span onclick="if(window.exportMainChart) window.exportMainChart()" class="px-2.5 py-1 md:py-1.5 text-slate-400 cursor-pointer hover:text-indigo-600 transition border-r border-gray-200" title="Ladda ner aktuellt diagram som bild (PNG)">
                                 <i class="fa-solid fa-camera"></i>
                             </span>
@@ -752,6 +755,65 @@
             
             if (typeof window.runSimulation === 'function') window.runSimulation();
         }
+        // --- FUNKTION: SKAPA OCH KOPIERA LÄNK ---
+function shareScenarioUrl() {
+    const params = new URLSearchParams();
+    
+    // Hämta rullistor
+    if(document.getElementById('yearSelect')) params.set('scen', document.getElementById('yearSelect').value);
+    if(document.getElementById('popSource')) params.set('pop', document.getElementById('popSource').value);
+    if(document.getElementById('causalityMode')) params.set('caus', document.getElementById('causalityMode').value);
+    
+    // Hämta reglage
+    if(document.getElementById('jobGrowthSlider')) params.set('j', document.getElementById('jobGrowthSlider').value);
+    if(document.getElementById('syssGradSlider')) params.set('s', document.getElementById('syssGradSlider').value);
+    if(document.getElementById('inpendlingSlider')) params.set('i', document.getElementById('inpendlingSlider').value);
+    if(document.getElementById('utpendlingSlider')) params.set('u', document.getElementById('utpendlingSlider').value);
+
+    // Bygg URL och kopiera till urklipp
+    const url = window.location.origin + window.location.pathname + '?' + params.toString();
+    const tempInput = document.createElement("input");
+    tempInput.value = url;
+    document.body.appendChild(tempInput);
+    tempInput.select();
+    document.execCommand("copy"); // Säker kopiering
+    document.body.removeChild(tempInput);
+
+    // Visa bekräftelse
+    if (typeof showDemoToast === 'function') {
+        showDemoToast("Länk kopierad!", "En länk med exakt dessa inställningar ligger nu i ditt urklipp, redo att klistras in i ett mejl eller chatt.");
+        setTimeout(() => { let t = document.getElementById('demoToast'); if(t) t.style.opacity = '0'; }, 4000);
+    }
+}
+
+// --- LÄS IN LÄNK NÄR SIDAN LADDAS ---
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (Array.from(params).length === 0) return; // Gör inget om det inte är en delad länk
+    
+    // Sätt rullistor
+    if(params.has('scen')) document.getElementById('yearSelect').value = params.get('scen');
+    if(params.has('pop')) document.getElementById('popSource').value = params.get('pop');
+    if(params.has('caus')) document.getElementById('causalityMode').value = params.get('caus');
+    
+    // Sätt reglage (och uppdatera deras textvärden)
+    const setSlid = (id, valId, paramVal, suffix) => {
+        let el = document.getElementById(id);
+        if(el && params.has(paramVal)) {
+            el.value = params.get(paramVal);
+            let valEl = document.getElementById(valId);
+            if(valEl) valEl.innerText = (params.get(paramVal) > 0 ? '+' : '') + params.get(paramVal) + suffix;
+        }
+    };
+    
+    setSlid('jobGrowthSlider', 'jobGrowthVal', 'j', '%');
+    setSlid('syssGradSlider', 'syssGradVal', 's', '%-enh');
+    setSlid('inpendlingSlider', 'inpendlingVal', 'i', '%');
+    setSlid('utpendlingSlider', 'utpendlingVal', 'u', '%');
+
+    // Kör motorn om 1 sekund när all data laddat klart
+    setTimeout(() => { if (typeof window.runSimulation === 'function') window.runSimulation(); }, 1000);
+});
     </script>
 </body>
 </html>
