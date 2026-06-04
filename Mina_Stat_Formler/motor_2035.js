@@ -1801,7 +1801,7 @@ window.runSimulation = function() {
            // --- INSTÄLLNING FÖR ELASTICITET (Regionförstoring) ---
             // 1.0 = Linjär ökning. 1.5 = Kraftigt exponentiell. 0.5 = Dämpad effekt.
             // Prova att sänka denna till 0.8 eller 1.0 om grafen reagerar för häftigt!
-            const PENDLINGS_ELASTICITET = 0.8; 
+            const PENDLINGS_ELASTICITET = 0.6; 
             // -------------------------------------------------------
             
             if (regionChangeMin !== 0 && window.syssConfig['Inom_en_timme']) {
@@ -2040,6 +2040,34 @@ window.runSimulation = function() {
 
                 let futureSupply = 0, futureSupplyM = 0, futureSupplyK = 0, futureRate = 0;
                 let isAgeWeighted = false;
+
+                // --- FIX FÖR LOKALT UTBUD 2025 (Kvarhållande av 75+ arbetare m.fl.) ---
+                let supplyResidual = 0;
+                if (ageRates && popSource !== 'fryst' && activePopData.length > 0) {
+                    let ageWeightedBaseSupply = 0;
+                    Object.values(ageRates).forEach(group => {
+                        let gPop = 0;
+                        let records = activePopData.filter(r => String(r.tid).trim() === String(window.baseYear));
+                        if (records.length === 0) records = window.popData.filter(r => String(r.tid).trim() === String(window.baseYear)); 
+                        
+                        let useGender = records.some(r => String(r.kön).trim().toLowerCase() === 'män' || String(r.kön).trim().toLowerCase() === 'kvinnor');
+                        records.forEach(r => {
+                            if (!String(r.ålder).toLowerCase().includes('totalt')) {
+                                if (useGender && String(r.kön).trim().toLowerCase() !== 'män' && String(r.kön).trim().toLowerCase() !== 'kvinnor') return;
+                                const aMatch = String(r.ålder).match(/\d+/);
+                                if (aMatch) {
+                                    const a = parseInt(aMatch[0]);
+                                    if (a >= group.min && a <= group.max) gPop += (r.Befolkning || 0);
+                                }
+                            }
+                        });
+                        ageWeightedBaseSupply += (gPop * group.rate);
+                    });
+                    if (typeof baselineSupply !== 'undefined') {
+                        supplyResidual = baselineSupply - ageWeightedBaseSupply;
+                    }
+                }
+                // -----------------------------------------------------------------------
                 
                 if (ageRates && popSource !== 'fryst' && activePopData.length > 0 && hasPopDataForYear) {
                             isAgeWeighted = true;
@@ -2103,7 +2131,7 @@ window.runSimulation = function() {
                                     });
                                 }
                                 
-                                let sliderOffset = syssGradChangeOverall;
+                                let sliderOffset = typeof syssGradChangeOverall !== 'undefined' ? syssGradChangeOverall : 0;
                                 let sliderEl = document.getElementById(`syssAge${group.min}_${group.max}`);
                                 if (sliderEl) sliderOffset = parseFloat(sliderEl.value) || 0;
 
@@ -2113,6 +2141,14 @@ window.runSimulation = function() {
                                 futureSupplyM += (groupFuturePopM * currentSpecificRate);
                                 futureSupplyK += (groupFuturePopK * currentSpecificRate);
                             });
+                            
+                    // --- LÄGG TILL RESIDUALEN FÖR SÖMLÖS ÖVERGÅNG ---
+                    let residualDecay = 1; // Konstant statistisk residual (t.ex. okänd ålder), 75+ exkluderas i definitionen
+                    futureSupply += supplyResidual;
+                    futureSupplyM += supplyResidual * share_n_man;
+                    futureSupplyK += supplyResidual * (1 - share_n_man);
+                    // ------------------------------------------------
+
                     futureSupply += cumulativeExtraStudents;
                     futureSupplyM += cumulativeExtraStudents * share_n_man;
                     futureSupplyK += cumulativeExtraStudents * (1 - share_n_man);
@@ -2630,15 +2666,84 @@ window.updateKPIs = function() {
             }
         }
         
-    // TVÅSTEGSLARM 4: Bostäder
-    if (totalPopNeeded > 0) {
-        let krävdaBostader = totalPopNeeded / 2.1; // Divideras med snitthushållets storlek
-        if (krävdaBostader > tak.maxBostadsproduktion) {
-            warnings.push({icon: 'fa-house-crack', color: 'red', text: 'Ansträngd bostadsmarknad', title: `Varning: Det krävs byggnation av ca ${window.formatNumber(krävdaBostader, 0)} bostäder detta år, vilket överstiger det historiska kapacitetstaket på ${tak.maxBostadsproduktion} bostäder/år.`});
-        } else if (krävdaBostader >= (tak.maxBostadsproduktion * 0.8)) {
-            warnings.push({icon: 'fa-house', color: 'amber', text: 'Stort byggbehov', title: `Förvarning: Inflyttningstakten kräver ca ${window.formatNumber(krävdaBostader, 0)} bostäder/år, vilket närmar sig kommunens byggkapacitet.`});
+   // TVÅSTEGSLARM 4: Bostäder
+        let popGrowthBase = 0;
+        
+        // NU VET VI ATT ÅRTALET HETER 'y'!
+        let simAr = typeof y !== 'undefined' ? y : null;
+
+        if (simAr) {
+            // Skräddarsydd funktion för att läsa din Excel-struktur (År, Kön, 0, 1, 2... 100)
+            let getPop = (yVal) => {
+                let sum = 0;
+                
+                if (window.syssBasdata) {
+                    let sheetKeys = Object.keys(window.syssBasdata).filter(k => 
+                        k.toLowerCase().includes('prognos') || 
+                        k.toLowerCase().includes('befolkning')
+                    );
+                    
+                    for (let key of sheetKeys) {
+                        let rows = window.syssBasdata[key].filter(r => parseInt(r['År'] || r['år'] || r['ÅR']) === parseInt(yVal));
+                        if (rows.length > 0) {
+                            rows.forEach(row => {
+                                Object.keys(row).forEach(k => {
+                                    // Om kolumnrubriken är en siffra (ålder 0-100)
+                                    if (/^\d+$/.test(String(k).trim())) {
+                                        sum += parseFloat(row[k]) || 0;
+                                    }
+                                });
+                            });
+                            if (sum > 0) return sum; // Data hittad, returnera!
+                        }
+                    }
+                }
+                
+                // Fallback till SCB om Excel saknas
+                let pData = typeof activePopData !== 'undefined' ? activePopData : (window.popData || []);
+                let recs = pData.filter(r => String(r.tid).replace(' (Prognos)', '').trim() === String(yVal));
+                if (recs.length > 0) {
+                    recs.forEach(r => {
+                        if (!String(r.ålder).toLowerCase().includes('totalt')) {
+                            sum += parseFloat(r.Befolkning) || 0;
+                        }
+                    });
+                }
+                
+                return sum;
+            };
+
+            // Hämta för detta året (y) och förra året (y - 1)
+            let pNu = getPop(simAr);
+            let pFjol = getPop(simAr - 1);
+            
+            if (pNu > 0 && pFjol > 0) {
+                popGrowthBase = Math.max(0, pNu - pFjol);
+            }
         }
-    }
+
+        // Lägg ihop Basprognosens behov med det Extra Jobbehovet
+        let extraPopNeeded = (typeof totalPopNeeded !== 'undefined' && totalPopNeeded > 0) ? totalPopNeeded : 0;
+        let krävdaBostader = (popGrowthBase + extraPopNeeded) / 2.1; 
+
+        // Larma om totalen överstiger kommunens historiska tak
+        if (krävdaBostader > 0 && typeof tak !== 'undefined' && tak.maxBostadsproduktion) {
+            let basBost = Math.round(popGrowthBase / 2.1);
+            let extraBost = Math.round(extraPopNeeded / 2.1);
+            let totStr = typeof window.formatNumber === 'function' ? window.formatNumber(krävdaBostader, 0) : Math.round(krävdaBostader);
+            
+            if (krävdaBostader > tak.maxBostadsproduktion) {
+                warnings.push({
+                    icon: 'fa-house-crack', color: 'red', text: 'Ansträngd bostadsmarknad', 
+                    title: `Varning: Totalt bostadsbehov år ${simAr} är ca ${totStr}/år (Basprognos: ${basBost}, Extra jobb: ${extraBost}). Överstiger tak på ${tak.maxBostadsproduktion}.`
+                });
+            } else if (krävdaBostader >= (tak.maxBostadsproduktion * 0.8)) {
+                warnings.push({
+                    icon: 'fa-house', color: 'amber', text: 'Stort byggbehov', 
+                    title: `Förvarning: Totalt bostadsbehov år ${simAr} är ca ${totStr}/år (Basprognos: ${basBost}, Extra jobb: ${extraBost}). Närmar sig smärtgräns.`
+                });
+            }
+        }
     
     // --- SKRIVER UT ALLA LARM ---
     if (warningEl) {

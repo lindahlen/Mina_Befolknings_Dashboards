@@ -476,6 +476,20 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 window.savedScaleMin = null;
                 window.savedScaleMax = null;
             }
+            
+            // NYTT: Krasch-säker hantering av "Utgå från 0" (Rör bara DOM-elementet)
+            const cType = document.getElementById('chartType') ? document.getElementById('chartType').value : null;
+            const zeroCb = document.getElementById('useZeroAxis');
+            if (zeroCb && cType) {
+                if (window.lastSelectedChart !== cType) {
+                    if (cType === 'bostadsbyggande_behov') {
+                        zeroCb.checked = true;
+                    } else {
+                        zeroCb.checked = false;
+                    }
+                    window.lastSelectedChart = cType;
+                }
+            }
         }
         // ----------------------------
     const chartTypeElement = document.getElementById('chartType');
@@ -483,6 +497,16 @@ window.updateDashboard = function(calledFromDropdown = true) {
     if (!chartTypeElement || !subGroupSelect) return;
 
     const chartType = chartTypeElement.value;
+    // --- NYTT: Dölj "Fast skala" dynamiskt för vissa grafer ---
+            const fixedScaleContainer = document.getElementById('fixedScaleContainer');
+            if (fixedScaleContainer) {
+                if (chartType.includes('match') || chartType === 'pendling_detalj' || chartType === 'medfoljande_behov' || chartType === 'utbud_efterfragan_delta') {
+                    fixedScaleContainer.style.display = 'none';
+                } else {
+                    fixedScaleContainer.style.display = 'flex';
+                }
+            }
+            // ---------------------------------------------------------
     
     const dualAxesContainer = document.getElementById('dualAxesContainer');
     const useDualAxesElement = document.getElementById('useDualAxes');
@@ -729,6 +753,180 @@ window.updateDashboard = function(calledFromDropdown = true) {
                     }
                 });
             }
+            } else if (chartType === 'bostadsbyggande_behov') {
+            startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
+            let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Scenario)" : "");
+            if (title) title.innerText = "Bostadsbyggande & Behov" + suffix;
+            if (desc) desc.innerText = causalityMode === 'dynamic' ? "Visar historiskt färdigställda bostäder jämfört med totalt uppskattat behov (basprognos + simulerad inflyttning)." : "Visar historiskt färdigställda bostäder jämfört med teoretiskt behov (basprognos + omatchat rekryteringsgap).";
+            
+            isBarChart = true;
+            isStacked = true;
+            labels = activeYears;
+
+            let hBostader = [], pBehovBase = [], pBehovExtra = [], sBehovBase = [], sBehovExtra = [], maxKapacitet = [], rollingAvgData = [];
+            let userSyssAdj = document.getElementById('migrantSyssSlider') ? parseFloat(document.getElementById('migrantSyssSlider').value) / 100 : 0.10;
+            let empRate = Math.max(0.01, (window.globalMigrantEmploymentRate || 0.5) + userSyssAdj);
+            
+            let byggTak = (window.takEffekter && window.takEffekter.maxBostadsproduktion) ? window.takEffekter.maxBostadsproduktion : 1500;
+
+            let sistaHistoriskaAr = baseYear;
+            if (currentPopData && currentPopData.find(r => String(r.tid).replace(' (Prognos)', '').trim() === String(baseYear + 1) && r.Färdigställda_bostäder !== undefined && r.Färdigställda_bostäder !== null && r.Färdigställda_bostäder !== "")) {
+                sistaHistoriskaAr = baseYear + 1;
+            }
+
+            // --- NYHET: DIAGRAMMET ANVÄNDER NU LARMETS SKOTTSÄKRA 0-100-RÄKNARE! ---
+            // --- NYHET: DIAGRAMMET PRIORITERAR AKTIV PROGNOSFLIK ---
+                    let getPop0to100 = (yVal) => {
+                        let sum = 0;
+                        if (window.syssBasdata) {
+                            // Siktar in sig DIREKT på den valda prognosen i rullistan (ex. Officiell_befolkningsprognos)
+                            let pSource = typeof popSource !== 'undefined' ? popSource : (window.popSource || null);
+                            let sheetKeys = [];
+                            
+                            if (pSource && window.syssBasdata[pSource]) {
+                                sheetKeys = [pSource];
+                            } else {
+                                // Fallback: Leta bara i flikar som uttryckligen heter 'prognos'
+                                sheetKeys = Object.keys(window.syssBasdata).filter(k => k.toLowerCase().includes('prognos'));
+                            }
+                            
+                            for (let key of sheetKeys) {
+                                let rows = window.syssBasdata[key].filter(r => parseInt(r['År'] || r['år'] || r['ÅR']) === parseInt(yVal));
+                                if (rows.length > 0) {
+                                    rows.forEach(row => {
+                                        Object.keys(row).forEach(k => {
+                                            if (/^\d+$/.test(String(k).trim())) {
+                                                sum += parseFloat(row[k]) || 0;
+                                            }
+                                        });
+                                    });
+                                    if (sum > 0) return sum;
+                                }
+                            }
+                        }
+                        
+                        // SCB Fallback om Excel saknas
+                        let pData = typeof currentPopData !== 'undefined' ? currentPopData : (window.popData || []);
+                        let recs = pData.filter(r => String(r.tid).replace(' (Prognos)', '').trim() === String(yVal));
+                        if (recs.length > 0) {
+                            recs.forEach(r => {
+                                if (!String(r.ålder).toLowerCase().includes('totalt')) {
+                                    sum += parseFloat(r.Befolkning) || 0;
+                                }
+                            });
+                        }
+                        return sum;
+                    };
+            // ------------------------------------------------------------------------
+
+            labels.forEach((y, index) => {
+                let numericY = Number(y);
+                maxKapacitet.push(byggTak);
+
+                // Hantera rullande 10-årssnitt
+                let endYearForAvg = numericY > sistaHistoriskaAr ? sistaHistoriskaAr : numericY;
+                let sumBostader = 0;
+                let countBostader = 0;
+                
+                for (let i = 0; i < 10; i++) {
+                    let lookbackYear = endYearForAvg - i;
+                    let popRec10 = currentPopData ? currentPopData.find(r => String(r.tid).replace(' (Prognos)', '').trim() === String(lookbackYear) && r.Färdigställda_bostäder !== undefined && r.Färdigställda_bostäder !== null && String(r.Färdigställda_bostäder).trim() !== "") : null;
+                    if (popRec10) {
+                        sumBostader += parseFloat(popRec10.Färdigställda_bostäder);
+                        countBostader++;
+                    }
+                }
+                rollingAvgData.push(countBostader > 0 ? (sumBostader / countBostader) : null);
+
+                let popRec = null;
+                // FIXEN: Spärren! Leta BARA efter historisk data (Färdigställda_bostäder) om året faktiskt ÄR historiskt.
+                if (currentPopData && numericY <= sistaHistoriskaAr) {
+                    popRec = currentPopData.find(r => String(r.tid).replace(' (Prognos)', '').trim() === String(numericY) && r.Färdigställda_bostäder !== undefined && r.Färdigställda_bostäder !== null && String(r.Färdigställda_bostäder).trim() !== "");
+                }
+
+                // Om det är ett historiskt år, rita blå stapel
+                if (popRec) {
+                    hBostader.push(parseFloat(popRec.Färdigställda_bostäder));
+                    pBehovBase.push(null);
+                    pBehovExtra.push(null);
+                    sBehovBase.push(null);
+                    sBehovExtra.push(null);
+                } 
+                // Om det är ett framtida år, räkna ut prognos-staplarna!
+                else if (numericY > baseYear && progDataStore[numericY]) {
+                    hBostader.push(null);
+                    
+                    // Diagrammet räknar ut basprognosen
+                    let calcBehovBase = (ar) => {
+                        let pCurr = getPop0to100(ar);
+                        let pPrev = getPop0to100(ar - 1);
+                        let popGrowthBase = 0;
+                        
+                        if (pCurr > 0 && pPrev > 0) {
+                            popGrowthBase = Math.max(0, pCurr - pPrev);
+                        }
+
+                        // --- SMART BRO FÖR ÖVERGÅNGSÅR (2025-2026) ---
+                        // Om databytet mellan SCB och Excel skapar en oäkta minskning/nolla för de första prognosåren,
+                        // lånar vi tillväxten från nästa år (som är matematiskt ren från Excel-filen).
+                        if (popGrowthBase === 0 && ar <= baseYear + 2) {
+                            let pNext = getPop0to100(ar + 1);
+                            if (pNext > pCurr) {
+                                popGrowthBase = pNext - pCurr;
+                            }
+                        }
+                        // ---------------------------------------------
+
+                        return popGrowthBase > 0 ? popGrowthBase / 2.1 : 0;
+                    };
+
+                    let calcBehovExtra = (d) => {
+                        if (!d) return null;
+                        let extraPopNeeded = 0;
+                        if (causalityMode === 'dynamic' && d.inducedPop > 0) {
+                            extraPopNeeded = d.inducedPop;
+                        } else if (causalityMode === 'analytic') {
+                            const omatchatGap = d.demand - (d.supply + (showCommuting ? ((d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0)) + (d.virtualSupply || 0)) : 0));
+                            if (omatchatGap > 5) {
+                                extraPopNeeded = omatchatGap / empRate;
+                            }
+                        }
+                        return extraPopNeeded > 0 ? extraPopNeeded / 2.1 : 0; 
+                    };
+
+                    let baseNeed = calcBehovBase(numericY);
+                    pBehovBase.push(baseNeed);
+                    pBehovExtra.push(calcBehovExtra(progDataStore[numericY]));
+
+                    if (isComparing) {
+                        sBehovBase.push(baseNeed);
+                        sBehovExtra.push(calcBehovExtra(savedProjectedData ? savedProjectedData[numericY] : null));
+                    }
+                }
+                else {
+                    hBostader.push(null);
+                    pBehovBase.push(null);
+                    pBehovExtra.push(null);
+                    sBehovBase.push(null);
+                    sBehovExtra.push(null);
+                }
+            });
+
+            datasets = [
+                { type: 'bar', label: 'Färdigställda Bostäder (Historik)', data: hBostader, backgroundColor: '#0ea5e9', stack: 'Stack 1' },
+                { type: 'bar', label: 'Behov från Basprognos (Scenario)', data: pBehovBase, backgroundColor: '#fcd34d', stack: 'Stack 1' },
+                { type: 'bar', label: 'Extra behov från Jobb (Scenario)', data: pBehovExtra, backgroundColor: '#f59e0b', stack: 'Stack 1' }
+            ];
+            
+            if (isComparing) {
+                datasets.push({ type: 'bar', label: 'Behov från Basprognos (Sparad)', data: sBehovBase, backgroundColor: 'rgba(252, 211, 77, 0.4)', stack: 'Stack 2' });
+                datasets.push({ type: 'bar', label: 'Extra behov från Jobb (Sparad)', data: sBehovExtra, backgroundColor: 'rgba(245, 158, 11, 0.4)', stack: 'Stack 2' });
+            }
+
+            datasets.push({ type: 'line', label: '10-årssnitt (Historisk Byggtakt)', data: rollingAvgData, borderColor: '#64748b', borderWidth: 2, pointStyle: false, fill: false, hidden: true });
+            datasets.push({ type: 'line', label: 'Kapacitetstak (Byggproduktion)', data: maxKapacitet, borderColor: '#ef4444', borderWidth: 2, borderDash: [5,5], pointStyle: false, fill: false });
+
+            customScale = { y: { stacked: true, beginAtZero: true, min: 0, ticks: { callback: val => typeof window.formatNumber === 'function' ? window.formatNumber(val, 0) : val } } };
 
     } else if (chartType === 'medfoljande_behov') {
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
@@ -771,7 +969,15 @@ window.updateDashboard = function(calledFromDropdown = true) {
             });
         });
         
-        customScale = { y: { stacked: true, beginAtZero: useZeroAxis, ticks: { callback: val => window.formatNumber(val, 0) } } };
+        // Stenhård låsning av Y-axeln till 0 (utan grace som kan tvinga den neråt)
+            customScale = { 
+                y: { 
+                    stacked: true, 
+                    beginAtZero: true,
+                    min: 0, 
+                    ticks: { callback: val => typeof window.formatNumber === 'function' ? window.formatNumber(val, 0) : val } 
+                } 
+            };
 
     } else if (chartType === 'utbud_efterfragan') {
         isMultiLine = true;
