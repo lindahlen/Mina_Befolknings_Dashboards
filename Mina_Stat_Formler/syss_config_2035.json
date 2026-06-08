@@ -121,6 +121,14 @@
       "Grund": 0
     },
     {
+      "Indikator": "BRP_utv",
+      "Bas": "0.015",
+      "Hög": "0.02",
+      "Låg": "0.01",
+      "Stagnerande": "0.01",
+      "Grund": "0.015"
+    },
+    {
       "Indikator": "Befolkningskälla",
       "Bas": "Officiell",
       "Hög": "Officiell",

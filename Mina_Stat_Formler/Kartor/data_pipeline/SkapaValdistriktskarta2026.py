@@ -792,10 +792,12 @@ try:
     </style>
     
     <!-- HEADER PANEL -->
-    <div class="header-panel">
-        <img src="Img/Linkopingsloggo.png" alt="Linköping Logotyp" onerror="this.style.display='none'">
+    <a href="../mandatkalkylator_styrelser.html" style="text-decoration: none; color: inherit; display: block;" title="Gå tillbaka till Mandatkalkylatorn">
+    <div class="header-panel" style="cursor: pointer;">
+        <img src="../Img/Linkopingsloggo.png" alt="Linköping Logotyp" onerror="this.style.display='none'">
         <h4>Valanalys Linköping 2026</h4>
     </div>
+</a>
 
     <div class="legend-container" id="legend-container">
         <!-- Separata Legender -->

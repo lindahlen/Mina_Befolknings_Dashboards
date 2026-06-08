@@ -219,6 +219,7 @@ def export_html_dashboard(df, df_snabbval):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Jimmy Lindahl">
     <title>__DASHBOARD_TITLE__</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -238,12 +239,15 @@ def export_html_dashboard(df, df_snabbval):
 <body class="p-2 sm:p-4 md:p-6">
 
     <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-4 sm:p-6 relative">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4 pb-2 border-b border-gray-100">
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">__DASHBOARD_TITLE__</h1>
-            <button onclick="exportCSV()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow flex items-center justify-center">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                Ladda ner CSV
-            </button>
+            <div class="flex flex-col items-start md:items-end w-full md:w-auto gap-1">
+                <a href="nationella_index.html" class="w-full md:w-auto bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 px-4 rounded shadow flex items-center justify-center transition-colors">
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Tillbaka till översikten
+                </a>
+                <span class="text-xs text-gray-500 font-medium italic pr-1">Sammanställning av Jimmy Lindahl</span>
+            </div>
         </div>
 
         <!-- TILLBAKA-KNAPP CONTAINER -->
@@ -628,10 +632,18 @@ def export_html_dashboard(df, df_snabbval):
         <!-- ============================================== -->
         <div id="tab-admin" class="tab-content">
             <div class="bg-blue-50 border border-blue-200 p-4 rounded-lg shadow-sm mb-6 relative">
-                <button onclick="runLocalPythonScript()" class="hidden md:block absolute top-4 right-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow text-sm">
-                    Instruktion: Uppdatera Data
-                </button>
-                <h3 class="text-blue-800 font-bold mb-2 flex items-center">
+                
+                <div class="hidden md:flex absolute top-4 right-4 gap-2">
+                    <button onclick="exportCSV()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow text-sm flex items-center">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Ladda ner CSV
+                    </button>
+                    <button onclick="runLocalPythonScript()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded shadow text-sm">
+                        Instruktion: Uppdatera Data
+                    </button>
+                </div>
+                
+                <h3 class="text-blue-800 font-bold mb-2 flex items-center mt-12 md:mt-0">
                     <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
                     Systemlogik & Avancerad Analys
                 </h3>

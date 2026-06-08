@@ -320,7 +320,11 @@ html_template = """
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Säsong</label>
-                        <select id="search-season" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select>
+                        <div class="flex items-center gap-1">
+                            <button onclick="changeSeasonLocal('search-season', 1)" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Föregående säsong i listan">◀</button>
+                            <select id="search-season" onchange="updateSearchPhaseDropdown()" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select>
+                            <button onclick="changeSeasonLocal('search-season', -1)" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Nästa säsong i listan">▶</button>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Omgång</label>
@@ -457,6 +461,8 @@ html_template = """
                             <option value="draw">Flest Oavgjorda i rad</option>
                             <option value="cs">Flest Hållna Nollor i rad</option>
                             <option value="ns">Längsta Måltorka i rad</option>
+                            <option value="scored">Flest matcher med gjorda mål i rad</option>
+                            <option value="conceded">Flest matcher med insläppta mål i rad</option>
                         </select>
                     </div>
                     
@@ -490,7 +496,7 @@ html_template = """
                 <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end mb-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Säsong</label>
-                        <select id="table-season" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select>
+                        <div class="flex items-center gap-1"><button onclick="changeSeasonLocal('table-season', 1)" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Föregående säsong i listan">◀</button><select id="table-season" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select><button onclick="changeSeasonLocal('table-season', -1)" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Nästa säsong i listan">▶</button></div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Fas i serien</label>
@@ -1273,10 +1279,10 @@ html_template = """
             const fromStart = document.getElementById('streak-from-start').checked; const sameSeason = document.getElementById('streak-same-season').checked;
             document.getElementById('streaks-placeholder').classList.add('hidden');
             let teamsToProcess = teamFilter === "ALL" ? TEAMS : [teamFilter];
-            let absoluteMax = { win: { len: 0, arr: [], team: "" }, unb: { len: 0, arr: [], team: "" }, loss: { len: 0, arr: [], team: "" }, winless: { len: 0, arr: [], team: "" }, draw: { len: 0, arr: [], team: "" }, cs: { len: 0, arr: [], team: "" }, ns: { len: 0, arr: [], team: "" } };
+            let absoluteMax = { win: { len: 0, arr: [], team: "" }, unb: { len: 0, arr: [], team: "" }, loss: { len: 0, arr: [], team: "" }, winless: { len: 0, arr: [], team: "" }, draw: { len: 0, arr: [], team: "" }, cs: { len: 0, arr: [], team: "" }, ns: { len: 0, arr: [], team: "" }, scored: { len: 0, arr: [], team: "" }, conceded: { len: 0, arr: [], team: "" } };
             
             let seasonMax = { w:0, wS:"", wT:"", l:0, lS:"", lT:"", gf:0, gfS:"", gfT:"", ga:0, gaS:"", gaT:"" };
-            globalAllStreaks = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
+            globalAllStreaks = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
 
             teamsToProcess.forEach(team => {
                 let matches = MATCH_DATA.filter(m => m.Hemmalag === team || m.Bortalag === team);
@@ -1290,9 +1296,9 @@ html_template = """
                     return a.Match_ID - b.Match_ID;
                 });
 
-                let max = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
-                let cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
-                let valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true }; 
+                let max = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
+                let cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
+                let valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true, scored:true, conceded:true }; 
 
                 const processMatch = (m) => {
                     const isHome = m.Hemmalag === team;
@@ -1309,7 +1315,7 @@ html_template = """
                     else if (gf < ga) matchLost = true;
                     else matchDrawn = true;
 
-                    const c = { win: matchWon, unb: matchWon || matchDrawn, loss: matchLost, winless: matchLost || matchDrawn, draw: matchDrawn, cs: ga === 0, ns: gf === 0 };
+                    const c = { win: matchWon, unb: matchWon || matchDrawn, loss: matchLost, winless: matchLost || matchDrawn, draw: matchDrawn, cs: ga === 0, ns: gf === 0, scored: gf > 0, conceded: ga > 0 };
                     Object.keys(c).forEach(k => {
                         if (c[k]) { if (valid[k]) cur[k].push(m); } else {
                             if (cur[k].length > 0) globalAllStreaks[k].push({ team: team, len: cur[k].length, arr: [...cur[k]] });
@@ -1322,8 +1328,8 @@ html_template = """
                 let seasonMap = {}; matches.forEach(m => { if (!seasonMap[m.Säs]) seasonMap[m.Säs] = []; seasonMap[m.Säs].push(m); });
                 if (sameSeason || fromStart) {
                     Object.values(seasonMap).forEach(sMatches => {
-                        cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
-                        if (fromStart) valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true };
+                        cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
+                        if (fromStart) valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true, scored:true, conceded:true };
                         
                         let sW=0, sL=0, sGf=0, sGa=0;
 
@@ -1674,48 +1680,61 @@ html_template = """
                 
                 if (!mRoundsActive) {
                     for(let r = 1; r <= sMaxRound; r++) {
-                        let rTable = {}; globalSeasonTeams.forEach(t => { rTable[t] = { team: t, pts:0, gd:0, gf:0 }; });
-                        matches.filter(m => parseInt(m.Omgång) <= r).forEach(m => {
-                            let hm = parseInt(m.HM)||0; let bm = parseInt(m.BM)||0;
-                            let nTxt = String(m.NOT).toUpperCase();
-                            let isWOH = nTxt.includes("W.O; H") || nTxt.includes("AVBRUTEN; V") || nTxt.includes("EJ KVALIFICERAD SPELARE; V");
-                            let isWOB = nTxt.includes("W.O; B") || nTxt.includes("AVBRUTEN; F") || nTxt.includes("EJ KVALIFICERAD SPELARE; F");
-                            let isAvbrutenO = nTxt.includes("AVBRUTEN; O");
-                            if (isNaN(hm) || isNaN(bm)) { hm = 0; bm = 0; }
-                            rTable[m.Hemmalag].gf += hm; rTable[m.Bortalag].gf += bm; rTable[m.Hemmalag].gd += (hm - bm); rTable[m.Bortalag].gd += (bm - hm);
+                        
+                        // --- NY SKOTTSÄKER 50%-SPÄRR ---
+                        let matchesInThisRound = matches.filter(m => parseInt(m.Omgång) === r);
+                        let playedInThisRound = matchesInThisRound.filter(m => m.HM !== "" && m.HM !== null && m.HM !== undefined);
+                        
+                        let reqMatches = globalSeasonTeams.length / 4; // Minst 4 matcher för en 16-lagsserie
+                        
+                        if (playedInThisRound.length < reqMatches) {
+                            // Mindre än 50% är spelade -> Spärra denna omgång helt
+                            globalSeasonRanks[r] = null;
+                        } else {
+                            // Mer än 50% spelade -> Räkna ut tabellen
+                            let rTable = {}; globalSeasonTeams.forEach(t => { rTable[t] = { team: t, pts:0, gd:0, gf:0 }; });
+                            matches.filter(m => parseInt(m.Omgång) <= r).forEach(m => {
+                                let hm = parseInt(m.HM)||0; let bm = parseInt(m.BM)||0;
+                                let nTxt = String(m.NOT).toUpperCase();
+                                let isWOH = nTxt.includes("W.O; H") || nTxt.includes("AVBRUTEN; V") || nTxt.includes("EJ KVALIFICERAD SPELARE; V");
+                                let isWOB = nTxt.includes("W.O; B") || nTxt.includes("AVBRUTEN; F") || nTxt.includes("EJ KVALIFICERAD SPELARE; F");
+                                let isAvbrutenO = nTxt.includes("AVBRUTEN; O");
+                                if (isNaN(hm) || isNaN(bm)) { hm = 0; bm = 0; }
+                                rTable[m.Hemmalag].gf += hm; rTable[m.Bortalag].gf += bm; rTable[m.Hemmalag].gd += (hm - bm); rTable[m.Bortalag].gd += (bm - hm);
+                                
+                                if (isWOH) { rTable[m.Hemmalag].pts += pointsForWin; }
+                                else if (isWOB) { rTable[m.Bortalag].pts += pointsForWin; }
+                                else if (isAvbrutenO) { rTable[m.Hemmalag].pts += 1; rTable[m.Bortalag].pts += 1; }
+                                else if (hm > bm) rTable[m.Hemmalag].pts += pointsForWin; 
+                                else if (hm < bm) rTable[m.Bortalag].pts += pointsForWin;
+                                else { rTable[m.Hemmalag].pts += 1; rTable[m.Bortalag].pts += 1; }
+                            });
                             
-                            if (isWOH) { rTable[m.Hemmalag].pts += pointsForWin; }
-                            else if (isWOB) { rTable[m.Bortalag].pts += pointsForWin; }
-                            else if (isAvbrutenO) { rTable[m.Hemmalag].pts += 1; rTable[m.Bortalag].pts += 1; }
-                            else if (hm > bm) rTable[m.Hemmalag].pts += pointsForWin; 
-                            else if (hm < bm) rTable[m.Bortalag].pts += pointsForWin;
-                            else { rTable[m.Hemmalag].pts += 1; rTable[m.Bortalag].pts += 1; }
-                        });
-                        
-                        Object.values(rTable).forEach(t => {
-                            let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][t.team];
-                            if (mInfo && mInfo.start_pts < 0) {
-                                let adj = mInfo.start_pts;
-                                if (adj === -3 && pointsForWin === 2) adj = -2;
-                                t.pts += adj;
-                            }
-                        });
-                        
-                        let tArr = Object.values(rTable); 
-                        tArr.sort((a, b) => {
-                            if (b.pts !== a.pts) return b.pts - a.pts;
-                            if (useGoalRatio) {
-                                let ratioA = a.ga === 0 ? (a.gf > 0 ? 999 : 0) : a.gf / a.ga; let ratioB = b.ga === 0 ? (b.gf > 0 ? 999 : 0) : b.gf / b.ga;
-                                if (ratioB !== ratioA) return ratioB - ratioA;
-                            } else { if (b.gd !== a.gd) return b.gd - a.gd; }
-                            return b.gf - a.gf;
-                        });
-                        globalSeasonRanks[r] = {}; tArr.forEach((row, i) => { globalSeasonRanks[r][row.team] = i + 1; });
+                            Object.values(rTable).forEach(t => {
+                                let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][t.team];
+                                if (mInfo && mInfo.start_pts < 0) {
+                                    let adj = mInfo.start_pts;
+                                    if (adj === -3 && pointsForWin === 2) adj = -2;
+                                    t.pts += adj;
+                                }
+                            });
+                            
+                            let tArr = Object.values(rTable); 
+                            tArr.sort((a, b) => {
+                                if (b.pts !== a.pts) return b.pts - a.pts;
+                                if (useGoalRatio) {
+                                    let ratioA = a.ga === 0 ? (a.gf > 0 ? 999 : 0) : a.gf / a.ga; let ratioB = b.ga === 0 ? (b.gf > 0 ? 999 : 0) : b.gf / b.ga;
+                                    if (ratioB !== ratioA) return ratioB - ratioA;
+                                } else { if (b.gd !== a.gd) return b.gd - a.gd; }
+                                return b.gf - a.gf;
+                            });
+                            globalSeasonRanks[r] = {}; tArr.forEach((row, i) => { globalSeasonRanks[r][row.team] = i + 1; });
+                        }
                     }
                     let trendSelect = document.getElementById('trend-team-select');
                     let options = '<option value="">-- Välj lag --</option>'; globalSeasonTeams.sort().forEach(t => { options += `<option value="${t}">${t}</option>`; });
                     trendSelect.innerHTML = options; document.getElementById('team-trend-section').classList.remove('hidden');
-                    if (trendChartInstance) trendChartInstance.destroy();
+                    if (typeof trendChartInstance !== 'undefined' && trendChartInstance) trendChartInstance.destroy();
                 } else { document.getElementById('team-trend-section').classList.add('hidden'); }
             } else { document.getElementById('team-trend-section').classList.add('hidden'); }
         }
@@ -1726,10 +1745,18 @@ html_template = """
             document.getElementById('trend-title').innerText = `Placeringsutveckling: ${team} (${getSeasonName(season)})`;
             let labels = []; let data = []; let r_keys = Object.keys(globalSeasonRanks).map(Number).sort((a,b)=>a-b);
             let maxR = r_keys.length > 0 ? r_keys[r_keys.length-1] : 0;
-            for(let r=1; r<=maxR; r++) { labels.push(`Omg ${r}`); data.push(globalSeasonRanks[r] ? globalSeasonRanks[r][team] || null : null); }
+            for(let r=1; r<=maxR; r++) { 
+                labels.push(`Omg ${r}`); 
+                // Om omgången spärrades av databasen, tryck in null
+                if (globalSeasonRanks[r] === null) {
+                    data.push(null);
+                } else {
+                    data.push(globalSeasonRanks[r] ? globalSeasonRanks[r][team] || null : null); 
+                }
+            }
             const ctx = document.getElementById('teamTrendChart').getContext('2d');
             if(trendChartInstance) trendChartInstance.destroy();
-            trendChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Placering', data: data, borderColor: '#2563eb', backgroundColor: '#2563eb', borderWidth: 3, tension: 0.1, pointBackgroundColor: '#1e3a8a', pointRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { reverse: true, min: 1, max: globalSeasonTeams.length, ticks: { stepSize: 1 }, title: { display: true, text: 'Tabellplacering' } } } } });
+            trendChartInstance = new Chart(ctx, { type: 'line', data: { labels: labels, datasets: [{ label: 'Placering', data: data, borderColor: '#2563eb', backgroundColor: '#2563eb', borderWidth: 3, tension: 0.1, pointBackgroundColor: '#1e3a8a', pointRadius: 4, spanGaps: true, }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { reverse: true, min: 1, max: globalSeasonTeams.length, ticks: { stepSize: 1 }, title: { display: true, text: 'Tabellplacering' } } } } });
         }
 
         function renderDynamicAllTimeTable() {
@@ -2273,7 +2300,7 @@ html_template = """
             document.getElementById('analysis-comparison-table').classList.add('hidden'); document.getElementById('analysis-chart-container').classList.remove('hidden');
             let allErrors = []; globalAnalysisData = {}; 
 
-            seasonsToAnalyze.forEach(season => {
+           seasonsToAnalyze.forEach(season => {
                 let sMatches = MATCH_DATA.filter(m => String(m.Säs) === String(season) && m.Omgång !== "" && !isNaN(parseInt(m.Omgång)));
                 if (sMatches.length === 0) return; 
                 const ptsForWin = (SEASON_INFO[season] && SEASON_INFO[season].pts) ? SEASON_INFO[season].pts : 3;
@@ -2309,6 +2336,13 @@ html_template = """
                     let rankMap = {}; arr.forEach((r, i) => { rankMap[r.team] = i + 1; }); return { ranks: rankMap, sortedArray: arr };
                 };
 
+                // --- NY VAKT: 50%-SPÄRREN ---
+                const isRoundValid = (rnd) => {
+                    let mInRnd = sMatches.filter(m => parseInt(m.Omgång) === rnd);
+                    let playedInRnd = mInRnd.filter(m => m.HM !== "" && m.HM !== null && m.HM !== undefined);
+                    return mInRnd.length === 0 || playedInRnd.length >= (mInRnd.length / 2);
+                };
+
                 const finalTable = getTableAtRound(maxRound); const finalRanks = finalTable.ranks;
                 let teamsToAnalyze = Object.keys(finalRanks);
                 if (focus === 'top') teamsToAnalyze = finalTable.sortedArray.slice(0, 3).map(r => r.team);
@@ -2316,6 +2350,21 @@ html_template = """
 
                 let seasonErrors = []; let seasonDataObj = {};
                 for (let r = 1; r <= maxRound; r++) {
+                    
+                    // --- DEN SKOTTSÄKRA SPÄRREN FÖR GRAFEN ---
+                    let mInRnd = sMatches.filter(m => parseInt(m.Omgång) === r);
+                    let playedInRnd = mInRnd.filter(m => m.HM !== "" && m.HM !== null && m.HM !== undefined);
+                    let reqMatches = Object.keys(finalRanks).length / 4; // Minst 4 matcher för en 16-lagsserie
+                    
+                    if (playedInRnd.length < reqMatches) {
+                        seasonErrors.push(null);
+                        if (seasonsToAnalyze.length === 1) {
+                            seasonDataObj[r] = { mae: null, spearman: null, teams: [] };
+                        }
+                        continue; 
+                    }
+                    // -----------------------------------------
+
                     let currentTable = getTableAtRound(r); let currentRanks = currentTable.ranks;
                     let totalError = 0; teamsToAnalyze.forEach(t => { totalError += Math.abs(currentRanks[t] - finalRanks[t]); });
                     let meanError = totalError / teamsToAnalyze.length; 
@@ -2327,6 +2376,7 @@ html_template = """
                         seasonDataObj[r] = { mae: meanError, spearman: spearman, teams: teamsToAnalyze.map(t => ({ name: t, currentRank: currentRanks[t], finalRank: finalRanks[t], diff: currentRanks[t] - finalRanks[t] })).sort((a,b) => a.currentRank - b.currentRank) };
                     }
                 }
+
                 allErrors.push(seasonErrors);
                 if (seasonsToAnalyze.length === 1) globalAnalysisData = seasonDataObj;
             });
@@ -2342,7 +2392,7 @@ html_template = """
             document.getElementById('analysis-results').classList.remove('hidden'); const ctx = document.getElementById('analysisChart').getContext('2d');
             if (analysisChartInstance) { analysisChartInstance.destroy(); }
             analysisChartInstance = new Chart(ctx, {
-                type: 'line', data: { labels: labels, datasets: [{ label: 'Genomsnittligt Positionsfel (MAE)', data: averagedErrors, borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', borderWidth: 3, pointBackgroundColor: '#1e3a8a', pointHoverRadius: 8, pointHoverBackgroundColor: '#f59e0b', fill: true, tension: 0.3 }] },
+                type: 'line', data: { labels: labels, datasets: [{ label: 'Genomsnittligt Positionsfel (MAE)', data: averagedErrors, borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', borderWidth: 3, pointBackgroundColor: '#1e3a8a', pointHoverRadius: 8, pointHoverBackgroundColor: '#f59e0b', fill: true, tension: 0.3, spanGaps: true }] },
                 options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return ` MAE: ${c.parsed.y.toFixed(2)}`; } } } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Positionsfel' } }, x: { grid: { display: false } } },
                     onClick: (e, activeEls) => { if (seasonsToAnalyze.length > 1) { alert("Detaljerad tabell är endast tillgänglig när du granskar en enskild säsong, inte hela epoker/perioder."); return; } if (activeEls.length > 0) { const round = activeEls[0].index + 1; showAnalysisDetails(round); } }
                 }
@@ -2359,6 +2409,28 @@ html_template = """
                 return `<tr class="hover:bg-slate-800 transition-colors"><td class="p-3 font-medium text-blue-200">${t.name}</td><td class="p-3 text-center">${t.currentRank}</td><td class="p-3 text-center text-emerald-300 font-semibold">${t.finalRank}</td><td class="p-3 text-center">${diffStr}</td></tr>`;
             }).join('');
             document.getElementById('details-body').innerHTML = html; document.getElementById('analysis-details').classList.remove('hidden'); document.getElementById('analysis-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        function changeSeasonLocal(selectId, dir) {
+            let sel = document.getElementById(selectId);
+            if (!sel) return;
+            
+            let newIdx = sel.selectedIndex + dir;
+            // Förhindra att man bläddrar till en tom rad/väljare (t.ex. "-- Alla --") på index 0
+            let minIdx = (sel.options.length > 0 && sel.options[0].value === "") ? 1 : 0; 
+            
+            if (newIdx >= minIdx && newIdx < sel.options.length) {
+                sel.selectedIndex = newIdx;
+                
+                // Detta eldar av ett "change"-event i bakgrunden så att webbläsaren fattar 
+                // att rullistan har ändrats och automatiskt kör igång dina tabell-ritar-funktioner
+                sel.dispatchEvent(new Event('change'));
+                
+                // Specifika extra-anrop för Matchsök om du använder det där också:
+                if (selectId === 'search-season') {
+                    if (typeof updateSearchPhaseDropdown === 'function') updateSearchPhaseDropdown();
+                    if (typeof performSearch === 'function') performSearch();
+                }
+            }
         }
     </script>
 </body>

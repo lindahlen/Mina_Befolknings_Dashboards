@@ -354,7 +354,11 @@ html_template = """
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Säsong</label>
-                        <select id="search-season" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-orange-500"></select>
+                        <div class="flex items-center gap-1">
+                            <button onclick="changeSeasonLocal('search-season', 1)" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Föregående säsong i listan">◀</button>
+                            <select id="search-season" onchange="updateSearchPhaseDropdown()" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select>
+                            <button onclick="changeSeasonLocal('search-season', -1)" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Nästa säsong i listan">▶</button>
+                        </div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Omgång</label>
@@ -487,6 +491,8 @@ html_template = """
                             <option value="draw">Flest Oavgjorda i rad</option>
                             <option value="cs">Flest Hållna Nollor i rad</option>
                             <option value="ns">Längsta Måltorka i rad</option>
+                            <option value="scored">Flest matcher med gjorda mål i rad</option>
+                            <option value="conceded">Flest matcher med insläppta mål i rad</option>
                         </select>
                     </div>
                     
@@ -513,7 +519,7 @@ html_template = """
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end mb-4">
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Säsong</label>
-                        <select id="table-season" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-orange-500"></select>
+                        <div class="flex items-center gap-1"><button onclick="changeSeasonLocal('table-season', 1)" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Föregående säsong i listan">◀</button><select id="table-season" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select><button onclick="changeSeasonLocal('table-season', -1)" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Nästa säsong i listan">▶</button></div>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-slate-700 mb-1">Efter omgång</label>
@@ -1249,10 +1255,10 @@ html_template = """
             const fromStart = document.getElementById('streak-from-start').checked; const sameSeason = document.getElementById('streak-same-season').checked;
             document.getElementById('streaks-placeholder').classList.add('hidden');
             let teamsToProcess = teamFilter === "ALL" ? TEAMS : [teamFilter];
-            let absoluteMax = { win: { len: 0, arr: [], team: "" }, unb: { len: 0, arr: [], team: "" }, loss: { len: 0, arr: [], team: "" }, winless: { len: 0, arr: [], team: "" }, draw: { len: 0, arr: [], team: "" }, cs: { len: 0, arr: [], team: "" }, ns: { len: 0, arr: [], team: "" } };
+            let absoluteMax = { win: { len: 0, arr: [], team: "" }, unb: { len: 0, arr: [], team: "" }, loss: { len: 0, arr: [], team: "" }, winless: { len: 0, arr: [], team: "" }, draw: { len: 0, arr: [], team: "" }, cs: { len: 0, arr: [], team: "" }, ns: { len: 0, arr: [], team: "" }, scored: { len: 0, arr: [], team: "" }, conceded: { len: 0, arr: [], team: "" } };
             
             let seasonMax = { w:0, wS:"", wT:"", l:0, lS:"", lT:"", gf:0, gfS:"", gfT:"", ga:0, gaS:"", gaT:"" };
-            globalAllStreaks = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
+            globalAllStreaks = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
 
             teamsToProcess.forEach(team => {
                 let matches = MATCH_DATA.filter(m => m.Hemmalag === team || m.Bortalag === team);
@@ -1266,9 +1272,9 @@ html_template = """
                     return a.Match_ID - b.Match_ID;
                 });
 
-                let max = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
-                let cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
-                let valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true }; 
+                let max = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
+                let cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
+                let valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true, scored:true, conceded:true }; 
 
                 const processMatch = (m) => {
                     const isHome = m.Hemmalag === team;
@@ -1285,7 +1291,7 @@ html_template = """
                     else if (gf < ga) matchLost = true;
                     else matchDrawn = true;
 
-                    const c = { win: matchWon, unb: matchWon || matchDrawn, loss: matchLost, winless: matchLost || matchDrawn, draw: matchDrawn, cs: ga === 0, ns: gf === 0 };
+                    const c = { win: matchWon, unb: matchWon || matchDrawn, loss: matchLost, winless: matchLost || matchDrawn, draw: matchDrawn, cs: ga === 0, ns: gf === 0, scored: gf > 0, conceded: ga > 0 };
                     Object.keys(c).forEach(k => {
                         if (c[k]) { if (valid[k]) cur[k].push(m); } else {
                             if (cur[k].length > 0) globalAllStreaks[k].push({ team: team, len: cur[k].length, arr: [...cur[k]] });
@@ -1298,8 +1304,8 @@ html_template = """
                 let seasonMap = {}; matches.forEach(m => { if (!seasonMap[m.Säs]) seasonMap[m.Säs] = []; seasonMap[m.Säs].push(m); });
                 if (sameSeason || fromStart) {
                     Object.values(seasonMap).forEach(sMatches => {
-                        cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[] };
-                        if (fromStart) valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true };
+                        cur = { win:[], unb:[], loss:[], winless:[], draw:[], cs:[], ns:[], scored:[], conceded:[] };
+                        if (fromStart) valid = { win:true, unb:true, loss:true, winless:true, draw:true, cs:true, ns:true, scored:true, conceded:true };
                         
                         let sW=0, sL=0, sGf=0, sGa=0;
 
@@ -2256,6 +2262,28 @@ html_template = """
                 return `<tr class="hover:bg-slate-800 transition-colors"><td class="p-3 font-medium text-orange-200">${t.name}</td><td class="p-3 text-center">${t.currentRank}</td><td class="p-3 text-center text-emerald-300 font-semibold">${t.finalRank}</td><td class="p-3 text-center">${diffStr}</td></tr>`;
             }).join('');
             document.getElementById('details-body').innerHTML = html; document.getElementById('analysis-details').classList.remove('hidden'); document.getElementById('analysis-details').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        function changeSeasonLocal(selectId, dir) {
+            let sel = document.getElementById(selectId);
+            if (!sel) return;
+            
+            let newIdx = sel.selectedIndex + dir;
+            // Förhindra att man bläddrar till en tom rad/väljare (t.ex. "-- Alla --") på index 0
+            let minIdx = (sel.options.length > 0 && sel.options[0].value === "") ? 1 : 0; 
+            
+            if (newIdx >= minIdx && newIdx < sel.options.length) {
+                sel.selectedIndex = newIdx;
+                
+                // Detta eldar av ett "change"-event i bakgrunden så att webbläsaren fattar 
+                // att rullistan har ändrats och automatiskt kör igång dina tabell-ritar-funktioner
+                sel.dispatchEvent(new Event('change'));
+                
+                // Specifika extra-anrop för Matchsök om du använder det där också:
+                if (selectId === 'search-season') {
+                    if (typeof updateSearchPhaseDropdown === 'function') updateSearchPhaseDropdown();
+                    if (typeof performSearch === 'function') performSearch();
+                }
+            }
         }
     </script>
 </body>
