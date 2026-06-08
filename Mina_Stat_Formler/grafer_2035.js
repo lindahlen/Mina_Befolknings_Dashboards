@@ -1274,13 +1274,13 @@ window.updateDashboard = function(calledFromDropdown = true) {
                         
                         <div class="absolute z-[100] hidden group-hover:block w-80 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
                             <p class="mb-2"><strong>Bruttoregionprodukt (BRP):</strong> BRP är den regionala motsvarigheten till BNP och mäter det samlade värdet av allt som produceras i kommunen.</p>
-                            <p class="mb-2"><strong>Hur beräknas framtiden?</strong> Kalkylatorn uppskattar den framtida tillväxten genom att kombinera antalet arbetande personer med förväntad produktivitetsökning.</p>
-                            <p><strong>BRP i Nyckeltalsrutan:</strong> Observera att KPI-rutan högst upp på sidan visar BRP <em>per sysselsatt</em> (ett mått på hur produktiv varje medarbetare är), medan detta diagram visar den <em>totala</em> ekonomiska volymen för hela kommunen.</p>
+                            <p class="mb-2"><strong>Hur beräknas framtiden?</strong> Kalkylatorn uppskattar den framtida tillväxten genom att kombinera det simulerade antalet arbetande personer (jobb) med en årlig produktivitetsökning. Vilken procentsats som används för produktiviteten (t.ex. 1,5%) styrs av det scenario (ex. <em>Bas</em>, <em>Hög</em> eller <em>Låg</em>) som har aktiverats i styrfilen.</p>
+                            <p><strong>BRP i Nyckeltalsrutan:</strong> Observera att KPI-rutan högst upp på sidan visar BRP <em>per sysselsatt</em> (ett mått på hur produktiv varje medarbetare är), medan detta diagram visar den <em>totala</em> ekonomiska volymen för hela kommunen (Mkr).</p>
                             
                             <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
                         </div>
                     </span>
-                    <span class="text-sm">Visar kommunens uppskattade Bruttoregionprodukt (BRP) över tid.</span>
+                    <span class="text-sm">Visar kommunens uppskattade Bruttoregionprodukt (BRP) i Miljoner kronor (Mkr) över tid.</span>
                 </div>
             `;
         }
@@ -1389,10 +1389,10 @@ window.updateDashboard = function(calledFromDropdown = true) {
             let infoText = "Visar in- och utpendling över kommungränsen, samt pendlingsnetto över tid." + modeSuffix;
             
             let tooltipHTML = `
-                <p class="mb-2"><strong>Rullistan (Utpendling):</strong> Välj om utpendling ska visas som negativa staplar (lättare att se nettot visuellt) eller positiva staplar (lättare att jämföra volymer).</p>
-                <p class="mb-2"><strong>Pendlingsnetto:</strong> Linjen visar skillnaden mellan in- och utpendlare. Ligger linjen över nollstrecket har kommunen fler inpendlare än utpendlare.</p>
-                <p class="mb-2"><strong>Dynamiskt läge:</strong> Diagrammet och Nyckeltalet (KPI) högst upp är helt synkade och visar den nya jämvikten <em>efter</em> att rekryteringsgapet har fyllts med simulerad in/utpendling.</p>
-                <p><strong>Analytiskt läge:</strong> Diagrammet ritar endast ut basprognosen. Nyckeltalet högst upp visar detta basvärde, följt av en parentes som anger hur mycket <em>ytterligare</em> pendling som saknas (eller är i överskott) för att arbetsmarknaden ska gå ihop.</p>
+                <p class="mb-2"><strong>Rullistan:</strong> Välj om utpendling ska visas som positiva eller negativa staplar för att lättare jämföra volymer eller visuellt se nettot.</p>
+                <p class="mb-2"><strong>Förväntad utveckling (Bas):</strong> Kalkylatorn beräknar en strukturell grundpendling baserad på jobbtillväxt, demografi och grannkommunernas arbetskraftsreserv.</p>
+                <p class="mb-2"><strong>Analytiskt läge:</strong> Visar den strukturella pendlingen. Om denna inte räcker för att fylla kommunens jobb, varnar Nyckeltalet (KPI) högst upp med en orange parentes som visar hur extremt pendlingen skulle behöva öka för att lösa krisen.</p>
+                <p><strong>Dynamiskt läge:</strong> Modellen löser rekryteringsgapet genom ökad inflyttning. Eftersom de nya invånarna bor lokalt och tar jobben, slipper pendlingen öka drastiskt och stannar därmed på sin naturliga, balanserade grundnivå i diagrammet.</p>
             `;
 
             desc.innerHTML = `
@@ -1415,7 +1415,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
         labels.forEach(y => {
             let numY = Number(y);
             
-            // 1. Historiken
+            // 1. Historiken (alltid oförändrad)
             if (numY <= window.baseYear && window.histDataStore[numY]) {
                 hIn.push(window.histDataStore[numY].inpendling);
                 let utVal = window.histDataStore[numY].utpendling;
@@ -1431,28 +1431,32 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 pNet.push(window.histDataStore[numY].netCommuting);
             } else if (numY > window.baseYear && window.progDataStore[numY]) {
                 
-                // Hämta analytiska basvärden
                 let d = window.progDataStore[numY];
                 let currentIn = d.inpendling || 0;
                 let currentUt = d.utpendling || 0;
-                let currentNet = d.explicitNetCommuting || 0;
+                
+                // EXAKT samma logik som i updateKPIs
+                let explNetto = d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0);
+                let virtualExt = d.virtualSupply || 0;
+                let totalPendling = showCommuting ? (explNetto + virtualExt) : 0;
+                
+                let currentNet = totalPendling;
 
-                // --- NY DYNAMISK LOGIK (MATCHAR KPI-KORTET) ---
-                if (causalityMode === 'dynamic') {
-                    // Vi återskapar beräkningen från updateKPIs
-                    let totalPendling = (d.explicitNetCommuting !== undefined) ? d.explicitNetCommuting : (currentIn - currentUt);
+                // För att staplarna (In minus Ut) ska gå jämnt ut med det nya nettot, 
+                // adderar vi det virtuella pendlingsutbudet på inpendlingen.
+                currentIn += virtualExt;
+
+                // --- DYNAMISK LOGIK (MATCHAR DYNAMISKT GAP I KPI-KORTET) ---
+                if (causalityMode === 'dynamic' && showCommuting) {
                     let omatchatGap = (d.demand || 0) - ((d.supply || 0) + totalPendling);
                     
-                    // Om det finns ett gap som måste fyllas, justeras nettot
                     if (Math.abs(omatchatGap) > 5) {
-                        currentNet = totalPendling + omatchatGap;
+                        currentNet = totalPendling + omatchatGap; // Nettot blir det som krävs för balans
                         
-                        // Vi antar att omatchat gap löses genom ökad inpendling (positivt gap) 
-                        // eller ökad utpendling (negativt gap / överskott av lokal arbetskraft)
                         if (omatchatGap > 0) {
-                            currentIn += omatchatGap; 
+                            currentIn += omatchatGap; // Fler pendlar in för att ta jobben
                         } else {
-                            currentUt += Math.abs(omatchatGap);
+                            currentUt += Math.abs(omatchatGap); // Överskott av lokal arbetskraft pendlar ut
                         }
                     }
                 }
@@ -1810,6 +1814,7 @@ window.updateDashboard = function(calledFromDropdown = true) {
         const ageGroup = subGroupSelect ? subGroupSelect.value : '20-64';
         let h_1 = [], h_2 = [], h_tot = [], p_1 = [], p_2 = [], p_tot = [];
         labels = activeYears;
+        
         labels.forEach(y => {
             let numericY = Number(y);
             if (numericY >= 1985) {
@@ -1824,22 +1829,48 @@ window.updateDashboard = function(calledFromDropdown = true) {
                     }
                 }
 
-                if (y <= window.baseYear) { h_1.push(v1); h_2.push(v2); h_tot.push(window.histDataStore[numericY] ? window.histDataStore[numericY].displayRate : null); } 
-                else { h_1.push(null); h_2.push(null); h_tot.push(null); }
+                // NY LOGIK FÖR HISTORIK: Räkna ut snittet av v1 och v2 om båda finns, annars använd displayRate (som fallback för utrikes)
+                let totHistVal = null;
+                if (chartType === 'syssgrad_kon' && v1 !== null && v2 !== null) {
+                    totHistVal = (v1 + v2) / 2;
+                } else {
+                    totHistVal = window.histDataStore[numericY] ? window.histDataStore[numericY].displayRate : null;
+                }
+
+                if (y <= window.baseYear) { 
+                    h_1.push(v1); h_2.push(v2); h_tot.push(totHistVal); 
+                } else { 
+                    h_1.push(null); h_2.push(null); h_tot.push(null); 
+                }
                 
-                if (y === window.baseYear) { p_1.push(v1); p_2.push(v2); p_tot.push(window.histDataStore[numericY] ? window.histDataStore[numericY].displayRate : null); } 
+                // NY LOGIK FÖR PROGNOS: Samma sak, hämta rätt värden och räkna ut snittet
+                if (y === window.baseYear) { 
+                    p_1.push(v1); p_2.push(v2); p_tot.push(totHistVal); 
+                } 
                 else if (y > window.baseYear && window.progDataStore[numericY]) {
-                    // Hämta värdena DIREKT från kalkylatormotorns uträkning istället för att lägga på samma genomsnitt på båda!
+                    let pv1 = null, pv2 = null, pvTot = null;
+                    
                     if (chartType === 'syssgrad_utrikes') {
-                        p_1.push(window.progDataStore[numericY][key1] != null ? window.progDataStore[numericY][key1] : null);
-                        p_2.push(window.progDataStore[numericY][key2] != null ? window.progDataStore[numericY][key2] : null);
+                        pv1 = window.progDataStore[numericY][key1] != null ? window.progDataStore[numericY][key1] : null;
+                        pv2 = window.progDataStore[numericY][key2] != null ? window.progDataStore[numericY][key2] : null;
+                        pvTot = window.progDataStore[numericY].displayRate != null ? window.progDataStore[numericY].displayRate : null;
                     } else {
-                        p_1.push(window.progDataStore[numericY][key1] && window.progDataStore[numericY][key1][ageGroup] != null ? window.progDataStore[numericY][key1][ageGroup] : null);
-                        p_2.push(window.progDataStore[numericY][key2] && window.progDataStore[numericY][key2][ageGroup] != null ? window.progDataStore[numericY][key2][ageGroup] : null);
+                        pv1 = window.progDataStore[numericY][key1] && window.progDataStore[numericY][key1][ageGroup] != null ? window.progDataStore[numericY][key1][ageGroup] : null;
+                        pv2 = window.progDataStore[numericY][key2] && window.progDataStore[numericY][key2][ageGroup] != null ? window.progDataStore[numericY][key2][ageGroup] : null;
+                        // Räkna ut snittet för framtiden
+                        if (pv1 !== null && pv2 !== null) {
+                            pvTot = (pv1 + pv2) / 2;
+                        } else {
+                            pvTot = window.progDataStore[numericY].displayRate != null ? window.progDataStore[numericY].displayRate : null;
+                        }
                     }
-                    p_tot.push(window.progDataStore[numericY].displayRate != null ? window.progDataStore[numericY].displayRate : null);
-           
-                } else { p_1.push(null); p_2.push(null); p_tot.push(null); }
+                    
+                    p_1.push(pv1);
+                    p_2.push(pv2);
+                    p_tot.push(pvTot);
+                } else { 
+                    p_1.push(null); p_2.push(null); p_tot.push(null); 
+                }
             }
         });
 

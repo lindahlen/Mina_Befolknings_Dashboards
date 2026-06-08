@@ -158,31 +158,55 @@
                     </details>
 
                     <div class="slider-container">
-                        <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
-                            <span class="flex items-center">
+                            <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
+                            <span class="flex items-center gap-1.5">
                                 Kvarstannandegrad LiU
-                                <i id="civIngToggleIcon" class="fa-solid fa-circle-plus text-sky-600 ml-1.5 cursor-pointer hover:text-sky-800 transition" onclick="if(window.toggleCivIng) window.toggleCivIng()" title="Dela upp på Civilingenjörer och Övriga"></i>
+            
+                                <!-- Här har before:-inset-3 ändrats till before:-inset-1 för att inte täcka +-knappen -->
+                                <span class="relative group cursor-help text-blue-500 hover:text-blue-700 before:absolute before:-inset-1 before:content-['']">
+                                    <i class="fa-solid fa-circle-info text-base relative z-10"></i>
+                                    <div class="absolute z-[100] hidden group-hover:block w-80 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
+                                        <p class="mb-2"><strong>Kvarstannandegrad:</strong> Visar kommunens förmåga att behålla studenter och unga vuxna efter att de har avslutat sina studier.</p>
+                                        <p><strong>Effekt i modellen:</strong> Att öka kvarstannandegraden är ett av de mest effektiva sätten att minska ett framtida rekryteringsgap. Det tillför ung, välutbildad arbetskraft direkt till den lokala marknaden, utan att staden behöver tävla om helt nya inflyttare från andra kommuner.</p>
+                                        <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
+                                    </div>
+                                </span>
+
+                                <i id="civIngToggleIcon" class="fa-solid fa-circle-plus text-sky-600 cursor-pointer hover:text-sky-800 transition" onclick="if(window.toggleCivIng) window.toggleCivIng()" title="Dela upp på Civilingenjörer och Övriga"></i>
                             </span>
                             <span id="studentVal" class="text-slate-600 font-bold">Baslinje</span>
-                        </label>
-                        <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="document.getElementById('studentVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
-                    </div>
-
-                    <div id="civIngContainer" class="slider-container hidden bg-sky-50 p-2.5 rounded border border-sky-200 mt-2 mb-3 shadow-inner">
-                        <label class="block text-xs font-medium mb-1 flex justify-between text-sky-900">
-                            <span>↳ Därav Civilingenjörer</span>
-                            <span id="civIngVal" class="text-sky-700 font-bold">Baslinje</span>
-                        </label>
-                        <input type="range" id="civIngSlider" min="-10" max="40" step="1" value="0" oninput="document.getElementById('civIngVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
-                    </div>
+                            </label>
+                            <input type="range" id="studentSlider" min="-10" max="20" step="1" value="0" oninput="document.getElementById('studentVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
+                        </div>
+                    
+                        <div id="civIngContainer" class="slider-container hidden bg-sky-50 p-2.5 rounded border border-sky-200 mt-2 mb-3 shadow-inner">
+                            <label class="block text-xs font-medium mb-1 flex justify-between text-sky-900">
+                                <span>↳ Därav Civilingenjörer</span>
+                                <span id="civIngVal" class="text-sky-700 font-bold">Baslinje</span>
+                            </label>
+                            <input type="range" id="civIngSlider" min="-10" max="40" step="1" value="0" oninput="document.getElementById('civIngVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'">
+                        </div>
 
                     <div class="slider-container bg-orange-50 p-2 rounded border border-orange-100 mt-3">
-                        <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
-                            <span class="flex items-center gap-1">Inflyttares syss.grad <i class="fa-solid fa-circle-info text-orange-400 cursor-pointer hover:text-orange-600 transition" onclick="if(window.showInfo) window.showInfo('inflyttare')"></i></span>
-                            <span id="migrantSyssVal" class="text-orange-600 font-bold">+10%-enh</span>
-                        </label>
-                        <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="document.getElementById('migrantSyssVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'; if(window.handleYearChange) window.handleYearChange();">
-                    </div>
+                            <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
+                                <span class="flex items-center gap-1.5">
+                                    Inflyttares syss.grad 
+            
+                                    <!-- Uppgraderad i-knapp för Inflyttares syss.grad med din specifika text! -->
+                                    <span class="relative group cursor-help text-orange-400 hover:text-orange-600 before:absolute before:-inset-3 before:content-['']">
+                                        <i class="fa-solid fa-circle-info text-base relative z-10"></i>
+                                    <div class="absolute z-[100] hidden group-hover:block w-80 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
+                                            <p class="mb-2"><strong>Hur påverkas kalkylatorn?</strong> Detta reglage påverkar <em>inte</em> arbetsmarknadsdiagrammen, utan korrigerar endast nyckeltalet "Befolkning (Ny)" högst upp.</p>
+                                            <p class="mb-2"><strong>Varför behövs detta?</strong> SCB mäter ofta sysselsättning året <em>innan</em> en flytt. Genom att dra upp reglaget (+10 %) korrigerar du för mörkertalet av inflyttare som faktiskt flyttar in specifikt för att börja ett nytt jobb.</p>
+                                            <p><strong>Effekt:</strong> Ju högre andel av inflyttarna som de facto tar ett jobb direkt, desto färre "extra" vuxna och barn behöver flytta in till kommunen. Det betyder i sin tur att färre bostäder behöver byggas för att stänga ett specifikt kompetensgap.</p>
+                                            <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
+                                        </div>
+                                    </span>
+                                </span>
+                                <span id="migrantSyssVal" class="text-orange-600 font-bold">+10%-enh</span>
+                            </label>
+                            <input type="range" id="migrantSyssSlider" min="-10" max="40" step="1" value="10" oninput="document.getElementById('migrantSyssVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%-enh'; if(window.handleYearChange) window.handleYearChange();">
+                        </div>
 
                     <hr class="my-4 border-gray-200">
                     
@@ -227,21 +251,42 @@
                         </div>
 
                         <div class="slider-container mt-4">
-                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
-                                <span>Distansarbete (Andel)</span>
-                                <span id="distansVal" class="text-slate-600 font-bold">Baslinje</span>
+                            <label class="block text-xs font-medium mb-1 flex justify-between items-center text-gray-700">
+                                <div class="flex items-center gap-1.5">
+                                    <span>Distansarbete (Andel)</span>
+                                    <span class="relative group cursor-help text-blue-500 hover:text-blue-700 before:absolute before:-inset-3 before:content-['']">
+                                        <i class="fa-solid fa-circle-info text-base relative z-10"></i>
+                                        <div class="absolute z-[100] hidden group-hover:block w-80 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
+                                            <p class="mb-2"><strong>Distansarbete:</strong> Fungerar som en <em>digital</em> regionförstoring. När distansarbetet ökar behöver företagen inte längre begränsa sin rekrytering till det geografiska närområdet, och invånarna kan ta jobb på annan ort utan att behöva pendla fysiskt.</p>
+                                            <p><strong>Effekt i modellen:</strong> Ett högre värde här ökar det virtuella arbetskraftsutbudet. Det avlastar pendlingsnätet och minskar det akuta behovet av att bygga nya bostäder lokalt för att klara kompetensförsörjningen.</p>
+                                            <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
+                                        </div>
+                                    </span>
+                                </div>
+                            <span id="distansVal" class="text-slate-600 font-bold">Baslinje</span>
                             </label>
-                            <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="document.getElementById('distansVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
+                        <input type="range" id="distansSlider" min="-20" max="40" step="5" value="0" oninput="document.getElementById('distansVal').innerText = (this.value > 0 ? '+' : '') + this.value + '%'">
                         </div>
 
                         <div class="slider-container">
-                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700">
-                                <span>Regionförstoring (Restid)</span>
+                            <label class="block text-xs font-medium mb-1 flex justify-between text-gray-700 items-center">
+                                <div class="flex items-center gap-1.5">
+                                    <span>Regionförstoring (Restid)</span>
+                                    <span class="relative group cursor-help text-blue-500 hover:text-blue-700 before:absolute before:-inset-3 before:content-['']">
+                                        <i class="fa-solid fa-circle-info text-base relative z-10"></i>
+                                        <div class="absolute z-[100] hidden group-hover:block w-80 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
+                                            <p class="mb-2"><strong>Regionförstoring:</strong> När restiderna kortas (t.ex. genom bättre infrastruktur eller snabbare tåg) krymper det mentala och fysiska avståndet till grannkommunerna. Det gör att den funktionella arbetsmarknadsregionen vidgas – företag får tillgång till fler sökande och invånare får tillgång till fler jobb.</p>
+                                            <p class="mb-2"><strong>Vad är pendlingselasticitet?</strong> Det är ett mått på hur känsliga vi människor är för förändrade restider. Om restiden minskar, hur många fler väljer då <em>faktiskt</em> att börja pendla? All erfarenhet visar att pendlingen inte ökar med 100 % av den teoretiska potentialen, eftersom människor väger in andra saker i livet (familj, vanor, skola).</p>
+                                            <p><strong>Varför är värdet inställt på 0,6?</strong> Kalkylatorn använder en elasticitet på 0,6. Det betyder att om tillgängligheten till grannkommunernas arbetskraft förbättras med t.ex. 10 % via kortare restider, så realiseras <strong>60 %</strong> av detta i form av faktiskt ökad in- och utpendling. Det är ett robust och realistiskt antagande baserat på transportekonomisk forskning.</p>
+                                            <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
+                                        </div>
+                                    </span>
+                                </div>
                                 <span id="regionVal" class="text-slate-600 font-bold">Dagens nivå</span>
                             </label>
-                            <input type="range" id="regionSlider" min="-10" max="30" step="1" value="0" oninput="document.getElementById('regionVal').innerText = this.value == 0 ? 'Dagens nivå' : (this.value > 0 ? '+' + this.value + ' min' : this.value + ' min')">
+                        <input type="range" id="regionSlider" min="-10" max="30" step="1" value="0" oninput="document.getElementById('regionVal').innerText = this.value == 0 ? 'Dagens nivå' : (this.value > 0 ? '+' + this.value + ' min' : this.value + ' min')">
                         </div>
-                    </div>
+                        </div>
 
                     <div class="flex flex-wrap gap-1.5 mt-4">
                         <button id="simBtn" onclick="if(window.runSimulation) window.runSimulation()" class="w-full sm:flex-1 bg-slate-700 hover:bg-slate-800 text-white font-bold py-1.5 px-2 rounded transition flex items-center justify-center shadow-md text-xs sm:text-sm">
@@ -534,6 +579,7 @@
                             region: getVal('Regionförstoring', 0),
                             migrantSyss: getVal('Justering inflyttares syss.grad', 10),
                             naringSkala: getVal('Näringslivsjustering_skala', 1.0),
+                            brpUtv: getVal('BRP_utv', 0.015), // <--- HÄR ÄR DEN NYA RADEN
                             popSource: String(rows.find(r => String(r.Indikator).trim() === 'Befolkningskälla')?.[colName] || '').toLowerCase()
                         };
 

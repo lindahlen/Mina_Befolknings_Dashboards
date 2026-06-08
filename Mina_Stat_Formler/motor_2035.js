@@ -791,6 +791,9 @@ window.toggleSaveScenario = function() {
 };
 
 window.setScenario = function(type) {
+    // FLYTTAD TILL TOPPEN: Denna MÅSTE köras direkt när man klickar på en knapp!
+    alert("Du klickade på scenariot: " + type);
+
     const s = window.scenarioSettings[type];
     document.getElementById('jobGrowthSlider').value = s.jobGrowth || 0;
     document.getElementById('jobGrowthVal').innerText = (s.jobGrowth > 0 ? '+' : '') + (s.jobGrowth || 0) + '%';
@@ -815,7 +818,9 @@ window.setScenario = function(type) {
     });
     
     window.currentNaringSkala = s.naringSkala !== undefined ? s.naringSkala : 1.0;
-
+    // HÄR ÄR DEN NYA RADEN FÖR BRP: Vi sparar scenariots BRP-tillväxt i minnet
+    window.currentBrpUtv = s.brpUtv;
+        
     document.getElementById('studentSlider').value = s.student || 0;
     document.getElementById('studentVal').innerText = (s.student > 0 ? '+' : '') + (s.student || 0) + '%-enh';
     if(document.getElementById('migrantSyssSlider')) { document.getElementById('migrantSyssSlider').value = s.migrantSyss !== undefined ? s.migrantSyss : 10; document.getElementById('migrantSyssVal').innerText = (s.migrantSyss > 0 ? '+' : '') + (s.migrantSyss !== undefined ? s.migrantSyss : 10) + '%-enh'; }
@@ -1826,7 +1831,16 @@ window.runSimulation = function() {
             const distansBoostTotal = baselineGap * (distansChange / 100);
             
             const targetVirtualSupply = extraRegionSupplyTotal + distansBoostTotal;
-            const brpCAGR = window.histDataStore['brpCAGR'] || 0.015;
+            
+            // 1. Ta reda på vilket scenario som är klickat/aktivt just nu
+            const activeType = window.currentActiveScenario || 'base';
+            
+            // 2. Hämta hela det scenariots inställningar från minnet
+            const activeScenObj = window.scenarioSettings ? window.scenarioSettings[activeType] : null;
+            
+            // 3. Hämta BRP_utv från det aktiva scenariot, annars historik eller fallback på 1.5%
+            const brpCAGR = (activeScenObj && activeScenObj.brpUtv !== undefined) ? activeScenObj.brpUtv : (window.histDataStore['brpCAGR'] || 0.015);
+                            
             const baseExtrapolatedBRP = window.histDataStore[window.baseYear].extrapolatedBrp;
             
             const useAvg = (popSource === 'officiell' || popSource === 'custom' || popSource === 'reducerad');
