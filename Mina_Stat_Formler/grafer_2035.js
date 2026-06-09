@@ -1329,52 +1329,60 @@ window.updateDashboard = function(calledFromDropdown = true) {
         if (title) title.innerText = "Årlig förändring (Nytt utbud/Efterfrågan)";
         
         if (desc) {
-            // Baka in texten och i-knappen med magnet-effekten!
             desc.innerHTML = `
                 <div class="flex items-center gap-2">
                     <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
                         <i class="fa-solid fa-circle-info text-base relative z-10"></i>
-                        
                         <div class="absolute z-[100] hidden group-hover:block w-80 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
-                            <p class="mb-2"><strong>Årlig nettoförändring:</strong> Till skillnad från huvuddiagrammet (som visar totala nivåer), visar detta diagram förändringen från ett år till nästa. Hur många <em>nya</em> jobb skapas jämfört med hur mycket arbetskraften växer?</p>
-                            <p><strong>Tolkning:</strong> Staplar under nollstrecket innebär en minskning (t.ex. avtagande efterfrågan eller stora pensionsavgångar). Simulerade jobbsatsningar i kalkylatorn syns ofta som skarpa uppåtgående toppar i den gröna stapeln.</p>
-                            
+                            <p class="mb-2"><strong>Årlig nettoförändring:</strong> Visar förändringen från ett år till nästa. Hur många <em>nya</em> jobb skapas jämfört med hur mycket arbetskraften växer?</p>
+                            <p><strong>Tolkning:</strong> Staplar under nollstrecket innebär en minskning. Simulerade jobbsatsningar i kalkylatorn syns ofta som skarpa uppåtgående toppar i den gröna stapeln.</p>
                             <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
                         </div>
                     </span>
-                    <span class="text-sm">Visar den årliga nettoförändringen av antalet jobb och den lokala arbetskraften.</span>
+                    <span class="text-sm">Visar den årliga nettoförändringen av antalet jobb och den lokala arbetskraften. Klicka på "Förändring Nettopendling" i teckenförklaringen för att lägga till detta flöde i staplarna.</span>
                 </div>
             `;
         }
 
         isBarChart = true;
 
-        let dDemand = [], dSupply = [];
+        let dDemand = [], dSupply = [], dPend = [];
         labels = activeYears;
         
+        const simModeEl = document.getElementById('simMode');
+        const showCommuting = simModeEl ? (simModeEl.value === 'full') : true;
+
+        const getCalculatedValues = (year) => {
+            let d = year <= window.baseYear ? window.histDataStore[year] : (window.progDataStore[year] || window.histDataStore[year]);
+            if (!d) return { dem: null, sup: null, pend: null };
+            
+            let dem = d.demand != null ? Number(d.demand) : 0;
+            let sup = d.supply != null ? Number(d.supply) : 0;
+            
+            let explicitNet = d.explicitNetCommuting != null ? Number(d.explicitNetCommuting) : 0;
+            let netP = d.netCommuting != null ? Number(d.netCommuting) : explicitNet;
+            let vSup = d.virtualSupply != null ? Number(d.virtualSupply) : 0;
+            
+            let totPend = showCommuting ? (netP + vSup) : 0;
+            
+            return { dem: dem, sup: sup, pend: totPend };
+        };
+
         labels.forEach(y => {
             let numY = Number(y);
-            let currD = null, currS = null, prevD = null, prevS = null;
+            
+            let current = getCalculatedValues(numY);
+            let previous = getCalculatedValues(numY - 1);
 
-            if (numY <= window.baseYear && window.histDataStore[numY]) {
-                currD = window.histDataStore[numY].demand; currS = window.histDataStore[numY].supply;
-            } else if (numY > window.baseYear && window.progDataStore[numY]) {
-                currD = window.progDataStore[numY].demand; currS = window.progDataStore[numY].supply;
-            }
-
-            if (numY - 1 <= window.baseYear && window.histDataStore[numY - 1]) {
-                prevD = window.histDataStore[numY - 1].demand; prevS = window.histDataStore[numY - 1].supply;
-            } else if (numY - 1 > window.baseYear && window.progDataStore[numY - 1]) {
-                prevD = window.progDataStore[numY - 1].demand; prevS = window.progDataStore[numY - 1].supply;
-            }
-
-            if (currD != null && prevD != null) dDemand.push(currD - prevD); else dDemand.push(null);
-            if (currS != null && prevS != null) dSupply.push(currS - prevS); else dSupply.push(null);
+            if (current.dem != null && previous.dem != null) dDemand.push(current.dem - previous.dem); else dDemand.push(null);
+            if (current.sup != null && previous.sup != null) dSupply.push(current.sup - previous.sup); else dSupply.push(null);
+            if (current.pend != null && previous.pend != null) dPend.push(current.pend - previous.pend); else dPend.push(null);
         });
 
         datasets = [
-            { type: 'bar', label: 'Förändring Efterfrågan', data: dDemand, backgroundColor: '#10b981' },
-            { type: 'bar', label: 'Förändring Lokalt Utbud', data: dSupply, backgroundColor: '#0ea5e9' }
+            { type: 'bar', label: 'Förändring Efterfrågan', data: dDemand, backgroundColor: '#10b981', stack: 'Stack 1' },
+            { type: 'bar', label: 'Förändring Lokalt Utbud', data: dSupply, backgroundColor: '#0ea5e9', stack: 'Stack 2' },
+            { type: 'bar', label: 'Förändring Nettopendling', data: dPend, backgroundColor: '#f59e0b', stack: 'Stack 2', hidden: true }
         ];
 
     } else if (chartType === 'pendling_detalj') {

@@ -114,7 +114,7 @@
     },
     {
       "Indikator": "Regionförstoring",
-      "Bas": 5,
+      "Bas": 0,
       "Hög": 5,
       "Låg": -5,
       "Stagnerande": 0,
@@ -122,7 +122,7 @@
     },
     {
       "Indikator": "BRP_utv",
-      "Bas": null,
+      "Bas": "0.029302",
       "Hög": "0.034302",
       "Låg": "0.020302",
       "Stagnerande": "0.015302",
