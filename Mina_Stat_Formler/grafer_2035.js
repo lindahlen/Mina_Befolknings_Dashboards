@@ -785,28 +785,27 @@ window.updateDashboard = function(calledFromDropdown = true) {
             let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Scenario)" : "");
             if (title) title.innerText = "Bostadsbyggande & Behov" + suffix;
             if (desc) {
-            // 1. Först bestämmer vi vilken text som ska visas (precis som du hade innan)
-            const infoText = causalityMode === 'dynamic' 
-                ? "Visar historiskt färdigställda bostäder jämfört med totalt uppskattat behov (basprognos + simulerad inflyttning)." 
-                : "Visar historiskt färdigställda bostäder jämfört med teoretiskt behov (basprognos + omatchat rekryteringsgap).";
+                const infoText = causalityMode === 'dynamic' 
+                    ? "Visar historiskt färdigställda bostäder jämfört med det årliga nya behovet (basprognos + simulerat nettotillskott inkl. familjer)." 
+                    : "Visar historiskt färdigställda bostäder jämfört med det teoretiska nya behovet (basprognos + tillskott från rekryteringsgap inkl. familjer).";
 
-            // 2. Sedan bakar vi in texten tillsammans med i-knappen via innerHTML
-            desc.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
-                        <i class="fa-solid fa-circle-info text-base relative z-10"></i>
-                        
-                        <div class="absolute z-[100] hidden group-hover:block w-64 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
-                            <p class="mb-2"><strong>Förenklad modell:</strong> Kalkylen bygger på en fast kvot på 2,1 boende per ny bostad.</p>
-                            <p><strong>Tips!</strong> Klicka på "10-årigt historiskt snitt" i teckenförklaringen för att tända/släcka jämförelselinjen.</p>
+                desc.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
+                            <i class="fa-solid fa-circle-info text-base relative z-10"></i>
                             
-                            <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
-                        </div>
-                    </span>
-                    <span>${infoText}</span>
-                </div>
-            `;
-        } 
+                            <div class="absolute z-[100] hidden group-hover:block w-72 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
+                                <p class="mb-2"><strong>Flödesmodell:</strong> Kalkylen visar det faktiska nya behovet per enskilt år baserat på 2,1 boende per ny bostad.</p>
+                                <p class="mb-2"><strong>Familjemultiplikator:</strong> Inflyttande arbetskraft från jobbtillväxt skalas upp med 33 % för att inkludera medföljande barn och äldre (baserat på att ca 75 % är i arbetsför ålder).</p>
+                                <p><strong>Tips!</strong> Klicka på "10-årigt historiskt snitt" i teckenförklaringen för att tända/släcka jämförelselinjen.</p>
+                                
+                                <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
+                            </div>
+                        </span>
+                        <span>${infoText}</span>
+                    </div>
+                `;
+            } 
             isBarChart = true;
             isStacked = true;
             labels = activeYears;
@@ -822,50 +821,44 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 sistaHistoriskaAr = baseYear + 1;
             }
 
-            // --- NYHET: DIAGRAMMET ANVÄNDER NU LARMETS SKOTTSÄKRA 0-100-RÄKNARE! ---
-            // --- NYHET: DIAGRAMMET PRIORITERAR AKTIV PROGNOSFLIK ---
-                    let getPop0to100 = (yVal) => {
-                        let sum = 0;
-                        if (window.syssBasdata) {
-                            // Siktar in sig DIREKT på den valda prognosen i rullistan (ex. Officiell_befolkningsprognos)
-                            let pSource = typeof popSource !== 'undefined' ? popSource : (window.popSource || null);
-                            let sheetKeys = [];
-                            
-                            if (pSource && window.syssBasdata[pSource]) {
-                                sheetKeys = [pSource];
-                            } else {
-                                // Fallback: Leta bara i flikar som uttryckligen heter 'prognos'
-                                sheetKeys = Object.keys(window.syssBasdata).filter(k => k.toLowerCase().includes('prognos'));
-                            }
-                            
-                            for (let key of sheetKeys) {
-                                let rows = window.syssBasdata[key].filter(r => parseInt(r['År'] || r['år'] || r['ÅR']) === parseInt(yVal));
-                                if (rows.length > 0) {
-                                    rows.forEach(row => {
-                                        Object.keys(row).forEach(k => {
-                                            if (/^\d+$/.test(String(k).trim())) {
-                                                sum += parseFloat(row[k]) || 0;
-                                            }
-                                        });
-                                    });
-                                    if (sum > 0) return sum;
-                                }
-                            }
-                        }
-                        
-                        // SCB Fallback om Excel saknas
-                        let pData = typeof currentPopData !== 'undefined' ? currentPopData : (window.popData || []);
-                        let recs = pData.filter(r => String(r.tid).replace(' (Prognos)', '').trim() === String(yVal));
-                        if (recs.length > 0) {
-                            recs.forEach(r => {
-                                if (!String(r.ålder).toLowerCase().includes('totalt')) {
-                                    sum += parseFloat(r.Befolkning) || 0;
-                                }
+            let getPop0to100 = (yVal) => {
+                let sum = 0;
+                if (window.syssBasdata) {
+                    let pSource = typeof popSource !== 'undefined' ? popSource : (window.popSource || null);
+                    let sheetKeys = [];
+                    
+                    if (pSource && window.syssBasdata[pSource]) {
+                        sheetKeys = [pSource];
+                    } else {
+                        sheetKeys = Object.keys(window.syssBasdata).filter(k => k.toLowerCase().includes('prognos'));
+                    }
+                    
+                    for (let key of sheetKeys) {
+                        let rows = window.syssBasdata[key].filter(r => parseInt(r['År'] || r['år'] || r['ÅR']) === parseInt(yVal));
+                        if (rows.length > 0) {
+                            rows.forEach(row => {
+                                Object.keys(row).forEach(k => {
+                                    if (/^\d+$/.test(String(k).trim())) {
+                                        sum += parseFloat(row[k]) || 0;
+                                    }
+                                });
                             });
+                            if (sum > 0) return sum;
                         }
-                        return sum;
-                    };
-            // ------------------------------------------------------------------------
+                    }
+                }
+                
+                let pData = typeof currentPopData !== 'undefined' ? currentPopData : (window.popData || []);
+                let recs = pData.filter(r => String(r.tid).replace(' (Prognos)', '').trim() === String(yVal));
+                if (recs.length > 0) {
+                    recs.forEach(r => {
+                        if (!String(r.ålder).toLowerCase().includes('totalt')) {
+                            sum += parseFloat(r.Befolkning) || 0;
+                        }
+                    });
+                }
+                return sum;
+            };
 
             labels.forEach((y, index) => {
                 let numericY = Number(y);
@@ -887,12 +880,10 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 rollingAvgData.push(countBostader > 0 ? (sumBostader / countBostader) : null);
 
                 let popRec = null;
-                // FIXEN: Spärren! Leta BARA efter historisk data (Färdigställda_bostäder) om året faktiskt ÄR historiskt.
                 if (currentPopData && numericY <= sistaHistoriskaAr) {
                     popRec = currentPopData.find(r => String(r.tid).replace(' (Prognos)', '').trim() === String(numericY) && r.Färdigställda_bostäder !== undefined && r.Färdigställda_bostäder !== null && String(r.Färdigställda_bostäder).trim() !== "");
                 }
 
-                // Om det är ett historiskt år, rita blå stapel
                 if (popRec) {
                     hBostader.push(parseFloat(popRec.Färdigställda_bostäder));
                     pBehovBase.push(null);
@@ -900,11 +891,9 @@ window.updateDashboard = function(calledFromDropdown = true) {
                     sBehovBase.push(null);
                     sBehovExtra.push(null);
                 } 
-                // Om det är ett framtida år, räkna ut prognos-staplarna!
                 else if (numericY > baseYear && progDataStore[numericY]) {
                     hBostader.push(null);
                     
-                    // Diagrammet räknar ut basprognosen
                     let calcBehovBase = (ar) => {
                         let pCurr = getPop0to100(ar);
                         let pPrev = getPop0to100(ar - 1);
@@ -914,41 +903,57 @@ window.updateDashboard = function(calledFromDropdown = true) {
                             popGrowthBase = Math.max(0, pCurr - pPrev);
                         }
 
-                        // --- SMART BRO FÖR ÖVERGÅNGSÅR (2025-2026) ---
-                        // Om databytet mellan SCB och Excel skapar en oäkta minskning/nolla för de första prognosåren,
-                        // lånar vi tillväxten från nästa år (som är matematiskt ren från Excel-filen).
                         if (popGrowthBase === 0 && ar <= baseYear + 2) {
                             let pNext = getPop0to100(ar + 1);
                             if (pNext > pCurr) {
                                 popGrowthBase = pNext - pCurr;
                             }
                         }
-                        // ---------------------------------------------
 
                         return popGrowthBase > 0 ? popGrowthBase / 2.1 : 0;
                     };
 
-                    let calcBehovExtra = (d) => {
-                        if (!d) return null;
-                        let extraPopNeeded = 0;
-                        if (causalityMode === 'dynamic' && d.inducedPop > 0) {
-                            extraPopNeeded = d.inducedPop;
+                    let calcBehovExtra = (store, ar) => {
+                        let dCurr = store[ar];
+                        let dPrev = store[ar - 1];
+                        if (!dCurr) return 0;
+
+                        let extraPopNeededCurr = 0;
+                        let extraPopNeededPrev = 0;
+
+                        if (causalityMode === 'dynamic' && dCurr.inducedPop > 0) {
+                            extraPopNeededCurr = dCurr.inducedPop;
                         } else if (causalityMode === 'analytic') {
-                            const omatchatGap = d.demand - (d.supply + (showCommuting ? ((d.netCommuting !== undefined ? d.netCommuting : (d.explicitNetCommuting || 0)) + (d.virtualSupply || 0)) : 0));
-                            if (omatchatGap > 5) {
-                                extraPopNeeded = omatchatGap / empRate;
+                            const gapCurr = dCurr.demand - (dCurr.supply + (showCommuting ? ((dCurr.netCommuting !== undefined ? dCurr.netCommuting : (dCurr.explicitNetCommuting || 0)) + (dCurr.virtualSupply || 0)) : 0));
+                            if (gapCurr > 5) extraPopNeededCurr = gapCurr / empRate;
+                        }
+
+                        if (dPrev) {
+                            if (causalityMode === 'dynamic' && dPrev.inducedPop > 0) {
+                                extraPopNeededPrev = dPrev.inducedPop;
+                            } else if (causalityMode === 'analytic') {
+                                const gapPrev = dPrev.demand - (dPrev.supply + (showCommuting ? ((dPrev.netCommuting !== undefined ? dPrev.netCommuting : (dPrev.explicitNetCommuting || 0)) + (dPrev.virtualSupply || 0)) : 0));
+                                if (gapPrev > 5) extraPopNeededPrev = gapPrev / empRate;
                             }
                         }
-                        return extraPopNeeded > 0 ? extraPopNeeded / 2.1 : 0; 
+
+                        // Det årliga flödet (endast arbetare)
+                        let annualNetPop = Math.max(0, extraPopNeededCurr - extraPopNeededPrev);
+                        
+                        // SKALA UPP för medföljande familjemedlemmar (16-74 år -> 0-100 år)
+                        let totalDemographicInflow = annualNetPop * 1.33;
+                        
+                        // Dela med 2.1 för att få fram antalet bostäder
+                        return totalDemographicInflow > 0 ? totalDemographicInflow / 2.1 : 0; 
                     };
 
                     let baseNeed = calcBehovBase(numericY);
                     pBehovBase.push(baseNeed);
-                    pBehovExtra.push(calcBehovExtra(progDataStore[numericY]));
+                    pBehovExtra.push(calcBehovExtra(progDataStore, numericY));
 
                     if (isComparing) {
                         sBehovBase.push(baseNeed);
-                        sBehovExtra.push(calcBehovExtra(savedProjectedData ? savedProjectedData[numericY] : null));
+                        sBehovExtra.push(savedProjectedData ? calcBehovExtra(savedProjectedData, numericY) : null);
                     }
                 }
                 else {
@@ -978,24 +983,22 @@ window.updateDashboard = function(calledFromDropdown = true) {
 
     } else if (chartType === 'medfoljande_behov') {
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
-        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : "");
+        let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore && window.allYears && window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : "");
         if (title) title.innerText = "Välfärdsbehov (Medföljande barn)" + suffix;
         
         if (desc) {
-            // Skapa texten baserat på vilket läge som är valt
             const infoText = causalityMode === 'dynamic' 
                 ? "Visar uppskattat behov av nya förskole- och skolplatser som genereras av arbetskraftsinflyttningen varje år."
                 : "<span class='text-amber-700 font-medium'>Denna vy visar inga data i Analytiskt läge. Byt till ett Dynamiskt scenario i panelen ovan och klicka på Kör.</span>";
 
-            // Baka in texten tillsammans med den snygga i-knappen
             desc.innerHTML = `
                 <div class="flex items-center gap-2">
-                    <span class="relative group cursor-help text-blue-500 hover:text-blue-700 -0.5 before:absolute before:-inset-3 before:content-['']">
+                    <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
                         <i class="fa-solid fa-circle-info text-base relative z-10"></i>
                         
-                        <div class="absolute z-[100] hidden group-hover:block w-64 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
+                        <div class="absolute z-[100] hidden group-hover:block w-72 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
                             <p class="mb-2"><strong>Medföljande familjer:</strong> När du simulerar effekten av nya jobb beräknar kalkylatorn hur många barnfamiljer som flyttar in.</p>
-                            <p>Diagrammet översätter detta direkt till behov av förskole- och skolplatser, utifrån kvoterna i systemets styrfil.</p>
+                            <p class="mb-2"><strong>Flödesmodell:</strong> Diagrammet visar det årliga nettotillskottet (hur många *nya* platser som måste skapas). <br><br><em>Obs: De inledande prognosåren är dolda då de utgör övergångsår i beräkningsmotorn.</em></p>
                             
                             <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
                         </div>
@@ -1015,21 +1018,51 @@ window.updateDashboard = function(calledFromDropdown = true) {
             categories = ['Förskola (0-5 år)', 'Grundskola F-3 (6-9 år)', 'Grundskola 4-9 (10-15 år)', 'Gymnasium (16-18 år)']; 
         }
 
-        labels = activeYears.filter(y => y > window.baseYear); 
-        if (labels.length === 0) labels = [(window.baseYear+1).toString()]; 
+        // Hämta enbart prognosåren (efter baseYear)
+        let forecastYears = activeYears.filter(y => y > window.baseYear); 
+        if (forecastYears.length === 0) forecastYears = [(window.baseYear+1).toString()]; 
+        
+        // Identifiera de två första prognosåren (övergångsåren)
+        let hiddenYears = [];
+        if (forecastYears.length > 0) hiddenYears.push(forecastYears[0]);
+        if (forecastYears.length > 1) hiddenYears.push(forecastYears[1]);
+
+        // Bygg etiketterna för X-axeln. De två första åren får "(Redovisas ej)"
+        labels = forecastYears.map((y, index) => {
+            if (index === 0 || index === 1) return [y, '(Redovisas ej)'];
+            return y;
+        });
         
         const colors = ['#f59e0b', '#10b981', '#0ea5e9', '#8b5cf6', '#ec4899'];
         
         categories.forEach((cat, idx) => {
             let p_data = [];
-            labels.forEach(y => {
+            forecastYears.forEach(y => {
                 let numericY = Number(y);
+                let currentVal = 0;
+                let prevVal = 0;
+
+                // Hämta ackumulerat värde för aktuellt år
                 if (window.progDataStore && window.progDataStore[numericY] && window.progDataStore[numericY].medfoljande) {
-                    p_data.push(window.progDataStore[numericY].medfoljande[cat] || 0);
+                    currentVal = window.progDataStore[numericY].medfoljande[cat] || 0;
+                }
+
+                // Hämta ackumulerat värde för föregående år
+                if (window.progDataStore && window.progDataStore[numericY - 1] && window.progDataStore[numericY - 1].medfoljande) {
+                    prevVal = window.progDataStore[numericY - 1].medfoljande[cat] || 0;
+                }
+
+                // Räkna ut årets nettoförändring
+                let annualNet = Math.max(0, currentVal - prevVal);
+
+                // Nolla stapeln om det är något av övergångsåren, annars tryck in det faktiska årliga behovet
+                if (hiddenYears.includes(y)) {
+                    p_data.push(null);
                 } else {
-                    p_data.push(0);
+                    p_data.push(annualNet);
                 }
             });
+            
             datasets.push({
                 type: 'bar',
                 label: cat,
@@ -1038,15 +1071,14 @@ window.updateDashboard = function(calledFromDropdown = true) {
             });
         });
         
-        // Stenhård låsning av Y-axeln till 0 (utan grace som kan tvinga den neråt)
-            customScale = { 
-                y: { 
-                    stacked: true, 
-                    beginAtZero: true,
-                    min: 0, 
-                    ticks: { callback: val => typeof window.formatNumber === 'function' ? window.formatNumber(val, 0) : val } 
-                } 
-            };
+        customScale = { 
+            y: { 
+                stacked: true, 
+                beginAtZero: true,
+                min: 0, 
+                ticks: { callback: val => typeof window.formatNumber === 'function' ? window.formatNumber(val, 0) : val } 
+            } 
+        };
 
     } else if (chartType === 'utbud_efterfragan') {
         isMultiLine = true;
@@ -1565,7 +1597,8 @@ window.updateDashboard = function(calledFromDropdown = true) {
             
             let rawLabels = [];
             if (dfDag.length > 0) {
-                const excludeCols = ['År', 'år', 'Samtliga', 'Totalt', 'Kön', 'kön', 'Okänd bransch'];
+                // NY LOGIK: Vi plockar INTE bort 'Okänd bransch' här. Den måste finnas kvar ifall vi vill gruppera den!
+                const excludeCols = ['År', 'år', 'Samtliga', 'Totalt', 'Kön', 'kön'];
                 rawLabels = Object.keys(dfDag[0]).filter(k => !excludeCols.includes(k));
             }
             
@@ -1573,7 +1606,9 @@ window.updateDashboard = function(calledFromDropdown = true) {
             let nattDataRaw = window.aggregateMatchData(dfNatt, refYear, rawLabels, 'Cols');
             
             const subGroupVal = subGroupSelect ? subGroupSelect.value : 'all';
+            
             if (subGroupVal && subGroupVal !== 'all' && window.syssConfig['SNIgrupper']) {
+                // ANVÄNDAREN HAR VALT EN GRUPPERING
                 let groupedDag = { 'totalt': {} }, groupedNatt = { 'totalt': {} };
                 const sniGrupper = window.syssConfig['SNIgrupper'];
                 const firstKey = Object.keys(sniGrupper[0])[0]; 
@@ -1592,7 +1627,11 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 labels = Object.keys(groupedDag['totalt']);
                 dagData = groupedDag; nattData = groupedNatt;
             } else {
-                labels = rawLabels; dagData = dagDataRaw; nattData = nattDataRaw;
+                // STANDARDLÄGE (Ingen gruppering)
+                // NY LOGIK: Nu filtrerar vi bort 'Okänd bransch' så den inte stör standardvyn
+                labels = rawLabels.filter(l => l !== 'Okänd bransch');
+                dagData = dagDataRaw; 
+                nattData = nattDataRaw;
             }
 
             if (labels.length > 15 && (!subGroupVal || subGroupVal === 'all')) {
@@ -1602,33 +1641,28 @@ window.updateDashboard = function(calledFromDropdown = true) {
             infoText = "Visar matchningen mellan lokalt utbud och efterfrågan uppdelat på olika branscher.";
             chartSpecificTooltip = `
                 <p class="mb-2"><strong>Bransch (SNI):</strong> Utgångspunkten för branschindelningen är SCB:s standard via så kallad "SNI-bokstav".</p>
-                <p class="mb-2"><strong>Gruppera branscher:</strong> Använd rullistan bredvid för att slå ihop branscherna till större, anpassade grupper.</p>
+                <p class="mb-2"><strong>Gruppera branscher:</strong> Använd rullistan bredvid för att slå ihop branscherna till större, anpassade grupper. <em>Här inkluderas även okända branscher om de är definierade i din styrfil.</em></p>
             `;
         }
         
         if (desc) {
-            // Skapa den gemensamma texten
             let commonTooltipHTML = "";
             
-            // Kolla om vi INTE är i Sektormatchning (Män/Kvinnor), för då visar vi gap-texten
             if (chartType !== 'sektor_match_kon') {
                 commonTooltipHTML += `
                     <p class="mb-2"><strong>Rekryteringsgap:</strong> Visar skillnaden mellan antalet jobb (Efterfrågan/Dagbefolkning) och bosatt arbetskraft (Utbud/Nattbefolkning). Om stapeln för jobb är högre uppstår ett gap. Gapet kan fyllas genom ökad inpendling eller ökad inflyttning.</p>
                     <p class="mb-2"><strong>Analytiskt vs Dynamiskt:</strong> I <em>Analytiskt</em> läge ser du det teoretiska gapet utifrån basprognosen. I <em>Dynamiskt</em> läge visas den nya jämvikten <em>efter</em> att de simulerade inflyttarna har tillsatt jobben.</p>
                 `;
             } else {
-                // Alternativ text för Sektormatchning Män/Kvinnor (utan "gap"-prat)
                 commonTooltipHTML += `
                     <p class="mb-2"><strong>Analytiskt vs Dynamiskt:</strong> I <em>Analytiskt</em> läge visas utbud och efterfrågan utifrån basprognosen. I <em>Dynamiskt</em> läge visas den nya jämvikten <em>efter</em> att den simulerade arbetskraftsinflyttningen skett.</p>
                 `;
             }
 
-            // Lägg till tipset om årtalsrullistan till alla tre diagram
             commonTooltipHTML += `
                 <p><strong>Tips för framtiden!</strong> För scenarier framåt i tiden: Använd årtals-rullistan ovanför diagrammet för att titta på balansen under enskilda år.</p>
             `;
 
-            // NYTT: Kontrollera om vi är i dynamiskt läge och lägg till en fet text i beskrivningen
             let modeSuffix = causalityMode === 'dynamic' ? " <strong>(Dynamisk jämvikt)</strong>" : "";
 
             desc.innerHTML = `
@@ -1644,7 +1678,13 @@ window.updateDashboard = function(calledFromDropdown = true) {
                     <span class="text-sm">${infoText}${modeSuffix}</span>
                 </div>
             `;
-        }
+            // NYTT: Tvinga KPI:erna att uppdateras efter att diagrammet (och simuleringen) är helt klar
+            if (typeof window.updateKPIs === 'function') {
+            setTimeout(() => {
+                window.updateKPIs();
+            }, 50); // 50 millisekunders fördröjning räcker för att koden ska hinna andas
+            }
+        } // <-- Här slutar blocket för bransch_match
         
         window.drawMatchChart(selYearInt, labels, dagData, nattData, isGenderSplit, useZeroAxis, isHorizontal);
         return; 

@@ -2682,38 +2682,30 @@ window.updateKPIs = function() {
         
    // TVÅSTEGSLARM 4: Bostäder
         let popGrowthBase = 0;
-        
-        // NU VET VI ATT ÅRTALET HETER 'y'!
         let simAr = typeof y !== 'undefined' ? y : null;
 
         if (simAr) {
-            // Skräddarsydd funktion för att läsa din Excel-struktur (År, Kön, 0, 1, 2... 100)
             let getPop = (yVal) => {
                 let sum = 0;
-                
                 if (window.syssBasdata) {
                     let sheetKeys = Object.keys(window.syssBasdata).filter(k => 
-                        k.toLowerCase().includes('prognos') || 
-                        k.toLowerCase().includes('befolkning')
+                        k.toLowerCase().includes('prognos') || k.toLowerCase().includes('befolkning')
                     );
-                    
                     for (let key of sheetKeys) {
                         let rows = window.syssBasdata[key].filter(r => parseInt(r['År'] || r['år'] || r['ÅR']) === parseInt(yVal));
                         if (rows.length > 0) {
                             rows.forEach(row => {
                                 Object.keys(row).forEach(k => {
-                                    // Om kolumnrubriken är en siffra (ålder 0-100)
                                     if (/^\d+$/.test(String(k).trim())) {
                                         sum += parseFloat(row[k]) || 0;
                                     }
                                 });
                             });
-                            if (sum > 0) return sum; // Data hittad, returnera!
+                            if (sum > 0) return sum;
                         }
                     }
                 }
                 
-                // Fallback till SCB om Excel saknas
                 let pData = typeof activePopData !== 'undefined' ? activePopData : (window.popData || []);
                 let recs = pData.filter(r => String(r.tid).replace(' (Prognos)', '').trim() === String(yVal));
                 if (recs.length > 0) {
@@ -2723,38 +2715,81 @@ window.updateKPIs = function() {
                         }
                     });
                 }
-                
                 return sum;
             };
 
-            // Hämta för detta året (y) och förra året (y - 1)
             let pNu = getPop(simAr);
             let pFjol = getPop(simAr - 1);
             
             if (pNu > 0 && pFjol > 0) {
                 popGrowthBase = Math.max(0, pNu - pFjol);
             }
+            
+            // --- SMART BRO FÖR ÖVERGÅNGSÅR I LARMET ---
+            if (popGrowthBase === 0 && simAr <= window.baseYear + 2) {
+                let pNext = getPop(simAr + 1);
+                if (pNext > pNu) {
+                    popGrowthBase = pNext - pNu;
+                }
+            }
         }
 
-        // Lägg ihop Basprognosens behov med det Extra Jobbehovet
-        let extraPopNeeded = (typeof totalPopNeeded !== 'undefined' && totalPopNeeded > 0) ? totalPopNeeded : 0;
-        let krävdaBostader = (popGrowthBase + extraPopNeeded) / 2.1; 
+        // --- NY LOGIK FÖR EXTRA BEHOV (NETTO) ---
+        // Vi måste ta fram *nettoökningen* i extra arbetskraft jämfört med året innan
+        let extraPopNetto = 0;
+        
+        let getExtraPop = (yVal) => {
+            let d = yVal <= window.baseYear ? window.histDataStore[yVal] : window.progDataStore[yVal];
+            if (!d) return 0;
+            
+            if (causalityMode === 'dynamic' && d.inducedPop > 0) {
+                return d.inducedPop;
+            } else if (causalityMode === 'analytic') {
+                let showCom = document.getElementById('simMode') ? document.getElementById('simMode').value === 'full' : true;
+                let userSyssAdj = document.getElementById('migrantSyssSlider') ? parseFloat(document.getElementById('migrantSyssSlider').value) / 100 : 0.10;
+                let empRate = Math.max(0.01, (window.globalMigrantEmploymentRate || 0.5) + userSyssAdj);
+                
+                let explicitNet = d.explicitNetCommuting != null ? Number(d.explicitNetCommuting) : 0;
+                let netP = d.netCommuting != null ? Number(d.netCommuting) : explicitNet;
+                let vSup = d.virtualSupply != null ? Number(d.virtualSupply) : 0;
+                let totPend = showCom ? (netP + vSup) : 0;
+                
+                let gap = d.demand - (d.supply + totPend);
+                if (gap > 5) return gap / empRate;
+            }
+            return 0;
+        };
 
-        // Larma om totalen överstiger kommunens historiska tak
+        let extraPopNu = getExtraPop(simAr);
+        let extraPopFjol = getExtraPop(simAr - 1);
+        
+        if (extraPopNu > 0 && extraPopFjol >= 0) {
+            extraPopNetto = Math.max(0, extraPopNu - extraPopFjol);
+        }
+
+        // --- SKALA UPP FÖR MEDFÖLJANDE BARN/ÄLDRE ---
+        // Antar att arbetskraften är ca 75 % av den totala befolkningen. 
+        // Vi måste multiplicera det vuxna nettot med 1.33 för att få den sanna demografiska inflyttningsvolymen.
+        let uppskaladExtraPopNetto = extraPopNetto * 1.33; 
+
+        // Nu kan vi dela med 2.1 !
+        let krävdaBostader = (popGrowthBase + uppskaladExtraPopNetto) / 2.1; 
+
+        // Larma om årets behov överstiger kapaciteten
         if (krävdaBostader > 0 && typeof tak !== 'undefined' && tak.maxBostadsproduktion) {
             let basBost = Math.round(popGrowthBase / 2.1);
-            let extraBost = Math.round(extraPopNeeded / 2.1);
+            let extraBost = Math.round(uppskaladExtraPopNetto / 2.1);
             let totStr = typeof window.formatNumber === 'function' ? window.formatNumber(krävdaBostader, 0) : Math.round(krävdaBostader);
             
             if (krävdaBostader > tak.maxBostadsproduktion) {
                 warnings.push({
                     icon: 'fa-house-crack', color: 'red', text: 'Ansträngd bostadsmarknad', 
-                    title: `Varning: Totalt bostadsbehov år ${simAr} är ca ${totStr}/år (Basprognos: ${basBost}, Extra jobb: ${extraBost}). Överstiger tak på ${tak.maxBostadsproduktion}.`
+                    title: `Varning: Nytt bostadsbehov år ${simAr} är ca ${totStr} st (Basprognos: ${basBost}, Extra jobb+familjer: ${extraBost}). Överstiger årligt tak på ${tak.maxBostadsproduktion}.`
                 });
             } else if (krävdaBostader >= (tak.maxBostadsproduktion * 0.8)) {
                 warnings.push({
                     icon: 'fa-house', color: 'amber', text: 'Stort byggbehov', 
-                    title: `Förvarning: Totalt bostadsbehov år ${simAr} är ca ${totStr}/år (Basprognos: ${basBost}, Extra jobb: ${extraBost}). Närmar sig smärtgräns.`
+                    title: `Förvarning: Nytt bostadsbehov år ${simAr} är ca ${totStr} st (Basprognos: ${basBost}, Extra jobb+familjer: ${extraBost}). Närmar sig årlig smärtgräns.`
                 });
             }
         }

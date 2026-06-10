@@ -5443,7 +5443,8 @@
       "Branschkaraktär": "Tillverkande",
       "Tiilväxttyp": "Krympande",
       "KIBS_nära": null,
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Tillverkning och utvinning",
@@ -5452,7 +5453,8 @@
       "Branschkaraktär": "Tillverkande",
       "Tiilväxttyp": "Mogen",
       "KIBS_nära": null,
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Energi och miljö",
@@ -5461,7 +5463,8 @@
       "Branschkaraktär": "Ortstjänster",
       "Tiilväxttyp": "Tillväxt",
       "KIBS_nära": null,
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Byggverksamhet",
@@ -5470,7 +5473,8 @@
       "Branschkaraktär": "Tillverkande",
       "Tiilväxttyp": "Mogen",
       "KIBS_nära": null,
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Handel",
@@ -5479,7 +5483,8 @@
       "Branschkaraktär": "Ortstjänster",
       "Tiilväxttyp": "Mogen",
       "KIBS_nära": null,
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Transport",
@@ -5488,7 +5493,8 @@
       "Branschkaraktär": "Företagsstödjande",
       "Tiilväxttyp": "Mogen",
       "KIBS_nära": null,
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Hotell och restauranger",
@@ -5497,7 +5503,8 @@
       "Branschkaraktär": "Ortstjänster",
       "Tiilväxttyp": "Tillväxt",
       "KIBS_nära": null,
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Information och kommunikation",
@@ -5506,7 +5513,8 @@
       "Branschkaraktär": "Företagsstödjande",
       "Tiilväxttyp": "Tillväxt",
       "KIBS_nära": "KIBS",
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Kreditinstitut och försäkringsbolag",
@@ -5515,7 +5523,8 @@
       "Branschkaraktär": "Företagsstödjande",
       "Tiilväxttyp": "Tillväxt",
       "KIBS_nära": "Tjänster",
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Fastighetsverksamhet",
@@ -5524,7 +5533,8 @@
       "Branschkaraktär": "Ortstjänster",
       "Tiilväxttyp": "Mogen",
       "KIBS_nära": "Tjänster",
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Företagstjänster",
@@ -5533,7 +5543,8 @@
       "Branschkaraktär": "Företagsstödjande",
       "Tiilväxttyp": "Tillväxt",
       "KIBS_nära": "KIBS",
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Offentlig förvaltning",
@@ -5542,7 +5553,8 @@
       "Branschkaraktär": "Ortstjänster",
       "Tiilväxttyp": "Tillväxt",
       "KIBS_nära": null,
-      "Offentliga_branscher": "Offentlig förvaltning"
+      "Offentliga_branscher": "Offentlig förvaltning",
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Utbildning",
@@ -5551,7 +5563,8 @@
       "Branschkaraktär": "Ortstjänster",
       "Tiilväxttyp": "Mogen",
       "KIBS_nära": null,
-      "Offentliga_branscher": "Utbildning"
+      "Offentliga_branscher": "Utbildning",
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Vård och omsorg",
@@ -5560,7 +5573,8 @@
       "Branschkaraktär": "Ortstjänster",
       "Tiilväxttyp": "Tillväxt",
       "KIBS_nära": null,
-      "Offentliga_branscher": "Vård och omsorg"
+      "Offentliga_branscher": "Vård och omsorg",
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Personliga och kulturella tjänster",
@@ -5569,7 +5583,8 @@
       "Branschkaraktär": "Ortstjänster",
       "Tiilväxttyp": "Tillväxt",
       "KIBS_nära": null,
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     },
     {
       "SNIbokstav": "Okänd bransch",
@@ -5578,7 +5593,8 @@
       "Branschkaraktär": null,
       "Tiilväxttyp": "Krympande",
       "KIBS_nära": null,
-      "Offentliga_branscher": null
+      "Offentliga_branscher": null,
+      "Totalt": "Samtliga"
     }
   ],
   "Etableringschocker": [
