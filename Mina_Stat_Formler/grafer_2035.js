@@ -478,17 +478,23 @@ window.updateDashboard = function(calledFromDropdown = true) {
             }
             
             // NYTT: Krasch-säker hantering av "Utgå från 0" (Rör bara DOM-elementet)
-            const cType = document.getElementById('chartType') ? document.getElementById('chartType').value : null;
-            const zeroCb = document.getElementById('useZeroAxis');
-            if (zeroCb && cType) {
-                if (window.lastSelectedChart !== cType) {
-                    if (cType === 'bostadsbyggande_behov') {
-                        zeroCb.checked = true;
-                    } else {
-                        zeroCb.checked = false;
-                    }
-                    window.lastSelectedChart = cType;
-                }
+const cType = document.getElementById('chartType') ? document.getElementById('chartType').value : null;
+const zeroCb = document.getElementById('useZeroAxis');
+
+if (zeroCb && cType) {
+    // Letar upp behållaren (t.ex. <label> eller <div> som omger kryssrutan) för att kunna dölja hela paketet
+    const zeroContainer = zeroCb.closest('label') || zeroCb.parentElement;
+
+    if (window.lastSelectedChart !== cType) {
+        if (cType === 'bostadsbyggande_behov') {
+            zeroCb.checked = true; // Håll den ikryssad i bakgrunden så skalan blir rätt
+            if (zeroContainer) zeroContainer.style.display = 'none'; // Dölj för användaren
+        } else {
+            zeroCb.checked = false; // Nollställ för andra diagram
+            if (zeroContainer) zeroContainer.style.display = ''; // Tom sträng låter CSS (Tailwind) styra utseendet igen
+        }
+        window.lastSelectedChart = cType;
+    }
             }
         }
         // ----------------------------
@@ -536,6 +542,11 @@ window.updateDashboard = function(calledFromDropdown = true) {
     const exportPopBtn = document.getElementById('exportPopBtn');
 
     // --- UI LOGIK FÖR RULLISTOR OCH KNAPPAR BEROENDE PÅ DIAGRAM ---
+    // GLOBAL SLÄCKARE: Dölj bostadskvoten för alla diagram som standard
+    if (document.getElementById('bostadKvotSelect')) {
+        document.getElementById('bostadKvotSelect').style.display = 'none';
+    }
+
     if (chartType === 'pop_dynamic') {
         if(exportPopBtn) exportPopBtn.classList.replace('hidden', 'flex');
         if(dualAxesContainer) { dualAxesContainer.classList.add('hidden'); dualAxesContainer.classList.remove('flex'); }
@@ -782,6 +793,15 @@ window.updateDashboard = function(calledFromDropdown = true) {
             }
             } else if (chartType === 'bostadsbyggande_behov') {
             startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
+            
+            // NYTT: Hämta rullistan och dess värde (fallback till 2.1 om den inte hittas)
+            let bostadKvotSelect = document.getElementById('bostadKvotSelect');
+            if (bostadKvotSelect) {
+                bostadKvotSelect.style.display = isComparing ? 'none' : 'inline-block';
+            }
+            let bostadKvot = bostadKvotSelect ? parseFloat(bostadKvotSelect.value) : 2.1;
+            // -------------------------------------------------------------------------
+
             let suffix = isComparing ? " (Jämförelse)" : (progDataStore[allYears[allYears.length-1]] ? " (Scenario)" : "");
             if (title) title.innerText = "Bostadsbyggande & Behov" + suffix;
             if (desc) {
@@ -789,13 +809,16 @@ window.updateDashboard = function(calledFromDropdown = true) {
                     ? "Visar historiskt färdigställda bostäder jämfört med det årliga nya behovet (basprognos + simulerat nettotillskott inkl. familjer)." 
                     : "Visar historiskt färdigställda bostäder jämfört med det teoretiska nya behovet (basprognos + tillskott från rekryteringsgap inkl. familjer).";
 
+                // Formatera kvoten snyggt med kommatecken för info-rutan (ex. 2.1 blir "2,1")
+                let displayKvot = bostadKvot.toString().replace('.', ',');
+
                 desc.innerHTML = `
                     <div class="flex items-center gap-2">
                         <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
                             <i class="fa-solid fa-circle-info text-base relative z-10"></i>
                             
                             <div class="absolute z-[100] hidden group-hover:block w-72 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
-                                <p class="mb-2"><strong>Flödesmodell:</strong> Kalkylen visar det faktiska nya behovet per enskilt år baserat på 2,1 boende per ny bostad.</p>
+                                <p class="mb-2"><strong>Flödesmodell:</strong> Kalkylen visar det faktiska nya behovet per enskilt år baserat på ${displayKvot} boende per ny bostad.</p>
                                 <p class="mb-2"><strong>Familjemultiplikator:</strong> Inflyttande arbetskraft från jobbtillväxt skalas upp med 33 % för att inkludera medföljande barn och äldre (baserat på att ca 75 % är i arbetsför ålder).</p>
                                 <p><strong>Tips!</strong> Klicka på "10-årigt historiskt snitt" i teckenförklaringen för att tända/släcka jämförelselinjen.</p>
                                 
@@ -910,7 +933,8 @@ window.updateDashboard = function(calledFromDropdown = true) {
                             }
                         }
 
-                        return popGrowthBase > 0 ? popGrowthBase / 2.1 : 0;
+                        // NYTT: Delar med dynamiskt värde istället för 2.1
+                        return popGrowthBase > 0 ? popGrowthBase / bostadKvot : 0;
                     };
 
                     let calcBehovExtra = (store, ar) => {
@@ -943,8 +967,8 @@ window.updateDashboard = function(calledFromDropdown = true) {
                         // SKALA UPP för medföljande familjemedlemmar (16-74 år -> 0-100 år)
                         let totalDemographicInflow = annualNetPop * 1.33;
                         
-                        // Dela med 2.1 för att få fram antalet bostäder
-                        return totalDemographicInflow > 0 ? totalDemographicInflow / 2.1 : 0; 
+                        // NYTT: Delar med dynamiskt värde istället för 2.1
+                        return totalDemographicInflow > 0 ? totalDemographicInflow / bostadKvot : 0; 
                     };
 
                     let baseNeed = calcBehovBase(numericY);
@@ -1677,6 +1701,28 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 <p class="mb-2"><strong>Synkroniserad data:</strong> Branschnivåerna har kalibrerats matematiskt så att totalen stämmer exakt med KPI-kortens <em>Lokala Utbud</em> och <em>Efterfrågan</em>.</p>
                 <p class="mb-2"><strong>Gruppera branscher:</strong> Använd rullistan bredvid för att slå ihop branscherna till större, anpassade grupper.</p>
             `;
+        // --- NYTT: Fix för fladdrande Tooltips i Branschmatchning ---
+            // Detta tvingar Chart.js att enbart visa tooltip för den exakta stapel 
+            // muspekaren rör vid, och håller den strikt inom diagrammets synliga yta.
+            window.customChartConfig = {
+                interaction: {
+                    mode: 'y', // Följ Y-axeln strikt (eftersom diagrammet är liggande)
+                    intersect: true // Trigga bara om pekaren faktiskt rör stapeln
+                },
+                plugins: {
+                    tooltip: {
+                        position: 'nearest',
+                        yAlign: 'center', // Centrerar tooltipen vertikalt vid stapeln
+                        callbacks: {
+                            // Detta ser till att rubriken i tooltipen stämmer exakt
+                            title: function(context) {
+                                return context[0].label;
+                            }
+                        }
+                    }
+                }
+            };
+            // -----------------------------------------------------------
         }
         
         if (desc) {

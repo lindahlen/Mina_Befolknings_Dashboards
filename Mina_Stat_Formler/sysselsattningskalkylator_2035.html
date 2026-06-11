@@ -388,6 +388,18 @@
                                 <option value="">Laddar...</option>
                             </select>
                             
+                            <select id="bostadKvotSelect" onchange="if(window.runSimulation) window.runSimulation(); if(window.updateDashboard) window.updateDashboard(true);" class="p-1 md:p-1.5 text-xs md:text-sm font-semibold text-blue-700 border-r border-gray-200 outline-none focus:bg-blue-50 transition-colors bg-white w-full sm:w-auto" style="display: none;">
+                                <option value="1.80">1,80 boende/bostad</option>
+                                <option value="1.90">1,90 boende/bostad</option>
+                                <option value="1.95">1,95 boende/bostad</option>
+                                <option value="2.00">2,00 boende/bostad</option>
+                                <option value="2.05">2,05 boende/bostad</option>
+                                <option value="2.10" selected>2,10 boende/bostad</option>
+                                <option value="2.15">2,15 boende/bostad</option>
+                                <option value="2.20">2,20 boende/bostad</option>
+                                <option value="2.30">2,30 boende/bostad</option>
+                                <option value="2.40">2,40 boende/bostad</option>
+                            </select>
                             <select id="chartType" class="p-1 md:p-1.5 text-xs md:text-sm bg-slate-50 outline-none focus:bg-sky-100 transition-colors font-semibold text-gray-700 border-r border-gray-200 flex-grow w-full sm:w-auto" onchange="if(window.updateDashboard) window.updateDashboard(true)">
                                 <option value="utbud_efterfragan">Utbud vs Efterfrågan (Trend)</option>
                                 <option value="utbud_efterfragan_delta">Årlig förändring (Utbud/Efterfrågan)</option>
@@ -580,6 +592,7 @@
                             migrantSyss: getVal('Justering inflyttares syss.grad', 10),
                             naringSkala: getVal('Näringslivsjustering_skala', 1.0),
                             brpUtv: getVal('BRP_utv', 0.015), // <--- HÄR ÄR DEN NYA RADEN
+                            boendekvot: getVal('Boendekvot', 2.1),
                             popSource: String(rows.find(r => String(r.Indikator).trim() === 'Befolkningskälla')?.[colName] || '').toLowerCase()
                         };
 
@@ -880,11 +893,25 @@ window.highlightScenario = function(type) {
         btn.classList.remove('scenario-active-base', 'scenario-active-high', 'scenario-active-low', 'scenario-active-stagnant');
     });
 
-    // 2. Lägg till färg på den valda
+    // 2. Lägg till färg på den valda (som tidigare)
     if (type) {
         const btn = document.getElementById('btn-scenario-' + type);
         if (btn) btn.classList.add('scenario-active-' + type);
-    }
+        
+        // --- NY KOD FÖR ATT UPPDATERA RULLISTAN UTIFRÅN VALT SCENARIO ---
+        if (window.scenarioSettings && window.scenarioSettings[type]) {
+            let scenData = window.scenarioSettings[type];
+            if (scenData && scenData.boendekvot) {
+                const kvotSelect = document.getElementById('bostadKvotSelect');
+                if (kvotSelect) {
+                    let valStr = parseFloat(scenData.boendekvot).toFixed(2);
+                    if (kvotSelect.querySelector(`option[value="${valStr}"]`)) {
+                        kvotSelect.value = valStr;
+                    }
+                }
+            }
+        }
+    }      
 };
 
 // Koppla "släckaren" till reglagen - men BARA om en människa drar i dem!

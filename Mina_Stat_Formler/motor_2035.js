@@ -2465,7 +2465,8 @@ window.updateKPIs = function() {
         maxIntegration: window.takEffekter?.maxIntegration || 71.0,
         karnaLangtidsarbetslosa: window.takEffekter?.karnaLangtidsarbetslosa || 3.0,
         studentAbsorptionsTak: window.takEffekter?.studentAbsorptionsTak || 50,
-        maxBostadsproduktion: window.takEffekter?.maxBostadsproduktion || 1500
+        maxBostadsproduktion: window.takEffekter?.maxBostadsproduktion || 1500,
+        boendePerBostad: window.takEffekter?.boendePerBostad || 2.1 // <--- NY: Lade in en standardvärde-fångare här också
     };
 
     if (window.syssConfig && window.syssConfig['Tak_effekten']) {
@@ -2483,6 +2484,25 @@ window.updateKPIs = function() {
                     if (kStr.includes('max_inpendlingsandel')) tak.maxInpendlingsandel = val;
                     if (kStr.includes('kapacitetstak_infrastruktur')) tak.kapacitetstakInfrastruktur = val;
                     if (kStr.includes('max_sysselsättningsgrad') && !kStr.includes('äldre')) tak.maxSyssGrad = val;
+                    
+                    // --- NY KOD BÖRJAR HÄR ---
+                    if (kStr.includes('boendekvot') || kStr.includes('boende per bostad') || kStr.includes('hushållsstorlek')) {
+                        tak.boendePerBostad = val;
+                        
+                        // Sätt UI-rullistan till detta värde ENBART första gången kalkylatorn laddas.
+                        // Detta hindrar motorn från att skriva över användarens manuella val när de simulerar.
+                        if (!window.bostadDefaultSet) {
+                            const kvotSelect = document.getElementById('bostadKvotSelect');
+                            if (kvotSelect) {
+                                let valStr = val.toFixed(2); // Säkerställer formatet "2.10"
+                                if (kvotSelect.querySelector(`option[value="${valStr}"]`)) {
+                                    kvotSelect.value = valStr;
+                                }
+                            }
+                            window.bostadDefaultSet = true; // Lås spärren!
+                        }
+                    }
+                    // --- NY KOD SLUTAR HÄR ---
                 }
             }
         });
@@ -2775,22 +2795,39 @@ window.updateKPIs = function() {
         // Nu kan vi dela med 2.1 !
         let krävdaBostader = (popGrowthBase + uppskaladExtraPopNetto) / 2.1; 
 
-        // Larma om årets behov överstiger kapaciteten
-        if (krävdaBostader > 0 && typeof tak !== 'undefined' && tak.maxBostadsproduktion) {
-            let basBost = Math.round(popGrowthBase / 2.1);
-            let extraBost = Math.round(uppskaladExtraPopNetto / 2.1);
-            let totStr = typeof window.formatNumber === 'function' ? window.formatNumber(krävdaBostader, 0) : Math.round(krävdaBostader);
+        // --- Larm för bostadsmarknaden (Dynamiskt och enbart framtid) ---
+        
+        // 1. Hämta den dynamiska kvoten från rullistan (fallback på 2.1)
+        let larmBostadKvot = 2.1;
+        let larmKvotEl = document.getElementById('bostadKvotSelect');
+        if (larmKvotEl) {
+            larmBostadKvot = parseFloat(larmKvotEl.value) || 2.1;
+        }
+
+        // 2. Säkerställ att vi BARA larmar för framtida prognosår
+        let larmLimitYear = typeof window.baseYear !== 'undefined' ? window.baseYear : 2024;
+
+        if (simAr > larmLimitYear && typeof tak !== 'undefined' && tak.maxBostadsproduktion) {
             
-            if (krävdaBostader > tak.maxBostadsproduktion) {
-                warnings.push({
-                    icon: 'fa-house-crack', color: 'red', text: 'Ansträngd bostadsmarknad', 
-                    title: `Varning: Nytt bostadsbehov år ${simAr} är ca ${totStr} st (Basprognos: ${basBost}, Extra jobb+familjer: ${extraBost}). Överstiger årligt tak på ${tak.maxBostadsproduktion}.`
-                });
-            } else if (krävdaBostader >= (tak.maxBostadsproduktion * 0.8)) {
-                warnings.push({
-                    icon: 'fa-house', color: 'amber', text: 'Stort byggbehov', 
-                    title: `Förvarning: Nytt bostadsbehov år ${simAr} är ca ${totStr} st (Basprognos: ${basBost}, Extra jobb+familjer: ${extraBost}). Närmar sig årlig smärtgräns.`
-                });
+            // 3. Räkna ut behovet med den NYA kvoten
+            let basBost = Math.round(popGrowthBase / larmBostadKvot);
+            let extraBost = Math.round(uppskaladExtraPopNetto / larmBostadKvot);
+            let dynamiskaKrävdaBostäder = basBost + extraBost; 
+
+            if (dynamiskaKrävdaBostäder > 0) {
+                let totStr = typeof window.formatNumber === 'function' ? window.formatNumber(dynamiskaKrävdaBostäder, 0) : Math.round(dynamiskaKrävdaBostäder);
+                
+                if (dynamiskaKrävdaBostäder > tak.maxBostadsproduktion) {
+                    warnings.push({
+                        icon: 'fa-house-crack', color: 'red', text: 'Ansträngd bostadsmarknad', 
+                        title: `Varning: Nytt bostadsbehov år ${simAr} är ca ${totStr} st (Basprognos: ${basBost}, Extra jobb+familjer: ${extraBost}). Överstiger årligt tak på ${tak.maxBostadsproduktion}.`
+                    });
+                } else if (dynamiskaKrävdaBostäder >= (tak.maxBostadsproduktion * 0.8)) {
+                    warnings.push({
+                        icon: 'fa-house', color: 'amber', text: 'Stort byggbehov', 
+                        title: `Förvarning: Nytt bostadsbehov år ${simAr} är ca ${totStr} st (Basprognos: ${basBost}, Extra jobb+familjer: ${extraBost}). Närmar sig årlig smärtgräns.`
+                    });
+                }
             }
         }
     
