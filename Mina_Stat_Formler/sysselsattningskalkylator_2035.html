@@ -122,10 +122,10 @@
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-1">
-                            <button onclick="if(window.setScenario) window.setScenario('base')" class="flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Bas</button>
-                            <button onclick="if(window.setScenario) window.setScenario('high')" class="flex-1 bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Hög</button>
-                            <button onclick="if(window.setScenario) window.setScenario('low')" class="flex-1 bg-white hover:bg-orange-50 text-orange-700 border border-orange-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Låg</button>
-                            <button onclick="if(window.setScenario) window.setScenario('stagnant')" class="flex-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Stagn.</button>
+                            <button id="btn-scenario-base" onclick="if(window.setScenario) window.setScenario('base'); if(window.highlightScenario) window.highlightScenario('base');" class="scenario-btn flex-1 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Bas</button>
+                            <button id="btn-scenario-high" onclick="if(window.setScenario) window.setScenario('high'); if(window.highlightScenario) window.highlightScenario('high');" class="scenario-btn flex-1 bg-white hover:bg-sky-50 text-sky-700 border border-sky-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Hög</button>
+                            <button id="btn-scenario-low" onclick="if(window.setScenario) window.setScenario('low'); if(window.highlightScenario) window.highlightScenario('low');" class="scenario-btn flex-1 bg-white hover:bg-orange-50 text-orange-700 border border-orange-200 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Låg</button>
+                            <button id="btn-scenario-stagnant" onclick="if(window.setScenario) window.setScenario('stagnant'); if(window.highlightScenario) window.highlightScenario('stagnant');" class="scenario-btn flex-1 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 py-1 px-1 rounded text-[11px] font-semibold transition shadow-sm min-w-[50px]">Stagn.</button>
                         </div>
                     </div>
 
@@ -298,7 +298,7 @@
                         <button onclick="if(window.exportSyssToCSV) window.exportSyssToCSV()" class="flex-none bg-emerald-100 hover:bg-emerald-200 text-emerald-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Exportera data (CSV)">
                             <i class="fa-solid fa-download"></i>
                         </button>
-                        <button onclick="if(window.resetSimulation) window.resetSimulation()" class="flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Återställ värden">
+                        <button onclick="if(window.resetSimulation) window.resetSimulation(); if(window.highlightScenario) window.highlightScenario(null);" class="flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-1.5 px-2.5 rounded transition flex items-center justify-center shadow-sm text-xs sm:text-sm" title="Återställ värden">
                             <i class="fa-solid fa-rotate-left"></i>
                         </button>
                     </div>
@@ -862,5 +862,48 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => { if (typeof window.runSimulation === 'function') window.runSimulation(); }, 1000);
 });
     </script>
+    <script>
+// Skapa färgerna
+const style = document.createElement('style');
+style.innerHTML = `
+  .scenario-active-base { background-color: #059669 !important; color: white !important; box-shadow: 0 0 0 2px #34d399 !important; border-color: transparent !important; }
+  .scenario-active-high { background-color: #0284c7 !important; color: white !important; box-shadow: 0 0 0 2px #38bdf8 !important; border-color: transparent !important; }
+  .scenario-active-low { background-color: #ea580c !important; color: white !important; box-shadow: 0 0 0 2px #fb923c !important; border-color: transparent !important; }
+  .scenario-active-stagnant { background-color: #4b5563 !important; color: white !important; box-shadow: 0 0 0 2px #9ca3af !important; border-color: transparent !important; }
+`;
+document.head.appendChild(style);
+
+// Funktionen som ändrar utseendet
+window.highlightScenario = function(type) {
+    // 1. Tvätta bort alla färger från alla knappar
+    document.querySelectorAll('.scenario-btn').forEach(btn => {
+        btn.classList.remove('scenario-active-base', 'scenario-active-high', 'scenario-active-low', 'scenario-active-stagnant');
+    });
+
+    // 2. Lägg till färg på den valda
+    if (type) {
+        const btn = document.getElementById('btn-scenario-' + type);
+        if (btn) btn.classList.add('scenario-active-' + type);
+    }
+};
+
+// Koppla "släckaren" till reglagen - men BARA om en människa drar i dem!
+setTimeout(() => {
+    const sliders = [
+        'jobGrowthSlider', 'syssGradSlider', 'ageSlidersContainer', 
+        'studentSlider', 'civIngSlider', 'migrantSyssSlider', 
+        'inpendlingSlider', 'utpendlingSlider', 'distansSlider', 'regionSlider'
+    ];
+
+    sliders.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            // e.isTrusted är magin här! Det är sant om en mus/fingertryck rörde reglaget, falskt om JS gjorde det.
+            el.addEventListener('input', (e) => { if (e.isTrusted) window.highlightScenario(null); });
+            el.addEventListener('change', (e) => { if (e.isTrusted) window.highlightScenario(null); });
+        }
+    });
+}, 1000);
+</script>
 </body>
 </html>

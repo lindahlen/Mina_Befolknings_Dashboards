@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internationella turneringar - Svensk Fotbollshistoria</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .hover-card {
+            transition: all 0.3s ease;
+        }
+        .hover-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .icon-wrapper {
+            transition: all 0.3s ease;
+        }
+        .hover-card:hover .icon-wrapper {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Hero / Header Sektion -->
+    <header class="bg-blue-900 text-white relative overflow-hidden shadow-lg">
+        <!-- Dekorativa bakgrundselement -->
+        <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-yellow-500 opacity-20 blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 -ml-20 -mb-20 w-80 h-80 rounded-full bg-blue-500 opacity-30 blur-3xl"></div>
+        
+        <!-- Tillbaka-knapp -->
+        <div class="relative z-20 max-w-7xl mx-auto px-4 pt-6">
+            <a href="index.html" class="inline-flex items-center text-blue-200 hover:text-white transition-colors text-sm font-medium">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                Tillbaka till startsidan
+            </a>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 py-12 md:py-16 relative z-10 text-center">
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-100 to-white">
+                Internationella Turneringar
+            </h1>
+            <p class="text-base md:text-lg text-blue-200 max-w-2xl mx-auto font-light">
+                Följ fotbollens största mästerskap genom historien. Från det allra första Världsmästerskapet till dagens gigantiska turneringar. Välj en dashboard nedan.
+            </p>
+        </div>
+    </header>
+
+    <!-- Huvudinnehåll / Korten -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-12 w-full -mt-8 relative z-20">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- KORT 1: VM-Slutspel (AKTIVT) -->
+            <a href="VM_Dashboard.html" class="hover-card bg-white rounded-xl overflow-hidden border border-slate-200 group flex flex-col h-full cursor-pointer relative">
+                <!-- Status Badge -->
+                <div class="absolute top-4 right-4 bg-emerald-100 text-emerald-700 text-xs font-bold px-2 py-1 rounded-full shadow-sm border border-emerald-200">Aktiv</div>
+                
+                <div class="h-2 bg-gradient-to-r from-yellow-400 to-yellow-600 w-full"></div>
+                <div class="p-6 flex-grow flex flex-col items-center text-center">
+                    <div class="icon-wrapper w-16 h-16 bg-yellow-50 rounded-full flex items-center justify-center mb-4 text-yellow-600 shadow-sm border border-yellow-100">
+                        <!-- Glob/Trophy ikon -->
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-yellow-600 transition-colors">VM-slutspel Historik</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed">
+                        Analysera alla enskilda VM-matcher, turneringsträd, historiska straffsparksläggningar och detaljerade laguppställningar från 1930 och framåt.
+                    </p>
+                </div>
+                <div class="bg-slate-50 p-3 border-t border-slate-100 flex justify-center items-center text-yellow-600 font-semibold text-sm">
+                    Öppna dashboard <svg class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </div>
+            </a>
+
+            <!-- KORT 2: EM-Slutspel (FIKTIVT / DOLT) -->
+            <!-- Ta bort klassen 'hidden' från a-taggen nedan när du vill visa kortet -->
+            <a href="EM_Dashboard.html" class="hidden hover-card bg-white rounded-xl overflow-hidden border border-slate-200 group flex flex-col h-full cursor-pointer relative opacity-90">
+                <!-- Status Badge -->
+                <div class="absolute top-4 right-4 bg-slate-100 text-slate-500 text-xs font-bold px-2 py-1 rounded-full shadow-sm border border-slate-200">Kommande</div>
+
+                <div class="h-2 bg-gradient-to-r from-blue-500 to-indigo-600 w-full"></div>
+                <div class="p-6 flex-grow flex flex-col items-center text-center">
+                    <div class="icon-wrapper w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-blue-600 shadow-sm border border-blue-100">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">EM-slutspel</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed">
+                        Europamästerskapen i fotboll. Utforska de klassiska europamötena, turneringstabeller och legendariska prestationer från vår egen kontinent.
+                    </p>
+                </div>
+                <div class="bg-slate-50 p-3 border-t border-slate-100 flex justify-center items-center text-slate-400 font-medium text-sm">
+                    Modul under uppbyggnad
+                </div>
+            </a>
+
+            <!-- KORT 3: Olympiska Spelen (FIKTIVT / DOLT) -->
+            <!-- Ta bort klassen 'hidden' från a-taggen nedan när du vill visa kortet -->
+            <a href="OS_Dashboard.html" class="hidden hover-card bg-white rounded-xl overflow-hidden border border-slate-200 group flex flex-col h-full cursor-pointer relative opacity-90">
+                <!-- Status Badge -->
+                <div class="absolute top-4 right-4 bg-slate-100 text-slate-500 text-xs font-bold px-2 py-1 rounded-full shadow-sm border border-slate-200">Kommande</div>
+
+                <div class="h-2 bg-gradient-to-r from-emerald-400 to-teal-500 w-full"></div>
+                <div class="p-6 flex-grow flex flex-col items-center text-center">
+                    <div class="icon-wrapper w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-4 text-emerald-600 shadow-sm border border-emerald-100">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-emerald-600 transition-colors">Olympiska Spelen</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed">
+                        Den olympiska fotbollshistorien. Från de tidiga amatörturneringarna till U23-mästerskapen och den fantastiska damfotbollshistoriken.
+                    </p>
+                </div>
+                <div class="bg-slate-50 p-3 border-t border-slate-100 flex justify-center items-center text-slate-400 font-medium text-sm">
+                    Modul under uppbyggnad
+                </div>
+            </a>
+
+            <!-- KORT 4: Europeiska Cuper (FIKTIVT / DOLT) -->
+            <!-- Ta bort klassen 'hidden' från a-taggen nedan när du vill visa kortet -->
+            <a href="Eurocups_Dashboard.html" class="hidden hover-card bg-white rounded-xl overflow-hidden border border-slate-200 group flex flex-col h-full cursor-pointer relative opacity-90">
+                <!-- Status Badge -->
+                <div class="absolute top-4 right-4 bg-slate-100 text-slate-500 text-xs font-bold px-2 py-1 rounded-full shadow-sm border border-slate-200">Kommande</div>
+
+                <div class="h-2 bg-gradient-to-r from-purple-500 to-fuchsia-600 w-full"></div>
+                <div class="p-6 flex-grow flex flex-col items-center text-center">
+                    <div class="icon-wrapper w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mb-4 text-purple-600 shadow-sm border border-purple-100">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-bold text-slate-800 mb-2 group-hover:text-purple-600 transition-colors">Europeiska cuper</h2>
+                    <p class="text-slate-500 text-sm leading-relaxed">
+                        Klubblagens internationella kamp. Champions League, UEFA-cupen, Europa League och Cupvinnarcupen samlat i en kraftfull analysvy.
+                    </p>
+                </div>
+                <div class="bg-slate-50 p-3 border-t border-slate-100 flex justify-center items-center text-slate-400 font-medium text-sm">
+                    Modul under uppbyggnad
+                </div>
+            </a>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 text-slate-400 py-8 text-center mt-auto border-t border-slate-700">
+        <p class="text-sm">Specialportal för Svensk Fotbollshistoria &copy; Jimmy Lindahl 2026</p>
+    </footer>
+
+</body>
+</html>

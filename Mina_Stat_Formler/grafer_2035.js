@@ -424,7 +424,7 @@ window.drawMatchChart = function(year, labels, dagData, nattData, splitGender, u
         labels.forEach(l => { netData[l] = nattData['totalt'][l] - dagData['totalt'][l]; });
         
         const simModeEl = document.getElementById('simMode');
-        const supplyLabel = (simModeEl && simModeEl.value === 'full') ? 'Utbud (Inkl. all pendling)' : 'Lokalt Utbud (Nattbef.)';
+        const supplyLabel = (simModeEl && simModeEl.value === 'full') ? 'Lokalt Utbud (Natt)' : 'Lokalt Utbud (Nattbef.)';
 
         datasets = [
             { 
@@ -1597,18 +1597,53 @@ window.updateDashboard = function(calledFromDropdown = true) {
             
             let rawLabels = [];
             if (dfDag.length > 0) {
-                // NY LOGIK: Vi plockar INTE bort 'Okänd bransch' här. Den måste finnas kvar ifall vi vill gruppera den!
                 const excludeCols = ['År', 'år', 'Samtliga', 'Totalt', 'Kön', 'kön'];
                 rawLabels = Object.keys(dfDag[0]).filter(k => !excludeCols.includes(k));
             }
             
-            let dagDataRaw = window.aggregateMatchData(dfDag, refYear, rawLabels, 'Cols');
-            let nattDataRaw = window.aggregateMatchData(dfNatt, refYear, rawLabels, 'Cols');
-            
+            // DEEP COPY: Låser rådatan så den inte muterar och växer okontrollerat
+            let dagDataRaw = JSON.parse(JSON.stringify(window.aggregateMatchData(dfDag, refYear, rawLabels, 'Cols')));
+            let nattDataRaw = JSON.parse(JSON.stringify(window.aggregateMatchData(dfNatt, refYear, rawLabels, 'Cols')));
+
+            // ------------------------------------------------------------------------
+            // KORRIGERING AV DEN UNDERLIGGANDE MOTORN (Anti-dubbelräkning)
+            // ------------------------------------------------------------------------
+            // Den generiska motorn nedanför skalar tyvärr "Utbud" baserat på tillväxten av TOTALT utbud (inkl pendling).
+            // Vi skapar en faktor som neutraliserar pendlingseffekten så vi enbart visar Lokalt Utbud.
+            if (selYearInt > window.baseYear) {
+                let targetStore = window.progDataStore[selYearInt] || window.histDataStore[selYearInt];
+                let baseStore = window.histDataStore[window.baseYear];
+                
+                if (targetStore && baseStore) {
+                    // 1. Vad den generiska motorn TROR att den ska skala med (Total Supply inkl pendling)
+                    let tNet = targetStore.netCommuting != null ? targetStore.netCommuting : (targetStore.explicitNetCommuting || 0);
+                    let tTotSup = (targetStore.supply || 0) + tNet + (targetStore.virtualSupply || 0);
+                    
+                    let bNet = baseStore.netCommuting != null ? baseStore.netCommuting : (baseStore.explicitNetCommuting || 0);
+                    let bTotSup = (baseStore.supply || 0) + bNet + (baseStore.virtualSupply || 0);
+                    
+                    let genericFactor = bTotSup > 0 ? (tTotSup / bTotSup) : 1;
+                    
+                    // 2. Vad vi FAKTISKT vill skala med (Enbart Lokalt Utbud)
+                    let wantedFactor = (baseStore.supply || 0) > 0 ? ((targetStore.supply || 0) / baseStore.supply) : 1;
+                    
+                    // 3. Vår korrigeringsfaktor (som vi pre-applicerar för att lura motorn i nästa steg)
+                    let correctionNatt = genericFactor > 0 ? (wantedFactor / genericFactor) : 1;
+                    
+                    rawLabels.forEach(l => {
+                        if (nattDataRaw['totalt'][l] !== undefined) {
+                            nattDataRaw['totalt'][l] *= correctionNatt;
+                        }
+                    });
+                    
+                    // OBS: Vi rör inte dagDataRaw (Efterfrågan), för den skalar motorn redan helt perfekt!
+                }
+            }
+            // ------------------------------------------------------------------------
+
             const subGroupVal = subGroupSelect ? subGroupSelect.value : 'all';
             
             if (subGroupVal && subGroupVal !== 'all' && window.syssConfig['SNIgrupper']) {
-                // ANVÄNDAREN HAR VALT EN GRUPPERING
                 let groupedDag = { 'totalt': {} }, groupedNatt = { 'totalt': {} };
                 const sniGrupper = window.syssConfig['SNIgrupper'];
                 const firstKey = Object.keys(sniGrupper[0])[0]; 
@@ -1627,8 +1662,6 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 labels = Object.keys(groupedDag['totalt']);
                 dagData = groupedDag; nattData = groupedNatt;
             } else {
-                // STANDARDLÄGE (Ingen gruppering)
-                // NY LOGIK: Nu filtrerar vi bort 'Okänd bransch' så den inte stör standardvyn
                 labels = rawLabels.filter(l => l !== 'Okänd bransch');
                 dagData = dagDataRaw; 
                 nattData = nattDataRaw;
@@ -1638,10 +1671,11 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 wrapper.style.minHeight = (labels.length * 20) + 'px';
             }
             
-            infoText = "Visar matchningen mellan lokalt utbud och efterfrågan uppdelat på olika branscher.";
+            infoText = "Visar matchningen mellan lokalt utbud och efterfrågan uppdelat på olika branscher. Utbudet representerar enbart bosatt arbetskraft för att tydliggöra pendlingsbehovet.";
             chartSpecificTooltip = `
                 <p class="mb-2"><strong>Bransch (SNI):</strong> Utgångspunkten för branschindelningen är SCB:s standard via så kallad "SNI-bokstav".</p>
-                <p class="mb-2"><strong>Gruppera branscher:</strong> Använd rullistan bredvid för att slå ihop branscherna till större, anpassade grupper. <em>Här inkluderas även okända branscher om de är definierade i din styrfil.</em></p>
+                <p class="mb-2"><strong>Synkroniserad data:</strong> Branschnivåerna har kalibrerats matematiskt så att totalen stämmer exakt med KPI-kortens <em>Lokala Utbud</em> och <em>Efterfrågan</em>.</p>
+                <p class="mb-2"><strong>Gruppera branscher:</strong> Använd rullistan bredvid för att slå ihop branscherna till större, anpassade grupper.</p>
             `;
         }
         
@@ -1650,8 +1684,8 @@ window.updateDashboard = function(calledFromDropdown = true) {
             
             if (chartType !== 'sektor_match_kon') {
                 commonTooltipHTML += `
-                    <p class="mb-2"><strong>Rekryteringsgap:</strong> Visar skillnaden mellan antalet jobb (Efterfrågan/Dagbefolkning) och bosatt arbetskraft (Utbud/Nattbefolkning). Om stapeln för jobb är högre uppstår ett gap. Gapet kan fyllas genom ökad inpendling eller ökad inflyttning.</p>
-                    <p class="mb-2"><strong>Analytiskt vs Dynamiskt:</strong> I <em>Analytiskt</em> läge ser du det teoretiska gapet utifrån basprognosen. I <em>Dynamiskt</em> läge visas den nya jämvikten <em>efter</em> att de simulerade inflyttarna har tillsatt jobben.</p>
+                    <p class="mb-2"><strong>Rekryteringsgap:</strong> Visar skillnaden mellan antalet jobb (Efterfrågan) och lokalt bosatt arbetskraft (Utbud). Gapet i diagrammet illustrerar hur mycket arbetskraft som måste tillföras via pendling eller inflyttning.</p>
+                    <p class="mb-2"><strong>Analytiskt vs Dynamiskt:</strong> I <em>Analytiskt</em> läge ser du det teoretiska gapet utifrån basprognosen. I <em>Dynamiskt</em> läge visas den nya jämvikten <em>efter</em> att simulerade inflyttare har börjat jobba och ökat det lokala utbudet.</p>
                 `;
             } else {
                 commonTooltipHTML += `
@@ -1677,14 +1711,15 @@ window.updateDashboard = function(calledFromDropdown = true) {
                     </span>
                     <span class="text-sm">${infoText}${modeSuffix}</span>
                 </div>
-            `;
+           `;
+        }
             // NYTT: Tvinga KPI:erna att uppdateras efter att diagrammet (och simuleringen) är helt klar
             if (typeof window.updateKPIs === 'function') {
             setTimeout(() => {
                 window.updateKPIs();
             }, 50); // 50 millisekunders fördröjning räcker för att koden ska hinna andas
             }
-        } // <-- Här slutar blocket för bransch_match
+         // <-- Här slutar blocket för bransch_match
         
         window.drawMatchChart(selYearInt, labels, dagData, nattData, isGenderSplit, useZeroAxis, isHorizontal);
         return; 
