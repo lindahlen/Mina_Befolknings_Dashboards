@@ -1581,6 +1581,25 @@ if (zeroCb && cType) {
             
             infoText = "Visar matchningen mellan lokalt utbud och företagens efterfrågan utifrån utbildningsnivå.";
             chartSpecificTooltip = `<p class="mb-2"><strong>Utbildning:</strong> Jämför den utbildningsnivå som företagen kräver med den utbildningsnivå som den bosatta arbetskraften har.</p>`;
+            
+            // --- STRÖMBRYTARE: Ändra till false om du vill dölja i-knappen för utbildning, true för att slå på---
+            const visaIknappUtb = false;
+
+            if (visaIknappUtb) {
+                infoText = `
+                    <div class="flex items-center gap-2">
+                        <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
+                            <i class="fa-solid fa-circle-info text-base relative z-10"></i>
+                            <div class="absolute z-[100] hidden group-hover:block w-72 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
+                                ${chartSpecificTooltip}
+                                <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
+                            </div>
+                        </span>
+                        <span>${infoText}</span>
+                    </div>
+                `;
+            }
+         // Slut på utb_match blocket
         
         } else if (chartType === 'sektor_match' || chartType === 'sektor_match_kon') {
             if (chartType === 'sektor_match_kon') {

@@ -15,16 +15,22 @@
         .card-red { display: inline-block; width: 10px; height: 14px; background-color: #ef4444; border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,0.2); margin-left: 4px; vertical-align: middle; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
 
     <header class="bg-blue-900 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold tracking-tight">🏆 VM-Databasen</h1>
+            <a href="internationella_index.html" class="text-blue-200 hover:text-white text-sm font-medium transition flex items-center">
+                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                Tillbaka
+            </a>
         </div>
         
         <nav class="max-w-7xl mx-auto px-4 flex space-x-1 overflow-x-auto no-scrollbar pb-2">
             <button onclick="switchTab('tab-turneringar')" class="tab-btn px-4 py-2 rounded-t-lg bg-white text-blue-900 font-semibold transition whitespace-nowrap">Turneringar</button>
             <button onclick="switchTab('tab-matcher')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap">Turneringsdata & Matcher</button>
+            <button onclick="switchTab('tab-h2h')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap">Head-to-Head</button>
+            <button onclick="switchTab('tab-maraton')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap">Maratontabell</button>
             <button onclick="switchTab('tab-admin')" class="tab-btn px-4 py-2 rounded-t-lg bg-red-800 text-red-200 hover:bg-red-700 transition flex items-center gap-2 whitespace-nowrap">
                 <span>⚠️ Admin Kontroll</span>
                 <span id="admin-badge" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
@@ -32,13 +38,15 @@
         </nav>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 py-6">
+    <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
         
+        <!-- FLIK 1: Turneringar -->
         <div id="tab-turneringar" class="tab-content">
             <h2 class="text-2xl font-bold mb-6 text-slate-700">Turneringar genom tiderna</h2>
             <div id="tournaments-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
         </div>
 
+        <!-- FLIK 2: Matcher & Grupper & Träd -->
         <div id="tab-matcher" class="tab-content hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4 bg-white p-4 rounded-xl shadow-sm border border-slate-200">
                 <div>
@@ -54,7 +62,6 @@
                         </select>
                         <button onclick="navigateYear(1)" class="p-1 px-3 text-slate-600 hover:text-blue-700 hover:bg-blue-50 rounded transition text-xl font-black" title="Nästa turnering">&#10095;</button>
                     </div>
-                    
                     <input type="text" id="search-input" placeholder="Sök lag, arena, fas..." class="p-2 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64" onkeyup="renderMatches()">
                 </div>
             </div>
@@ -79,6 +86,7 @@
                         <tbody id="matches-list" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
+                <p id="matches-count" class="text-sm text-slate-500 p-2 text-right bg-slate-50 border-t border-slate-200"></p>
             </div>
 
             <div id="sub-view-groups" class="sub-view-content hidden space-y-8">
@@ -97,10 +105,83 @@
                 </div>
                 <div id="knockout-tree-container" class="flex space-x-6 min-w-[1000px] pb-4"></div>
             </div>
-
-            <p id="matches-count" class="text-sm text-slate-500 mt-2 text-right"></p>
         </div>
 
+        <!-- FLIK 3: HEAD TO HEAD (H2H) -->
+        <div id="tab-h2h" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6">
+                <h2 class="text-xl font-bold text-slate-800 mb-6 flex justify-between items-center">
+                    Analysera inbördes möten
+                    <span class="text-blue-500 cursor-help" title="Statistik baserad på ordinarie tid och eventuell förlängning.">ⓘ</span>
+                </h2>
+                
+                <div class="flex flex-col md:flex-row gap-8 items-center justify-center">
+                    <div class="w-full md:w-1/3">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Lag A (Fokuslag)</label>
+                        <select id="h2h-team-a" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg font-bold text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="renderH2H()"></select>
+                    </div>
+                    <div class="text-2xl font-black text-slate-300">VS</div>
+                    <div class="w-full md:w-1/3">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Lag B (Motståndare)</label>
+                        <select id="h2h-team-b" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-lg font-bold text-slate-800 shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500" onchange="renderH2H()"></select>
+                    </div>
+                </div>
+                <div class="mt-6 flex justify-center">
+                    <button onclick="renderH2H()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded shadow transition">Analysera VS</button>
+                </div>
+            </div>
+
+            <!-- H2H Resultatboxar -->
+            <div id="h2h-summary" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6"></div>
+
+            <!-- H2H Matchlista -->
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                <div class="max-h-[60vh] overflow-y-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 z-10">
+                            <tr>
+                                <th class="p-3 text-xs font-semibold text-slate-500 uppercase">Turnering / Fas</th>
+                                <th class="p-3 text-xs font-semibold text-slate-500 uppercase">Datum</th>
+                                <th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Hemmalag</th>
+                                <th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Res</th>
+                                <th class="p-3 text-xs font-semibold text-slate-500 uppercase">Bortalag</th>
+                            </tr>
+                        </thead>
+                        <tbody id="h2h-matches-list" class="divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLIK 4: MARATONTABELL -->
+        <div id="tab-maraton" class="tab-content hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                    <h2 class="text-xl font-bold text-slate-800">Historisk Maratontabell</h2>
+                    <span class="text-xs text-slate-500 font-medium">Poängberäkning: 3p för vinst, Straffavgöranden räknas som oavgjort</span>
+                </div>
+                <div class="max-h-[75vh] overflow-y-auto">
+                    <table class="w-full text-sm text-left border-collapse">
+                        <thead class="bg-blue-900 text-white sticky top-0 z-10">
+                            <tr>
+                                <th class="p-3 font-semibold w-10 text-center">#</th>
+                                <th class="p-3 font-semibold">Nation</th>
+                                <th class="p-3 font-semibold text-center w-12" title="Spelade matcher">S</th>
+                                <th class="p-3 font-semibold text-center w-12" title="Vinster">V</th>
+                                <th class="p-3 font-semibold text-center w-12" title="Oavgjorda">O</th>
+                                <th class="p-3 font-semibold text-center w-12" title="Förluster">F</th>
+                                <th class="p-3 font-semibold text-center w-20" title="Gjorda-Insläppta">Mål</th>
+                                <th class="p-3 font-semibold text-center w-16" title="Målskillnad">MS</th>
+                                <th class="p-3 font-bold text-center w-12 text-yellow-300">P</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marathon-table-body" class="divide-y divide-slate-200 bg-white"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLIK 5: Admin -->
         <div id="tab-admin" class="tab-content hidden">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-xl font-bold text-red-800">Kvalitetssäkring & Felsökning</h2>
@@ -110,9 +191,9 @@
         </div>
     </main>
 
+    <!-- MATCH MODAL -->
     <div id="match-modal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
         <div class="bg-slate-100 rounded-xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden relative">
-            
             <div class="bg-blue-900 text-white p-4 flex items-center relative min-h-[60px]">
                 <div class="absolute left-4">
                     <span class="text-xl font-black text-blue-200 tracking-wider" id="modal-year"></span>
@@ -128,7 +209,6 @@
                     </button>
                 </div>
             </div>
-
             <div class="p-0 overflow-y-auto flex-1">
                 <div class="bg-white p-6 border-b border-slate-200 text-center">
                     <div class="text-sm text-slate-500 mb-4">
@@ -147,7 +227,6 @@
                 <div class="p-6 bg-slate-50">
                     <h4 class="text-sm font-bold uppercase text-slate-400 mb-3 text-center tracking-widest">Matchhändelser</h4>
                     <div class="max-w-xl mx-auto bg-white border border-slate-200 rounded-lg shadow-sm p-4" id="modal-events"></div>
-                    
                     <div id="modal-penalties-container" class="max-w-xl mx-auto mt-4 hidden">
                         <h5 class="text-xs font-bold uppercase text-slate-500 mb-2 text-center border-b border-slate-200 pb-1">Straffsparksläggning</h5>
                         <div class="grid grid-cols-2 gap-4 text-sm" id="modal-penalties"></div>
@@ -322000,18 +322079,39 @@
             return s.trim();
         };
 
+        // Extraherar alla unika lag för dropdowns och maratontabell
+        function getAllTeams() {
+            let teams = new Set();
+            Object.values(db.matches).forEach(m => {
+                if(m.home_team) teams.add(m.home_team);
+                if(m.away_team) teams.add(m.away_team);
+            });
+            return Array.from(teams).sort();
+        }
+
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => {
                 btn.classList.remove('bg-white', 'text-blue-900', 'font-semibold');
                 btn.classList.add('bg-blue-800', 'text-blue-200');
+                if(btn.innerText.includes('Admin')) {
+                    btn.classList.remove('bg-red-800', 'text-red-200');
+                    btn.classList.add('bg-red-800', 'text-red-200');
+                }
             });
             document.getElementById(tabId).classList.remove('hidden');
             const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabId));
-            if(activeBtn) {
+            if(activeBtn && !tabId.includes('admin')) {
                 activeBtn.classList.remove('bg-blue-800', 'text-blue-200');
                 activeBtn.classList.add('bg-white', 'text-blue-900', 'font-semibold');
+            } else if (activeBtn && tabId.includes('admin')) {
+                 activeBtn.classList.remove('bg-red-800', 'text-red-200');
+                 activeBtn.classList.add('bg-white', 'text-red-900', 'font-semibold');
             }
+            
+            // Ladda specifikt innehåll när en tab öppnas
+            if(tabId === 'tab-h2h') populateH2HSelectors();
+            if(tabId === 'tab-maraton') renderMarathonTable();
         }
 
         function switchSubTab(subViewId) {
@@ -322121,12 +322221,18 @@
             let count = 0;
             let currentPhase = ''; 
             
-            const getPhaseWeight = (phase) => {
-                if (!phase) return 0;
-                let p = phase.toLowerCase();
-                // Sätt viktning så att Final alltid hamnar före Bronsmatch vid samma datum
+            const getPhaseWeight = (m) => {
+                if (!m.phase) return 0;
+                let p = m.phase.toLowerCase();
+                
+                // --- NY LOGIK FÖR FINAL 1950 (Eller andra specialfinaler med kod 5/6) ---
+                if (m.advancement && (m.advancement.code === 5 || m.advancement.code === 6 || m.advancement.is_final === true)) {
+                    return 1000; // Överordnad all annan text!
+                }
+                
                 if (p.includes("final") && !p.includes("kvarts") && !p.includes("semi") && !p.includes("åtton") && !p.includes("sexton") && !p.includes("omgång")) return 100;
-                if (p.includes("tredje") || p.includes("brons")) return 90;
+                // --- NY LOGIK FÖR MATCH OM 3:E PRIS / BRONS ---
+                if (p.includes("tredje") || p.includes("brons") || p.includes("3:e")) return 90;
                 if (p.includes("semi")) return 80;
                 if (p.includes("kvarts")) return 70;
                 if (p.includes("åtton")) return 60;
@@ -322138,7 +322244,7 @@
                 let diff = new Date(b.date) - new Date(a.date);
                 if (diff !== 0 && !isNaN(diff)) return diff;
                 // Om datumet är exakt samma, låt viktningen avgöra (Högst vikt visas först)
-                return getPhaseWeight(b.phase) - getPhaseWeight(a.phase);
+                return getPhaseWeight(b) - getPhaseWeight(a);
             });
 
             matchArray.forEach(m => {
@@ -322302,11 +322408,11 @@
             allPhases.forEach(p => treeData[p] = []);
             treeData["Bronsmatch"] = [];
             
-            // Ny knivskarp matchningslogik
             koMatches.forEach(m => {
                 let p_lower = m.phase.toLowerCase();
                 
-                if (p_lower.includes("tredje") || p_lower.includes("brons")) {
+                // --- NY LOGIK FÖR ATT FÅNGA BRONS/3:E PRIS ---
+                if (p_lower.includes("tredje") || p_lower.includes("brons") || p_lower.includes("3:e")) {
                     treeData["Bronsmatch"].push(m);
                 } else if (p_lower.includes("sextondelsfinal")) {
                     treeData["Sextondelsfinal"].push(m);
@@ -322319,7 +322425,6 @@
                 } else if (p_lower.includes("finalomgång")) {
                     treeData["Finalomgång"].push(m);
                 } else if (p_lower.includes("final")) {
-                    // Eftersom vi uteslutit kvartsfinal och semifinal tidigare, vet vi säkert att detta är Finalen
                     treeData["Final"].push(m);
                 }
             });
@@ -322360,6 +322465,182 @@
             container.innerHTML = html;
         }
 
+        // =========================================================
+        // 📊 NYTT: MARATONTABELL
+        // =========================================================
+        function renderMarathonTable() {
+            const container = document.getElementById('marathon-table-body');
+            let teams = {};
+
+            Object.values(db.matches).forEach(m => {
+                if (m.score.home_total === null) return; // Matchen ej spelad ännu
+                
+                [m.home_team, m.away_team].forEach(t => {
+                    if (!teams[t]) teams[t] = { name: t, S:0, V:0, O:0, F:0, GM:0, IM:0, P:0 };
+                });
+
+                let h = teams[m.home_team];
+                let a = teams[m.away_team];
+                
+                let hg = m.score.home_total;
+                let ag = m.score.away_total;
+
+                h.S++; a.S++;
+                h.GM += hg; h.IM += ag;
+                a.GM += ag; a.IM += hg;
+
+                // Historisk statistik-regel: Matcher avgjorda på straffar bokförs som Oavgjort i maratontabeller!
+                if (hg > ag) {
+                    h.V++; h.P += 3; a.F++;
+                } else if (ag > hg) {
+                    a.V++; a.P += 3; h.F++;
+                } else {
+                    h.O++; a.O++; h.P += 1; a.P += 1;
+                }
+            });
+
+            let sortedTeams = Object.values(teams).sort((a,b) => {
+                if (b.P !== a.P) return b.P - a.P;
+                let diffA = a.GM - a.IM;
+                let diffB = b.GM - b.IM;
+                if (diffB !== diffA) return diffB - diffA;
+                return b.GM - a.GM; // Flest gjorda mål avgör
+            });
+
+            let html = '';
+            sortedTeams.forEach((t, idx) => {
+                let diff = t.GM - t.IM;
+                let diffStr = diff > 0 ? `+${diff}` : diff;
+                let rankClass = idx < 10 ? "font-bold text-slate-800" : "text-slate-600";
+                
+                html += `
+                    <tr class="hover:bg-blue-50 transition border-b border-slate-100 last:border-0">
+                        <td class="p-3 text-center text-xs text-slate-400 font-bold">${idx + 1}</td>
+                        <td class="p-3 ${rankClass}">${t.name}</td>
+                        <td class="p-3 text-center font-medium">${t.S}</td>
+                        <td class="p-3 text-center text-green-600">${t.V}</td>
+                        <td class="p-3 text-center text-slate-500">${t.O}</td>
+                        <td class="p-3 text-center text-red-500">${t.F}</td>
+                        <td class="p-3 text-center text-xs text-slate-500">${t.GM}-${t.IM} <span class="font-normal text-[10px]">(${diffStr})</span></td>
+                        <td class="p-3 text-center font-medium text-slate-700">${diffStr}</td>
+                        <td class="p-3 text-center font-black text-blue-900">${t.P}</td>
+                    </tr>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // =========================================================
+        // 📊 NYTT: HEAD-TO-HEAD (H2H)
+        // =========================================================
+        function populateH2HSelectors() {
+            const selectA = document.getElementById('h2h-team-a');
+            const selectB = document.getElementById('h2h-team-b');
+            
+            // Kolla om de redan är fyllda
+            if (selectA.options.length > 0) return; 
+
+            const teams = getAllTeams();
+            
+            teams.forEach(t => {
+                selectA.add(new Option(t, t));
+                selectB.add(new Option(t, t));
+            });
+
+            // Sätt defaultvärden (Om de finns, annars tar den de första i listan)
+            if (teams.includes("Brasilien")) selectA.value = "Brasilien";
+            if (teams.includes("Tyskland")) selectB.value = "Tyskland";
+            
+            renderH2H(); // Kör renderingen direkt när fliken öppnas
+        }
+
+        function renderH2H() {
+            const teamA = document.getElementById('h2h-team-a').value;
+            const teamB = document.getElementById('h2h-team-b').value;
+            const container = document.getElementById('h2h-matches-list');
+            const summaryContainer = document.getElementById('h2h-summary');
+            
+            if(!teamA || !teamB) return;
+
+            let h2hMatches = Object.values(db.matches).filter(m => {
+                if(m.score.home_total === null) return false;
+                return (m.home_team === teamA && m.away_team === teamB) || (m.home_team === teamB && m.away_team === teamA);
+            });
+
+            // Sortera kronologiskt (äldst först)
+            h2hMatches.sort((a,b) => new Date(a.date) - new Date(b.date));
+
+            let winsA = 0;
+            let winsB = 0;
+            let draws = 0;
+
+            let html = '';
+            h2hMatches.forEach(m => {
+                // Summera statistik
+                if(m.score.home_total > m.score.away_total) {
+                    if(m.home_team === teamA) winsA++; else winsB++;
+                } else if(m.score.away_total > m.score.home_total) {
+                    if(m.away_team === teamA) winsA++; else winsB++;
+                } else {
+                    // Straffar avgör vinnare
+                    if(m.score.home_pen !== null && m.score.away_pen !== null) {
+                        if(m.score.home_pen > m.score.away_pen) {
+                            if(m.home_team === teamA) winsA++; else winsB++;
+                        } else {
+                            if(m.away_team === teamA) winsA++; else winsB++;
+                        }
+                    } else {
+                        draws++;
+                    }
+                }
+
+                const scoreClass = "font-bold text-slate-800 bg-slate-100 px-3 py-1 rounded border border-slate-200";
+                const isHomeA = m.home_team === teamA;
+                
+                html += `
+                    <tr onclick="openMatchModal('${m.id}')" class="hover:bg-blue-50 cursor-pointer transition group">
+                        <td class="p-3 border-t border-slate-100">
+                            <div class="text-[10px] uppercase font-bold text-blue-900">${m.date.substring(0,4)}</div>
+                            <div class="text-xs text-slate-500">${m.phase}</div>
+                        </td>
+                        <td class="p-3 border-t border-slate-100">
+                            <div class="text-xs text-slate-500">${m.date}</div>
+                        </td>
+                        <td class="p-3 border-t border-slate-100 text-right ${isHomeA ? 'font-black text-blue-900' : 'font-medium text-slate-500'}">${m.home_team}</td>
+                        <td class="p-3 border-t border-slate-100 text-center"><span class="${scoreClass}">${formatScore(m)}</span></td>
+                        <td class="p-3 border-t border-slate-100 ${!isHomeA ? 'font-black text-blue-900' : 'font-medium text-slate-500'}">${m.away_team}</td>
+                    </tr>
+                `;
+            });
+
+            container.innerHTML = html;
+
+            // Bygg H2H Summary Boxar
+            let total = h2hMatches.length;
+            summaryContainer.innerHTML = `
+                <div class="bg-indigo-50 border border-indigo-100 p-4 rounded-xl text-center shadow-sm">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-indigo-400 mb-1">Möten</div>
+                    <div class="text-3xl font-black text-indigo-900">${total}</div>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-100 p-4 rounded-xl text-center shadow-sm">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-emerald-500 mb-1">Vinster ${teamA}</div>
+                    <div class="text-3xl font-black text-emerald-700">${winsA}</div>
+                </div>
+                <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl text-center shadow-sm">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-1">Oavgjorda</div>
+                    <div class="text-3xl font-black text-slate-600">${draws}</div>
+                </div>
+                <div class="bg-rose-50 border border-rose-100 p-4 rounded-xl text-center shadow-sm md:col-start-2 md:col-span-2 lg:col-start-auto lg:col-span-1">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-rose-500 mb-1">Vinster ${teamB}</div>
+                    <div class="text-3xl font-black text-rose-700">${winsB}</div>
+                </div>
+            `;
+        }
+
+        // =========================================================
+        // MATCH MODAL & ADMIN 
+        // =========================================================
         function openMatchModal(matchId) {
             const m = db.matches[matchId];
             if (!m) return;
@@ -322384,7 +322665,7 @@
             if (m.score.home_pen !== null) detailsHtml += ` &bull; Straffar: ${m.score.home_pen}-${m.score.away_pen}`;
             document.getElementById('modal-score-details').innerHTML = detailsHtml;
 
-            // --- MATCHHÄNDELSER (Mål & Kort med Självmålslogik) ---
+            // --- MATCHHÄNDELSER (Mål & Kort) ---
             const eventsContainer = document.getElementById('modal-events');
             let eventsArray = [];
             
@@ -322394,11 +322675,8 @@
                 const noteText = g.note ? g.note.trim() : "";
                 
                 if (pName.toLowerCase() === "självmål") {
-                    if (noteText && noteText !== "null" && noteText !== "") {
-                        goalText = `⚽ Självmål av ${formatName(noteText)}`;
-                    } else {
-                        goalText = `⚽ Självmål`;
-                    }
+                    if (noteText && noteText !== "null" && noteText !== "") goalText = `⚽ Självmål av ${formatName(noteText)}`;
+                    else goalText = `⚽ Självmål`;
                 } else {
                     let typeStr = g.type && g.type !== 'Spelmål' && g.type !== 'Okänt' && g.type !== 'null' ? ` - ${g.type}` : '';
                     let noteStr = noteText && noteText !== 'null' ? ` (${noteText})` : '';
@@ -322426,13 +322704,12 @@
                 eventsContainer.innerHTML = '<p class="text-center text-slate-400 text-sm italic">Inga specifika mål- eller kortuppgifter registrerade.</p>';
             }
 
-            // --- STRAFFAR (Rensad från null) ---
+            // --- STRAFFAR ---
             const penContainerBox = document.getElementById('modal-penalties-container');
             const penContainer = document.getElementById('modal-penalties');
             
             if (m.events.penalties && m.events.penalties.length > 0) {
                 penContainerBox.classList.remove('hidden');
-                
                 let homePens = m.events.penalties.filter(p => p.team === m.home_team).sort((a, b) => a.penalty_nr - b.penalty_nr);
                 let awayPens = m.events.penalties.filter(p => p.team === m.away_team).sort((a, b) => a.penalty_nr - b.penalty_nr);
                 
@@ -322443,18 +322720,14 @@
                         let outcomeLower = outcomeText.toLowerCase();
                         let isGoal = !outcomeLower.includes('miss') && outcomeText !== ''; 
                         let icon = isGoal ? '<span class="pen-goal text-lg leading-none align-middle">✓</span>' : '<span class="pen-miss text-lg leading-none align-middle">✗</span>';
-                        
                         let outcomeDisplay = '';
                         if (outcomeLower !== 'mål' && outcomeLower !== 'miss' && outcomeLower !== 'ja' && outcomeLower !== '1' && outcomeText !== '') {
                             outcomeDisplay = ` <span class="text-xs font-bold text-slate-500">${outcomeText}</span>`;
                         }
-                        
                         let nrVal = p.penalty_nr;
                         let hasNr = nrVal !== null && nrVal !== undefined && nrVal !== "" && String(nrVal) !== "null";
-                        
                         let leftText = isHome ? (hasNr ? `${nrVal}. ` : '') + icon + outcomeDisplay : formatName(p.player);
                         let rightText = isHome ? formatName(p.player) : outcomeDisplay + ' ' + icon + (hasNr ? ` <span class="text-xs text-slate-400">(${nrVal})</span>` : '');
-                        
                         p_html += `<li class="border-b border-slate-100 pb-1 last:border-0">${leftText} ${rightText}</li>`;
                     });
                     return p_html + '</ul></div>';
@@ -322478,9 +322751,7 @@
 
                 let lHtml = '';
                 teamData.forEach((p, index) => {
-                    if (index === 11) {
-                        lHtml += `<li class="py-3 mt-3 mb-1 border-t-2 border-slate-200 text-center text-xs font-black text-slate-400 uppercase tracking-widest bg-slate-50">Avbytare</li>`;
-                    }
+                    if (index === 11) lHtml += `<li class="py-3 mt-3 mb-1 border-t-2 border-slate-200 text-center text-xs font-black text-slate-400 uppercase tracking-widest bg-slate-50">Avbytare</li>`;
 
                     const subStr = p.sub ? String(p.sub).toLowerCase().trim() : '';
                     const cardStr = p.card ? String(p.card).toLowerCase().trim() : (p.status ? String(p.status).toLowerCase().trim() : '');
@@ -322488,16 +322759,15 @@
                     
                     let subIcon = '', cardIcon = '', capIcon = isCap ? `<span class="text-blue-700 font-black ml-1 text-[10px] bg-blue-100 px-1 rounded shadow-sm">C</span>` : '', eventMin = '';
                     
-                    if (subStr.includes('in') && subStr.includes('ut')) {
-                        subIcon = `<span class="text-green-600 font-bold ml-1 text-[12px]">↑</span><span class="text-red-500 font-bold ml-0.5"text-[12px]">↓</span>`;
-                    } else if (subStr.includes('in')) { subIcon = `<span class="text-green-600 font-bold ml-1 text-[14px]">↑</span>`; }
-                    else if (subStr.includes('ut')) { subIcon = `<span class="text-red-500 font-bold ml-1 text-[14px]">↓</span>`; }
+                    if (subStr.includes('in') && subStr.includes('ut')) subIcon = `<span class="text-green-600 font-bold ml-1 text-[12px]">↑</span><span class="text-red-500 font-bold ml-0.5 text-[12px]">↓</span>`;
+                    else if (subStr.includes('in')) subIcon = `<span class="text-green-600 font-bold ml-1 text-[14px]">↑</span>`;
+                    else if (subStr.includes('ut')) subIcon = `<span class="text-red-500 font-bold ml-1 text-[14px]">↓</span>`;
 
-                    if (cardStr.includes('v') && cardStr.includes('utv')) { cardIcon = `<span class="card-yellow"></span><span class="card-red"></span>`; }
-                    else if (cardStr.includes('utv')) { cardIcon = `<span class="card-red"></span>`; }
-                    else if (cardStr.includes('v')) { cardIcon = `<span class="card-yellow"></span>`; }
+                    if (cardStr.includes('v') && cardStr.includes('utv')) cardIcon = `<span class="card-yellow"></span><span class="card-red"></span>`;
+                    else if (cardStr.includes('utv')) cardIcon = `<span class="card-red"></span>`;
+                    else if (cardStr.includes('v')) cardIcon = `<span class="card-yellow"></span>`;
                     
-                    if (subStr) { eventMin = `<span class="text-xs text-slate-400 ml-1">(${subStr})</span>`; }
+                    if (subStr) eventMin = `<span class="text-xs text-slate-400 ml-1">(${subStr})</span>`;
                     const nrText = p.shirt_nr && p.shirt_nr !== 'null' ? `<span class="inline-block w-6 font-bold text-slate-400 text-xs">${p.shirt_nr}.</span>` : `<span class="inline-block w-6 text-slate-300">-</span>`;
                     
                     lHtml += `<li class="py-1 border-b border-slate-50 last:border-0 flex items-center">${nrText} <span class="${subStr.includes('in') ? 'text-slate-600' : 'font-medium'}">${formatName(p.name)}</span>${capIcon}${subIcon}${cardIcon} ${eventMin}</li>`;
@@ -322517,26 +322787,15 @@
 
         function closeModal() { document.getElementById('match-modal').classList.add('hidden'); }
         
-        // =========================================================
-        // ⚠️ NYTT: SEKTIONERAD ADMIN-FLIK
-        // =========================================================
         function renderAdminWarnings() {
             const container = document.getElementById('admin-list-container');
             const badge = document.getElementById('admin-badge');
             const warnings = db.admin_warnings || [];
             
             if (warnings.length > 0) {
-                badge.innerText = warnings.length; 
-                badge.classList.remove('hidden');
+                badge.innerText = warnings.length; badge.classList.remove('hidden');
                 
-                // Kategorisera varningarna
-                let groups = {
-                    "🔴 Kritiska Fel & Datafel": [],
-                    "🟠 Logikfel (Resultat & Slutspel)": [],
-                    "🟡 Saknas i 'Namn' eller 'Trupper'": [],
-                    "⚪ Övriga varningar": []
-                };
-
+                let groups = { "🔴 Kritiska Fel & Datafel": [], "🟠 Logikfel (Resultat & Slutspel)": [], "🟡 Saknas i 'Namn' eller 'Trupper'": [], "⚪ Övriga varningar": [] };
                 warnings.forEach(w => {
                     if (w.includes("Kritisk") || w.includes("Allvarlig") || w.includes("Datafel")) groups["🔴 Kritiska Fel & Datafel"].push(w);
                     else if (w.includes("Logikfel")) groups["🟠 Logikfel (Resultat & Slutspel)"].push(w);
@@ -322547,15 +322806,9 @@
                 let html = '';
                 for (let [title, list] of Object.entries(groups)) {
                     if (list.length === 0) continue;
-                    
-                    html += `<h3 class="font-bold text-slate-700 mt-6 mb-2 border-b pb-1">${title} <span class="text-xs font-normal text-slate-400">(${list.length})</span></h3>`;
-                    html += `<div class="space-y-2 mb-6">`;
-                    
+                    html += `<h3 class="font-bold text-slate-700 mt-6 mb-2 border-b pb-1">${title} <span class="text-xs font-normal text-slate-400">(${list.length})</span></h3><div class="space-y-2 mb-6">`;
                     list.forEach(w => {
-                        let c = title.includes("Kritiska") ? "border-red-200 bg-red-50 text-red-800 font-medium" :
-                                title.includes("Logikfel") ? "border-orange-200 bg-orange-50 text-orange-800" :
-                                title.includes("Saknas") ? "border-yellow-200 bg-yellow-50 text-yellow-800" :
-                                "border-slate-200 bg-slate-50 text-slate-800";
+                        let c = title.includes("Kritiska") ? "border-red-200 bg-red-50 text-red-800 font-medium" : title.includes("Logikfel") ? "border-orange-200 bg-orange-50 text-orange-800" : title.includes("Saknas") ? "border-yellow-200 bg-yellow-50 text-yellow-800" : "border-slate-200 bg-slate-50 text-slate-800";
                         html += `<div class="p-2.5 border-l-4 rounded ${c} text-xs shadow-sm">${w}</div>`;
                     });
                     html += `</div>`;
