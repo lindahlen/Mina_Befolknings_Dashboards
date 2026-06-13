@@ -23,9 +23,6 @@ JSON_FILE = os.path.join(JSON_DIR, "vm_data.json")
 
 os.makedirs(JSON_DIR, exist_ok=True)
 
-# =========================================================
-# 2. HJÄLPFUNKTIONER FÖR DATATVÄTT
-# =========================================================
 def clean_dataframe(df):
     return df.replace({np.nan: None}).fillna("")
 
@@ -51,8 +48,6 @@ def build_database():
         df_nationer = clean_dataframe(pd.read_excel(EXCEL_FILE, sheet_name='Nationer'))
         df_avancerade = clean_dataframe(pd.read_excel(EXCEL_FILE, sheet_name='Avancerade'))
         df_straffar = clean_dataframe(pd.read_excel(EXCEL_FILE, sheet_name='Straffläggning'))
-        
-        # NYA FLIKAR FÖR KONTROLL
         df_namn = clean_dataframe(pd.read_excel(EXCEL_FILE, sheet_name='Namn'))
         df_trupper = clean_dataframe(pd.read_excel(EXCEL_FILE, sheet_name='Trupper'))
         
@@ -71,34 +66,96 @@ def build_database():
         "metadata": {"title": "Fotbolls-VM Historik 1930-", "last_updated": str(pd.Timestamp.now().date())},
         "admin_warnings": [],
         "tournaments": {}, 
-        "matches": {}      
+        "matches": {},
+        "team_mappings": {},  
+        "players": {},
+        "placements": {} # NY MATRIS: För placeringar per år
     }
 
-    # -- 3A. FÖRBERED UPPSLAGSVERK OCH VALIDERINGS-LISTOR --
-    
-    # 1. Hämta alla unika och giltiga namn
+    # -- 3A. FÖRBERED UPPSLAGSVERK OCH MAPPNING --
+    try:
+        df_landerna = clean_dataframe(pd.read_excel(EXCEL_FILE, sheet_name='Länderna'))
+        for _, row in df_landerna.iterrows():
+            land = str(row.get('Land', '')).strip()
+            landsnamn = str(row.get('Landsnamn', '')).strip()
+            if land and landsnamn and land != landsnamn:
+                db["team_mappings"][land] = landsnamn
+    except Exception:
+        print("Observera: Fliken 'Länderna' saknades. Ingen nationsmappning genomförs.")
+
+    def get_mapped(team_name):
+        return db["team_mappings"].get(team_name, team_name)
+
     valid_names = set(df_namn['Namn'].astype(str).str.strip())
     valid_names.discard("")
     valid_names.discard("None")
 
-    # 2. Hämta trupper
+    # Extrahera födelsedatum
+    player_birth_info = {}
+    for _, row in df_namn.iterrows():
+        namn = str(row.get('Namn', '')).strip()
+        fodd_val = row.get('Född', row.get('Födelsedatum', ''))
+        
+        fodd_str = ""
+        if pd.notnull(fodd_val) and str(fodd_val) != "" and str(fodd_val) != "None":
+            if hasattr(fodd_val, 'strftime'): fodd_str = fodd_val.strftime('%Y-%m-%d')
+            else: fodd_str = str(fodd_val).strip().replace(" 00:00:00", "")
+                
+        if namn and fodd_str:
+            player_birth_info[namn] = fodd_str
+
+    # Extrahera trupper
     trupper_lookup = {}
+    player_squad_info = {}
     for _, row in df_trupper.iterrows():
         t_year = str(row.get('Turn_År', '')).strip()
         t_land = str(row.get('Land', '')).strip()
         t_namn = str(row.get('Namn', row.get('efternamn', ''))).strip()
+        t_anm = str(row.get('Anm', '')).lower()
         
         if t_year and t_land and t_namn:
             key = f"{t_year}_{t_land}"
-            if key not in trupper_lookup:
-                trupper_lookup[key] = set()
+            if key not in trupper_lookup: trupper_lookup[key] = set()
             trupper_lookup[key].add(t_namn)
+            if t_namn not in player_squad_info:
+                player_squad_info[t_namn] = {"years": set(), "nations": set(), "is_gk": False}
+            player_squad_info[t_namn]["years"].add(t_year)
+            player_squad_info[t_namn]["nations"].add(get_mapped(t_land))
+            if 'mv' in t_anm: player_squad_info[t_namn]["is_gk"] = True
 
+    for p_name, s_info in player_squad_info.items():
+        if p_name not in valid_names: continue
+        fodd = player_birth_info.get(p_name, "")
+        db["players"][p_name] = {
+            "name": p_name,
+            "nations": sorted(list(s_info["nations"])),
+            "tournaments": [], 
+            "squad_tournaments": sorted(list(s_info["years"])),
+            "is_gk": s_info["is_gk"],
+            "birth_date": fodd,
+            "birth_year": fodd[:4] if fodd else "",
+            "matches_played": 0,
+            "minutes_played": 0,
+            "goals": 0,
+            "yellow_cards": 0,
+            "red_cards": 0,
+            "match_list": []
+        }
+
+    # Hämta in placeringar och tränare
     coaches_lookup = {}
     for _, row in df_nationer.iterrows():
         year = str(row['Turn_ÅR'])
         nation = str(row['Nation'])
-        coaches_lookup[f"{year}_{nation}"] = str(row['Förbundskapten'])
+        placering = str(row.get('Placering', '')).strip()
+        
+        coaches_lookup[f"{year}_{nation}"] = str(row.get('Förbundskapten', ''))
+        
+        if year and nation and placering and placering != "None":
+            mapped_nation = get_mapped(nation)
+            if mapped_nation not in db["placements"]:
+                db["placements"][mapped_nation] = {}
+            db["placements"][mapped_nation][year] = placering
 
     avancerade_lookup = {}
     for _, row in df_avancerade.iterrows():
@@ -114,7 +171,7 @@ def build_database():
             "host": str(row['Värdland']),
             "winner": str(row['Mästare']),
             "matches": [],
-            "stats": {"total_goals": 0, "total_attendance": 0, "matches_played": 0} 
+            "stats": {} 
         }
 
     for _, row in df_matcher.iterrows():
@@ -131,7 +188,6 @@ def build_database():
         if ar in db["tournaments"]:
             db["tournaments"][ar]["matches"].append(match_id)
 
-        # Logik för avancemang
         adv_code = safe_int(row.get('Avancerade'))
         adv_text = avancerade_lookup.get(adv_code, "Okänd kod") if adv_code else "Ej angivet"
         
@@ -141,6 +197,14 @@ def build_database():
             
         is_group_stage = adv_code in [9, 10, 11, 12, 14]
         points_for_win = 3 if adv_code == 10 else (2 if is_group_stage else None)
+
+        hm1, hm2 = safe_int(row.get('HM1')), safe_int(row.get('HM2'))
+        bm1, bm2 = safe_int(row.get('BM1')), safe_int(row.get('BM2'))
+        hfm, bfm = safe_int(row.get('HFM')), safe_int(row.get('BFM'))
+        hm, bm = safe_int(row.get('HM')), safe_int(row.get('BM'))
+
+        home_ft = hm1 + hm2 if (hm1 is not None and hm2 is not None) else (hm - hfm if (hm is not None and hfm is not None) else None)
+        away_ft = bm1 + bm2 if (bm1 is not None and bm2 is not None) else (bm - bfm if (bm is not None and bfm is not None) else None)
 
         db["matches"][match_id] = {
             "id": match_id,
@@ -167,12 +231,14 @@ def build_database():
                 "is_bronze": adv_code in [15, 16]
             },
             "score": {
-                "home_total": safe_int(row['HM']),
-                "away_total": safe_int(row['BM']),
-                "home_ht": safe_int(row['HM1']),
-                "away_ht": safe_int(row['BM1']),
-                "home_et": safe_int(row['HFM']),
-                "away_et": safe_int(row['BFM']),
+                "home_total": hm,
+                "away_total": bm,
+                "home_ht": hm1,
+                "away_ht": bm1,
+                "home_ft": home_ft,  
+                "away_ft": away_ft,
+                "home_et": hfm,      # Använder nu faktiska förlängningsmål!
+                "away_et": bfm,  
                 "home_pen": safe_int(row.get('HSM')),
                 "away_pen": safe_int(row.get('BSM'))
             },
@@ -180,102 +246,218 @@ def build_database():
         }
 
     # -- 3C. HÄNDELSER OCH ADMIN-KONTROLLER --
-    
-    # Mål
     for _, row in df_mal.iterrows():
         match_id = str(row['Match_ID'])
         name = str(row['Målskytt']).strip()
-        
         if name and name.lower() not in ["självmål", "okänd"] and name not in valid_names:
             db["admin_warnings"].append(f"Saknas i 'Namn': Målskytt '{name}' (Match {match_id})")
-
         if match_id in db["matches"]:
             db["matches"][match_id]["events"]["goals"].append({
-                "player": name,
-                "team": str(row['Land']),
-                "minute": str(row['Minut']),
-                "type": str(row['Innebörd']),
-                "note": str(row.get('Not', ''))
+                "player": name, "team": str(row['Land']), "minute": str(row['Minut']),
+                "type": str(row['Innebörd']), "note": str(row.get('Not', ''))
             })
 
-    # Utvisningar
     for _, row in df_utvisningar.iterrows():
         match_id = str(row['Match_ID'])
         name = str(row['Namn']).strip()
-        
         if name and name not in valid_names:
             db["admin_warnings"].append(f"Saknas i 'Namn': Utvisad spelare '{name}' (Match {match_id})")
-            
         if match_id in db["matches"]:
-            db["matches"][match_id]["events"]["cards"].append({
-                "player": name,
-                "minute": str(row['Minut']),
-                "type": "Red"
-            })
+            db["matches"][match_id]["events"]["cards"].append({"player": name, "minute": str(row['Minut']), "type": "Red"})
             
-    # Straffläggning
     for _, row in df_straffar.iterrows():
         match_id = str(row['Match_ID'])
         name = str(row['Namn']).strip()
-        
         if name and name not in valid_names:
             db["admin_warnings"].append(f"Saknas i 'Namn': Straffskytt '{name}' (Match {match_id})")
-            
         if match_id in db["matches"]:
             db["matches"][match_id]["events"]["penalties"].append({
-                "penalty_nr": safe_int(row['Straff_NR']),
-                "player": name,
-                "team": str(row['Land']),
-                "outcome": str(row['Innebörd_straff']),
-                "note": str(row['Notering'])
+                "penalty_nr": safe_int(row['Straff_NR']), "player": name, "team": str(row['Land']),
+                "outcome": str(row['Innebörd_straff']), "note": str(row['Notering'])
             })
 
-    # Spelare (Laguppställningar) och Trupp-kontroll
+    # -- 3E. SMART BYTES-MATEMATIK & LAGUPPSTÄLLNINGAR --
     missing_squad_warned = set()
+    temp_lineups = {}
+    
     for _, row in df_spelare.iterrows():
-        match_id = str(row['Match_ID'])
+        m_id = str(row['Match_ID'])
+        if m_id not in db["matches"]: continue
+        
+        if m_id not in temp_lineups:
+            temp_lineups[m_id] = {"home": [], "away": []}
+            
+        hb = str(row['HB']).strip().upper()
+        t_key = "home" if hb == "1" or hb.startswith("H") else "away"
+        
         name = str(row['Namn']).strip()
         shirt = str(row.get('Tröjnr', ''))
-        hb = str(row['HB']).strip().upper()
+        played_mins = safe_int(row['Minut']) 
+        byte_str = str(row.get('Byte', '')).lower()
         
         if name and name not in valid_names:
-            db["admin_warnings"].append(f"Saknas i 'Namn': Laguppst. '{name}' (Match {match_id})")
+            db["admin_warnings"].append(f"Saknas i 'Namn': Laguppst. '{name}' (Match {m_id})")
             
-        if match_id in db["matches"]:
-            m = db["matches"][match_id]
-            team_key = "home" if hb == "1" or hb.startswith("H") else "away"
-            actual_team = m["home_team"] if team_key == "home" else m["away_team"]
-            year = m["date"][:4]
+        actual_team = db["matches"][m_id]["home_team"] if t_key == "home" else db["matches"][m_id]["away_team"]
+        year = db["matches"][m_id]["date"][:4]
+        
+        t_key_squad = f"{year}_{actual_team}"
+        if t_key_squad in trupper_lookup:
+            if name not in trupper_lookup[t_key_squad]:
+                db["admin_warnings"].append(f"Saknas i 'Trupper': Tröjnr {shirt} - {name} ({actual_team} {year}, Match {m_id})")
+        else:
+            if t_key_squad not in missing_squad_warned:
+                db["admin_warnings"].append(f"Allvarlig: Har inga spelare registrerade för {actual_team} {year} i fliken 'Trupper'.")
+                missing_squad_warned.add(t_key_squad)
+
+        temp_lineups[m_id][t_key].append({
+            "shirt_nr": safe_int(shirt),
+            "name": name,
+            "position": str(row.get('Position', '')),
+            "status": str(row.get('Händelse', '')),
+            "captain": str(row.get('Kapten', '')),
+            "card": str(row.get('Händelse', '')),
+            "played_mins": played_mins,
+            "is_in": 'in' in byte_str,
+            "is_out": 'ut' in byte_str
+        })
+        
+    for m_id, teams in temp_lineups.items():
+        # Fånga röda kort och mål innan vi stänger laguppställningen
+        red_cards = {}
+        for rc in db["matches"][m_id]["events"]["cards"]:
+            if rc["type"] == "Red": red_cards[rc["player"].strip()] = safe_int(rc["minute"])
             
-            # Kolla mot Trupper
-            t_key = f"{year}_{actual_team}"
-            if t_key in trupper_lookup:
-                if name not in trupper_lookup[t_key]:
-                    db["admin_warnings"].append(f"Saknas i 'Trupper': Tröjnr {shirt} - {name} ({actual_team} {year}, Match {match_id})")
-            else:
-                if t_key not in missing_squad_warned:
-                    db["admin_warnings"].append(f"Allvarlig: Har inga spelare registrerade för {actual_team} {year} i fliken 'Trupper'.")
-                    missing_squad_warned.add(t_key)
+        match_goals = {}
+        for g in db["matches"][m_id]["events"]["goals"]:
+            p_name = g["player"].strip()
+            if p_name and p_name.lower() != "självmål":
+                match_goals[p_name] = match_goals.get(p_name, 0) + 1
+                
+        for t_key, players in teams.items():
+            max_mins = max([p["played_mins"] for p in players if p["played_mins"] is not None] + [90])
+            for p in players:
+                p["sub_in_min"] = None; p["sub_out_min"] = None
+                pm = p["played_mins"]
+                if pm is None: continue 
+                rc_min = red_cards.get(p["name"].strip())
+                if not p["is_in"]: 
+                    if p["is_out"]: p["sub_out_min"] = pm
+                else: 
+                    if rc_min: p["sub_in_min"] = rc_min - pm
+                    elif not p["is_out"]: p["sub_in_min"] = max_mins - pm
+                        
+            in_uts = [p for p in players if p["is_in"] and p["is_out"] and p["played_mins"] is not None]
+            if in_uts:
+                known_out = [p["sub_out_min"] for p in players if not p["is_in"] and p["sub_out_min"]]
+                known_in = [p["sub_in_min"] for p in players if p["is_in"] and not p["is_out"] and p["sub_in_min"]]
+                for p in in_uts:
+                    pm = p["played_mins"]
+                    matched = False
+                    for ot in known_out:
+                        for it in known_in:
+                            if abs((ot + pm) - it) <= 1: 
+                                p["sub_in_min"] = ot; p["sub_out_min"] = it; matched = True
+                                break
+                        if matched: break
+                    if not matched:
+                        unmatched = [ot for ot in known_out if not any(abs(ot - kit) <= 2 for kit in known_in)]
+                        if unmatched: p["sub_in_min"] = unmatched[0]; p["sub_out_min"] = unmatched[0] + pm
+                            
+            for p in players:
+                sub_parts = []
+                if p["is_in"] and p["sub_in_min"] is not None: sub_parts.append(f"in {p['sub_in_min']}'")
+                if p["is_out"] and p["sub_out_min"] is not None: sub_parts.append(f"ut {p['sub_out_min']}'")
+                if not sub_parts:
+                    if p["is_in"] and p["is_out"]: sub_parts = ["in", "ut"]
+                    elif p["is_in"]: sub_parts = ["in"]
+                    elif p["is_out"]: sub_parts = ["ut"]
+                
+                p_name_clean = p["name"].strip()
+                db["matches"][m_id]["events"]["lineups"][t_key].append({
+                    "shirt_nr": p["shirt_nr"],
+                    "name": p_name_clean,
+                    "position": p["position"],
+                    "status": p["status"],
+                    "sub": ", ".join(sub_parts), 
+                    "captain": p["captain"],
+                    "card": p["card"],
+                    "red_card_minute": red_cards.get(p_name_clean),  # NYTT!
+                    "goals": match_goals.get(p_name_clean, 0),       # NYTT!
+                    "minute": p["played_mins"]
+                })
 
-            db["matches"][match_id]["events"]["lineups"][team_key].append({
-                "shirt_nr": safe_int(shirt),
-                "name": name,
-                "position": str(row['Position']),
-                "status": str(row['Händelse']),
-                "sub": str(row.get('Byte', '')),
-                "captain": str(row.get('Kapten', '')),
-                "card": str(row.get('Händelse', '')),
-                "minute": str(row['Minut'])
-            })
-
-    # -- 3D. AVANCERAD LOGISK KONTROLL (TIDSLINJE & RESULTAT) --
+    # -- 3F. AGGRERERA SPELARSTATISTIK --
+    print("👤 Aggregerar detaljerad spelarstatistik...")
     for m_id, m in db["matches"].items():
-        # Kontroll 1: Stämmer mål/straff-resultatet med koden för avancemang?
+        year = m["date"][:4]
+        h_team = get_mapped(m["home_team"])
+        a_team = get_mapped(m["away_team"])
+        
+        match_goals = {}
+        for g in m["events"]["goals"]:
+            p_name = g["player"].strip()
+            if p_name and p_name.lower() != "självmål":
+                match_goals[p_name] = match_goals.get(p_name, 0) + 1
+                
+        match_reds = set([c["player"].strip() for c in m["events"]["cards"] if c["type"] == "Red"])
+        
+        for t_key, t_name in [("home", h_team), ("away", a_team)]:
+            for p in m["events"]["lineups"][t_key]:
+                p_name = p["name"].strip()
+                if not p_name: continue
+                
+                if p_name not in db["players"]:
+                    fodd = player_birth_info.get(p_name, "")
+                    db["players"][p_name] = {
+                        "name": p_name,
+                        "nations": [],
+                        "tournaments": [],
+                        "squad_tournaments": [],
+                        "is_gk": player_squad_info.get(p_name, {}).get("is_gk", False),
+                        "birth_date": fodd,
+                        "birth_year": fodd[:4] if fodd else "",
+                        "matches_played": 0,
+                        "minutes_played": 0,
+                        "goals": 0,
+                        "yellow_cards": 0,
+                        "red_cards": 0,
+                        "match_list": [] 
+                    }
+                    
+                p_obj = db["players"][p_name]
+                
+                if t_name not in p_obj["nations"]: p_obj["nations"].append(t_name)
+                if year not in p_obj["squad_tournaments"]: p_obj["squad_tournaments"].append(year)
+                
+                mins = p["minute"]
+                played = False
+                if mins is not None: played = True
+                elif "in" in str(p["sub"]).lower() or "start" in str(p["status"]).lower(): played = True
+                    
+                if played:
+                    if year not in p_obj["tournaments"]: p_obj["tournaments"].append(year)
+                    p_obj["matches_played"] += 1
+                    if mins is not None: p_obj["minutes_played"] += safe_int(mins) or 0
+                    p_obj["match_list"].append(m_id)
+                    
+                    if p_name in match_goals: p_obj["goals"] += match_goals[p_name]
+                        
+                    card_str = str(p.get("card", "")).lower()
+                    if "v" in card_str and "utv" not in card_str: p_obj["yellow_cards"] += 1
+                    if "utv" in card_str or p_name in match_reds: p_obj["red_cards"] += 1
+                    if "v utv" in card_str: p_obj["yellow_cards"] += 1
+
+    for p_obj in db["players"].values():
+        p_obj["tournaments"].sort()
+        p_obj["squad_tournaments"].sort()
+
+    # -- 3G. AVANCERAD LOGISK KONTROLL --
+    for m_id, m in db["matches"].items():
         ht_g = m["score"]["home_total"]
         at_g = m["score"]["away_total"]
         ht_p = m["score"]["home_pen"]
         at_p = m["score"]["away_pen"]
-        
         actual_winner = None
         if ht_g is not None and at_g is not None:
             if ht_g > at_g: actual_winner = m["home_team"]
@@ -285,67 +467,118 @@ def build_database():
                 elif at_p > ht_p: actual_winner = m["away_team"]
                 
         adv_team = m["advancement"]["advancing_team"]
-        
-        # Om matchen inte är ett oavgjort gruppspel, men vi har fel avancemang
         if adv_team and actual_winner and adv_team != actual_winner:
             db["admin_warnings"].append(f"Logikfel: Match {m_id} slutade med seger för {actual_winner}, men Avancerade-koden säger att {adv_team} gick vidare/vann.")
 
-    # Kontroll 2: Tidslinjen för utslagna lag
     for t_year, t_data in db["tournaments"].items():
-        # Hämta årets matcher och sortera i datumordning
         t_matches = [db["matches"][m_id] for m_id in t_data["matches"]]
         t_matches.sort(key=lambda x: x["date"] if x["date"] else "9999-99-99")
-        
-        eliminated_teams = {} # Sparar vilket lag som åkte ut i vilken match
-        knockout_advanced_teams = {} # Sparar lag som gick vidare i slutspelet
-        
+        eliminated_teams = {} 
+        knockout_advanced_teams = {} 
         for m in t_matches:
             home = m["home_team"]
             away = m["away_team"]
             is_bronze = m["advancement"]["is_bronze"]
-            
-            # Varnar om ett utslaget lag spelar en ny match (undantag Bronsmatch)
-            if home in eliminated_teams and not is_bronze:
-                db["admin_warnings"].append(f"Logikfel (Slutspel): {home} spelar i match {m['id']} trots att de blev utslagna redan i match {eliminated_teams[home]}.")
-            if away in eliminated_teams and not is_bronze:
-                db["admin_warnings"].append(f"Logikfel (Slutspel): {away} spelar i match {m['id']} trots att de blev utslagna redan i match {eliminated_teams[away]}.")
-                
-            # Bocka av lag som faktiskt spelar (så de inte varnas för att ha "försvunnit")
+            if home in eliminated_teams and not is_bronze: db["admin_warnings"].append(f"Logikfel (Slutspel): {home} spelar i match {m['id']} trots utslagning i match {eliminated_teams[home]}.")
+            if away in eliminated_teams and not is_bronze: db["admin_warnings"].append(f"Logikfel (Slutspel): {away} spelar i match {m['id']} trots utslagning i match {eliminated_teams[away]}.")
             if home in knockout_advanced_teams: del knockout_advanced_teams[home]
             if away in knockout_advanced_teams: del knockout_advanced_teams[away]
-            
-            # Registrera utslagning / avancemang för utslagsmatcher
             if not m["advancement"]["is_group_match"]:
                 adv_team = m["advancement"]["advancing_team"]
                 if adv_team:
                     loser = away if adv_team == home else home
                     eliminated_teams[loser] = m["id"]
-                    
                     if not m["advancement"]["is_final"] and not is_bronze:
                         knockout_advanced_teams[adv_team] = m["id"]
-                        
-        # Om något lag ligger kvar i listan över avancerade, har de gått vidare men aldrig spelat nästa match
         for team, m_id in knockout_advanced_teams.items():
-            db["admin_warnings"].append(f"Logikfel (Slutspel): {team} avancerade från match {m_id} men saknar efterföljande slutspelsmatch i turneringen {t_year}.")
+            db["admin_warnings"].append(f"Logikfel (Slutspel): {team} avancerade från match {m_id} men saknar efterföljande match år {t_year}.")
 
-    # Beräkna enkel turneringsstatistik innan vi sparar
+    # -- 3H. TURNERINGSSTATISTIK (ÖVERSIKT OCH REKORD) --
+    print("📈 Aggregerar övergripande turneringsstatistik...")
     for year, t in db["tournaments"].items():
         t_goals, t_att, m_count = 0, 0, 0
+        goals_h1, goals_h2, goals_et, goals_pen = 0, 0, 0, 0
+        matches_et, matches_pen = 0, 0
+        t_players = set()
+        t_goalscorers = {}
+        champion = t["winner"]
+        champ_coach = ""
+        champ_captain = ""
+        
         for m_id in t["matches"]:
             m = db["matches"].get(m_id)
-            if m and m["score"]["home_total"] is not None:
-                m_count += 1
-                t_goals += m["score"]["home_total"] + m["score"]["away_total"]
-                if m["attendance"] is not None:
-                    t_att += m["attendance"]
-        db["tournaments"][year]["stats"] = {"total_goals": t_goals, "total_attendance": t_att, "matches_played": m_count}
+            if not m or m["score"]["home_total"] is None: continue
+            
+            m_count += 1
+            t_goals += m["score"]["home_total"] + m["score"]["away_total"]
+            if m["attendance"]: t_att += m["attendance"]
+            
+            s = m["score"]
+            if s["home_ht"] is not None and s["away_ht"] is not None:
+                goals_h1 += s["home_ht"] + s["away_ht"]
+            if s["home_ft"] is not None and s["home_ht"] is not None:
+                goals_h2 += (s["home_ft"] - s["home_ht"]) + (s["away_ft"] - s["away_ht"])
+            if s["home_et"] is not None:
+                goals_et += s["home_et"] + s["away_et"]
+                matches_et += 1
+            if s["home_pen"] is not None:
+                goals_pen += s["home_pen"] + s["away_pen"]
+                matches_pen += 1
+                
+            for g in m["events"]["goals"]:
+                p_name = g["player"].strip()
+                if p_name and p_name.lower() != "självmål":
+                    t_goalscorers[p_name] = t_goalscorers.get(p_name, 0) + 1
+                    
+            for t_key in ["home", "away"]:
+                for p in m["events"]["lineups"][t_key]:
+                    if p["minute"] is not None or "in" in str(p["sub"]).lower() or "start" in str(p["status"]).lower():
+                        t_players.add(p["name"].strip())
+                        
+            if m["advancement"]["is_final"] and champion and champion != "Okänd":
+                if get_mapped(m["home_team"]) == get_mapped(champion) or m["home_team"] == champion:
+                    champ_coach = m["coaches"]["home"]
+                    for p in m["events"]["lineups"]["home"]:
+                        if "c" in str(p["captain"]).lower(): champ_captain = p["name"]
+                elif get_mapped(m["away_team"]) == get_mapped(champion) or m["away_team"] == champion:
+                    champ_coach = m["coaches"]["away"]
+                    for p in m["events"]["lineups"]["away"]:
+                        if "c" in str(p["captain"]).lower(): champ_captain = p["name"]
+                        
+        debutants = 0
+        for p_name in t_players:
+            p_obj = db["players"].get(p_name)
+            # Spelaren debuterade om detta är den första turneringen de faktiskt fick minuter i
+            if p_obj and p_obj["tournaments"] and p_obj["tournaments"][0] == year:
+                debutants += 1
+                
+        top_scorer_list = []
+        if t_goalscorers:
+            max_g = max(t_goalscorers.values())
+            top_scorer_list = [{"name": p, "goals": g} for p, g in t_goalscorers.items() if g == max_g]
+            
+        t["stats"] = {
+            "total_goals": t_goals,
+            "total_attendance": t_att,
+            "matches_played": m_count,
+            "goals_h1": goals_h1,
+            "goals_h2": goals_h2,
+            "goals_et": goals_et,
+            "goals_pen": goals_pen,
+            "matches_et": matches_et,
+            "matches_pen": matches_pen,
+            "players_used": len(t_players),
+            "debutants": debutants,
+            "goalscorers": len(t_goalscorers),
+            "top_scorers": top_scorer_list,
+            "champion_coach": champ_coach,
+            "champion_captain": champ_captain
+        }
 
-    # Spara filen
     with open(JSON_FILE, 'w', encoding='utf-8') as f:
         json.dump(db, f, ensure_ascii=False, indent=2)
         
-    print(f"✅ JSON-databas uppdaterad med omfattande Admin-validering!")
-    print(f"⚠️  {len(db['admin_warnings'])} larm genererade. Öppna dashboarden (Fliken Admin) för att granska.")
+    print(f"✅ JSON-databas uppdaterad med Turneringsöversikt, Laguppställnings-mål & Placeringsmatris!")
 
 if __name__ == "__main__":
     build_database()
