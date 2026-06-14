@@ -20,9 +20,9 @@
     <header class="bg-blue-900 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold tracking-tight">🏆 VM-Databasen</h1>
-            <a href="internationella_index.html" class="text-blue-200 hover:text-white text-sm font-medium transition flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                Tillbaka
+            <a href="internationella_index.html" class="bg-white text-blue-900 border border-white px-4 py-2 rounded-lg transition hover:bg-blue-50 hover:shadow-md font-bold text-sm flex items-center">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                Tillbaka till översikten
             </a>
         </div>
         
@@ -33,6 +33,7 @@
             <button onclick="switchTab('tab-maraton')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap">Maratontabell</button>
             <button onclick="switchTab('tab-teams')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap font-bold text-amber-300">Lagrekord & Sviter</button>
             <button onclick="switchTab('tab-spelare')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap font-bold">Spelare & Statistik</button>
+            <button onclick="switchTab('tab-staff')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap font-bold text-indigo-300">Domare & Tränare</button>
             <button onclick="switchTab('tab-admin')" class="tab-btn px-4 py-2 rounded-t-lg bg-red-800 text-red-200 hover:bg-red-700 transition flex items-center gap-2 whitespace-nowrap">
                 <span>⚠️ Admin</span>
                 <span id="admin-badge" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
@@ -164,9 +165,23 @@
         <!-- FLIK 4: MARATONTABELL -->
         <div id="tab-maraton" class="tab-content hidden">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-                <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-slate-800">Historisk Maratontabell</h2>
-                    <span class="text-xs text-slate-500 font-medium">Poängberäkning: 3p för vinst, Straffavgöranden räknas som oavgjort</span>
+                <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Historisk Maratontabell</h2>
+                        <span class="text-xs text-slate-500 font-medium">Filtrera fas och poängsystem för djupare analys</span>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                        <select id="marathon-phase-filter" onchange="renderMarathonTable()" class="p-2 border border-slate-300 rounded-lg shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="all">Alla Matcher</option>
+                            <option value="group">Endast Gruppspel</option>
+                            <option value="knockout">Endast Slutspel/Utslagning</option>
+                        </select>
+                        <select id="marathon-points-filter" onchange="renderMarathonTable()" class="p-2 border border-slate-300 rounded-lg shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="3">3p för seger</option>
+                            <option value="2">2p för seger</option>
+                            <option value="3_pen">3p inkl. Straffsegrar</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="max-h-[70vh] overflow-y-auto">
                     <table class="w-full text-sm text-left border-collapse">
@@ -219,10 +234,14 @@
                     <select id="team-top-type" onchange="renderTeamData()" class="p-2 border border-slate-300 rounded-lg shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64">
                         <option value="biggest_win">Största Segrar</option>
                         <option value="high_score">Målrikaste Matcher</option>
+                        <option value="h2h_most">Flest inbördes möten</option>
                         <option value="attendance">Högsta Publiksiffror</option>
                         <option value="medals">Flest Medaljer (Endast historik)</option>
                         <option value="placements">Översikt placeringar (Matris)</option>
-                        <option value="h2h_most">Flest inbördes möten</option>
+                        <option value="penalties">Straffavgöranden (Matchlista)</option>
+                    <!-- Nya geografiska perspektiv -->
+                        <option value="arenas">Geografi: Arenor (Flest matcher)</option>
+                        <option value="cities">Geografi: Städer (Högst totalpublik)</option>
                     </select>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
@@ -358,10 +377,10 @@
                             <option value="tournaments_squad">Flest turneringar i trupp</option>
                             <option value="yellow">Flest varningar (Gula kort)</option>
                             <option value="red">Utvisningar (Röda kort)</option>
-                            <option value="oldest_player">Äldsta spelare (Kommer snart)</option>
-                            <option value="youngest_player">Yngsta spelare (Kommer snart)</option>
-                            <option value="oldest_scorer">Äldsta målskytt (Kommer snart)</option>
-                            <option value="youngest_scorer">Yngsta målskytt (Kommer snart)</option>
+                            <option value="oldest_player">Äldsta spelare (vid tidpunkt för match)</option>
+                            <option value="youngest_player">Yngsta spelare (vid tidpunkt för match)</option>
+                            <option value="oldest_scorer">Äldsta målskytt</option>
+                            <option value="youngest_scorer">Yngsta målskytt</option>
                         </select>
                     </div>
                 </div>
@@ -370,11 +389,43 @@
             </div>
         </div>
 
-        <!-- FLIK 7: Admin -->
+        <!-- FLIK 7: DOMARE & TRÄNARE -->
+        <div id="tab-staff" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="w-full md:w-1/2">
+                    <h2 class="text-xl font-bold text-slate-800">Domare & Förbundskaptener</h2>
+                    <p class="text-xs text-slate-500 mt-1">Historik och rekord för ledarna vid sidlinjen och domarna på plan.</p>
+                </div>
+                <div class="w-full md:w-1/2">
+                    <select id="staff-top-type" onchange="renderStaffData()" class="w-full p-3 border border-slate-300 rounded-lg shadow-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="ref_matches">Domare: Flest döma matcher</option>
+                        <option value="ref_nations">Domare: Nationer med flest domare</option>
+                        <option value="ref_oldest">Domare: Äldsta</option>
+                        <option value="ref_youngest">Domare: Yngsta</option>
+                        <option value="coach_matches">Kaptener: Flest coachade matcher</option>
+                        <option value="coach_tournaments">Kaptener: Deltagit i flest VM (Trupp/Ledare)</option>
+                        <!-- De dolda ålderslistorna, redo att aktiveras när födelsedata finns i JSON -->
+                        <!-- För att aktivera ålderslistorna: Ta bort koden style="display: none;" från raderna nedan -->
+                        <!-- För att inaktivera ålderslistorna: Lägg in ex. in koden på detta sätt option value="coach_oldest" style="display: none;" för raderna nedan -->
+                        <option value="coach_oldest" style="display: none;">Kaptener: Äldsta (Kräver födelsedata)</option>
+                        <option value="coach_youngest" style="display: none;">Kaptener: Yngsta (Kräver födelsedata)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                <div id="staff-list-results" class="max-h-[65vh] overflow-auto"></div>
+            </div>
+        </div>
+
+        <!-- FLIK 8: Admin -->
         <div id="tab-admin" class="tab-content hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-red-800">Kvalitetssäkring & Felsökning</h2>
-                <button onclick="renderAdminWarnings()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded">Uppdatera logg</button>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-xl font-bold text-red-800">Kvalitetssäkring & Felsökning</h2>
+                    <span class="text-sm text-slate-500 font-medium hidden sm:inline">Sammanställning: Jimmy Lindahl</span>
+                </div>
+                <button onclick="renderAdminWarnings()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded transition whitespace-nowrap">Uppdatera logg</button>
             </div>
             <div class="bg-white rounded-lg shadow-sm border border-red-200 p-6" id="admin-list-container"></div>
         </div>
@@ -458,7 +509,10 @@
                 <h2 class="text-2xl font-black tracking-tight flex items-center gap-3">
                     <span id="team-modal-name"></span>
                 </h2>
-                <button onclick="closeTeamModal()" class="text-blue-300 hover:text-white transition text-3xl leading-none">&times;</button>
+                <button onclick="closeTeamModal()" class="text-blue-300 hover:text-white transition flex items-center">
+                    <span class="text-sm font-semibold uppercase tracking-widest hidden sm:inline mr-2">Stäng</span>
+                    <span class="text-3xl leading-none">&times;</span>
+                </button>
             </div>
             <div class="p-6 bg-slate-50 border-b border-slate-200">
                 <div id="team-modal-summary" class="mb-4"></div>
@@ -489,7 +543,10 @@
                     <h2 class="text-xl font-black tracking-tight" id="streak-modal-title"></h2>
                     <div class="text-sm font-bold text-amber-900 mt-1" id="streak-modal-subtitle"></div>
                 </div>
-                <button onclick="closeStreakModal()" class="text-amber-900 hover:text-white transition text-3xl leading-none">&times;</button>
+                <button onclick="closeStreakModal()" class="text-amber-900 hover:text-white transition flex items-center">
+                    <span class="text-sm font-semibold uppercase tracking-widest hidden sm:inline mr-2">Stäng</span>
+                    <span class="text-3xl leading-none">&times;</span>
+                </button>
             </div>
             <div class="p-0 overflow-y-auto flex-1 bg-white">
                 <table class="w-full text-left border-collapse">
@@ -503,6 +560,30 @@
                         </tr>
                     </thead>
                     <tbody id="streak-modal-matches-list" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- STAFF / NATION MODAL -->
+    <div id="staff-modal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-slate-100 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden relative">
+            <div class="bg-indigo-900 text-white p-4 flex justify-between items-center relative">
+                <div>
+                    <h2 class="text-xl font-black tracking-tight" id="staff-modal-title"></h2>
+                    <div class="text-sm font-bold text-indigo-300 mt-1" id="staff-modal-subtitle"></div>
+                </div>
+                <button onclick="closeStaffModal()" class="text-indigo-300 hover:text-white transition flex items-center">
+                    <span class="text-sm font-semibold uppercase tracking-widest hidden sm:inline mr-2">Stäng</span>
+                    <span class="text-3xl leading-none">&times;</span>
+                </button>
+            </div>
+            <div class="p-0 overflow-y-auto flex-1 bg-white">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 z-10" id="staff-modal-thead">
+                        <!-- Dynamisk header -->
+                    </thead>
+                    <tbody id="staff-modal-list" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
         </div>
@@ -569,9 +650,450 @@
         const db = {
   "metadata": {
     "title": "Fotbolls-VM Historik 1930-",
-    "last_updated": "2026-06-13"
+    "last_updated": "2026-06-14"
   },
   "admin_warnings": [
+    "Snarlika namn (Dublettrisk): Paulo Sérgio, Paulo Sergio är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Perez, Hugo, Pérez, Hugo är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Ooijer, Andre, Ooijer, André är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): El-Khalej, Tahar, El Khalej, Tahar är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Suarez, Luis, Suárez, Luis är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Weiss, Vladimír, Weiss, Vladimir är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Sosa, Rubén, Sosa, Rúben är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Gomez, Gabriel, Gómez, Gabriel är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Sanchez, Carlos, Sánchez, Carlos är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Otamendi, Nicolás, Otamendi, Nicolas är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Kozak, Jan 1, Kozak, Jan är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Marin, Luís, Marin, Luis, Marín, Luis är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Rodríguez, Alberto, Rodriguez, Alberto är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Pérez, Luís, Pérez, Luis är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Pak Nam-chol 2, Pak Nam-chol är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Kim Bok-yung, Kim Bo-kyung är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Andre, André är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Rodríguez, Ignacio, Rodriguez, Ignacio är väldigt lika i 'Namn'-fliken.",
+    "Saknas i 'Namn': Nya trupp-spelaren ',' (Cuba, Rumänien, Marocko, Egypten, Brasilien, Frankrike, USA, Bolivia, Mexico, Chile, England, Serbien, Argentina, Belgien, El Salvador, 1930, 1934, 1938, 1950, 1970, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Joel, Monteiro' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Brilhante, Alfredo' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Itália, Luiz' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Hermógenes, Fonseca' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Fausto, Santos' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Fernando, Giudicelli' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Poly, Polycarpo' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Nilo, Braga' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Arakén, Araquém' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Preguinho, João' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Téofilo, Théophilo' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Velloso, Oswaldo' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zé Luiz, José' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Benedicto, Benedito' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Russinho, Moacir' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Carvalho Leite, Carlos' (Brasilien, 1930, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Moderato, Visintainer' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Benevenuto, Humberto' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Oscarino, Costa' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Doca, Alfredo' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Pamplona, Estanislao' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Fortes, Agostinho' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ivan, Mariz' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Manoelzinho, Manoel' (Brasilien, 1930)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Pedrosa, Roberto' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Sílvio, Mazzi' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Luz, Luiz' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Tinoco, Alfredo' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Silveira, Martím' (Brasilien, 1934, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Canalli, Héitor' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Luisinho, Oliveira' (Brasilien, 1934, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Valdemar, Brito' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Armandinho, Santos' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Leônidas, Silva' (Brasilien, 1934, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Patesko, Rodolfo' (Brasilien, 1934, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Atila, Carvalho' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Octacílio, Pinheiro' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ariel, Nogueira' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Germano, Boettcher' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Waldyr, Walter' (Brasilien, 1934)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Batatais, Algisto' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Domingos, Antônio' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Machado, Athur' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zezé Procópio, José' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Affonsinho, Affonso' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Lopes, José' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Romeu, Pellicciari' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Perácio, José' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Hércules, Miranda' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Wálter, Goulart' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jaú, Euclydes' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Nariz, Alvaro' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Britto, Hermínio' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Brandão, José Augusto' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Argemiro, Silva' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Roberto, Emilio' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Tim, Elba' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Niginho, Dionizio' (Brasilien, 1938)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Barbosa, Moacyr' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Augusto, Costa' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Juvenal, Amarijo' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ely, Amparo' (Brasilien, 1950, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Danilo, Alvim' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Bigode, João' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Maneca, Manoel' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ademir, Meneses' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Baltazar, Oswaldo' (Brasilien, 1950, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jair, Pinto' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Friaça, Albino' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Noronha, Alfredo' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Bauer, José Carlos' (Brasilien, 1950, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rui, Campos' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Alfredo, Santos' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zizinho, Thomas' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Chico, Francisco' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rodrigues, Francisco' (Brasilien, 1950, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Santos, Nilton' (Brasilien, 1950, 1954, 1958, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Adaozinho, Adao' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Nena, Olavo' (Brasilien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Castilho, Carlos José' (Brasilien, 1950, 1954, 1958, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zarra, Telmo' (Spanien, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'McLoughlin, Berrnard' (USA, 1950)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Santos, Djalma' (Brasilien, 1954, 1958, 1962, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Brandâozinho, Lucas' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Pinheiro, João Batista' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Julinho, Julio' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Didí, Waldir' (Brasilien, 1954, 1958, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Pinga, José' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Alfredo, Ramos' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mauro, Ramos' (Brasilien, 1954, 1958, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Dequinha, José' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Maurinho, Mauro' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Humberto, Tozzi' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Indio, Aluizio' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rubens, Joshué' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Veludo, Caetano' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Cabeção, Luiz' (Brasilien, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Turgay, Seren' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ridvan, Bolatli' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Basri, Dirimlili' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mustafa, Ertan' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Çetin, Zeybek' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rober, Izak' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Erol, Keskin' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Suat, Mamat' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Feridun, Bugeker' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Burhan, Sargin' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Lefter, Küçükandonyadis' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Sükrü, Ersoy' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Bülent, Eken' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ali, Beratligil' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mehmet, Dincer' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Nedim, Gunar' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Naci, Erdem' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Akgün, Kacmaz' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ahmet, Berman' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Necmettin, Necmi' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Kadri, Aytac' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Coskun, Tas' (Turkiet, 1954)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Bellini, Hideraldo Luiz' (Brasilien, 1958, 1962, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Gilmar, Neves' (Brasilien, 1958, 1962, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Dino, Sani' (Brasilien, 1958)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Moacir, Claudino' (Brasilien, 1958)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zózimo, Calazans' (Brasilien, 1958, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Pelé, Edson' (Brasilien, 1958, 1962, 1966, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Garrincha, Manoel' (Brasilien, 1958, 1962, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'De Sordi, Nilton' (Brasilien, 1958)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Orlando, Carvalho' (Brasilien, 1958, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Oreco, Waldemar' (Brasilien, 1958)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Joel, Antônio' (Brasilien, 1958)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zito, José' (Brasilien, 1958, 1962, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Vavá, Edvaldo' (Brasilien, 1958, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Dida, Edivaldo' (Brasilien, 1958)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Brabrook, Peter' (England, 1958)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Pancho Flores, Francisco' (Mexico, 1958)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Krijzevskij, Konstantin' (Ryssland, 1958)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Coutinho, Antônio' (Brasilien, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jair Marinho, Oliveira' (Brasilien, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jurandyr, Freitas' (Brasilien, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Altaïr, Gomes' (Brasilien, 1962, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zequinha, José' (Brasilien, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mengálvio, Figueiró' (Brasilien, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jair, Costa' (Brasilien, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Amarildo, Silveira' (Brasilien, 1962)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Del Muro, José' (Mexico, 1962, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Adelárdo, Rodríguez' (Spanien, 1962, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Fidelis, José' (Brasilien, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Brito, Hércules' (Brasilien, 1966, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Henrique, Paulo' (Brasilien, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rildo, Meneses' (Brasilien, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Gérson, Nunes' (Brasilien, 1966, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Manga, Aílton' (Brasilien, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Denilson, Machado' (Brasilien, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Lima, Antônio' (Brasilien, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jairzinho, Jair' (Brasilien, 1966, 1970, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Alcindo, Freitas' (Brasilien, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Silva, Wálter' (Brasilien, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Tostão, Eduardo' (Brasilien, 1966, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Paraná, Ademir' (Brasilien, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Edu, Jonas' (Brasilien, 1966, 1970, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Simôes, Antônio' (Portugal, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Eusébio, Ferreira' (Portugal, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'José Carlos, José' (Portugal, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'del Sol, Luis' (Spanien, 1966)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Pirri, José' (Spanien, 1966, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Van Moer, Wilfried' (Belgien, 1970, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Félix, Venerando' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Piazza, Wilson' (Brasilien, 1970, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Carlos Alberto, Torres' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Clodoaldo, Santana' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Marco Antônio, Feliciano' (Brasilien, 1970, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ado, Eduardo' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Roberto, Miranda' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Baldochi, José' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Fontana, José' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Everaldo, Silva' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Joel, Camargo' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Paulo César, Lima' (Brasilien, 1970, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Dario, José' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'José Maria, Alves' (Brasilien, 1970)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Leão, Emerson' (Brasilien, 1970, 1974, 1978, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Luiz Pereira, Edmundo' (Brasilien, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zé Maria, José' (Brasilien, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Leivinha, João' (Brasilien, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Cesar Augusto, Lemos' (Brasilien, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Renato, Valle' (Brasilien, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Valdomiro, Franco' (Brasilien, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Nelinho, Manoel' (Brasilien, 1974, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Alfredo, Filho' (Brasilien, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Paulo César, Carpegiano' (Brasilien, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ademir, Guía' (Brasilien, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mirandinha, Sebastião' (Brasilien, 1974)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Dirceu, José' (Brasilien, 1974, 1978, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Valdir Peres, Arruda' (Brasilien, 1974, 1978, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Toninho, Antônio' (Brasilien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Oscar, José' (Brasilien, 1978, 1982, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Amaral, João' (Brasilien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Cerezo, Toninho' (Brasilien, 1978, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Edinho, Edino' (Brasilien, 1978, 1982, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zé Sérgio, José' (Brasilien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zico, Arthur' (Brasilien, 1978, 1982, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Reinaldo, José' (Brasilien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Carlos, Roberto' (Brasilien, 1978, 1982, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Abel, Carlos' (Brasilien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Polozzi, José' (Brasilien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rodrigues Neto, José' (Brasilien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Batista, João' (Brasilien, 1978, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Gil, Gilberto' (Brasilien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mendonça, Jorge' (Brasilien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Roberto Dinamite, Carlos' (Brasilien, 1978, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Chicão, Francisco' (Brasilien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Dani, Daniel Ruiz' (Spanien, 1978)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Juanito, Juan' (Spanien, 1978, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Quini, Enrique' (Spanien, 1978, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Miguel Angel, Gonzalez' (Spanien, 1978, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Leandro, José' (Brasilien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Luizinho, Luiz Carlos' (Brasilien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Júnior, Leovigil' (Brasilien, 1982, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Paulo Isidoro, Jesus' (Brasilien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Sócrates, Oliveira' (Brasilien, 1982, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Serginho, Sérgio' (Brasilien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Eder, Alexio' (Brasilien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Paulo Sergio, Oliveira' (Brasilien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Edevaldo, Freitas' (Brasilien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Juninho, Alcides' (Brasilien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Falcão, Roberto' (Brasilien, 1982, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Pedrinho, Pedro' (Brasilien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Renato, Carlos' (Brasilien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Kozak, 44197' (Tjeckien, 1982)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Edson, Boaro' (Brasilien, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Müller, Luis' (Brasilien, 1986, 1990, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Casagrande, Walter' (Brasilien, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Careca, Antônio' (Brasilien, 1986, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Edivaldo, Martins' (Brasilien, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Paulo Vítor, Barbosa' (Brasilien, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Josimar, Higino' (Brasilien, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Júlio César, Silva' (Brasilien, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Alemão, Ricardo' (Brasilien, 1986, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Galvão, Mauro' (Brasilien, 1986, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Branco, Cláudio' (Brasilien, 1986, 1990, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Elzo, Aloisio' (Brasilien, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Silas, Paulo' (Brasilien, 1986, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Valdo, Cãndido' (Brasilien, 1986, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Carlos Manuel, Correia' (Portugal, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Diamantino, Miranda' (Portugal, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rui Aguas, José' (Portugal, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Reñones, Tomás' (Spanien, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Víctor, Muñoz' (Spanien, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Quique, Enrique' (Spanien, 1986, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Eloy, Olaya' (Spanien, 1986)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Míchel, Miguel' (Spanien, 1986, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Taffarel, Cláudio' (Brasilien, 1990, 1994, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jorginho, Jorge' (Brasilien, 1990, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Gomes, Ricardo' (Brasilien, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Dunga, Carlos' (Brasilien, 1990, 1994, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Bismarck, Faria' (Brasilien, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Romário, Faria' (Brasilien, 1990, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Acacio, Barreto' (Brasilien, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mozer, José' (Brasilien, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Aldair, Santos' (Brasilien, 1990, 1994, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Bebeto, José' (Brasilien, 1990, 1994, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Gaúcho, Renato' (Brasilien, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mazinho, Iomar' (Brasilien, 1990, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rocha, Ricardo' (Brasilien, 1990, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Tita, Milton' (Brasilien, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zé Carlos, José Carlos' (Brasilien, 1990)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Silva, Mauro' (Brasilien, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zinho, Crizam' (Brasilien, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Raí, Oliveira' (Brasilien, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zetti, Armelino' (Brasilien, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Cafu, Marcos' (Brasilien, 1994, 1998, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Santos, Márcio' (Brasilien, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Leonardo, Araújo' (Brasilien, 1994, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Sérgio, Paulo' (Brasilien, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ronaldo, Lima' (Brasilien, 1994, 1998, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Viola, Paulo' (Brasilien, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Gilmar, Rinaldi' (Brasilien, 1994)",
+    "Tidsgap-varning: Namnet 'Mondragón, Faryd' sträcker sig över 20 år (från 1994 till 2014). Kontrollera om det är två olika personer.",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Finidi, George' (Nigeria, 1994, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Sergí, Barjuan' (Spanien, 1994, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Juanele, Juan' (Spanien, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Felipe, Minambres' (Spanien, 1994)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Enrique, Luis' (Spanien, 1994, 1998, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Van Der Elst, Franky' (Belgien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Júnior Baiano, Raimundo' (Brasilien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Sampaio, César' (Brasilien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Roberto Carlos, Silva' (Brasilien, 1998, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Giovanni, Silva' (Brasilien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rivaldo, Vítor' (Brasilien, 1998, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Emerson, Rosa' (Brasilien, 1998, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zé Carlos, José' (Brasilien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Gonçalves, Marcelo' (Brasilien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Andre, Cruz' (Brasilien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zé Roberto, José' (Brasilien, 1998, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Doriva, Guidoni' (Brasilien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Denílson, Oliveira' (Brasilien, 1998, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Edmundo, Neto' (Brasilien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Dida, Nélson' (Brasilien, 1998, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Raúl, González' (Spanien, 1998, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Amór, Guillermo' (Spanien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Kiko, Francisco' (Spanien, 1998)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Marcos, Reis' (Brasilien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Lúcio, Lucimar' (Brasilien, 2002, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Roque Júnior, José' (Brasilien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Edmílson, Moraes' (Brasilien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ricardinho, Ricardo' (Brasilien, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Gilberto Silva, Aparecido' (Brasilien, 2002, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ronaldinho, Ronaldo' (Brasilien, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Belletti, Juliano' (Brasilien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Anderson Polga, Corrêa' (Brasilien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Kléberson, José' (Brasilien, 2002, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Júnior, Jenílson' (Brasilien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Vampeta, Marcos' (Brasilien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Juninho Paulista, Oswaldo' (Brasilien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Edílson, Ferreira' (Brasilien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Luizão, Luiz Carlos' (Brasilien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ceni, Rogério' (Brasilien, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Kaká, Ricardo' (Brasilien, 2002, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mesén, Alvaro' (Costa Rica, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Baía, Vítor' (Portugal, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Paulo Sousa, Manuel' (Portugal, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'João Pinto, Manuel' (Portugal, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Pauleta, Pedro' (Portugal, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rui Costa, Manuel' (Portugal, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ricardo, Pereira' (Portugal, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Nuno Gomes, Miguel' (Portugal, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rui Jorge, Oliveira' (Portugal, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Al Thaqafi, Mansour' (Saudiarabien, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Juanfrán, Juan' (Spanien, 2002, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Joaquín, Sánchez' (Spanien, 2002, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rüstü, Reçber' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Emre, Asik' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Bülent, Korkmaz' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Fatih, Akyel' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Alpay, Özalan' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Arif, Erdem' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Okan, Buruk' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Tugay, Kerimoglu' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Hakan, Sükür' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Yildiray, Bastürk' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Hasan, Sas' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ömer, Çatkiç' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Muzzy, Izzet' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Tayfur, Havutçu' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Nihat, Kahveci' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ümit, Özat' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ilhan, Mansiz' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ergün, Penbe' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Abdullah, Ercan' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Hakan, Ünsal' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Emre, Belözoglu' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ümit, Davala' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zafer, Ozgultekin' (Turkiet, 2002)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jamba, João' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Kali, Carlos' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Miloy, Marcos' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Figueiredo, Paolo' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'André, Macanga' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Akwá, Fabrice' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mateus, Galiano' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Lamá, Luis' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Zé Kalanga, Nsimba' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Locó, Manuel' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mário, Hipolito' (Angola, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Juan, Santos' (Brasilien, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Adriano, Leite' (Brasilien, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Cicinho, Cicero' (Brasilien, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Luisão, Anderson' (Brasilien, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Cris, Cristiano' (Brasilien, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Gilberto, Melo' (Brasilien, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mineiro, Carlos' (Brasilien, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Juninho Pernambucano, Antonio' (Brasilien, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Fred, Frederico' (Brasilien, 2006, 2014, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Robinho, Robson' (Brasilien, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'De La Cruz, Ulises' (Ecuador, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Costinha, Francisco' (Portugal, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Simão, Sabrosa' (Portugal, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Quim, Joaquim' (Portugal, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Miguel, Monteiro' (Portugal, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Nuno Valente, Jorge' (Portugal, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Maniche, Ribeiro' (Portugal, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Tiago, Mendez' (Portugal, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Deco, Souza' (Portugal, 2006, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Juanito, Gutiérrez' (Spanien, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Ibañez, Pablo' (Spanien, 2006)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Melo, Felipe' (Brasilien, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Fabiano, Luis' (Brasilien, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Silva, Thiago' (Brasilien, 2010, 2014, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Chávez, Osman' (Honduras, 2010, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Da Silva , Paulo' (Paraguay, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Mendes, Pedro' (Portugal, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Veloso, Miguel' (Portugal, 2010, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Meireles, Raul' (Portugal, 2010, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Fernandes, Daniel' (Portugal, 2010)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Coentrao, Fabio' (Portugal, 2010, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jefferson, Galvao' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Luiz, David' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Hulk, Givanildo' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Paulinho, José' (Brasilien, 2014, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Oscar, Emboaba' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Dante, Bonfim' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Maxwell, Andrade' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Henrique, Adriano' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Gustavo, Luiz' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Hernanes, Anderson' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Willian, Da Silva' (Brasilien, 2014, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Bernard, Duarte' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jo, João' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Victor, Leandro' (Brasilien, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Moutinho, João' (Portugal, 2014, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Eder, António' (Portugal, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Patricio, Rui' (Portugal, 2014, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Neto, Luis' (Portugal, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Rafa, Alexandre' (Portugal, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Pereira, João' (Portugal, 2014)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Geromel, Pedro' (Brasilien, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Luis, Filipe' (Brasilien, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Costa, Douglas' (Brasilien, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Augusto, Renato' (Brasilien, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Jesus, Gabriel' (Brasilien, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Coutinho, Philippe' (Brasilien, 2018)",
+    "Saknas i 'Namn': Nya trupp-spelaren 'Firmino, Roberto' (Brasilien, 2018)",
     "Saknas i 'Namn': Målskytt 'Van der Heyden, Peter' (Match 593)",
     "Saknas i 'Namn': Målskytt 'Lee Chung-Yong' (Match 728)",
     "Saknas i 'Namn': Målskytt 'Di María, Angel' (Match 827)",
@@ -3956,7 +4478,6 @@
     "Logikfel (Slutspel): Tyskland spelar i match 34 trots utslagning i match 32.",
     "Logikfel (Slutspel): Österrike spelar i match 34 trots utslagning i match 33.",
     "Logikfel (Slutspel): Tyskland avancerade från match 34 men saknar efterföljande match år 1934.",
-    "Logikfel (Slutspel): Italien avancerade från match 35 men saknar efterföljande match år 1934.",
     "Logikfel (Slutspel): Ryssland spelar i match 896 trots utslagning i match 887.",
     "Logikfel (Slutspel): Spanien avancerade från match 887 men saknar efterföljande match år 2018."
   ],
@@ -4050,8 +4571,8 @@
             "goals": 5
           }
         ],
-        "champion_coach": "",
-        "champion_captain": ""
+        "champion_coach": "Pozzo, Vittorio",
+        "champion_captain": "Combi, Giampiero"
       }
     },
     "1938": {
@@ -17253,12 +17774,12 @@
         "away": "Petru, Karel"
       },
       "advancement": {
-        "code": 1,
-        "text": "Hemmalaget avancerade",
+        "code": 5,
+        "text": "Turneringssegrare; Hemmalaget",
         "advancing_team": "Italien",
         "is_group_match": false,
         "points_for_win": null,
-        "is_final": false,
+        "is_final": true,
         "is_bronze": false
       },
       "score": {
@@ -583669,6 +584190,1425 @@
     "Panama": {
       "2018": "32.0"
     }
+  },
+  "staff": {
+    "referees": {
+      "Macias, José": {
+        "birth_date": "1901-02-03"
+      },
+      "Lombardi, Domingo": {
+        "birth_date": "1898-03-22"
+      },
+      "Warnken, Albert": {
+        "birth_date": "1889-06-05"
+      },
+      "Rêgo, Gilberto de Almeida": {
+        "birth_date": "1881-02-21"
+      },
+      "Christophe, Henri": {
+        "birth_date": "1884-07-23"
+      },
+      "Matteucci, Francisco": {
+        "birth_date": "1903-05-16"
+      },
+      "Langenus, John": {
+        "birth_date": "1891-12-09"
+      },
+      "Saucedo, Ulises": {
+        "birth_date": "1896-03-03"
+      },
+      "Balway, John": {
+        "birth_date": "1888-02-02"
+      },
+      "Vallarino, Ricardo": {
+        "birth_date": "1893-04-03"
+      },
+      "van Moorsel, Joop": {
+        "birth_date": "1902-07-09"
+      },
+      "Barlassina, Rinaldo": {
+        "birth_date": "1898-05-02"
+      },
+      "Mattea, Francesco": {
+        "birth_date": "1895-01-17"
+      },
+      "Mercet, René": {
+        "birth_date": "1898-12-01"
+      },
+      "Eklind, Ivan": {
+        "birth_date": "1905-10-15"
+      },
+      "Birlem, Alfred": {
+        "birth_date": "1888-01-10"
+      },
+      "Braun, Eugen": {
+        "birth_date": "1895-08-31"
+      },
+      "Baert, Luis André": {
+        "birth_date": "1903-12-29"
+      },
+      "Beranek, Alois": {
+        "birth_date": "1900-01-15"
+      },
+      "Carraro, Albino": {
+        "birth_date": "1899-04-04"
+      },
+      "Conrié, Roger": {
+        "birth_date": "1898-10-01"
+      },
+      "Leclercq, Lucien": {
+        "birth_date": "1897-01-16"
+      },
+      "Scarpi, Giuseppe": {
+        "birth_date": "1900-12-25"
+      },
+      "Wütrich, Hans": {
+        "birth_date": "1889-11-01"
+      },
+      "Krist, Augustin": {
+        "birth_date": "1894-12-12"
+      },
+      "Capdeville, Georges": {
+        "birth_date": "1899-10-30"
+      },
+      "Reader, George": {
+        "birth_date": "1896-11-22"
+      },
+      "van der Meer, Karel": {
+        "birth_date": "1905-07-29"
+      },
+      "Vianna, Mario Goncalves": {
+        "birth_date": "1902-09-06"
+      },
+      "Galeati, Giovanni": {
+        "birth_date": "1901-02-18"
+      },
+      "Lutz, Jean": {
+        "birth_date": "1904-01-02"
+      },
+      "Leafe, Reginald J": {
+        "birth_date": "1914-11-30"
+      },
+      "Azon Roma, Ramon": {
+        "birth_date": "1913-05-01"
+      },
+      "Dattilo, Generoso": {
+        "birth_date": "1902-05-03"
+      },
+      "Mitchell, George": {
+        "birth_date": "1912-02-22"
+      },
+      "Griffiths, Benjamin": {
+        "birth_date": "1909-01-17"
+      },
+      "Ellis, Arthur": {
+        "birth_date": "1914-07-08"
+      },
+      "Franken, Laurent": {
+        "birth_date": "1905-01-09"
+      },
+      "Wyssling, Paul": {
+        "birth_date": "1912-01-05"
+      },
+      "Vincenti, Raymond": {
+        "birth_date": "1911-09-13"
+      },
+      "da Costa, José Viera": {
+        "birth_date": "1908-02-13"
+      },
+      "Schmetzer, Emil": {
+        "birth_date": "1908-06-19"
+      },
+      "Orlandini, Vincenzo": {
+        "birth_date": "1910-08-30"
+      },
+      "Stefanovic, Vasa": {
+        "birth_date": "1906-01-14"
+      },
+      "Faultless, Charlie": {
+        "birth_date": "1908-03-05"
+      },
+      "Asensi Martin, Manuel": {
+        "birth_date": "1918-07-12"
+      },
+      "Ling, William": {
+        "birth_date": "1908-08-01"
+      },
+      "Zsolt, Istvan": {
+        "birth_date": "1921-06-21"
+      },
+      "Marino, Esteban": {
+        "birth_date": "1914-03-26"
+      },
+      "Steiner, Erich": {
+        "birth_date": "1920-05-09"
+      },
+      "Guigue, Maurice": {
+        "birth_date": "1912-08-04"
+      },
+      "Latysjev, Nikolaj": {
+        "birth_date": "1913-11-21"
+      },
+      "Gardeazabal Garay, Juan": {
+        "birth_date": "1923-11-27"
+      },
+      "Codesal, José Maria": {
+        "birth_date": "1927-10-20"
+      },
+      "Seipelt, Friedrich": {
+        "birth_date": "1915-04-02"
+      },
+      "Jörgensen, Carl Frederik": {
+        "birth_date": "1912-09-12"
+      },
+      "Lemesic, Leo": {
+        "birth_date": "1908-06-08"
+      },
+      "Mowat, John": {
+        "birth_date": "1908-03-31"
+      },
+      "Ahlner, Sten": {
+        "birth_date": "1915-12-07"
+      },
+      "Dusch, Albert": {
+        "birth_date": "1912-12-06"
+      },
+      "Brozzi, Juan Regis": {
+        "birth_date": "1922-02-08"
+      },
+      "van Nuffel, Lucien": {
+        "birth_date": "1914-01-14"
+      },
+      "Bronkhorst, Jan": {
+        "birth_date": "1914-03-03"
+      },
+      "Eriksson, Arne": {
+        "birth_date": "1916-01-15"
+      },
+      "Campos, Joaquim Fernandes": {
+        "birth_date": "1924-05-09"
+      },
+      "Macko, Martin": {
+        "birth_date": "1920-06-17"
+      },
+      "Aston, Kenneth": {
+        "birth_date": "1915-09-01"
+      },
+      "Dienst, Gottfried": {
+        "birth_date": "1919-09-09"
+      },
+      "Dorogi, Andor": {
+        "birth_date": "1912-08-10"
+      },
+      "Horn, Leo": {
+        "birth_date": "1916-08-29"
+      },
+      "Davidson, Robert H": {
+        "birth_date": "1928-07-19"
+      },
+      "Schwinte, Pierre": {
+        "birth_date": "1922-03-06"
+      },
+      "Galba, Karol": {
+        "birth_date": "1921-02-02"
+      },
+      "Tesanic, Branko": {
+        "birth_date": "1920-03-10"
+      },
+      "Bustamente, Sergio": {
+        "birth_date": "1924-04-24"
+      },
+      "Jonni, Cesare": {
+        "birth_date": "1917-01-21"
+      },
+      "Yamasaki, Arturo": {
+        "birth_date": "1929-05-11"
+      },
+      "Blavier, Arthur": {
+        "birth_date": "1914-01-28"
+      },
+      "Robles, Carlos": {
+        "birth_date": "1925-12-15"
+      },
+      "Phillips, Hugh": {
+        "birth_date": "1921-04-04"
+      },
+      "Tschenscher, Kurt": {
+        "birth_date": "1928-10-05"
+      },
+      "Rumentschev, Dimitar": {
+        "birth_date": "1919-01-06"
+      },
+      "Ashkenazi, Menachem": {
+        "birth_date": "1934-08-06"
+      },
+      "Callaghan, Leo": {
+        "birth_date": "1924-02-05"
+      },
+      "Kandil, Ali": {
+        "birth_date": "1920-12-20"
+      },
+      "Dagnall, Kenneth": {
+        "birth_date": "1921-01-30"
+      },
+      "Bachramov, Tofik": {
+        "birth_date": "1925-11-29"
+      },
+      "Lo Bello, Concetto": {
+        "birth_date": "1924-05-13"
+      },
+      "Zecevic, Konstantin": {
+        "birth_date": "1922-01-17"
+      },
+      "Kreitlein, Rudolf": {
+        "birth_date": "1919-11-14"
+      },
+      "McCabe, George": {
+        "birth_date": "1922-03-13"
+      },
+      "Lööw, Bertil": {
+        "birth_date": "1924-01-01"
+      },
+      "Goicochea, Roberto": {
+        "birth_date": "1927-11-27"
+      },
+      "Marques, Armando": {
+        "birth_date": "1930-03-06"
+      },
+      "Adair, John": {
+        "birth_date": "1919-03-31"
+      },
+      "Finney, James": {
+        "birth_date": "1924-08-17"
+      },
+      "Loraux, Vital": {
+        "birth_date": "1925-09-22"
+      },
+      "Sbardella, Antonio": {
+        "birth_date": "1925-10-17"
+      },
+      "Taylor, John K": {
+        "birth_date": "1930-05-21"
+      },
+      "van Ravens, Laurens": {
+        "birth_date": "1922-09-18"
+      },
+      "Radulescu, Andrei": {
+        "birth_date": "1925-02-09"
+      },
+      "Barreto Ruiz, Ramon": {
+        "birth_date": "1939-09-14"
+      },
+      "de Leo, Diego": {
+        "birth_date": "1921-12-05"
+      },
+      "Scheurer, Rudolf": {
+        "birth_date": "1925-05-25"
+      },
+      "Glöckner, Rudi": {
+        "birth_date": "1929-03-20"
+      },
+      "Tarekegn, Seyoum": {
+        "birth_date": "1937-09-01"
+      },
+      "Klein, Abraham": {
+        "birth_date": "1934-03-29"
+      },
+      "Ortiz de Mendibil, José Maria": {
+        "birth_date": "1926-08-11"
+      },
+      "Hormazabal, Rafael": {
+        "birth_date": "1929-10-13"
+      },
+      "Aguilar, Abel": {
+        "birth_date": "1929-08-05"
+      },
+      "Landauer, Henry": {
+        "birth_date": "1929-01-08"
+      },
+      "Marschall, Ferdinand": {
+        "birth_date": "1924-02-19"
+      },
+      "Coerezza, Angel Norberto": {
+        "birth_date": "1933-10-24"
+      },
+      "de Moraes, Antonio": {
+        "birth_date": "1929-02-14"
+      },
+      "Machin, Roger": {
+        "birth_date": "1926-05-28"
+      },
+      "Saldanha Ribeiro, Antonio": {
+        "birth_date": "1927-12-07"
+      },
+      "N'Diaye, Youssou": {
+        "birth_date": "1932-06-20"
+      },
+      "Babacan, Dogan": {
+        "birth_date": "1930-04-05"
+      },
+      "Schulenburg, Gerhard": {
+        "birth_date": "1926-10-11"
+      },
+      "Perez Nunez, Edison": {
+        "birth_date": "1936-04-14"
+      },
+      "Palotai, Karoly": {
+        "birth_date": "1935-09-11"
+      },
+      "Thomas, Clive": {
+        "birth_date": "1936-06-27"
+      },
+      "Llobregat, Vicente": {
+        "birth_date": "1932-10-28"
+      },
+      "Delgado, Omar": {
+        "birth_date": "1941-01-21"
+      },
+      "Kamel, Mostafa": {
+        "birth_date": "1927-11-07"
+      },
+      "van Gemert, Arie": {
+        "birth_date": "1929-03-23"
+      },
+      "Angonese, Aurelio": {
+        "birth_date": "1929-04-16"
+      },
+      "Winsemann, Werner": {
+        "birth_date": "1933-01-15"
+      },
+      "Suppiah, Govindasamy": {
+        "birth_date": "1929-06-17"
+      },
+      "Kazakov, Pavel": {
+        "birth_date": "1928-02-19"
+      },
+      "Namdar, Jafar": {
+        "birth_date": "1934-07-02"
+      },
+      "Gonzalez Archundia, Alfonso": {
+        "birth_date": "1934-06-14"
+      },
+      "Rainea, Nicolae": {
+        "birth_date": "1933-11-19"
+      },
+      "Boskovic, Tony": {
+        "birth_date": "1933-01-27"
+      },
+      "Sanchez Ibanez, Pablo": {
+        "birth_date": "1930-01-25"
+      },
+      "Weyland, Hans-Joachim": {
+        "birth_date": "1929-10-29"
+      },
+      "Linemayr, Erich": {
+        "birth_date": "1933-01-24"
+      },
+      "Pestarino, Luis": {
+        "birth_date": "1928-05-28"
+      },
+      "da Silva Garrido, Antonio": {
+        "birth_date": "1932-12-03"
+      },
+      "Gordon, John R": {
+        "birth_date": "1930-02-10"
+      },
+      "Eriksson, Ulf": {
+        "birth_date": "1942-05-26"
+      },
+      "Dubach, Jean": {
+        "birth_date": "1930-02-28"
+      },
+      "Franco Martinez, Angel": {
+        "birth_date": "1938-10-31"
+      },
+      "Bouzo, Farouk": {
+        "birth_date": "1938-03-03"
+      },
+      "Corver, Charles": {
+        "birth_date": "1936-01-16"
+      },
+      "Gonella, Sergio": {
+        "birth_date": "1933-05-23"
+      },
+      "Prokop, Adolf": {
+        "birth_date": "1939-02-02"
+      },
+      "Coelho, Arnaldo C": {
+        "birth_date": "1943-01-15"
+      },
+      "Orozco, Cesar Augusto": {
+        "birth_date": "1930-04-14"
+      },
+      "Wurtz, Robert": {
+        "birth_date": "1941-12-16"
+      },
+      "Jarguz, Alojzy": {
+        "birth_date": "1934-03-19"
+      },
+      "Biwersi, Ferdinand": {
+        "birth_date": "1934-06-24"
+      },
+      "Maksimovic, Dusan": {
+        "birth_date": "1940-01-06"
+      },
+      "Rion, Francois": {
+        "birth_date": "1933-06-10"
+      },
+      "Partridge, Patrick": {
+        "birth_date": "1933-06-20"
+      },
+      "Silvagno, Juan": {
+        "birth_date": "1934-07-29"
+      },
+      "Christov, Vojtech": {
+        "birth_date": "1945-03-16"
+      },
+      "Vautrot, Michel": {
+        "birth_date": "1945-10-23"
+      },
+      "Lamo Castillo, Augusto": {
+        "birth_date": "1938-09-25"
+      },
+      "Al-Doy, Ibrahim": {
+        "birth_date": "1945-01-22"
+      },
+      "Socha, David": {
+        "birth_date": "1938-09-27"
+      },
+      "Wöhrer, Franz": {
+        "birth_date": "1939-06-05"
+      },
+      "Ithurralde, Arturo": {
+        "birth_date": "1934-03-06"
+      },
+      "Labo, Enrique": {
+        "birth_date": "1939-03-02"
+      },
+      "Dwomoh, Benjamin": {
+        "birth_date": "1935-07-01"
+      },
+      "Fredriksson, Erik": {
+        "birth_date": "1943-02-13"
+      },
+      "Cardellino, Juan Daniel": {
+        "birth_date": "1942-03-04"
+      },
+      "Lacarne, Belaid": {
+        "birth_date": "1940-10-26"
+      },
+      "Siles, Luis": {
+        "birth_date": "1941-12-13"
+      },
+      "Eschweiler, Walter": {
+        "birth_date": "1935-09-20"
+      },
+      "Ponnet, Alexis": {
+        "birth_date": "1939-03-09"
+      },
+      "El-Ghoul, Yousef": {
+        "birth_date": "1936-06-01"
+      },
+      "Moffatt, Malcolm": {
+        "birth_date": "1937-01-01"
+      },
+      "Lund-Sörensen, Henning": {
+        "birth_date": "1942-03-20"
+      },
+      "Galler, Bruno": {
+        "birth_date": "1946-10-21"
+      },
+      "Chan Tam Sun, Thomson": {
+        "birth_date": "1941-05-08"
+      },
+      "Stupar, Miroslav": {
+        "birth_date": "1941-08-27"
+      },
+      "White, Clive B": {
+        "birth_date": "1940-05-02"
+      },
+      "Rubio, Mario": {
+        "birth_date": "1936-11-28"
+      },
+      "Barrancos, Luis": {
+        "birth_date": "1946-08-19"
+      },
+      "Dotchev, Bogdan": {
+        "birth_date": "1936-06-26"
+      },
+      "Matovinovic, Damir": {
+        "birth_date": "1940-04-06"
+      },
+      "Castro, Gaston": {
+        "birth_date": "1948-08-23"
+      },
+      "Mendez Molina, Romulo": {
+        "birth_date": "1938-12-21"
+      },
+      "Casarin, Paolo": {
+        "birth_date": "1940-05-12"
+      },
+      "Aristizabal, Gilberto": {
+        "birth_date": "1940-09-08"
+      },
+      "Ortiz, Hector": {
+        "birth_date": "1933-04-05"
+      },
+      "Valentine, Robert": {
+        "birth_date": "1939-05-10"
+      },
+      "Bambridge, Christopher": {
+        "birth_date": "1947-10-07"
+      },
+      "Silva Arce, Hernan": {
+        "birth_date": "1948-11-05"
+      },
+      "Agnolin, Luigi": {
+        "birth_date": "1943-03-21"
+      },
+      "Sanchez Armino, Victoriano": {
+        "birth_date": "1942-06-26"
+      },
+      "Martinez Bazan, José Luis": {
+        "birth_date": "1942-02-11"
+      },
+      "Esposito, Carlos Alfonso": {
+        "birth_date": "1941-11-04"
+      },
+      "Butenko, Valerij": {
+        "birth_date": "1941-07-16"
+      },
+      "Roth, Volker": {
+        "birth_date": "1942-02-01"
+      },
+      "Picon-Ackong, Edwin": {
+        "birth_date": "1940-11-04"
+      },
+      "Nemeth, Lajos": {
+        "birth_date": "1944-08-14"
+      },
+      "Arppi Filho, Romualdo": {
+        "birth_date": "1939-01-07"
+      },
+      "Keizer, Jan": {
+        "birth_date": "1940-10-06"
+      },
+      "Al-Shanar, Fallaj": {
+        "birth_date": "1947-10-10"
+      },
+      "Al-Sharif, Jamal": {
+        "birth_date": "1954-12-08"
+      },
+      "Gonzalez Roa, Gabriel": {
+        "birth_date": "1942-03-18"
+      },
+      "Courtney, George": {
+        "birth_date": "1941-06-04"
+      },
+      "Ben Naceur, Ali": {
+        "birth_date": "1944-03-02"
+      },
+      "Brummeier, Horst": {
+        "birth_date": "1945-12-31"
+      },
+      "Diaz Palacio, Jesus": {
+        "birth_date": "1954-10-16"
+      },
+      "Marques Ramirez, Antonio": {
+        "birth_date": "1936-05-22"
+      },
+      "Igna, Ioan": {
+        "birth_date": "1940-06-04"
+      },
+      "Traoré, Idrissa": {
+        "birth_date": "1947-12-27"
+      },
+      "Silva Valente, Carlos": {
+        "birth_date": "1948-07-25"
+      },
+      "Ulloa Morera, Berny": {
+        "birth_date": "1950-08-05"
+      },
+      "Petrovic, Zoran": {
+        "birth_date": "1952-04-10"
+      },
+      "Snoddy, Alan": {
+        "birth_date": "1955-03-29"
+      },
+      "Daina, André": {
+        "birth_date": "1940-07-08"
+      },
+      "Takada, Shizuo": {
+        "birth_date": "1947-08-05"
+      },
+      "Kirschen, Siegfried": {
+        "birth_date": "1943-10-13"
+      },
+      "Quiniou, Joel": {
+        "birth_date": "1950-07-11"
+      },
+      "Ramiz Wright, José": {
+        "birth_date": "1944-09-07"
+      },
+      "Mikkelsen, Peter": {
+        "birth_date": "1960-05-01"
+      },
+      "Lanese, Tullio": {
+        "birth_date": "1947-01-10"
+      },
+      "Röthlisberger, Kurt": {
+        "birth_date": "1951-05-21"
+      },
+      "Loustau, Juan": {
+        "birth_date": "1947-07-13"
+      },
+      "Schmidhuber, Aron": {
+        "birth_date": "1947-02-28"
+      },
+      "Soriano Aladren, Emilio": {
+        "birth_date": "1945-10-29"
+      },
+      "Mauro, Vincent": {
+        "birth_date": "1943-10-23"
+      },
+      "Kohl, Helmut": {
+        "birth_date": "1943-02-08"
+      },
+      "Codesal Mendez, Edgardo": {
+        "birth_date": "1951-06-02"
+      },
+      "Smith, George B": {
+        "birth_date": "1943-10-14"
+      },
+      "Spirin, Alexej": {
+        "birth_date": "1952-01-04"
+      },
+      "Maciel, Carlos": {
+        "birth_date": "1946-11-04"
+      },
+      "Jouini, Neji": {
+        "birth_date": "1949-08-12"
+      },
+      "van Langenhove, Marcel": {
+        "birth_date": "1944-04-16"
+      },
+      "Jacome Guerrero, Elias": {
+        "birth_date": "1945-11-02"
+      },
+      "Brizio Carter, Arturo": {
+        "birth_date": "1956-03-09"
+      },
+      "Lamolina, Francisco": {
+        "birth_date": "1950-10-25"
+      },
+      "van der Ende, Mario": {
+        "birth_date": "1956-03-28"
+      },
+      "Torres Cadena, José": {
+        "birth_date": "1952-07-15"
+      },
+      "Tejeda Noriega, Alberto": {
+        "birth_date": "1956-11-11"
+      },
+      "Puhl, Sándor": {
+        "birth_date": "1955-07-14"
+      },
+      "Lim Kee Chong, An-Yan": {
+        "birth_date": "1960-05-15"
+      },
+      "Diaz Vega, Manuel": {
+        "birth_date": "1954-09-01"
+      },
+      "Badilla Sequeira, Rodrigo": {
+        "birth_date": "1957-07-22"
+      },
+      "Filippi Cavani, Ernesto": {
+        "birth_date": "1950-10-26"
+      },
+      "Angeles, Arturo A": {
+        "birth_date": "1953-09-12"
+      },
+      "Baldas, Fabio": {
+        "birth_date": "1949-03-19"
+      },
+      "Mottram, Leslie W": {
+        "birth_date": "1951-03-05"
+      },
+      "Krug, Heinz Hellmut": {
+        "birth_date": "1956-05-19"
+      },
+      "Marsiglia, Renato": {
+        "birth_date": "1951-06-03"
+      },
+      "Don, Philip": {
+        "birth_date": "1952-03-10"
+      },
+      "Karlsson, Bo": {
+        "birth_date": "1949-10-12"
+      },
+      "Bujsaim, Ali Mohamed": {
+        "birth_date": "1959-09-09"
+      },
+      "Pairetto, Pierluigi": {
+        "birth_date": "1952-07-15"
+      },
+      "Garcia Aranda, José Maria": {
+        "birth_date": "1956-03-03"
+      },
+      "Un-Prassert, Pirom": {
+        "birth_date": "1953-11-16"
+      },
+      "Bouchardeu, Lucien": {
+        "birth_date": "1961-12-18"
+      },
+      "Gonzalez Chavez, Epifanio": {
+        "birth_date": "1958-01-19"
+      },
+      "Castrilli, Javier Alberto": {
+        "birth_date": "1957-05-22"
+      },
+      "Rezende de Freitas, Marcio": {
+        "birth_date": "1960-12-22"
+      },
+      "Al-Zaid, Rahman": {
+        "birth_date": "1959-02-11"
+      },
+      "Collina, Pierluigi": {
+        "birth_date": "1960-02-13"
+      },
+      "Baharmast, Esfandiar": {
+        "birth_date": "1954-03-11"
+      },
+      "Benkö, Günther": {
+        "birth_date": "1955-07-12"
+      },
+      "Melo Pereira, Vitor Manuel": {
+        "birth_date": "1957-04-21"
+      },
+      "Okada, Masayoshi": {
+        "birth_date": "1958-05-24"
+      },
+      "Belqola, Saïd": {
+        "birth_date": "1956-08-30"
+      },
+      "Levnikov, Nikolai": {
+        "birth_date": "1956-05-15"
+      },
+      "Vagner, Laszlo": {
+        "birth_date": "1955-12-24"
+      },
+      "Lennie, Edward": {
+        "birth_date": "1959-10-05"
+      },
+      "El Ghandour, Gamal": {
+        "birth_date": "1957-06-12"
+      },
+      "Toro Rendon, John Jairo": {
+        "birth_date": "1958-04-04"
+      },
+      "Sanchez Yanten, Mario Fernando": {
+        "birth_date": "1956-07-22"
+      },
+      "McLeod, Ian": {
+        "birth_date": "1954-03-05"
+      },
+      "Wojcik, Ryszard": {
+        "birth_date": "1956-06-06"
+      },
+      "Dallas, Hugh": {
+        "birth_date": "1957-10-26"
+      },
+      "Ramdhan, Ramesh": {
+        "birth_date": "1960-07-25"
+      },
+      "Nielsen, Kim Milton": {
+        "birth_date": "1960-08-03"
+      },
+      "Pedersen, Rune": {
+        "birth_date": "1963-05-19"
+      },
+      "Meier, Urs": {
+        "birth_date": "1959-01-22"
+      },
+      "Batta, Marc": {
+        "birth_date": "1953-11-01"
+      },
+      "Heynemann, Bernd": {
+        "birth_date": "1954-01-22"
+      },
+      "Durkin, Paul": {
+        "birth_date": "1955-08-15"
+      },
+      "Kamikawa, Toru": {
+        "birth_date": "1963-06-08"
+      },
+      "Mane, Saad": {
+        "birth_date": "1963-01-06"
+      },
+      "Aquino Valenzano, Ubaldo": {
+        "birth_date": "1958-05-02"
+      },
+      "Veissière, Gilles": {
+        "birth_date": "1959-09-18"
+      },
+      "Michel, Lubos": {
+        "birth_date": "1968-05-16"
+      },
+      "Simon, Carlos": {
+        "birth_date": "1965-03-03"
+      },
+      "Guezzaz, Mohammed": {
+        "birth_date": "1962-10-01"
+      },
+      "Lu Jun": {
+        "birth_date": "1959-03-19"
+      },
+      "Kim Young-joo": {
+        "birth_date": "1957-12-30"
+      },
+      "Hall, Brian": {
+        "birth_date": "1961-06-05"
+      },
+      "Vassaras, Kyros": {
+        "birth_date": "1966-02-01"
+      },
+      "Mattus, William": {
+        "birth_date": "1964-04-17"
+      },
+      "Ruiz, Oscar": {
+        "birth_date": "1969-11-01"
+      },
+      "Prendergast, Peter": {
+        "birth_date": "1963-09-23"
+      },
+      "Moreno, Byron": {
+        "birth_date": "1969-11-23"
+      },
+      "Batres, Carlos": {
+        "birth_date": "1968-04-02"
+      },
+      "Hauge, Terje": {
+        "birth_date": "1965-10-05"
+      },
+      "Ramos Rizo, Felipe": {
+        "birth_date": "1963-03-10"
+      },
+      "Ortube, René": {
+        "birth_date": "1964-12-26"
+      },
+      "Sanchez, Angel": {
+        "birth_date": "1957-03-03"
+      },
+      "Poll, Graham": {
+        "birth_date": "1963-07-29"
+      },
+      "Frisk, Anders": {
+        "birth_date": "1963-02-18"
+      },
+      "Daami, Mourad": {
+        "birth_date": "1962-08-15"
+      },
+      "Codjia, Coffi": {
+        "birth_date": "1967-12-09"
+      },
+      "Merk, Markus": {
+        "birth_date": "1962-03-15"
+      },
+      "Shield, Mark": {
+        "birth_date": "1973-09-02"
+      },
+      "Wegereef, Jan": {
+        "birth_date": "1962-01-17"
+      },
+      "Lopez Nieto, Antonio": {
+        "birth_date": "1958-01-25"
+      },
+      "Ndoye, Falla": {
+        "birth_date": "1960-03-04"
+      },
+      "Elizondo, Horacio": {
+        "birth_date": "1963-11-04"
+      },
+      "Rodriguez, Marco": {
+        "birth_date": "1973-11-10"
+      },
+      "Maidin, Shamsul": {
+        "birth_date": "1966-04-16"
+      },
+      "De Bleeckere, Frank": {
+        "birth_date": "1966-07-01"
+      },
+      "Rosetti, Roberto": {
+        "birth_date": "1967-09-18"
+      },
+      "Larrionda, Jorge": {
+        "birth_date": "1968-03-09"
+      },
+      "Amarilla, Carlos": {
+        "birth_date": "1970-10-26"
+      },
+      "Abd El Fatah, Esam": {
+        "birth_date": "1965-12-30"
+      },
+      "Archundia, Benito": {
+        "birth_date": "1966-03-21"
+      },
+      "Ivanov, Valentin": {
+        "birth_date": "1961-07-04"
+      },
+      "Busacca, Massimo": {
+        "birth_date": "1969-02-06"
+      },
+      "Medina Cantalejo, Luis": {
+        "birth_date": "1964-03-01"
+      },
+      "Poulat, Eric": {
+        "birth_date": "1963-12-08"
+      },
+      "Irmatov, Ravsjan": {
+        "birth_date": "1977-08-09"
+      },
+      "Nishimura, Yuichi": {
+        "birth_date": "1972-04-17"
+      },
+      "Stark, Wolfgang": {
+        "birth_date": "1969-11-20"
+      },
+      "Hester, Michael": {
+        "birth_date": "1972-05-02"
+      },
+      "Baldassi, Hector": {
+        "birth_date": "1966-01-05"
+      },
+      "Lannoy, Stephane": {
+        "birth_date": "1969-09-18"
+      },
+      "Benquerenca, Olegario": {
+        "birth_date": "1969-10-18"
+      },
+      "Damon, Jerome": {
+        "birth_date": "1972-04-04"
+      },
+      "Kassai, Viktor": {
+        "birth_date": "1975-09-10"
+      },
+      "Maillet, Eddy": {
+        "birth_date": "1967-10-19"
+      },
+      "Webb, Howard": {
+        "birth_date": "1971-07-14"
+      },
+      "Al Ghamdi, Khalil": {
+        "birth_date": "1970-09-02"
+      },
+      "Undiano, Alberto": {
+        "birth_date": "1973-10-08"
+      },
+      "Coulibaly, Koman": {
+        "birth_date": "1970-07-04"
+      },
+      "Pozo, Pablo": {
+        "birth_date": "1973-03-27"
+      },
+      "Doue, Noumandiez": {
+        "birth_date": "1970-09-29"
+      },
+      "Roldan, Wilmar": {
+        "birth_date": "1980-01-24"
+      },
+      "Rizzoli, Nicola": {
+        "birth_date": "1971-10-05"
+      },
+      "Geiger, Mark W.": {
+        "birth_date": "1974-08-25"
+      },
+      "Brych, Felix": {
+        "birth_date": "1975-08-03"
+      },
+      "Osses, Enrique": {
+        "birth_date": "1974-05-26"
+      },
+      "Kuipers, Björn": {
+        "birth_date": "1973-03-28"
+      },
+      "Aguilar, Joel": {
+        "birth_date": "1975-07-02"
+      },
+      "Ricci, Sandro": {
+        "birth_date": "1974-11-19"
+      },
+      "Vera, Carlos": {
+        "birth_date": "1976-06-25"
+      },
+      "Eriksson, Jonas": {
+        "birth_date": "1974-03-28"
+      },
+      "Mazic, Milorad": {
+        "birth_date": "1973-03-23"
+      },
+      "Cakir, Cuneyt": {
+        "birth_date": "1976-11-23"
+      },
+      "Pitana, Néstor": {
+        "birth_date": "1975-06-17"
+      },
+      "Haimoudi, Djamel": {
+        "birth_date": "1970-12-10"
+      },
+      "Proenca, Pedro": {
+        "birth_date": "1970-11-03"
+      },
+      "Velasco Carballo, Carlos": {
+        "birth_date": "1971-03-16"
+      },
+      "Williams, Benjamin": {
+        "birth_date": "1977-04-14"
+      },
+      "O'Leary, Peter": {
+        "birth_date": "1972-03-03"
+      },
+      "Gassama, Bakary": {
+        "birth_date": "1979-02-10"
+      },
+      "Shukralla, Nawaf": {
+        "birth_date": "1976-10-13"
+      },
+      "Rocchi, Gianluca": {
+        "birth_date": "1973-08-25"
+      },
+      "Cunha, Andrés": {
+        "birth_date": "1976-09-08"
+      },
+      "Marciniak, Szymon": {
+        "birth_date": "1981-01-07"
+      },
+      "Diedhiou, Malang": {
+        "birth_date": "1973-04-30"
+      },
+      "Faghani, Alireza": {
+        "birth_date": "1978-03-21"
+      },
+      "Ramos, César": {
+        "birth_date": "1983-12-15"
+      },
+      "Sikazwe, Janny": {
+        "birth_date": "1979-05-26"
+      },
+      "Cáceres, Enrique": {
+        "birth_date": "1974-03-20"
+      },
+      "Skomina, Damir": {
+        "birth_date": "1976-08-05"
+      },
+      "Turpin, Clément": {
+        "birth_date": "1982-05-16"
+      },
+      "Mateu Lahoz, Antonio": {
+        "birth_date": "1977-03-12"
+      },
+      "Mohammed, Mohammed Abdulla": {
+        "birth_date": "1978-12-02"
+      },
+      "Conger, Matt": {
+        "birth_date": "1978-10-11"
+      },
+      "Marrufo, Jair": {
+        "birth_date": "1977-06-17"
+      },
+      "Grisha, Ghead": {
+        "birth_date": "1976-02-29"
+      },
+      "Karasev, Sergej": {
+        "birth_date": "1979-06-12"
+      }
+    },
+    "coaches": {
+      "Acosta, Nelson": {
+        "birth_date": "1944-06-12"
+      },
+      "Adshead, John": {
+        "birth_date": "1942-03-27"
+      },
+      "Advocaat, Dick": {
+        "birth_date": "1947-09-27"
+      },
+      "Arena, Bruce": {
+        "birth_date": "1951-09-21"
+      },
+      "Baróti, Lajos": {
+        "birth_date": "1914-08-19"
+      },
+      "Barreau, Gaston": {
+        "birth_date": "1883-12-07"
+      },
+      "Bearzot, Enzo": {
+        "birth_date": "1927-09-26"
+      },
+      "Beattie, Andy": {
+        "birth_date": "1913-08-11"
+      },
+      "Beckenbauer, Franz": {
+        "birth_date": "1945-09-11"
+      },
+      "Beenhakker, Leo": {
+        "birth_date": "1942-08-02"
+      },
+      "Bergmark, Orvar": {
+        "birth_date": "1930-11-16"
+      },
+      "Beskov, Konstantin": {
+        "birth_date": "1920-11-18"
+      },
+      "Bingham, Billy": {
+        "birth_date": "1931-08-05"
+      },
+      "Cha Bum-kun": {
+        "birth_date": "1953-05-21"
+      },
+      "Charlton, Jack": {
+        "birth_date": "1935-05-08"
+      },
+      "Eriksson, Sven-Göran": {
+        "birth_date": "1948-02-05"
+      },
+      "Herberger, Sepp": {
+        "birth_date": "1897-03-28"
+      },
+      "Hiddink, Guus": {
+        "birth_date": "1946-11-08"
+      },
+      "Jacquet, Aimé": {
+        "birth_date": "1941-11-27"
+      },
+      "Lemerre, Roger": {
+        "birth_date": "1941-06-18"
+      },
+      "Meisl, Hugo": {
+        "birth_date": "1881-11-16"
+      },
+      "Menotti, César Luis": {
+        "birth_date": "1938-11-05"
+      },
+      "Michel, Henri": {
+        "birth_date": "1947-10-28"
+      },
+      "Michels, Rinus": {
+        "birth_date": "1928-02-09"
+      },
+      "Parreira, Carlos Alberto": {
+        "birth_date": "1943-02-27"
+      },
+      "Pozzo, Vittorio": {
+        "birth_date": "1886-03-12"
+      },
+      "Ramsey, Alf": {
+        "birth_date": "1920-01-22"
+      },
+      "Santamaria, José Emilio": {
+        "birth_date": "1929-07-31"
+      },
+      "Santana, Telê": {
+        "birth_date": "1933-07-26"
+      },
+      "Scolari, Luis Felipe": {
+        "birth_date": "1948-11-09"
+      },
+      "Sebes, Gusztav": {
+        "birth_date": "1906-06-21"
+      },
+      "Stábile, Guillermo": {
+        "birth_date": "1906-01-17"
+      },
+      "Zagalo, Mario": {
+        "birth_date": "1931-08-09"
+      },
+      "Aragonés, Luis": {
+        "birth_date": "1938-07-28"
+      },
+      "Blochin, Oleg": {
+        "birth_date": "1952-11-05"
+      },
+      "Brückner, Karel": {
+        "birth_date": "1939-11-13"
+      },
+      "Domenech, Raymond": {
+        "birth_date": "1952-01-24"
+      },
+      "Dujkovic, Ratomir": {
+        "birth_date": "1946-02-24"
+      },
+      "Gonçalves, Luís": {
+        "birth_date": "1960-06-22"
+      },
+      "Guimarães, Alexandre": {
+        "birth_date": "1959-11-07"
+      },
+      "Ivankovic, Branko": {
+        "birth_date": "1954-02-28"
+      },
+      "Janas, Pawel": {
+        "birth_date": "1953-03-04"
+      },
+      "Klinsmann, Jürgen": {
+        "birth_date": "1964-07-30"
+      },
+      "Kranjcar, Zlatko": {
+        "birth_date": "1956-11-15"
+      },
+      "Kuhn, Jakob": {
+        "birth_date": "1943-10-12"
+      },
+      "Lagerbäck, Lars": {
+        "birth_date": "1948-07-16"
+      },
+      "Lavolpe, Ricardo": {
+        "birth_date": "1952-02-06"
+      },
+      "Lippi, Marcello": {
+        "birth_date": "1948-04-11"
+      },
+      "Paquetá, Marcos": {
+        "birth_date": "1958-08-27"
+      },
+      "Pekerman, José": {
+        "birth_date": "1949-09-03"
+      },
+      "Petkovic, Ilija": {
+        "birth_date": "1945-09-22"
+      },
+      "Pfister, Otto": {
+        "birth_date": "1937-11-24"
+      },
+      "Ruiz, Anibal": {
+        "birth_date": "1942-12-30"
+      },
+      "Suárez, Luis Fernando": {
+        "birth_date": "1959-12-23"
+      },
+      "van Basten, Marco": {
+        "birth_date": "1964-10-31"
+      },
+      "Zico, Arthur": {
+        "birth_date": "1953-03-03"
+      },
+      "Queiroz, Carlos": {
+        "birth_date": "1953-03-01"
+      },
+      "Löw, Joachim": {
+        "birth_date": "1960-02-03"
+      },
+      "Capello, Fabio": {
+        "birth_date": "1946-06-18"
+      },
+      "van Marwijk, Bert": {
+        "birth_date": "1952-05-19"
+      },
+      "Maradona, Diego": {
+        "birth_date": "1960-10-30"
+      },
+      "Dunga, Carlos": {
+        "birth_date": "1963-10-31"
+      },
+      "Tabarez, Oscar": {
+        "birth_date": "1947-03-03"
+      },
+      "Huh Jung-moo": {
+        "birth_date": "1955-01-13"
+      },
+      "Deschamps, Didier": {
+        "birth_date": "1968-10-15"
+      },
+      "Hong Myung-bo": {
+        "birth_date": "1969-02-12"
+      },
+      "Keshi, Stephen": {
+        "birth_date": "1962-01-31"
+      },
+      "Sampaoli, Jorge": {
+        "birth_date": "1960-03-13"
+      },
+      "Santos, Fernando": {
+        "birth_date": "1954-10-10"
+      },
+      "Susic, Safet": {
+        "birth_date": "1955-04-13"
+      },
+      "Wilmots, Marc": {
+        "birth_date": "1969-02-22"
+      },
+      "Andersson, Janne": {
+        "birth_date": "1962-09-29"
+      },
+      "Cissé, Aliou": {
+        "birth_date": "1976-03-24"
+      },
+      "Cuper, Hector": {
+        "birth_date": "1955-11-16"
+      },
+      "Dalic, Zlatko": {
+        "birth_date": "1966-10-26"
+      },
+      "Gareca, Ricardo": {
+        "birth_date": "1958-02-10"
+      },
+      "Gomez, Hernan": {
+        "birth_date": "1956-02-03"
+      },
+      "Hallgrimsson, Heimir": {
+        "birth_date": "1967-06-10"
+      },
+      "Hareide, Åge": {
+        "birth_date": "1953-09-23"
+      },
+      "Hierro, Fernando": {
+        "birth_date": "1968-03-23"
+      },
+      "Krstajic, Mladen": {
+        "birth_date": "1974-03-04"
+      },
+      "Maaloul, Nabil": {
+        "birth_date": "1962-12-25"
+      },
+      "Martinez, Roberto": {
+        "birth_date": "1973-07-13"
+      },
+      "Nawalka, Adam": {
+        "birth_date": "1957-10-23"
+      },
+      "Nishino, Akira": {
+        "birth_date": "1955-04-07"
+      },
+      "Osorio, Juan Carlos": {
+        "birth_date": "1961-06-08"
+      },
+      "Petkovic, Vladimir": {
+        "birth_date": "1963-08-15"
+      },
+      "Pizzi, Juan Antonio": {
+        "birth_date": "1968-06-07"
+      },
+      "Ramirez, Oscar": {
+        "birth_date": "1964-12-08"
+      },
+      "Renard, Herve": {
+        "birth_date": "1968-09-30"
+      },
+      "Rohr, Gernot": {
+        "birth_date": "1953-06-28"
+      },
+      "Shin Tae-yong": {
+        "birth_date": "1970-10-11"
+      },
+      "Southgate, Gareth": {
+        "birth_date": "1970-09-03"
+      },
+      "Tite": {
+        "birth_date": "1961-05-25"
+      },
+      "Tjertjesov, Stanislav": {
+        "birth_date": "1963-09-02"
+      }
+    }
   }
 };
         const safeText = (text) => text === null || text === undefined || text === "null" ? "" : text;
@@ -583683,6 +585623,30 @@
             }
             return s.trim();
         };
+
+        // --- ÅLDERSBERÄKNING ---
+        function getAgeAtDate(birthDateStr, matchDateStr) {
+            if (!birthDateStr || birthDateStr.length < 4) return null;
+            if (!matchDateStr) return null;
+            
+            let by = parseInt(birthDateStr.substring(0,4));
+            let my = parseInt(matchDateStr.substring(0,4));
+            
+            if (birthDateStr.length === 4) {
+                return { years: my - by, days: null, sortVal: (my - by) * 365, text: `ca ${my - by} år` };
+            }
+            
+            let b = new Date(birthDateStr);
+            let m = new Date(matchDateStr);
+            if (isNaN(b) || isNaN(m)) return null;
+            
+            let diffTime = Math.abs(m - b);
+            let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            let years = Math.floor(diffDays / 365.25);
+            let days = Math.floor(diffDays % 365.25);
+            
+            return { years: years, days: days, sortVal: diffDays, text: `${years} år, ${days} dgr` };
+        }
 
         const getPhaseColors = (phase) => {
             if (!phase) return "bg-slate-200 text-slate-700 border-slate-300";
@@ -583715,7 +585679,7 @@
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-white', 'text-blue-900', 'font-semibold', 'text-amber-300');
+                btn.classList.remove('bg-white', 'text-blue-900', 'font-semibold', 'text-amber-300', 'text-indigo-300');
                 btn.classList.add('bg-blue-800', 'text-blue-200');
             });
             document.getElementById(tabId).classList.remove('hidden');
@@ -583735,6 +585699,9 @@
                 populatePlayerNations();
                 populateTopNations();
                 document.getElementById('player-search-input').focus();
+            }
+            if(tabId === 'tab-staff') {
+                renderStaffData();
             }
         }
 
@@ -583916,13 +585883,17 @@
                 if (!groupStartDates[phase] || new Date(m.date) < new Date(groupStartDates[phase])) groupStartDates[phase] = m.date;
                 [m.home_team, m.away_team].forEach(t => { if (!groups[phase].teams[t]) groups[phase].teams[t] = { name: t, S: 0, V: 0, O: 0, F: 0, GM: 0, IM: 0, P: 0 }; });
                 if (m.score.home_total !== null && m.score.away_total !== null) {
+                    if (['92','93','126','127','128'].includes(String(m.id))) return;
+                    
                     let h = groups[phase].teams[m.home_team], a = groups[phase].teams[m.away_team];
                     let hg = m.score.home_total, ag = m.score.away_total, ptsWin = m.advancement.points_for_win || 2; 
                     h.S++; a.S++; h.GM += hg; h.IM += ag; a.GM += ag; a.IM += hg;
                     if (hg > ag) { h.V++; h.P += ptsWin; a.F++; } else if (ag > hg) { a.V++; a.P += ptsWin; h.F++; } else { h.O++; a.O++; h.P += 1; a.P += 1; }
                 }
             });
-            let sortedGroups = Object.keys(groups).sort((a,b) => new Date(groupStartDates[a]) - new Date(groupStartDates[b]));
+            
+            let sortedGroups = Object.keys(groups).sort((a,b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+            
             let html = '', lastPhaseType = null;
             sortedGroups.forEach(gName => {
                 let currentPhaseType = getPhaseSuffixType(gName);
@@ -583942,8 +585913,15 @@
                             <tbody class="divide-y divide-slate-100 font-medium text-slate-700">`;
                 sortedTeams.forEach((t, idx) => {
                     let diff = t.GM - t.IM, diffStr = diff > 0 ? `+${diff}` : diff, rowClass = idx < 2 ? "bg-blue-50/40 font-bold" : "", advancedStr = "";
-                    let tPhases = teamPhases[t.name] || [], currentPhaseIndex = tPhases.indexOf(gName);
-                    if (currentPhaseIndex !== -1 && currentPhaseIndex < tPhases.length - 1) advancedStr = ` <span title="Laget avancerade" class="text-emerald-500 text-[10px] ml-1.5 cursor-help bg-emerald-50 px-1 py-0.5 rounded shadow-sm border border-emerald-100">✅ Avancerade</span>`;
+                    
+                    let advanced = yearMatches.some(ym => {
+                        let p = (ym.phase || "").toLowerCase();
+                        let isKnockout = p.includes('kvarts') || p.includes('åtton') || p.includes('semi') || p.includes('final') || p.includes('brons') || p.includes('tredje');
+                        return isKnockout && (getMappedTeamName(ym.home_team) === getMappedTeamName(t.name) || getMappedTeamName(ym.away_team) === getMappedTeamName(t.name));
+                    });
+                    
+                    if (advanced) advancedStr = ` <span title="Laget avancerade" class="text-emerald-500 text-[10px] ml-1.5 cursor-help bg-emerald-50 px-1 py-0.5 rounded shadow-sm border border-emerald-100">✅ Avancerade</span>`;
+                    
                     html += `<tr class="${rowClass}"><td class="py-2 text-slate-900 flex items-center">${t.name}${advancedStr}</td><td class="py-2 text-center text-slate-500">${t.S}</td><td class="py-2 text-center text-green-600">${t.V}</td><td class="py-2 text-center text-slate-400">${t.O}</td><td class="py-2 text-center text-red-500">${t.F}</td><td class="py-2 text-center text-xs text-slate-500">${t.GM}-${t.IM} <span class="text-[10px] font-normal">(${diffStr})</span></td><td class="py-2 text-center font-black text-blue-900">${t.P}</td></tr>`;
                 });
                 html += `</tbody></table></div>`;
@@ -583955,11 +585933,29 @@
             let hw = m.advancement.advancing_team === m.home_team, aw = m.advancement.advancing_team === m.away_team;
             let bc = theme === 'orange' ? 'border-orange-300' : 'border-slate-200', hb = theme === 'orange' ? 'hover:border-orange-500' : 'hover:border-blue-400';
             let tch = hw ? (theme==='orange'?'text-orange-800':'text-blue-900') : 'text-slate-500', tca = aw ? (theme==='orange'?'text-orange-800':'text-blue-900') : 'text-slate-500';
-            return `<div onclick="openMatchModal('${m.id}')" class="bg-white p-3 rounded-lg border ${bc} shadow-sm my-3 ${hb} hover:shadow transition cursor-pointer group text-xs"><div class="text-[10px] text-slate-400 font-bold mb-1.5 flex justify-between"><span>ID: ${m.id}</span> <span>${m.date}</span></div><div class="space-y-1.5 font-medium"><div class="flex justify-between items-center ${hw ? 'font-black '+tch : 'text-slate-500'}"><span class="truncate pr-1">${m.home_team}</span><span>${m.score.home_total !== null ? m.score.home_total : '-'}</span></div><div class="flex justify-between items-center ${aw ? 'font-black '+tca : 'text-slate-500'}"><span class="truncate pr-1">${m.away_team}</span><span>${m.score.away_total !== null ? m.score.away_total : '-'}</span></div></div>${m.score.home_pen !== null ? `<div class="text-[9px] text-center text-slate-400 font-bold mt-1 border-t pt-1">Str: ${m.score.home_pen}-${m.score.away_pen}</div>` : ''}</div>`;
+            
+            let omspelText = ['31','43','44','49'].includes(String(m.id)) ? ' <span class="text-orange-500 font-bold ml-1">(Omspel)</span>' : '';
+
+            return `<div onclick="openMatchModal('${m.id}')" class="bg-white p-3 rounded-lg border ${bc} shadow-sm my-3 ${hb} hover:shadow transition cursor-pointer group text-xs"><div class="text-[10px] text-slate-400 font-bold mb-1.5 flex justify-between"><span>ID: ${m.id}${omspelText}</span> <span>${m.date}</span></div><div class="space-y-1.5 font-medium"><div class="flex justify-between items-center ${hw ? 'font-black '+tch : 'text-slate-500'}"><span class="truncate pr-1">${m.home_team}</span><span>${m.score.home_total !== null ? m.score.home_total : '-'}</span></div><div class="flex justify-between items-center ${aw ? 'font-black '+tca : 'text-slate-500'}"><span class="truncate pr-1">${m.away_team}</span><span>${m.score.away_total !== null ? m.score.away_total : '-'}</span></div></div>${m.score.home_pen !== null ? `<div class="text-[9px] text-center text-slate-400 font-bold mt-1 border-t pt-1">Str: ${m.score.home_pen}-${m.score.away_pen}</div>` : ''}</div>`;
         }
 
         function renderKnockoutTree(year) {
             const container = document.getElementById('knockout-tree-container');
+            
+            if (year === '1950') {
+                container.innerHTML = `
+                    <div class="flex-1 flex flex-col justify-around bg-slate-50/60 p-3 rounded-xl border border-slate-200/80 min-w-[220px]">
+                        <h4 class="text-center font-black text-xs uppercase tracking-widest text-slate-400 border-b pb-2 mb-4">Finalomgång (Omgång 1 & 2)</h4>
+                        ${['70','71','72','73'].map(id => db.matches[id] ? buildMatchCard(db.matches[id]) : '').join('')}
+                    </div>
+                    <div class="flex-1 flex flex-col justify-around bg-slate-50/60 p-3 rounded-xl border border-slate-200/80 min-w-[220px]">
+                        <h4 class="text-center font-black text-xs uppercase tracking-widest text-slate-400 border-b pb-2 mb-4">Finalomgång (Avgörande)</h4>
+                        ${['75','74'].map(id => db.matches[id] ? buildMatchCard(db.matches[id]) : '').join('')}
+                    </div>
+                `;
+                return;
+            }
+
             let koMatches = Object.values(db.matches).filter(m => m.date.substring(0,4) === year && (!m.advancement.is_group_match || m.phase.toLowerCase().includes('finalomgång')));
             if (koMatches.length === 0) { container.innerHTML = '<div class="p-8 text-center text-slate-400 italic w-full">Denna turnering avgjordes helt via gruppspel / slutgrupper.</div>'; return; }
             let allPhases = ["Sextondelsfinal", "Åttondelsfinal", "Kvartsfinal", "Semifinal", "Finalomgång", "Final"], treeData = {};
@@ -583999,24 +585995,68 @@
         // 📊 H2H & MARATONTABELL
         // =========================================================
         function renderMarathonTable() {
-            const container = document.getElementById('marathon-table-body'), footerContainer = document.getElementById('marathon-footer');
+            const container = document.getElementById('marathon-table-body');
+            const footerContainer = document.getElementById('marathon-footer');
+            const pointSys = document.getElementById('marathon-points-filter').value;
+            const phaseFilter = document.getElementById('marathon-phase-filter').value;
+            
+            let ptsForWin = pointSys === '2' ? 2 : 3;
+
             let teams = {};
             Object.values(db.matches).forEach(m => {
                 if (m.score.home_total === null) return; 
-                let year = m.date.substring(0, 4), hMapped = getMappedTeamName(m.home_team), aMapped = getMappedTeamName(m.away_team);
+                
+                // Nyhet: Smart Fas-filter
+                let isGroup = m.advancement.is_group_match;
+                let pLower = String(m.phase).toLowerCase();
+                
+                // Omspel och playoff är utslagning även om de ligger i en gruppspelsfas i db
+                if (pLower.includes("playoff") || pLower.includes("omspel")) isGroup = false;
+                // Finalomgången 1950 och dubbla gruppspel 1974-1982 är gruppspel
+                if (pLower.includes("grupp") || pLower.includes("finalomgång")) isGroup = true;
+
+                if (phaseFilter === 'group' && !isGroup) return;
+                if (phaseFilter === 'knockout' && isGroup) return;
+
+                let year = m.date.substring(0, 4);
+                let hMapped = getMappedTeamName(m.home_team);
+                let aMapped = getMappedTeamName(m.away_team);
+                
                 [ {orig: m.home_team, mapped: hMapped}, {orig: m.away_team, mapped: aMapped} ].forEach(t => {
                     if (!teams[t.mapped]) teams[t.mapped] = { name: t.mapped, S:0, V:0, O:0, F:0, GM:0, IM:0, P:0, years: new Set(), orig_names: new Set() };
                     teams[t.mapped].orig_names.add(t.orig);
                 });
-                let h = teams[hMapped], a = teams[aMapped], hg = m.score.home_total, ag = m.score.away_total;
+                
+                let h = teams[hMapped], a = teams[aMapped];
+                let hg = m.score.home_total, ag = m.score.away_total;
+                
                 h.years.add(year); a.years.add(year);
                 h.S++; a.S++; h.GM += hg; h.IM += ag; a.GM += ag; a.IM += hg;
-                if (hg > ag) { h.V++; h.P += 3; a.F++; } else if (ag > hg) { a.V++; a.P += 3; h.F++; } else { h.O++; a.O++; h.P += 1; a.P += 1; }
+                
+                // Smart poängberäkning
+                let h_win = false, a_win = false, draw = false;
+                if (hg > ag) h_win = true;
+                else if (ag > hg) a_win = true;
+                else {
+                    if (pointSys === '3_pen' && m.score.home_pen !== null && m.score.away_pen !== null) {
+                        if (m.score.home_pen > m.score.away_pen) h_win = true;
+                        else a_win = true;
+                    } else {
+                        draw = true;
+                    }
+                }
+
+                if (h_win) { h.V++; h.P += ptsForWin; a.F++; }
+                else if (a_win) { a.V++; a.P += ptsForWin; h.F++; }
+                else if (draw) { h.O++; a.O++; h.P += 1; a.P += 1; }
             });
+            
             let sortedTeams = Object.values(teams).sort((a,b) => {
-                if (b.P !== a.P) return b.P - a.P; let diffA = a.GM - a.IM, diffB = b.GM - b.IM;
+                if (b.P !== a.P) return b.P - a.P; 
+                let diffA = a.GM - a.IM, diffB = b.GM - b.IM;
                 if (diffB !== diffA) return diffB - diffA; return b.GM - a.GM; 
             });
+            
             let html = '';
             sortedTeams.forEach((t, idx) => {
                 let diff = t.GM - t.IM, diffStr = diff > 0 ? `+${diff}` : diff, rankClass = idx < 10 ? "font-bold text-slate-800" : "text-slate-600";
@@ -584035,6 +586075,7 @@
                         </tr>`;
             });
             container.innerHTML = html;
+            
             let mergedTextArray = [];
             Object.values(teams).forEach(t => {
                 if (t.orig_names.size > 1 || (t.orig_names.size === 1 && !t.orig_names.has(t.name))) {
@@ -584304,6 +586345,31 @@
                         <td class="p-3 text-center font-black text-blue-600">${m.totGoals}</td></tr>`;
                 });
             }
+            else if (type === 'h2h_most') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Möte (Lag A - Lag B)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Antal Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let pairs = {};
+                matches.forEach(m => {
+                    let t1 = getMappedTeamName(m.home_team);
+                    let t2 = getMappedTeamName(m.away_team);
+                    let pairArr = [t1, t2].sort();
+                    let pKey = pairArr[0] + " - " + pairArr[1];
+                    if (!pairs[pKey]) pairs[pKey] = { name: pKey, count: 0, t1: pairArr[0], t2: pairArr[1] };
+                    pairs[pKey].count++;
+                });
+                
+                let sortedPairs = Object.values(pairs).sort((a,b) => b.count - a.count);
+                if (nation !== 'all') {
+                    sortedPairs = sortedPairs.filter(p => p.t1 === nation || p.t2 === nation);
+                }
+                
+                sortedPairs.slice(0, 50).forEach((p, i) => {
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer" onclick="openH2HFromToplist('${p.t1.replace(/'/g, "\'")}', '${p.t2.replace(/'/g, "\'")}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${p.name} <span class="text-[10px] text-slate-400 ml-2">Klicka för H2H-analys &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-600">${p.count}</td></tr>`;
+                });
+            }
             else if (type === 'attendance') {
                 html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Match (Datum)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Arena</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Publik</th></tr></thead><tbody class="divide-y divide-slate-100">';
                 let validMatches = matches;
@@ -584369,30 +586435,88 @@
                 });
                 if (sorted.length === 0) html += `<tr><td colspan="6" class="p-6 text-center text-slate-500 italic">Inga medaljer funna med detta filter.</td></tr>`;
             }
-            else if (type === 'h2h_most') {
-                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Möte (Lag A - Lag B)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Antal Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+            else if (type === 'penalties') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Match (Datum)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Res (e.fl.)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Straffar</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let validMatches = matches.filter(m => m.score.home_pen !== null);
+                if (nation !== 'all') validMatches = validMatches.filter(m => getMappedTeamName(m.home_team) === nation || getMappedTeamName(m.away_team) === nation);
                 
-                let pairs = {};
-                matches.forEach(m => {
-                    let t1 = getMappedTeamName(m.home_team);
-                    let t2 = getMappedTeamName(m.away_team);
-                    let pairArr = [t1, t2].sort();
-                    let pKey = pairArr[0] + " - " + pairArr[1];
-                    if (!pairs[pKey]) pairs[pKey] = { name: pKey, count: 0, t1: pairArr[0], t2: pairArr[1] };
-                    pairs[pKey].count++;
+                validMatches.sort((a, b) => new Date(b.date) - new Date(a.date)); // Senaste överst
+                
+                validMatches.forEach((m, i) => {
+                    let pStr = `<span class="font-black text-slate-800">${m.score.home_pen} - ${m.score.away_pen}</span>`;
+                    html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openMatchModal('${m.id}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-medium text-slate-700">${m.home_team} - ${m.away_team} <span class="text-[10px] text-slate-400 block">${m.date} (${m.phase})</span></td>
+                        <td class="p-3 text-center font-bold text-slate-500">${m.score.home_total}-${m.score.away_total}</td>
+                        <td class="p-3 text-center bg-slate-50 border-l border-slate-100">${pStr}</td></tr>`;
                 });
+                if (validMatches.length === 0) html += `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Inga straffläggningar hittades.</td></tr>`;
+            }
+            // NYTT TILLÄGG: ARENOR
+            else if (type === 'arenas') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Arena (Ort)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Matcher</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Total Publik</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Publiksnitt</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let arenas = {};
                 
-                let sortedPairs = Object.values(pairs).sort((a,b) => b.count - a.count);
+                // HÄR ÄR FIXEN: Filtrera matcherna på nation först!
+                let validMatches = matches;
                 if (nation !== 'all') {
-                    sortedPairs = sortedPairs.filter(p => p.t1 === nation || p.t2 === nation);
+                    validMatches = validMatches.filter(m => getMappedTeamName(m.home_team) === nation || getMappedTeamName(m.away_team) === nation);
                 }
                 
-                sortedPairs.slice(0, 50).forEach((p, i) => {
-                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer" onclick="openH2HFromToplist('${p.t1.replace(/'/g, "\'")}', '${p.t2.replace(/'/g, "\'")}')">
-                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
-                        <td class="p-3 font-bold text-slate-700">${p.name} <span class="text-[10px] text-slate-400 ml-2">Klicka för H2H-analys &rarr;</span></td>
-                        <td class="p-3 text-center font-black text-blue-600">${p.count}</td></tr>`;
+                validMatches.forEach(m => {
+                    let a = m.arena ? m.arena.trim() : "";
+                    let c = m.city ? m.city.trim() : "";
+                    if (!a || a.toLowerCase() === "okänd" || a === "null") return;
+                    let key = a + "|" + c;
+                    if (!arenas[key]) arenas[key] = { arena: a, city: c, count: 0, att: 0, matches: [] };
+                    arenas[key].count++;
+                    arenas[key].matches.push(m.id);
+                    if (m.attendance) arenas[key].att += m.attendance;
                 });
+                let sorted = Object.values(arenas).sort((a,b) => b.count - a.count || b.att - a.att);
+                sorted.slice(0, 50).forEach((item, i) => {
+                    let avg = item.count > 0 ? Math.round(item.att / item.count) : 0;
+                    window.staffMatchData['arena_' + i] = item.matches;
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openGeoModal('${item.arena.replace(/'/g, "\'")}', 'Arena i ${item.city}', 'arena_${i}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${item.arena} <span class="text-xs font-normal text-slate-400 ml-2">(${item.city})</span> <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${item.count}</td>
+                        <td class="p-3 text-center font-medium text-slate-600">${item.att.toLocaleString('sv-SE')}</td>
+                        <td class="p-3 text-right font-bold text-emerald-600">${avg.toLocaleString('sv-SE')}</td></tr>`;
+                });
+                if (sorted.length === 0) html += `<tr><td colspan="5" class="p-6 text-center text-slate-500 italic">Ingen arenadata hittades.</td></tr>`;
+            }
+            // NYTT TILLÄGG: STÄDER (Med publiksnitt och klickbarhet)
+            else if (type === 'cities') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Ort</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Matcher</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Total Publik</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Publiksnitt</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let cities = {};
+                
+                // HÄR ÄR FIXEN: Filtrera matcherna på nation först!
+                let validMatches = matches;
+                if (nation !== 'all') {
+                    validMatches = validMatches.filter(m => getMappedTeamName(m.home_team) === nation || getMappedTeamName(m.away_team) === nation);
+                }
+                
+                validMatches.forEach(m => {
+                    let c = m.city ? m.city.trim() : "";
+                    if (!c || c.toLowerCase() === "okänd" || c === "null") return;
+                    if (!cities[c]) cities[c] = { city: c, count: 0, att: 0, matches: [] };
+                    cities[c].count++;
+                    cities[c].matches.push(m.id);
+                    if (m.attendance) cities[c].att += m.attendance;
+                });
+                let sorted = Object.values(cities).sort((a,b) => b.att - a.att || b.count - a.count);
+                sorted.slice(0, 50).forEach((item, i) => {
+                    let avg = item.count > 0 ? Math.round(item.att / item.count) : 0;
+                    window.staffMatchData['city_' + i] = item.matches;
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openGeoModal('${item.city.replace(/'/g, "\'")}', 'Värdstad', 'city_${i}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${item.city} <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${item.count}</td>
+                        <td class="p-3 text-center font-medium text-slate-600">${item.att.toLocaleString('sv-SE')}</td>
+                        <td class="p-3 text-right font-bold text-emerald-600">${avg.toLocaleString('sv-SE')}</td></tr>`;
+                });
+                if (sorted.length === 0) html += `<tr><td colspan="5" class="p-6 text-center text-slate-500 italic">Ingen stadsdata hittades.</td></tr>`;
             }
 
             html += '</tbody></table>';
@@ -584515,7 +586639,7 @@
         }
 
         function searchPlayersLive(pageIndex = 0) {
-            if (typeof pageIndex !== 'number') pageIndex = 0; // Fallback for event objects
+            if (typeof pageIndex !== 'number') pageIndex = 0; 
             window.playerSearchCurrentPage = pageIndex;
 
             const query = document.getElementById('player-search-input').value.toLowerCase().trim();
@@ -584726,9 +586850,298 @@
                     html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openPlayerProfile('${p.name.replace(/'/g, "\'")}')"><td class="p-3 text-center font-bold text-slate-400">${i+1}</td><td class="p-3 font-bold text-slate-700">${formatName(p.name)}${p.is_gk ? ' <span class="text-[10px] text-slate-400">(mv)</span>' : ''}${yearsDisplay} <span class="text-xs font-normal text-slate-400 block sm:inline sm:ml-2">${p.nations.join(', ')}</span></td><td class="p-3 text-center font-black text-red-600">${p.red_cards}</td></tr>`;
                 });
             }
-            else if (type.includes('oldest') || type.includes('youngest')) {
-                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Ålder</th></tr></thead><tbody class="divide-y divide-slate-100">';
-                html += `<tr><td colspan="3" class="p-8 text-center text-slate-500 italic font-medium">Vi kommer att aktivera åldersberäkningen snart! Datan finns inläst och väntar på de avancerade beräkningsfunktionerna.</td></tr>`;
+            else if (type === 'oldest_player' || type === 'youngest_player') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Match-datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Ålder</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let ageList = [];
+                players.forEach(p => {
+                    if (p.matches_played === 0 || !p.birth_date) return;
+                    let pMatches = p.match_list.map(mId => db.matches[mId]).filter(m => m && m.date);
+                    if (pMatches.length === 0) return;
+                    pMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    
+                    let targetMatch = type === 'oldest_player' ? pMatches[pMatches.length - 1] : pMatches[0];
+                    let age = getAgeAtDate(p.birth_date, targetMatch.date);
+                    if (age) ageList.push({ p: p, age: age, match: targetMatch });
+                });
+                
+                ageList.sort((a, b) => type === 'oldest_player' ? b.age.sortVal - a.age.sortVal : a.age.sortVal - b.age.sortVal);
+                ageList.slice(0, 50).forEach((item, i) => {
+                    let isApprox = item.age.days === null;
+                    html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openPlayerProfile('${item.p.name.replace(/'/g, "\'")}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(item.p.name)} <span class="text-xs font-normal text-slate-400 block sm:inline sm:ml-2">${item.p.nations.join(', ')}</span></td>
+                        <td class="p-3 text-center text-slate-500 text-xs">${item.match.date} <span class="block text-[9px] uppercase">${item.match.home_team}-${item.match.away_team}</span></td>
+                        <td class="p-3 text-center font-black ${type === 'oldest_player' ? 'text-indigo-600' : 'text-teal-600'}">${item.age.text} ${isApprox ? '<span title="Endast födelseår känt" class="cursor-help text-slate-400 font-normal">*</span>' : ''}</td>
+                    </tr>`;
+                });
+            }
+            else if (type === 'oldest_scorer' || type === 'youngest_scorer') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Match-datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Ålder</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let ageList = [];
+                players.forEach(p => {
+                    if (p.goals === 0 || !p.birth_date) return;
+                    let goalMatches = [];
+                    p.match_list.forEach(mId => {
+                        let m = db.matches[mId];
+                        if (!m || !m.events || !m.events.goals) return;
+                        let scoredInMatch = m.events.goals.some(g => g.player.trim() === p.name);
+                        if (scoredInMatch) goalMatches.push(m);
+                    });
+                    
+                    if (goalMatches.length === 0) return;
+                    goalMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    
+                    let targetMatch = type === 'oldest_scorer' ? goalMatches[goalMatches.length - 1] : goalMatches[0];
+                    let age = getAgeAtDate(p.birth_date, targetMatch.date);
+                    if (age) ageList.push({ p: p, age: age, match: targetMatch });
+                });
+                
+                ageList.sort((a, b) => type === 'oldest_scorer' ? b.age.sortVal - a.age.sortVal : a.age.sortVal - b.age.sortVal);
+                ageList.slice(0, 50).forEach((item, i) => {
+                    let isApprox = item.age.days === null;
+                    html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openPlayerProfile('${item.p.name.replace(/'/g, "\'")}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(item.p.name)} <span class="text-[10px] text-emerald-600 font-bold ml-1">⚽</span> <span class="text-xs font-normal text-slate-400 block sm:inline sm:ml-2">${item.p.nations.join(', ')}</span></td>
+                        <td class="p-3 text-center text-slate-500 text-xs">${item.match.date} <span class="block text-[9px] uppercase">${item.match.home_team}-${item.match.away_team}</span></td>
+                        <td class="p-3 text-center font-black ${type === 'oldest_scorer' ? 'text-indigo-600' : 'text-teal-600'}">${item.age.text} ${isApprox ? '<span title="Endast födelseår känt" class="cursor-help text-slate-400 font-normal">*</span>' : ''}</td>
+                    </tr>`;
+                });
+            }
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // =========================================================
+        // 👔 DOMARE & FÖRBUNDSKAPTENER
+        // =========================================================
+        window.staffMatchData = {}; // Global lagring av id-listor för modalen
+
+        function renderStaffData() {
+            const type = document.getElementById('staff-top-type').value;
+            const container = document.getElementById('staff-list-results');
+            
+            let html = '<table class="w-full text-left border-collapse"><thead class="bg-slate-50 sticky top-0 border-b border-slate-200 z-10"><tr>';
+            html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase w-12 text-center">#</th>';
+
+            if (type === 'ref_matches') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Domare (Nation)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Dömda Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let refs = {};
+                Object.values(db.matches).forEach(m => {
+                    let r = m.referee ? m.referee.trim() : "";
+                    if (!r || r.toLowerCase() === "okänd" || r.toLowerCase() === "null") return;
+                    if (!refs[r]) refs[r] = { name: r, country: m.referee_country, count: 0, matches: [], years: new Set(), hasFinal: false };
+                    refs[r].count++;
+                    refs[r].years.add(m.date.substring(0,4));
+                    refs[r].matches.push(m.id);
+                    if (!refs[r].country && m.referee_country && m.referee_country !== "null") refs[r].country = m.referee_country;
+                    if (m.advancement && m.advancement.is_final) refs[r].hasFinal = true;
+                });
+                
+                let sorted = Object.values(refs).sort((a,b) => b.count - a.count);
+                sorted.slice(0, 50).forEach((r, i) => {
+                    let nat = r.country && r.country !== "null" ? ` <span class="text-xs font-normal text-slate-400 ml-2">(${r.country})</span>` : "";
+                    let yArr = Array.from(r.years).sort();
+                    let yStr = yArr.length > 1 ? `${yArr[0]}-${yArr[yArr.length-1]}` : yArr[0];
+                    let finIcon = r.hasFinal ? ` <span class="text-base ml-1" title="Har dömt VM-final">🏆</span>` : "";
+                    
+                    window.staffMatchData['ref_' + i] = r.matches;
+                    
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openStaffModal('${r.name.replace(/'/g, "\'")}', 'Domare ${r.country ? '('+r.country+')' : ''}', 'ref_${i}', 'referees')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(r.name)}${finIcon}${nat} <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${r.count} <span class="block text-[10px] text-slate-400 font-normal">${yStr}</span></td></tr>`;
+                });
+            }
+            else if (type === 'ref_nations') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Nation</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Antal Domare</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Totalt Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let refs = {}; let nats = {};
+                
+                Object.values(db.matches).forEach(m => {
+                    let r = m.referee ? m.referee.trim() : "";
+                    if (!r || r.toLowerCase() === "okänd" || r.toLowerCase() === "null") return;
+                    
+                    // HÄR ÄR RÄTTELSEN: Vi samlar in årtal och matcher även för nations-listan
+                    if (!refs[r]) refs[r] = { name: r, country: m.referee_country, count: 0, matches: [], years: new Set(), hasFinal: false };
+                    refs[r].count++;
+                    refs[r].years.add(m.date.substring(0,4));
+                    refs[r].matches.push(m.id);
+                    if (!refs[r].country && m.referee_country && m.referee_country !== "null") refs[r].country = m.referee_country;
+                    // NYTT: Fångar upp finaler ännu säkrare!
+                    if ((m.advancement && m.advancement.is_final) || String(m.phase).trim().toLowerCase() === 'final') refs[r].hasFinal = true;
+                });
+                Object.values(refs).forEach(r => {
+                    let c = r.country;
+                    if (!c || c === "null" || c === "Okänd") return;
+                    if (!nats[c]) nats[c] = { name: c, matchCount: 0, refsList: [] };
+                    nats[c].matchCount += r.count;
+                    nats[c].refsList.push(r);
+                });
+                
+                let sorted = Object.values(nats).sort((a,b) => b.matchCount - a.matchCount);
+                sorted.slice(0, 50).forEach((n, i) => {
+                    window.staffMatchData['nat_' + i] = n.refsList;
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openRefNationModal('nat_${i}', '${n.name}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${n.name} <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa domare &rarr;</span></td>
+                        <td class="p-3 text-center font-bold text-slate-600">${n.refsList.length}</td>
+                        <td class="p-3 text-center font-black text-blue-800">${n.matchCount}</td></tr>`;
+                });
+            }
+            else if (type === 'coach_matches') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Förbundskapten</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Coachade Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let coaches = {};
+                Object.values(db.matches).forEach(m => {
+                    if (m.score.home_total === null) return; 
+                    let year = m.date.substring(0,4);
+                    [m.coaches.home, m.coaches.away].forEach(c => {
+                        let cName = c ? c.trim() : "";
+                        if (!cName || cName.toLowerCase() === "okänd" || cName === "null") return;
+                        if (!coaches[cName]) coaches[cName] = { name: cName, count: 0, years: new Set(), nations: new Set(), matches: [] };
+                        coaches[cName].count++;
+                        coaches[cName].years.add(year);
+                        coaches[cName].matches.push(m.id);
+                        coaches[cName].nations.add(c === m.coaches.home ? m.home_team : m.away_team);
+                    });
+                });
+                
+                let sorted = Object.values(coaches).sort((a,b) => b.count - a.count);
+                sorted.slice(0, 50).forEach((c, i) => {
+                    let nats = Array.from(c.nations).map(n => getMappedTeamName(n)).join(", ");
+                    let yArr = Array.from(c.years).sort();
+                    let yStr = yArr.length > 1 ? `${yArr[0]}-${yArr[yArr.length-1]}` : yArr[0];
+                    
+                    window.staffMatchData['coach_' + i] = c.matches;
+                    
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openStaffModal('${c.name.replace(/'/g, "\'")}', 'Förbundskapten för ${nats}', 'coach_${i}', 'coaches')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(c.name)} <span class="text-xs font-normal text-slate-400 ml-2">(${nats})</span> <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${c.count} <span class="block text-[10px] text-slate-400 font-normal">${yStr}</span></td></tr>`;
+                });
+            }
+            else if (type === 'coach_tournaments') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Förbundskapten</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Turneringar</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let coaches = {};
+                Object.values(db.matches).forEach(m => {
+                    if (m.score.home_total === null) return;
+                    let year = m.date.substring(0,4);
+                    [m.coaches.home, m.coaches.away].forEach(c => {
+                        let cName = c ? c.trim() : "";
+                        if (!cName || cName.toLowerCase() === "okänd" || cName === "null") return;
+                        if (!coaches[cName]) coaches[cName] = { name: cName, years: new Set(), nations: new Set(), matches: [] };
+                        coaches[cName].years.add(year);
+                        coaches[cName].matches.push(m.id);
+                        coaches[cName].nations.add(c === m.coaches.home ? m.home_team : m.away_team);
+                    });
+                });
+                
+                let sorted = Object.values(coaches).sort((a,b) => b.years.size - a.years.size).filter(c => c.years.size > 1);
+                sorted.slice(0, 50).forEach((c, i) => {
+                    let nats = Array.from(c.nations).map(n => getMappedTeamName(n)).join(", ");
+                    let yearsStr = Array.from(c.years).sort().join(", ");
+                    
+                    window.staffMatchData['coacht_' + i] = c.matches;
+                    
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openStaffModal('${c.name.replace(/'/g, "\'")}', 'Förbundskapten för ${nats}', 'coacht_${i}', 'coaches')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(c.name)} <span class="text-xs font-normal text-slate-400 ml-2">(${nats})</span> <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${c.years.size} <span class="block text-[10px] text-slate-400 font-normal">${yearsStr}</span></td></tr>`;
+                });
+            }
+            else if (type === 'ref_oldest' || type === 'ref_youngest') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Domare (Nation)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Match-datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Ålder</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let ageList = [];
+                Object.values(db.matches).forEach(m => {
+                    let rName = m.referee ? m.referee.trim() : "";
+                    if (!rName || rName.toLowerCase() === "okänd" || rName === "null") return;
+                    
+                    let bDate = db.staff && db.staff.referees && db.staff.referees[rName] ? db.staff.referees[rName].birth_date : null;
+                    if (!bDate || !m.date) return;
+                    
+                    let age = getAgeAtDate(bDate, m.date);
+                    if (age) {
+                        ageList.push({ name: rName, country: m.referee_country, match: m, age: age });
+                    }
+                });
+                
+                let bestMatchPerRef = {};
+                ageList.forEach(item => {
+                    if (!bestMatchPerRef[item.name]) {
+                        bestMatchPerRef[item.name] = item;
+                    } else {
+                        if (type === 'ref_oldest' && item.age.sortVal > bestMatchPerRef[item.name].age.sortVal) bestMatchPerRef[item.name] = item;
+                        if (type === 'ref_youngest' && item.age.sortVal < bestMatchPerRef[item.name].age.sortVal) bestMatchPerRef[item.name] = item;
+                    }
+                });
+                
+                let sortedList = Object.values(bestMatchPerRef).sort((a,b) => type === 'ref_oldest' ? b.age.sortVal - a.age.sortVal : a.age.sortVal - b.age.sortVal);
+                
+                sortedList.slice(0, 50).forEach((item, i) => {
+                    let isApprox = item.age.days === null;
+                    let nat = item.country && item.country !== "null" ? ` <span class="text-xs font-normal text-slate-400 ml-2">(${item.country})</span>` : "";
+                    let bYearStr = ` <span class="text-xs text-blue-400 ml-1">(Född ${db.staff.referees[item.name].birth_date.substring(0,4)})</span>`;
+                    
+                    window.staffMatchData['refo_' + i] = [item.match.id];
+                    
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openStaffModal('${formatName(item.name).replace(/'/g, "\'")}', 'Domare', 'refo_${i}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(item.name)}${bYearStr}${nat}</td>
+                        <td class="p-3 text-center text-slate-500 text-xs">${item.match.date} <span class="block text-[9px] uppercase">${item.match.home_team}-${item.match.away_team}</span></td>
+                        <td class="p-3 text-center font-black ${type === 'ref_oldest' ? 'text-indigo-600' : 'text-teal-600'}">${item.age.text} ${isApprox ? '<span title="Endast födelseår känt" class="cursor-help text-slate-400 font-normal">*</span>' : ''}</td>
+                    </tr>`;
+                });
+                if (sortedList.length === 0) html += `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Ingen åldersdata funnen för domare.</td></tr>`;
+            }
+            else if (type === 'coach_oldest' || type === 'coach_youngest') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Förbundskapten (Lag)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Match-datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Ålder</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let ageList = [];
+                Object.values(db.matches).forEach(m => {
+                    if (m.score.home_total === null) return;
+                    
+                    let teams = [ {c: m.coaches.home, t: m.home_team}, {c: m.coaches.away, t: m.away_team} ];
+                    teams.forEach(teamObj => {
+                        let cName = teamObj.c ? teamObj.c.trim() : "";
+                        if (!cName || cName.toLowerCase() === "okänd" || cName === "null") return;
+                        
+                        let bDate = db.staff && db.staff.coaches && db.staff.coaches[cName] ? db.staff.coaches[cName].birth_date : null;
+                        if (!bDate || !m.date) return;
+                        
+                        let age = getAgeAtDate(bDate, m.date);
+                        if (age) {
+                            ageList.push({ name: cName, team: teamObj.t, match: m, age: age });
+                        }
+                    });
+                });
+                
+                let bestMatchPerCoach = {};
+                ageList.forEach(item => {
+                    if (!bestMatchPerCoach[item.name]) {
+                        bestMatchPerCoach[item.name] = item;
+                    } else {
+                        if (type === 'coach_oldest' && item.age.sortVal > bestMatchPerCoach[item.name].age.sortVal) bestMatchPerCoach[item.name] = item;
+                        if (type === 'coach_youngest' && item.age.sortVal < bestMatchPerCoach[item.name].age.sortVal) bestMatchPerCoach[item.name] = item;
+                    }
+                });
+                
+                let sortedList = Object.values(bestMatchPerCoach).sort((a,b) => type === 'coach_oldest' ? b.age.sortVal - a.age.sortVal : a.age.sortVal - b.age.sortVal);
+                
+                sortedList.slice(0, 50).forEach((item, i) => {
+                    let isApprox = item.age.days === null;
+                    let nat = item.team ? ` <span class="text-xs font-normal text-slate-400 ml-2">(${item.team})</span>` : "";
+                    let bYearStr = ` <span class="text-xs text-blue-400 ml-1">(Född ${db.staff.coaches[item.name].birth_date.substring(0,4)})</span>`;
+                    
+                    window.staffMatchData['coacho_' + i] = [item.match.id];
+                    
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openStaffModal('${formatName(item.name).replace(/'/g, "\'")}', 'Förbundskapten', 'coacho_${i}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(item.name)}${bYearStr}${nat}</td>
+                        <td class="p-3 text-center text-slate-500 text-xs">${item.match.date} <span class="block text-[9px] uppercase">${item.match.home_team}-${item.match.away_team}</span></td>
+                        <td class="p-3 text-center font-black ${type === 'coach_oldest' ? 'text-indigo-600' : 'text-teal-600'}">${item.age.text} ${isApprox ? '<span title="Endast födelseår känt" class="cursor-help text-slate-400 font-normal">*</span>' : ''}</td>
+                    </tr>`;
+                });
+                if (sortedList.length === 0) html += `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Ingen åldersdata funnen för förbundskaptener.</td></tr>`;
             }
 
             html += '</tbody></table>';
@@ -584738,6 +587151,119 @@
         // =========================================================
         // MODALER FÖR DELDETALJER (TURNERING/LAG/SVIT)
         // =========================================================
+        function openStaffModal(rawName, subtitle, dataKey, staffType) {
+            let fName = formatName(rawName);
+            
+            // Hämta födelseår om det finns
+            let bDate = db.staff && db.staff[staffType] && db.staff[staffType][rawName] ? db.staff[staffType][rawName].birth_date : null;
+            let bYearStr = bDate ? ` <span class="text-indigo-300 font-medium ml-2 text-lg">(född ${bDate.substring(0,4)})</span>` : "";
+            
+            let matchIds = window.staffMatchData[dataKey] || [];
+            
+            // Kolla om de har en VM-final i sin personliga klick-lista
+            let hasFinal = false;
+            if (staffType === 'referees') {
+                matchIds.forEach(id => {
+                    let m = db.matches[id];
+                    if (m && ((m.advancement && m.advancement.is_final) || String(m.phase).trim().toLowerCase() === 'final')) hasFinal = true;
+                });
+            }
+            let finIcon = hasFinal ? ` <span class="text-2xl ml-2" title="Har dömt VM-final">🏆</span>` : "";
+
+            // Skriv ut titeln i modalen (innerHTML används nu för att vi lägger till HTML-ikoner och färgad text)
+            document.getElementById('staff-modal-title').innerHTML = fName + bYearStr + finIcon;
+            document.getElementById('staff-modal-subtitle').innerText = subtitle;
+            
+            let sMatches = matchIds.map(id => db.matches[id]).filter(m => m);
+            sMatches.sort((a,b) => new Date(a.date) - new Date(b.date));
+            
+            document.getElementById('staff-modal-thead').innerHTML = `<tr><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Fas</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Hemmalag</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Res</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Bortalag</th></tr>`;
+            
+            let html = '';
+            let prevYear = '';
+            sMatches.forEach(m => {
+                let mYear = m.date.substring(0,4);
+                let rowBorder = (prevYear && prevYear !== mYear) ? 'border-t-2 border-slate-300' : 'border-t border-slate-100';
+                prevYear = mYear;
+                
+                const scClass = m.score.home_total !== null ? "font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200" : "text-slate-400 text-xs";
+                html += `
+                    <tr onclick="openMatchModal('${m.id}')" class="hover:bg-indigo-50 cursor-pointer transition group">
+                        <td class="p-3 ${rowBorder}"><div class="text-[10px] uppercase font-bold text-indigo-900">${mYear}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
+                        <td class="p-3 ${rowBorder}"><div class="text-xs text-slate-500">${m.date}</div></td>
+                        <td class="p-3 ${rowBorder} text-right font-medium text-slate-700">${m.home_team}</td>
+                        <td class="p-3 ${rowBorder} text-center"><span class="${scClass}">${formatScore(m)}</span></td>
+                        <td class="p-3 ${rowBorder} font-medium text-slate-700">${m.away_team}</td>
+                    </tr>`;
+            });
+            document.getElementById('staff-modal-list').innerHTML = html;
+            document.getElementById('staff-modal').classList.remove('hidden');
+        }
+        
+        function openRefNationModal(dataKey, nationName) {
+            document.getElementById('staff-modal-title').innerText = `Domare från ${nationName}`;
+            document.getElementById('staff-modal-subtitle').innerText = "Klicka på en domare för att se matchhistorik";
+            
+            let refsList = window.staffMatchData[dataKey] || [];
+            refsList.sort((a,b) => b.count - a.count);
+            
+            document.getElementById('staff-modal-thead').innerHTML = `<tr><th class="p-3 text-xs font-semibold text-slate-500 uppercase w-12 text-center">#</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Namn</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Dömda Matcher</th></tr>`;
+            
+            let html = '';
+            refsList.forEach((r, i) => {
+                let yArr = Array.from(r.years).sort();
+                let yStr = yArr.length > 1 ? `${yArr[0]}-${yArr[yArr.length-1]}` : yArr[0];
+                let finIcon = r.hasFinal ? ` <span class="text-base ml-1" title="Har dömt VM-final">🏆</span>` : "";
+                
+                let bDate = db.staff && db.staff.referees && db.staff.referees[r.name] ? db.staff.referees[r.name].birth_date : null;
+                let bYearStr = bDate ? ` <span class="text-xs text-blue-400 ml-1">(Född ${bDate.substring(0,4)})</span>` : "";
+                
+                // Skapa en tillfällig nyckel för just den här domarens matcher
+                let subKey = `sub_${dataKey}_${i}`;
+                window.staffMatchData[subKey] = r.matches;
+                
+                html += `
+                    <tr class="hover:bg-indigo-50 transition cursor-pointer group" onclick="openStaffModal('${formatName(r.name).replace(/'/g, "\'")}', 'Domare (${nationName})', '${subKey}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(r.name)}${bYearStr}${finIcon} <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${r.count} <span class="block text-[10px] text-slate-400 font-normal">${yStr}</span></td>
+                    </tr>`;
+            });
+            document.getElementById('staff-modal-list').innerHTML = html;
+            document.getElementById('staff-modal').classList.remove('hidden');
+        }
+        function openGeoModal(title, subtitle, dataKey) {
+            document.getElementById('staff-modal-title').innerHTML = title;
+            document.getElementById('staff-modal-subtitle').innerText = subtitle;
+            
+            let matchIds = window.staffMatchData[dataKey] || [];
+            let sMatches = matchIds.map(id => db.matches[id]).filter(m => m);
+            sMatches.sort((a,b) => new Date(a.date) - new Date(b.date));
+            
+            document.getElementById('staff-modal-thead').innerHTML = `<tr><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Fas</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Hemmalag</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Res</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Bortalag</th></tr>`;
+            
+            let html = '';
+            let prevYear = '';
+            sMatches.forEach(m => {
+                let mYear = m.date.substring(0,4);
+                let rowBorder = (prevYear && prevYear !== mYear) ? 'border-t-2 border-slate-300' : 'border-t border-slate-100';
+                prevYear = mYear;
+                
+                const scClass = m.score.home_total !== null ? "font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200" : "text-slate-400 text-xs";
+                html += `
+                    <tr onclick="openMatchModal('${m.id}')" class="hover:bg-indigo-50 cursor-pointer transition group">
+                        <td class="p-3 ${rowBorder}"><div class="text-[10px] uppercase font-bold text-indigo-900">${mYear}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
+                        <td class="p-3 ${rowBorder}"><div class="text-xs text-slate-500">${m.date}</div></td>
+                        <td class="p-3 ${rowBorder} text-right font-medium text-slate-700">${m.home_team}</td>
+                        <td class="p-3 ${rowBorder} text-center"><span class="${scClass}">${formatScore(m)}</span></td>
+                        <td class="p-3 ${rowBorder} font-medium text-slate-700">${m.away_team}</td>
+                    </tr>`;
+            });
+            document.getElementById('staff-modal-list').innerHTML = html;
+            document.getElementById('staff-modal').classList.remove('hidden');
+        }
+        function closeStaffModal() { document.getElementById('staff-modal').classList.add('hidden'); }
+
         function openTournamentModal(year) {
             let t = db.tournaments[year];
             if (!t) return;
@@ -584829,6 +587355,8 @@
             
             let ts=0, tv=0, to=0, tf=0, tgm=0, tim=0, tp=0;
             let listHtml = '';
+            let prevYear = '';
+            
             teamMatches.forEach(m => {
                 let isH = getMappedTeamName(m.home_team) === mappedName;
                 ts++;
@@ -584838,14 +587366,18 @@
                 else if (ag > hg) { if(!isH) {tv++; tp+=3;} else {tf++;} }
                 else { to++; tp++; }
                 
+                let mYear = m.date.substring(0,4);
+                let rowBorder = (prevYear && prevYear !== mYear) ? 'border-t-2 border-slate-300' : 'border-t border-slate-100';
+                prevYear = mYear;
+                
                 const scClass = "font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200";
                 listHtml += `
                     <tr onclick="openMatchModal('${m.id}')" class="hover:bg-blue-50 cursor-pointer transition group">
-                        <td class="p-3 border-t border-slate-100"><div class="text-[10px] uppercase font-bold text-blue-900">${m.date.substring(0,4)}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
-                        <td class="p-3 border-t border-slate-100"><div class="text-xs text-slate-500">${m.date}</div></td>
-                        <td class="p-3 border-t border-slate-100 text-right ${isH ? 'font-black text-blue-900' : 'font-medium text-slate-500'}">${m.home_team}</td>
-                        <td class="p-3 border-t border-slate-100 text-center"><span class="${scClass}">${formatScore(m)}</span></td>
-                        <td class="p-3 border-t border-slate-100 ${!isH ? 'font-black text-blue-900' : 'font-medium text-slate-500'}">${m.away_team}</td>
+                        <td class="p-3 ${rowBorder}"><div class="text-[10px] uppercase font-bold text-blue-900">${mYear}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
+                        <td class="p-3 ${rowBorder}"><div class="text-xs text-slate-500">${m.date}</div></td>
+                        <td class="p-3 ${rowBorder} text-right ${isH ? 'font-black text-blue-900' : 'font-medium text-slate-500'}">${m.home_team}</td>
+                        <td class="p-3 ${rowBorder} text-center"><span class="${scClass}">${formatScore(m)}</span></td>
+                        <td class="p-3 ${rowBorder} ${!isH ? 'font-black text-blue-900' : 'font-medium text-slate-500'}">${m.away_team}</td>
                     </tr>`;
             });
             
@@ -584872,16 +587404,21 @@
             sMatches.sort((a,b) => new Date(a.date) - new Date(b.date));
             
             let html = '';
+            let prevYear = '';
             sMatches.forEach(m => {
                 let isH = getMappedTeamName(m.home_team) === team;
+                let mYear = m.date.substring(0,4);
+                let rowBorder = (prevYear && prevYear !== mYear) ? 'border-t-2 border-slate-300' : 'border-t border-slate-100';
+                prevYear = mYear;
+                
                 const scClass = "font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200";
                 html += `
                     <tr onclick="openMatchModal('${m.id}')" class="hover:bg-amber-50 cursor-pointer transition group">
-                        <td class="p-3 border-t border-slate-100"><div class="text-[10px] uppercase font-bold text-amber-900">${m.date.substring(0,4)}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
-                        <td class="p-3 border-t border-slate-100"><div class="text-xs text-slate-500">${m.date}</div></td>
-                        <td class="p-3 border-t border-slate-100 text-right ${isH ? 'font-black text-amber-900' : 'font-medium text-slate-500'}">${m.home_team}</td>
-                        <td class="p-3 border-t border-slate-100 text-center"><span class="${scClass}">${formatScore(m)}</span></td>
-                        <td class="p-3 border-t border-slate-100 ${!isH ? 'font-black text-amber-900' : 'font-medium text-slate-500'}">${m.away_team}</td>
+                        <td class="p-3 ${rowBorder}"><div class="text-[10px] uppercase font-bold text-amber-900">${mYear}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
+                        <td class="p-3 ${rowBorder}"><div class="text-xs text-slate-500">${m.date}</div></td>
+                        <td class="p-3 ${rowBorder} text-right ${isH ? 'font-black text-amber-900' : 'font-medium text-slate-500'}">${m.home_team}</td>
+                        <td class="p-3 ${rowBorder} text-center"><span class="${scClass}">${formatScore(m)}</span></td>
+                        <td class="p-3 ${rowBorder} ${!isH ? 'font-black text-amber-900' : 'font-medium text-slate-500'}">${m.away_team}</td>
                     </tr>`;
             });
             document.getElementById('streak-modal-matches-list').innerHTML = html;
@@ -584898,7 +587435,10 @@
             if (!m) return;
             document.getElementById('modal-year').innerText = m.date.substring(0,4);
             document.getElementById('modal-title-center').innerText = `${m.phase} • ${m.date}`;
-            document.getElementById('modal-match-id').innerText = `Match-ID: ${m.id}`;
+            
+            let omspelText = ['31','43','44','49'].includes(String(m.id)) ? ' (Omspel)' : '';
+            document.getElementById('modal-match-id').innerText = `Match-ID: ${m.id}${omspelText}`;
+            
             document.getElementById('modal-arena').innerText = safeText(m.arena);
             document.getElementById('modal-city').innerText = safeText(m.city);
             document.getElementById('modal-attendance').innerText = m.attendance ? m.attendance.toLocaleString('sv-SE') : 'Okänt';

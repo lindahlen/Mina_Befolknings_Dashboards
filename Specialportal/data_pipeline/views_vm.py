@@ -47,9 +47,9 @@ def build_dashboard():
     <header class="bg-blue-900 text-white shadow-md sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
             <h1 class="text-2xl font-bold tracking-tight">🏆 VM-Databasen</h1>
-            <a href="internationella_index.html" class="text-blue-200 hover:text-white text-sm font-medium transition flex items-center">
-                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-                Tillbaka
+            <a href="internationella_index.html" class="bg-white text-blue-900 border border-white px-4 py-2 rounded-lg transition hover:bg-blue-50 hover:shadow-md font-bold text-sm flex items-center">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path></svg>
+                Tillbaka till översikten
             </a>
         </div>
         
@@ -60,6 +60,7 @@ def build_dashboard():
             <button onclick="switchTab('tab-maraton')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap">Maratontabell</button>
             <button onclick="switchTab('tab-teams')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap font-bold text-amber-300">Lagrekord & Sviter</button>
             <button onclick="switchTab('tab-spelare')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap font-bold">Spelare & Statistik</button>
+            <button onclick="switchTab('tab-staff')" class="tab-btn px-4 py-2 rounded-t-lg bg-blue-800 text-blue-200 hover:bg-blue-700 transition whitespace-nowrap font-bold text-indigo-300">Domare & Tränare</button>
             <button onclick="switchTab('tab-admin')" class="tab-btn px-4 py-2 rounded-t-lg bg-red-800 text-red-200 hover:bg-red-700 transition flex items-center gap-2 whitespace-nowrap">
                 <span>⚠️ Admin</span>
                 <span id="admin-badge" class="bg-red-500 text-white text-xs px-2 py-1 rounded-full hidden">0</span>
@@ -191,9 +192,23 @@ def build_dashboard():
         <!-- FLIK 4: MARATONTABELL -->
         <div id="tab-maraton" class="tab-content hidden">
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-                <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-slate-800">Historisk Maratontabell</h2>
-                    <span class="text-xs text-slate-500 font-medium">Poängberäkning: 3p för vinst, Straffavgöranden räknas som oavgjort</span>
+                <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">Historisk Maratontabell</h2>
+                        <span class="text-xs text-slate-500 font-medium">Filtrera fas och poängsystem för djupare analys</span>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                        <select id="marathon-phase-filter" onchange="renderMarathonTable()" class="p-2 border border-slate-300 rounded-lg shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="all">Alla Matcher</option>
+                            <option value="group">Endast Gruppspel</option>
+                            <option value="knockout">Endast Slutspel/Utslagning</option>
+                        </select>
+                        <select id="marathon-points-filter" onchange="renderMarathonTable()" class="p-2 border border-slate-300 rounded-lg shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="3">3p för seger</option>
+                            <option value="2">2p för seger</option>
+                            <option value="3_pen">3p inkl. Straffsegrar</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="max-h-[70vh] overflow-y-auto">
                     <table class="w-full text-sm text-left border-collapse">
@@ -246,10 +261,14 @@ def build_dashboard():
                     <select id="team-top-type" onchange="renderTeamData()" class="p-2 border border-slate-300 rounded-lg shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64">
                         <option value="biggest_win">Största Segrar</option>
                         <option value="high_score">Målrikaste Matcher</option>
+                        <option value="h2h_most">Flest inbördes möten</option>
                         <option value="attendance">Högsta Publiksiffror</option>
                         <option value="medals">Flest Medaljer (Endast historik)</option>
                         <option value="placements">Översikt placeringar (Matris)</option>
-                        <option value="h2h_most">Flest inbördes möten</option>
+                        <option value="penalties">Straffavgöranden (Matchlista)</option>
+                    <!-- Nya geografiska perspektiv -->
+                        <option value="arenas">Geografi: Arenor (Flest matcher)</option>
+                        <option value="cities">Geografi: Städer (Högst totalpublik)</option>
                     </select>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
@@ -385,10 +404,10 @@ def build_dashboard():
                             <option value="tournaments_squad">Flest turneringar i trupp</option>
                             <option value="yellow">Flest varningar (Gula kort)</option>
                             <option value="red">Utvisningar (Röda kort)</option>
-                            <option value="oldest_player">Äldsta spelare (Kommer snart)</option>
-                            <option value="youngest_player">Yngsta spelare (Kommer snart)</option>
-                            <option value="oldest_scorer">Äldsta målskytt (Kommer snart)</option>
-                            <option value="youngest_scorer">Yngsta målskytt (Kommer snart)</option>
+                            <option value="oldest_player">Äldsta spelare (vid tidpunkt för match)</option>
+                            <option value="youngest_player">Yngsta spelare (vid tidpunkt för match)</option>
+                            <option value="oldest_scorer">Äldsta målskytt</option>
+                            <option value="youngest_scorer">Yngsta målskytt</option>
                         </select>
                     </div>
                 </div>
@@ -397,11 +416,43 @@ def build_dashboard():
             </div>
         </div>
 
-        <!-- FLIK 7: Admin -->
+        <!-- FLIK 7: DOMARE & TRÄNARE -->
+        <div id="tab-staff" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6 flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="w-full md:w-1/2">
+                    <h2 class="text-xl font-bold text-slate-800">Domare & Förbundskaptener</h2>
+                    <p class="text-xs text-slate-500 mt-1">Historik och rekord för ledarna vid sidlinjen och domarna på plan.</p>
+                </div>
+                <div class="w-full md:w-1/2">
+                    <select id="staff-top-type" onchange="renderStaffData()" class="w-full p-3 border border-slate-300 rounded-lg shadow-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="ref_matches">Domare: Flest döma matcher</option>
+                        <option value="ref_nations">Domare: Nationer med flest domare</option>
+                        <option value="ref_oldest">Domare: Äldsta</option>
+                        <option value="ref_youngest">Domare: Yngsta</option>
+                        <option value="coach_matches">Kaptener: Flest coachade matcher</option>
+                        <option value="coach_tournaments">Kaptener: Deltagit i flest VM (Trupp/Ledare)</option>
+                        <!-- De dolda ålderslistorna, redo att aktiveras när födelsedata finns i JSON -->
+                        <!-- För att aktivera ålderslistorna: Ta bort koden style="display: none;" från raderna nedan -->
+                        <!-- För att inaktivera ålderslistorna: Lägg in ex. in koden på detta sätt option value="coach_oldest" style="display: none;" för raderna nedan -->
+                        <option value="coach_oldest" style="display: none;">Kaptener: Äldsta (Kräver födelsedata)</option>
+                        <option value="coach_youngest" style="display: none;">Kaptener: Yngsta (Kräver födelsedata)</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                <div id="staff-list-results" class="max-h-[65vh] overflow-auto"></div>
+            </div>
+        </div>
+
+        <!-- FLIK 8: Admin -->
         <div id="tab-admin" class="tab-content hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-red-800">Kvalitetssäkring & Felsökning</h2>
-                <button onclick="renderAdminWarnings()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded">Uppdatera logg</button>
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-xl font-bold text-red-800">Kvalitetssäkring & Felsökning</h2>
+                    <span class="text-sm text-slate-500 font-medium hidden sm:inline">Sammanställning: Jimmy Lindahl</span>
+                </div>
+                <button onclick="renderAdminWarnings()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded transition whitespace-nowrap">Uppdatera logg</button>
             </div>
             <div class="bg-white rounded-lg shadow-sm border border-red-200 p-6" id="admin-list-container"></div>
         </div>
@@ -485,7 +536,10 @@ def build_dashboard():
                 <h2 class="text-2xl font-black tracking-tight flex items-center gap-3">
                     <span id="team-modal-name"></span>
                 </h2>
-                <button onclick="closeTeamModal()" class="text-blue-300 hover:text-white transition text-3xl leading-none">&times;</button>
+                <button onclick="closeTeamModal()" class="text-blue-300 hover:text-white transition flex items-center">
+                    <span class="text-sm font-semibold uppercase tracking-widest hidden sm:inline mr-2">Stäng</span>
+                    <span class="text-3xl leading-none">&times;</span>
+                </button>
             </div>
             <div class="p-6 bg-slate-50 border-b border-slate-200">
                 <div id="team-modal-summary" class="mb-4"></div>
@@ -516,7 +570,10 @@ def build_dashboard():
                     <h2 class="text-xl font-black tracking-tight" id="streak-modal-title"></h2>
                     <div class="text-sm font-bold text-amber-900 mt-1" id="streak-modal-subtitle"></div>
                 </div>
-                <button onclick="closeStreakModal()" class="text-amber-900 hover:text-white transition text-3xl leading-none">&times;</button>
+                <button onclick="closeStreakModal()" class="text-amber-900 hover:text-white transition flex items-center">
+                    <span class="text-sm font-semibold uppercase tracking-widest hidden sm:inline mr-2">Stäng</span>
+                    <span class="text-3xl leading-none">&times;</span>
+                </button>
             </div>
             <div class="p-0 overflow-y-auto flex-1 bg-white">
                 <table class="w-full text-left border-collapse">
@@ -530,6 +587,30 @@ def build_dashboard():
                         </tr>
                     </thead>
                     <tbody id="streak-modal-matches-list" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- STAFF / NATION MODAL -->
+    <div id="staff-modal" class="fixed inset-0 z-50 hidden modal-backdrop flex items-center justify-center p-4">
+        <div class="bg-slate-100 rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden relative">
+            <div class="bg-indigo-900 text-white p-4 flex justify-between items-center relative">
+                <div>
+                    <h2 class="text-xl font-black tracking-tight" id="staff-modal-title"></h2>
+                    <div class="text-sm font-bold text-indigo-300 mt-1" id="staff-modal-subtitle"></div>
+                </div>
+                <button onclick="closeStaffModal()" class="text-indigo-300 hover:text-white transition flex items-center">
+                    <span class="text-sm font-semibold uppercase tracking-widest hidden sm:inline mr-2">Stäng</span>
+                    <span class="text-3xl leading-none">&times;</span>
+                </button>
+            </div>
+            <div class="p-0 overflow-y-auto flex-1 bg-white">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 z-10" id="staff-modal-thead">
+                        <!-- Dynamisk header -->
+                    </thead>
+                    <tbody id="staff-modal-list" class="divide-y divide-slate-100"></tbody>
                 </table>
             </div>
         </div>
@@ -607,6 +688,30 @@ def build_dashboard():
             return s.trim();
         };
 
+        // --- ÅLDERSBERÄKNING ---
+        function getAgeAtDate(birthDateStr, matchDateStr) {
+            if (!birthDateStr || birthDateStr.length < 4) return null;
+            if (!matchDateStr) return null;
+            
+            let by = parseInt(birthDateStr.substring(0,4));
+            let my = parseInt(matchDateStr.substring(0,4));
+            
+            if (birthDateStr.length === 4) {
+                return { years: my - by, days: null, sortVal: (my - by) * 365, text: `ca ${my - by} år` };
+            }
+            
+            let b = new Date(birthDateStr);
+            let m = new Date(matchDateStr);
+            if (isNaN(b) || isNaN(m)) return null;
+            
+            let diffTime = Math.abs(m - b);
+            let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            let years = Math.floor(diffDays / 365.25);
+            let days = Math.floor(diffDays % 365.25);
+            
+            return { years: years, days: days, sortVal: diffDays, text: `${years} år, ${days} dgr` };
+        }
+
         const getPhaseColors = (phase) => {
             if (!phase) return "bg-slate-200 text-slate-700 border-slate-300";
             let p = phase.toLowerCase();
@@ -638,7 +743,7 @@ def build_dashboard():
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('bg-white', 'text-blue-900', 'font-semibold', 'text-amber-300');
+                btn.classList.remove('bg-white', 'text-blue-900', 'font-semibold', 'text-amber-300', 'text-indigo-300');
                 btn.classList.add('bg-blue-800', 'text-blue-200');
             });
             document.getElementById(tabId).classList.remove('hidden');
@@ -658,6 +763,9 @@ def build_dashboard():
                 populatePlayerNations();
                 populateTopNations();
                 document.getElementById('player-search-input').focus();
+            }
+            if(tabId === 'tab-staff') {
+                renderStaffData();
             }
         }
 
@@ -839,13 +947,17 @@ def build_dashboard():
                 if (!groupStartDates[phase] || new Date(m.date) < new Date(groupStartDates[phase])) groupStartDates[phase] = m.date;
                 [m.home_team, m.away_team].forEach(t => { if (!groups[phase].teams[t]) groups[phase].teams[t] = { name: t, S: 0, V: 0, O: 0, F: 0, GM: 0, IM: 0, P: 0 }; });
                 if (m.score.home_total !== null && m.score.away_total !== null) {
+                    if (['92','93','126','127','128'].includes(String(m.id))) return;
+                    
                     let h = groups[phase].teams[m.home_team], a = groups[phase].teams[m.away_team];
                     let hg = m.score.home_total, ag = m.score.away_total, ptsWin = m.advancement.points_for_win || 2; 
                     h.S++; a.S++; h.GM += hg; h.IM += ag; a.GM += ag; a.IM += hg;
                     if (hg > ag) { h.V++; h.P += ptsWin; a.F++; } else if (ag > hg) { a.V++; a.P += ptsWin; h.F++; } else { h.O++; a.O++; h.P += 1; a.P += 1; }
                 }
             });
-            let sortedGroups = Object.keys(groups).sort((a,b) => new Date(groupStartDates[a]) - new Date(groupStartDates[b]));
+            
+            let sortedGroups = Object.keys(groups).sort((a,b) => a.localeCompare(b, undefined, {numeric: true, sensitivity: 'base'}));
+            
             let html = '', lastPhaseType = null;
             sortedGroups.forEach(gName => {
                 let currentPhaseType = getPhaseSuffixType(gName);
@@ -865,8 +977,15 @@ def build_dashboard():
                             <tbody class="divide-y divide-slate-100 font-medium text-slate-700">`;
                 sortedTeams.forEach((t, idx) => {
                     let diff = t.GM - t.IM, diffStr = diff > 0 ? `+${diff}` : diff, rowClass = idx < 2 ? "bg-blue-50/40 font-bold" : "", advancedStr = "";
-                    let tPhases = teamPhases[t.name] || [], currentPhaseIndex = tPhases.indexOf(gName);
-                    if (currentPhaseIndex !== -1 && currentPhaseIndex < tPhases.length - 1) advancedStr = ` <span title="Laget avancerade" class="text-emerald-500 text-[10px] ml-1.5 cursor-help bg-emerald-50 px-1 py-0.5 rounded shadow-sm border border-emerald-100">✅ Avancerade</span>`;
+                    
+                    let advanced = yearMatches.some(ym => {
+                        let p = (ym.phase || "").toLowerCase();
+                        let isKnockout = p.includes('kvarts') || p.includes('åtton') || p.includes('semi') || p.includes('final') || p.includes('brons') || p.includes('tredje');
+                        return isKnockout && (getMappedTeamName(ym.home_team) === getMappedTeamName(t.name) || getMappedTeamName(ym.away_team) === getMappedTeamName(t.name));
+                    });
+                    
+                    if (advanced) advancedStr = ` <span title="Laget avancerade" class="text-emerald-500 text-[10px] ml-1.5 cursor-help bg-emerald-50 px-1 py-0.5 rounded shadow-sm border border-emerald-100">✅ Avancerade</span>`;
+                    
                     html += `<tr class="${rowClass}"><td class="py-2 text-slate-900 flex items-center">${t.name}${advancedStr}</td><td class="py-2 text-center text-slate-500">${t.S}</td><td class="py-2 text-center text-green-600">${t.V}</td><td class="py-2 text-center text-slate-400">${t.O}</td><td class="py-2 text-center text-red-500">${t.F}</td><td class="py-2 text-center text-xs text-slate-500">${t.GM}-${t.IM} <span class="text-[10px] font-normal">(${diffStr})</span></td><td class="py-2 text-center font-black text-blue-900">${t.P}</td></tr>`;
                 });
                 html += `</tbody></table></div>`;
@@ -878,11 +997,29 @@ def build_dashboard():
             let hw = m.advancement.advancing_team === m.home_team, aw = m.advancement.advancing_team === m.away_team;
             let bc = theme === 'orange' ? 'border-orange-300' : 'border-slate-200', hb = theme === 'orange' ? 'hover:border-orange-500' : 'hover:border-blue-400';
             let tch = hw ? (theme==='orange'?'text-orange-800':'text-blue-900') : 'text-slate-500', tca = aw ? (theme==='orange'?'text-orange-800':'text-blue-900') : 'text-slate-500';
-            return `<div onclick="openMatchModal('${m.id}')" class="bg-white p-3 rounded-lg border ${bc} shadow-sm my-3 ${hb} hover:shadow transition cursor-pointer group text-xs"><div class="text-[10px] text-slate-400 font-bold mb-1.5 flex justify-between"><span>ID: ${m.id}</span> <span>${m.date}</span></div><div class="space-y-1.5 font-medium"><div class="flex justify-between items-center ${hw ? 'font-black '+tch : 'text-slate-500'}"><span class="truncate pr-1">${m.home_team}</span><span>${m.score.home_total !== null ? m.score.home_total : '-'}</span></div><div class="flex justify-between items-center ${aw ? 'font-black '+tca : 'text-slate-500'}"><span class="truncate pr-1">${m.away_team}</span><span>${m.score.away_total !== null ? m.score.away_total : '-'}</span></div></div>${m.score.home_pen !== null ? `<div class="text-[9px] text-center text-slate-400 font-bold mt-1 border-t pt-1">Str: ${m.score.home_pen}-${m.score.away_pen}</div>` : ''}</div>`;
+            
+            let omspelText = ['31','43','44','49'].includes(String(m.id)) ? ' <span class="text-orange-500 font-bold ml-1">(Omspel)</span>' : '';
+
+            return `<div onclick="openMatchModal('${m.id}')" class="bg-white p-3 rounded-lg border ${bc} shadow-sm my-3 ${hb} hover:shadow transition cursor-pointer group text-xs"><div class="text-[10px] text-slate-400 font-bold mb-1.5 flex justify-between"><span>ID: ${m.id}${omspelText}</span> <span>${m.date}</span></div><div class="space-y-1.5 font-medium"><div class="flex justify-between items-center ${hw ? 'font-black '+tch : 'text-slate-500'}"><span class="truncate pr-1">${m.home_team}</span><span>${m.score.home_total !== null ? m.score.home_total : '-'}</span></div><div class="flex justify-between items-center ${aw ? 'font-black '+tca : 'text-slate-500'}"><span class="truncate pr-1">${m.away_team}</span><span>${m.score.away_total !== null ? m.score.away_total : '-'}</span></div></div>${m.score.home_pen !== null ? `<div class="text-[9px] text-center text-slate-400 font-bold mt-1 border-t pt-1">Str: ${m.score.home_pen}-${m.score.away_pen}</div>` : ''}</div>`;
         }
 
         function renderKnockoutTree(year) {
             const container = document.getElementById('knockout-tree-container');
+            
+            if (year === '1950') {
+                container.innerHTML = `
+                    <div class="flex-1 flex flex-col justify-around bg-slate-50/60 p-3 rounded-xl border border-slate-200/80 min-w-[220px]">
+                        <h4 class="text-center font-black text-xs uppercase tracking-widest text-slate-400 border-b pb-2 mb-4">Finalomgång (Omgång 1 & 2)</h4>
+                        ${['70','71','72','73'].map(id => db.matches[id] ? buildMatchCard(db.matches[id]) : '').join('')}
+                    </div>
+                    <div class="flex-1 flex flex-col justify-around bg-slate-50/60 p-3 rounded-xl border border-slate-200/80 min-w-[220px]">
+                        <h4 class="text-center font-black text-xs uppercase tracking-widest text-slate-400 border-b pb-2 mb-4">Finalomgång (Avgörande)</h4>
+                        ${['75','74'].map(id => db.matches[id] ? buildMatchCard(db.matches[id]) : '').join('')}
+                    </div>
+                `;
+                return;
+            }
+
             let koMatches = Object.values(db.matches).filter(m => m.date.substring(0,4) === year && (!m.advancement.is_group_match || m.phase.toLowerCase().includes('finalomgång')));
             if (koMatches.length === 0) { container.innerHTML = '<div class="p-8 text-center text-slate-400 italic w-full">Denna turnering avgjordes helt via gruppspel / slutgrupper.</div>'; return; }
             let allPhases = ["Sextondelsfinal", "Åttondelsfinal", "Kvartsfinal", "Semifinal", "Finalomgång", "Final"], treeData = {};
@@ -922,24 +1059,68 @@ def build_dashboard():
         // 📊 H2H & MARATONTABELL
         // =========================================================
         function renderMarathonTable() {
-            const container = document.getElementById('marathon-table-body'), footerContainer = document.getElementById('marathon-footer');
+            const container = document.getElementById('marathon-table-body');
+            const footerContainer = document.getElementById('marathon-footer');
+            const pointSys = document.getElementById('marathon-points-filter').value;
+            const phaseFilter = document.getElementById('marathon-phase-filter').value;
+            
+            let ptsForWin = pointSys === '2' ? 2 : 3;
+
             let teams = {};
             Object.values(db.matches).forEach(m => {
                 if (m.score.home_total === null) return; 
-                let year = m.date.substring(0, 4), hMapped = getMappedTeamName(m.home_team), aMapped = getMappedTeamName(m.away_team);
+                
+                // Nyhet: Smart Fas-filter
+                let isGroup = m.advancement.is_group_match;
+                let pLower = String(m.phase).toLowerCase();
+                
+                // Omspel och playoff är utslagning även om de ligger i en gruppspelsfas i db
+                if (pLower.includes("playoff") || pLower.includes("omspel")) isGroup = false;
+                // Finalomgången 1950 och dubbla gruppspel 1974-1982 är gruppspel
+                if (pLower.includes("grupp") || pLower.includes("finalomgång")) isGroup = true;
+
+                if (phaseFilter === 'group' && !isGroup) return;
+                if (phaseFilter === 'knockout' && isGroup) return;
+
+                let year = m.date.substring(0, 4);
+                let hMapped = getMappedTeamName(m.home_team);
+                let aMapped = getMappedTeamName(m.away_team);
+                
                 [ {orig: m.home_team, mapped: hMapped}, {orig: m.away_team, mapped: aMapped} ].forEach(t => {
                     if (!teams[t.mapped]) teams[t.mapped] = { name: t.mapped, S:0, V:0, O:0, F:0, GM:0, IM:0, P:0, years: new Set(), orig_names: new Set() };
                     teams[t.mapped].orig_names.add(t.orig);
                 });
-                let h = teams[hMapped], a = teams[aMapped], hg = m.score.home_total, ag = m.score.away_total;
+                
+                let h = teams[hMapped], a = teams[aMapped];
+                let hg = m.score.home_total, ag = m.score.away_total;
+                
                 h.years.add(year); a.years.add(year);
                 h.S++; a.S++; h.GM += hg; h.IM += ag; a.GM += ag; a.IM += hg;
-                if (hg > ag) { h.V++; h.P += 3; a.F++; } else if (ag > hg) { a.V++; a.P += 3; h.F++; } else { h.O++; a.O++; h.P += 1; a.P += 1; }
+                
+                // Smart poängberäkning
+                let h_win = false, a_win = false, draw = false;
+                if (hg > ag) h_win = true;
+                else if (ag > hg) a_win = true;
+                else {
+                    if (pointSys === '3_pen' && m.score.home_pen !== null && m.score.away_pen !== null) {
+                        if (m.score.home_pen > m.score.away_pen) h_win = true;
+                        else a_win = true;
+                    } else {
+                        draw = true;
+                    }
+                }
+
+                if (h_win) { h.V++; h.P += ptsForWin; a.F++; }
+                else if (a_win) { a.V++; a.P += ptsForWin; h.F++; }
+                else if (draw) { h.O++; a.O++; h.P += 1; a.P += 1; }
             });
+            
             let sortedTeams = Object.values(teams).sort((a,b) => {
-                if (b.P !== a.P) return b.P - a.P; let diffA = a.GM - a.IM, diffB = b.GM - b.IM;
+                if (b.P !== a.P) return b.P - a.P; 
+                let diffA = a.GM - a.IM, diffB = b.GM - b.IM;
                 if (diffB !== diffA) return diffB - diffA; return b.GM - a.GM; 
             });
+            
             let html = '';
             sortedTeams.forEach((t, idx) => {
                 let diff = t.GM - t.IM, diffStr = diff > 0 ? `+${diff}` : diff, rankClass = idx < 10 ? "font-bold text-slate-800" : "text-slate-600";
@@ -958,6 +1139,7 @@ def build_dashboard():
                         </tr>`;
             });
             container.innerHTML = html;
+            
             let mergedTextArray = [];
             Object.values(teams).forEach(t => {
                 if (t.orig_names.size > 1 || (t.orig_names.size === 1 && !t.orig_names.has(t.name))) {
@@ -1227,6 +1409,31 @@ def build_dashboard():
                         <td class="p-3 text-center font-black text-blue-600">${m.totGoals}</td></tr>`;
                 });
             }
+            else if (type === 'h2h_most') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Möte (Lag A - Lag B)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Antal Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let pairs = {};
+                matches.forEach(m => {
+                    let t1 = getMappedTeamName(m.home_team);
+                    let t2 = getMappedTeamName(m.away_team);
+                    let pairArr = [t1, t2].sort();
+                    let pKey = pairArr[0] + " - " + pairArr[1];
+                    if (!pairs[pKey]) pairs[pKey] = { name: pKey, count: 0, t1: pairArr[0], t2: pairArr[1] };
+                    pairs[pKey].count++;
+                });
+                
+                let sortedPairs = Object.values(pairs).sort((a,b) => b.count - a.count);
+                if (nation !== 'all') {
+                    sortedPairs = sortedPairs.filter(p => p.t1 === nation || p.t2 === nation);
+                }
+                
+                sortedPairs.slice(0, 50).forEach((p, i) => {
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer" onclick="openH2HFromToplist('${p.t1.replace(/'/g, "\\'")}', '${p.t2.replace(/'/g, "\\'")}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${p.name} <span class="text-[10px] text-slate-400 ml-2">Klicka för H2H-analys &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-600">${p.count}</td></tr>`;
+                });
+            }
             else if (type === 'attendance') {
                 html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Match (Datum)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Arena</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Publik</th></tr></thead><tbody class="divide-y divide-slate-100">';
                 let validMatches = matches;
@@ -1292,30 +1499,88 @@ def build_dashboard():
                 });
                 if (sorted.length === 0) html += `<tr><td colspan="6" class="p-6 text-center text-slate-500 italic">Inga medaljer funna med detta filter.</td></tr>`;
             }
-            else if (type === 'h2h_most') {
-                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Möte (Lag A - Lag B)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Antal Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+            else if (type === 'penalties') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Match (Datum)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Res (e.fl.)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Straffar</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let validMatches = matches.filter(m => m.score.home_pen !== null);
+                if (nation !== 'all') validMatches = validMatches.filter(m => getMappedTeamName(m.home_team) === nation || getMappedTeamName(m.away_team) === nation);
                 
-                let pairs = {};
-                matches.forEach(m => {
-                    let t1 = getMappedTeamName(m.home_team);
-                    let t2 = getMappedTeamName(m.away_team);
-                    let pairArr = [t1, t2].sort();
-                    let pKey = pairArr[0] + " - " + pairArr[1];
-                    if (!pairs[pKey]) pairs[pKey] = { name: pKey, count: 0, t1: pairArr[0], t2: pairArr[1] };
-                    pairs[pKey].count++;
+                validMatches.sort((a, b) => new Date(b.date) - new Date(a.date)); // Senaste överst
+                
+                validMatches.forEach((m, i) => {
+                    let pStr = `<span class="font-black text-slate-800">${m.score.home_pen} - ${m.score.away_pen}</span>`;
+                    html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openMatchModal('${m.id}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-medium text-slate-700">${m.home_team} - ${m.away_team} <span class="text-[10px] text-slate-400 block">${m.date} (${m.phase})</span></td>
+                        <td class="p-3 text-center font-bold text-slate-500">${m.score.home_total}-${m.score.away_total}</td>
+                        <td class="p-3 text-center bg-slate-50 border-l border-slate-100">${pStr}</td></tr>`;
                 });
+                if (validMatches.length === 0) html += `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Inga straffläggningar hittades.</td></tr>`;
+            }
+            // NYTT TILLÄGG: ARENOR
+            else if (type === 'arenas') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Arena (Ort)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Matcher</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Total Publik</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Publiksnitt</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let arenas = {};
                 
-                let sortedPairs = Object.values(pairs).sort((a,b) => b.count - a.count);
+                // HÄR ÄR FIXEN: Filtrera matcherna på nation först!
+                let validMatches = matches;
                 if (nation !== 'all') {
-                    sortedPairs = sortedPairs.filter(p => p.t1 === nation || p.t2 === nation);
+                    validMatches = validMatches.filter(m => getMappedTeamName(m.home_team) === nation || getMappedTeamName(m.away_team) === nation);
                 }
                 
-                sortedPairs.slice(0, 50).forEach((p, i) => {
-                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer" onclick="openH2HFromToplist('${p.t1.replace(/'/g, "\\'")}', '${p.t2.replace(/'/g, "\\'")}')">
-                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
-                        <td class="p-3 font-bold text-slate-700">${p.name} <span class="text-[10px] text-slate-400 ml-2">Klicka för H2H-analys &rarr;</span></td>
-                        <td class="p-3 text-center font-black text-blue-600">${p.count}</td></tr>`;
+                validMatches.forEach(m => {
+                    let a = m.arena ? m.arena.trim() : "";
+                    let c = m.city ? m.city.trim() : "";
+                    if (!a || a.toLowerCase() === "okänd" || a === "null") return;
+                    let key = a + "|" + c;
+                    if (!arenas[key]) arenas[key] = { arena: a, city: c, count: 0, att: 0, matches: [] };
+                    arenas[key].count++;
+                    arenas[key].matches.push(m.id);
+                    if (m.attendance) arenas[key].att += m.attendance;
                 });
+                let sorted = Object.values(arenas).sort((a,b) => b.count - a.count || b.att - a.att);
+                sorted.slice(0, 50).forEach((item, i) => {
+                    let avg = item.count > 0 ? Math.round(item.att / item.count) : 0;
+                    window.staffMatchData['arena_' + i] = item.matches;
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openGeoModal('${item.arena.replace(/'/g, "\\'")}', 'Arena i ${item.city}', 'arena_${i}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${item.arena} <span class="text-xs font-normal text-slate-400 ml-2">(${item.city})</span> <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${item.count}</td>
+                        <td class="p-3 text-center font-medium text-slate-600">${item.att.toLocaleString('sv-SE')}</td>
+                        <td class="p-3 text-right font-bold text-emerald-600">${avg.toLocaleString('sv-SE')}</td></tr>`;
+                });
+                if (sorted.length === 0) html += `<tr><td colspan="5" class="p-6 text-center text-slate-500 italic">Ingen arenadata hittades.</td></tr>`;
+            }
+            // NYTT TILLÄGG: STÄDER (Med publiksnitt och klickbarhet)
+            else if (type === 'cities') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Ort</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Matcher</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Total Publik</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Publiksnitt</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let cities = {};
+                
+                // HÄR ÄR FIXEN: Filtrera matcherna på nation först!
+                let validMatches = matches;
+                if (nation !== 'all') {
+                    validMatches = validMatches.filter(m => getMappedTeamName(m.home_team) === nation || getMappedTeamName(m.away_team) === nation);
+                }
+                
+                validMatches.forEach(m => {
+                    let c = m.city ? m.city.trim() : "";
+                    if (!c || c.toLowerCase() === "okänd" || c === "null") return;
+                    if (!cities[c]) cities[c] = { city: c, count: 0, att: 0, matches: [] };
+                    cities[c].count++;
+                    cities[c].matches.push(m.id);
+                    if (m.attendance) cities[c].att += m.attendance;
+                });
+                let sorted = Object.values(cities).sort((a,b) => b.att - a.att || b.count - a.count);
+                sorted.slice(0, 50).forEach((item, i) => {
+                    let avg = item.count > 0 ? Math.round(item.att / item.count) : 0;
+                    window.staffMatchData['city_' + i] = item.matches;
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openGeoModal('${item.city.replace(/'/g, "\\'")}', 'Värdstad', 'city_${i}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${item.city} <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${item.count}</td>
+                        <td class="p-3 text-center font-medium text-slate-600">${item.att.toLocaleString('sv-SE')}</td>
+                        <td class="p-3 text-right font-bold text-emerald-600">${avg.toLocaleString('sv-SE')}</td></tr>`;
+                });
+                if (sorted.length === 0) html += `<tr><td colspan="5" class="p-6 text-center text-slate-500 italic">Ingen stadsdata hittades.</td></tr>`;
             }
 
             html += '</tbody></table>';
@@ -1438,7 +1703,7 @@ def build_dashboard():
         }
 
         function searchPlayersLive(pageIndex = 0) {
-            if (typeof pageIndex !== 'number') pageIndex = 0; // Fallback for event objects
+            if (typeof pageIndex !== 'number') pageIndex = 0; 
             window.playerSearchCurrentPage = pageIndex;
 
             const query = document.getElementById('player-search-input').value.toLowerCase().trim();
@@ -1649,9 +1914,298 @@ def build_dashboard():
                     html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openPlayerProfile('${p.name.replace(/'/g, "\\'")}')"><td class="p-3 text-center font-bold text-slate-400">${i+1}</td><td class="p-3 font-bold text-slate-700">${formatName(p.name)}${p.is_gk ? ' <span class="text-[10px] text-slate-400">(mv)</span>' : ''}${yearsDisplay} <span class="text-xs font-normal text-slate-400 block sm:inline sm:ml-2">${p.nations.join(', ')}</span></td><td class="p-3 text-center font-black text-red-600">${p.red_cards}</td></tr>`;
                 });
             }
-            else if (type.includes('oldest') || type.includes('youngest')) {
-                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Ålder</th></tr></thead><tbody class="divide-y divide-slate-100">';
-                html += `<tr><td colspan="3" class="p-8 text-center text-slate-500 italic font-medium">Vi kommer att aktivera åldersberäkningen snart! Datan finns inläst och väntar på de avancerade beräkningsfunktionerna.</td></tr>`;
+            else if (type === 'oldest_player' || type === 'youngest_player') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Match-datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Ålder</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let ageList = [];
+                players.forEach(p => {
+                    if (p.matches_played === 0 || !p.birth_date) return;
+                    let pMatches = p.match_list.map(mId => db.matches[mId]).filter(m => m && m.date);
+                    if (pMatches.length === 0) return;
+                    pMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    
+                    let targetMatch = type === 'oldest_player' ? pMatches[pMatches.length - 1] : pMatches[0];
+                    let age = getAgeAtDate(p.birth_date, targetMatch.date);
+                    if (age) ageList.push({ p: p, age: age, match: targetMatch });
+                });
+                
+                ageList.sort((a, b) => type === 'oldest_player' ? b.age.sortVal - a.age.sortVal : a.age.sortVal - b.age.sortVal);
+                ageList.slice(0, 50).forEach((item, i) => {
+                    let isApprox = item.age.days === null;
+                    html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openPlayerProfile('${item.p.name.replace(/'/g, "\\'")}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(item.p.name)} <span class="text-xs font-normal text-slate-400 block sm:inline sm:ml-2">${item.p.nations.join(', ')}</span></td>
+                        <td class="p-3 text-center text-slate-500 text-xs">${item.match.date} <span class="block text-[9px] uppercase">${item.match.home_team}-${item.match.away_team}</span></td>
+                        <td class="p-3 text-center font-black ${type === 'oldest_player' ? 'text-indigo-600' : 'text-teal-600'}">${item.age.text} ${isApprox ? '<span title="Endast födelseår känt" class="cursor-help text-slate-400 font-normal">*</span>' : ''}</td>
+                    </tr>`;
+                });
+            }
+            else if (type === 'oldest_scorer' || type === 'youngest_scorer') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Match-datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Ålder</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let ageList = [];
+                players.forEach(p => {
+                    if (p.goals === 0 || !p.birth_date) return;
+                    let goalMatches = [];
+                    p.match_list.forEach(mId => {
+                        let m = db.matches[mId];
+                        if (!m || !m.events || !m.events.goals) return;
+                        let scoredInMatch = m.events.goals.some(g => g.player.trim() === p.name);
+                        if (scoredInMatch) goalMatches.push(m);
+                    });
+                    
+                    if (goalMatches.length === 0) return;
+                    goalMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
+                    
+                    let targetMatch = type === 'oldest_scorer' ? goalMatches[goalMatches.length - 1] : goalMatches[0];
+                    let age = getAgeAtDate(p.birth_date, targetMatch.date);
+                    if (age) ageList.push({ p: p, age: age, match: targetMatch });
+                });
+                
+                ageList.sort((a, b) => type === 'oldest_scorer' ? b.age.sortVal - a.age.sortVal : a.age.sortVal - b.age.sortVal);
+                ageList.slice(0, 50).forEach((item, i) => {
+                    let isApprox = item.age.days === null;
+                    html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openPlayerProfile('${item.p.name.replace(/'/g, "\\'")}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(item.p.name)} <span class="text-[10px] text-emerald-600 font-bold ml-1">⚽</span> <span class="text-xs font-normal text-slate-400 block sm:inline sm:ml-2">${item.p.nations.join(', ')}</span></td>
+                        <td class="p-3 text-center text-slate-500 text-xs">${item.match.date} <span class="block text-[9px] uppercase">${item.match.home_team}-${item.match.away_team}</span></td>
+                        <td class="p-3 text-center font-black ${type === 'oldest_scorer' ? 'text-indigo-600' : 'text-teal-600'}">${item.age.text} ${isApprox ? '<span title="Endast födelseår känt" class="cursor-help text-slate-400 font-normal">*</span>' : ''}</td>
+                    </tr>`;
+                });
+            }
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // =========================================================
+        // 👔 DOMARE & FÖRBUNDSKAPTENER
+        // =========================================================
+        window.staffMatchData = {}; // Global lagring av id-listor för modalen
+
+        function renderStaffData() {
+            const type = document.getElementById('staff-top-type').value;
+            const container = document.getElementById('staff-list-results');
+            
+            let html = '<table class="w-full text-left border-collapse"><thead class="bg-slate-50 sticky top-0 border-b border-slate-200 z-10"><tr>';
+            html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase w-12 text-center">#</th>';
+
+            if (type === 'ref_matches') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Domare (Nation)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Dömda Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let refs = {};
+                Object.values(db.matches).forEach(m => {
+                    let r = m.referee ? m.referee.trim() : "";
+                    if (!r || r.toLowerCase() === "okänd" || r.toLowerCase() === "null") return;
+                    if (!refs[r]) refs[r] = { name: r, country: m.referee_country, count: 0, matches: [], years: new Set(), hasFinal: false };
+                    refs[r].count++;
+                    refs[r].years.add(m.date.substring(0,4));
+                    refs[r].matches.push(m.id);
+                    if (!refs[r].country && m.referee_country && m.referee_country !== "null") refs[r].country = m.referee_country;
+                    if (m.advancement && m.advancement.is_final) refs[r].hasFinal = true;
+                });
+                
+                let sorted = Object.values(refs).sort((a,b) => b.count - a.count);
+                sorted.slice(0, 50).forEach((r, i) => {
+                    let nat = r.country && r.country !== "null" ? ` <span class="text-xs font-normal text-slate-400 ml-2">(${r.country})</span>` : "";
+                    let yArr = Array.from(r.years).sort();
+                    let yStr = yArr.length > 1 ? `${yArr[0]}-${yArr[yArr.length-1]}` : yArr[0];
+                    let finIcon = r.hasFinal ? ` <span class="text-base ml-1" title="Har dömt VM-final">🏆</span>` : "";
+                    
+                    window.staffMatchData['ref_' + i] = r.matches;
+                    
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openStaffModal('${r.name.replace(/'/g, "\\'")}', 'Domare ${r.country ? '('+r.country+')' : ''}', 'ref_${i}', 'referees')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(r.name)}${finIcon}${nat} <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${r.count} <span class="block text-[10px] text-slate-400 font-normal">${yStr}</span></td></tr>`;
+                });
+            }
+            else if (type === 'ref_nations') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Nation</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Antal Domare</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Totalt Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let refs = {}; let nats = {};
+                
+                Object.values(db.matches).forEach(m => {
+                    let r = m.referee ? m.referee.trim() : "";
+                    if (!r || r.toLowerCase() === "okänd" || r.toLowerCase() === "null") return;
+                    
+                    // HÄR ÄR RÄTTELSEN: Vi samlar in årtal och matcher även för nations-listan
+                    if (!refs[r]) refs[r] = { name: r, country: m.referee_country, count: 0, matches: [], years: new Set(), hasFinal: false };
+                    refs[r].count++;
+                    refs[r].years.add(m.date.substring(0,4));
+                    refs[r].matches.push(m.id);
+                    if (!refs[r].country && m.referee_country && m.referee_country !== "null") refs[r].country = m.referee_country;
+                    // NYTT: Fångar upp finaler ännu säkrare!
+                    if ((m.advancement && m.advancement.is_final) || String(m.phase).trim().toLowerCase() === 'final') refs[r].hasFinal = true;
+                });
+                Object.values(refs).forEach(r => {
+                    let c = r.country;
+                    if (!c || c === "null" || c === "Okänd") return;
+                    if (!nats[c]) nats[c] = { name: c, matchCount: 0, refsList: [] };
+                    nats[c].matchCount += r.count;
+                    nats[c].refsList.push(r);
+                });
+                
+                let sorted = Object.values(nats).sort((a,b) => b.matchCount - a.matchCount);
+                sorted.slice(0, 50).forEach((n, i) => {
+                    window.staffMatchData['nat_' + i] = n.refsList;
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openRefNationModal('nat_${i}', '${n.name}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${n.name} <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa domare &rarr;</span></td>
+                        <td class="p-3 text-center font-bold text-slate-600">${n.refsList.length}</td>
+                        <td class="p-3 text-center font-black text-blue-800">${n.matchCount}</td></tr>`;
+                });
+            }
+            else if (type === 'coach_matches') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Förbundskapten</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Coachade Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let coaches = {};
+                Object.values(db.matches).forEach(m => {
+                    if (m.score.home_total === null) return; 
+                    let year = m.date.substring(0,4);
+                    [m.coaches.home, m.coaches.away].forEach(c => {
+                        let cName = c ? c.trim() : "";
+                        if (!cName || cName.toLowerCase() === "okänd" || cName === "null") return;
+                        if (!coaches[cName]) coaches[cName] = { name: cName, count: 0, years: new Set(), nations: new Set(), matches: [] };
+                        coaches[cName].count++;
+                        coaches[cName].years.add(year);
+                        coaches[cName].matches.push(m.id);
+                        coaches[cName].nations.add(c === m.coaches.home ? m.home_team : m.away_team);
+                    });
+                });
+                
+                let sorted = Object.values(coaches).sort((a,b) => b.count - a.count);
+                sorted.slice(0, 50).forEach((c, i) => {
+                    let nats = Array.from(c.nations).map(n => getMappedTeamName(n)).join(", ");
+                    let yArr = Array.from(c.years).sort();
+                    let yStr = yArr.length > 1 ? `${yArr[0]}-${yArr[yArr.length-1]}` : yArr[0];
+                    
+                    window.staffMatchData['coach_' + i] = c.matches;
+                    
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openStaffModal('${c.name.replace(/'/g, "\\'")}', 'Förbundskapten för ${nats}', 'coach_${i}', 'coaches')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(c.name)} <span class="text-xs font-normal text-slate-400 ml-2">(${nats})</span> <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${c.count} <span class="block text-[10px] text-slate-400 font-normal">${yStr}</span></td></tr>`;
+                });
+            }
+            else if (type === 'coach_tournaments') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Förbundskapten</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Turneringar</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let coaches = {};
+                Object.values(db.matches).forEach(m => {
+                    if (m.score.home_total === null) return;
+                    let year = m.date.substring(0,4);
+                    [m.coaches.home, m.coaches.away].forEach(c => {
+                        let cName = c ? c.trim() : "";
+                        if (!cName || cName.toLowerCase() === "okänd" || cName === "null") return;
+                        if (!coaches[cName]) coaches[cName] = { name: cName, years: new Set(), nations: new Set(), matches: [] };
+                        coaches[cName].years.add(year);
+                        coaches[cName].matches.push(m.id);
+                        coaches[cName].nations.add(c === m.coaches.home ? m.home_team : m.away_team);
+                    });
+                });
+                
+                let sorted = Object.values(coaches).sort((a,b) => b.years.size - a.years.size).filter(c => c.years.size > 1);
+                sorted.slice(0, 50).forEach((c, i) => {
+                    let nats = Array.from(c.nations).map(n => getMappedTeamName(n)).join(", ");
+                    let yearsStr = Array.from(c.years).sort().join(", ");
+                    
+                    window.staffMatchData['coacht_' + i] = c.matches;
+                    
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openStaffModal('${c.name.replace(/'/g, "\\'")}', 'Förbundskapten för ${nats}', 'coacht_${i}', 'coaches')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(c.name)} <span class="text-xs font-normal text-slate-400 ml-2">(${nats})</span> <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${c.years.size} <span class="block text-[10px] text-slate-400 font-normal">${yearsStr}</span></td></tr>`;
+                });
+            }
+            else if (type === 'ref_oldest' || type === 'ref_youngest') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Domare (Nation)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Match-datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Ålder</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let ageList = [];
+                Object.values(db.matches).forEach(m => {
+                    let rName = m.referee ? m.referee.trim() : "";
+                    if (!rName || rName.toLowerCase() === "okänd" || rName === "null") return;
+                    
+                    let bDate = db.staff && db.staff.referees && db.staff.referees[rName] ? db.staff.referees[rName].birth_date : null;
+                    if (!bDate || !m.date) return;
+                    
+                    let age = getAgeAtDate(bDate, m.date);
+                    if (age) {
+                        ageList.push({ name: rName, country: m.referee_country, match: m, age: age });
+                    }
+                });
+                
+                let bestMatchPerRef = {};
+                ageList.forEach(item => {
+                    if (!bestMatchPerRef[item.name]) {
+                        bestMatchPerRef[item.name] = item;
+                    } else {
+                        if (type === 'ref_oldest' && item.age.sortVal > bestMatchPerRef[item.name].age.sortVal) bestMatchPerRef[item.name] = item;
+                        if (type === 'ref_youngest' && item.age.sortVal < bestMatchPerRef[item.name].age.sortVal) bestMatchPerRef[item.name] = item;
+                    }
+                });
+                
+                let sortedList = Object.values(bestMatchPerRef).sort((a,b) => type === 'ref_oldest' ? b.age.sortVal - a.age.sortVal : a.age.sortVal - b.age.sortVal);
+                
+                sortedList.slice(0, 50).forEach((item, i) => {
+                    let isApprox = item.age.days === null;
+                    let nat = item.country && item.country !== "null" ? ` <span class="text-xs font-normal text-slate-400 ml-2">(${item.country})</span>` : "";
+                    let bYearStr = ` <span class="text-xs text-blue-400 ml-1">(Född ${db.staff.referees[item.name].birth_date.substring(0,4)})</span>`;
+                    
+                    window.staffMatchData['refo_' + i] = [item.match.id];
+                    
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openStaffModal('${formatName(item.name).replace(/'/g, "\\'")}', 'Domare', 'refo_${i}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(item.name)}${bYearStr}${nat}</td>
+                        <td class="p-3 text-center text-slate-500 text-xs">${item.match.date} <span class="block text-[9px] uppercase">${item.match.home_team}-${item.match.away_team}</span></td>
+                        <td class="p-3 text-center font-black ${type === 'ref_oldest' ? 'text-indigo-600' : 'text-teal-600'}">${item.age.text} ${isApprox ? '<span title="Endast födelseår känt" class="cursor-help text-slate-400 font-normal">*</span>' : ''}</td>
+                    </tr>`;
+                });
+                if (sortedList.length === 0) html += `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Ingen åldersdata funnen för domare.</td></tr>`;
+            }
+            else if (type === 'coach_oldest' || type === 'coach_youngest') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Förbundskapten (Lag)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Match-datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Ålder</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let ageList = [];
+                Object.values(db.matches).forEach(m => {
+                    if (m.score.home_total === null) return;
+                    
+                    let teams = [ {c: m.coaches.home, t: m.home_team}, {c: m.coaches.away, t: m.away_team} ];
+                    teams.forEach(teamObj => {
+                        let cName = teamObj.c ? teamObj.c.trim() : "";
+                        if (!cName || cName.toLowerCase() === "okänd" || cName === "null") return;
+                        
+                        let bDate = db.staff && db.staff.coaches && db.staff.coaches[cName] ? db.staff.coaches[cName].birth_date : null;
+                        if (!bDate || !m.date) return;
+                        
+                        let age = getAgeAtDate(bDate, m.date);
+                        if (age) {
+                            ageList.push({ name: cName, team: teamObj.t, match: m, age: age });
+                        }
+                    });
+                });
+                
+                let bestMatchPerCoach = {};
+                ageList.forEach(item => {
+                    if (!bestMatchPerCoach[item.name]) {
+                        bestMatchPerCoach[item.name] = item;
+                    } else {
+                        if (type === 'coach_oldest' && item.age.sortVal > bestMatchPerCoach[item.name].age.sortVal) bestMatchPerCoach[item.name] = item;
+                        if (type === 'coach_youngest' && item.age.sortVal < bestMatchPerCoach[item.name].age.sortVal) bestMatchPerCoach[item.name] = item;
+                    }
+                });
+                
+                let sortedList = Object.values(bestMatchPerCoach).sort((a,b) => type === 'coach_oldest' ? b.age.sortVal - a.age.sortVal : a.age.sortVal - b.age.sortVal);
+                
+                sortedList.slice(0, 50).forEach((item, i) => {
+                    let isApprox = item.age.days === null;
+                    let nat = item.team ? ` <span class="text-xs font-normal text-slate-400 ml-2">(${item.team})</span>` : "";
+                    let bYearStr = ` <span class="text-xs text-blue-400 ml-1">(Född ${db.staff.coaches[item.name].birth_date.substring(0,4)})</span>`;
+                    
+                    window.staffMatchData['coacho_' + i] = [item.match.id];
+                    
+                    html += `<tr class="hover:bg-blue-50 transition cursor-pointer group" onclick="openStaffModal('${formatName(item.name).replace(/'/g, "\\'")}', 'Förbundskapten', 'coacho_${i}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(item.name)}${bYearStr}${nat}</td>
+                        <td class="p-3 text-center text-slate-500 text-xs">${item.match.date} <span class="block text-[9px] uppercase">${item.match.home_team}-${item.match.away_team}</span></td>
+                        <td class="p-3 text-center font-black ${type === 'coach_oldest' ? 'text-indigo-600' : 'text-teal-600'}">${item.age.text} ${isApprox ? '<span title="Endast födelseår känt" class="cursor-help text-slate-400 font-normal">*</span>' : ''}</td>
+                    </tr>`;
+                });
+                if (sortedList.length === 0) html += `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Ingen åldersdata funnen för förbundskaptener.</td></tr>`;
             }
 
             html += '</tbody></table>';
@@ -1661,6 +2215,119 @@ def build_dashboard():
         // =========================================================
         // MODALER FÖR DELDETALJER (TURNERING/LAG/SVIT)
         // =========================================================
+        function openStaffModal(rawName, subtitle, dataKey, staffType) {
+            let fName = formatName(rawName);
+            
+            // Hämta födelseår om det finns
+            let bDate = db.staff && db.staff[staffType] && db.staff[staffType][rawName] ? db.staff[staffType][rawName].birth_date : null;
+            let bYearStr = bDate ? ` <span class="text-indigo-300 font-medium ml-2 text-lg">(född ${bDate.substring(0,4)})</span>` : "";
+            
+            let matchIds = window.staffMatchData[dataKey] || [];
+            
+            // Kolla om de har en VM-final i sin personliga klick-lista
+            let hasFinal = false;
+            if (staffType === 'referees') {
+                matchIds.forEach(id => {
+                    let m = db.matches[id];
+                    if (m && ((m.advancement && m.advancement.is_final) || String(m.phase).trim().toLowerCase() === 'final')) hasFinal = true;
+                });
+            }
+            let finIcon = hasFinal ? ` <span class="text-2xl ml-2" title="Har dömt VM-final">🏆</span>` : "";
+
+            // Skriv ut titeln i modalen (innerHTML används nu för att vi lägger till HTML-ikoner och färgad text)
+            document.getElementById('staff-modal-title').innerHTML = fName + bYearStr + finIcon;
+            document.getElementById('staff-modal-subtitle').innerText = subtitle;
+            
+            let sMatches = matchIds.map(id => db.matches[id]).filter(m => m);
+            sMatches.sort((a,b) => new Date(a.date) - new Date(b.date));
+            
+            document.getElementById('staff-modal-thead').innerHTML = `<tr><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Fas</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Hemmalag</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Res</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Bortalag</th></tr>`;
+            
+            let html = '';
+            let prevYear = '';
+            sMatches.forEach(m => {
+                let mYear = m.date.substring(0,4);
+                let rowBorder = (prevYear && prevYear !== mYear) ? 'border-t-2 border-slate-300' : 'border-t border-slate-100';
+                prevYear = mYear;
+                
+                const scClass = m.score.home_total !== null ? "font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200" : "text-slate-400 text-xs";
+                html += `
+                    <tr onclick="openMatchModal('${m.id}')" class="hover:bg-indigo-50 cursor-pointer transition group">
+                        <td class="p-3 ${rowBorder}"><div class="text-[10px] uppercase font-bold text-indigo-900">${mYear}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
+                        <td class="p-3 ${rowBorder}"><div class="text-xs text-slate-500">${m.date}</div></td>
+                        <td class="p-3 ${rowBorder} text-right font-medium text-slate-700">${m.home_team}</td>
+                        <td class="p-3 ${rowBorder} text-center"><span class="${scClass}">${formatScore(m)}</span></td>
+                        <td class="p-3 ${rowBorder} font-medium text-slate-700">${m.away_team}</td>
+                    </tr>`;
+            });
+            document.getElementById('staff-modal-list').innerHTML = html;
+            document.getElementById('staff-modal').classList.remove('hidden');
+        }
+        
+        function openRefNationModal(dataKey, nationName) {
+            document.getElementById('staff-modal-title').innerText = `Domare från ${nationName}`;
+            document.getElementById('staff-modal-subtitle').innerText = "Klicka på en domare för att se matchhistorik";
+            
+            let refsList = window.staffMatchData[dataKey] || [];
+            refsList.sort((a,b) => b.count - a.count);
+            
+            document.getElementById('staff-modal-thead').innerHTML = `<tr><th class="p-3 text-xs font-semibold text-slate-500 uppercase w-12 text-center">#</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Namn</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Dömda Matcher</th></tr>`;
+            
+            let html = '';
+            refsList.forEach((r, i) => {
+                let yArr = Array.from(r.years).sort();
+                let yStr = yArr.length > 1 ? `${yArr[0]}-${yArr[yArr.length-1]}` : yArr[0];
+                let finIcon = r.hasFinal ? ` <span class="text-base ml-1" title="Har dömt VM-final">🏆</span>` : "";
+                
+                let bDate = db.staff && db.staff.referees && db.staff.referees[r.name] ? db.staff.referees[r.name].birth_date : null;
+                let bYearStr = bDate ? ` <span class="text-xs text-blue-400 ml-1">(Född ${bDate.substring(0,4)})</span>` : "";
+                
+                // Skapa en tillfällig nyckel för just den här domarens matcher
+                let subKey = `sub_${dataKey}_${i}`;
+                window.staffMatchData[subKey] = r.matches;
+                
+                html += `
+                    <tr class="hover:bg-indigo-50 transition cursor-pointer group" onclick="openStaffModal('${formatName(r.name).replace(/'/g, "\\'")}', 'Domare (${nationName})', '${subKey}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(r.name)}${bYearStr}${finIcon} <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa matcher &rarr;</span></td>
+                        <td class="p-3 text-center font-black text-blue-800">${r.count} <span class="block text-[10px] text-slate-400 font-normal">${yStr}</span></td>
+                    </tr>`;
+            });
+            document.getElementById('staff-modal-list').innerHTML = html;
+            document.getElementById('staff-modal').classList.remove('hidden');
+        }
+        function openGeoModal(title, subtitle, dataKey) {
+            document.getElementById('staff-modal-title').innerHTML = title;
+            document.getElementById('staff-modal-subtitle').innerText = subtitle;
+            
+            let matchIds = window.staffMatchData[dataKey] || [];
+            let sMatches = matchIds.map(id => db.matches[id]).filter(m => m);
+            sMatches.sort((a,b) => new Date(a.date) - new Date(b.date));
+            
+            document.getElementById('staff-modal-thead').innerHTML = `<tr><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Fas</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Datum</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Hemmalag</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Res</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Bortalag</th></tr>`;
+            
+            let html = '';
+            let prevYear = '';
+            sMatches.forEach(m => {
+                let mYear = m.date.substring(0,4);
+                let rowBorder = (prevYear && prevYear !== mYear) ? 'border-t-2 border-slate-300' : 'border-t border-slate-100';
+                prevYear = mYear;
+                
+                const scClass = m.score.home_total !== null ? "font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200" : "text-slate-400 text-xs";
+                html += `
+                    <tr onclick="openMatchModal('${m.id}')" class="hover:bg-indigo-50 cursor-pointer transition group">
+                        <td class="p-3 ${rowBorder}"><div class="text-[10px] uppercase font-bold text-indigo-900">${mYear}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
+                        <td class="p-3 ${rowBorder}"><div class="text-xs text-slate-500">${m.date}</div></td>
+                        <td class="p-3 ${rowBorder} text-right font-medium text-slate-700">${m.home_team}</td>
+                        <td class="p-3 ${rowBorder} text-center"><span class="${scClass}">${formatScore(m)}</span></td>
+                        <td class="p-3 ${rowBorder} font-medium text-slate-700">${m.away_team}</td>
+                    </tr>`;
+            });
+            document.getElementById('staff-modal-list').innerHTML = html;
+            document.getElementById('staff-modal').classList.remove('hidden');
+        }
+        function closeStaffModal() { document.getElementById('staff-modal').classList.add('hidden'); }
+
         function openTournamentModal(year) {
             let t = db.tournaments[year];
             if (!t) return;
@@ -1752,6 +2419,8 @@ def build_dashboard():
             
             let ts=0, tv=0, to=0, tf=0, tgm=0, tim=0, tp=0;
             let listHtml = '';
+            let prevYear = '';
+            
             teamMatches.forEach(m => {
                 let isH = getMappedTeamName(m.home_team) === mappedName;
                 ts++;
@@ -1761,14 +2430,18 @@ def build_dashboard():
                 else if (ag > hg) { if(!isH) {tv++; tp+=3;} else {tf++;} }
                 else { to++; tp++; }
                 
+                let mYear = m.date.substring(0,4);
+                let rowBorder = (prevYear && prevYear !== mYear) ? 'border-t-2 border-slate-300' : 'border-t border-slate-100';
+                prevYear = mYear;
+                
                 const scClass = "font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200";
                 listHtml += `
                     <tr onclick="openMatchModal('${m.id}')" class="hover:bg-blue-50 cursor-pointer transition group">
-                        <td class="p-3 border-t border-slate-100"><div class="text-[10px] uppercase font-bold text-blue-900">${m.date.substring(0,4)}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
-                        <td class="p-3 border-t border-slate-100"><div class="text-xs text-slate-500">${m.date}</div></td>
-                        <td class="p-3 border-t border-slate-100 text-right ${isH ? 'font-black text-blue-900' : 'font-medium text-slate-500'}">${m.home_team}</td>
-                        <td class="p-3 border-t border-slate-100 text-center"><span class="${scClass}">${formatScore(m)}</span></td>
-                        <td class="p-3 border-t border-slate-100 ${!isH ? 'font-black text-blue-900' : 'font-medium text-slate-500'}">${m.away_team}</td>
+                        <td class="p-3 ${rowBorder}"><div class="text-[10px] uppercase font-bold text-blue-900">${mYear}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
+                        <td class="p-3 ${rowBorder}"><div class="text-xs text-slate-500">${m.date}</div></td>
+                        <td class="p-3 ${rowBorder} text-right ${isH ? 'font-black text-blue-900' : 'font-medium text-slate-500'}">${m.home_team}</td>
+                        <td class="p-3 ${rowBorder} text-center"><span class="${scClass}">${formatScore(m)}</span></td>
+                        <td class="p-3 ${rowBorder} ${!isH ? 'font-black text-blue-900' : 'font-medium text-slate-500'}">${m.away_team}</td>
                     </tr>`;
             });
             
@@ -1795,16 +2468,21 @@ def build_dashboard():
             sMatches.sort((a,b) => new Date(a.date) - new Date(b.date));
             
             let html = '';
+            let prevYear = '';
             sMatches.forEach(m => {
                 let isH = getMappedTeamName(m.home_team) === team;
+                let mYear = m.date.substring(0,4);
+                let rowBorder = (prevYear && prevYear !== mYear) ? 'border-t-2 border-slate-300' : 'border-t border-slate-100';
+                prevYear = mYear;
+                
                 const scClass = "font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200";
                 html += `
                     <tr onclick="openMatchModal('${m.id}')" class="hover:bg-amber-50 cursor-pointer transition group">
-                        <td class="p-3 border-t border-slate-100"><div class="text-[10px] uppercase font-bold text-amber-900">${m.date.substring(0,4)}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
-                        <td class="p-3 border-t border-slate-100"><div class="text-xs text-slate-500">${m.date}</div></td>
-                        <td class="p-3 border-t border-slate-100 text-right ${isH ? 'font-black text-amber-900' : 'font-medium text-slate-500'}">${m.home_team}</td>
-                        <td class="p-3 border-t border-slate-100 text-center"><span class="${scClass}">${formatScore(m)}</span></td>
-                        <td class="p-3 border-t border-slate-100 ${!isH ? 'font-black text-amber-900' : 'font-medium text-slate-500'}">${m.away_team}</td>
+                        <td class="p-3 ${rowBorder}"><div class="text-[10px] uppercase font-bold text-amber-900">${mYear}</div><div class="text-xs text-slate-500">${m.phase}</div></td>
+                        <td class="p-3 ${rowBorder}"><div class="text-xs text-slate-500">${m.date}</div></td>
+                        <td class="p-3 ${rowBorder} text-right ${isH ? 'font-black text-amber-900' : 'font-medium text-slate-500'}">${m.home_team}</td>
+                        <td class="p-3 ${rowBorder} text-center"><span class="${scClass}">${formatScore(m)}</span></td>
+                        <td class="p-3 ${rowBorder} ${!isH ? 'font-black text-amber-900' : 'font-medium text-slate-500'}">${m.away_team}</td>
                     </tr>`;
             });
             document.getElementById('streak-modal-matches-list').innerHTML = html;
@@ -1821,7 +2499,10 @@ def build_dashboard():
             if (!m) return;
             document.getElementById('modal-year').innerText = m.date.substring(0,4);
             document.getElementById('modal-title-center').innerText = `${m.phase} • ${m.date}`;
-            document.getElementById('modal-match-id').innerText = `Match-ID: ${m.id}`;
+            
+            let omspelText = ['31','43','44','49'].includes(String(m.id)) ? ' (Omspel)' : '';
+            document.getElementById('modal-match-id').innerText = `Match-ID: ${m.id}${omspelText}`;
+            
             document.getElementById('modal-arena').innerText = safeText(m.arena);
             document.getElementById('modal-city').innerText = safeText(m.city);
             document.getElementById('modal-attendance').innerText = m.attendance ? m.attendance.toLocaleString('sv-SE') : 'Okänt';
@@ -1971,13 +2652,13 @@ def build_dashboard():
 </body>
 </html>
 """
-
-    final_html = html_template.replace("__JSON_DATA_PLACEHOLDER__", json_str)
-
+    
+    html_template = html_template.replace("__JSON_DATA_PLACEHOLDER__", json_str)
+    
     with open(OUTPUT_HTML, 'w', encoding='utf-8') as f:
-        f.write(final_html)
+        f.write(html_template)
         
-    print(f"✅ Dashboard framgångsrikt uppgraderad till version med Turneringsvyer och Matrix!")
+    print(f"✅ Hemsidan har byggts! Öppna '{OUTPUT_HTML}' i din webbläsare.")
 
 if __name__ == "__main__":
     build_dashboard()

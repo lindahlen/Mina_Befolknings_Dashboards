@@ -3,6 +3,8 @@ import sys
 import pandas as pd
 import numpy as np
 import json
+import re
+import unicodedata
 
 # =========================================================
 # 1. GENERELL SETUP & SÖKVÄGSHANTERING
@@ -51,6 +53,17 @@ def build_database():
         df_namn = clean_dataframe(pd.read_excel(EXCEL_FILE, sheet_name='Namn'))
         df_trupper = clean_dataframe(pd.read_excel(EXCEL_FILE, sheet_name='Trupper'))
         
+        # Nya flikar för Domare och Förbundskaptener
+        try:
+            df_domare = clean_dataframe(pd.read_excel(EXCEL_FILE, sheet_name='Domare'))
+        except Exception:
+            df_domare = pd.DataFrame()
+            
+        try:
+            df_coaches = clean_dataframe(pd.read_excel(EXCEL_FILE, sheet_name='Förbundskaptener'))
+        except Exception:
+            df_coaches = pd.DataFrame()
+        
         if list(df_matcher.columns).count('HSM') > 1:
             cols = list(df_matcher.columns)
             cols[cols.index('HSM', cols.index('HSM') + 1)] = 'BSM'
@@ -69,8 +82,17 @@ def build_database():
         "matches": {},
         "team_mappings": {},  
         "players": {},
-        "placements": {} # NY MATRIS: För placeringar per år
+        "placements": {},
+        "staff": { "referees": {}, "coaches": {} } # NYTT: Åldersdata för personal
     }
+
+    missing_players_dict = {}
+    def add_missing(name, reason, extra_info=""):
+        if name not in missing_players_dict:
+            missing_players_dict[name] = {"Namn": name, "Källa": set(), "Info": set()}
+        missing_players_dict[name]["Källa"].add(reason)
+        if extra_info:
+            missing_players_dict[name]["Info"].add(extra_info)
 
     # -- 3A. FÖRBERED UPPSLAGSVERK OCH MAPPNING --
     try:
@@ -89,6 +111,44 @@ def build_database():
     valid_names = set(df_namn['Namn'].astype(str).str.strip())
     valid_names.discard("")
     valid_names.discard("None")
+
+    # Kolla efter snarlika namn i 'Namn'-fliken
+    normalized_names = {}
+    for name in valid_names:
+        norm = ''.join(c for c in unicodedata.normalize('NFD', name) if unicodedata.category(c) != 'Mn')
+        norm = re.sub(r'[^a-zA-Z]', '', norm).lower()
+        if norm not in normalized_names:
+            normalized_names[norm] = []
+        normalized_names[norm].append(name)
+        
+    for norm, originals in normalized_names.items():
+        if len(originals) > 1:
+            db["admin_warnings"].append(f"Snarlika namn (Dublettrisk): {', '.join(originals)} är väldigt lika i 'Namn'-fliken.")
+
+    # -- Hämta åldersdata för Domare och Förbundskaptener --
+    if not df_domare.empty:
+        for _, row in df_domare.iterrows():
+            namn = str(row.get('Domare', '')).strip()
+            if not namn: continue
+            fodd_val = row.get('Födelsedatum', row.get('Födelseår', ''))
+            fodd_str = ""
+            if pd.notnull(fodd_val) and str(fodd_val) != "" and str(fodd_val) != "None":
+                if hasattr(fodd_val, 'strftime'): fodd_str = fodd_val.strftime('%Y-%m-%d')
+                else: fodd_str = str(fodd_val).strip().replace(" 00:00:00", "")
+            if fodd_str:
+                db["staff"]["referees"][namn] = {"birth_date": fodd_str}
+
+    if not df_coaches.empty:
+        for _, row in df_coaches.iterrows():
+            namn = str(row.get('FK_Namn', '')).strip()
+            if not namn: continue
+            fodd_val = row.get('Födelsedatum', row.get('Födelseår', ''))
+            fodd_str = ""
+            if pd.notnull(fodd_val) and str(fodd_val) != "" and str(fodd_val) != "None":
+                if hasattr(fodd_val, 'strftime'): fodd_str = fodd_val.strftime('%Y-%m-%d')
+                else: fodd_str = str(fodd_val).strip().replace(" 00:00:00", "")
+            if fodd_str:
+                db["staff"]["coaches"][namn] = {"birth_date": fodd_str}
 
     # Extrahera födelsedatum
     player_birth_info = {}
@@ -124,7 +184,31 @@ def build_database():
             if 'mv' in t_anm: player_squad_info[t_namn]["is_gk"] = True
 
     for p_name, s_info in player_squad_info.items():
-        if p_name not in valid_names: continue
+        if p_name not in valid_names: 
+            nat_str = ", ".join(s_info["nations"])
+            yr_str = ", ".join(sorted(list(s_info["years"])))
+            db["admin_warnings"].append(f"Saknas i 'Namn': Nya trupp-spelaren '{p_name}' ({nat_str}, {yr_str})")
+            add_missing(p_name, "Trupper", f"{nat_str} ({yr_str})")
+            continue
+            
+        # Kolla tidsgap för samma namn
+        years_ints = sorted([safe_int(y) for y in s_info["years"] if safe_int(y) is not None])
+        if len(years_ints) >= 2:
+            total_gap = years_ints[-1] - years_ints[0]
+            if total_gap > 16:  
+                max_consecutive_gap = 0
+                for i in range(1, len(years_ints)):
+                    diff = years_ints[i] - years_ints[i-1]
+                    if years_ints[i-1] == 1938 and years_ints[i] == 1950:
+                        diff = 4
+                    if diff > max_consecutive_gap:
+                        max_consecutive_gap = diff
+                        
+                if total_gap <= 20 and max_consecutive_gap <= 4:
+                    pass 
+                else:
+                    db["admin_warnings"].append(f"Tidsgap-varning: Namnet '{p_name}' sträcker sig över {total_gap} år (från {years_ints[0]} till {years_ints[-1]}). Kontrollera om det är två olika personer.")
+
         fodd = player_birth_info.get(p_name, "")
         db["players"][p_name] = {
             "name": p_name,
@@ -237,7 +321,7 @@ def build_database():
                 "away_ht": bm1,
                 "home_ft": home_ft,  
                 "away_ft": away_ft,
-                "home_et": hfm,      # Använder nu faktiska förlängningsmål!
+                "home_et": hfm,      
                 "away_et": bfm,  
                 "home_pen": safe_int(row.get('HSM')),
                 "away_pen": safe_int(row.get('BSM'))
@@ -251,6 +335,7 @@ def build_database():
         name = str(row['Målskytt']).strip()
         if name and name.lower() not in ["självmål", "okänd"] and name not in valid_names:
             db["admin_warnings"].append(f"Saknas i 'Namn': Målskytt '{name}' (Match {match_id})")
+            add_missing(name, "Målskytt", f"Match {match_id}")
         if match_id in db["matches"]:
             db["matches"][match_id]["events"]["goals"].append({
                 "player": name, "team": str(row['Land']), "minute": str(row['Minut']),
@@ -262,6 +347,7 @@ def build_database():
         name = str(row['Namn']).strip()
         if name and name not in valid_names:
             db["admin_warnings"].append(f"Saknas i 'Namn': Utvisad spelare '{name}' (Match {match_id})")
+            add_missing(name, "Utvisning", f"Match {match_id}")
         if match_id in db["matches"]:
             db["matches"][match_id]["events"]["cards"].append({"player": name, "minute": str(row['Minut']), "type": "Red"})
             
@@ -270,6 +356,7 @@ def build_database():
         name = str(row['Namn']).strip()
         if name and name not in valid_names:
             db["admin_warnings"].append(f"Saknas i 'Namn': Straffskytt '{name}' (Match {match_id})")
+            add_missing(name, "Straffskytt", f"Match {match_id}")
         if match_id in db["matches"]:
             db["matches"][match_id]["events"]["penalties"].append({
                 "penalty_nr": safe_int(row['Straff_NR']), "player": name, "team": str(row['Land']),
@@ -297,6 +384,7 @@ def build_database():
         
         if name and name not in valid_names:
             db["admin_warnings"].append(f"Saknas i 'Namn': Laguppst. '{name}' (Match {m_id})")
+            add_missing(name, "Laguppställning", f"Match {m_id}")
             
         actual_team = db["matches"][m_id]["home_team"] if t_key == "home" else db["matches"][m_id]["away_team"]
         year = db["matches"][m_id]["date"][:4]
@@ -323,7 +411,6 @@ def build_database():
         })
         
     for m_id, teams in temp_lineups.items():
-        # Fånga röda kort och mål innan vi stänger laguppställningen
         red_cards = {}
         for rc in db["matches"][m_id]["events"]["cards"]:
             if rc["type"] == "Red": red_cards[rc["player"].strip()] = safe_int(rc["minute"])
@@ -382,8 +469,8 @@ def build_database():
                     "sub": ", ".join(sub_parts), 
                     "captain": p["captain"],
                     "card": p["card"],
-                    "red_card_minute": red_cards.get(p_name_clean),  # NYTT!
-                    "goals": match_goals.get(p_name_clean, 0),       # NYTT!
+                    "red_card_minute": red_cards.get(p_name_clean),  
+                    "goals": match_goals.get(p_name_clean, 0),       
                     "minute": p["played_mins"]
                 })
 
@@ -548,7 +635,6 @@ def build_database():
         debutants = 0
         for p_name in t_players:
             p_obj = db["players"].get(p_name)
-            # Spelaren debuterade om detta är den första turneringen de faktiskt fick minuter i
             if p_obj and p_obj["tournaments"] and p_obj["tournaments"][0] == year:
                 debutants += 1
                 
@@ -579,6 +665,20 @@ def build_database():
         json.dump(db, f, ensure_ascii=False, indent=2)
         
     print(f"✅ JSON-databas uppdaterad med Turneringsöversikt, Laguppställnings-mål & Placeringsmatris!")
+
+    # -- 3I. EXPORTERA SAKNADE SPELARE TILL CSV --
+    if missing_players_dict:
+        export_list = []
+        for name, data in missing_players_dict.items():
+            export_list.append({
+                "Namn": name,
+                "Saknas i (Källa)": ", ".join(sorted(list(data["Källa"]))),
+                "Extra info": ", ".join(sorted(list(data["Info"])))
+            })
+        df_missing = pd.DataFrame(export_list)
+        missing_file = os.path.join(EXCEL_DIR, "Saknade_Spelare_Export.csv")
+        df_missing.to_csv(missing_file, index=False, encoding='utf-8-sig', sep=';')
+        print(f"⚠️ Hittade {len(export_list)} saknade spelare. Listan har sparats till: {missing_file}")
 
 if __name__ == "__main__":
     build_database()
