@@ -1,28 +1,28 @@
 {
   "metadata": {
     "title": "Fotbolls-VM Historik 1930-",
-    "last_updated": "2026-06-14"
+    "last_updated": "2026-06-15"
   },
   "admin_warnings": [
-    "Snarlika namn (Dublettrisk): Paulo Sérgio, Paulo Sergio är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Perez, Hugo, Pérez, Hugo är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Ooijer, Andre, Ooijer, André är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): El-Khalej, Tahar, El Khalej, Tahar är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Suarez, Luis, Suárez, Luis är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Weiss, Vladimír, Weiss, Vladimir är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Otamendi, Nicolas, Otamendi, Nicolás är väldigt lika i 'Namn'-fliken.",
     "Snarlika namn (Dublettrisk): Sosa, Rubén, Sosa, Rúben är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Paulo Sérgio, Paulo Sergio är väldigt lika i 'Namn'-fliken.",
     "Snarlika namn (Dublettrisk): Gomez, Gabriel, Gómez, Gabriel är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Sanchez, Carlos, Sánchez, Carlos är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Otamendi, Nicolás, Otamendi, Nicolas är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Kozak, Jan 1, Kozak, Jan är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Marin, Luís, Marin, Luis, Marín, Luis är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Rodríguez, Alberto, Rodriguez, Alberto är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Pérez, Luís, Pérez, Luis är väldigt lika i 'Namn'-fliken.",
     "Snarlika namn (Dublettrisk): Pak Nam-chol 2, Pak Nam-chol är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Ooijer, André, Ooijer, Andre är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Suarez, Luis, Suárez, Luis är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Pérez, Hugo, Perez, Hugo är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Kozak, Jan 1, Kozak, Jan är väldigt lika i 'Namn'-fliken.",
     "Snarlika namn (Dublettrisk): Kim Bok-yung, Kim Bo-kyung är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Andre, André är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Rodríguez, Alberto, Rodriguez, Alberto är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): El Khalej, Tahar, El-Khalej, Tahar är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Pérez, Luis, Pérez, Luís är väldigt lika i 'Namn'-fliken.",
     "Snarlika namn (Dublettrisk): Rodríguez, Ignacio, Rodriguez, Ignacio är väldigt lika i 'Namn'-fliken.",
-    "Saknas i 'Namn': Nya trupp-spelaren ',' (Cuba, Rumänien, Marocko, Egypten, Brasilien, Frankrike, USA, Bolivia, Mexico, Chile, England, Serbien, Argentina, Belgien, El Salvador, 1930, 1934, 1938, 1950, 1970, 1982)",
+    "Snarlika namn (Dublettrisk): André, Andre är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Weiss, Vladimir, Weiss, Vladimír är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Sanchez, Carlos, Sánchez, Carlos är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Marin, Luís, Marín, Luis, Marin, Luis är väldigt lika i 'Namn'-fliken.",
+    "Saknas i 'Namn': Nya trupp-spelaren ',' (Marocko, Argentina, Serbien, Egypten, Brasilien, Bolivia, Mexico, Chile, Belgien, Cuba, El Salvador, USA, Frankrike, England, Rumänien, 1930, 1934, 1938, 1950, 1970, 1982)",
     "Saknas i 'Namn': Nya trupp-spelaren 'Joel, Monteiro' (Brasilien, 1930)",
     "Saknas i 'Namn': Nya trupp-spelaren 'Brilhante, Alfredo' (Brasilien, 1930)",
     "Saknas i 'Namn': Nya trupp-spelaren 'Itália, Luiz' (Brasilien, 1930)",
@@ -3824,13 +3824,7 @@
     "Saknas i 'Namn': Laguppst. 'Fofana, Youssouf' (Match 964)",
     "Saknas i 'Namn': Laguppst. 'Thuram, Marcus' (Match 964)",
     "Saknas i 'Namn': Laguppst. 'Konaté, Ibrahima' (Match 964)",
-    "Saknas i 'Namn': Laguppst. 'Disasi, Axel' (Match 964)",
-    "Logikfel: Match 887 slutade med seger för Ryssland, men Avancerade-koden säger att Spanien gick vidare/vann.",
-    "Logikfel (Slutspel): Tyskland spelar i match 34 trots utslagning i match 32.",
-    "Logikfel (Slutspel): Österrike spelar i match 34 trots utslagning i match 33.",
-    "Logikfel (Slutspel): Tyskland avancerade från match 34 men saknar efterföljande match år 1934.",
-    "Logikfel (Slutspel): Ryssland spelar i match 896 trots utslagning i match 887.",
-    "Logikfel (Slutspel): Spanien avancerade från match 887 men saknar efterföljande match år 2018."
+    "Saknas i 'Namn': Laguppst. 'Disasi, Axel' (Match 964)"
   ],
   "tournaments": {
     "1930": {
@@ -16777,13 +16771,13 @@
         "away": "Meisl, Hugo"
       },
       "advancement": {
-        "code": 1,
-        "text": "Hemmalaget avancerade",
+        "code": 15,
+        "text": "Vinnare i match om 3:e pris; Hemmalaget",
         "advancing_team": "Tyskland",
         "is_group_match": false,
         "points_for_win": null,
         "is_final": false,
-        "is_bronze": false
+        "is_bronze": true
       },
       "score": {
         "home_total": 3,
@@ -30530,13 +30524,13 @@
         "away": "Eizaguirre, Guillermo"
       },
       "advancement": {
-        "code": 12,
-        "text": "Gruppspel, Finalomgång 2 poäng för seger, likställs med match om 3:e pris och final (Summeras ihop med 11)",
-        "advancing_team": null,
-        "is_group_match": true,
-        "points_for_win": 2,
+        "code": 15,
+        "text": "Vinnare i match om 3:e pris; Hemmalaget",
+        "advancing_team": "Sverige",
+        "is_group_match": false,
+        "points_for_win": null,
         "is_final": false,
-        "is_bronze": false
+        "is_bronze": true
       },
       "score": {
         "home_total": 3,
@@ -340385,9 +340379,9 @@
         "away": "Tjertjesov, Stanislav"
       },
       "advancement": {
-        "code": 1,
-        "text": "Hemmalaget avancerade",
-        "advancing_team": "Spanien",
+        "code": 2,
+        "text": "Bortalaget avancerade",
+        "advancing_team": "Ryssland",
         "is_group_match": false,
         "points_for_win": null,
         "is_final": false,

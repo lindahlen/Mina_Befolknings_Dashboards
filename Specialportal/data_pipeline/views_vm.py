@@ -30,6 +30,7 @@ def build_dashboard():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Jimmy Lindahl">
     <title>Fotbolls-VM Historik</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -72,7 +73,12 @@ def build_dashboard():
         
         <!-- FLIK 1: Turneringar -->
         <div id="tab-turneringar" class="tab-content">
-            <h2 class="text-2xl font-bold mb-6 text-slate-700">Turneringar genom tiderna</h2>
+            <div class="flex items-center gap-3 mb-6">
+                <h2 class="text-2xl font-bold text-slate-700">Turneringar genom tiderna</h2>
+                <button onclick="openTournamentModal('all')" class="bg-blue-100 text-blue-800 hover:bg-blue-200 p-1.5 px-3 rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm border border-blue-200" title="Visa allmän sammanställning för samtliga turneringar">
+                    📊 VM-slutspel totalt
+                </button>
+            </div>
             <div id="tournaments-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
         </div>
 
@@ -400,6 +406,7 @@ def build_dashboard():
                         <select id="top-type-filter" onchange="renderTopList()" class="p-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 w-full sm:w-1/2">
                             <option value="matches">Flest spelade matcher</option>
                             <option value="goals">Flest mål (exkl. straffar)</option>
+                            <option value="matches_scored">Mål i flest antal matcher</option>
                             <option value="tournaments">Flest spelade turneringar</option>
                             <option value="tournaments_squad">Flest turneringar i trupp</option>
                             <option value="yellow">Flest varningar (Gula kort)</option>
@@ -425,7 +432,7 @@ def build_dashboard():
                 </div>
                 <div class="w-full md:w-1/2">
                     <select id="staff-top-type" onchange="renderStaffData()" class="w-full p-3 border border-slate-300 rounded-lg shadow-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="ref_matches">Domare: Flest döma matcher</option>
+                        <option value="ref_matches">Domare: Flest dömda matcher</option>
                         <option value="ref_nations">Domare: Nationer med flest domare</option>
                         <option value="ref_oldest">Domare: Äldsta</option>
                         <option value="ref_youngest">Domare: Yngsta</option>
@@ -1326,19 +1333,26 @@ def build_dashboard():
             const type = document.getElementById('team-top-type').value;
             const container = document.getElementById('team-top-results');
             
+            // FIX: Flytta scroll-egenskaperna dynamiskt så att "sticky"-huvudet fungerar
+            if (type === 'placements') {
+                container.classList.remove('max-h-[65vh]', 'overflow-auto');
+            } else {
+                container.classList.add('max-h-[65vh]', 'overflow-auto');
+            }
+            
             if (type === 'placements') {
                 let years = Object.keys(db.tournaments).sort((a,b) => a - b);
                 let validTeams = Object.keys(db.placements).sort();
                 if (nation !== 'all') validTeams = validTeams.filter(t => t === nation);
 
                 let html = `
-                <div id="top-scroll" class="hidden md:block" style="overflow-x: auto; overflow-y: hidden; height: 16px; margin-bottom: 2px;" onscroll="document.getElementById('bottom-scroll').scrollLeft = this.scrollLeft;">
+                <div id="top-scroll" class="hidden md:block bg-white" style="overflow-x: auto; overflow-y: hidden; height: 16px;" onscroll="const bs = document.getElementById('bottom-scroll'); if(bs) bs.scrollLeft = this.scrollLeft;">
                     <div id="top-scroll-inner" style="height: 1px;"></div>
                 </div>
-                <div id="bottom-scroll" style="overflow-x: auto;" onscroll="document.getElementById('top-scroll').scrollLeft = this.scrollLeft;">
+                <div id="bottom-scroll" class="max-h-[65vh] overflow-auto w-full" onscroll="const ts = document.getElementById('top-scroll'); if(ts) ts.scrollLeft = this.scrollLeft;">
                 <table class="w-full text-left border-collapse" id="matrix-table">
-                <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 z-10"><tr>
-                <th class="p-3 text-xs font-semibold text-slate-500 uppercase sticky left-0 bg-slate-50 z-20 shadow-[1px_0_0_0_#e2e8f0]">Nation</th>`;
+                <thead class="bg-slate-50 sticky top-0 border-b border-slate-200 z-20"><tr>
+                <th class="p-3 text-xs font-semibold text-slate-500 uppercase sticky left-0 top-0 bg-slate-50 z-30 shadow-[1px_0_0_0_#e2e8f0]">Nation</th>`;
                 
                 years.forEach(y => html += `<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center min-w-[50px]">${y.substring(2)}</th>`);
                 html += '</tr></thead><tbody class="divide-y divide-slate-100">';
@@ -1567,7 +1581,7 @@ def build_dashboard():
                     if (!cities[c]) cities[c] = { city: c, count: 0, att: 0, matches: [] };
                     cities[c].count++;
                     cities[c].matches.push(m.id);
-                    if (m.attendance) cities[c].att += m.attendance;
+                    if (m.attendance) cities[c].att += m.attendance;    
                 });
                 let sorted = Object.values(cities).sort((a,b) => b.att - a.att || b.count - a.count);
                 sorted.slice(0, 50).forEach((item, i) => {
@@ -1866,6 +1880,47 @@ def build_dashboard():
                     let yearStr = yearsArr.length > 1 ? `${yearsArr[0]}-${yearsArr[yearsArr.length-1]}` : (yearsArr.length === 1 ? yearsArr[0] : '');
                     let yearsDisplay = yearStr ? ` <span class="text-xs font-normal text-slate-400 ml-1">(${yearStr})</span>` : '';
                     html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openPlayerProfile('${p.name.replace(/'/g, "\\'")}')"><td class="p-3 text-center font-bold text-slate-400">${i+1}</td><td class="p-3 font-bold text-slate-700">${formatName(p.name)}${p.is_gk ? ' <span class="text-[10px] text-slate-400">(mv)</span>' : ''}${yearsDisplay} <span class="text-xs font-normal text-slate-400 block sm:inline sm:ml-2">${p.nations.join(', ')}</span></td><td class="p-3 text-center font-black text-emerald-600">${p.goals}</td></tr>`;
+                });
+            }
+            else if (type === 'matches_scored') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Nätat i antal matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let scorerStats = [];
+                players.forEach(p => {
+                    if (p.goals === 0) return; 
+                    
+                    let matchesWithGoals = 0;
+                    let goalYears = new Set();
+                    
+                    p.match_list.forEach(mId => {
+                        let m = db.matches[mId];
+                        if (!m || !m.events || !m.events.goals) return;
+                        
+                        let scoredInMatch = m.events.goals.some(g => g.player.trim() === p.name);
+                        if (scoredInMatch) {
+                            matchesWithGoals++;
+                            goalYears.add(m.date.substring(0,4));
+                        }
+                    });
+                    
+                    if (matchesWithGoals > 0) {
+                        scorerStats.push({ p: p, matchCount: matchesWithGoals, years: goalYears });
+                    }
+                });
+                
+                // Sortera på antal nätade matcher, vid lika: flest totala mål, sedan namn
+                scorerStats.sort((a, b) => b.matchCount - a.matchCount || b.p.goals - a.p.goals);
+                
+                scorerStats.slice(0, 50).forEach((item, i) => {
+                    let p = item.p;
+                    let yArr = Array.from(item.years).sort();
+                    let yStr = yArr.length > 1 ? `${yArr[0]}-${yArr[yArr.length-1]}` : (yArr.length === 1 ? yArr[0] : '');
+                    
+                    html += `<tr class="hover:bg-blue-50 cursor-pointer transition group" onclick="openPlayerProfile('${p.name.replace(/'/g, "\\'")}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${formatName(p.name)} <span class="text-[10px] text-slate-400 ml-2 group-hover:text-blue-500 transition">Visa profil &rarr;</span> <span class="text-xs font-normal text-slate-400 block sm:inline sm:ml-2">${p.nations.join(', ')}</span></td>
+                        <td class="p-3 text-center font-black text-emerald-600">${item.matchCount} <span class="block text-[10px] text-slate-500 font-medium">Totalt ${p.goals} mål <span class="font-normal">(${yStr})</span></span></td>
+                    </tr>`;
                 });
             }
             else if (type === 'tournaments') {
@@ -2329,6 +2384,116 @@ def build_dashboard():
         function closeStaffModal() { document.getElementById('staff-modal').classList.add('hidden'); }
 
         function openTournamentModal(year) {
+            // Hämta elementen för rutan "Mästarnas Ledare" för att kunna anpassa rubrikerna dynamiskt
+            const leaderBox = document.getElementById('tm-coach').closest('.bg-slate-50');
+            const boxTitle = leaderBox.querySelector('h4');
+            const label1 = document.getElementById('tm-coach').previousElementSibling;
+            const label2 = document.getElementById('tm-captain').previousElementSibling;
+            const matchBtn = document.getElementById('tm-btn-matches');
+
+            // ---------------------------------------------------------
+            // UTGÅNGSLÄGE: SAMTLIGA TURNERINGAR (TOTALSUMMA)
+            // ---------------------------------------------------------
+            if (year === 'all') {
+                let winners = {};
+                let maxYear = 0, minYear = 9999;
+                let s = {
+                    matches_played: 0, total_goals: 0, total_attendance: 0,
+                    goals_h1: 0, goals_h2: 0, goals_et: 0, matches_et: 0,
+                    goals_pen: 0, matches_pen: 0, debutants: 0
+                };
+                
+                // Loopa igenom alla turneringar i databasen för att ackumulera statistik
+                Object.keys(db.tournaments).forEach(y => {
+                    let tNum = parseInt(y);
+                    if (tNum > maxYear) maxYear = tNum;
+                    if (tNum < minYear) minYear = tNum;
+                    
+                    let t = db.tournaments[y];
+                    if (t.winner && t.winner !== 'Okänd') {
+                        winners[t.winner] = (winners[t.winner] || 0) + 1;
+                    }
+                    if (t.stats) {
+                        let ts = t.stats;
+                        s.matches_played += ts.matches_played || 0;
+                        s.total_goals += ts.total_goals || 0;
+                        s.total_attendance += ts.total_attendance || 0;
+                        s.goals_h1 += ts.goals_h1 || 0;
+                        s.goals_h2 += ts.goals_h2 || 0;
+                        s.goals_et += ts.goals_et || 0;
+                        s.matches_et += ts.matches_et || 0;
+                        s.goals_pen += ts.goals_pen || 0;
+                        s.matches_pen += ts.matches_pen || 0;
+                        s.debutants += ts.debutants || 0;
+                    }
+                });
+                
+                // Räkna ut vem som vunnit flest gångerhistoriskt
+                let topWinner = "-";
+                let maxWins = 0;
+                Object.entries(winners).forEach(([w, count]) => {
+                    if (count > maxWins) { maxWins = count; topWinner = `${w} (${count} titlar)`; }
+                });
+                
+                // Fyll i grundinfon i modalen
+                document.getElementById('tm-year').innerText = "Alla Turneringar";
+                document.getElementById('tm-host').innerText = `${minYear} - ${maxYear}`;
+                document.getElementById('tm-winner').innerText = topWinner;
+                
+                // Anpassa "Mästerskapsöversikten" i vänstra rutan
+                boxTitle.innerText = "Mästerskap Översikt";
+                label1.innerText = "Antal Turneringar";
+                label2.innerText = "Mesta Mästare";
+                document.getElementById('tm-coach').innerText = Object.keys(db.tournaments).length + " st";
+                document.getElementById('tm-captain').innerText = topWinner;
+                
+                // Fyll i turneringen i siffror (All-time)
+                document.getElementById('tm-matches').innerText = s.matches_played;
+                document.getElementById('tm-goals').innerText = s.total_goals;
+                document.getElementById('tm-avg-goals').innerText = s.matches_played > 0 ? (s.total_goals / s.matches_played).toFixed(2) : "0.00";
+                document.getElementById('tm-avg-att').innerText = s.matches_played > 0 && s.total_attendance > 0 ? Math.round(s.total_attendance / s.matches_played).toLocaleString('sv-SE') : "0";
+                
+                document.getElementById('tm-g-h1').innerText = s.goals_h1;
+                document.getElementById('tm-g-h2').innerText = s.goals_h2;
+                document.getElementById('tm-g-et').innerText = `${s.goals_et} (${s.matches_et} m)`;
+                document.getElementById('tm-g-pen').innerText = `${s.goals_pen} (${s.matches_pen} m)`;
+                
+                // All-time spelarfakta extraherat direkt ur spelardatabasen
+                let allPlayers = Object.values(db.players);
+                let activePlayersCount = allPlayers.filter(p => p.matches_played > 0).length;
+                let uniqueScorersCount = allPlayers.filter(p => p.goals > 0).length;
+                
+                document.getElementById('tm-p-used').innerText = activePlayersCount.toLocaleString('sv-SE');
+                document.getElementById('tm-p-debut').innerText = s.debutants.toLocaleString('sv-SE'); 
+                document.getElementById('tm-p-scorers').innerText = uniqueScorersCount.toLocaleString('sv-SE');
+                
+                // Räkna ut den historiska skyttekungen över alla VM
+                let maxGoals = 0;
+                let topScorers = [];
+                allPlayers.forEach(p => {
+                    if (p.goals > maxGoals) { maxGoals = p.goals; topScorers = [p]; }
+                    else if (p.goals === maxGoals && maxGoals > 0) { topScorers.push(p); }
+                });
+                
+                if (topScorers.length > 0) {
+                    document.getElementById('tm-p-top').innerText = topScorers.map(p => `${formatName(p.name)} (${p.goals})`).join(', ');
+                } else {
+                    document.getElementById('tm-p-top').innerText = '-';
+                }
+                
+                matchBtn.classList.add('hidden'); // Dölj match-knappen då den ej är relevant för alla år
+                document.getElementById('tournament-modal').classList.remove('hidden');
+                return; // Avbryt här så vi inte kör den vanliga årslogiken nedan
+            }
+
+            // ---------------------------------------------------------
+            // LÄGE: ENSKILD TURNERING (ÅTERSTÄLL ETIKETTER & LEDARE)
+            // ---------------------------------------------------------
+            boxTitle.innerText = "Mästarnas Ledare";
+            label1.innerText = "Förbundskapten";
+            label2.innerText = "Lagkapten (Final)";
+            matchBtn.classList.remove('hidden');
+
             let t = db.tournaments[year];
             if (!t) return;
             
