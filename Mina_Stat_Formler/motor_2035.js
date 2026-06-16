@@ -135,28 +135,40 @@ window.infoTexts = {
                   <li><b>Pendling:</b> Manuella justeringar utöver det historiska snittet och bransch-simuleringarna.</li>
                   <li><b>Grannkommuner:</b> Klicka på den närmaste lilla diagram-ikonen här bredvid för att analysera grannkommunernas demografiska potential fram till ${window.PROGNOS_SLUTAR}. Uppgifter från SCB:s regionala prognos</li>
                   <li><b>Jämförelsekommuner:</b> Klicka på den lila vågskåls-ikonen för att analysera några jämförelsekommuners demografiska potential fram till ${window.PROGNOS_SLUTAR}. Uppgifter från SCB:s regionala prognos.</li>
-                  <li><b>Regionförstoring:</b> Bygger på en tyngdkraftsmodell. Om du minskar restiden (t.ex. -10 min via Ostlänken), räknar modellen om avståndet till kranskommunerna och tillgängliggör automatiskt tusentals "virtuella" arbetstagare som nu hamnar inom pendlingsbart avstånd.</li></ul>` 
+                  <li><b>Regionförstoring:</b> Bygger på en tyngdkraftsmodell. Om du minskar restiden (t.ex. -10 min via Ostlänken), räknar modellen om avståndet till kranskommunerna och tillgängliggör automatiskt tusentals "virtuella" arbetstagare som nu hamnar inom pendlingsbart avstånd.</li>
+        </ul>
+
+        <div class="p-3 bg-amber-50 rounded border-l-4 border-amber-500 text-amber-900 text-xs mt-2 space-y-1">
+            <p class="font-bold uppercase tracking-wider text-[10px] text-amber-700">Viktigt vid simulering:</p>
+            <p class="leading-relaxed">Eftersom reglagen är sammankopplade i bakgrunden innebär en höjning av <i>Regionförstoring</i> att basnivån för inpendling skruvas upp automatiskt. <b>Var därför försiktig med att justera båda reglagen kraftigt samtidigt</b>, då det finns stor risk att du dubbelräknar effekten och skapar ett orealistiskt extremscenario.</p>
+        </div>
+    </div>`
     },
+    // FIXAT: Lagat trasiga HTML-taggar och avslutat meningen för branschglidning
     'shocker': { 
         title: 'Näringslivsjustering & Branschglidning', 
-        content: `<p>Näringslivets strukturomvandling är ett avancerat simuleringsblock som styrs via två separata flikar <em>Näringslivsjustering</em> i Excel-filen, och skalanivån (hur stor genomslaget är) styrs via parametern <em>Näringslivsjustering_skala</em> i scenariefliken.</p><p><b>Branschglidning:</b> Systemet är förberett för att tillämpa "                  <ul class="list-disc pl-5 space-y-2">
-                  <ul class="list-disc pl-5 space-y-2">
-                  <li><b>Bosättningskvot:</b> Kalkylatorn tittar på vilken bransch som växer, analyserar dess historiska 10-årssnitt för hur stor andel av personalen som bor i Linköping, och delar automatiskt upp de nya jobben i "Lokal Efterfrågan" vs "Ny Inpendling". Skalfaktorn i scenariot kan påverka denna kvot.</li>
-                  <li><b>Branschglidning (Kannibalisering):</b> Om Bransch A växer kraftigt, räknar systemet ut hur stor andel personal den "stjäl" från Bransch B, och gör automatiskt ett avdrag från Bransch B:s total.</li></ul>` 
+        content: `<p class="mb-2">Näringslivets strukturomvandling är ett avancerat simuleringsblock som styrs via två separata flikar: <em>Näringslivsjustering</em> i Excel-filen, medan skalanivån (hur stort genomslaget är) styrs via parametern <em>Näringslivsjustering_skala</em> i scenariefliken.</p>
+                  <p class="mb-2"><b>Branschglidning:</b> Systemet är förberett för att tillämpa marknadsdynamik via följande mekanismer:</p>
+                  <ul class="list-disc pl-5 space-y-1 text-xs">
+                      <li><b>Bosättningskvot:</b> Kalkylatorn tittar på vilken bransch som växer, analyserar dess historiska 10-årssnitt för hur stor andel av personalen som bor i Linköping, och delar automatiskt upp de nya jobben i "Lokal Efterfrågan" vs "Ny Inpendling". Skalfaktorn i scenariot kan påverka denna kvot.</li>
+                      <li><b>Branschglidning (Kannibalisering):</b> Om Bransch A växer kraftigt, räknar systemet ut hur stor andel personal den "stjäl" från Bransch B, och gör automatiskt ett avdrag från Bransch B:s total.</li>
+                  </ul>` 
     },
+
+    // FIXAT: Rensat bort dubbletten, bara en ren 'diagram'-nyckel kvar
     'diagram': { 
         title: 'Utvecklingsdiagram & Analys', 
         content: `<p>I rullistan kan du djupdyka i arbetsmarknaden (Utbildningsnivå, Kön, Ursprung, Bransch). Använd kryssrutorna för att få grafen att utgå från 0 (mer visuell korrekthet) eller för att dela y-axeln på vänster/höger sida för lättare jämförelse mellan stora och små volymer.</p>` 
     },
-    'diagram': { 
-        title: 'Utvecklingsdiagram & Analys', 
-        content: `<p>I rullistan kan du djupdyka i arbetsmarknaden (Utbildningsnivå, Kön, Ursprung, Bransch). Använd kryssrutorna för att få grafen att utgå från 0 (mer visuell korrekthet) eller för att dela y-axeln på vänster/höger sida för lättare jämförelse mellan stora och små volymer.</p>` 
-    },
-    'befolkning': { 
+
+    // FIXAT: Gav denna unikt namn så den inte längre raderas av nyckeltalet under
+    'befolkning_effekt': { 
         title: 'Demografisk Effekt (Befolkningsbehov)', 
         content: `<p>Visar hur mycket befolkning (vuxna och barn) som behöver flytta in för att täcka det omatchade rekryteringsgapet.</p>` 
     },
-     'befolkning': { 
+    
+    // FIXAT: Gav denna unikt namn så båda befolknings-texterna kan leva samtidigt
+    'befolkning_nyckeltal': { 
         title: 'Nyckeltal: Befolkning (Ny)', 
         content: `<p>Visar konsekvensen av arbetsmarknaden översatt i faktiska människor (demografi). Siffran anger hur många extra vuxna och medföljande barn som behöver flytta in till kommunen utöver den normala befolkningsprognosen, för att företagens skapade rekryteringsgap ska täckas helt.</p>` 
     }

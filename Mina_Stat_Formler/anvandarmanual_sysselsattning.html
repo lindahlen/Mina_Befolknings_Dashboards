@@ -206,6 +206,37 @@
                         <p class="text-sm text-sky-800">Frigör kapacitet. Om det lokala rekryteringsgapet är 5 000 personer, och du anger 10 % distansarbete, minskas det akuta trycket på fysisk inpendling och inflyttning genom att personal arbetar från andra delar av Sverige/världen.</p>
                     </div>
                 </div>
+                <div class="w-full mt-4 p-5 bg-slate-50 rounded-lg border-l-4 border-amber-500 shadow-sm space-y-3">
+    
+                <div class="flex items-center gap-2 text-amber-800 font-bold text-base md:text-lg">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <h3>Metod & Logik: Inpendling vs. Regionförstoring</h3>
+                </div>
+
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    När du simulerar det externa arbetskraftsutbudet är det viktigt att känna till hur kalkylatormotorn hanterar parametrarna för <i>Inpendling</i> och <i>Regionförstoring</i>. Eftersom dessa två reglage pratar med varandra i bakgrunden finns det en stor risk för <b>dubbelräkning</b> om båda justeras kraftigt samtidigt.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+                    <div class="p-3 bg-white rounded border border-gray-200">
+                        <p class="font-semibold text-xs uppercase tracking-wider text-gray-500 mb-1">1. Regionförstoring (Orsaken)</p>
+                        <p class="text-xs text-gray-650 leading-relaxed">
+                            Bygger på en tyngdkraftsmodell med pendlingselasticiteten inställd på 0,6. När restiderna förkortas (t.ex. via Ostlänken) minskar det virtuella avståndet till kranskommunerna. Modellen tillgängliggör då automatiskt tusentals nya arbetstagare som nu hamnar inom pendlingsbart avstånd.
+                        </p>
+                    </div>
+        
+                    <div class="p-3 bg-white rounded border border-gray-200">
+                        <p class="font-semibold text-xs uppercase tracking-wider text-gray-500 mb-1">2. Inpendling (Konsekvensen)</p>
+                        <p class="text-xs text-gray-650 leading-relaxed">
+                            Eftersom det går snabbare och smidigare att resa, blir den faktiska konsekvensen i verkligheten att fler människor kommer att börja pendla in till de nya jobben i kommunen.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-amber-50/60 p-3 rounded text-xs text-amber-950 leading-relaxed">
+                    <span class="font-semibold text-amber-800">Simuleringsråd:</span> 
+                    För att undvika orealistiska glädjekalkyler bör du behandla reglagen som två separata scenarier. Vill du simulera infrastruktur (snabbare tåg), justera <i>enbart</i> Regionförstoring. Vill du simulera ett förändrat resebeteende (t.ex. mer distansarbete) utan nya spår, justera <i>enbart</i> manuell Inpendling.
+                </div>
             </section>
 
             <!-- 5. Nyckeltal (KPI) -->

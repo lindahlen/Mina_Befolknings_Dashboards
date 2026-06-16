@@ -477,22 +477,33 @@ window.updateDashboard = function(calledFromDropdown = true) {
                 window.savedScaleMax = null;
             }
             
-            // NYTT: Krasch-säker hantering av "Utgå från 0" (Rör bara DOM-elementet)
+            // KRASCH-SÄKER HANTERING AV "UTGÅ FRÅN 0" (HÖGST UPP I UPDATE_DASHBOARD)
+// ========================================================================
 const cType = document.getElementById('chartType') ? document.getElementById('chartType').value : null;
 const zeroCb = document.getElementById('useZeroAxis');
 
 if (zeroCb && cType) {
-    // Letar upp behållaren (t.ex. <label> eller <div> som omger kryssrutan) för att kunna dölja hela paketet
+    // Letar upp behållaren (t.ex. <label> eller <div> som omger kryssrutan)
     const zeroContainer = zeroCb.closest('label') || zeroCb.parentElement;
 
     if (window.lastSelectedChart !== cType) {
-        if (cType === 'bostadsbyggande_behov') {
-            zeroCb.checked = true; // Håll den ikryssad i bakgrunden så skalan blir rätt
-            if (zeroContainer) zeroContainer.style.display = 'none'; // Dölj för användaren
-        } else {
-            zeroCb.checked = false; // Nollställ för andra diagram
-            if (zeroContainer) zeroContainer.style.display = ''; // Tom sträng låter CSS (Tailwind) styra utseendet igen
+        
+        if (cType === 'medfoljande_behov') {
+            // NYTT: Tvinga ikryssad vid start för Välfärd, men låt rutan vara synlig
+            zeroCb.checked = true; 
+            if (zeroContainer) zeroContainer.style.display = ''; 
+        } 
+        else if (cType === 'bostadsbyggande_behov') {
+            // BEHÅLL: Håll den ikryssad i bakgrunden och dölj för Bostad
+            zeroCb.checked = true; 
+            if (zeroContainer) zeroContainer.style.display = 'none'; 
+        } 
+        else {
+            // STANDARD: Nollställ (bocka ur) och visa rutan för alla andra diagram
+            zeroCb.checked = false; 
+            if (zeroContainer) zeroContainer.style.display = ''; 
         }
+        
         window.lastSelectedChart = cType;
     }
             }
@@ -503,6 +514,174 @@ if (zeroCb && cType) {
     if (!chartTypeElement || !subGroupSelect) return;
 
     const chartType = chartTypeElement.value;
+
+    // NY RAD: Gör variabeln global inuti hela denna funktion så alla block kan nå den
+    let chartSpecificTooltip = '';
+    let globalSpecificTooltip = ''; // NY: Denna skickar unik info till den övre globala i-knappen!
+    let infoText = ''; // <-- DENNA RAD MÅSTE FINNAS HÄR SÅ ATT INTERNA BLOCK KAN SKRIVA TILL DEN!
+
+// ========================================================================
+    // 1. DEFINIERA TEXTERNA GLOBALT (Säkrar mot radkrascher på 2110, 1496 osv!)
+    // ========================================================================
+    const textKort = `<p>I rullistan kan du djupdyka i arbetsmarknaden. Använd kryssrutan för att få grafen att utgå från 0 för mer visuell korrekthet.</p>`;
+    const textLang = `<p>I rullistan kan du djupdyka i arbetsmarknaden (Utbildningsnivå, Kön, Ursprung, Bransch). Använd kryssrutorna för att få grafen att utgå från 0 (mer visuell korrekthet), eller för att dela y-axeln på vänster/höger sida för lättare jämförelse mellan stora och små volymer.</p>`;
+
+    window.textKort = textKort;
+    window.textLang = textLang;
+
+    // ========================================================================
+    // 2. DEN SMARTA DÖRRVAKTEN (Uppdaterad med kirurgisk precision)
+    // ========================================================================
+    setTimeout(() => {
+        if (!window.infoTexts || !window.infoTexts['diagram']) return;
+
+        const cTypeLower = chartType.toLowerCase();
+
+        // A. NÖDUTGÅNG FÖR MATCHNING: Rör inte dessa, låt deras egna block bestämma!
+        if (cTypeLower.includes('match')) {
+            return; 
+        }
+
+        // B. DE 8 DEMOGRAFISKA DIAGRAMMEN (Kön + Härkomst/Inrikes/Utrikes)
+        const isDemographic = cTypeLower.includes('_kon') || 
+                              cTypeLower.includes('_ursprung') || 
+                              cTypeLower.includes('_harkomst') || 
+                              cTypeLower.includes('utrikes') || 
+                              cTypeLower.includes('inrikes') || 
+                              cTypeLower.includes('bakgrund');
+
+        if (isDemographic) {
+            window.infoTexts['diagram'].title = 'Utvecklingsdiagram & Analys';
+            window.infoTexts['diagram'].content = textLang;
+            return;
+        }
+
+        // C. DE FYRA SPECIALDIAGRAMMEN (Mörk ruta + kort allmän text)
+        
+        // 1. BOSTADSBYGGANDE (Denna måste ligga FÖRE välfärd för att inte krocka på ordet 'behov'!)
+        if (cTypeLower.includes('bostad')) {
+            window.infoTexts['diagram'].title = 'Analys: Bostadsbyggande & Behov';
+            window.infoTexts['diagram'].content = `
+                <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        <p><strong>Bostadsbehov:</strong> Beräknar hur många nya bostäder som behöver färdigställas årligen för att matcha det demografiska hushållsbehovet från inflyttningen. Du kan manuellt ändra antalet boende per bostad i rullistan som finns i mitten ovanför diagrammet.</p>
+                    </div>
+                    <div>Tips! Välj "Från 1975" i rullistan med årtal och akivera det historiska snittet för kommunens byggtakt, då får du en bra uppfattning av omfattningen för det framtida behovet av bostadsbyggande utifrån de inställningar som du har gjort i kalkylatorn. Vid behov av visuell stabilitet, Bocka i "Fast skala".</div>
+                </div>
+            `;
+        } 
+        
+        // 2. VÄLFÄRDSBEHOV (Fångar upp medföljande/välfärd/behov nu när bostad redan är utsorterad)
+        else if (cTypeLower.includes('medfoljande') || cTypeLower.includes('valfard') || cTypeLower.includes('behov')) {
+            window.infoTexts['diagram'].title = 'Analys: Välfärdsbehov (Medföljande barn)';
+            window.infoTexts['diagram'].content = `
+                <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        <p><strong>Medföljande barn:</strong> Visar i <strong>dynamiskt läge</strong> hur många barn som förväntas flytta med sin familj till kommunen då inflyttningen behöver öka mer än enligt kommunens prognos för att fylla rekryteringsgapet.</p>
+                    </div>
+                    <div>I analytiskt läge visas inte några data.</div>
+                </div>
+            `;
+        } 
+        
+        // 3. BEFOLKNINGSUTVECKLING
+        else if (cTypeLower.includes('befolkning') || cTypeLower.includes('pop_dynamic')) {
+            window.infoTexts['diagram'].title = 'Analys: Befolkningsutveckling (Dynamisk)';
+            window.infoTexts['diagram'].content = `
+                <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        <p><b>Dynamisk befolkningsmodell:</b> Simulerar hur befolkningen förändras i realtid baserat på det beräknade behovet av inflyttad arbetskraft och historiska födelsetal.</p>
+                    </div>
+                    <div>I analytiskt läge visas den förväntade utvecklingen enligt den befolkningskälla som du har valt i "Källa". I dynamiskt läge kan du se hur mycket extra inflyttning som krävs för att hantera arbetsmarknadens efterfrågan på arbetskraft utifrån de inställningar i reglagen som du har gjort. Välj i rullistan för ålder vilken eller vilka åldersgrupper du vill titta på. <BR><em>Tips!</em> Tycker du att det blir för många linjer i diagrammet när du har valt ålder i 5-årsklasser. Klicka på åldersklasserna i teckenförklaringen för att ta bort dem en och en, eller "Dölj alla" och bygg sedan successivt upp diagrammet med de åldersgrupper du vill ta med. Använd kryssrutan för att få grafen att utgå från 0 för mer visuell korrekthet.</div>
+                </div>
+            `;
+        } 
+        
+        // 4. UTBUD VS EFTERFRÅGAN (TREND)
+        // Fångar upp om det innehåller 'trend' ELLER om det är kalkylatorns rena grunddiagram ('utbud_efterfragan')
+        else if (cTypeLower.includes('trend') || chartType === 'utbud_efterfragan') {
+            window.infoTexts['diagram'].title = 'Analys: Utbud vs Efterfrågan (Trend)';
+            window.infoTexts['diagram'].content = `
+                <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        <p><strong>Trendanalys:</strong> Jämför den långsiktiga historiska trenden för arbetsmarknadens utbud mot arbetsgivarnas efterfrågan för att identifiera strukturella skiften. Växla mellan analytiskt och dynamiskt läge.</p>
+                    </div>
+                    <div>${textKort}</div>
+                </div>
+            `;
+        } 
+
+        // 5. NY: ÅRLIG FÖRÄNDRING (Fångar upp om ID innehåller 'forandring')
+        else if (cTypeLower.includes('forandring') || chartType === 'utbud_efterfragan_delta') {
+            window.infoTexts['diagram'].title = 'Analys: Årlig förändring';
+            window.infoTexts['diagram'].content = `
+                <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        <p><strong>Årlig förändring:</strong> Här visas den årliga förändringen i arbetsmarknadens utbud och efterfrågan. Staplarna för Efterfrågan visar förändringen för dagbefolkningen, dvs. de förvärvsarbetande som har sin arbetsplats i Linköping, och staplarna för Lokalt Utbud visar förändringen för nattbefolkningen, dvs. de förvärvsarbetande som har sin bostad i Linköping.</p>
+                    </div>
+                    <div>I rullistan kan du djupdyka i arbetsmarknaden och följa trender och matchning utifrån flera olika perspektiv.</div>
+                </div>
+            `;
+        }
+
+        // 6. NY: PENDLINGSDIAGRAMMET (Fångar upp om ID innehåller 'pendling')
+        else if (cTypeLower.includes('pendling')) {
+            window.infoTexts['diagram'].title = 'Analys: Pendling & Flöden';
+            window.infoTexts['diagram'].content = `
+                <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        <p><strong>In- och utpendling:</strong> Här visas nivåerna för in- och utpendling över kommungräns. <BR>Du har möjlighet att växla mellan att visa staplarna för utpendllng med negativa värden eller att visa dem med positiva värden, och därmed direkt se gapet mellan in- och utpendling. Pendlingsnettot visas som en linje i diagrammet.  </p>
+                    </div>
+                    <div>I rullistan kan du djupdyka i arbetsmarknaden och följa trender och matchning utifrån flera olika perspektiv.</div>
+                </div>
+            `;
+        } 
+        
+        // D. FALLBACK: FÖR ALLA ANDRA VANLIGA DIAGRAM (T.ex. Årlig förändring) -> Kort text!
+        else {
+            window.infoTexts['diagram'].title = 'Utvecklingsdiagram & Analys';
+            window.infoTexts['diagram'].content = textKort;
+        }
+
+    }, 35);
+    // ========================================================================
+    // ========================================================================
+    // NYTT: TEXT FÖR DEN OVERGRIPANDE NYCKELTALS-KNAPPEN (KPI)
+    // ========================================================================
+    if (window.infoTexts) {
+        window.infoTexts['nyckeltal'] = {
+            title: 'Information om Nyckeltal & Begrepp',
+            content: `
+                <div class="space-y-4 text-sm text-gray-800">
+                    <p>Nyckeltalen (KPI-korten) sammanfattar de viktigaste parametrarna för det valda året i din simulering. De visar hur arbetsmarknad, demografi och välfärd hänger ihop i realtid.</p>
+                    
+                    <div class="p-3 bg-gray-900 bg-opacity-5 bg-gray-50 rounded border-l-4 border-blue-500">
+                        <p class="font-semibold text-gray-900 mb-1">Befolkning (ny):</p>
+                        <p class="text-xs text-gray-750 leading-relaxed">Visar konsekvensen av arbetsmarknaden översatt i faktiska människor (demografi). Siffran anger hur många extra vuxna och medföljande barn som behöver flytta in till kommunen utöver den normala befolkningsprognosen, för att företagens skapade rekryteringsgap ska täckas helt.</p>
+                    </div>
+
+                    <div class="p-3 bg-gray-900 bg-opacity-5 bg-gray-50 rounded border-l-4 border-amber-500 space-y-2">
+                        <p class="font-semibold text-gray-900 mb-1">Marknadslägen som kan dyka upp:</p>
+                        <div class="text-xs text-gray-750 space-y-1.5">
+                            <p><b>• Balans:</b> Innebär att det lokala utbudet av arbetskraft (boende i kommunen) matchar företagens efterfrågan och rekryteringsbehov på ett stabilt sätt.</p>
+                            <p><b>• Överskott:</b> Dyker upp om det lokala utbudet är större än efterfrågan inom vissa segment, eller om simuleringen visar att tillgången på arbetskraft överstiger de lediga jobben för det valda året.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="p-3 bg-gray-900 bg-opacity-5 bg-gray-50 rounded border-l-4 border-sky-500">
+                        <p class="font-semibold mb-1 text-xs uppercase tracking-wider text-gray-500">Övergripande områden:</p>
+                        <ul class="list-disc pl-5 space-y-1 text-xs text-gray-600">
+                            <li><b>Matchning:</b> Visar glappet mellan utbud (bosatta) och efterfrågan (jobb).</li>
+                            <li><b>Samhällsbehov:</b> Översätter inflyttningen till behov av bostäder, skolor och förskolor.</li>
+                        </ul>
+                    </div>
+                    
+                    <p class="text-xs text-gray-500 italic pt-1">Tips: Ändra år i rullistan till höger för att se hur nyckeltalen och marknadsläget förändras över tid.</p>
+                </div>
+            `
+        };
+    }
+
     // --- NYTT: Dölj "Fast skala" dynamiskt för vissa grafer ---
             const fixedScaleContainer = document.getElementById('fixedScaleContainer');
             if (fixedScaleContainer) {
@@ -790,8 +969,33 @@ if (zeroCb && cType) {
                         datasets.push({ label: g.label + ' (Prognos)', data: p_data, borderColor: g.color, backgroundColor: 'transparent', borderWidth: 3, borderDash: [5,5], pointStyle: 'circle' });
                     }
                 });
+                // --- UPPDATERA DEN GLOBALA I-KNAPPEN ---
+        if (window.infoTexts && window.infoTexts['diagram']) {
+            window.infoTexts['diagram'].title = 'Analys: Befolkningsutveckling (Dynamisk)';
+            window.infoTexts['diagram'].content = `
+                <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        <p><b>Dynamisk befolkningsmodell:</b> Simulerar hur befolkningen förändras i realtid baserat på det beräknade behovet av inflyttad arbetskraft och historiska födelsetal.</p>
+                    </div>
+                    <div>
+                        <p>I rullistan kan du djupdyka i arbetsmarknaden. Använd kryssrutorna för att få grafen att utgå från 0 för mer visuell korrekthet.</p>
+                    </div>
+                </div>
+            `;
+        }
             }
             } else if (chartType === 'bostadsbyggande_behov') {
+            if (window.infoTexts && window.infoTexts['diagram']) {
+                window.infoTexts['diagram'].title = 'Analys: Bostadsbyggande & Behov';
+                window.infoTexts['diagram'].content = `
+                    <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        <p><strong>Bostadsbehov:</strong> Beräknar hur många nya bostäder som behöver färdigställas årligen för att matcha det demografiska hushållsbehovet från inflyttningen. Du kan ändra antal boende per ny bostad i rullistan som finns i mitten ovanför diagrammet.</p>
+                    </div>
+                    <p>I rullistan kan du djupdyka i arbetsmarknaden. Använd kryssrutorna för att få grafen att utgå från 0 för mer visuell korrekthet.</p>
+                </div>
+            `;
+        }
             startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
             
             // NYTT: Hämta rullistan och dess värde (fallback till 2.1 om den inte hittas)
@@ -1004,8 +1208,23 @@ if (zeroCb && cType) {
             datasets.push({ type: 'line', label: 'Kapacitetstak (Byggproduktion)', data: maxKapacitet, borderColor: '#ef4444', borderWidth: 2, borderDash: [5,5], pointStyle: false, fill: false });
 
             customScale = { y: { stacked: true, beginAtZero: true, min: 0, ticks: { callback: val => typeof window.formatNumber === 'function' ? window.formatNumber(val, 0) : val } } };
-
+                
     } else if (chartType === 'medfoljande_behov') {
+        // --------------------------------------------------------------------
+        // >>> NY KOD: KLISTRA IN DETTA PRECIS HÄR (EFTER SEMIKOLONET) <<<
+        // --------------------------------------------------------------------
+        if (window.infoTexts && window.infoTexts['diagram']) {
+            window.infoTexts['diagram'].title = 'Analys: Välfärdsbehov (Medföljande barn)';
+            window.infoTexts['diagram'].content = `
+                <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        <p><strong>Medföljande barn:</strong> Visar i <strong>dynamiskt läge</strong> hur många barn som förväntas flytta med sin familj till kommunen då inflyttningen behöver öka mer än enligt prognosen för att fylla rekryteringsgapet. I analytiskt läge visas inte några data.</p>
+                    </div>
+                    <p>I rullistan kan du djupdyka i arbetsmarknaden. Använd kryssrutorna för att få grafen att utgå från 0 för mer visuell korrekthet.</p>
+                </div>
+            `;
+        }
+        // --------------------------------------------------------------------
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
         let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore && window.allYears && window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : "");
         if (title) title.innerText = "Välfärdsbehov (Medföljande barn)" + suffix;
@@ -1015,19 +1234,34 @@ if (zeroCb && cType) {
                 ? "Visar uppskattat behov av nya förskole- och skolplatser som genereras av arbetskraftsinflyttningen varje år."
                 : "<span class='text-amber-700 font-medium'>Denna vy visar inga data i Analytiskt läge. Byt till ett Dynamiskt scenario i panelen ovan och klicka på Kör.</span>";
 
+            // --- 1. UPPDATERA DEN ÖVRE GLOBALA I-KNAPPEN (Från år) ---
+            // Här sätter vi titeln och ENBART den unika mörka texten (Helt utan dolda strömbrytare som kan strula)
+            if (window.infoTexts && window.infoTexts['diagram']) {
+                window.infoTexts['diagram'].title = 'Analys: Välfärdsbehov (Medföljande barn)'; 
+                window.infoTexts['diagram'].content = `
+                    <div class="space-y-3 text-sm text-gray-800">
+                        <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                            <p><strong>Medföljande barn:</strong> Visar hur många barn som förväntas flytta med då inflyttningen till kommunen ökar för att fylla rekryteringsgapet.</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // --- 2. LOKAL UTMATNING DIREKT I BLOCKET (Behåller din källkod och funktionalitet intakt!) ---
             desc.innerHTML = `
                 <div class="flex items-center gap-2">
                     <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
                         <i class="fa-solid fa-circle-info text-base relative z-10"></i>
                         
                         <div class="absolute z-[100] hidden group-hover:block w-72 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
-                            <p class="mb-2"><strong>Medföljande familjer:</strong> När du simulerar effekten av nya jobb beräknar kalkylatorn hur många barnfamiljer som flyttar in.</p>
-                            <p class="mb-2"><strong>Flödesmodell:</strong> Diagrammet visar det årliga nettotillskottet (hur många *nya* platser som måste skapas). <br><br><em>Obs: De inledande prognosåren är dolda då de utgör övergångsår i beräkningsmotorn.</em></p>
-                            
+                            <div class="pt-1.5">
+                                <p class="mb-2"><strong>Medföljande familjer:</strong> När du simulerar effekten av nya jobb beräknar kalkylatorn hur många barnfamiljer som flyttar in.</p>
+                                <p class="mb-0"><strong>Flödesmodell:</strong> Diagrammet visar det årliga nettotillskottet (hur många *nya* platser som måste skapas). <br><br><em>Obs: De inledande prognosåren är dolda då de utgör övergångsår i beräkningsmotorn.</em></p>
+                            </div>
                             <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
                         </div>
                     </span>
-                    <span>${infoText}</span>
+                    <span class="text-sm font-normal text-gray-900">${infoText}</span>
                 </div>
             `;
         }
@@ -1102,9 +1336,24 @@ if (zeroCb && cType) {
                 min: 0, 
                 ticks: { callback: val => typeof window.formatNumber === 'function' ? window.formatNumber(val, 0) : val } 
             } 
-        };
+        };    
 
     } else if (chartType === 'utbud_efterfragan') {
+     
+        // >>> NY KOD: KLISTRA IN DETTA PRECIS HÄR UNDER STARTEN <<<
+    if (window.infoTexts && window.infoTexts['diagram']) {
+        window.infoTexts['diagram'].title = 'Analys: Utbud vs Efterfrågan (Trend)';
+        window.infoTexts['diagram'].content = `
+            <div class="space-y-3 text-sm text-gray-800">
+                <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                    <p><strong>Trendanalys:</strong> Jämför den långsiktiga historiska trenden för arbetsmarknadens utbud mot arbetsgivarnas efterfrågan för att identifiera strukturella skiften.</p>
+                </div>
+                <div>
+                    <p>I rullistan kan du djupdyka i arbetsmarknaden. Använd kryssrutorna för att få grafen att utgå från 0 för mer visuell korrekthet.</p>
+                </div>
+            </div>
+        `;
+    }
         isMultiLine = true;
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
         let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : " (Historik)");
@@ -1191,6 +1440,11 @@ if (zeroCb && cType) {
         datasets.forEach(ds => { if (defaultHiddenLabels.includes(ds.label)) ds.hidden = true; });
 
     } else if (chartType.includes('arbetsloshet') || chartType.includes('langtidsarb')) {
+          // Klistra in längst ner i vart och ett av de 8 demografiska blocken:
+        if (window.infoTexts && window.infoTexts['diagram']) {
+            window.infoTexts['diagram'].title = 'Utvecklingsdiagram & Analys';
+            window.infoTexts['diagram'].content = textLang; // Tvingar fram den långa y-axeltexten
+        }
         isMultiLine = true;
         startYearSelect.style.display = 'inline-block';
         let isLangtid = chartType.includes('langtidsarb');
@@ -1314,6 +1568,7 @@ if (zeroCb && cType) {
             datasets.forEach(ds => { ds.yAxisID = ds.label.includes(lbl2) ? 'y1' : 'y'; });
         } else {
             customScale = { y: { beginAtZero: useZeroAxis, grace: graceVal, ticks: { callback: val => window.formatNumber(val, typeVal === 'num' ? 0 : 1) + (typeVal === 'num' ? '' : '%') } } };
+      
         }
 
     } else if (chartType === 'brp_totalt') {
@@ -1391,7 +1646,7 @@ if (zeroCb && cType) {
                         <i class="fa-solid fa-circle-info text-base relative z-10"></i>
                         <div class="absolute z-[100] hidden group-hover:block w-80 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
                             <p class="mb-2"><strong>Årlig nettoförändring:</strong> Visar förändringen från ett år till nästa. Hur många <em>nya</em> jobb skapas jämfört med hur mycket arbetskraften växer?</p>
-                            <p><strong>Tolkning:</strong> Staplar under nollstrecket innebär en minskning. Simulerade jobbsatsningar i kalkylatorn syns ofta som skarpa uppåtgående toppar i den gröna stapeln.</p>
+                            <p><strong>Tolkning:</strong> Staplar under nollstrecket innebär en minskning av antalet förvärvsarbetande. Simulerade jobbsatsningar i kalkylatorn syns ofta som skarpa uppåtgående toppar i den gröna stapeln.</p>
                             <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
                         </div>
                     </span>
@@ -1561,8 +1816,8 @@ if (zeroCb && cType) {
         const refYear = isProgYear ? window.baseYear : selYearInt;
         let suffix = isProgYear ? " (Scenario)" : "";
         
-        let infoText = "";
-        let chartSpecificTooltip = "";
+        infoText = "";
+        chartSpecificTooltip = "";
 
         if (chartType === 'utb_match') {
             if (title) title.innerText = `Utbildningsmatchning (År ${selYearInt})${suffix}`;
@@ -1581,26 +1836,30 @@ if (zeroCb && cType) {
             
             infoText = "Visar matchningen mellan lokalt utbud och företagens efterfrågan utifrån utbildningsnivå.";
             chartSpecificTooltip = `<p class="mb-2"><strong>Utbildning:</strong> Jämför den utbildningsnivå som företagen kräver med den utbildningsnivå som den bosatta arbetskraften har.</p>`;
-            
-            // --- STRÖMBRYTARE: Ändra till false om du vill dölja i-knappen för utbildning, true för att slå på---
-            const visaIknappUtb = false;
+            // --- UPPDATERA DEN GLOBALA I-KNAPPEN (Från år) FÖR DETTA DIAGRAM ---
+if (window.infoTexts && window.infoTexts['diagram']) {
+    let standardText = `<p>I rullistan kan du djupdyka i arbetsmarknaden (Utbildningsnivå, Kön, Ursprung, Bransch). Använd kryssrutorna för att få grafen att utgå från 0 (mer visuell korrekthet) eller för att dela y-axeln på vänster/höger sida för lättare jämförelse mellan stora och små volymer.</p>`;
+    
+    // ========================================================================
+    // STRÖMBRYTARE: true = visa allmän text i botten, false = dölj den helt!
+    // ========================================================================
+    const visaStandardTextHär = false; 
 
-            if (visaIknappUtb) {
-                infoText = `
-                    <div class="flex items-center gap-2">
-                        <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
-                            <i class="fa-solid fa-circle-info text-base relative z-10"></i>
-                            <div class="absolute z-[100] hidden group-hover:block w-72 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
-                                ${chartSpecificTooltip}
-                                <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
-                            </div>
-                        </span>
-                        <span>${infoText}</span>
-                    </div>
-                `;
-            }
-         // Slut på utb_match blocket
-        
+    // 1. ÄNDRA RUBRIKEN HÄR SÅ ATT DEN MATCHAR DIAGRAMMET:
+    window.infoTexts['diagram'].title = 'Analys: Utbildningsmatchning'; 
+    
+    window.infoTexts['diagram'].content = `
+        <div class="space-y-3 text-sm text-gray-800">
+            
+            <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                <p><strong>Utbildningsnivå:</strong> Jämför den utbildningsnivå som företagen kräver med den utbildningsnivå som den bosatta arbetskraften har.</p>
+            </div>
+            
+            ${visaStandardTextHär ? `<div>${standardText}</div>` : ''}
+            
+        </div>
+    `;
+}
         } else if (chartType === 'sektor_match' || chartType === 'sektor_match_kon') {
             if (chartType === 'sektor_match_kon') {
                 if (title) title.innerText = `Sektormatchning: Män och Kvinnor (År ${selYearInt})${suffix}`;
@@ -1630,96 +1889,155 @@ if (zeroCb && cType) {
             }
             
             infoText = "Visar matchningen mellan lokalt utbud och efterfrågan inom privat respektive offentlig sektor.";
+            // Raden under är utkommenterad och blir "osynlig" för kalkylatorn:
             chartSpecificTooltip = `<p class="mb-2"><strong>Sektor:</strong> Visar fördelningen av jobb och lokal arbetskraft mellan privat näringsliv och offentlig verksamhet.</p>`;
-        
-        } else if (chartType === 'bransch_match') {
-            if (title) title.innerText = `Branschmatchning (År ${selYearInt})${suffix}`;
-            isHorizontal = true;
-            const dfDag = getDataset('Syss_bransch');
-            const dfNatt = getDataset('Natt_bransch');
-            
-            let rawLabels = [];
-            if (dfDag.length > 0) {
-                const excludeCols = ['År', 'år', 'Samtliga', 'Totalt', 'Kön', 'kön'];
-                rawLabels = Object.keys(dfDag[0]).filter(k => !excludeCols.includes(k));
-            }
-            
-            // DEEP COPY: Låser rådatan så den inte muterar och växer okontrollerat
-            let dagDataRaw = JSON.parse(JSON.stringify(window.aggregateMatchData(dfDag, refYear, rawLabels, 'Cols')));
-            let nattDataRaw = JSON.parse(JSON.stringify(window.aggregateMatchData(dfNatt, refYear, rawLabels, 'Cols')));
+        // --- UPPDATERA DEN GLOBALA I-KNAPPEN (Från år) FÖR DETTA DIAGRAM ---
+if (window.infoTexts && window.infoTexts['diagram']) {
+    let standardText = `<p>I rullistan kan du djupdyka i arbetsmarknaden (Utbildningsnivå, Kön, Ursprung, Bransch). Använd kryssrutorna för att få grafen att utgå från 0 (mer visuell korrekthet) eller för att dela y-axeln på vänster/höger sida för lättare jämförelse mellan stora och små volymer.</p>`;
+    
+    // ========================================================================
+    // STRÖMBRYTARE: true = visa allmän text i botten, false = dölj den helt!
+    // ========================================================================
+    const visaStandardTextHär = false; 
 
-            // ------------------------------------------------------------------------
-            // KORRIGERING AV DEN UNDERLIGGANDE MOTORN (Anti-dubbelräkning)
-            // ------------------------------------------------------------------------
-            // Den generiska motorn nedanför skalar tyvärr "Utbud" baserat på tillväxten av TOTALT utbud (inkl pendling).
-            // Vi skapar en faktor som neutraliserar pendlingseffekten så vi enbart visar Lokalt Utbud.
-            if (selYearInt > window.baseYear) {
-                let targetStore = window.progDataStore[selYearInt] || window.histDataStore[selYearInt];
-                let baseStore = window.histDataStore[window.baseYear];
-                
-                if (targetStore && baseStore) {
-                    // 1. Vad den generiska motorn TROR att den ska skala med (Total Supply inkl pendling)
-                    let tNet = targetStore.netCommuting != null ? targetStore.netCommuting : (targetStore.explicitNetCommuting || 0);
-                    let tTotSup = (targetStore.supply || 0) + tNet + (targetStore.virtualSupply || 0);
-                    
-                    let bNet = baseStore.netCommuting != null ? baseStore.netCommuting : (baseStore.explicitNetCommuting || 0);
-                    let bTotSup = (baseStore.supply || 0) + bNet + (baseStore.virtualSupply || 0);
-                    
-                    let genericFactor = bTotSup > 0 ? (tTotSup / bTotSup) : 1;
-                    
-                    // 2. Vad vi FAKTISKT vill skala med (Enbart Lokalt Utbud)
-                    let wantedFactor = (baseStore.supply || 0) > 0 ? ((targetStore.supply || 0) / baseStore.supply) : 1;
-                    
-                    // 3. Vår korrigeringsfaktor (som vi pre-applicerar för att lura motorn i nästa steg)
-                    let correctionNatt = genericFactor > 0 ? (wantedFactor / genericFactor) : 1;
-                    
-                    rawLabels.forEach(l => {
-                        if (nattDataRaw['totalt'][l] !== undefined) {
-                            nattDataRaw['totalt'][l] *= correctionNatt;
-                        }
-                    });
-                    
-                    // OBS: Vi rör inte dagDataRaw (Efterfrågan), för den skalar motorn redan helt perfekt!
+    // 1. ÄNDRA RUBRIKEN HÄR SÅ ATT DEN MATCHAR DIAGRAMMET:
+    window.infoTexts['diagram'].title = 'Analys: Sektormatchning'; 
+    
+    window.infoTexts['diagram'].content = `
+        <div class="space-y-3 text-sm text-gray-800">
+            
+            <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                <p><strong>Sektor:</strong> Visar fördelningen av jobb och lokal arbetskraft mellan privat näringsliv och offentlig verksamhet.</p>
+            </div>
+            
+            ${visaStandardTextHär ? `<div>${standardText}</div>` : ''}
+            
+        </div>
+    `;
+}
+        } else if (chartType === 'bransch_match') {
+    if (title) title.innerText = `Branschmatchning (År ${selYearInt})${suffix}`;
+    isHorizontal = true;
+    const dfDag = getDataset('Syss_bransch');
+    const dfNatt = getDataset('Natt_bransch');
+    
+    let rawLabels = [];
+    if (dfDag.length > 0) {
+        const excludeCols = ['År', 'år', 'Samtliga', 'Totalt', 'Kön', 'kön'];
+        rawLabels = Object.keys(dfDag[0]).filter(k => !excludeCols.includes(k));
+    }
+    
+    // DEEP COPY: Låser rådatan så den inte muterar och växer okontrollerat
+    let dagDataRaw = JSON.parse(JSON.stringify(window.aggregateMatchData(dfDag, refYear, rawLabels, 'Cols')));
+    let nattDataRaw = JSON.parse(JSON.stringify(window.aggregateMatchData(dfNatt, refYear, rawLabels, 'Cols')));
+
+    // ------------------------------------------------------------------------
+    // KORRIGERING AV DEN UNDERLIGGANDE MOTORN (Anti-dubbelräkning)
+    // ------------------------------------------------------------------------
+    if (selYearInt > window.baseYear) {
+        let targetStore = window.progDataStore[selYearInt] || window.histDataStore[selYearInt];
+        let baseStore = window.histDataStore[window.baseYear];
+        
+        if (targetStore && baseStore) {
+            let tNet = targetStore.netCommuting != null ? targetStore.netCommuting : (targetStore.explicitNetCommuting || 0);
+            let tTotSup = (targetStore.supply || 0) + tNet + (targetStore.virtualSupply || 0);
+            
+            let bNet = baseStore.netCommuting != null ? baseStore.netCommuting : (baseStore.explicitNetCommuting || 0);
+            let bTotSup = (baseStore.supply || 0) + bNet + (baseStore.virtualSupply || 0);
+            
+            let genericFactor = bTotSup > 0 ? (tTotSup / bTotSup) : 1;
+            let wantedFactor = (baseStore.supply || 0) > 0 ? ((targetStore.supply || 0) / baseStore.supply) : 1;
+            let correctionNatt = genericFactor > 0 ? (wantedFactor / genericFactor) : 1;
+            
+            rawLabels.forEach(l => {
+                if (nattDataRaw['totalt'][l] !== undefined) {
+                    nattDataRaw['totalt'][l] *= correctionNatt;
+                }
+            });
+        }
+    }
+    // ------------------------------------------------------------------------
+
+    const subGroupVal = subGroupSelect ? subGroupSelect.value : 'all';
+    
+    if (subGroupVal && subGroupVal !== 'all' && window.syssConfig['SNIgrupper']) {
+        let groupedDag = { 'totalt': {} }, groupedNatt = { 'totalt': {} };
+        const sniGrupper = window.syssConfig['SNIgrupper'];
+        const firstKey = Object.keys(sniGrupper[0])[0]; 
+
+        rawLabels.forEach(l => {
+            let mappingRow = sniGrupper.find(r => String(r[firstKey]).trim() === String(l).trim());
+            let targetGroup = mappingRow ? mappingRow[subGroupVal] : null;
+
+            if (targetGroup && String(targetGroup).trim() !== '') {
+                let groupName = String(targetGroup).trim();
+                if (!groupedDag['totalt'][groupName]) { groupedDag['totalt'][groupName] = 0; groupedNatt['totalt'][groupName] = 0; }
+                groupedDag['totalt'][groupName] += dagDataRaw['totalt'][l] || 0;
+                groupedNatt['totalt'][groupName] += nattDataRaw['totalt'][l] || 0;
+            }
+        });
+        labels = Object.keys(groupedDag['totalt']);
+        dagData = groupedDag; nattData = groupedNatt;
+    } else {
+        labels = rawLabels.filter(l => l !== 'Okänd bransch');
+        dagData = dagDataRaw; 
+        nattData = nattDataRaw;
+    }
+
+    if (labels.length > 15 && (!subGroupVal || subGroupVal === 'all')) {
+        wrapper.style.minHeight = (labels.length * 20) + 'px';
+    }
+    
+    // HÄR ÄR DINA RENODLADE TEXTER (Helt utan if-satser eller window.infoTexts)
+    infoText = "Visar matchningen mellan lokalt utbud och efterfrågan uppdelat på olika branscher. Utbudet representerar enbart bosatt arbetskraft för att tydliggöra pendlingsbehovet.";
+    
+    chartSpecificTooltip = `
+        <p class="mb-1"><strong>Bransch (SNI):</strong> Utgångspunkten för branschindelningen är SCB:s standard via så kallad "SNI-bokstav".</p>
+        <p class="mb-1"><strong>Synkroniserad data:</strong> Branchnivåerna har kalibrerats matematiskt så att totalen stämmer exakt med KPI-kortens <em>Lokala Utbud</em> och <em>Efterfrågan</em>.</p>
+        <p><strong>Gruppera branscher:</strong> Använd rullistan bredvid för att slå ihop branscherna till större, anpassade grupper.</p>
+    `;
+
+    // DIN PRICKSÄKRA TOOLTIP-FIX I BOTTEN
+    window.customChartConfig = {
+        interaction: {
+            mode: 'y',
+            intersect: true
+        },
+        plugins: {
+            tooltip: {
+                position: 'nearest',
+                yAlign: 'center',
+                callbacks: {
+                    title: function(context) {
+                        return context[0].label;
+                    }
                 }
             }
-            // ------------------------------------------------------------------------
+        }
+    };
 
-            const subGroupVal = subGroupSelect ? subGroupSelect.value : 'all';
-            
-            if (subGroupVal && subGroupVal !== 'all' && window.syssConfig['SNIgrupper']) {
-                let groupedDag = { 'totalt': {} }, groupedNatt = { 'totalt': {} };
-                const sniGrupper = window.syssConfig['SNIgrupper'];
-                const firstKey = Object.keys(sniGrupper[0])[0]; 
+// ========================================================================
+// SÄKRAD LOKAL MOTOR (Standardstil - Helt immun mot interna block-låsningar)
+// ========================================================================
+const lokalTextAttVisa = (typeof chartSpecificTooltip !== 'undefined' && chartSpecificTooltip) ? chartSpecificTooltip : '';
+const infoTextAttVisa = (typeof infoText !== 'undefined' && infoText) ? infoText : '';
 
-                rawLabels.forEach(l => {
-                    let mappingRow = sniGrupper.find(r => String(r[firstKey]).trim() === String(l).trim());
-                    let targetGroup = mappingRow ? mappingRow[subGroupVal] : null;
-
-                    if (targetGroup && String(targetGroup).trim() !== '') {
-                        let groupName = String(targetGroup).trim();
-                        if (!groupedDag['totalt'][groupName]) { groupedDag['totalt'][groupName] = 0; groupedNatt['totalt'][groupName] = 0; }
-                        groupedDag['totalt'][groupName] += dagDataRaw['totalt'][l] || 0;
-                        groupedNatt['totalt'][groupName] += nattDataRaw['totalt'][l] || 0;
-                    }
-                });
-                labels = Object.keys(groupedDag['totalt']);
-                dagData = groupedDag; nattData = groupedNatt;
-            } else {
-                labels = rawLabels.filter(l => l !== 'Okänd bransch');
-                dagData = dagDataRaw; 
-                nattData = nattDataRaw;
-            }
-
-            if (labels.length > 15 && (!subGroupVal || subGroupVal === 'all')) {
-                wrapper.style.minHeight = (labels.length * 20) + 'px';
-            }
-            
-            infoText = "Visar matchningen mellan lokalt utbud och efterfrågan uppdelat på olika branscher. Utbudet representerar enbart bosatt arbetskraft för att tydliggöra pendlingsbehovet.";
-            chartSpecificTooltip = `
-                <p class="mb-2"><strong>Bransch (SNI):</strong> Utgångspunkten för branschindelningen är SCB:s standard via så kallad "SNI-bokstav".</p>
-                <p class="mb-2"><strong>Synkroniserad data:</strong> Branschnivåerna har kalibrerats matematiskt så att totalen stämmer exakt med KPI-kortens <em>Lokala Utbud</em> och <em>Efterfrågan</em>.</p>
-                <p class="mb-2"><strong>Gruppera branscher:</strong> Använd rullistan bredvid för att slå ihop branscherna till större, anpassade grupper.</p>
-            `;
+if (typeof desc !== 'undefined' && desc) {
+    desc.innerHTML = `
+        <div class="flex items-center gap-2">
+            ${lokalTextAttVisa ? `
+            <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
+                <i class="fa-solid fa-circle-info text-base relative z-10"></i>
+                <div class="absolute z-[100] hidden group-hover:block w-80 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none space-y-2">
+                    <div class="pt-1.5">${lokalTextAttVisa}</div>
+                    <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
+                </div>
+            </span>
+            ` : ''}
+            <span class="text-sm font-normal text-gray-900">${infoTextAttVisa}</span>
+        </div>
+    `;
+}
         // --- NYTT: Fix för fladdrande Tooltips i Branschmatchning ---
             // Detta tvingar Chart.js att enbart visa tooltip för den exakta stapel 
             // muspekaren rör vid, och håller den strikt inom diagrammets synliga yta.
@@ -1741,16 +2059,36 @@ if (zeroCb && cType) {
                     }
                 }
             };
-            // -----------------------------------------------------------
+            // --------------------------------------------------------------------
+        // >>> NY KOD: KLISTRA IN DETTA PRECIS HÄR (EFTER SEMIKOLONET) <<<
+        // --------------------------------------------------------------------
+        if (window.infoTexts && window.infoTexts['diagram']) {
+            window.infoTexts['diagram'].title = 'Analys: Branschmatchning';
+            window.infoTexts['diagram'].content = `
+                <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        <p class="mb-2"><b>Branschglidning & Marknadsdynamik:</b> Systemet är förberett för att tillämpa strukturomvandling via följande mekanismer:</p>
+                        <ul class="list-disc pl-5 space-y-1 text-xs">
+                            <li><b>Bosättningskvot:</b> Kalkylatorn analyserar historiska 10-årssnitt för hur stor andel av personalen som bor i Linköping, och delar automatiskt upp de nya jobben i "Lokal Efterfrågan" vs "Ny Inpendling".</li>
+                            <li><b>Branschglidning (Kannibalisering):</b> Om en bransch växer kraftigt, räknar systemet ut hur stor andel personal den "stjäl" från andra branscher och gör ett automatiskt avdrag därifrån.</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p>I rullistan kan du djupdyka i arbetsmarknaden och följa trender samt hur matchningen fungerar utifrån sektor eller utbildningsnivå.</p>
+                    </div>
+                </div>
+            `;
         }
-        
+        // --------------------------------------------------------------------
+        }
+
         if (desc) {
             let commonTooltipHTML = "";
             
             if (chartType !== 'sektor_match_kon') {
                 commonTooltipHTML += `
                     <p class="mb-2"><strong>Rekryteringsgap:</strong> Visar skillnaden mellan antalet jobb (Efterfrågan) och lokalt bosatt arbetskraft (Utbud). Gapet i diagrammet illustrerar hur mycket arbetskraft som måste tillföras via pendling eller inflyttning.</p>
-                    <p class="mb-2"><strong>Analytiskt vs Dynamiskt:</strong> I <em>Analytiskt</em> läge ser du det teoretiska gapet utifrån basprognosen. I <em>Dynamiskt</em> läge visas den nya jämvikten <em>efter</em> att simulerade inflyttare har börjat jobba och ökat det lokala utbudet.</p>
+                        <p class="mb-2"><strong>Analytiskt vs Dynamiskt:</strong> I <em>Analytiskt</em> läge ser du det teoretiska gapet utifrån basprognosen. I <em>Dynamiskt</em> läge visas den nya jämvikten <em>efter</em> att simulerade inflyttare har börjat jobba och ökat det lokala utbudet.</p>
                 `;
             } else {
                 commonTooltipHTML += `
@@ -1764,19 +2102,32 @@ if (zeroCb && cType) {
 
             let modeSuffix = causalityMode === 'dynamic' ? " <strong>(Dynamisk jämvikt)</strong>" : "";
 
-            desc.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
-                        <i class="fa-solid fa-circle-info text-base relative z-10"></i>
-                        <div class="absolute z-[100] hidden group-hover:block w-80 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none">
-                            ${chartSpecificTooltip}
-                            ${commonTooltipHTML}
-                            <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
-                        </div>
-                    </span>
-                    <span class="text-sm">${infoText}${modeSuffix}</span>
-                </div>
-           `;
+            // ========================================================================
+// ENHETLIG LOKAL MOTOR OVANFÖR DIAGRAMMEN (Standardstil: bg-gray-800, text-xs)
+// ========================================================================
+const harLokalTooltip = (typeof chartSpecificTooltip !== 'undefined' && chartSpecificTooltip !== '');
+
+desc.innerHTML = `
+    <div class="flex items-center gap-2">
+        
+        ${(harLokalTooltip || (typeof commonTooltipHTML !== 'undefined' && commonTooltipHTML)) ? `
+        <span class="relative group cursor-help text-blue-500 hover:text-blue-700 mt-0.5 before:absolute before:-inset-3 before:content-['']">
+            <i class="fa-solid fa-circle-info text-base relative z-10"></i>
+            
+            <div class="absolute z-[100] hidden group-hover:block w-80 p-3 mt-2 text-xs text-white font-normal normal-case bg-gray-800 rounded shadow-xl -left-2 top-full text-left pointer-events-none space-y-2">
+                
+                ${harLokalTooltip ? `<div class="pt-1.5">${chartSpecificTooltip}</div>` : ''}
+                
+                ${(typeof commonTooltipHTML !== 'undefined' && commonTooltipHTML) ? `<div class="pt-1 border-t border-gray-700/50 text-gray-300">${commonTooltipHTML}</div>` : ''}
+                <div class="absolute w-3 h-3 bg-gray-800 rotate-45 -top-1 left-2.5"></div>
+            </div>
+        </span>
+        ` : ''}
+        
+        <span class="text-sm font-normal text-gray-900">${infoText}${typeof modeSuffix !== 'undefined' ? modeSuffix : ''}</span>
+    </div>
+`;
+// ========================================================================
         }
             // NYTT: Tvinga KPI:erna att uppdateras efter att diagrammet (och simuleringen) är helt klar
             if (typeof window.updateKPIs === 'function') {
@@ -1789,6 +2140,11 @@ if (zeroCb && cType) {
         window.drawMatchChart(selYearInt, labels, dagData, nattData, isGenderSplit, useZeroAxis, isHorizontal);
         return; 
     } else if (chartType === 'trend_utrikes' || chartType === 'trend_kon') {
+        // Klistra in längst ner i vart och ett av de 8 demografiska blocken:
+        if (window.infoTexts && window.infoTexts['diagram']) {
+            window.infoTexts['diagram'].title = 'Utvecklingsdiagram & Analys';
+            window.infoTexts['diagram'].content = textLang; // Tvingar fram den långa y-axeltexten
+        }
         isMultiLine = true;
         startYearSelect.style.display = isComparing ? 'none' : 'inline-block';
         let suffix = isComparing ? " (Jämförelse)" : (window.progDataStore[window.allYears[window.allYears.length-1]] ? " (Scenario)" : " (Historik)");
@@ -2183,6 +2539,27 @@ if (zeroCb && cType) {
         } else {
             hideAllBtn.classList.add('hidden');
             hideAllBtn.classList.remove('flex');
+        }
+    }
+    // --- SKICKA UNIK INFO TILL DEN ÖVRE GLOBALA I-KNAPPEN ---
+    if (window.infoTexts && window.infoTexts['diagram']) {
+        let standardText = `<p>I rullistan kan du djupdyka i arbetsmarknaden (Utbildningsnivå, Kön, Ursprung, Bransch). Använd kryssrutorna för att få grafen att utgå från 0 (mer visuell korrekthet) eller för att dela y-axeln på vänster/höger sida för lättare jämförelse mellan stora och små volymer.</p>`;
+        
+        if (typeof globalSpecificTooltip !== 'undefined' && globalSpecificTooltip !== '') {
+            // Om diagrammet har unik global text, baka in den i en snygg mörk ruta överst i den ljusa popupen
+            window.infoTexts['diagram'].content = `
+                <div class="space-y-3 text-sm text-gray-800">
+                    <div class="p-3 bg-gray-950 rounded border-l-4 border-blue-500 text-gray-100">
+                        ${globalSpecificTooltip}
+                    </div>
+                    <div>
+                        ${standardText}
+                    </div>
+                </div>
+            `;
+        } else {
+            // Annars visas bara den vanliga standardtexten
+            window.infoTexts['diagram'].content = standardText;
         }
     }
 };

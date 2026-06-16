@@ -310,7 +310,9 @@
                     <div class="flex justify-between items-end mb-1">
                         <div class="flex items-center gap-2">
                             <h2 class="text-lg md:text-xl font-bold text-gray-800">Nyckeltal</h2>
-                            <span onclick="if(window.showInfo) window.showInfo('befolkning')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information om nyckeltalen"><i class="fa-solid fa-circle-info"></i></span>
+                            <span onclick="if(window.showInfo) window.showInfo('nyckeltal')" class="text-slate-400 cursor-pointer hover:text-sky-600 transition" title="Klicka för mer information om nyckeltalen">
+                                <i class="fa-solid fa-circle-info"></i>
+                            </span>
                             <div id="takWarning" class="hidden ml-2 flex flex-wrap gap-2 items-center"></div>
                         </div>
                         <select id="yearSelect" class="border border-gray-300 rounded p-1 text-xs md:text-sm bg-white font-medium shadow-sm cursor-pointer" onchange="if(window.handleYearChange) window.handleYearChange()" title="Välj år för att uppdatera nyckeltalen nedan">
