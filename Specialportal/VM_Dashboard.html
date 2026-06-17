@@ -182,10 +182,18 @@
                             <option value="group">Endast Gruppspel</option>
                             <option value="knockout">Endast Slutspel/Utslagning</option>
                         </select>
+                        <select id="marathon-period-filter" onchange="renderMarathonTable()" class="bg-white border border-slate-300 rounded px-2 py-1 text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="full">Hela matchen (ordinarie + förlängning)</option>
+                            <option value="full_pen">Hela matchen (med poäng från straffavgörande)</option>
+                            <option value="regular">Ordinarie tid (Enbart 90 min)</option>
+                            <option value="ht">1:a halvlek</option>
+                            <option value="h2">2:a halvlek</option>
+                            <option value="et">Enbart förlängning</option>
+                            <option value="pen">Enbart straffläggning</option>
+                        </select>
                         <select id="marathon-points-filter" onchange="renderMarathonTable()" class="p-2 border border-slate-300 rounded-lg shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="3">3p för seger</option>
                             <option value="2">2p för seger</option>
-                            <option value="3_pen">3p inkl. Straffsegrar</option>
                         </select>
                     </div>
                 </div>
@@ -588051,6 +588059,8 @@
             const footerContainer = document.getElementById('marathon-footer');
             const pointSys = document.getElementById('marathon-points-filter').value;
             const phaseFilter = document.getElementById('marathon-phase-filter').value;
+            // Hämtar det nya filtret (med 'full' som standard om HTML-rullistan saknas tillfälligt)
+            const periodFilter = document.getElementById('marathon-period-filter') ? document.getElementById('marathon-period-filter').value : 'full';
             
             let ptsForWin = pointSys === '2' ? 2 : 3;
 
@@ -588070,6 +588080,56 @@
                 if (phaseFilter === 'group' && !isGroup) return;
                 if (phaseFilter === 'knockout' && isGroup) return;
 
+                // --- NY LOGIK FÖR PERIODER (HALVLEKAR/FÖRLÄNGNING/STRAFFAR) ---
+                let hg = 0;
+                let ag = 0;
+                let validPeriod = true;
+
+                if (periodFilter === 'full' || periodFilter === 'full_pen') {
+                    hg = Number(m.score.home_total);
+                    ag = Number(m.score.away_total);
+                } 
+                else if (periodFilter === 'regular') {
+                    // Hämtar enbart resultatet efter full tid (90 min), exkluderar förlängning
+                    if (m.score.home_ft == null || m.score.away_ft == null) validPeriod = false;
+                    else {
+                        hg = Number(m.score.home_ft);
+                        ag = Number(m.score.away_ft);
+                    }
+                }
+                else if (periodFilter === 'ht') {
+                    if (m.score.home_ht == null || m.score.away_ht == null) validPeriod = false;
+                    else {
+                        hg = Number(m.score.home_ht);
+                        ag = Number(m.score.away_ht);
+                    }
+                } 
+                else if (periodFilter === 'h2') {
+                    if (m.score.home_ft == null || m.score.home_ht == null) validPeriod = false;
+                    else {
+                        hg = Number(m.score.home_ft) - Number(m.score.home_ht);
+                        ag = Number(m.score.away_ft) - Number(m.score.away_ht);
+                    }
+                } 
+                else if (periodFilter === 'et') {
+                    if (m.score.home_et == null || m.score.away_et == null) validPeriod = false;
+                    else {
+                        hg = Number(m.score.home_et);
+                        ag = Number(m.score.away_et);
+                    }
+                } 
+                else if (periodFilter === 'pen') {
+                    if (m.score.home_pen == null || m.score.away_pen == null) validPeriod = false;
+                    else {
+                        hg = Number(m.score.home_pen);
+                        ag = Number(m.score.away_pen);
+                    }
+                }
+
+                // Om vald period inte spelades (t.ex. matchen gick inte till förlängning), avbryt för denna match
+                if (!validPeriod) return; 
+                // -------------------------------------------------------------
+
                 let year = m.date.substring(0, 4);
                 let hMapped = getMappedTeamName(m.home_team);
                 let aMapped = getMappedTeamName(m.away_team);
@@ -588080,8 +588140,8 @@
                 });
                 
                 let h = teams[hMapped], a = teams[aMapped];
-                let hg = m.score.home_total, ag = m.score.away_total;
                 
+                // Använder hg och ag som nu är uträknade för den specifika perioden
                 h.years.add(year); a.years.add(year);
                 h.S++; a.S++; h.GM += hg; h.IM += ag; a.GM += ag; a.IM += hg;
                 
@@ -588090,7 +588150,8 @@
                 if (hg > ag) h_win = true;
                 else if (ag > hg) a_win = true;
                 else {
-                    if (pointSys === '3_pen' && m.score.home_pen !== null && m.score.away_pen !== null) {
+                    // Nu appliceras straffseger enbart om man valt "full_pen" i rullistan!
+                    if (periodFilter === 'full_pen' && m.score.home_pen !== null && m.score.away_pen !== null) {
                         if (m.score.home_pen > m.score.away_pen) h_win = true;
                         else a_win = true;
                     } else {
@@ -589256,18 +589317,6 @@
             }
 
             html += '</tbody></table>';
-            
-            // Rita ut sidnavigering för spelarlistor om listan är längre än 50 rader
-            if (currentListTotal > PAGE_SIZE) {
-                let totalPages = Math.ceil(currentListTotal / PAGE_SIZE);
-                html += `
-                <div class="flex justify-between items-center bg-slate-50 p-3 border-t border-slate-200 shadow-inner sticky bottom-0 z-20">
-                    <button onclick="window.playerTopPage=${pageIndex - 1}; renderTopList()" ${pageIndex === 0 ? 'disabled class="text-slate-300 font-bold cursor-not-allowed"' : 'class="text-blue-600 hover:text-blue-800 font-bold transition"'}>&larr; Föregående</button>
-                    <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Sida ${pageIndex + 1} av ${totalPages} <span class="font-normal normal-case">(${currentListTotal} totalt)</span></span>
-                    <button onclick="window.playerTopPage=${pageIndex + 1}; renderTopList()" ${pageIndex >= totalPages - 1 ? 'disabled class="text-slate-300 font-bold cursor-not-allowed"' : 'class="text-blue-600 hover:text-blue-800 font-bold transition"'}>Nästa &rarr;</button>
-                </div>`;
-            }
-
             container.innerHTML = html;
         }
 
@@ -589307,6 +589356,7 @@
                 });
                 
                 let sorted = Object.values(refs).sort((a,b) => b.count - a.count);
+                currentListTotal = sorted.length; // <-- LÄGG TILL DENNA RAD
                 sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((r, idx) => {
                     let i = (pageIndex * PAGE_SIZE) + idx;
                     let nat = r.country && r.country !== "null" ? ` <span class="text-xs font-normal text-slate-400 ml-2">(${r.country})</span>` : "";
@@ -589375,6 +589425,7 @@
                 });
                 
                 let sorted = Object.values(coaches).sort((a,b) => b.count - a.count);
+                currentListTotal = sorted.length; // <-- LÄGG TILL DENNA RAD
                 sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((c, idx) => {
                     let i = (pageIndex * PAGE_SIZE) + idx;
                     let nats = Array.from(c.nations).map(n => getMappedTeamName(n)).join(", ");
@@ -589406,6 +589457,7 @@
                 });
                 
                 let sorted = Object.values(coaches).sort((a,b) => b.years.size - a.years.size).filter(c => c.years.size > 1);
+                currentListTotal = sorted.length; // <-- LÄGG TILL DENNA RAD
                 sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((c, idx) => {
                     let i = (pageIndex * PAGE_SIZE) + idx;
                     let nats = Array.from(c.nations).map(n => getMappedTeamName(n)).join(", ");
@@ -589515,9 +589567,10 @@
                 if (sortedList.length === 0) html += `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Ingen åldersdata funnen för förbundskaptener.</td></tr>`;
             }
 
+            // Stäng själva tabellen i HTML-strängen
             html += '</tbody></table>';
             
-            // Rita ut sidnavigering för domare/ledare om listan är längre än 50 rader
+            // Bygg sidnavigeringen som en helt separat <div> (endast för listor som är delade över sidor)
             if (currentListTotal > PAGE_SIZE) {
                 let totalPages = Math.ceil(currentListTotal / PAGE_SIZE);
                 html += `
@@ -589528,6 +589581,7 @@
                 </div>`;
             }
 
+            // Kasta in både tabell och navigering (om den finns) i behållaren samtidigt
             container.innerHTML = html;
         }
 

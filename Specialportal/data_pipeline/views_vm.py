@@ -209,10 +209,18 @@ def build_dashboard():
                             <option value="group">Endast Gruppspel</option>
                             <option value="knockout">Endast Slutspel/Utslagning</option>
                         </select>
+                        <select id="marathon-period-filter" onchange="renderMarathonTable()" class="bg-white border border-slate-300 rounded px-2 py-1 text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="full">Hela matchen (ordinarie + förlängning)</option>
+                            <option value="full_pen">Hela matchen (med poäng från straffavgörande)</option>
+                            <option value="regular">Ordinarie tid (Enbart 90 min)</option>
+                            <option value="ht">1:a halvlek</option>
+                            <option value="h2">2:a halvlek</option>
+                            <option value="et">Enbart förlängning</option>
+                            <option value="pen">Enbart straffläggning</option>
+                        </select>
                         <select id="marathon-points-filter" onchange="renderMarathonTable()" class="p-2 border border-slate-300 rounded-lg shadow-sm text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="3">3p för seger</option>
                             <option value="2">2p för seger</option>
-                            <option value="3_pen">3p inkl. Straffsegrar</option>
                         </select>
                     </div>
                 </div>
@@ -271,7 +279,10 @@ def build_dashboard():
                         <option value="attendance">Högsta Publiksiffror</option>
                         <option value="medals">Flest Medaljer (Endast historik)</option>
                         <option value="placements">Översikt placeringar (Matris)</option>
+                        <option value="cleansheets">Hållna nollor (Nationer)</option>
                         <option value="penalties">Straffavgöranden (Matchlista)</option>
+                        <option value="owngoals">Självmål (Matchlista)</option>
+                        <option value="hattricks">Hattricks (Matchlista)</option>
                     <!-- Nya geografiska perspektiv -->
                         <option value="arenas">Geografi: Arenor (Flest matcher)</option>
                         <option value="cities">Geografi: Städer (Högst totalpublik)</option>
@@ -1070,6 +1081,8 @@ def build_dashboard():
             const footerContainer = document.getElementById('marathon-footer');
             const pointSys = document.getElementById('marathon-points-filter').value;
             const phaseFilter = document.getElementById('marathon-phase-filter').value;
+            // Hämtar det nya filtret (med 'full' som standard om HTML-rullistan saknas tillfälligt)
+            const periodFilter = document.getElementById('marathon-period-filter') ? document.getElementById('marathon-period-filter').value : 'full';
             
             let ptsForWin = pointSys === '2' ? 2 : 3;
 
@@ -1089,6 +1102,56 @@ def build_dashboard():
                 if (phaseFilter === 'group' && !isGroup) return;
                 if (phaseFilter === 'knockout' && isGroup) return;
 
+                // --- NY LOGIK FÖR PERIODER (HALVLEKAR/FÖRLÄNGNING/STRAFFAR) ---
+                let hg = 0;
+                let ag = 0;
+                let validPeriod = true;
+
+                if (periodFilter === 'full' || periodFilter === 'full_pen') {
+                    hg = Number(m.score.home_total);
+                    ag = Number(m.score.away_total);
+                } 
+                else if (periodFilter === 'regular') {
+                    // Hämtar enbart resultatet efter full tid (90 min), exkluderar förlängning
+                    if (m.score.home_ft == null || m.score.away_ft == null) validPeriod = false;
+                    else {
+                        hg = Number(m.score.home_ft);
+                        ag = Number(m.score.away_ft);
+                    }
+                }
+                else if (periodFilter === 'ht') {
+                    if (m.score.home_ht == null || m.score.away_ht == null) validPeriod = false;
+                    else {
+                        hg = Number(m.score.home_ht);
+                        ag = Number(m.score.away_ht);
+                    }
+                } 
+                else if (periodFilter === 'h2') {
+                    if (m.score.home_ft == null || m.score.home_ht == null) validPeriod = false;
+                    else {
+                        hg = Number(m.score.home_ft) - Number(m.score.home_ht);
+                        ag = Number(m.score.away_ft) - Number(m.score.away_ht);
+                    }
+                } 
+                else if (periodFilter === 'et') {
+                    if (m.score.home_et == null || m.score.away_et == null) validPeriod = false;
+                    else {
+                        hg = Number(m.score.home_et);
+                        ag = Number(m.score.away_et);
+                    }
+                } 
+                else if (periodFilter === 'pen') {
+                    if (m.score.home_pen == null || m.score.away_pen == null) validPeriod = false;
+                    else {
+                        hg = Number(m.score.home_pen);
+                        ag = Number(m.score.away_pen);
+                    }
+                }
+
+                // Om vald period inte spelades (t.ex. matchen gick inte till förlängning), avbryt för denna match
+                if (!validPeriod) return; 
+                // -------------------------------------------------------------
+
                 let year = m.date.substring(0, 4);
                 let hMapped = getMappedTeamName(m.home_team);
                 let aMapped = getMappedTeamName(m.away_team);
@@ -1099,8 +1162,8 @@ def build_dashboard():
                 });
                 
                 let h = teams[hMapped], a = teams[aMapped];
-                let hg = m.score.home_total, ag = m.score.away_total;
                 
+                // Använder hg och ag som nu är uträknade för den specifika perioden
                 h.years.add(year); a.years.add(year);
                 h.S++; a.S++; h.GM += hg; h.IM += ag; a.GM += ag; a.IM += hg;
                 
@@ -1109,7 +1172,8 @@ def build_dashboard():
                 if (hg > ag) h_win = true;
                 else if (ag > hg) a_win = true;
                 else {
-                    if (pointSys === '3_pen' && m.score.home_pen !== null && m.score.away_pen !== null) {
+                    // Nu appliceras straffseger enbart om man valt "full_pen" i rullistan!
+                    if (periodFilter === 'full_pen' && m.score.home_pen !== null && m.score.away_pen !== null) {
                         if (m.score.home_pen > m.score.away_pen) h_win = true;
                         else a_win = true;
                     } else {
@@ -1333,6 +1397,17 @@ def build_dashboard():
             const type = document.getElementById('team-top-type').value;
             const container = document.getElementById('team-top-results');
             
+            // FIX: Sidnumrering för listor som överskrider 50
+            if (window.lastTeamTopType !== type || window.lastTeamNation !== nation || window.lastTeamYear !== year) {
+                window.teamRecordPage = 0;
+                window.lastTeamTopType = type;
+                window.lastTeamNation = nation;
+                window.lastTeamYear = year;
+            }
+            let pageIndex = window.teamRecordPage || 0;
+            const PAGE_SIZE = 50;
+            let currentListTotal = 0; // Sparar antalet för att rita knappar
+            
             // FIX: Flytta scroll-egenskaperna dynamiskt så att "sticky"-huvudet fungerar
             if (type === 'placements') {
                 container.classList.remove('max-h-[65vh]', 'overflow-auto');
@@ -1519,8 +1594,10 @@ def build_dashboard():
                 if (nation !== 'all') validMatches = validMatches.filter(m => getMappedTeamName(m.home_team) === nation || getMappedTeamName(m.away_team) === nation);
                 
                 validMatches.sort((a, b) => new Date(b.date) - new Date(a.date)); // Senaste överst
+                currentListTotal = validMatches.length; // Spara totalen
                 
-                validMatches.forEach((m, i) => {
+                validMatches.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((m, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx; // Fixa så # stämmer!
                     let pStr = `<span class="font-black text-slate-800">${m.score.home_pen} - ${m.score.away_pen}</span>`;
                     html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openMatchModal('${m.id}')">
                         <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
@@ -1530,6 +1607,218 @@ def build_dashboard():
                 });
                 if (validMatches.length === 0) html += `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Inga straffläggningar hittades.</td></tr>`;
             }
+            // NYTT TILLÄGG: SJÄLVMÅL (Korrigerad förskjutning och spelarnamn)
+            else if (type === 'owngoals') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Match (År/Fas)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Spelare / Tillgodo</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Minut</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Slutresultat</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                // ---> HÄR ÄR FIXEN: Vi definierar och filtrerar matcherna för vald nation <---
+               let validMatches = matches;
+                if (nation !== 'all') {
+                    validMatches = validMatches.filter(m => getMappedTeamName(m.home_team) === nation || getMappedTeamName(m.away_team) === nation);
+                }
+                
+                let ogList = [];
+                validMatches.forEach(m => {
+                    if (m.events && m.events.goals) {
+                        m.events.goals.forEach(g => {
+                            let isOG = false;
+                            let pName = g.player ? g.player.trim().toLowerCase() : "";
+                            let gType = g.type ? g.type.toLowerCase() : "";
+                            let gNote = g.note ? g.note.toLowerCase() : "";
+                            
+                            if (pName.includes('själv') || gType.includes('själv') || gNote.includes('själv')) {
+                                isOG = true;
+                            }
+                            
+                            if (isOG) {
+                                ogList.push({ match: m, goal: g });
+                            }
+                        });
+                    }
+                });
+                
+                // Sortera kronologiskt (nyast först)
+                ogList.sort((a,b) => new Date(b.match.date) - new Date(a.match.date));
+                currentListTotal = ogList.length; // Spara totalen
+                
+                ogList.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((item, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx; // Fixa så # stämmer!
+                    let m = item.match;
+                    let g = item.goal;
+                    
+                    // FIX: Om målskytt är "Självmål", hämta det riktiga namnet från Not-kolumnen (g.note)
+                    let pNameRaw = g.player;
+                    if (pNameRaw.toLowerCase().includes('själv') && g.note && g.note !== "null" && g.note !== "") {
+                        pNameRaw = g.note;
+                    }
+                    
+                    let pClean = formatName(pNameRaw);
+                    // Landet som målet tillgodoräknades (det lag som INTE gjorde självmålet)
+                    let tClean = g.team ? `➔ ${g.team}` : "";
+                    
+                    html += `<tr class="hover:bg-red-50 transition cursor-pointer group" onclick="openMatchModal('${m.id}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3">
+                            <div class="font-bold text-slate-700">${m.home_team} - ${m.away_team}</div>
+                            <div class="text-[10px] text-slate-400 uppercase">${m.date.substring(0,4)} • ${m.phase}</div>
+                        </td>
+                        <td class="p-3 text-center font-bold text-slate-600">
+                            <span class="text-red-700">${pClean}</span> <span class="text-xs font-semibold text-emerald-600 block sm:inline sm:ml-1">${tClean}</span>
+                        </td>
+                        <td class="p-3 text-center font-black text-red-600">${g.minute}'</td>
+                        <td class="p-3 text-right pr-4"><span class="font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200">${formatScore(m)}</span></td>
+                    </tr>`;
+                });
+                
+                if (ogList.length === 0) html += `<tr><td colspan="5" class="p-6 text-center text-slate-500 italic">Inga självmål hittades för denna filtrering.</td></tr>`;
+            }
+            // NYTT TILLÄGG: HATTRICKS
+            else if (type === 'hattricks') {
+                // OBS: Kolumnen för # genereras automatiskt ovanför denna kod, precis som vi listade ut!
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Match (År/Fas)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Spelare / Nation</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Antal Mål</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Slutresultat</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let htList = [];
+                matches.forEach(m => {
+                    if (m.events && m.events.goals) {
+                        let playerGoals = {};
+                        m.events.goals.forEach(g => {
+                            let isOG = false;
+                            let pName = g.player ? g.player.trim().toLowerCase() : "";
+                            let gType = g.type ? g.type.toLowerCase() : "";
+                            let gNote = g.note ? g.note.toLowerCase() : "";
+                            if (pName.includes('själv') || gType.includes('själv') || gNote.includes('själv')) isOG = true;
+                            
+                            // Räkna bara mål som INTE är självmål
+                            if (!isOG && g.player) {
+                                let key = g.player.trim() + "|" + (g.team || "");
+                                if (!playerGoals[key]) playerGoals[key] = { count: 0, player: g.player, team: g.team, minutes: [] };
+                                playerGoals[key].count++;
+                                playerGoals[key].minutes.push(g.minute);
+                            }
+                        });
+                        
+                        Object.values(playerGoals).forEach(pg => {
+                            // Hattrick = 3 eller fler mål
+                            if (pg.count >= 3) {
+                                // Filtrera på nation (spelarens lag)
+                                if (nation === 'all' || getMappedTeamName(pg.team) === nation) {
+                                    htList.push({ match: m, stats: pg });
+                                }
+                            }
+                        });
+                    }
+                });
+                
+                // Sortera kronologiskt (nyast först)
+                htList.sort((a,b) => new Date(b.match.date) - new Date(a.match.date));
+                currentListTotal = htList.length;
+                
+                htList.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((item, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
+                    let m = item.match;
+                    let pg = item.stats;
+                    let pClean = formatName(pg.player);
+                    let tClean = pg.team ? `(${pg.team})` : "";
+                    let minStr = pg.minutes.join(', ') + "'";
+                    
+                    html += `<tr class="hover:bg-amber-50 transition cursor-pointer group" onclick="openMatchModal('${m.id}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3">
+                            <div class="font-bold text-slate-700">${m.home_team} - ${m.away_team}</div>
+                            <div class="text-[10px] text-slate-400 uppercase">${m.date.substring(0,4)} • ${m.phase}</div>
+                        </td>
+                        <td class="p-3 text-center font-bold text-slate-600">
+                            <span class="text-amber-700">${pClean}</span> <span class="text-xs font-semibold text-slate-400 block sm:inline sm:ml-1">${tClean}</span>
+                        </td>
+                        <td class="p-3 text-center font-black text-amber-600">${pg.count} <span class="block text-[10px] font-medium text-slate-400">(${minStr})</span></td>
+                        <td class="p-3 text-right pr-4"><span class="font-bold text-slate-800 bg-slate-100 px-2 py-1 rounded border border-slate-200">${formatScore(m)}</span></td>
+                    </tr>`;
+                });
+                
+                if (htList.length === 0) html += `<tr><td colspan="5" class="p-6 text-center text-slate-500 italic">Inga hattricks hittades för denna filtrering.</td></tr>`;
+            }
+            // NYTT TILLÄGG: HÅLLNA NOLLOR
+            else if (type === 'cleansheets') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Nation</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Matcher</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center" title="Noll insläppta mål under hela matchen (inkl. förlängning)">Nollor (Totalt)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center" title="Noll insläppta mål efter ordinarie tid (90 min)">Nollor (90 min)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">% (Totalt)</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let csStats = {};
+                
+                matches.forEach(m => {
+                    let hTeam = getMappedTeamName(m.home_team);
+                    let aTeam = getMappedTeamName(m.away_team);
+                    
+                    if (!csStats[hTeam]) csStats[hTeam] = { matches: 0, cs_total: 0, cs_90: 0 };
+                    if (!csStats[aTeam]) csStats[aTeam] = { matches: 0, cs_total: 0, cs_90: 0 };
+                    
+                    csStats[hTeam].matches++;
+                    csStats[aTeam].matches++;
+                    
+                    // Läs av insläppta mål (Totalt inkl. ev. förlängning)
+                    let aGoalsTotal = m.score.away_total != null ? Number(m.score.away_total) : 0;
+                    let hGoalsTotal = m.score.home_total != null ? Number(m.score.home_total) : 0;
+                    
+                    let aGoals90 = aGoalsTotal;
+                    let hGoals90 = hGoalsTotal;
+                    
+                    // VI ANVÄNDER DIN BEFINTLIGA DATA: home_ft och away_ft är resultatet efter 90 min!
+                    if (m.score.home_ft != null && m.score.away_ft != null) {
+                        hGoals90 = Number(m.score.home_ft);
+                        aGoals90 = Number(m.score.away_ft);
+                    } 
+                    // Fallback (Bara om ft-siffrorna skulle saknas för någon urgammal match)
+                    else if (m.events && m.events.goals && m.events.goals.length > 0) {
+                        aGoals90 = 0; hGoals90 = 0;
+                        m.events.goals.forEach(g => {
+                            let min = g.minute ? String(g.minute).toUpperCase() : "";
+                            let isET = min.includes('ET') || min.includes('FÖRL') || (parseInt(min) > 90 && !min.includes('+'));
+                            if (!isET) {
+                                if (getMappedTeamName(g.team) === aTeam) aGoals90++;
+                                if (getMappedTeamName(g.team) === hTeam) hGoals90++;
+                            }
+                        });
+                        if (aGoals90 === 0 && hGoals90 === 0 && (aGoalsTotal > 0 || hGoalsTotal > 0)) {
+                            aGoals90 = aGoalsTotal;
+                            hGoals90 = hGoalsTotal;
+                        }
+                    }
+                    
+                    // Registrera nollorna
+                    if (aGoalsTotal === 0) csStats[hTeam].cs_total++;
+                    if (hGoalsTotal === 0) csStats[aTeam].cs_total++;
+                    
+                    if (aGoals90 === 0) csStats[hTeam].cs_90++;
+                    if (hGoals90 === 0) csStats[aTeam].cs_90++;
+                });
+                
+                let csList = Object.entries(csStats).map(([team, stats]) => ({ team, ...stats }));
+                
+                // Om en specifik nation är vald, visa bara den
+                if (nation !== 'all') {
+                    csList = csList.filter(item => item.team === nation);
+                }
+                
+                // Sortera: 1. Flest nollor totalt, 2. Flest nollor 90 min, 3. Minst antal spelade matcher (högst %)
+                csList.sort((a,b) => b.cs_total - a.cs_total || b.cs_90 - a.cs_90 || a.matches - b.matches);
+                
+                currentListTotal = csList.length;
+                
+                csList.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((item, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
+                    let pct = item.matches > 0 ? ((item.cs_total / item.matches) * 100).toFixed(1) : 0;
+                    
+                    html += `<tr class="hover:bg-blue-50 transition">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-slate-700">${item.team}</td>
+                        <td class="p-3 text-center text-slate-600">${item.matches}</td>
+                        <td class="p-3 text-center font-black text-emerald-600">${item.cs_total}</td>
+                        <td class="p-3 text-center font-bold text-emerald-400">${item.cs_90}</td>
+                        <td class="p-3 text-right pr-4 font-bold text-slate-500">${pct}%</td>
+                    </tr>`;
+                });
+                
+                if (csList.length === 0) html += `<tr><td colspan="6" class="p-6 text-center text-slate-500 italic">Ingen data hittades för denna filtrering.</td></tr>`;
+            }
+
             // NYTT TILLÄGG: ARENOR
             else if (type === 'arenas') {
                 html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase">Arena (Ort)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Matcher</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Total Publik</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Publiksnitt</th></tr></thead><tbody class="divide-y divide-slate-100">';
@@ -1598,6 +1887,18 @@ def build_dashboard():
             }
 
             html += '</tbody></table>';
+
+            // Lägg till sidnavigering dynamiskt om listan har fler än 50 rader!
+            if (currentListTotal > PAGE_SIZE) {
+                let totalPages = Math.ceil(currentListTotal / PAGE_SIZE);
+                html += `
+                <div class="flex justify-between items-center bg-slate-50 p-3 border-t border-slate-200 shadow-inner sticky bottom-0 z-20">
+                    <button onclick="window.teamRecordPage=${pageIndex - 1}; renderTeamData()" ${pageIndex === 0 ? 'disabled class="text-slate-300 font-bold cursor-not-allowed"' : 'class="text-blue-600 hover:text-blue-800 font-bold transition"'}>&larr; Föregående</button>
+                    <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Sida ${pageIndex + 1} av ${totalPages} <span class="font-normal normal-case">(${currentListTotal} totalt)</span></span>
+                    <button onclick="window.teamRecordPage=${pageIndex + 1}; renderTeamData()" ${pageIndex >= totalPages - 1 ? 'disabled class="text-slate-300 font-bold cursor-not-allowed"' : 'class="text-blue-600 hover:text-blue-800 font-bold transition"'}>Nästa &rarr;</button>
+                </div>`;
+            }
+
             container.innerHTML = html;
         }
 
@@ -1855,6 +2156,14 @@ def build_dashboard():
             const type = document.getElementById('top-type-filter').value;
             const nation = document.getElementById('top-nation-filter').value;
             const container = document.getElementById('top-list-results');
+            // FIX: Sidnumrering för spelarlistor
+            if (window.lastPlayerTopType !== type) {
+                window.playerTopPage = 0;
+                window.lastPlayerTopType = type;
+            }
+            let pageIndex = window.playerTopPage || 0;
+            const PAGE_SIZE = 50;
+            let currentListTotal = 0;
             let players = Object.values(db.players);
             if (nation !== 'all') players = players.filter(p => p.nations.includes(nation));
 
@@ -1865,7 +2174,8 @@ def build_dashboard():
             if (type === 'matches') {
                 html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
                 sorted = players.sort((a, b) => b.matches_played - a.matches_played).filter(p => p.matches_played > 0);
-                sorted.slice(0, 50).forEach((p, i) => {
+                sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((p, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx; // Fixar korrekt numrering (#)
                     let yearsArr = [...p.tournaments].sort();
                     let yearStr = yearsArr.length > 1 ? `${yearsArr[0]}-${yearsArr[yearsArr.length-1]}` : (yearsArr.length === 1 ? yearsArr[0] : '');
                     let yearsDisplay = yearStr ? ` <span class="text-xs font-normal text-slate-400 ml-1">(${yearStr})</span>` : '';
@@ -1875,7 +2185,8 @@ def build_dashboard():
             else if (type === 'goals') {
                 html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Mål</th></tr></thead><tbody class="divide-y divide-slate-100">';
                 sorted = players.sort((a, b) => b.goals - a.goals).filter(p => p.goals > 0);
-                sorted.slice(0, 50).forEach((p, i) => {
+                sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((p, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx; // Fixar korrekt numrering (#)
                     let yearsArr = [...p.tournaments].sort();
                     let yearStr = yearsArr.length > 1 ? `${yearsArr[0]}-${yearsArr[yearsArr.length-1]}` : (yearsArr.length === 1 ? yearsArr[0] : '');
                     let yearsDisplay = yearStr ? ` <span class="text-xs font-normal text-slate-400 ml-1">(${yearStr})</span>` : '';
@@ -2039,6 +2350,15 @@ def build_dashboard():
         function renderStaffData() {
             const type = document.getElementById('staff-top-type').value;
             const container = document.getElementById('staff-list-results');
+
+            // FIX: Sidnumrering för domare/ledare
+            if (window.lastStaffType !== type) {
+                window.staffPage = 0;
+                window.lastStaffType = type;
+            }
+            let pageIndex = window.staffPage || 0;
+            const PAGE_SIZE = 50;
+            let currentListTotal = 0;
             
             let html = '<table class="w-full text-left border-collapse"><thead class="bg-slate-50 sticky top-0 border-b border-slate-200 z-10"><tr>';
             html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase w-12 text-center">#</th>';
@@ -2058,7 +2378,9 @@ def build_dashboard():
                 });
                 
                 let sorted = Object.values(refs).sort((a,b) => b.count - a.count);
-                sorted.slice(0, 50).forEach((r, i) => {
+                currentListTotal = sorted.length; // <-- LÄGG TILL DENNA RAD
+                sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((r, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let nat = r.country && r.country !== "null" ? ` <span class="text-xs font-normal text-slate-400 ml-2">(${r.country})</span>` : "";
                     let yArr = Array.from(r.years).sort();
                     let yStr = yArr.length > 1 ? `${yArr[0]}-${yArr[yArr.length-1]}` : yArr[0];
@@ -2125,7 +2447,9 @@ def build_dashboard():
                 });
                 
                 let sorted = Object.values(coaches).sort((a,b) => b.count - a.count);
-                sorted.slice(0, 50).forEach((c, i) => {
+                currentListTotal = sorted.length; // <-- LÄGG TILL DENNA RAD
+                sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((c, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let nats = Array.from(c.nations).map(n => getMappedTeamName(n)).join(", ");
                     let yArr = Array.from(c.years).sort();
                     let yStr = yArr.length > 1 ? `${yArr[0]}-${yArr[yArr.length-1]}` : yArr[0];
@@ -2155,7 +2479,9 @@ def build_dashboard():
                 });
                 
                 let sorted = Object.values(coaches).sort((a,b) => b.years.size - a.years.size).filter(c => c.years.size > 1);
-                sorted.slice(0, 50).forEach((c, i) => {
+                currentListTotal = sorted.length; // <-- LÄGG TILL DENNA RAD
+                sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((c, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let nats = Array.from(c.nations).map(n => getMappedTeamName(n)).join(", ");
                     let yearsStr = Array.from(c.years).sort().join(", ");
                     
@@ -2263,7 +2589,21 @@ def build_dashboard():
                 if (sortedList.length === 0) html += `<tr><td colspan="4" class="p-6 text-center text-slate-500 italic">Ingen åldersdata funnen för förbundskaptener.</td></tr>`;
             }
 
+            // Stäng själva tabellen i HTML-strängen
             html += '</tbody></table>';
+            
+            // Bygg sidnavigeringen som en helt separat <div> (endast för listor som är delade över sidor)
+            if (currentListTotal > PAGE_SIZE) {
+                let totalPages = Math.ceil(currentListTotal / PAGE_SIZE);
+                html += `
+                <div class="flex justify-between items-center bg-slate-50 p-3 border-t border-slate-200 shadow-inner sticky bottom-0 z-20">
+                    <button onclick="window.staffPage=${pageIndex - 1}; renderStaffData()" ${pageIndex === 0 ? 'disabled class="text-slate-300 font-bold cursor-not-allowed"' : 'class="text-blue-600 hover:text-blue-800 font-bold transition"'}>&larr; Föregående</button>
+                    <span class="text-xs text-slate-500 font-bold uppercase tracking-wider">Sida ${pageIndex + 1} av ${totalPages} <span class="font-normal normal-case">(${currentListTotal} totalt)</span></span>
+                    <button onclick="window.staffPage=${pageIndex + 1}; renderStaffData()" ${pageIndex >= totalPages - 1 ? 'disabled class="text-slate-300 font-bold cursor-not-allowed"' : 'class="text-blue-600 hover:text-blue-800 font-bold transition"'}>Nästa &rarr;</button>
+                </div>`;
+            }
+
+            // Kasta in både tabell och navigering (om den finns) i behållaren samtidigt
             container.innerHTML = html;
         }
 
@@ -2448,15 +2788,15 @@ def build_dashboard():
                 document.getElementById('tm-captain').innerText = topWinner;
                 
                 // Fyll i turneringen i siffror (All-time)
-                document.getElementById('tm-matches').innerText = s.matches_played;
-                document.getElementById('tm-goals').innerText = s.total_goals;
+                document.getElementById('tm-matches').innerText = s.matches_played.toLocaleString('sv-SE');
+                document.getElementById('tm-goals').innerText = s.total_goals.toLocaleString('sv-SE');
                 document.getElementById('tm-avg-goals').innerText = s.matches_played > 0 ? (s.total_goals / s.matches_played).toFixed(2) : "0.00";
                 document.getElementById('tm-avg-att').innerText = s.matches_played > 0 && s.total_attendance > 0 ? Math.round(s.total_attendance / s.matches_played).toLocaleString('sv-SE') : "0";
                 
-                document.getElementById('tm-g-h1').innerText = s.goals_h1;
-                document.getElementById('tm-g-h2').innerText = s.goals_h2;
-                document.getElementById('tm-g-et').innerText = `${s.goals_et} (${s.matches_et} m)`;
-                document.getElementById('tm-g-pen').innerText = `${s.goals_pen} (${s.matches_pen} m)`;
+                document.getElementById('tm-g-h1').innerText = s.goals_h1.toLocaleString('sv-SE');
+                document.getElementById('tm-g-h2').innerText = s.goals_h2.toLocaleString('sv-SE');
+                document.getElementById('tm-g-et').innerText = `${s.goals_et.toLocaleString('sv-SE')} (${s.matches_et.toLocaleString('sv-SE')} m)`;
+                document.getElementById('tm-g-pen').innerText = `${s.goals_pen.toLocaleString('sv-SE')} (${s.matches_pen.toLocaleString('sv-SE')} m)`;
                 
                 // All-time spelarfakta extraherat direkt ur spelardatabasen
                 let allPlayers = Object.values(db.players);
@@ -2505,15 +2845,15 @@ def build_dashboard():
             document.getElementById('tm-coach').innerText = s.champion_coach && s.champion_coach !== "Okänd" ? formatName(s.champion_coach) : 'Saknas';
             document.getElementById('tm-captain').innerText = s.champion_captain ? formatName(s.champion_captain) : 'Saknas i databas';
             
-            document.getElementById('tm-matches').innerText = s.matches_played;
-            document.getElementById('tm-goals').innerText = s.total_goals;
+            document.getElementById('tm-matches').innerText = s.matches_played.toLocaleString('sv-SE');
+            document.getElementById('tm-goals').innerText = s.total_goals.toLocaleString('sv-SE');
             document.getElementById('tm-avg-goals').innerText = s.matches_played > 0 ? (s.total_goals / s.matches_played).toFixed(2) : "0.00";
             document.getElementById('tm-avg-att').innerText = s.matches_played > 0 && s.total_attendance > 0 ? Math.round(s.total_attendance / s.matches_played).toLocaleString('sv-SE') : "0";
             
-            document.getElementById('tm-g-h1').innerText = s.goals_h1;
-            document.getElementById('tm-g-h2').innerText = s.goals_h2;
-            document.getElementById('tm-g-et').innerText = `${s.goals_et} (${s.matches_et} m)`;
-            document.getElementById('tm-g-pen').innerText = `${s.goals_pen} (${s.matches_pen} m)`;
+            document.getElementById('tm-g-h1').innerText = s.goals_h1.toLocaleString('sv-SE');
+            document.getElementById('tm-g-h2').innerText = s.goals_h2.toLocaleString('sv-SE');
+            document.getElementById('tm-g-et').innerText = `${s.goals_et.toLocaleString('sv-SE')} (${s.matches_et.toLocaleString('sv-SE')} m)`;
+            document.getElementById('tm-g-pen').innerText = `${s.goals_pen.toLocaleString('sv-SE')} (${s.matches_pen.toLocaleString('sv-SE')} m)`;
             
             document.getElementById('tm-p-used').innerText = s.players_used;
             document.getElementById('tm-p-debut').innerText = s.debutants;

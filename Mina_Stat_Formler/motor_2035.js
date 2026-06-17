@@ -112,7 +112,7 @@ window.infoTexts = {
                   <p>Själva värdena bakom knapparna styr du i Excel-filens flik <em>Scenarier</em>. Om du i fliken <em>Tillväxt</em> har specificerat värden för enskilda åldersklasser laddas även de in automatiskt.</p>
                   <p class="mt-3 pt-2 border-t border-slate-200 text-xs text-indigo-600">
                       <i class="fa-solid fa-person-chalkboard mr-1"></i> <strong>Presentations-demo:</strong> 
-                      Klicka på ikonen med griffeltavlan bredvid rubriken Snabbscenarier för att starta en guidad visning. Kalkylatorn stegar då automatiskt igenom modellens regionalekonomiska logik i 5 pedagogiska steg.
+                      Klicka på ikonen med griffeltavlan bredvid rubriken Snabbscenarier för att starta en guidad visning. Kalkylatorn stegar då automatiskt igenom modellens regionalekonomiska logik i 6 pedagogiska steg.
                   </p>` 
     },
     'demografi': { 
@@ -1076,9 +1076,41 @@ window.resetSimulation = function() {
             toast.style.opacity = '1';
         }
 
+         window.demoStep = 0;
+
+        // Hjälpfunktion för att visa en svävande förklaringstext
+        function showDemoToast(title, text) {
+            let toast = document.getElementById('demoToast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'demoToast';
+                // NY DESIGN: Bredare (w-[550px]) och luftigare (px-8 py-6)
+                toast.className = 'fixed bottom-8 right-8 bg-slate-800 text-white px-8 py-6 rounded-lg shadow-2xl z-50 w-[550px] transition-opacity duration-300 pointer-events-none border border-slate-600';
+                document.body.appendChild(toast);
+            }
+            // NY TEXTSTORLEK: Något större rubrik och brödtext (text-base istället för text-sm)
+            toast.innerHTML = `<h3 class="text-sky-400 font-bold text-lg uppercase mb-2 flex items-center"><i class="fa-solid fa-person-chalkboard mr-2"></i> ${title}</h3><p class="text-base leading-relaxed">${text}</p>`;
+            toast.style.opacity = '1';
+        }
+
         window.runPresentationDemo = function() {
             const demoBtnIcon = document.querySelector('#demoBtn i');
-            
+
+            // ========================================================================
+            // NYTT: SÄKERSTÄLL F5-LÄGE INNAN DEMON STARTAR
+            // ========================================================================
+            if (window.demoStep === 0) {
+                // HÄR ANROPAR DU DIN BEFINTLIGA ÅTERSTÄLLNINGSFUNKTION!
+                // Byt ut 'aterstallAllt' mot det exakta namnet på den funktion 
+                // som körs när man klickar på din vanliga "Återställ"-knapp.
+                if (typeof window.resetSimulation === 'function') {
+                    window.resetSimulation(); 
+                } 
+                // Alternativt: Om du har en funktion för att ladda snabbscenarier
+                // kanske du kan anropa ett tomt/standard-scenario här, typ:
+                // laddaSnabbscenario('standard');
+            }
+
             // --- NYTT: Smarta robot-funktioner som simulerar äkta mänskliga klick ---
             const setSlider = (id, val) => {
                 let el = document.getElementById(id);

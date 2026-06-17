@@ -489,9 +489,9 @@ if (zeroCb && cType) {
     if (window.lastSelectedChart !== cType) {
         
         if (cType === 'medfoljande_behov') {
-            // NYTT: Tvinga ikryssad vid start för Välfärd, men låt rutan vara synlig
+            // NYTT: Tvinga ikryssad vid start för Välfärd, men låt rutan vara synlig  // synlig = ''; dold= 'none';
             zeroCb.checked = true; 
-            if (zeroContainer) zeroContainer.style.display = ''; 
+            if (zeroContainer) zeroContainer.style.display = 'none'; 
         } 
         else if (cType === 'bostadsbyggande_behov') {
             // BEHÅLL: Håll den ikryssad i bakgrunden och dölj för Bostad
@@ -657,7 +657,7 @@ if (zeroCb && cType) {
                     
                     <div class="p-3 bg-gray-900 bg-opacity-5 bg-gray-50 rounded border-l-4 border-blue-500">
                         <p class="font-semibold text-gray-900 mb-1">Befolkning (ny):</p>
-                        <p class="text-xs text-gray-750 leading-relaxed">Visar konsekvensen av arbetsmarknaden översatt i faktiska människor (demografi). Siffran anger hur många extra vuxna och medföljande barn som behöver flytta in till kommunen utöver den normala befolkningsprognosen, för att företagens skapade rekryteringsgap ska täckas helt.</p>
+                        <p class="text-xs text-gray-750 leading-relaxed">Visar konsekvensen av arbetsmarknaden översatt i faktiska människor (demografi). Siffran anger hur många extra vuxna i arbetsför ålder som behöver flytta in till kommunen utöver den normala befolkningsprognosen, för att företagens skapade rekryteringsgap ska täckas helt Observera att medföljande barn (0–15 år) inte ingår i denna siffra, utan beräknas och redovisas separat under Välfärdsbehov.</p>
                     </div>
 
                     <div class="p-3 bg-gray-900 bg-opacity-5 bg-gray-50 rounded border-l-4 border-amber-500 space-y-2">
@@ -685,7 +685,8 @@ if (zeroCb && cType) {
     // --- NYTT: Dölj "Fast skala" dynamiskt för vissa grafer ---
             const fixedScaleContainer = document.getElementById('fixedScaleContainer');
             if (fixedScaleContainer) {
-                if (chartType.includes('match') || chartType === 'pendling_detalj' || chartType === 'medfoljande_behov' || chartType === 'utbud_efterfragan_delta') {
+                // Jag har tagit bort: || chartType === 'medfoljande_behov'
+                if (chartType.includes('match') || chartType === 'pendling_detalj' || chartType === 'utbud_efterfragan_delta') {
                     fixedScaleContainer.style.display = 'none';
                 } else {
                     fixedScaleContainer.style.display = 'flex';
