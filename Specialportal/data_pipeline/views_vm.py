@@ -283,6 +283,9 @@ def build_dashboard():
                         <option value="penalties">Straffavgöranden (Matchlista)</option>
                         <option value="owngoals">Självmål (Matchlista)</option>
                         <option value="hattricks">Hattricks (Matchlista)</option>
+                        <option value="opening_official">VM:s Öppningsmatcher</option>
+                        <option value="opening_host">Värdnationernas Premiärmatcher</option>
+                        <option value="opening_defending">Regerande mästarnas Premiärmatcher</option>
                     <!-- Nya geografiska perspektiv -->
                         <option value="arenas">Geografi: Arenor (Flest matcher)</option>
                         <option value="cities">Geografi: Städer (Högst totalpublik)</option>
@@ -321,6 +324,7 @@ def build_dashboard():
             <div class="flex border-b border-slate-300 mb-6 space-x-2">
                 <button id="player-sub-btn-search" onclick="switchPlayerSubTab('player-view-search')" class="px-4 py-2 font-bold text-sm text-blue-900 border-b-2 border-blue-900 bg-white rounded-t-lg shadow-sm">🔍 Sök Spelarprofil</button>
                 <button id="player-sub-btn-top" onclick="switchPlayerSubTab('player-view-top')" class="px-4 py-2 font-bold text-sm text-slate-500 hover:text-blue-900 border-b-2 border-transparent transition">⭐ Topplistor</button>
+            <button id="player-sub-btn-best" onclick="switchPlayerSubTab('player-view-best')" class="px-4 py-2 font-bold text-sm text-slate-500 hover:text-blue-900 border-b-2 border-transparent transition">🏆 Bästa Spelare</button>
             </div>
 
             <!-- SPELARPROFILEN -->
@@ -432,6 +436,9 @@ def build_dashboard():
 
                 <div id="top-list-results" class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden"></div>
             </div>
+            <div id="player-view-best" class="player-sub-content hidden">
+                <div id="best-players-container"></div>
+            </div>
         </div>
 
         <!-- FLIK 7: DOMARE & TRÄNARE -->
@@ -467,7 +474,7 @@ def build_dashboard():
         <div id="tab-admin" class="tab-content hidden">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
                 <div class="flex items-center gap-4">
-                    <h2 class="text-xl font-bold text-red-800">Kvalitetssäkring & Felsökning</h2>
+                    <h2 class="text-xl font-bold text-red-800">Kvalitetssäkring & Felsökning 🕵️‍♂️</h2>
                     <span class="text-sm text-slate-500 font-medium hidden sm:inline">Sammanställning: Jimmy Lindahl</span>
                 </div>
                 <button onclick="renderAdminWarnings()" class="text-sm bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded transition whitespace-nowrap">Uppdatera logg</button>
@@ -1815,8 +1822,135 @@ def build_dashboard():
                         <td class="p-3 text-right pr-4 font-bold text-slate-500">${pct}%</td>
                     </tr>`;
                 });
-                
+                        
                 if (csList.length === 0) html += `<tr><td colspan="6" class="p-6 text-center text-slate-500 italic">Ingen data hittades för denna filtrering.</td></tr>`;
+            }
+            else if (type === 'opening_official') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">År</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Match (Datum)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Resultat</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Notering</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                let years = Object.keys(db.tournaments).sort((a,b) => b - a);
+                if (year !== 'all') years = years.filter(y => y === year);
+                
+                let listData = [];
+                years.forEach(y => {
+                    let t = db.tournaments[y];
+                    if (!t.opening_match) return;
+                    let m = db.matches[t.opening_match];
+                    if (!m) return;
+                    if (nation !== 'all' && getMappedTeamName(m.home_team) !== nation && getMappedTeamName(m.away_team) !== nation) return;
+                    listData.push({ y: y, m: m, t: t });
+                });
+                
+                listData.forEach((item, i) => {
+                    let m = item.m, t = item.t;
+                    let note = t.comment ? `<div class="text-[10px] text-slate-500 italic bg-slate-50 px-2 py-1.5 rounded border border-slate-200 inline-block text-left max-w-xs whitespace-normal leading-tight">${t.comment}</div>` : '<span class="text-slate-300">-</span>';
+                    
+                    // Skapa en snygg sträng för tiden om den finns, annars lämna tomt
+                    // Gör om "15:00:00" till "15:00" ifall det finns en tid
+                    let timeStr = "";
+                    if (m.time) {
+                        // Tvinga till text och plocka tecken 0 till 5 (t.ex. "15:00")
+                        timeStr = ` kl. ${String(m.time).substring(0, 5)}`; 
+                    }
+
+                    // VIKTIGT: Kolla så att ${timeStr} finns med efter ${m.date} på raden nedanför!
+                    html += `<tr class="hover:bg-blue-50 cursor-pointer transition" onclick="openMatchModal('${m.id}')">
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-blue-900 text-center">${item.y}</td>
+                        <td class="p-3 font-medium text-slate-700">
+                            ${m.home_team} - ${m.away_team} 
+                            <span class="text-[10px] text-slate-400 block">${m.date}${timeStr} (${m.phase})</span>
+                        </td>
+                        <td class="p-3 text-center font-bold text-slate-800 bg-slate-50 border-x border-slate-100">${formatScore(m)}</td>
+                        <td class="p-3 text-center">${note}</td>
+                    </tr>`;
+                });
+                if (listData.length === 0) html += `<tr><td colspan="5" class="p-6 text-center text-slate-500 italic">Inga premiärmatcher hittades för denna filtrering.</td></tr>`;
+            }
+            else if (type === 'opening_host') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">År</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Värdnation</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Match (Datum)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Resultat</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let years = Object.keys(db.tournaments).sort((a,b) => b - a);
+                if (year !== 'all') years = years.filter(y => y === year);
+                
+                let listData = [];
+                years.forEach(y => {
+                    let t = db.tournaments[y];
+                    if (!t.host || t.host === "Okänd") return;
+                    let hosts = t.host.split(/&|,|\//).map(h => h.trim()).filter(h => h);
+                    
+                    let tMatches = t.matches.map(id => db.matches[id]).filter(m => m);
+                    tMatches.sort((a,b) => new Date(a.date) - new Date(b.date) || parseInt(a.id) - parseInt(b.id));
+                    
+                    hosts.forEach(h => {
+                        let hMapped = getMappedTeamName(h);
+                        if (nation !== 'all' && hMapped !== nation) return;
+                        
+                        let firstMatch = tMatches.find(m => getMappedTeamName(m.home_team) === hMapped || getMappedTeamName(m.away_team) === hMapped);
+                        listData.push({ y: y, host: hMapped, m: firstMatch });
+                    });
+                });
+                
+                listData.forEach((item, i) => {
+                    let m = item.m;
+                    html += `<tr class="hover:bg-blue-50 transition ${m ? 'cursor-pointer' : ''}" ${m ? `onclick="openMatchModal('${m.id}')"` : ''}>
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-blue-900 text-center">${item.y}</td>
+                        <td class="p-3 font-bold text-slate-700">${item.host}</td>`;
+                        
+                    if (m) {
+                        html += `<td class="p-3 font-medium text-slate-700">${m.home_team} - ${m.away_team} <span class="text-[10px] text-slate-400 block">${m.date} (${m.phase})</span></td>
+                        <td class="p-3 text-center font-bold text-slate-800 bg-slate-50 border-l border-slate-100">${formatScore(m)}</td></tr>`;
+                    } else {
+                        html += `<td class="p-3 text-slate-400 italic" colspan="2">Spelade inga matcher (ex. drog sig ur)</td></tr>`;
+                    }
+                });
+                if (listData.length === 0) html += `<tr><td colspan="5" class="p-6 text-center text-slate-500 italic">Inga värdnationsmatcher hittades för denna filtrering.</td></tr>`;
+            }
+            else if (type === 'opening_defending') {
+                html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">År</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Reg. Mästare</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Match (Datum)</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Resultat</th></tr></thead><tbody class="divide-y divide-slate-100">';
+                
+                let sortedYearsAsc = Object.keys(db.tournaments).sort((a,b) => a - b);
+                let defData = {};
+                let prevWinner = null;
+                sortedYearsAsc.forEach(y => {
+                    let t = db.tournaments[y];
+                    if (prevWinner) defData[y] = prevWinner;
+                    if (t.winner && t.winner !== "Okänd") prevWinner = getMappedTeamName(t.winner);
+                    else prevWinner = null;
+                });
+                
+                let years = Object.keys(db.tournaments).sort((a,b) => b - a);
+                if (year !== 'all') years = years.filter(y => y === year);
+                
+                let listData = [];
+                years.forEach(y => {
+                    let defChamp = defData[y];
+                    if (!defChamp) return;
+                    if (nation !== 'all' && defChamp !== nation) return;
+                    
+                    let t = db.tournaments[y];
+                    let tMatches = t.matches.map(id => db.matches[id]).filter(m => m);
+                    tMatches.sort((a,b) => new Date(a.date) - new Date(b.date) || parseInt(a.id) - parseInt(b.id));
+                    
+                    let firstMatch = tMatches.find(m => getMappedTeamName(m.home_team) === defChamp || getMappedTeamName(m.away_team) === defChamp);
+                    listData.push({ y: y, champ: defChamp, m: firstMatch });
+                });
+                
+                listData.forEach((item, i) => {
+                    let m = item.m;
+                    html += `<tr class="hover:bg-blue-50 transition ${m ? 'cursor-pointer' : ''}" ${m ? `onclick="openMatchModal('${m.id}')"` : ''}>
+                        <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
+                        <td class="p-3 font-bold text-blue-900 text-center">${item.y}</td>
+                        <td class="p-3 font-bold text-slate-700">${item.champ}</td>`;
+                        
+                    if (m) {
+                        html += `<td class="p-3 font-medium text-slate-700">${m.home_team} - ${m.away_team} <span class="text-[10px] text-slate-400 block">${m.date} (${m.phase})</span></td>
+                        <td class="p-3 text-center font-bold text-slate-800 bg-slate-50 border-l border-slate-100">${formatScore(m)}</td></tr>`;
+                    } else {
+                        html += `<td class="p-3 text-slate-400 italic" colspan="2">Deltog ej i denna turnering</td></tr>`;
+                    }
+                });
+                if (listData.length === 0) html += `<tr><td colspan="5" class="p-6 text-center text-slate-500 italic">Inga matcher för regerande mästare hittades för denna filtrering.</td></tr>`;
             }
 
             // NYTT TILLÄGG: ARENOR
@@ -1997,16 +2131,32 @@ def build_dashboard():
         window.playerSearchCurrentPage = 0;
 
         function switchPlayerSubTab(subViewId) {
+            // Gömmer alla behållare som har klassen "player-sub-content"
             document.querySelectorAll('.player-sub-content').forEach(el => el.classList.add('hidden'));
+            
+            // Visar den vi klickade på
             document.getElementById(subViewId).classList.remove('hidden');
-            const tabs = [ {id: 'player-view-search', btn: 'player-sub-btn-search'}, {id: 'player-view-top', btn: 'player-sub-btn-top'} ];
+            
+            // Array med alla våra tre flikar
+            const tabs = [ 
+                {id: 'player-view-search', btn: 'player-sub-btn-search'}, 
+                {id: 'player-view-top', btn: 'player-sub-btn-top'},
+                {id: 'player-view-best', btn: 'player-sub-btn-best'} // <-- NYA FLIKEN TILLAGD HÄR
+            ];
+            
+            // Uppdaterar utseendet på knapparna
             tabs.forEach(t => {
                 const btn = document.getElementById(t.btn);
-                if (t.id === subViewId) btn.className = "px-4 py-2 font-bold text-sm text-blue-900 border-b-2 border-blue-900 bg-white rounded-t-lg shadow-sm";
-                else btn.className = "px-4 py-2 font-bold text-sm text-slate-500 hover:text-blue-900 border-b-2 border-transparent transition";
+                if (btn) {
+                    if (t.id === subViewId) btn.className = "px-4 py-2 font-bold text-sm text-blue-900 border-b-2 border-blue-900 bg-white rounded-t-lg shadow-sm";
+                    else btn.className = "px-4 py-2 font-bold text-sm text-slate-500 hover:text-blue-900 border-b-2 border-transparent transition";
+                }
             });
+            
+            // Särskilda händelser när man öppnar en specifik flik
             if (subViewId === 'player-view-search') document.getElementById('player-search-input').focus();
             if (subViewId === 'player-view-top') { populateTopNations(); renderTopList(); }
+            if (subViewId === 'player-view-best') { renderBestPlayersTab(); } // <-- KALLAR PÅ VÅR NYA FUNKTION
         }
 
         function populatePlayerNations() {
@@ -2340,6 +2490,60 @@ def build_dashboard():
 
             html += '</tbody></table>';
             container.innerHTML = html;
+        }
+        function renderBestPlayersTab() {
+            const tabTitle = "VM:s Bästa Spelare (Guldbollen)";
+            const tabFooterComment = "Notera: Utmärkelsen för turneringens bästa spelare har utsetts på olika sätt genom åren. Fram till 1978 utsågs spelarna ofta inofficiellt av journalister, medan det officiella priset (Guldbollen) infördes 1982.";
+            
+            let html = `<h2 class="text-xl font-bold text-blue-900 mb-4">${tabTitle}</h2>`;
+
+            html += `<table class="w-full text-left border-collapse bg-white shadow-sm rounded-lg overflow-hidden">
+                        <thead class="bg-slate-100">
+                            <tr>
+                                <th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">År</th>
+                                <th class="p-3 text-xs font-semibold text-slate-500 uppercase">Värdnation</th>
+                                <th class="p-3 text-xs font-semibold text-slate-500 uppercase">Bästa Spelare</th>
+                                <th class="p-3 text-xs font-semibold text-slate-500 uppercase">Nation</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">`;
+            
+            // Hämta alla turneringar från databasen (jag förutsätter att din variabel heter db)
+            let tournaments = Object.values(db.tournaments);
+            
+            // Sortera turneringarna i fallande ordning (nyast först)
+            tournaments.sort((a, b) => b.year - a.year);
+
+            // Loopa igenom turneringarna och bygg en rad för varje
+            tournaments.forEach(t => {
+                // Vi skriver bara ut raden om det faktiskt finns en "Bästa spelare" angiven
+                if (t.best_player) {
+                    // Om vi inte hittade något land sätter vi ett bindestreck
+                    let countryStr = t.best_player_country ? t.best_player_country : '<span class="text-slate-300">-</span>';
+                    
+                    // Formatera namnet med din smarta funktion
+                    let formattedName = formatName(t.best_player);
+
+                    // Lägg till onclick och pekare för att visa att raden är klickbar.
+                    // OBS: Dubbelkolla att din funktion för spelarprofilen heter 'openPlayerModal'. 
+                    // Om den heter något annat (t.ex. 'showPlayer' eller 'openPlayerProfile'), byt ut det nedan!
+                    html += `   <tr class="hover:bg-blue-100 transition cursor-pointer" onclick="openPlayerProfile('${t.best_player}')">
+                                    <td class="p-3 font-bold text-blue-900 text-center">${t.year}</td>
+                                    <td class="p-3 text-slate-700 font-medium">${t.host}</td>
+                                    <td class="p-3 font-bold text-blue-700">${formattedName}</td>
+                                    <td class="p-3 text-slate-600">${countryStr}</td>
+                                </tr>`;
+                }
+            });
+
+            html += `   </tbody>
+                     </table>`;
+
+            html += `<div class="mt-4 p-4 bg-slate-50 border-l-4 border-blue-400 text-sm text-slate-600 italic rounded-r-lg shadow-sm">
+                        ${tabFooterComment}
+                     </div>`;
+
+            document.getElementById('best-players-container').innerHTML = html;
         }
 
         // =========================================================

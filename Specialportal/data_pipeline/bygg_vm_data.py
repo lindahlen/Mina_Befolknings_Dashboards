@@ -250,16 +250,38 @@ def build_database():
     # -- 3B. BYGG TURNERINGAR OCH MATCHER --
     for _, row in df_turnering.iterrows():
         ar = str(row['Turn_År'])
+        
+        # 1. Hämta bästa spelare först, så vi kan använda namnet för att söka
+        best_player_name = str(row.get('Bästa_Spelare')).strip() if pd.notna(row.get('Bästa_Spelare')) else ""
+        best_player_country = ""
+        
+        # 2. Om det finns ett namn, leta upp spelarens land i trupp-fliken
+        if best_player_name and best_player_name.lower() not in ['nan', 'none']:
+            match_trupp = df_trupper[
+                (df_trupper['Turn_År'] == row['Turn_År']) & 
+                (df_trupper['Namn'] == best_player_name)
+            ]
+            if not match_trupp.empty:
+                best_player_country = str(match_trupp.iloc[0]['Land']).strip()
+
+        # 3. Bygg turneringsobjektet (nu med best_player_country tillagd)
         db["tournaments"][ar] = {
             "year": safe_int(row['Turn_År']),
             "host": str(row['Värdland']),
             "winner": str(row['Mästare']),
+            "number_win": str(row['Titel_NR']),
+            "best_player": best_player_name,  # Använder variabeln från steg 1
+            "best_player_country": best_player_country,  # Den nya nationen vi hittade i steg 2
+            "opening_match": str(row.get('Premiärmatch')).strip() if pd.notna(row.get('Premiärmatch')) else "",
+            "comment": str(row.get('Kommentar')).strip() if pd.notna(row.get('Kommentar')) else "",
             "matches": [],
             "stats": {} 
         }
 
     for _, row in df_matcher.iterrows():
         match_id = str(row['Match_ID'])
+        raw_time = str(row.get('Klockslag', ''))
+        safe_time = raw_time.strip() if raw_time not in ['nan', 'NaT', 'None', ''] else ""
         home_team = str(row['Hemmalag'])
         away_team = str(row['Bortalag'])
         
@@ -299,6 +321,7 @@ def build_database():
             "attendance": safe_int(row['Publik']),
             "referee": str(row.get('Domare', '')),
             "referee_country": str(row.get('Domarland', '')),
+            "time": safe_time,
             "home_team": home_team,
             "away_team": away_team,
             "coaches": {

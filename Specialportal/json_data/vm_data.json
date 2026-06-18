@@ -1,27 +1,27 @@
 {
   "metadata": {
     "title": "Fotbolls-VM Historik 1930-",
-    "last_updated": "2026-06-17"
+    "last_updated": "2026-06-18"
   },
   "admin_warnings": [
-    "Snarlika namn (Dublettrisk): Marín, Luis, Marin, Luis, Marin, Luís är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Suárez, Luis, Suarez, Luis är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Otamendi, Nicolás, Otamendi, Nicolas är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Sosa, Rubén, Sosa, Rúben är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Weiss, Vladimír, Weiss, Vladimir är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Kim Bok-yung, Kim Bo-kyung är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Sanchez, Carlos, Sánchez, Carlos är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Paulo Sérgio, Paulo Sergio är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Pérez, Luís, Pérez, Luis är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Sosa, Rúben, Sosa, Rubén är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Ooijer, Andre, Ooijer, André är väldigt lika i 'Namn'-fliken.",
     "Snarlika namn (Dublettrisk): Gómez, Gabriel, Gomez, Gabriel är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Rodríguez, Alberto, Rodriguez, Alberto är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Pérez, Hugo, Perez, Hugo är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): André, Andre är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Pak Nam-chol, Pak Nam-chol 2 är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Kozak, Jan 1, Kozak, Jan är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Rodriguez, Ignacio, Rodríguez, Ignacio är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Kim Bo-kyung, Kim Bok-yung är väldigt lika i 'Namn'-fliken.",
     "Snarlika namn (Dublettrisk): El-Khalej, Tahar, El Khalej, Tahar är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Rodríguez, Ignacio, Rodriguez, Ignacio är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Ooijer, André, Ooijer, Andre är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Pak Nam-chol 2, Pak Nam-chol är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Weiss, Vladimír, Weiss, Vladimir är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Kozak, Jan, Kozak, Jan 1 är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Paulo Sergio, Paulo Sérgio är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Marín, Luis, Marin, Luís, Marin, Luis är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Andre, André är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Suárez, Luis, Suarez, Luis är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Sanchez, Carlos, Sánchez, Carlos är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Otamendi, Nicolás, Otamendi, Nicolas är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Pérez, Luís, Pérez, Luis är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Rodriguez, Alberto, Rodríguez, Alberto är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Perez, Hugo, Pérez, Hugo är väldigt lika i 'Namn'-fliken.",
     "Tidsgap-varning: Namnet 'Joel' sträcker sig över 40 år (från 1930 till 1970). Kontrollera om det är två olika personer.",
     "Tidsgap-varning: Namnet 'Germano' sträcker sig över 64 år (från 1934 till 1998). Kontrollera om det är två olika personer.",
     "Tidsgap-varning: Namnet 'Augusto' sträcker sig över 68 år (från 1950 till 2018). Kontrollera om det är två olika personer.",
@@ -4420,6 +4420,7 @@
       "winner": "Uruguay",
       "number_win": "1.0",
       "best_player": "Nasazzi, José",
+      "best_player_country": "Uruguay",
       "opening_match": "1",
       "comment": "Två matcher började 15:00. Angiven match där det första målet gjordes",
       "matches": [
@@ -4471,6 +4472,7 @@
       "winner": "Italien",
       "number_win": "1.0",
       "best_player": "Meazza, Giuseppe",
+      "best_player_country": "Italien",
       "opening_match": "20",
       "comment": "Åtta matcher började 16:30. Angiven match där det första målet gjordes",
       "matches": [
@@ -4521,6 +4523,7 @@
       "winner": "Italien",
       "number_win": "2.0",
       "best_player": "Leônidas",
+      "best_player_country": "Brasilien",
       "opening_match": "36",
       "comment": "",
       "matches": [
@@ -4572,6 +4575,7 @@
       "winner": "Uruguay",
       "number_win": "2.0",
       "best_player": "Zizinho",
+      "best_player_country": "Brasilien",
       "opening_match": "54",
       "comment": "",
       "matches": [
@@ -4627,6 +4631,7 @@
       "winner": "Västtyskland",
       "number_win": "1.0",
       "best_player": "Puskás, Ferenc",
+      "best_player_country": "Ungern",
       "opening_match": "76",
       "comment": "Fyra matcher började 18:00. Angiven match där det första målet gjordes",
       "matches": [
@@ -4686,6 +4691,7 @@
       "winner": "Brasilien",
       "number_win": "1.0",
       "best_player": "Didi",
+      "best_player_country": "",
       "opening_match": "102",
       "comment": "",
       "matches": [
@@ -4754,6 +4760,7 @@
       "winner": "Brasilien",
       "number_win": "2.0",
       "best_player": "Garrincha",
+      "best_player_country": "Brasilien",
       "opening_match": "140",
       "comment": "Fyra matcher började 15:00. Angiven match där det första målet gjordes",
       "matches": [
@@ -4839,6 +4846,7 @@
       "winner": "England",
       "number_win": "1.0",
       "best_player": "Charlton, Bobby",
+      "best_player_country": "England",
       "opening_match": "169",
       "comment": "",
       "matches": [
@@ -4904,6 +4912,7 @@
       "winner": "Brasilien",
       "number_win": "3.0",
       "best_player": "Pelé",
+      "best_player_country": "Brasilien",
       "opening_match": "201",
       "comment": "",
       "matches": [
@@ -4969,6 +4978,7 @@
       "winner": "Västtyskland",
       "number_win": "2.0",
       "best_player": "Cruyff, Johan",
+      "best_player_country": "Holland",
       "opening_match": "233",
       "comment": "",
       "matches": [
@@ -5040,6 +5050,7 @@
       "winner": "Argentina",
       "number_win": "1.0",
       "best_player": "Kempes, Mario",
+      "best_player_country": "Argentina",
       "opening_match": "271",
       "comment": "",
       "matches": [
@@ -5111,6 +5122,7 @@
       "winner": "Italien",
       "number_win": "3.0",
       "best_player": "Rossi, Paolo",
+      "best_player_country": "Italien",
       "opening_match": "309",
       "comment": "",
       "matches": [
@@ -5196,6 +5208,7 @@
       "winner": "Argentina",
       "number_win": "2.0",
       "best_player": "Maradona, Diego",
+      "best_player_country": "Argentina",
       "opening_match": "631",
       "comment": "",
       "matches": [
@@ -5281,6 +5294,7 @@
       "winner": "Västtyskland",
       "number_win": "3.0",
       "best_player": "Schillaci, Salvatore",
+      "best_player_country": "Italien",
       "opening_match": "413",
       "comment": "",
       "matches": [
@@ -5366,6 +5380,7 @@
       "winner": "Brasilien",
       "number_win": "4.0",
       "best_player": "Romário",
+      "best_player_country": "Brasilien",
       "opening_match": "465",
       "comment": "",
       "matches": [
@@ -5455,6 +5470,7 @@
       "winner": "Frankrike",
       "number_win": "1.0",
       "best_player": "Ronaldo",
+      "best_player_country": "Brasilien",
       "opening_match": "517",
       "comment": "",
       "matches": [
@@ -5552,6 +5568,7 @@
       "winner": "Brasilien",
       "number_win": "5.0",
       "best_player": "Kahn, Oliver",
+      "best_player_country": "Tyskland",
       "opening_match": "581",
       "comment": "",
       "matches": [
@@ -5649,6 +5666,7 @@
       "winner": "Italien",
       "number_win": "4.0",
       "best_player": "Zidane, Zinedine",
+      "best_player_country": "Frankrike",
       "opening_match": "645",
       "comment": "",
       "matches": [
@@ -5746,6 +5764,7 @@
       "winner": "Spanien",
       "number_win": "1.0",
       "best_player": "Forlán, Diego",
+      "best_player_country": "Uruguay",
       "opening_match": "709",
       "comment": "",
       "matches": [
@@ -5855,6 +5874,7 @@
       "winner": "Tyskland",
       "number_win": "4.0",
       "best_player": "Messi, Lionel",
+      "best_player_country": "Argentina",
       "opening_match": "773",
       "comment": "",
       "matches": [
@@ -5952,6 +5972,7 @@
       "winner": "Frankrike",
       "number_win": "2.0",
       "best_player": "Modric, Luka",
+      "best_player_country": "Kroatien",
       "opening_match": "837",
       "comment": "",
       "matches": [
@@ -6049,6 +6070,7 @@
       "winner": "Argentina",
       "number_win": "3.0",
       "best_player": "Messi, Lionel",
+      "best_player_country": "Argentina",
       "opening_match": "901",
       "comment": "",
       "matches": [
@@ -6146,6 +6168,7 @@
       "winner": "",
       "number_win": "",
       "best_player": "",
+      "best_player_country": "",
       "opening_match": "965",
       "comment": "",
       "matches": [],
