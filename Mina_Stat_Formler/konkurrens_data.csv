@@ -503,8 +503,8 @@ Fem till tolv;2020;BRP;492.2000000000001
 Fem till tolv;2021;BRP;524.575
 Fem till tolv;2022;BRP;555.8875
 Fem till tolv;2023;BRP;581.8
-Fem till tolv;2024;BRP;581.8
-Fem till tolv;2025;BRP;581.8
+Fem till tolv;2024;BRP;600.3304538896505
+Fem till tolv;2025;BRP;600.3304538896505
 Fyra stora;2000;BRP;340.5
 Fyra stora;2001;BRP;357.175
 Fyra stora;2002;BRP;360.525
@@ -529,8 +529,8 @@ Fyra stora;2020;BRP;688.075
 Fyra stora;2021;BRP;746.425
 Fyra stora;2022;BRP;819.4000000000001
 Fyra stora;2023;BRP;853.825
-Fyra stora;2024;BRP;853.825
-Fyra stora;2025;BRP;853.825
+Fyra stora;2024;BRP;899.812990658804
+Fyra stora;2025;BRP;899.812990658804
 Göteborg;2000;BRP;337.3
 Göteborg;2001;BRP;366.8
 Göteborg;2002;BRP;355.7
@@ -555,8 +555,8 @@ Göteborg;2020;BRP;683.2
 Göteborg;2021;BRP;742.7
 Göteborg;2022;BRP;826.5
 Göteborg;2023;BRP;899.5
-Göteborg;2024;BRP;899.5
-Göteborg;2025;BRP;899.5
+Göteborg;2024;BRP;886.4041054408792
+Göteborg;2025;BRP;886.4041054408792
 Helsingborg;2000;BRP;281.0
 Helsingborg;2001;BRP;291.7
 Helsingborg;2002;BRP;312.0
@@ -581,8 +581,8 @@ Helsingborg;2020;BRP;484.0
 Helsingborg;2021;BRP;501.8
 Helsingborg;2022;BRP;524.3
 Helsingborg;2023;BRP;551.6
-Helsingborg;2024;BRP;551.6
-Helsingborg;2025;BRP;551.6
+Helsingborg;2024;BRP;572.6885895378003
+Helsingborg;2025;BRP;572.6885895378003
 Jönköping;2000;BRP;253.0
 Jönköping;2001;BRP;262.0
 Jönköping;2002;BRP;271.9
@@ -607,8 +607,8 @@ Jönköping;2020;BRP;492.0
 Jönköping;2021;BRP;526.1
 Jönköping;2022;BRP;541.9
 Jönköping;2023;BRP;559.4
-Jönköping;2024;BRP;559.4
-Jönköping;2025;BRP;559.4
+Jönköping;2024;BRP;568.7320252539863
+Jönköping;2025;BRP;568.7320252539863
 Linköping;2000;BRP;256.6
 Linköping;2001;BRP;259.4
 Linköping;2002;BRP;284.2
@@ -633,8 +633,8 @@ Linköping;2020;BRP;567.4
 Linköping;2021;BRP;602.0
 Linköping;2022;BRP;620.6
 Linköping;2023;BRP;667.3
-Linköping;2024;BRP;667.3
-Linköping;2025;BRP;667.3
+Linköping;2024;BRP;695.9178867096551
+Linköping;2025;BRP;695.9178867096551
 Lkpg-Nkpg;2000;BRP;245.2
 Lkpg-Nkpg;2001;BRP;255.75
 Lkpg-Nkpg;2002;BRP;269.2
@@ -659,8 +659,8 @@ Lkpg-Nkpg;2020;BRP;487.65
 Lkpg-Nkpg;2021;BRP;520.65
 Lkpg-Nkpg;2022;BRP;548.05
 Lkpg-Nkpg;2023;BRP;576.3499999999999
-Lkpg-Nkpg;2024;BRP;576.3499999999999
-Lkpg-Nkpg;2025;BRP;576.3499999999999
+Lkpg-Nkpg;2024;BRP;586.5964427947589
+Lkpg-Nkpg;2025;BRP;586.5964427947589
 Lund;2000;BRP;316.8
 Lund;2001;BRP;323.4
 Lund;2002;BRP;358.6
@@ -685,8 +685,8 @@ Lund;2020;BRP;592.2
 Lund;2021;BRP;624.9
 Lund;2022;BRP;667.9
 Lund;2023;BRP;689.5
-Lund;2024;BRP;689.5
-Lund;2025;BRP;689.5
+Lund;2024;BRP;718.1817487532362
+Lund;2025;BRP;718.1817487532362
 Länet exkl Linköping;2000;BRP;233.9
 Länet exkl Linköping;2001;BRP;249.63333333333333
 Länet exkl Linköping;2002;BRP;255.0666666666667
@@ -711,8 +711,8 @@ Länet exkl Linköping;2020;BRP;414.4666666666667
 Länet exkl Linköping;2021;BRP;445.7
 Länet exkl Linköping;2022;BRP;478.06666666666666
 Länet exkl Linköping;2023;BRP;495.8333333333333
-Länet exkl Linköping;2024;BRP;495.8333333333333
-Länet exkl Linköping;2025;BRP;495.8333333333333
+Länet exkl Linköping;2024;BRP;493.077272108816
+Länet exkl Linköping;2025;BRP;493.077272108816
 Länet exkl Norrköping;2000;BRP;249.1
 Länet exkl Norrköping;2001;BRP;254.5
 Länet exkl Norrköping;2002;BRP;275.06666666666666
@@ -737,8 +737,8 @@ Länet exkl Norrköping;2020;BRP;520.8000000000001
 Länet exkl Norrköping;2021;BRP;554.1666666666666
 Länet exkl Norrköping;2022;BRP;574.8000000000001
 Länet exkl Norrköping;2023;BRP;617.1
-Länet exkl Norrköping;2024;BRP;617.1
-Länet exkl Norrköping;2025;BRP;617.1
+Länet exkl Norrköping;2024;BRP;638.8391973286776
+Länet exkl Norrköping;2025;BRP;638.8391973286776
 Malmö;2000;BRP;293.3
 Malmö;2001;BRP;305.9
 Malmö;2002;BRP;311.6
@@ -763,8 +763,8 @@ Malmö;2020;BRP;575.9
 Malmö;2021;BRP;623.5
 Malmö;2022;BRP;659.2
 Malmö;2023;BRP;686.9
-Malmö;2024;BRP;686.9
-Malmö;2025;BRP;686.9
+Malmö;2024;BRP;730.3033758967375
+Malmö;2025;BRP;730.3033758967375
 Norrköping;2000;BRP;233.8
 Norrköping;2001;BRP;252.1
 Norrköping;2002;BRP;254.2
@@ -789,8 +789,8 @@ Norrköping;2020;BRP;407.9
 Norrköping;2021;BRP;439.3
 Norrköping;2022;BRP;475.5
 Norrköping;2023;BRP;485.4
-Norrköping;2024;BRP;485.4
-Norrköping;2025;BRP;485.4
+Norrköping;2024;BRP;477.27499887986266
+Norrköping;2025;BRP;477.27499887986266
 Riket;2000;BRP;255.3
 Riket;2001;BRP;264.0
 Riket;2002;BRP;273.8
@@ -815,8 +815,8 @@ Riket;2020;BRP;484.2
 Riket;2021;BRP;520.1
 Riket;2022;BRP;554.6
 Riket;2023;BRP;583.0
-Riket;2024;BRP;583.0
-Riket;2025;BRP;583.0
+Riket;2024;BRP;609.5758459185511
+Riket;2025;BRP;609.5758459185511
 Sex till tolv;2000;BRP;258.9428571428571
 Sex till tolv;2001;BRP;272.11428571428576
 Sex till tolv;2002;BRP;285.3428571428571
@@ -841,8 +841,8 @@ Sex till tolv;2020;BRP;481.4571428571429
 Sex till tolv;2021;BRP;513.5142857142857
 Sex till tolv;2022;BRP;546.6428571428571
 Sex till tolv;2023;BRP;569.5857142857143
-Sex till tolv;2024;BRP;569.5857142857143
-Sex till tolv;2025;BRP;569.5857142857143
+Sex till tolv;2024;BRP;586.6751063439355
+Sex till tolv;2025;BRP;586.6751063439355
 Sex till tolv minus tio;2000;BRP;263.1333333333333
 Sex till tolv minus tio;2001;BRP;275.45
 Sex till tolv minus tio;2002;BRP;290.53333333333336
@@ -867,8 +867,8 @@ Sex till tolv minus tio;2020;BRP;493.7166666666667
 Sex till tolv minus tio;2021;BRP;525.8833333333333
 Sex till tolv minus tio;2022;BRP;558.4999999999999
 Sex till tolv minus tio;2023;BRP;583.6166666666667
-Sex till tolv minus tio;2024;BRP;583.6166666666667
-Sex till tolv minus tio;2025;BRP;583.6166666666667
+Sex till tolv minus tio;2024;BRP;604.9084575879476
+Sex till tolv minus tio;2025;BRP;604.9084575879476
 Stockholm;2000;BRP;502.5
 Stockholm;2001;BRP;504.3
 Stockholm;2002;BRP;508.5
@@ -893,8 +893,8 @@ Stockholm;2020;BRP;957.1
 Stockholm;2021;BRP;1053.0
 Stockholm;2022;BRP;1143.2
 Stockholm;2023;BRP;1166.3
-Stockholm;2024;BRP;1166.3
-Stockholm;2025;BRP;1166.3
+Stockholm;2024;BRP;1280.0908231070837
+Stockholm;2025;BRP;1280.0908231070837
 Tolv största;2000;BRP;285.93333333333334
 Tolv största;2001;BRP;299.40833333333336
 Tolv största;2002;BRP;310.3083333333333
@@ -919,8 +919,8 @@ Tolv största;2020;BRP;557.4916666666667
 Tolv största;2021;BRP;598.5250000000001
 Tolv största;2022;BRP;643.725
 Tolv största;2023;BRP;672.475
-Tolv största;2024;BRP;672.475
-Tolv största;2025;BRP;672.475
+Tolv största;2024;BRP;700.157966146035
+Tolv största;2025;BRP;700.157966146035
 Tolv största minus fem;2000;BRP;288.6
 Tolv största minus fem;2001;BRP;303.04545454545456
 Tolv största minus fem;2002;BRP;312.68181818181813
@@ -945,8 +945,8 @@ Tolv största minus fem;2020;BRP;556.590909090909
 Tolv största minus fem;2021;BRP;598.2090909090911
 Tolv största minus fem;2022;BRP;645.8272727272728
 Tolv största minus fem;2023;BRP;672.9454545454546
-Tolv största minus fem;2024;BRP;672.9454545454546
-Tolv största minus fem;2025;BRP;672.9454545454546
+Tolv största minus fem;2024;BRP;700.5434279129786
+Tolv största minus fem;2025;BRP;700.5434279129786
 Tre största;2000;BRP;377.7
 Tre största;2001;BRP;392.3333333333333
 Tre största;2002;BRP;391.9333333333333
@@ -971,8 +971,8 @@ Tre största;2020;BRP;738.7333333333332
 Tre största;2021;BRP;806.4
 Tre största;2022;BRP;876.3000000000001
 Tre största;2023;BRP;917.5666666666666
-Tre största;2024;BRP;917.5666666666666
-Tre största;2025;BRP;917.5666666666666
+Tre största;2024;BRP;965.5994348149
+Tre största;2025;BRP;965.5994348149
 Umeå;2000;BRP;231.3
 Umeå;2001;BRP;251.9
 Umeå;2002;BRP;264.8
@@ -997,8 +997,8 @@ Umeå;2020;BRP;455.9
 Umeå;2021;BRP;521.1
 Umeå;2022;BRP;579.0
 Umeå;2023;BRP;610.3
-Umeå;2024;BRP;610.3
-Umeå;2025;BRP;610.3
+Umeå;2024;BRP;639.3057529737413
+Umeå;2025;BRP;639.3057529737413
 Uppsala;2000;BRP;228.9
 Uppsala;2001;BRP;251.7
 Uppsala;2002;BRP;266.3
@@ -1023,8 +1023,8 @@ Uppsala;2020;BRP;536.1
 Uppsala;2021;BRP;566.5
 Uppsala;2022;BRP;648.7
 Uppsala;2023;BRP;662.6
-Uppsala;2024;BRP;662.6
-Uppsala;2025;BRP;662.6
+Uppsala;2024;BRP;702.4536581905157
+Uppsala;2025;BRP;702.4536581905157
 Västerås;2000;BRP;261.0
 Västerås;2001;BRP;274.2
 Västerås;2002;BRP;271.2
@@ -1049,8 +1049,8 @@ Västerås;2020;BRP;445.9
 Västerås;2021;BRP;463.1
 Västerås;2022;BRP;492.6
 Västerås;2023;BRP;501.2
-Västerås;2024;BRP;501.2
-Västerås;2025;BRP;501.2
+Västerås;2024;BRP;518.8076029672552
+Västerås;2025;BRP;518.8076029672552
 Örebro;2000;BRP;235.7
 Örebro;2001;BRP;249.5
 Örebro;2002;BRP;264.7
@@ -1075,8 +1075,8 @@ Västerås;2025;BRP;501.2
 Örebro;2021;BRP;518.3
 Örebro;2022;BRP;545.3
 Örebro;2023;BRP;589.7
-Örebro;2024;BRP;589.7
-Örebro;2025;BRP;589.7
+Örebro;2024;BRP;611.7350260416666
+Örebro;2025;BRP;611.7350260416666
 Östergötlands län;2000;BRP;234.1
 Östergötlands län;2001;BRP;244.7
 Östergötlands län;2002;BRP;256.8
@@ -1101,8 +1101,8 @@ Västerås;2025;BRP;501.2
 Östergötlands län;2021;BRP;458.5
 Östergötlands län;2022;BRP;483.2
 Östergötlands län;2023;BRP;516.7
-Östergötlands län;2024;BRP;516.7
-Östergötlands län;2025;BRP;516.7
+Östergötlands län;2024;BRP;524.6818185667228
+Östergötlands län;2025;BRP;524.6818185667228
 Fem till tolv;2000;Bostadsbyggande;191.52500000000003
 Fem till tolv;2001;Bostadsbyggande;250.1625
 Fem till tolv;2002;Bostadsbyggande;310.36249999999995
@@ -7211,6 +7211,1254 @@ Västerås;2025;KIBS;7103.200000000001
 Östergötlands län;2023;KIBS;21788.2
 Östergötlands län;2024;KIBS;21730.2
 Östergötlands län;2025;KIBS;21730.2
+Fem till tolv;2000;Lång_eftergymnasial_ant25;102478.0
+Fem till tolv;2001;Lång_eftergymnasial_ant25;108102.0
+Fem till tolv;2002;Lång_eftergymnasial_ant25;114157.0
+Fem till tolv;2003;Lång_eftergymnasial_ant25;119039.0
+Fem till tolv;2004;Lång_eftergymnasial_ant25;125027.0
+Fem till tolv;2005;Lång_eftergymnasial_ant25;131667.0
+Fem till tolv;2006;Lång_eftergymnasial_ant25;136436.0
+Fem till tolv;2007;Lång_eftergymnasial_ant25;141330.0
+Fem till tolv;2008;Lång_eftergymnasial_ant25;145421.0
+Fem till tolv;2009;Lång_eftergymnasial_ant25;149519.0
+Fem till tolv;2010;Lång_eftergymnasial_ant25;153037.0
+Fem till tolv;2011;Lång_eftergymnasial_ant25;156786.0
+Fem till tolv;2012;Lång_eftergymnasial_ant25;160833.0
+Fem till tolv;2013;Lång_eftergymnasial_ant25;164947.0
+Fem till tolv;2014;Lång_eftergymnasial_ant25;169313.0
+Fem till tolv;2015;Lång_eftergymnasial_ant25;172295.0
+Fem till tolv;2016;Lång_eftergymnasial_ant25;177724.0
+Fem till tolv;2017;Lång_eftergymnasial_ant25;182848.0
+Fem till tolv;2018;Lång_eftergymnasial_ant25;188674.0
+Fem till tolv;2019;Lång_eftergymnasial_ant25;194676.0
+Fem till tolv;2020;Lång_eftergymnasial_ant25;199869.0
+Fem till tolv;2021;Lång_eftergymnasial_ant25;204431.0
+Fem till tolv;2022;Lång_eftergymnasial_ant25;209084.0
+Fem till tolv;2023;Lång_eftergymnasial_ant25;212661.0
+Fem till tolv;2024;Lång_eftergymnasial_ant25;217152.0
+Fem till tolv;2025;Lång_eftergymnasial_ant25;221804.0
+Fyra stora;2000;Lång_eftergymnasial_ant25;237196.0
+Fyra stora;2001;Lång_eftergymnasial_ant25;251599.0
+Fyra stora;2002;Lång_eftergymnasial_ant25;262926.0
+Fyra stora;2003;Lång_eftergymnasial_ant25;273442.0
+Fyra stora;2004;Lång_eftergymnasial_ant25;285460.0
+Fyra stora;2005;Lång_eftergymnasial_ant25;299491.0
+Fyra stora;2006;Lång_eftergymnasial_ant25;311430.0
+Fyra stora;2007;Lång_eftergymnasial_ant25;323793.0
+Fyra stora;2008;Lång_eftergymnasial_ant25;335943.0
+Fyra stora;2009;Lång_eftergymnasial_ant25;348006.0
+Fyra stora;2010;Lång_eftergymnasial_ant25;359617.0
+Fyra stora;2011;Lång_eftergymnasial_ant25;372039.0
+Fyra stora;2012;Lång_eftergymnasial_ant25;383360.0
+Fyra stora;2013;Lång_eftergymnasial_ant25;395183.0
+Fyra stora;2014;Lång_eftergymnasial_ant25;406675.0
+Fyra stora;2015;Lång_eftergymnasial_ant25;418079.0
+Fyra stora;2016;Lång_eftergymnasial_ant25;430335.0
+Fyra stora;2017;Lång_eftergymnasial_ant25;442377.0
+Fyra stora;2018;Lång_eftergymnasial_ant25;457874.0
+Fyra stora;2019;Lång_eftergymnasial_ant25;472390.0
+Fyra stora;2020;Lång_eftergymnasial_ant25;484143.0
+Fyra stora;2021;Lång_eftergymnasial_ant25;494415.0
+Fyra stora;2022;Lång_eftergymnasial_ant25;509941.0
+Fyra stora;2023;Lång_eftergymnasial_ant25;521830.0
+Fyra stora;2024;Lång_eftergymnasial_ant25;533343.0
+Fyra stora;2025;Lång_eftergymnasial_ant25;544832.0
+Göteborg;2000;Lång_eftergymnasial_ant25;58768.0
+Göteborg;2001;Lång_eftergymnasial_ant25;62725.0
+Göteborg;2002;Lång_eftergymnasial_ant25;66571.0
+Göteborg;2003;Lång_eftergymnasial_ant25;69901.0
+Göteborg;2004;Lång_eftergymnasial_ant25;73457.0
+Göteborg;2005;Lång_eftergymnasial_ant25;77327.0
+Göteborg;2006;Lång_eftergymnasial_ant25;80017.0
+Göteborg;2007;Lång_eftergymnasial_ant25;82568.0
+Göteborg;2008;Lång_eftergymnasial_ant25;85327.0
+Göteborg;2009;Lång_eftergymnasial_ant25;87966.0
+Göteborg;2010;Lång_eftergymnasial_ant25;90428.0
+Göteborg;2011;Lång_eftergymnasial_ant25;93294.0
+Göteborg;2012;Lång_eftergymnasial_ant25;95774.0
+Göteborg;2013;Lång_eftergymnasial_ant25;98358.0
+Göteborg;2014;Lång_eftergymnasial_ant25;101300.0
+Göteborg;2015;Lång_eftergymnasial_ant25;104301.0
+Göteborg;2016;Lång_eftergymnasial_ant25;107627.0
+Göteborg;2017;Lång_eftergymnasial_ant25;110666.0
+Göteborg;2018;Lång_eftergymnasial_ant25;114888.0
+Göteborg;2019;Lång_eftergymnasial_ant25;118792.0
+Göteborg;2020;Lång_eftergymnasial_ant25;121813.0
+Göteborg;2021;Lång_eftergymnasial_ant25;123994.0
+Göteborg;2022;Lång_eftergymnasial_ant25;128393.0
+Göteborg;2023;Lång_eftergymnasial_ant25;132505.0
+Göteborg;2024;Lång_eftergymnasial_ant25;135424.0
+Göteborg;2025;Lång_eftergymnasial_ant25;138423.0
+Helsingborg;2000;Lång_eftergymnasial_ant25;9411.0
+Helsingborg;2001;Lång_eftergymnasial_ant25;9962.0
+Helsingborg;2002;Lång_eftergymnasial_ant25;10545.0
+Helsingborg;2003;Lång_eftergymnasial_ant25;11092.0
+Helsingborg;2004;Lång_eftergymnasial_ant25;11659.0
+Helsingborg;2005;Lång_eftergymnasial_ant25;12549.0
+Helsingborg;2006;Lång_eftergymnasial_ant25;13126.0
+Helsingborg;2007;Lång_eftergymnasial_ant25;13718.0
+Helsingborg;2008;Lång_eftergymnasial_ant25;14205.0
+Helsingborg;2009;Lång_eftergymnasial_ant25;14595.0
+Helsingborg;2010;Lång_eftergymnasial_ant25;14798.0
+Helsingborg;2011;Lång_eftergymnasial_ant25;15228.0
+Helsingborg;2012;Lång_eftergymnasial_ant25;15528.0
+Helsingborg;2013;Lång_eftergymnasial_ant25;15851.0
+Helsingborg;2014;Lång_eftergymnasial_ant25;16330.0
+Helsingborg;2015;Lång_eftergymnasial_ant25;16931.0
+Helsingborg;2016;Lång_eftergymnasial_ant25;17611.0
+Helsingborg;2017;Lång_eftergymnasial_ant25;18149.0
+Helsingborg;2018;Lång_eftergymnasial_ant25;19115.0
+Helsingborg;2019;Lång_eftergymnasial_ant25;19778.0
+Helsingborg;2020;Lång_eftergymnasial_ant25;20473.0
+Helsingborg;2021;Lång_eftergymnasial_ant25;20901.0
+Helsingborg;2022;Lång_eftergymnasial_ant25;21496.0
+Helsingborg;2023;Lång_eftergymnasial_ant25;21790.0
+Helsingborg;2024;Lång_eftergymnasial_ant25;22150.0
+Helsingborg;2025;Lång_eftergymnasial_ant25;22581.0
+Jönköping;2000;Lång_eftergymnasial_ant25;9093.0
+Jönköping;2001;Lång_eftergymnasial_ant25;9703.0
+Jönköping;2002;Lång_eftergymnasial_ant25;10385.0
+Jönköping;2003;Lång_eftergymnasial_ant25;10856.0
+Jönköping;2004;Lång_eftergymnasial_ant25;11545.0
+Jönköping;2005;Lång_eftergymnasial_ant25;12281.0
+Jönköping;2006;Lång_eftergymnasial_ant25;12951.0
+Jönköping;2007;Lång_eftergymnasial_ant25;13539.0
+Jönköping;2008;Lång_eftergymnasial_ant25;14079.0
+Jönköping;2009;Lång_eftergymnasial_ant25;14506.0
+Jönköping;2010;Lång_eftergymnasial_ant25;15080.0
+Jönköping;2011;Lång_eftergymnasial_ant25;15549.0
+Jönköping;2012;Lång_eftergymnasial_ant25;16059.0
+Jönköping;2013;Lång_eftergymnasial_ant25;16594.0
+Jönköping;2014;Lång_eftergymnasial_ant25;17107.0
+Jönköping;2015;Lång_eftergymnasial_ant25;17472.0
+Jönköping;2016;Lång_eftergymnasial_ant25;18061.0
+Jönköping;2017;Lång_eftergymnasial_ant25;18660.0
+Jönköping;2018;Lång_eftergymnasial_ant25;19414.0
+Jönköping;2019;Lång_eftergymnasial_ant25;20107.0
+Jönköping;2020;Lång_eftergymnasial_ant25;20958.0
+Jönköping;2021;Lång_eftergymnasial_ant25;21724.0
+Jönköping;2022;Lång_eftergymnasial_ant25;22369.0
+Jönköping;2023;Lång_eftergymnasial_ant25;22857.0
+Jönköping;2024;Lång_eftergymnasial_ant25;23511.0
+Jönköping;2025;Lång_eftergymnasial_ant25;24008.0
+Linköping;2000;Lång_eftergymnasial_ant25;16567.0
+Linköping;2001;Lång_eftergymnasial_ant25;17537.0
+Linköping;2002;Lång_eftergymnasial_ant25;18455.0
+Linköping;2003;Lång_eftergymnasial_ant25;19125.0
+Linköping;2004;Lång_eftergymnasial_ant25;19910.0
+Linköping;2005;Lång_eftergymnasial_ant25;20738.0
+Linköping;2006;Lång_eftergymnasial_ant25;21555.0
+Linköping;2007;Lång_eftergymnasial_ant25;22336.0
+Linköping;2008;Lång_eftergymnasial_ant25;22998.0
+Linköping;2009;Lång_eftergymnasial_ant25;23851.0
+Linköping;2010;Lång_eftergymnasial_ant25;24620.0
+Linköping;2011;Lång_eftergymnasial_ant25;25200.0
+Linköping;2012;Lång_eftergymnasial_ant25;25920.0
+Linköping;2013;Lång_eftergymnasial_ant25;26700.0
+Linköping;2014;Lång_eftergymnasial_ant25;27450.0
+Linköping;2015;Lång_eftergymnasial_ant25;27938.0
+Linköping;2016;Lång_eftergymnasial_ant25;28944.0
+Linköping;2017;Lång_eftergymnasial_ant25;29750.0
+Linköping;2018;Lång_eftergymnasial_ant25;30743.0
+Linköping;2019;Lång_eftergymnasial_ant25;31794.0
+Linköping;2020;Lång_eftergymnasial_ant25;32506.0
+Linköping;2021;Lång_eftergymnasial_ant25;32948.0
+Linköping;2022;Lång_eftergymnasial_ant25;33428.0
+Linköping;2023;Lång_eftergymnasial_ant25;33829.0
+Linköping;2024;Lång_eftergymnasial_ant25;34262.0
+Linköping;2025;Lång_eftergymnasial_ant25;35010.0
+Lkpg-Nkpg;2000;Lång_eftergymnasial_ant25;24190.0
+Lkpg-Nkpg;2001;Lång_eftergymnasial_ant25;25736.0
+Lkpg-Nkpg;2002;Lång_eftergymnasial_ant25;27282.0
+Lkpg-Nkpg;2003;Lång_eftergymnasial_ant25;28538.0
+Lkpg-Nkpg;2004;Lång_eftergymnasial_ant25;29953.0
+Lkpg-Nkpg;2005;Lång_eftergymnasial_ant25;31410.0
+Lkpg-Nkpg;2006;Lång_eftergymnasial_ant25;32818.0
+Lkpg-Nkpg;2007;Lång_eftergymnasial_ant25;34099.0
+Lkpg-Nkpg;2008;Lång_eftergymnasial_ant25;35291.0
+Lkpg-Nkpg;2009;Lång_eftergymnasial_ant25;36585.0
+Lkpg-Nkpg;2010;Lång_eftergymnasial_ant25;37753.0
+Lkpg-Nkpg;2011;Lång_eftergymnasial_ant25;38669.0
+Lkpg-Nkpg;2012;Lång_eftergymnasial_ant25;39847.0
+Lkpg-Nkpg;2013;Lång_eftergymnasial_ant25;40983.0
+Lkpg-Nkpg;2014;Lång_eftergymnasial_ant25;42212.0
+Lkpg-Nkpg;2015;Lång_eftergymnasial_ant25;43242.0
+Lkpg-Nkpg;2016;Lång_eftergymnasial_ant25;44891.0
+Lkpg-Nkpg;2017;Lång_eftergymnasial_ant25;46217.0
+Lkpg-Nkpg;2018;Lång_eftergymnasial_ant25;47703.0
+Lkpg-Nkpg;2019;Lång_eftergymnasial_ant25;49357.0
+Lkpg-Nkpg;2020;Lång_eftergymnasial_ant25;50562.0
+Lkpg-Nkpg;2021;Lång_eftergymnasial_ant25;51552.0
+Lkpg-Nkpg;2022;Lång_eftergymnasial_ant25;52579.0
+Lkpg-Nkpg;2023;Lång_eftergymnasial_ant25;53346.0
+Lkpg-Nkpg;2024;Lång_eftergymnasial_ant25;54218.0
+Lkpg-Nkpg;2025;Lång_eftergymnasial_ant25;55478.0
+Lund;2000;Lång_eftergymnasial_ant25;22479.0
+Lund;2001;Lång_eftergymnasial_ant25;23354.0
+Lund;2002;Lång_eftergymnasial_ant25;24169.0
+Lund;2003;Lång_eftergymnasial_ant25;24659.0
+Lund;2004;Lång_eftergymnasial_ant25;25310.0
+Lund;2005;Lång_eftergymnasial_ant25;26119.0
+Lund;2006;Lång_eftergymnasial_ant25;26486.0
+Lund;2007;Lång_eftergymnasial_ant25;27255.0
+Lund;2008;Lång_eftergymnasial_ant25;27769.0
+Lund;2009;Lång_eftergymnasial_ant25;28270.0
+Lund;2010;Lång_eftergymnasial_ant25;28515.0
+Lund;2011;Lång_eftergymnasial_ant25;29039.0
+Lund;2012;Lång_eftergymnasial_ant25;29582.0
+Lund;2013;Lång_eftergymnasial_ant25;30165.0
+Lund;2014;Lång_eftergymnasial_ant25;30792.0
+Lund;2015;Lång_eftergymnasial_ant25;30701.0
+Lund;2016;Lång_eftergymnasial_ant25;31330.0
+Lund;2017;Lång_eftergymnasial_ant25;32023.0
+Lund;2018;Lång_eftergymnasial_ant25;32454.0
+Lund;2019;Lång_eftergymnasial_ant25;33131.0
+Lund;2020;Lång_eftergymnasial_ant25;33536.0
+Lund;2021;Lång_eftergymnasial_ant25;34114.0
+Lund;2022;Lång_eftergymnasial_ant25;34692.0
+Lund;2023;Lång_eftergymnasial_ant25;35015.0
+Lund;2024;Lång_eftergymnasial_ant25;35688.0
+Lund;2025;Lång_eftergymnasial_ant25;36325.0
+Länet exkl Linköping;2000;Lång_eftergymnasial_ant25;15120.0
+Länet exkl Linköping;2001;Lång_eftergymnasial_ant25;15955.0
+Länet exkl Linköping;2002;Lång_eftergymnasial_ant25;16991.0
+Länet exkl Linköping;2003;Lång_eftergymnasial_ant25;17882.0
+Länet exkl Linköping;2004;Lång_eftergymnasial_ant25;18983.0
+Länet exkl Linköping;2005;Lång_eftergymnasial_ant25;20031.0
+Länet exkl Linköping;2006;Lång_eftergymnasial_ant25;20960.0
+Länet exkl Linköping;2007;Lång_eftergymnasial_ant25;21882.0
+Länet exkl Linköping;2008;Lång_eftergymnasial_ant25;22673.0
+Länet exkl Linköping;2009;Lång_eftergymnasial_ant25;23353.0
+Länet exkl Linköping;2010;Lång_eftergymnasial_ant25;24034.0
+Länet exkl Linköping;2011;Lång_eftergymnasial_ant25;24664.0
+Länet exkl Linköping;2012;Lång_eftergymnasial_ant25;25300.0
+Länet exkl Linköping;2013;Lång_eftergymnasial_ant25;25949.0
+Länet exkl Linköping;2014;Lång_eftergymnasial_ant25;26645.0
+Länet exkl Linköping;2015;Lång_eftergymnasial_ant25;27423.0
+Länet exkl Linköping;2016;Lång_eftergymnasial_ant25;28462.0
+Länet exkl Linköping;2017;Lång_eftergymnasial_ant25;29367.0
+Länet exkl Linköping;2018;Lång_eftergymnasial_ant25;30100.0
+Länet exkl Linköping;2019;Lång_eftergymnasial_ant25;31070.0
+Länet exkl Linköping;2020;Lång_eftergymnasial_ant25;31946.0
+Länet exkl Linköping;2021;Lång_eftergymnasial_ant25;32887.0
+Länet exkl Linköping;2022;Lång_eftergymnasial_ant25;33777.0
+Länet exkl Linköping;2023;Lång_eftergymnasial_ant25;34437.0
+Länet exkl Linköping;2024;Lång_eftergymnasial_ant25;35198.0
+Länet exkl Linköping;2025;Lång_eftergymnasial_ant25;36029.0
+Länet exkl Norrköping;2000;Lång_eftergymnasial_ant25;24064.0
+Länet exkl Norrköping;2001;Lång_eftergymnasial_ant25;25293.0
+Länet exkl Norrköping;2002;Lång_eftergymnasial_ant25;26619.0
+Länet exkl Norrköping;2003;Lång_eftergymnasial_ant25;27594.0
+Länet exkl Norrköping;2004;Lång_eftergymnasial_ant25;28850.0
+Länet exkl Norrköping;2005;Lång_eftergymnasial_ant25;30097.0
+Länet exkl Norrköping;2006;Lång_eftergymnasial_ant25;31252.0
+Länet exkl Norrköping;2007;Lång_eftergymnasial_ant25;32455.0
+Länet exkl Norrköping;2008;Lång_eftergymnasial_ant25;33378.0
+Länet exkl Norrköping;2009;Lång_eftergymnasial_ant25;34470.0
+Länet exkl Norrköping;2010;Lång_eftergymnasial_ant25;35521.0
+Länet exkl Norrköping;2011;Lång_eftergymnasial_ant25;36395.0
+Länet exkl Norrköping;2012;Lång_eftergymnasial_ant25;37293.0
+Länet exkl Norrköping;2013;Lång_eftergymnasial_ant25;38366.0
+Länet exkl Norrköping;2014;Lång_eftergymnasial_ant25;39333.0
+Länet exkl Norrköping;2015;Lång_eftergymnasial_ant25;40057.0
+Länet exkl Norrköping;2016;Lång_eftergymnasial_ant25;41459.0
+Länet exkl Norrköping;2017;Lång_eftergymnasial_ant25;42650.0
+Länet exkl Norrköping;2018;Lång_eftergymnasial_ant25;43883.0
+Länet exkl Norrköping;2019;Lång_eftergymnasial_ant25;45301.0
+Länet exkl Norrköping;2020;Lång_eftergymnasial_ant25;46396.0
+Länet exkl Norrköping;2021;Lång_eftergymnasial_ant25;47231.0
+Länet exkl Norrköping;2022;Lång_eftergymnasial_ant25;48054.0
+Länet exkl Norrköping;2023;Lång_eftergymnasial_ant25;48749.0
+Länet exkl Norrköping;2024;Lång_eftergymnasial_ant25;49504.0
+Länet exkl Norrköping;2025;Lång_eftergymnasial_ant25;50571.0
+Malmö;2000;Lång_eftergymnasial_ant25;24840.0
+Malmö;2001;Lång_eftergymnasial_ant25;27023.0
+Malmö;2002;Lång_eftergymnasial_ant25;29197.0
+Malmö;2003;Lång_eftergymnasial_ant25;31085.0
+Malmö;2004;Lång_eftergymnasial_ant25;33552.0
+Malmö;2005;Lång_eftergymnasial_ant25;36305.0
+Malmö;2006;Lång_eftergymnasial_ant25;38965.0
+Malmö;2007;Lång_eftergymnasial_ant25;41500.0
+Malmö;2008;Lång_eftergymnasial_ant25;43841.0
+Malmö;2009;Lång_eftergymnasial_ant25;46180.0
+Malmö;2010;Lång_eftergymnasial_ant25;47840.0
+Malmö;2011;Lång_eftergymnasial_ant25;49636.0
+Malmö;2012;Lång_eftergymnasial_ant25;51272.0
+Malmö;2013;Lång_eftergymnasial_ant25;52950.0
+Malmö;2014;Lång_eftergymnasial_ant25;54742.0
+Malmö;2015;Lång_eftergymnasial_ant25;56526.0
+Malmö;2016;Lång_eftergymnasial_ant25;58619.0
+Malmö;2017;Lång_eftergymnasial_ant25;60099.0
+Malmö;2018;Lång_eftergymnasial_ant25;62464.0
+Malmö;2019;Lång_eftergymnasial_ant25;64698.0
+Malmö;2020;Lång_eftergymnasial_ant25;67263.0
+Malmö;2021;Lång_eftergymnasial_ant25;69473.0
+Malmö;2022;Lång_eftergymnasial_ant25;72445.0
+Malmö;2023;Lång_eftergymnasial_ant25;75062.0
+Malmö;2024;Lång_eftergymnasial_ant25;77452.0
+Malmö;2025;Lång_eftergymnasial_ant25;79776.0
+Norrköping;2000;Lång_eftergymnasial_ant25;7623.0
+Norrköping;2001;Lång_eftergymnasial_ant25;8199.0
+Norrköping;2002;Lång_eftergymnasial_ant25;8827.0
+Norrköping;2003;Lång_eftergymnasial_ant25;9413.0
+Norrköping;2004;Lång_eftergymnasial_ant25;10043.0
+Norrköping;2005;Lång_eftergymnasial_ant25;10672.0
+Norrköping;2006;Lång_eftergymnasial_ant25;11263.0
+Norrköping;2007;Lång_eftergymnasial_ant25;11763.0
+Norrköping;2008;Lång_eftergymnasial_ant25;12293.0
+Norrköping;2009;Lång_eftergymnasial_ant25;12734.0
+Norrköping;2010;Lång_eftergymnasial_ant25;13133.0
+Norrköping;2011;Lång_eftergymnasial_ant25;13469.0
+Norrköping;2012;Lång_eftergymnasial_ant25;13927.0
+Norrköping;2013;Lång_eftergymnasial_ant25;14283.0
+Norrköping;2014;Lång_eftergymnasial_ant25;14762.0
+Norrköping;2015;Lång_eftergymnasial_ant25;15304.0
+Norrköping;2016;Lång_eftergymnasial_ant25;15947.0
+Norrköping;2017;Lång_eftergymnasial_ant25;16467.0
+Norrköping;2018;Lång_eftergymnasial_ant25;16960.0
+Norrköping;2019;Lång_eftergymnasial_ant25;17563.0
+Norrköping;2020;Lång_eftergymnasial_ant25;18056.0
+Norrköping;2021;Lång_eftergymnasial_ant25;18604.0
+Norrköping;2022;Lång_eftergymnasial_ant25;19151.0
+Norrköping;2023;Lång_eftergymnasial_ant25;19517.0
+Norrköping;2024;Lång_eftergymnasial_ant25;19956.0
+Norrköping;2025;Lång_eftergymnasial_ant25;20468.0
+Riket;2000;Lång_eftergymnasial_ant25;762600.0
+Riket;2001;Lång_eftergymnasial_ant25;802743.0
+Riket;2002;Lång_eftergymnasial_ant25;844514.0
+Riket;2003;Lång_eftergymnasial_ant25;878633.0
+Riket;2004;Lång_eftergymnasial_ant25;921229.0
+Riket;2005;Lång_eftergymnasial_ant25;972344.0
+Riket;2006;Lång_eftergymnasial_ant25;1011499.0
+Riket;2007;Lång_eftergymnasial_ant25;1051282.0
+Riket;2008;Lång_eftergymnasial_ant25;1085193.0
+Riket;2009;Lång_eftergymnasial_ant25;1116905.0
+Riket;2010;Lång_eftergymnasial_ant25;1147264.0
+Riket;2011;Lång_eftergymnasial_ant25;1180659.0
+Riket;2012;Lång_eftergymnasial_ant25;1210497.0
+Riket;2013;Lång_eftergymnasial_ant25;1242680.0
+Riket;2014;Lång_eftergymnasial_ant25;1278299.0
+Riket;2015;Lång_eftergymnasial_ant25;1314031.0
+Riket;2016;Lång_eftergymnasial_ant25;1355731.0
+Riket;2017;Lång_eftergymnasial_ant25;1394599.0
+Riket;2018;Lång_eftergymnasial_ant25;1442021.0
+Riket;2019;Lång_eftergymnasial_ant25;1487106.0
+Riket;2020;Lång_eftergymnasial_ant25;1529674.0
+Riket;2021;Lång_eftergymnasial_ant25;1573969.0
+Riket;2022;Lång_eftergymnasial_ant25;1621543.0
+Riket;2023;Lång_eftergymnasial_ant25;1657745.0
+Riket;2024;Lång_eftergymnasial_ant25;1695493.0
+Riket;2025;Lång_eftergymnasial_ant25;1733819.0
+Sex till tolv;2000;Lång_eftergymnasial_ant25;85911.0
+Sex till tolv;2001;Lång_eftergymnasial_ant25;90565.0
+Sex till tolv;2002;Lång_eftergymnasial_ant25;95702.0
+Sex till tolv;2003;Lång_eftergymnasial_ant25;99914.0
+Sex till tolv;2004;Lång_eftergymnasial_ant25;105117.0
+Sex till tolv;2005;Lång_eftergymnasial_ant25;110929.0
+Sex till tolv;2006;Lång_eftergymnasial_ant25;114881.0
+Sex till tolv;2007;Lång_eftergymnasial_ant25;118994.0
+Sex till tolv;2008;Lång_eftergymnasial_ant25;122423.0
+Sex till tolv;2009;Lång_eftergymnasial_ant25;125668.0
+Sex till tolv;2010;Lång_eftergymnasial_ant25;128417.0
+Sex till tolv;2011;Lång_eftergymnasial_ant25;131586.0
+Sex till tolv;2012;Lång_eftergymnasial_ant25;134913.0
+Sex till tolv;2013;Lång_eftergymnasial_ant25;138247.0
+Sex till tolv;2014;Lång_eftergymnasial_ant25;141863.0
+Sex till tolv;2015;Lång_eftergymnasial_ant25;144357.0
+Sex till tolv;2016;Lång_eftergymnasial_ant25;148780.0
+Sex till tolv;2017;Lång_eftergymnasial_ant25;153098.0
+Sex till tolv;2018;Lång_eftergymnasial_ant25;157931.0
+Sex till tolv;2019;Lång_eftergymnasial_ant25;162882.0
+Sex till tolv;2020;Lång_eftergymnasial_ant25;167363.0
+Sex till tolv;2021;Lång_eftergymnasial_ant25;171483.0
+Sex till tolv;2022;Lång_eftergymnasial_ant25;175656.0
+Sex till tolv;2023;Lång_eftergymnasial_ant25;178832.0
+Sex till tolv;2024;Lång_eftergymnasial_ant25;182890.0
+Sex till tolv;2025;Lång_eftergymnasial_ant25;186794.0
+Sex till tolv minus tio;2000;Lång_eftergymnasial_ant25;78288.0
+Sex till tolv minus tio;2001;Lång_eftergymnasial_ant25;82366.0
+Sex till tolv minus tio;2002;Lång_eftergymnasial_ant25;86875.0
+Sex till tolv minus tio;2003;Lång_eftergymnasial_ant25;90501.0
+Sex till tolv minus tio;2004;Lång_eftergymnasial_ant25;95074.0
+Sex till tolv minus tio;2005;Lång_eftergymnasial_ant25;100257.0
+Sex till tolv minus tio;2006;Lång_eftergymnasial_ant25;103618.0
+Sex till tolv minus tio;2007;Lång_eftergymnasial_ant25;107231.0
+Sex till tolv minus tio;2008;Lång_eftergymnasial_ant25;110130.0
+Sex till tolv minus tio;2009;Lång_eftergymnasial_ant25;112934.0
+Sex till tolv minus tio;2010;Lång_eftergymnasial_ant25;115284.0
+Sex till tolv minus tio;2011;Lång_eftergymnasial_ant25;118117.0
+Sex till tolv minus tio;2012;Lång_eftergymnasial_ant25;120986.0
+Sex till tolv minus tio;2013;Lång_eftergymnasial_ant25;123964.0
+Sex till tolv minus tio;2014;Lång_eftergymnasial_ant25;127101.0
+Sex till tolv minus tio;2015;Lång_eftergymnasial_ant25;129053.0
+Sex till tolv minus tio;2016;Lång_eftergymnasial_ant25;132833.0
+Sex till tolv minus tio;2017;Lång_eftergymnasial_ant25;136631.0
+Sex till tolv minus tio;2018;Lång_eftergymnasial_ant25;140971.0
+Sex till tolv minus tio;2019;Lång_eftergymnasial_ant25;145319.0
+Sex till tolv minus tio;2020;Lång_eftergymnasial_ant25;149307.0
+Sex till tolv minus tio;2021;Lång_eftergymnasial_ant25;152879.0
+Sex till tolv minus tio;2022;Lång_eftergymnasial_ant25;156505.0
+Sex till tolv minus tio;2023;Lång_eftergymnasial_ant25;159315.0
+Sex till tolv minus tio;2024;Lång_eftergymnasial_ant25;162934.0
+Sex till tolv minus tio;2025;Lång_eftergymnasial_ant25;166326.0
+Stockholm;2000;Lång_eftergymnasial_ant25;122668.0
+Stockholm;2001;Lång_eftergymnasial_ant25;129355.0
+Stockholm;2002;Lång_eftergymnasial_ant25;134728.0
+Stockholm;2003;Lång_eftergymnasial_ant25;139061.0
+Stockholm;2004;Lång_eftergymnasial_ant25;144023.0
+Stockholm;2005;Lång_eftergymnasial_ant25;150238.0
+Stockholm;2006;Lång_eftergymnasial_ant25;156175.0
+Stockholm;2007;Lång_eftergymnasial_ant25;162629.0
+Stockholm;2008;Lång_eftergymnasial_ant25;168890.0
+Stockholm;2009;Lång_eftergymnasial_ant25;175003.0
+Stockholm;2010;Lång_eftergymnasial_ant25;181447.0
+Stockholm;2011;Lång_eftergymnasial_ant25;188307.0
+Stockholm;2012;Lång_eftergymnasial_ant25;194642.0
+Stockholm;2013;Lång_eftergymnasial_ant25;201279.0
+Stockholm;2014;Lång_eftergymnasial_ant25;207146.0
+Stockholm;2015;Lång_eftergymnasial_ant25;213066.0
+Stockholm;2016;Lång_eftergymnasial_ant25;218680.0
+Stockholm;2017;Lång_eftergymnasial_ant25;224742.0
+Stockholm;2018;Lång_eftergymnasial_ant25;232120.0
+Stockholm;2019;Lång_eftergymnasial_ant25;238848.0
+Stockholm;2020;Lång_eftergymnasial_ant25;243753.0
+Stockholm;2021;Lång_eftergymnasial_ant25;247972.0
+Stockholm;2022;Lång_eftergymnasial_ant25;254476.0
+Stockholm;2023;Lång_eftergymnasial_ant25;258530.0
+Stockholm;2024;Lång_eftergymnasial_ant25;263575.0
+Stockholm;2025;Lång_eftergymnasial_ant25;268532.0
+Tolv största;2000;Lång_eftergymnasial_ant25;339674.0
+Tolv största;2001;Lång_eftergymnasial_ant25;359701.0
+Tolv största;2002;Lång_eftergymnasial_ant25;377083.0
+Tolv största;2003;Lång_eftergymnasial_ant25;392481.0
+Tolv största;2004;Lång_eftergymnasial_ant25;410487.0
+Tolv största;2005;Lång_eftergymnasial_ant25;431158.0
+Tolv största;2006;Lång_eftergymnasial_ant25;447866.0
+Tolv största;2007;Lång_eftergymnasial_ant25;465123.0
+Tolv största;2008;Lång_eftergymnasial_ant25;481364.0
+Tolv största;2009;Lång_eftergymnasial_ant25;497525.0
+Tolv största;2010;Lång_eftergymnasial_ant25;512654.0
+Tolv största;2011;Lång_eftergymnasial_ant25;528825.0
+Tolv största;2012;Lång_eftergymnasial_ant25;544193.0
+Tolv största;2013;Lång_eftergymnasial_ant25;560130.0
+Tolv största;2014;Lång_eftergymnasial_ant25;575988.0
+Tolv största;2015;Lång_eftergymnasial_ant25;590374.0
+Tolv största;2016;Lång_eftergymnasial_ant25;608059.0
+Tolv största;2017;Lång_eftergymnasial_ant25;625225.0
+Tolv största;2018;Lång_eftergymnasial_ant25;646548.0
+Tolv största;2019;Lång_eftergymnasial_ant25;667066.0
+Tolv största;2020;Lång_eftergymnasial_ant25;684012.0
+Tolv största;2021;Lång_eftergymnasial_ant25;698846.0
+Tolv största;2022;Lång_eftergymnasial_ant25;719025.0
+Tolv största;2023;Lång_eftergymnasial_ant25;734491.0
+Tolv största;2024;Lång_eftergymnasial_ant25;750495.0
+Tolv största;2025;Lång_eftergymnasial_ant25;766636.0
+Tolv största minus fem;2000;Lång_eftergymnasial_ant25;323107.0
+Tolv största minus fem;2001;Lång_eftergymnasial_ant25;342164.0
+Tolv största minus fem;2002;Lång_eftergymnasial_ant25;358628.0
+Tolv största minus fem;2003;Lång_eftergymnasial_ant25;373356.0
+Tolv största minus fem;2004;Lång_eftergymnasial_ant25;390577.0
+Tolv största minus fem;2005;Lång_eftergymnasial_ant25;410420.0
+Tolv största minus fem;2006;Lång_eftergymnasial_ant25;426311.0
+Tolv största minus fem;2007;Lång_eftergymnasial_ant25;442787.0
+Tolv största minus fem;2008;Lång_eftergymnasial_ant25;458366.0
+Tolv största minus fem;2009;Lång_eftergymnasial_ant25;473674.0
+Tolv största minus fem;2010;Lång_eftergymnasial_ant25;488034.0
+Tolv största minus fem;2011;Lång_eftergymnasial_ant25;503625.0
+Tolv största minus fem;2012;Lång_eftergymnasial_ant25;518273.0
+Tolv största minus fem;2013;Lång_eftergymnasial_ant25;533430.0
+Tolv största minus fem;2014;Lång_eftergymnasial_ant25;548538.0
+Tolv största minus fem;2015;Lång_eftergymnasial_ant25;562436.0
+Tolv största minus fem;2016;Lång_eftergymnasial_ant25;579115.0
+Tolv största minus fem;2017;Lång_eftergymnasial_ant25;595475.0
+Tolv största minus fem;2018;Lång_eftergymnasial_ant25;615805.0
+Tolv största minus fem;2019;Lång_eftergymnasial_ant25;635272.0
+Tolv största minus fem;2020;Lång_eftergymnasial_ant25;651506.0
+Tolv största minus fem;2021;Lång_eftergymnasial_ant25;665898.0
+Tolv största minus fem;2022;Lång_eftergymnasial_ant25;685597.0
+Tolv största minus fem;2023;Lång_eftergymnasial_ant25;700662.0
+Tolv största minus fem;2024;Lång_eftergymnasial_ant25;716233.0
+Tolv största minus fem;2025;Lång_eftergymnasial_ant25;731626.0
+Tre största;2000;Lång_eftergymnasial_ant25;206276.0
+Tre största;2001;Lång_eftergymnasial_ant25;219103.0
+Tre största;2002;Lång_eftergymnasial_ant25;230496.0
+Tre största;2003;Lång_eftergymnasial_ant25;240047.0
+Tre största;2004;Lång_eftergymnasial_ant25;251032.0
+Tre största;2005;Lång_eftergymnasial_ant25;263870.0
+Tre största;2006;Lång_eftergymnasial_ant25;275157.0
+Tre största;2007;Lång_eftergymnasial_ant25;286697.0
+Tre största;2008;Lång_eftergymnasial_ant25;298058.0
+Tre största;2009;Lång_eftergymnasial_ant25;309149.0
+Tre största;2010;Lång_eftergymnasial_ant25;319715.0
+Tre största;2011;Lång_eftergymnasial_ant25;331237.0
+Tre största;2012;Lång_eftergymnasial_ant25;341688.0
+Tre största;2013;Lång_eftergymnasial_ant25;352587.0
+Tre största;2014;Lång_eftergymnasial_ant25;363188.0
+Tre största;2015;Lång_eftergymnasial_ant25;373893.0
+Tre största;2016;Lång_eftergymnasial_ant25;384926.0
+Tre största;2017;Lång_eftergymnasial_ant25;395507.0
+Tre största;2018;Lång_eftergymnasial_ant25;409472.0
+Tre största;2019;Lång_eftergymnasial_ant25;422338.0
+Tre största;2020;Lång_eftergymnasial_ant25;432829.0
+Tre största;2021;Lång_eftergymnasial_ant25;441439.0
+Tre största;2022;Lång_eftergymnasial_ant25;455314.0
+Tre största;2023;Lång_eftergymnasial_ant25;466097.0
+Tre största;2024;Lång_eftergymnasial_ant25;476451.0
+Tre största;2025;Lång_eftergymnasial_ant25;486731.0
+Umeå;2000;Lång_eftergymnasial_ant25;14815.0
+Umeå;2001;Lång_eftergymnasial_ant25;15504.0
+Umeå;2002;Lång_eftergymnasial_ant25;16306.0
+Umeå;2003;Lång_eftergymnasial_ant25;17183.0
+Umeå;2004;Lång_eftergymnasial_ant25;18323.0
+Umeå;2005;Lång_eftergymnasial_ant25;19342.0
+Umeå;2006;Lång_eftergymnasial_ant25;19889.0
+Umeå;2007;Lång_eftergymnasial_ant25;20371.0
+Umeå;2008;Lång_eftergymnasial_ant25;20691.0
+Umeå;2009;Lång_eftergymnasial_ant25;21277.0
+Umeå;2010;Lång_eftergymnasial_ant25;21696.0
+Umeå;2011;Lång_eftergymnasial_ant25;22093.0
+Umeå;2012;Lång_eftergymnasial_ant25;22417.0
+Umeå;2013;Lång_eftergymnasial_ant25;22858.0
+Umeå;2014;Lång_eftergymnasial_ant25;23417.0
+Umeå;2015;Lång_eftergymnasial_ant25;23664.0
+Umeå;2016;Lång_eftergymnasial_ant25;24405.0
+Umeå;2017;Lång_eftergymnasial_ant25;25044.0
+Umeå;2018;Lång_eftergymnasial_ant25;25753.0
+Umeå;2019;Lång_eftergymnasial_ant25;26414.0
+Umeå;2020;Lång_eftergymnasial_ant25;27077.0
+Umeå;2021;Lång_eftergymnasial_ant25;27659.0
+Umeå;2022;Lång_eftergymnasial_ant25;28183.0
+Umeå;2023;Lång_eftergymnasial_ant25;28577.0
+Umeå;2024;Lång_eftergymnasial_ant25;29234.0
+Umeå;2025;Lång_eftergymnasial_ant25;29844.0
+Uppsala;2000;Lång_eftergymnasial_ant25;30920.0
+Uppsala;2001;Lång_eftergymnasial_ant25;32496.0
+Uppsala;2002;Lång_eftergymnasial_ant25;32430.0
+Uppsala;2003;Lång_eftergymnasial_ant25;33395.0
+Uppsala;2004;Lång_eftergymnasial_ant25;34428.0
+Uppsala;2005;Lång_eftergymnasial_ant25;35621.0
+Uppsala;2006;Lång_eftergymnasial_ant25;36273.0
+Uppsala;2007;Lång_eftergymnasial_ant25;37096.0
+Uppsala;2008;Lång_eftergymnasial_ant25;37885.0
+Uppsala;2009;Lång_eftergymnasial_ant25;38857.0
+Uppsala;2010;Lång_eftergymnasial_ant25;39902.0
+Uppsala;2011;Lång_eftergymnasial_ant25;40802.0
+Uppsala;2012;Lång_eftergymnasial_ant25;41672.0
+Uppsala;2013;Lång_eftergymnasial_ant25;42596.0
+Uppsala;2014;Lång_eftergymnasial_ant25;43487.0
+Uppsala;2015;Lång_eftergymnasial_ant25;44186.0
+Uppsala;2016;Lång_eftergymnasial_ant25;45409.0
+Uppsala;2017;Lång_eftergymnasial_ant25;46870.0
+Uppsala;2018;Lång_eftergymnasial_ant25;48402.0
+Uppsala;2019;Lång_eftergymnasial_ant25;50052.0
+Uppsala;2020;Lång_eftergymnasial_ant25;51314.0
+Uppsala;2021;Lång_eftergymnasial_ant25;52976.0
+Uppsala;2022;Lång_eftergymnasial_ant25;54627.0
+Uppsala;2023;Lång_eftergymnasial_ant25;55733.0
+Uppsala;2024;Lång_eftergymnasial_ant25;56892.0
+Uppsala;2025;Lång_eftergymnasial_ant25;58101.0
+Västerås;2000;Lång_eftergymnasial_ant25;11400.0
+Västerås;2001;Lång_eftergymnasial_ant25;12153.0
+Västerås;2002;Lång_eftergymnasial_ant25;12959.0
+Västerås;2003;Lång_eftergymnasial_ant25;13557.0
+Västerås;2004;Lång_eftergymnasial_ant25;14344.0
+Västerås;2005;Lång_eftergymnasial_ant25;15187.0
+Västerås;2006;Lång_eftergymnasial_ant25;15748.0
+Västerås;2007;Lång_eftergymnasial_ant25;16277.0
+Västerås;2008;Lång_eftergymnasial_ant25;16700.0
+Västerås;2009;Lång_eftergymnasial_ant25;17100.0
+Västerås;2010;Lång_eftergymnasial_ant25;17491.0
+Västerås;2011;Lång_eftergymnasial_ant25;17938.0
+Västerås;2012;Lång_eftergymnasial_ant25;18473.0
+Västerås;2013;Lång_eftergymnasial_ant25;19008.0
+Västerås;2014;Lång_eftergymnasial_ant25;19571.0
+Västerås;2015;Lång_eftergymnasial_ant25;20028.0
+Västerås;2016;Lång_eftergymnasial_ant25;20516.0
+Västerås;2017;Lång_eftergymnasial_ant25;21071.0
+Västerås;2018;Lång_eftergymnasial_ant25;21831.0
+Västerås;2019;Lång_eftergymnasial_ant25;22650.0
+Västerås;2020;Lång_eftergymnasial_ant25;23362.0
+Västerås;2021;Lång_eftergymnasial_ant25;24089.0
+Västerås;2022;Lång_eftergymnasial_ant25;24934.0
+Västerås;2023;Lång_eftergymnasial_ant25;25636.0
+Västerås;2024;Lång_eftergymnasial_ant25;26439.0
+Västerås;2025;Lång_eftergymnasial_ant25;27074.0
+Örebro;2000;Lång_eftergymnasial_ant25;11090.0
+Örebro;2001;Lång_eftergymnasial_ant25;11690.0
+Örebro;2002;Lång_eftergymnasial_ant25;12511.0
+Örebro;2003;Lång_eftergymnasial_ant25;13154.0
+Örebro;2004;Lång_eftergymnasial_ant25;13893.0
+Örebro;2005;Lång_eftergymnasial_ant25;14779.0
+Örebro;2006;Lång_eftergymnasial_ant25;15418.0
+Örebro;2007;Lång_eftergymnasial_ant25;16071.0
+Örebro;2008;Lång_eftergymnasial_ant25;16686.0
+Örebro;2009;Lång_eftergymnasial_ant25;17186.0
+Örebro;2010;Lång_eftergymnasial_ant25;17704.0
+Örebro;2011;Lång_eftergymnasial_ant25;18270.0
+Örebro;2012;Lång_eftergymnasial_ant25;18927.0
+Örebro;2013;Lång_eftergymnasial_ant25;19488.0
+Örebro;2014;Lång_eftergymnasial_ant25;19884.0
+Örebro;2015;Lång_eftergymnasial_ant25;20257.0
+Örebro;2016;Lång_eftergymnasial_ant25;20910.0
+Örebro;2017;Lång_eftergymnasial_ant25;21684.0
+Örebro;2018;Lång_eftergymnasial_ant25;22404.0
+Örebro;2019;Lång_eftergymnasial_ant25;23239.0
+Örebro;2020;Lång_eftergymnasial_ant25;23901.0
+Örebro;2021;Lång_eftergymnasial_ant25;24392.0
+Örebro;2022;Lång_eftergymnasial_ant25;24831.0
+Örebro;2023;Lång_eftergymnasial_ant25;25440.0
+Örebro;2024;Lång_eftergymnasial_ant25;25912.0
+Örebro;2025;Lång_eftergymnasial_ant25;26494.0
+Östergötlands län;2000;Lång_eftergymnasial_ant25;31687.0
+Östergötlands län;2001;Lång_eftergymnasial_ant25;33492.0
+Östergötlands län;2002;Lång_eftergymnasial_ant25;35446.0
+Östergötlands län;2003;Lång_eftergymnasial_ant25;37007.0
+Östergötlands län;2004;Lång_eftergymnasial_ant25;38893.0
+Östergötlands län;2005;Lång_eftergymnasial_ant25;40769.0
+Östergötlands län;2006;Lång_eftergymnasial_ant25;42515.0
+Östergötlands län;2007;Lång_eftergymnasial_ant25;44218.0
+Östergötlands län;2008;Lång_eftergymnasial_ant25;45671.0
+Östergötlands län;2009;Lång_eftergymnasial_ant25;47204.0
+Östergötlands län;2010;Lång_eftergymnasial_ant25;48654.0
+Östergötlands län;2011;Lång_eftergymnasial_ant25;49864.0
+Östergötlands län;2012;Lång_eftergymnasial_ant25;51220.0
+Östergötlands län;2013;Lång_eftergymnasial_ant25;52649.0
+Östergötlands län;2014;Lång_eftergymnasial_ant25;54095.0
+Östergötlands län;2015;Lång_eftergymnasial_ant25;55361.0
+Östergötlands län;2016;Lång_eftergymnasial_ant25;57406.0
+Östergötlands län;2017;Lång_eftergymnasial_ant25;59117.0
+Östergötlands län;2018;Lång_eftergymnasial_ant25;60843.0
+Östergötlands län;2019;Lång_eftergymnasial_ant25;62864.0
+Östergötlands län;2020;Lång_eftergymnasial_ant25;64452.0
+Östergötlands län;2021;Lång_eftergymnasial_ant25;65835.0
+Östergötlands län;2022;Lång_eftergymnasial_ant25;67205.0
+Östergötlands län;2023;Lång_eftergymnasial_ant25;68266.0
+Östergötlands län;2024;Lång_eftergymnasial_ant25;69460.0
+Östergötlands län;2025;Lång_eftergymnasial_ant25;71039.0
+Fem till tolv;2000;Lång_eftergymnasial_ant35;69088.0
+Fem till tolv;2001;Lång_eftergymnasial_ant35;71595.0
+Fem till tolv;2002;Lång_eftergymnasial_ant35;74307.0
+Fem till tolv;2003;Lång_eftergymnasial_ant35;76264.0
+Fem till tolv;2004;Lång_eftergymnasial_ant35;78912.0
+Fem till tolv;2005;Lång_eftergymnasial_ant35;82449.0
+Fem till tolv;2006;Lång_eftergymnasial_ant35;85663.0
+Fem till tolv;2007;Lång_eftergymnasial_ant35;89155.0
+Fem till tolv;2008;Lång_eftergymnasial_ant35;92854.0
+Fem till tolv;2009;Lång_eftergymnasial_ant35;96460.0
+Fem till tolv;2010;Lång_eftergymnasial_ant35;99750.0
+Fem till tolv;2011;Lång_eftergymnasial_ant35;103221.0
+Fem till tolv;2012;Lång_eftergymnasial_ant35;106904.0
+Fem till tolv;2013;Lång_eftergymnasial_ant35;110256.0
+Fem till tolv;2014;Lång_eftergymnasial_ant35;113887.0
+Fem till tolv;2015;Lång_eftergymnasial_ant35;117418.0
+Fem till tolv;2016;Lång_eftergymnasial_ant35;121431.0
+Fem till tolv;2017;Lång_eftergymnasial_ant35;125249.0
+Fem till tolv;2018;Lång_eftergymnasial_ant35;129305.0
+Fem till tolv;2019;Lång_eftergymnasial_ant35;133618.0
+Fem till tolv;2020;Lång_eftergymnasial_ant35;137688.0
+Fem till tolv;2021;Lång_eftergymnasial_ant35;141856.0
+Fem till tolv;2022;Lång_eftergymnasial_ant35;146208.0
+Fem till tolv;2023;Lång_eftergymnasial_ant35;150515.0
+Fem till tolv;2024;Lång_eftergymnasial_ant35;154778.0
+Fem till tolv;2025;Lång_eftergymnasial_ant35;159347.0
+Fyra stora;2000;Lång_eftergymnasial_ant35;148429.0
+Fyra stora;2001;Lång_eftergymnasial_ant35;154467.0
+Fyra stora;2002;Lång_eftergymnasial_ant35;159326.0
+Fyra stora;2003;Lång_eftergymnasial_ant35;164152.0
+Fyra stora;2004;Lång_eftergymnasial_ant35;170124.0
+Fyra stora;2005;Lång_eftergymnasial_ant35;177781.0
+Fyra stora;2006;Lång_eftergymnasial_ant35;185255.0
+Fyra stora;2007;Lång_eftergymnasial_ant35;193505.0
+Fyra stora;2008;Lång_eftergymnasial_ant35;201964.0
+Fyra stora;2009;Lång_eftergymnasial_ant35;211203.0
+Fyra stora;2010;Lång_eftergymnasial_ant35;219406.0
+Fyra stora;2011;Lång_eftergymnasial_ant35;228496.0
+Fyra stora;2012;Lång_eftergymnasial_ant35;236268.0
+Fyra stora;2013;Lång_eftergymnasial_ant35;244566.0
+Fyra stora;2014;Lång_eftergymnasial_ant35;253167.0
+Fyra stora;2015;Lång_eftergymnasial_ant35;262772.0
+Fyra stora;2016;Lång_eftergymnasial_ant35;272529.0
+Fyra stora;2017;Lång_eftergymnasial_ant35;281536.0
+Fyra stora;2018;Lång_eftergymnasial_ant35;291909.0
+Fyra stora;2019;Lång_eftergymnasial_ant35;302916.0
+Fyra stora;2020;Lång_eftergymnasial_ant35;311913.0
+Fyra stora;2021;Lång_eftergymnasial_ant35;320090.0
+Fyra stora;2022;Lång_eftergymnasial_ant35;331452.0
+Fyra stora;2023;Lång_eftergymnasial_ant35;342691.0
+Fyra stora;2024;Lång_eftergymnasial_ant35;353930.0
+Fyra stora;2025;Lång_eftergymnasial_ant35;365629.0
+Göteborg;2000;Lång_eftergymnasial_ant35;35852.0
+Göteborg;2001;Lång_eftergymnasial_ant35;37360.0
+Göteborg;2002;Lång_eftergymnasial_ant35;39056.0
+Göteborg;2003;Lång_eftergymnasial_ant35;40432.0
+Göteborg;2004;Lång_eftergymnasial_ant35;42205.0
+Göteborg;2005;Lång_eftergymnasial_ant35;44194.0
+Göteborg;2006;Lång_eftergymnasial_ant35;45982.0
+Göteborg;2007;Lång_eftergymnasial_ant35;47949.0
+Göteborg;2008;Lång_eftergymnasial_ant35;49956.0
+Göteborg;2009;Lång_eftergymnasial_ant35;52168.0
+Göteborg;2010;Lång_eftergymnasial_ant35;54114.0
+Göteborg;2011;Lång_eftergymnasial_ant35;56129.0
+Göteborg;2012;Lång_eftergymnasial_ant35;57875.0
+Göteborg;2013;Lång_eftergymnasial_ant35;59694.0
+Göteborg;2014;Lång_eftergymnasial_ant35;61655.0
+Göteborg;2015;Lång_eftergymnasial_ant35;63864.0
+Göteborg;2016;Lång_eftergymnasial_ant35;66157.0
+Göteborg;2017;Lång_eftergymnasial_ant35;68142.0
+Göteborg;2018;Lång_eftergymnasial_ant35;70731.0
+Göteborg;2019;Lång_eftergymnasial_ant35;73590.0
+Göteborg;2020;Lång_eftergymnasial_ant35;75961.0
+Göteborg;2021;Lång_eftergymnasial_ant35;78173.0
+Göteborg;2022;Lång_eftergymnasial_ant35;81298.0
+Göteborg;2023;Lång_eftergymnasial_ant35;84766.0
+Göteborg;2024;Lång_eftergymnasial_ant35;87669.0
+Göteborg;2025;Lång_eftergymnasial_ant35;90923.0
+Helsingborg;2000;Lång_eftergymnasial_ant35;6767.0
+Helsingborg;2001;Lång_eftergymnasial_ant35;7046.0
+Helsingborg;2002;Lång_eftergymnasial_ant35;7329.0
+Helsingborg;2003;Lång_eftergymnasial_ant35;7577.0
+Helsingborg;2004;Lång_eftergymnasial_ant35;7869.0
+Helsingborg;2005;Lång_eftergymnasial_ant35;8340.0
+Helsingborg;2006;Lång_eftergymnasial_ant35;8729.0
+Helsingborg;2007;Lång_eftergymnasial_ant35;9191.0
+Helsingborg;2008;Lång_eftergymnasial_ant35;9624.0
+Helsingborg;2009;Lång_eftergymnasial_ant35;10046.0
+Helsingborg;2010;Lång_eftergymnasial_ant35;10354.0
+Helsingborg;2011;Lång_eftergymnasial_ant35;10733.0
+Helsingborg;2012;Lång_eftergymnasial_ant35;11100.0
+Helsingborg;2013;Lång_eftergymnasial_ant35;11476.0
+Helsingborg;2014;Lång_eftergymnasial_ant35;11857.0
+Helsingborg;2015;Lång_eftergymnasial_ant35;12300.0
+Helsingborg;2016;Lång_eftergymnasial_ant35;12756.0
+Helsingborg;2017;Lång_eftergymnasial_ant35;13063.0
+Helsingborg;2018;Lång_eftergymnasial_ant35;13628.0
+Helsingborg;2019;Lång_eftergymnasial_ant35;14150.0
+Helsingborg;2020;Lång_eftergymnasial_ant35;14603.0
+Helsingborg;2021;Lång_eftergymnasial_ant35;15025.0
+Helsingborg;2022;Lång_eftergymnasial_ant35;15563.0
+Helsingborg;2023;Lång_eftergymnasial_ant35;16038.0
+Helsingborg;2024;Lång_eftergymnasial_ant35;16442.0
+Helsingborg;2025;Lång_eftergymnasial_ant35;16938.0
+Jönköping;2000;Lång_eftergymnasial_ant35;6243.0
+Jönköping;2001;Lång_eftergymnasial_ant35;6533.0
+Jönköping;2002;Lång_eftergymnasial_ant35;6799.0
+Jönköping;2003;Lång_eftergymnasial_ant35;6965.0
+Jönköping;2004;Lång_eftergymnasial_ant35;7256.0
+Jönköping;2005;Lång_eftergymnasial_ant35;7598.0
+Jönköping;2006;Lång_eftergymnasial_ant35;7976.0
+Jönköping;2007;Lång_eftergymnasial_ant35;8414.0
+Jönköping;2008;Lång_eftergymnasial_ant35;8799.0
+Jönköping;2009;Lång_eftergymnasial_ant35;9210.0
+Jönköping;2010;Lång_eftergymnasial_ant35;9674.0
+Jönköping;2011;Lång_eftergymnasial_ant35;10154.0
+Jönköping;2012;Lång_eftergymnasial_ant35;10618.0
+Jönköping;2013;Lång_eftergymnasial_ant35;10966.0
+Jönköping;2014;Lång_eftergymnasial_ant35;11444.0
+Jönköping;2015;Lång_eftergymnasial_ant35;11886.0
+Jönköping;2016;Lång_eftergymnasial_ant35;12372.0
+Jönköping;2017;Lång_eftergymnasial_ant35;12788.0
+Jönköping;2018;Lång_eftergymnasial_ant35;13237.0
+Jönköping;2019;Lång_eftergymnasial_ant35;13731.0
+Jönköping;2020;Lång_eftergymnasial_ant35;14251.0
+Jönköping;2021;Lång_eftergymnasial_ant35;14738.0
+Jönköping;2022;Lång_eftergymnasial_ant35;15262.0
+Jönköping;2023;Lång_eftergymnasial_ant35;15788.0
+Jönköping;2024;Lång_eftergymnasial_ant35;16350.0
+Jönköping;2025;Lång_eftergymnasial_ant35;16893.0
+Linköping;2000;Lång_eftergymnasial_ant35;10716.0
+Linköping;2001;Lång_eftergymnasial_ant35;11074.0
+Linköping;2002;Lång_eftergymnasial_ant35;11494.0
+Linköping;2003;Lång_eftergymnasial_ant35;11695.0
+Linköping;2004;Lång_eftergymnasial_ant35;12073.0
+Linköping;2005;Lång_eftergymnasial_ant35;12537.0
+Linköping;2006;Lång_eftergymnasial_ant35;13003.0
+Linköping;2007;Lång_eftergymnasial_ant35;13535.0
+Linköping;2008;Lång_eftergymnasial_ant35;14169.0
+Linköping;2009;Lång_eftergymnasial_ant35;14748.0
+Linköping;2010;Lång_eftergymnasial_ant35;15370.0
+Linköping;2011;Lång_eftergymnasial_ant35;15941.0
+Linköping;2012;Lång_eftergymnasial_ant35;16511.0
+Linköping;2013;Lång_eftergymnasial_ant35;17023.0
+Linköping;2014;Lång_eftergymnasial_ant35;17597.0
+Linköping;2015;Lång_eftergymnasial_ant35;18189.0
+Linköping;2016;Lång_eftergymnasial_ant35;18854.0
+Linköping;2017;Lång_eftergymnasial_ant35;19436.0
+Linköping;2018;Lång_eftergymnasial_ant35;20119.0
+Linköping;2019;Lång_eftergymnasial_ant35;20775.0
+Linköping;2020;Lång_eftergymnasial_ant35;21365.0
+Linköping;2021;Lång_eftergymnasial_ant35;21983.0
+Linköping;2022;Lång_eftergymnasial_ant35;22618.0
+Linköping;2023;Lång_eftergymnasial_ant35;23148.0
+Linköping;2024;Lång_eftergymnasial_ant35;23706.0
+Linköping;2025;Lång_eftergymnasial_ant35;24366.0
+Lkpg-Nkpg;2000;Lång_eftergymnasial_ant35;16255.0
+Lkpg-Nkpg;2001;Lång_eftergymnasial_ant35;16817.0
+Lkpg-Nkpg;2002;Lång_eftergymnasial_ant35;17504.0
+Lkpg-Nkpg;2003;Lång_eftergymnasial_ant35;17942.0
+Lkpg-Nkpg;2004;Lång_eftergymnasial_ant35;18570.0
+Lkpg-Nkpg;2005;Lång_eftergymnasial_ant35;19314.0
+Lkpg-Nkpg;2006;Lång_eftergymnasial_ant35;20125.0
+Lkpg-Nkpg;2007;Lång_eftergymnasial_ant35;20973.0
+Lkpg-Nkpg;2008;Lång_eftergymnasial_ant35;22024.0
+Lkpg-Nkpg;2009;Lång_eftergymnasial_ant35;22982.0
+Lkpg-Nkpg;2010;Lång_eftergymnasial_ant35;23921.0
+Lkpg-Nkpg;2011;Lång_eftergymnasial_ant35;24829.0
+Lkpg-Nkpg;2012;Lång_eftergymnasial_ant35;25779.0
+Lkpg-Nkpg;2013;Lång_eftergymnasial_ant35;26609.0
+Lkpg-Nkpg;2014;Lång_eftergymnasial_ant35;27570.0
+Lkpg-Nkpg;2015;Lång_eftergymnasial_ant35;28597.0
+Lkpg-Nkpg;2016;Lång_eftergymnasial_ant35;29705.0
+Lkpg-Nkpg;2017;Lång_eftergymnasial_ant35;30655.0
+Lkpg-Nkpg;2018;Lång_eftergymnasial_ant35;31693.0
+Lkpg-Nkpg;2019;Lång_eftergymnasial_ant35;32783.0
+Lkpg-Nkpg;2020;Lång_eftergymnasial_ant35;33853.0
+Lkpg-Nkpg;2021;Lång_eftergymnasial_ant35;34910.0
+Lkpg-Nkpg;2022;Lång_eftergymnasial_ant35;36027.0
+Lkpg-Nkpg;2023;Lång_eftergymnasial_ant35;37040.0
+Lkpg-Nkpg;2024;Lång_eftergymnasial_ant35;38094.0
+Lkpg-Nkpg;2025;Lång_eftergymnasial_ant35;39321.0
+Lund;2000;Lång_eftergymnasial_ant35;14381.0
+Lund;2001;Lång_eftergymnasial_ant35;14844.0
+Lund;2002;Lång_eftergymnasial_ant35;15242.0
+Lund;2003;Lång_eftergymnasial_ant35;15530.0
+Lund;2004;Lång_eftergymnasial_ant35;15805.0
+Lund;2005;Lång_eftergymnasial_ant35;16288.0
+Lund;2006;Lång_eftergymnasial_ant35;16674.0
+Lund;2007;Lång_eftergymnasial_ant35;17070.0
+Lund;2008;Lång_eftergymnasial_ant35;17581.0
+Lund;2009;Lång_eftergymnasial_ant35;17992.0
+Lund;2010;Lång_eftergymnasial_ant35;18274.0
+Lund;2011;Lång_eftergymnasial_ant35;18705.0
+Lund;2012;Lång_eftergymnasial_ant35;19170.0
+Lund;2013;Lång_eftergymnasial_ant35;19689.0
+Lund;2014;Lång_eftergymnasial_ant35;20190.0
+Lund;2015;Lång_eftergymnasial_ant35;20499.0
+Lund;2016;Lång_eftergymnasial_ant35;21006.0
+Lund;2017;Lång_eftergymnasial_ant35;21630.0
+Lund;2018;Lång_eftergymnasial_ant35;22070.0
+Lund;2019;Lång_eftergymnasial_ant35;22623.0
+Lund;2020;Lång_eftergymnasial_ant35;23047.0
+Lund;2021;Lång_eftergymnasial_ant35;23592.0
+Lund;2022;Lång_eftergymnasial_ant35;24189.0
+Lund;2023;Lång_eftergymnasial_ant35;24751.0
+Lund;2024;Lång_eftergymnasial_ant35;25239.0
+Lund;2025;Lång_eftergymnasial_ant35;25718.0
+Länet exkl Linköping;2000;Lång_eftergymnasial_ant35;11547.0
+Länet exkl Linköping;2001;Lång_eftergymnasial_ant35;11891.0
+Länet exkl Linköping;2002;Lång_eftergymnasial_ant35;12364.0
+Länet exkl Linköping;2003;Lång_eftergymnasial_ant35;12689.0
+Länet exkl Linköping;2004;Lång_eftergymnasial_ant35;13173.0
+Länet exkl Linköping;2005;Lång_eftergymnasial_ant35;13688.0
+Länet exkl Linköping;2006;Lång_eftergymnasial_ant35;14342.0
+Länet exkl Linköping;2007;Lång_eftergymnasial_ant35;14954.0
+Länet exkl Linköping;2008;Lång_eftergymnasial_ant35;15652.0
+Länet exkl Linköping;2009;Lång_eftergymnasial_ant35;16331.0
+Länet exkl Linköping;2010;Lång_eftergymnasial_ant35;16900.0
+Länet exkl Linköping;2011;Lång_eftergymnasial_ant35;17543.0
+Länet exkl Linköping;2012;Lång_eftergymnasial_ant35;18101.0
+Länet exkl Linköping;2013;Lång_eftergymnasial_ant35;18607.0
+Länet exkl Linköping;2014;Lång_eftergymnasial_ant35;19166.0
+Länet exkl Linköping;2015;Lång_eftergymnasial_ant35;19823.0
+Länet exkl Linköping;2016;Lång_eftergymnasial_ant35;20548.0
+Länet exkl Linköping;2017;Lång_eftergymnasial_ant35;21206.0
+Länet exkl Linköping;2018;Lång_eftergymnasial_ant35;21772.0
+Länet exkl Linköping;2019;Lång_eftergymnasial_ant35;22511.0
+Länet exkl Linköping;2020;Lång_eftergymnasial_ant35;23278.0
+Länet exkl Linköping;2021;Lång_eftergymnasial_ant35;24096.0
+Länet exkl Linköping;2022;Lång_eftergymnasial_ant35;24938.0
+Länet exkl Linköping;2023;Lång_eftergymnasial_ant35;25800.0
+Länet exkl Linköping;2024;Lång_eftergymnasial_ant35;26690.0
+Länet exkl Linköping;2025;Lång_eftergymnasial_ant35;27672.0
+Länet exkl Norrköping;2000;Lång_eftergymnasial_ant35;16724.0
+Länet exkl Norrköping;2001;Lång_eftergymnasial_ant35;17222.0
+Länet exkl Norrköping;2002;Lång_eftergymnasial_ant35;17848.0
+Länet exkl Norrköping;2003;Lång_eftergymnasial_ant35;18137.0
+Länet exkl Norrköping;2004;Lång_eftergymnasial_ant35;18749.0
+Länet exkl Norrköping;2005;Lång_eftergymnasial_ant35;19448.0
+Länet exkl Norrköping;2006;Lång_eftergymnasial_ant35;20223.0
+Länet exkl Norrköping;2007;Lång_eftergymnasial_ant35;21051.0
+Länet exkl Norrköping;2008;Lång_eftergymnasial_ant35;21966.0
+Länet exkl Norrköping;2009;Lång_eftergymnasial_ant35;22845.0
+Länet exkl Norrköping;2010;Lång_eftergymnasial_ant35;23719.0
+Länet exkl Norrköping;2011;Lång_eftergymnasial_ant35;24596.0
+Länet exkl Norrköping;2012;Lång_eftergymnasial_ant35;25344.0
+Länet exkl Norrköping;2013;Lång_eftergymnasial_ant35;26044.0
+Länet exkl Norrköping;2014;Lång_eftergymnasial_ant35;26790.0
+Länet exkl Norrköping;2015;Lång_eftergymnasial_ant35;27604.0
+Länet exkl Norrköping;2016;Lång_eftergymnasial_ant35;28551.0
+Länet exkl Norrköping;2017;Lång_eftergymnasial_ant35;29423.0
+Länet exkl Norrköping;2018;Lång_eftergymnasial_ant35;30317.0
+Länet exkl Norrköping;2019;Lång_eftergymnasial_ant35;31278.0
+Länet exkl Norrköping;2020;Lång_eftergymnasial_ant35;32155.0
+Länet exkl Norrköping;2021;Lång_eftergymnasial_ant35;33152.0
+Länet exkl Norrköping;2022;Lång_eftergymnasial_ant35;34147.0
+Länet exkl Norrköping;2023;Lång_eftergymnasial_ant35;35056.0
+Länet exkl Norrköping;2024;Lång_eftergymnasial_ant35;36008.0
+Länet exkl Norrköping;2025;Lång_eftergymnasial_ant35;37083.0
+Malmö;2000;Lång_eftergymnasial_ant35;15472.0
+Malmö;2001;Lång_eftergymnasial_ant35;16306.0
+Malmö;2002;Lång_eftergymnasial_ant35;17106.0
+Malmö;2003;Lång_eftergymnasial_ant35;17756.0
+Malmö;2004;Lång_eftergymnasial_ant35;18667.0
+Malmö;2005;Lång_eftergymnasial_ant35;19911.0
+Malmö;2006;Lång_eftergymnasial_ant35;21162.0
+Malmö;2007;Lång_eftergymnasial_ant35;22651.0
+Malmö;2008;Lång_eftergymnasial_ant35;23975.0
+Malmö;2009;Lång_eftergymnasial_ant35;25603.0
+Malmö;2010;Lång_eftergymnasial_ant35;27014.0
+Malmö;2011;Lång_eftergymnasial_ant35;28611.0
+Malmö;2012;Lång_eftergymnasial_ant35;30050.0
+Malmö;2013;Lång_eftergymnasial_ant35;31645.0
+Malmö;2014;Lång_eftergymnasial_ant35;33184.0
+Malmö;2015;Lång_eftergymnasial_ant35;34767.0
+Malmö;2016;Lång_eftergymnasial_ant35;36337.0
+Malmö;2017;Lång_eftergymnasial_ant35;37785.0
+Malmö;2018;Lång_eftergymnasial_ant35;39579.0
+Malmö;2019;Lång_eftergymnasial_ant35;41380.0
+Malmö;2020;Lång_eftergymnasial_ant35;42984.0
+Malmö;2021;Lång_eftergymnasial_ant35;44527.0
+Malmö;2022;Lång_eftergymnasial_ant35;46605.0
+Malmö;2023;Lång_eftergymnasial_ant35;48784.0
+Malmö;2024;Lång_eftergymnasial_ant35;50966.0
+Malmö;2025;Lång_eftergymnasial_ant35;53265.0
+Norrköping;2000;Lång_eftergymnasial_ant35;5539.0
+Norrköping;2001;Lång_eftergymnasial_ant35;5743.0
+Norrköping;2002;Lång_eftergymnasial_ant35;6010.0
+Norrköping;2003;Lång_eftergymnasial_ant35;6247.0
+Norrköping;2004;Lång_eftergymnasial_ant35;6497.0
+Norrköping;2005;Lång_eftergymnasial_ant35;6777.0
+Norrköping;2006;Lång_eftergymnasial_ant35;7122.0
+Norrköping;2007;Lång_eftergymnasial_ant35;7438.0
+Norrköping;2008;Lång_eftergymnasial_ant35;7855.0
+Norrköping;2009;Lång_eftergymnasial_ant35;8234.0
+Norrköping;2010;Lång_eftergymnasial_ant35;8551.0
+Norrköping;2011;Lång_eftergymnasial_ant35;8888.0
+Norrköping;2012;Lång_eftergymnasial_ant35;9268.0
+Norrköping;2013;Lång_eftergymnasial_ant35;9586.0
+Norrköping;2014;Lång_eftergymnasial_ant35;9973.0
+Norrköping;2015;Lång_eftergymnasial_ant35;10408.0
+Norrköping;2016;Lång_eftergymnasial_ant35;10851.0
+Norrköping;2017;Lång_eftergymnasial_ant35;11219.0
+Norrköping;2018;Lång_eftergymnasial_ant35;11574.0
+Norrköping;2019;Lång_eftergymnasial_ant35;12008.0
+Norrköping;2020;Lång_eftergymnasial_ant35;12488.0
+Norrköping;2021;Lång_eftergymnasial_ant35;12927.0
+Norrköping;2022;Lång_eftergymnasial_ant35;13409.0
+Norrköping;2023;Lång_eftergymnasial_ant35;13892.0
+Norrköping;2024;Lång_eftergymnasial_ant35;14388.0
+Norrköping;2025;Lång_eftergymnasial_ant35;14955.0
+Riket;2000;Lång_eftergymnasial_ant35;538714.0
+Riket;2001;Lång_eftergymnasial_ant35;557770.0
+Riket;2002;Lång_eftergymnasial_ant35;578712.0
+Riket;2003;Lång_eftergymnasial_ant35;595236.0
+Riket;2004;Lång_eftergymnasial_ant35;617453.0
+Riket;2005;Lång_eftergymnasial_ant35;648809.0
+Riket;2006;Lång_eftergymnasial_ant35;676180.0
+Riket;2007;Lång_eftergymnasial_ant35;706066.0
+Riket;2008;Lång_eftergymnasial_ant35;734219.0
+Riket;2009;Lång_eftergymnasial_ant35;763415.0
+Riket;2010;Lång_eftergymnasial_ant35;790555.0
+Riket;2011;Lång_eftergymnasial_ant35;819632.0
+Riket;2012;Lång_eftergymnasial_ant35;845042.0
+Riket;2013;Lång_eftergymnasial_ant35;870142.0
+Riket;2014;Lång_eftergymnasial_ant35;898582.0
+Riket;2015;Lång_eftergymnasial_ant35;929299.0
+Riket;2016;Lång_eftergymnasial_ant35;961146.0
+Riket;2017;Lång_eftergymnasial_ant35;992444.0
+Riket;2018;Lång_eftergymnasial_ant35;1025940.0
+Riket;2019;Lång_eftergymnasial_ant35;1060416.0
+Riket;2020;Lång_eftergymnasial_ant35;1094064.0
+Riket;2021;Lång_eftergymnasial_ant35;1129500.0
+Riket;2022;Lång_eftergymnasial_ant35;1169242.0
+Riket;2023;Lång_eftergymnasial_ant35;1207618.0
+Riket;2024;Lång_eftergymnasial_ant35;1246679.0
+Riket;2025;Lång_eftergymnasial_ant35;1287935.0
+Sex till tolv;2000;Lång_eftergymnasial_ant35;58372.0
+Sex till tolv;2001;Lång_eftergymnasial_ant35;60521.0
+Sex till tolv;2002;Lång_eftergymnasial_ant35;62813.0
+Sex till tolv;2003;Lång_eftergymnasial_ant35;64569.0
+Sex till tolv;2004;Lång_eftergymnasial_ant35;66839.0
+Sex till tolv;2005;Lång_eftergymnasial_ant35;69912.0
+Sex till tolv;2006;Lång_eftergymnasial_ant35;72660.0
+Sex till tolv;2007;Lång_eftergymnasial_ant35;75620.0
+Sex till tolv;2008;Lång_eftergymnasial_ant35;78685.0
+Sex till tolv;2009;Lång_eftergymnasial_ant35;81712.0
+Sex till tolv;2010;Lång_eftergymnasial_ant35;84380.0
+Sex till tolv;2011;Lång_eftergymnasial_ant35;87280.0
+Sex till tolv;2012;Lång_eftergymnasial_ant35;90393.0
+Sex till tolv;2013;Lång_eftergymnasial_ant35;93233.0
+Sex till tolv;2014;Lång_eftergymnasial_ant35;96290.0
+Sex till tolv;2015;Lång_eftergymnasial_ant35;99229.0
+Sex till tolv;2016;Lång_eftergymnasial_ant35;102577.0
+Sex till tolv;2017;Lång_eftergymnasial_ant35;105813.0
+Sex till tolv;2018;Lång_eftergymnasial_ant35;109186.0
+Sex till tolv;2019;Lång_eftergymnasial_ant35;112843.0
+Sex till tolv;2020;Lång_eftergymnasial_ant35;116323.0
+Sex till tolv;2021;Lång_eftergymnasial_ant35;119873.0
+Sex till tolv;2022;Lång_eftergymnasial_ant35;123590.0
+Sex till tolv;2023;Lång_eftergymnasial_ant35;127367.0
+Sex till tolv;2024;Lång_eftergymnasial_ant35;131072.0
+Sex till tolv;2025;Lång_eftergymnasial_ant35;134981.0
+Sex till tolv minus tio;2000;Lång_eftergymnasial_ant35;52833.0
+Sex till tolv minus tio;2001;Lång_eftergymnasial_ant35;54778.0
+Sex till tolv minus tio;2002;Lång_eftergymnasial_ant35;56803.0
+Sex till tolv minus tio;2003;Lång_eftergymnasial_ant35;58322.0
+Sex till tolv minus tio;2004;Lång_eftergymnasial_ant35;60342.0
+Sex till tolv minus tio;2005;Lång_eftergymnasial_ant35;63135.0
+Sex till tolv minus tio;2006;Lång_eftergymnasial_ant35;65538.0
+Sex till tolv minus tio;2007;Lång_eftergymnasial_ant35;68182.0
+Sex till tolv minus tio;2008;Lång_eftergymnasial_ant35;70830.0
+Sex till tolv minus tio;2009;Lång_eftergymnasial_ant35;73478.0
+Sex till tolv minus tio;2010;Lång_eftergymnasial_ant35;75829.0
+Sex till tolv minus tio;2011;Lång_eftergymnasial_ant35;78392.0
+Sex till tolv minus tio;2012;Lång_eftergymnasial_ant35;81125.0
+Sex till tolv minus tio;2013;Lång_eftergymnasial_ant35;83647.0
+Sex till tolv minus tio;2014;Lång_eftergymnasial_ant35;86317.0
+Sex till tolv minus tio;2015;Lång_eftergymnasial_ant35;88821.0
+Sex till tolv minus tio;2016;Lång_eftergymnasial_ant35;91726.0
+Sex till tolv minus tio;2017;Lång_eftergymnasial_ant35;94594.0
+Sex till tolv minus tio;2018;Lång_eftergymnasial_ant35;97612.0
+Sex till tolv minus tio;2019;Lång_eftergymnasial_ant35;100835.0
+Sex till tolv minus tio;2020;Lång_eftergymnasial_ant35;103835.0
+Sex till tolv minus tio;2021;Lång_eftergymnasial_ant35;106946.0
+Sex till tolv minus tio;2022;Lång_eftergymnasial_ant35;110181.0
+Sex till tolv minus tio;2023;Lång_eftergymnasial_ant35;113475.0
+Sex till tolv minus tio;2024;Lång_eftergymnasial_ant35;116684.0
+Sex till tolv minus tio;2025;Lång_eftergymnasial_ant35;120026.0
+Stockholm;2000;Lång_eftergymnasial_ant35;76526.0
+Stockholm;2001;Lång_eftergymnasial_ant35;79694.0
+Stockholm;2002;Lång_eftergymnasial_ant35;82725.0
+Stockholm;2003;Lång_eftergymnasial_ant35;85150.0
+Stockholm;2004;Lång_eftergymnasial_ant35;88019.0
+Stockholm;2005;Lång_eftergymnasial_ant35;91745.0
+Stockholm;2006;Lång_eftergymnasial_ant35;95605.0
+Stockholm;2007;Lång_eftergymnasial_ant35;99785.0
+Stockholm;2008;Lång_eftergymnasial_ant35;104159.0
+Stockholm;2009;Lång_eftergymnasial_ant35;108941.0
+Stockholm;2010;Lång_eftergymnasial_ant35;113066.0
+Stockholm;2011;Lång_eftergymnasial_ant35;117922.0
+Stockholm;2012;Lång_eftergymnasial_ant35;121847.0
+Stockholm;2013;Lång_eftergymnasial_ant35;126238.0
+Stockholm;2014;Lång_eftergymnasial_ant35;130822.0
+Stockholm;2015;Lång_eftergymnasial_ant35;135829.0
+Stockholm;2016;Lång_eftergymnasial_ant35;140899.0
+Stockholm;2017;Lång_eftergymnasial_ant35;145581.0
+Stockholm;2018;Lång_eftergymnasial_ant35;150545.0
+Stockholm;2019;Lång_eftergymnasial_ant35;155771.0
+Stockholm;2020;Lång_eftergymnasial_ant35;159708.0
+Stockholm;2021;Lång_eftergymnasial_ant35;163021.0
+Stockholm;2022;Lång_eftergymnasial_ant35;167916.0
+Stockholm;2023;Lång_eftergymnasial_ant35;172386.0
+Stockholm;2024;Lång_eftergymnasial_ant35;177372.0
+Stockholm;2025;Lång_eftergymnasial_ant35;182352.0
+Tolv största;2000;Lång_eftergymnasial_ant35;217517.0
+Tolv största;2001;Lång_eftergymnasial_ant35;226062.0
+Tolv största;2002;Lång_eftergymnasial_ant35;233633.0
+Tolv största;2003;Lång_eftergymnasial_ant35;240416.0
+Tolv största;2004;Lång_eftergymnasial_ant35;249036.0
+Tolv största;2005;Lång_eftergymnasial_ant35;260230.0
+Tolv största;2006;Lång_eftergymnasial_ant35;270918.0
+Tolv största;2007;Lång_eftergymnasial_ant35;282660.0
+Tolv största;2008;Lång_eftergymnasial_ant35;294818.0
+Tolv största;2009;Lång_eftergymnasial_ant35;307663.0
+Tolv största;2010;Lång_eftergymnasial_ant35;319156.0
+Tolv största;2011;Lång_eftergymnasial_ant35;331717.0
+Tolv största;2012;Lång_eftergymnasial_ant35;343172.0
+Tolv största;2013;Lång_eftergymnasial_ant35;354822.0
+Tolv största;2014;Lång_eftergymnasial_ant35;367054.0
+Tolv största;2015;Lång_eftergymnasial_ant35;380190.0
+Tolv största;2016;Lång_eftergymnasial_ant35;393960.0
+Tolv största;2017;Lång_eftergymnasial_ant35;406785.0
+Tolv största;2018;Lång_eftergymnasial_ant35;421214.0
+Tolv största;2019;Lång_eftergymnasial_ant35;436534.0
+Tolv största;2020;Lång_eftergymnasial_ant35;449601.0
+Tolv största;2021;Lång_eftergymnasial_ant35;461946.0
+Tolv största;2022;Lång_eftergymnasial_ant35;477660.0
+Tolv största;2023;Lång_eftergymnasial_ant35;493206.0
+Tolv största;2024;Lång_eftergymnasial_ant35;508708.0
+Tolv största;2025;Lång_eftergymnasial_ant35;524976.0
+Tolv största minus fem;2000;Lång_eftergymnasial_ant35;206801.0
+Tolv största minus fem;2001;Lång_eftergymnasial_ant35;214988.0
+Tolv största minus fem;2002;Lång_eftergymnasial_ant35;222139.0
+Tolv största minus fem;2003;Lång_eftergymnasial_ant35;228721.0
+Tolv största minus fem;2004;Lång_eftergymnasial_ant35;236963.0
+Tolv största minus fem;2005;Lång_eftergymnasial_ant35;247693.0
+Tolv största minus fem;2006;Lång_eftergymnasial_ant35;257915.0
+Tolv största minus fem;2007;Lång_eftergymnasial_ant35;269125.0
+Tolv största minus fem;2008;Lång_eftergymnasial_ant35;280649.0
+Tolv största minus fem;2009;Lång_eftergymnasial_ant35;292915.0
+Tolv största minus fem;2010;Lång_eftergymnasial_ant35;303786.0
+Tolv största minus fem;2011;Lång_eftergymnasial_ant35;315776.0
+Tolv största minus fem;2012;Lång_eftergymnasial_ant35;326661.0
+Tolv största minus fem;2013;Lång_eftergymnasial_ant35;337799.0
+Tolv största minus fem;2014;Lång_eftergymnasial_ant35;349457.0
+Tolv största minus fem;2015;Lång_eftergymnasial_ant35;362001.0
+Tolv största minus fem;2016;Lång_eftergymnasial_ant35;375106.0
+Tolv största minus fem;2017;Lång_eftergymnasial_ant35;387349.0
+Tolv största minus fem;2018;Lång_eftergymnasial_ant35;401095.0
+Tolv största minus fem;2019;Lång_eftergymnasial_ant35;415759.0
+Tolv största minus fem;2020;Lång_eftergymnasial_ant35;428236.0
+Tolv största minus fem;2021;Lång_eftergymnasial_ant35;439963.0
+Tolv största minus fem;2022;Lång_eftergymnasial_ant35;455042.0
+Tolv största minus fem;2023;Lång_eftergymnasial_ant35;470058.0
+Tolv största minus fem;2024;Lång_eftergymnasial_ant35;485002.0
+Tolv största minus fem;2025;Lång_eftergymnasial_ant35;500610.0
+Tre största;2000;Lång_eftergymnasial_ant35;127850.0
+Tre största;2001;Lång_eftergymnasial_ant35;133360.0
+Tre största;2002;Lång_eftergymnasial_ant35;138887.0
+Tre största;2003;Lång_eftergymnasial_ant35;143338.0
+Tre största;2004;Lång_eftergymnasial_ant35;148891.0
+Tre största;2005;Lång_eftergymnasial_ant35;155850.0
+Tre största;2006;Lång_eftergymnasial_ant35;162749.0
+Tre största;2007;Lång_eftergymnasial_ant35;170385.0
+Tre största;2008;Lång_eftergymnasial_ant35;178090.0
+Tre största;2009;Lång_eftergymnasial_ant35;186712.0
+Tre största;2010;Lång_eftergymnasial_ant35;194194.0
+Tre största;2011;Lång_eftergymnasial_ant35;202662.0
+Tre största;2012;Lång_eftergymnasial_ant35;209772.0
+Tre största;2013;Lång_eftergymnasial_ant35;217577.0
+Tre största;2014;Lång_eftergymnasial_ant35;225661.0
+Tre största;2015;Lång_eftergymnasial_ant35;234460.0
+Tre största;2016;Lång_eftergymnasial_ant35;243393.0
+Tre största;2017;Lång_eftergymnasial_ant35;251508.0
+Tre största;2018;Lång_eftergymnasial_ant35;260855.0
+Tre största;2019;Lång_eftergymnasial_ant35;270741.0
+Tre största;2020;Lång_eftergymnasial_ant35;278653.0
+Tre största;2021;Lång_eftergymnasial_ant35;285721.0
+Tre största;2022;Lång_eftergymnasial_ant35;295819.0
+Tre största;2023;Lång_eftergymnasial_ant35;305936.0
+Tre största;2024;Lång_eftergymnasial_ant35;316007.0
+Tre största;2025;Lång_eftergymnasial_ant35;326540.0
+Umeå;2000;Lång_eftergymnasial_ant35;9565.0
+Umeå;2001;Lång_eftergymnasial_ant35;9846.0
+Umeå;2002;Lång_eftergymnasial_ant35;10095.0
+Umeå;2003;Lång_eftergymnasial_ant35;10424.0
+Umeå;2004;Lång_eftergymnasial_ant35;10916.0
+Umeå;2005;Lång_eftergymnasial_ant35;11444.0
+Umeå;2006;Lång_eftergymnasial_ant35;11877.0
+Umeå;2007;Lång_eftergymnasial_ant35;12352.0
+Umeå;2008;Lång_eftergymnasial_ant35;12763.0
+Umeå;2009;Lång_eftergymnasial_ant35;13313.0
+Umeå;2010;Lång_eftergymnasial_ant35;13785.0
+Umeå;2011;Lång_eftergymnasial_ant35;14165.0
+Umeå;2012;Lång_eftergymnasial_ant35;14615.0
+Umeå;2013;Lång_eftergymnasial_ant35;14977.0
+Umeå;2014;Lång_eftergymnasial_ant35;15370.0
+Umeå;2015;Lång_eftergymnasial_ant35;15705.0
+Umeå;2016;Lång_eftergymnasial_ant35;16306.0
+Umeå;2017;Lång_eftergymnasial_ant35;16812.0
+Umeå;2018;Lång_eftergymnasial_ant35;17276.0
+Umeå;2019;Lång_eftergymnasial_ant35;17858.0
+Umeå;2020;Lång_eftergymnasial_ant35;18460.0
+Umeå;2021;Lång_eftergymnasial_ant35;19041.0
+Umeå;2022;Lång_eftergymnasial_ant35;19521.0
+Umeå;2023;Lång_eftergymnasial_ant35;20014.0
+Umeå;2024;Lång_eftergymnasial_ant35;20639.0
+Umeå;2025;Lång_eftergymnasial_ant35;21250.0
+Uppsala;2000;Lång_eftergymnasial_ant35;20579.0
+Uppsala;2001;Lång_eftergymnasial_ant35;21107.0
+Uppsala;2002;Lång_eftergymnasial_ant35;20439.0
+Uppsala;2003;Lång_eftergymnasial_ant35;20814.0
+Uppsala;2004;Lång_eftergymnasial_ant35;21233.0
+Uppsala;2005;Lång_eftergymnasial_ant35;21931.0
+Uppsala;2006;Lång_eftergymnasial_ant35;22506.0
+Uppsala;2007;Lång_eftergymnasial_ant35;23120.0
+Uppsala;2008;Lång_eftergymnasial_ant35;23874.0
+Uppsala;2009;Lång_eftergymnasial_ant35;24491.0
+Uppsala;2010;Lång_eftergymnasial_ant35;25212.0
+Uppsala;2011;Lång_eftergymnasial_ant35;25834.0
+Uppsala;2012;Lång_eftergymnasial_ant35;26496.0
+Uppsala;2013;Lång_eftergymnasial_ant35;26989.0
+Uppsala;2014;Lång_eftergymnasial_ant35;27506.0
+Uppsala;2015;Lång_eftergymnasial_ant35;28312.0
+Uppsala;2016;Lång_eftergymnasial_ant35;29136.0
+Uppsala;2017;Lång_eftergymnasial_ant35;30028.0
+Uppsala;2018;Lång_eftergymnasial_ant35;31054.0
+Uppsala;2019;Lång_eftergymnasial_ant35;32175.0
+Uppsala;2020;Lång_eftergymnasial_ant35;33260.0
+Uppsala;2021;Lång_eftergymnasial_ant35;34369.0
+Uppsala;2022;Lång_eftergymnasial_ant35;35633.0
+Uppsala;2023;Lång_eftergymnasial_ant35;36755.0
+Uppsala;2024;Lång_eftergymnasial_ant35;37923.0
+Uppsala;2025;Lång_eftergymnasial_ant35;39089.0
+Västerås;2000;Lång_eftergymnasial_ant35;8070.0
+Västerås;2001;Lång_eftergymnasial_ant35;8445.0
+Västerås;2002;Lång_eftergymnasial_ant35;8875.0
+Västerås;2003;Lång_eftergymnasial_ant35;9147.0
+Västerås;2004;Lång_eftergymnasial_ant35;9537.0
+Västerås;2005;Lång_eftergymnasial_ant35;10030.0
+Västerås;2006;Lång_eftergymnasial_ant35;10445.0
+Västerås;2007;Lång_eftergymnasial_ant35;10889.0
+Västerås;2008;Lång_eftergymnasial_ant35;11278.0
+Västerås;2009;Lång_eftergymnasial_ant35;11704.0
+Västerås;2010;Lång_eftergymnasial_ant35;12174.0
+Västerås;2011;Lång_eftergymnasial_ant35;12679.0
+Västerås;2012;Lång_eftergymnasial_ant35;13120.0
+Västerås;2013;Lång_eftergymnasial_ant35;13602.0
+Västerås;2014;Lång_eftergymnasial_ant35;14134.0
+Västerås;2015;Lång_eftergymnasial_ant35;14590.0
+Västerås;2016;Lång_eftergymnasial_ant35;14980.0
+Västerås;2017;Lång_eftergymnasial_ant35;15470.0
+Västerås;2018;Lång_eftergymnasial_ant35;16039.0
+Västerås;2019;Lång_eftergymnasial_ant35;16546.0
+Västerås;2020;Lång_eftergymnasial_ant35;17016.0
+Västerås;2021;Lång_eftergymnasial_ant35;17603.0
+Västerås;2022;Lång_eftergymnasial_ant35;18220.0
+Västerås;2023;Lång_eftergymnasial_ant35;18881.0
+Västerås;2024;Lång_eftergymnasial_ant35;19559.0
+Västerås;2025;Lång_eftergymnasial_ant35;20244.0
+Örebro;2000;Lång_eftergymnasial_ant35;7807.0
+Örebro;2001;Lång_eftergymnasial_ant35;8064.0
+Örebro;2002;Lång_eftergymnasial_ant35;8463.0
+Örebro;2003;Lång_eftergymnasial_ant35;8679.0
+Örebro;2004;Lång_eftergymnasial_ant35;8959.0
+Örebro;2005;Lång_eftergymnasial_ant35;9435.0
+Örebro;2006;Lång_eftergymnasial_ant35;9837.0
+Örebro;2007;Lång_eftergymnasial_ant35;10266.0
+Örebro;2008;Lång_eftergymnasial_ant35;10785.0
+Örebro;2009;Lång_eftergymnasial_ant35;11213.0
+Örebro;2010;Lång_eftergymnasial_ant35;11568.0
+Örebro;2011;Lång_eftergymnasial_ant35;11956.0
+Örebro;2012;Lång_eftergymnasial_ant35;12502.0
+Örebro;2013;Lång_eftergymnasial_ant35;12937.0
+Örebro;2014;Lång_eftergymnasial_ant35;13322.0
+Örebro;2015;Lång_eftergymnasial_ant35;13841.0
+Örebro;2016;Lång_eftergymnasial_ant35;14306.0
+Örebro;2017;Lång_eftergymnasial_ant35;14831.0
+Örebro;2018;Lång_eftergymnasial_ant35;15362.0
+Örebro;2019;Lång_eftergymnasial_ant35;15927.0
+Örebro;2020;Lång_eftergymnasial_ant35;16458.0
+Örebro;2021;Lång_eftergymnasial_ant35;16947.0
+Örebro;2022;Lång_eftergymnasial_ant35;17426.0
+Örebro;2023;Lång_eftergymnasial_ant35;18003.0
+Örebro;2024;Lång_eftergymnasial_ant35;18455.0
+Örebro;2025;Lång_eftergymnasial_ant35;18983.0
+Östergötlands län;2000;Lång_eftergymnasial_ant35;22263.0
+Östergötlands län;2001;Lång_eftergymnasial_ant35;22965.0
+Östergötlands län;2002;Lång_eftergymnasial_ant35;23858.0
+Östergötlands län;2003;Lång_eftergymnasial_ant35;24384.0
+Östergötlands län;2004;Lång_eftergymnasial_ant35;25246.0
+Östergötlands län;2005;Lång_eftergymnasial_ant35;26225.0
+Östergötlands län;2006;Lång_eftergymnasial_ant35;27345.0
+Östergötlands län;2007;Lång_eftergymnasial_ant35;28489.0
+Östergötlands län;2008;Lång_eftergymnasial_ant35;29821.0
+Östergötlands län;2009;Lång_eftergymnasial_ant35;31079.0
+Östergötlands län;2010;Lång_eftergymnasial_ant35;32270.0
+Östergötlands län;2011;Lång_eftergymnasial_ant35;33484.0
+Östergötlands län;2012;Lång_eftergymnasial_ant35;34612.0
+Östergötlands län;2013;Lång_eftergymnasial_ant35;35630.0
+Östergötlands län;2014;Lång_eftergymnasial_ant35;36763.0
+Östergötlands län;2015;Lång_eftergymnasial_ant35;38012.0
+Östergötlands län;2016;Lång_eftergymnasial_ant35;39402.0
+Östergötlands län;2017;Lång_eftergymnasial_ant35;40642.0
+Östergötlands län;2018;Lång_eftergymnasial_ant35;41891.0
+Östergötlands län;2019;Lång_eftergymnasial_ant35;43286.0
+Östergötlands län;2020;Lång_eftergymnasial_ant35;44643.0
+Östergötlands län;2021;Lång_eftergymnasial_ant35;46079.0
+Östergötlands län;2022;Lång_eftergymnasial_ant35;47556.0
+Östergötlands län;2023;Lång_eftergymnasial_ant35;48948.0
+Östergötlands län;2024;Lång_eftergymnasial_ant35;50396.0
+Östergötlands län;2025;Lång_eftergymnasial_ant35;52038.0
 Fem till tolv;2000;Lång_eftergymnasial_antal;108694.0
 Fem till tolv;2001;Lång_eftergymnasial_antal;114309.0
 Fem till tolv;2002;Lång_eftergymnasial_antal;120430.0
@@ -7835,6 +9083,1254 @@ Västerås;2025;Lång_eftergymnasial_antal;27571.0
 Östergötlands län;2023;Lång_eftergymnasial_antal;70834.0
 Östergötlands län;2024;Lång_eftergymnasial_antal;72166.0
 Östergötlands län;2025;Lång_eftergymnasial_antal;73764.0
+Fem till tolv;2000;Lång_eftergymnasial_proc25;21.21317741112272
+Fem till tolv;2001;Lång_eftergymnasial_proc25;22.144273785276
+Fem till tolv;2002;Lång_eftergymnasial_proc25;23.152065784667077
+Fem till tolv;2003;Lång_eftergymnasial_proc25;23.94960659808032
+Fem till tolv;2004;Lång_eftergymnasial_proc25;24.97309975210448
+Fem till tolv;2005;Lång_eftergymnasial_proc25;26.07093200157785
+Fem till tolv;2006;Lång_eftergymnasial_proc25;26.82069093859304
+Fem till tolv;2007;Lång_eftergymnasial_proc25;27.57837274394295
+Fem till tolv;2008;Lång_eftergymnasial_proc25;28.19234079572353
+Fem till tolv;2009;Lång_eftergymnasial_proc25;28.79770263067606
+Fem till tolv;2010;Lång_eftergymnasial_proc25;29.355087645695164
+Fem till tolv;2011;Lång_eftergymnasial_proc25;29.95319659201723
+Fem till tolv;2012;Lång_eftergymnasial_proc25;30.550874638993022
+Fem till tolv;2013;Lång_eftergymnasial_proc25;31.047887133446206
+Fem till tolv;2014;Lång_eftergymnasial_proc25;31.521310897410583
+Fem till tolv;2015;Lång_eftergymnasial_proc25;31.791558890537942
+Fem till tolv;2016;Lång_eftergymnasial_proc25;32.16220328977445
+Fem till tolv;2017;Lång_eftergymnasial_proc25;32.41605865045406
+Fem till tolv;2018;Lång_eftergymnasial_proc25;32.909382134042026
+Fem till tolv;2019;Lång_eftergymnasial_proc25;33.455993895121864
+Fem till tolv;2020;Lång_eftergymnasial_proc25;34.128087430910256
+Fem till tolv;2021;Lång_eftergymnasial_proc25;34.75223129872901
+Fem till tolv;2022;Lång_eftergymnasial_proc25;35.30235223746949
+Fem till tolv;2023;Lång_eftergymnasial_proc25;35.71527855248051
+Fem till tolv;2024;Lång_eftergymnasial_proc25;36.28438287934157
+Fem till tolv;2025;Lång_eftergymnasial_proc25;36.92624638094856
+Fyra stora;2000;Lång_eftergymnasial_proc25;24.944081877260853
+Fyra stora;2001;Lång_eftergymnasial_proc25;26.129044039087887
+Fyra stora;2002;Lång_eftergymnasial_proc25;27.41236190395708
+Fyra stora;2003;Lång_eftergymnasial_proc25;28.319485356547773
+Fyra stora;2004;Lång_eftergymnasial_proc25;29.37745721672913
+Fyra stora;2005;Lång_eftergymnasial_proc25;30.52427044989575
+Fyra stora;2006;Lång_eftergymnasial_proc25;31.29627771650644
+Fyra stora;2007;Lång_eftergymnasial_proc25;32.12801503197596
+Fyra stora;2008;Lång_eftergymnasial_proc25;32.820534490007354
+Fyra stora;2009;Lång_eftergymnasial_proc25;33.40307048747467
+Fyra stora;2010;Lång_eftergymnasial_proc25;33.99547877288483
+Fyra stora;2011;Lång_eftergymnasial_proc25;34.64880561679193
+Fyra stora;2012;Lång_eftergymnasial_proc25;35.19242162896306
+Fyra stora;2013;Lång_eftergymnasial_proc25;35.728080016681666
+Fyra stora;2014;Lång_eftergymnasial_proc25;36.222729542532285
+Fyra stora;2015;Lång_eftergymnasial_proc25;36.68187424667952
+Fyra stora;2016;Lång_eftergymnasial_proc25;37.08494255444869
+Fyra stora;2017;Lång_eftergymnasial_proc25;37.41369044977382
+Fyra stora;2018;Lång_eftergymnasial_proc25;38.07195329901053
+Fyra stora;2019;Lång_eftergymnasial_proc25;38.66111785156395
+Fyra stora;2020;Lång_eftergymnasial_proc25;39.401304777557264
+Fyra stora;2021;Lång_eftergymnasial_proc25;40.10259353896143
+Fyra stora;2022;Lång_eftergymnasial_proc25;40.89292741523458
+Fyra stora;2023;Lång_eftergymnasial_proc25;41.53756541165031
+Fyra stora;2024;Lång_eftergymnasial_proc25;42.19797424860318
+Fyra stora;2025;Lång_eftergymnasial_proc25;42.96122104372607
+Göteborg;2000;Lång_eftergymnasial_proc25;22.95705708403811
+Göteborg;2001;Lång_eftergymnasial_proc25;24.16291719313384
+Göteborg;2002;Lång_eftergymnasial_proc25;25.31582510020459
+Göteborg;2003;Lång_eftergymnasial_proc25;26.280250993484543
+Göteborg;2004;Lång_eftergymnasial_proc25;27.33944954128441
+Göteborg;2005;Lång_eftergymnasial_proc25;28.469655243509123
+Göteborg;2006;Lång_eftergymnasial_proc25;29.16220215317108
+Göteborg;2007;Lång_eftergymnasial_proc25;29.896985606952114
+Göteborg;2008;Lång_eftergymnasial_proc25;30.546913876368897
+Göteborg;2009;Lång_eftergymnasial_proc25;31.10515484331794
+Göteborg;2010;Lång_eftergymnasial_proc25;31.63488415212227
+Göteborg;2011;Lång_eftergymnasial_proc25;32.27462525470226
+Göteborg;2012;Lång_eftergymnasial_proc25;32.8568144938574
+Göteborg;2013;Lång_eftergymnasial_proc25;33.33322036770313
+Göteborg;2014;Lång_eftergymnasial_proc25;33.91419340799143
+Göteborg;2015;Lång_eftergymnasial_proc25;34.40664770965422
+Göteborg;2016;Lång_eftergymnasial_proc25;34.8476606767039
+Göteborg;2017;Lång_eftergymnasial_proc25;35.24675531491361
+Göteborg;2018;Lång_eftergymnasial_proc25;35.98977520487182
+Göteborg;2019;Lång_eftergymnasial_proc25;36.63886695617845
+Göteborg;2020;Lång_eftergymnasial_proc25;37.34739178690344
+Göteborg;2021;Lång_eftergymnasial_proc25;37.86561940767976
+Göteborg;2022;Lång_eftergymnasial_proc25;38.59690787041073
+Göteborg;2023;Lång_eftergymnasial_proc25;39.296019834102914
+Göteborg;2024;Lång_eftergymnasial_proc25;39.87855979693219
+Göteborg;2025;Lång_eftergymnasial_proc25;40.53714506606691
+Helsingborg;2000;Lång_eftergymnasial_proc25;15.001673760221893
+Helsingborg;2001;Lång_eftergymnasial_proc25;15.741486924231651
+Helsingborg;2002;Lång_eftergymnasial_proc25;16.474503187101615
+Helsingborg;2003;Lång_eftergymnasial_proc25;17.215315608946007
+Helsingborg;2004;Lång_eftergymnasial_proc25;17.941891600750978
+Helsingborg;2005;Lång_eftergymnasial_proc25;19.183966734949703
+Helsingborg;2006;Lång_eftergymnasial_proc25;19.87192103310978
+Helsingborg;2007;Lång_eftergymnasial_proc25;20.59728832900407
+Helsingborg;2008;Lång_eftergymnasial_proc25;21.182523113629586
+Helsingborg;2009;Lång_eftergymnasial_proc25;21.653017625066763
+Helsingborg;2010;Lång_eftergymnasial_proc25;21.91776764026305
+Helsingborg;2011;Lång_eftergymnasial_proc25;22.444287230279446
+Helsingborg;2012;Lång_eftergymnasial_proc25;22.7593181585003
+Helsingborg;2013;Lång_eftergymnasial_proc25;23.092275866087817
+Helsingborg;2014;Lång_eftergymnasial_proc25;23.427972971034244
+Helsingborg;2015;Lång_eftergymnasial_proc25;23.874388369502377
+Helsingborg;2016;Lång_eftergymnasial_proc25;24.27128268030155
+Helsingborg;2017;Lång_eftergymnasial_proc25;24.43684444384602
+Helsingborg;2018;Lång_eftergymnasial_proc25;25.302464723479734
+Helsingborg;2019;Lång_eftergymnasial_proc25;25.759983328557663
+Helsingborg;2020;Lång_eftergymnasial_proc25;26.381712047214663
+Helsingborg;2021;Lång_eftergymnasial_proc25;26.841578055170288
+Helsingborg;2022;Lång_eftergymnasial_proc25;27.467065332668888
+Helsingborg;2023;Lång_eftergymnasial_proc25;27.802232854864435
+Helsingborg;2024;Lång_eftergymnasial_proc25;28.18066157760814
+Helsingborg;2025;Lång_eftergymnasial_proc25;28.690315859019645
+Jönköping;2000;Lång_eftergymnasial_proc25;15.32433388947874
+Jönköping;2001;Lång_eftergymnasial_proc25;16.224667246338036
+Jönköping;2002;Lång_eftergymnasial_proc25;17.23651452282158
+Jönköping;2003;Lång_eftergymnasial_proc25;17.92572777860339
+Jönköping;2004;Lång_eftergymnasial_proc25;18.906393292283504
+Jönköping;2005;Lång_eftergymnasial_proc25;19.947050415800412
+Jönköping;2006;Lång_eftergymnasial_proc25;20.81719254818125
+Jönköping;2007;Lång_eftergymnasial_proc25;21.57712719333195
+Jönköping;2008;Lång_eftergymnasial_proc25;22.35897598780333
+Jönköping;2009;Lång_eftergymnasial_proc25;22.922065609000693
+Jönköping;2010;Lång_eftergymnasial_proc25;23.711437466587
+Jönköping;2011;Lång_eftergymnasial_proc25;24.34476279943636
+Jönköping;2012;Lång_eftergymnasial_proc25;25.026882977231285
+Jönköping;2013;Lång_eftergymnasial_proc25;25.608419883022886
+Jönköping;2014;Lång_eftergymnasial_proc25;26.0976353928299
+Jönköping;2015;Lång_eftergymnasial_proc25;26.41589307852801
+Jönköping;2016;Lång_eftergymnasial_proc25;26.78680014831294
+Jönköping;2017;Lång_eftergymnasial_proc25;27.15801423394315
+Jönköping;2018;Lång_eftergymnasial_proc25;27.76442995251988
+Jönköping;2019;Lång_eftergymnasial_proc25;28.289038648226573
+Jönköping;2020;Lång_eftergymnasial_proc25;29.153277970204066
+Jönköping;2021;Lång_eftergymnasial_proc25;29.944312730881624
+Jönköping;2022;Lång_eftergymnasial_proc25;30.48253682733058
+Jönköping;2023;Lång_eftergymnasial_proc25;30.91792013851315
+Jönköping;2024;Lång_eftergymnasial_proc25;31.474316925260045
+Jönköping;2025;Lång_eftergymnasial_proc25;32.08510410819769
+Linköping;2000;Lång_eftergymnasial_proc25;24.084492709378225
+Linköping;2001;Lång_eftergymnasial_proc25;25.213140680037384
+Linköping;2002;Lång_eftergymnasial_proc25;26.33118365483392
+Linköping;2003;Lång_eftergymnasial_proc25;27.126890017304472
+Linköping;2004;Lång_eftergymnasial_proc25;28.13020995224505
+Linköping;2005;Lång_eftergymnasial_proc25;29.197347487575147
+Linköping;2006;Lång_eftergymnasial_proc25;30.13378814779606
+Linköping;2007;Lång_eftergymnasial_proc25;30.996822048599064
+Linköping;2008;Lång_eftergymnasial_proc25;31.68728815894624
+Linköping;2009;Lång_eftergymnasial_proc25;32.41902380013864
+Linköping;2010;Lång_eftergymnasial_proc25;33.15780258851733
+Linköping;2011;Lång_eftergymnasial_proc25;33.92842717505452
+Linköping;2012;Lång_eftergymnasial_proc25;34.683009072175984
+Linköping;2013;Lång_eftergymnasial_proc25;35.34878794699006
+Linköping;2014;Lång_eftergymnasial_proc25;35.99103174290996
+Linköping;2015;Lång_eftergymnasial_proc25;36.39324188779033
+Linköping;2016;Lång_eftergymnasial_proc25;36.82395898271015
+Linköping;2017;Lång_eftergymnasial_proc25;37.151277504433175
+Linköping;2018;Lång_eftergymnasial_proc25;37.67339836282535
+Linköping;2019;Lång_eftergymnasial_proc25;38.34113163860884
+Linköping;2020;Lång_eftergymnasial_proc25;38.874869942714994
+Linköping;2021;Lång_eftergymnasial_proc25;39.30194553457469
+Linköping;2022;Lång_eftergymnasial_proc25;39.7252459951514
+Linköping;2023;Lång_eftergymnasial_proc25;40.08935343193023
+Linköping;2024;Lång_eftergymnasial_proc25;40.46246870423733
+Linköping;2025;Lång_eftergymnasial_proc25;41.13741848305035
+Lkpg-Nkpg;2000;Lång_eftergymnasial_proc25;18.01825764349438
+Lkpg-Nkpg;2001;Lång_eftergymnasial_proc25;18.97918031981039
+Lkpg-Nkpg;2002;Lång_eftergymnasial_proc25;19.987181032814263
+Lkpg-Nkpg;2003;Lång_eftergymnasial_proc25;20.78576953371132
+Lkpg-Nkpg;2004;Lång_eftergymnasial_proc25;21.75382033364817
+Lkpg-Nkpg;2005;Lång_eftergymnasial_proc25;22.72798710931721
+Lkpg-Nkpg;2006;Lång_eftergymnasial_proc25;23.603479439751688
+Lkpg-Nkpg;2007;Lång_eftergymnasial_proc25;24.380839477067035
+Lkpg-Nkpg;2008;Lång_eftergymnasial_proc25;25.09373437564456
+Lkpg-Nkpg;2009;Lång_eftergymnasial_proc25;25.78682838623057
+Lkpg-Nkpg;2010;Lång_eftergymnasial_proc25;26.46448654077729
+Lkpg-Nkpg;2011;Lång_eftergymnasial_proc25;27.11647106849508
+Lkpg-Nkpg;2012;Lång_eftergymnasial_proc25;27.789836794104104
+Lkpg-Nkpg;2013;Lång_eftergymnasial_proc25;28.322859664008853
+Lkpg-Nkpg;2014;Lång_eftergymnasial_proc25;28.874565483812376
+Lkpg-Nkpg;2015;Lång_eftergymnasial_proc25;29.29725489280208
+Lkpg-Nkpg;2016;Lång_eftergymnasial_proc25;29.71854065753252
+Lkpg-Nkpg;2017;Lång_eftergymnasial_proc25;30.067076176325784
+Lkpg-Nkpg;2018;Lång_eftergymnasial_proc25;30.582176895476778
+Lkpg-Nkpg;2019;Lång_eftergymnasial_proc25;31.192442444992345
+Lkpg-Nkpg;2020;Lång_eftergymnasial_proc25;31.77987338220703
+Lkpg-Nkpg;2021;Lång_eftergymnasial_proc25;32.31485307169969
+Lkpg-Nkpg;2022;Lång_eftergymnasial_proc25;32.84723212361814
+Lkpg-Nkpg;2023;Lång_eftergymnasial_proc25;33.2589817750053
+Lkpg-Nkpg;2024;Lång_eftergymnasial_proc25;33.743869437842235
+Lkpg-Nkpg;2025;Lång_eftergymnasial_proc25;34.43272430580576
+Lund;2000;Lång_eftergymnasial_proc25;42.47010145666837
+Lund;2001;Lång_eftergymnasial_proc25;43.66784465511116
+Lund;2002;Lång_eftergymnasial_proc25;44.79473635436938
+Lund;2003;Lång_eftergymnasial_proc25;45.4703029632498
+Lund;2004;Lång_eftergymnasial_proc25;46.5240248520275
+Lund;2005;Lång_eftergymnasial_proc25;47.56606144488354
+Lund;2006;Lång_eftergymnasial_proc25;48.12573816662124
+Lund;2007;Lång_eftergymnasial_proc25;48.93441298454136
+Lund;2008;Lång_eftergymnasial_proc25;49.25328130542746
+Lund;2009;Lång_eftergymnasial_proc25;49.70025140204989
+Lund;2010;Lång_eftergymnasial_proc25;50.081669213341065
+Lund;2011;Lång_eftergymnasial_proc25;50.673576937842455
+Lund;2012;Lång_eftergymnasial_proc25;51.3389215737318
+Lund;2013;Lång_eftergymnasial_proc25;51.851278877887786
+Lund;2014;Lång_eftergymnasial_proc25;52.32996838992556
+Lund;2015;Lång_eftergymnasial_proc25;52.15050110412774
+Lund;2016;Lång_eftergymnasial_proc25;52.54683595256864
+Lund;2017;Lång_eftergymnasial_proc25;52.60451745379877
+Lund;2018;Lång_eftergymnasial_proc25;52.77673881580017
+Lund;2019;Lång_eftergymnasial_proc25;53.30555242707512
+Lund;2020;Lång_eftergymnasial_proc25;54.00235100884044
+Lund;2021;Lång_eftergymnasial_proc25;54.72073401559141
+Lund;2022;Lång_eftergymnasial_proc25;55.313381909788106
+Lund;2023;Lång_eftergymnasial_proc25;55.44998178852518
+Lund;2024;Lång_eftergymnasial_proc25;56.29732458354366
+Lund;2025;Lång_eftergymnasial_proc25;57.12555828143675
+Länet exkl Linköping;2000;Lång_eftergymnasial_proc25;13.432793626159544
+Länet exkl Linköping;2001;Lång_eftergymnasial_proc25;14.209672461949348
+Länet exkl Linköping;2002;Lång_eftergymnasial_proc25;15.07867083044389
+Länet exkl Linköping;2003;Lång_eftergymnasial_proc25;15.81214310526817
+Länet exkl Linköping;2004;Lång_eftergymnasial_proc25;16.701363142888695
+Länet exkl Linköping;2005;Lång_eftergymnasial_proc25;17.566494502741328
+Länet exkl Linköping;2006;Lång_eftergymnasial_proc25;18.358331587548133
+Länet exkl Linköping;2007;Lång_eftergymnasial_proc25;19.0819062306478
+Länet exkl Linköping;2008;Lång_eftergymnasial_proc25;19.79041127618981
+Länet exkl Linköping;2009;Lång_eftergymnasial_proc25;20.459982697884943
+Länet exkl Linköping;2010;Lång_eftergymnasial_proc25;21.10368028698345
+Länet exkl Linköping;2011;Lång_eftergymnasial_proc25;21.68337234348892
+Länet exkl Linköping;2012;Lång_eftergymnasial_proc25;22.27770476084528
+Länet exkl Linköping;2013;Lång_eftergymnasial_proc25;22.74856865250981
+Länet exkl Linköping;2014;Lång_eftergymnasial_proc25;23.23125471901633
+Länet exkl Linköping;2015;Lång_eftergymnasial_proc25;23.648514945647605
+Länet exkl Linköping;2016;Lång_eftergymnasial_proc25;24.090552115879703
+Länet exkl Linköping;2017;Lång_eftergymnasial_proc25;24.47282952508461
+Länet exkl Linköping;2018;Lång_eftergymnasial_proc25;24.967215578437145
+Länet exkl Linköping;2019;Lång_eftergymnasial_proc25;25.55271403781626
+Länet exkl Linköping;2020;Lång_eftergymnasial_proc25;26.16865184063085
+Länet exkl Linköping;2021;Lång_eftergymnasial_proc25;26.74641398398898
+Länet exkl Linköping;2022;Lång_eftergymnasial_proc25;27.321736964454555
+Länet exkl Linköping;2023;Lång_eftergymnasial_proc25;27.77964490132333
+Länet exkl Linköping;2024;Lång_eftergymnasial_proc25;28.330705195291102
+Länet exkl Linköping;2025;Lång_eftergymnasial_proc25;29.023011790881327
+Länet exkl Norrköping;2000;Lång_eftergymnasial_proc25;19.49902869204339
+Länet exkl Norrköping;2001;Lång_eftergymnasial_proc25;20.44363282217634
+Länet exkl Norrköping;2002;Lång_eftergymnasial_proc25;21.42267345246355
+Länet exkl Norrköping;2003;Lång_eftergymnasial_proc25;22.153263588861325
+Länet exkl Norrköping;2004;Lång_eftergymnasial_proc25;23.077752761485577
+Länet exkl Norrköping;2005;Lång_eftergymnasial_proc25;24.035854880999267
+Länet exkl Norrköping;2006;Lång_eftergymnasial_proc25;24.888640295592506
+Länet exkl Norrköping;2007;Lång_eftergymnasial_proc25;25.697888802179826
+Länet exkl Norrköping;2008;Lång_eftergymnasial_proc25;26.38396505949149
+Länet exkl Norrköping;2009;Lång_eftergymnasial_proc25;27.092178111793014
+Länet exkl Norrköping;2010;Lång_eftergymnasial_proc25;27.796996334723488
+Länet exkl Norrköping;2011;Lång_eftergymnasial_proc25;28.49532845004836
+Länet exkl Norrköping;2012;Lång_eftergymnasial_proc25;29.170877038917155
+Länet exkl Norrköping;2013;Lång_eftergymnasial_proc25;29.774496935491022
+Länet exkl Norrköping;2014;Lång_eftergymnasial_proc25;30.347720978113912
+Länet exkl Norrköping;2015;Lång_eftergymnasial_proc25;30.744501940635857
+Länet exkl Norrköping;2016;Lång_eftergymnasial_proc25;31.195970441057327
+Länet exkl Norrköping;2017;Lång_eftergymnasial_proc25;31.557030853192
+Länet exkl Norrköping;2018;Lång_eftergymnasial_proc25;32.05843704578572
+Länet exkl Norrköping;2019;Lång_eftergymnasial_proc25;32.70140323143276
+Länet exkl Norrköping;2020;Lång_eftergymnasial_proc25;33.263648401138816
+Länet exkl Norrköping;2021;Lång_eftergymnasial_proc25;33.733506446863984
+Länet exkl Norrköping;2022;Lång_eftergymnasial_proc25;34.199750835987814
+Länet exkl Norrköping;2023;Lång_eftergymnasial_proc25;34.610016558248255
+Länet exkl Norrköping;2024;Lång_eftergymnasial_proc25;35.04930446168619
+Länet exkl Norrköping;2025;Lång_eftergymnasial_proc25;35.72770596812592
+Malmö;2000;Lång_eftergymnasial_proc25;18.10033883484534
+Malmö;2001;Lång_eftergymnasial_proc25;19.360362232140936
+Malmö;2002;Lång_eftergymnasial_proc25;20.58765459955718
+Malmö;2003;Lång_eftergymnasial_proc25;21.666248466599757
+Malmö;2004;Lång_eftergymnasial_proc25;23.051238715528257
+Malmö;2005;Lång_eftergymnasial_proc25;24.57507225971529
+Malmö;2006;Lång_eftergymnasial_proc25;25.738669766888837
+Malmö;2007;Lång_eftergymnasial_proc25;26.86049371529171
+Malmö;2008;Lång_eftergymnasial_proc25;27.7562519784742
+Malmö;2009;Lång_eftergymnasial_proc25;28.487884321176526
+Malmö;2010;Lång_eftergymnasial_proc25;29.01504124211548
+Malmö;2011;Lång_eftergymnasial_proc25;29.73978586107932
+Malmö;2012;Lång_eftergymnasial_proc25;30.25485787793494
+Malmö;2013;Lång_eftergymnasial_proc25;30.77146593055354
+Malmö;2014;Lång_eftergymnasial_proc25;31.222088506881267
+Malmö;2015;Lång_eftergymnasial_proc25;31.760640539401603
+Malmö;2016;Lång_eftergymnasial_proc25;32.28114037744577
+Malmö;2017;Lång_eftergymnasial_proc25;32.52761646000552
+Malmö;2018;Lång_eftergymnasial_proc25;33.20292566763055
+Malmö;2019;Lång_eftergymnasial_proc25;33.84229109454688
+Malmö;2020;Lång_eftergymnasial_proc25;34.68970959107577
+Malmö;2021;Lång_eftergymnasial_proc25;35.451015211589585
+Malmö;2022;Lång_eftergymnasial_proc25;36.33094787942007
+Malmö;2023;Lång_eftergymnasial_proc25;37.07369596032934
+Malmö;2024;Lång_eftergymnasial_proc25;37.82316114350455
+Malmö;2025;Lång_eftergymnasial_proc25;38.65771812080537
+Norrköping;2000;Lång_eftergymnasial_proc25;11.952022577610537
+Norrköping;2001;Lång_eftergymnasial_proc25;12.745219959583398
+Norrköping;2002;Lång_eftergymnasial_proc25;13.6431784107946
+Norrköping;2003;Lång_eftergymnasial_proc25;14.44464905011816
+Norrköping;2004;Lång_eftergymnasial_proc25;15.377430715051291
+Norrköping;2005;Lång_eftergymnasial_proc25;16.258626731059277
+Norrköping;2006;Lång_eftergymnasial_proc25;17.073170731707318
+Norrköping;2007;Lång_eftergymnasial_proc25;17.764856905535
+Norrköping;2008;Lång_eftergymnasial_proc25;18.50018059234289
+Norrköping;2009;Lång_eftergymnasial_proc25;19.154632972322503
+Norrköping;2010;Lång_eftergymnasial_proc25;19.77117049303726
+Norrköping;2011;Lång_eftergymnasial_proc25;20.30451496193563
+Norrköping;2012;Lång_eftergymnasial_proc25;20.896664516032228
+Norrköping;2013;Lång_eftergymnasial_proc25;21.296931381027644
+Norrköping;2014;Lång_eftergymnasial_proc25;21.758099224714798
+Norrköping;2015;Lång_eftergymnasial_proc25;22.20126789781382
+Norrköping;2016;Lång_eftergymnasial_proc25;22.6131223323549
+Norrköping;2017;Lång_eftergymnasial_proc25;22.9828748482184
+Norrköping;2018;Lång_eftergymnasial_proc25;23.490955428128203
+Norrköping;2019;Lång_eftergymnasial_proc25;24.043753251375847
+Norrköping;2020;Lång_eftergymnasial_proc25;24.684876821699067
+Norrköping;2021;Lång_eftergymnasial_proc25;25.32776060882469
+Norrköping;2022;Lång_eftergymnasial_proc25;25.96921825208489
+Norrköping;2023;Lång_eftergymnasial_proc25;26.428610118080385
+Norrköping;2024;Lång_eftergymnasial_proc25;27.025270171447147
+Norrköping;2025;Lång_eftergymnasial_proc25;27.72803012856117
+Riket;2000;Lång_eftergymnasial_proc25;16.24002700282486
+Riket;2001;Lång_eftergymnasial_proc25;16.999721521909237
+Riket;2002;Lång_eftergymnasial_proc25;17.794834126238612
+Riket;2003;Lång_eftergymnasial_proc25;18.45050165798389
+Riket;2004;Lång_eftergymnasial_proc25;19.28682852828252
+Riket;2005;Lång_eftergymnasial_proc25;20.274268857208924
+Riket;2006;Lång_eftergymnasial_proc25;20.981390742955615
+Riket;2007;Lång_eftergymnasial_proc25;21.728662173147317
+Riket;2008;Lång_eftergymnasial_proc25;22.388403342932847
+Riket;2009;Lång_eftergymnasial_proc25;22.99825573146954
+Riket;2010;Lång_eftergymnasial_proc25;23.59293435969485
+Riket;2011;Lång_eftergymnasial_proc25;24.240131612040127
+Riket;2012;Lång_eftergymnasial_proc25;24.78509802781384
+Riket;2013;Lång_eftergymnasial_proc25;25.3040680807878
+Riket;2014;Lång_eftergymnasial_proc25;25.80507433575046
+Riket;2015;Lång_eftergymnasial_proc25;26.24006859798867
+Riket;2016;Lång_eftergymnasial_proc25;26.64821756650747
+Riket;2017;Lång_eftergymnasial_proc25;27.039363959871743
+Riket;2018;Lång_eftergymnasial_proc25;27.63742374664096
+Riket;2019;Lång_eftergymnasial_proc25;28.21408467378628
+Riket;2020;Lång_eftergymnasial_proc25;28.876097218790225
+Riket;2021;Lång_eftergymnasial_proc25;29.556599091388964
+Riket;2022;Lång_eftergymnasial_proc25;30.269672011646843
+Riket;2023;Lång_eftergymnasial_proc25;30.87722311089124
+Riket;2024;Lång_eftergymnasial_proc25;31.493619149091096
+Riket;2025;Lång_eftergymnasial_proc25;32.182810765921346
+Sex till tolv;2000;Lång_eftergymnasial_proc25;20.802989511371937
+Sex till tolv;2001;Lång_eftergymnasial_proc25;21.70586422888152
+Sex till tolv;2002;Lång_eftergymnasial_proc25;22.697906088928956
+Sex till tolv;2003;Lång_eftergymnasial_proc25;23.49570896676258
+Sex till tolv;2004;Lång_eftergymnasial_proc25;24.522084009227257
+Sex till tolv;2005;Lång_eftergymnasial_proc25;25.62430121786395
+Sex till tolv;2006;Lång_eftergymnasial_proc25;26.34739133727832
+Sex till tolv;2007;Lång_eftergymnasial_proc25;27.09002284327779
+Sex till tolv;2008;Lång_eftergymnasial_proc25;27.693062600977434
+Sex till tolv;2009;Lång_eftergymnasial_proc25;28.28037103503855
+Sex till tolv;2010;Lång_eftergymnasial_proc25;28.81184265386342
+Sex till tolv;2011;Lång_eftergymnasial_proc25;29.385306508726188
+Sex till tolv;2012;Lång_eftergymnasial_proc25;29.960569719966884
+Sex till tolv;2013;Lång_eftergymnasial_proc25;30.433472731511365
+Sex till tolv;2014;Lång_eftergymnasial_proc25;30.88277934805353
+Sex till tolv;2015;Lång_eftergymnasial_proc25;31.13417560521617
+Sex till tolv;2016;Lång_eftergymnasial_proc25;31.496238190783647
+Sex till tolv;2017;Lång_eftergymnasial_proc25;31.73959881417133
+Sex till tolv;2018;Lång_eftergymnasial_proc25;32.228808387072974
+Sex till tolv;2019;Lång_eftergymnasial_proc25;32.758117074623726
+Sex till tolv;2020;Lång_eftergymnasial_proc25;33.44997564350958
+Sex till tolv;2021;Lång_eftergymnasial_proc25;34.10227212217963
+Sex till tolv;2022;Lång_eftergymnasial_proc25;34.67051027208636
+Sex till tolv;2023;Lång_eftergymnasial_proc25;35.09041071255913
+Sex till tolv;2024;Lång_eftergymnasial_proc25;35.687513475785025
+Sex till tolv;2025;Lång_eftergymnasial_proc25;36.32465036636259
+Sex till tolv minus tio;2000;Lång_eftergymnasial_proc25;22.27815066699884
+Sex till tolv minus tio;2001;Lång_eftergymnasial_proc25;23.199304940431198
+Sex till tolv minus tio;2002;Lång_eftergymnasial_proc25;24.20702736861801
+Sex till tolv minus tio;2003;Lång_eftergymnasial_proc25;25.004218952869987
+Sex till tolv minus tio;2004;Lång_eftergymnasial_proc25;26.046192891589914
+Sex till tolv minus tio;2005;Lång_eftergymnasial_proc25;27.18524696566473
+Sex till tolv minus tio;2006;Lång_eftergymnasial_proc25;27.893094771540152
+Sex till tolv minus tio;2007;Lång_eftergymnasial_proc25;28.644217166234924
+Sex till tolv minus tio;2008;Lång_eftergymnasial_proc25;29.22520960241652
+Sex till tolv minus tio;2009;Lång_eftergymnasial_proc25;29.801327378824556
+Sex till tolv minus tio;2010;Lång_eftergymnasial_proc25;30.318621347334453
+Sex till tolv minus tio;2011;Lång_eftergymnasial_proc25;30.89877176652461
+Sex till tolv minus tio;2012;Lång_eftergymnasial_proc25;31.471220587289327
+Sex till tolv minus tio;2013;Lång_eftergymnasial_proc25;31.95622962325865
+Sex till tolv minus tio;2014;Lång_eftergymnasial_proc25;32.40355936860999
+Sex till tolv minus tio;2015;Lång_eftergymnasial_proc25;32.622993556449906
+Sex till tolv minus tio;2016;Lång_eftergymnasial_proc25;32.976757500521764
+Sex till tolv minus tio;2017;Lång_eftergymnasial_proc25;33.19905280849682
+Sex till tolv minus tio;2018;Lång_eftergymnasial_proc25;33.68511721356377
+Sex till tolv minus tio;2019;Lång_eftergymnasial_proc25;34.21051104516504
+Sex till tolv minus tio;2020;Lång_eftergymnasial_proc25;34.91082544714467
+Sex till tolv minus tio;2021;Lång_eftergymnasial_proc25;35.564690707738784
+Sex till tolv minus tio;2022;Lång_eftergymnasial_proc25;36.12072560875327
+Sex till tolv minus tio;2023;Lång_eftergymnasial_proc25;36.53404414497225
+Sex till tolv minus tio;2024;Lång_eftergymnasial_proc25;37.13122069317468
+Sex till tolv minus tio;2025;Lång_eftergymnasial_proc25;37.75742040599616
+Stockholm;2000;Lång_eftergymnasial_proc25;28.436379315540695
+Stockholm;2001;Lång_eftergymnasial_proc25;29.58213843036632
+Stockholm;2002;Lång_eftergymnasial_proc25;30.556595065239627
+Stockholm;2003;Lång_eftergymnasial_proc25;31.314614357419995
+Stockholm;2004;Lång_eftergymnasial_proc25;32.24580815464769
+Stockholm;2005;Lång_eftergymnasial_proc25;33.25990848090253
+Stockholm;2006;Lång_eftergymnasial_proc25;34.05688541141939
+Stockholm;2007;Lång_eftergymnasial_proc25;34.977438628337424
+Stockholm;2008;Lång_eftergymnasial_proc25;35.72871646135718
+Stockholm;2009;Lång_eftergymnasial_proc25;36.308278975584656
+Stockholm;2010;Lång_eftergymnasial_proc25;37.030604581299286
+Stockholm;2011;Lång_eftergymnasial_proc25;37.70325060817508
+Stockholm;2012;Lång_eftergymnasial_proc25;38.27384077506484
+Stockholm;2013;Lång_eftergymnasial_proc25;38.88149468873208
+Stockholm;2014;Lång_eftergymnasial_proc25;39.37298521987714
+Stockholm;2015;Lång_eftergymnasial_proc25;39.97493428693112
+Stockholm;2016;Lång_eftergymnasial_proc25;40.43713826069269
+Stockholm;2017;Lång_eftergymnasial_proc25;40.92729342135216
+Stockholm;2018;Lång_eftergymnasial_proc25;41.75556123201572
+Stockholm;2019;Lång_eftergymnasial_proc25;42.427924327204906
+Stockholm;2020;Lång_eftergymnasial_proc25;43.2511320567235
+Stockholm;2021;Lång_eftergymnasial_proc25;43.94453856568678
+Stockholm;2022;Lång_eftergymnasial_proc25;44.83676644448791
+Stockholm;2023;Lång_eftergymnasial_proc25;45.484374367735
+Stockholm;2024;Lång_eftergymnasial_proc25;46.21771379473601
+Stockholm;2025;Lång_eftergymnasial_proc25;47.03767996118321
+Tolv största;2000;Lång_eftergymnasial_proc25;22.45681223316876
+Tolv största;2001;Lång_eftergymnasial_proc25;23.47253053654663
+Tolv största;2002;Lång_eftergymnasial_proc25;24.572164491097077
+Tolv största;2003;Lång_eftergymnasial_proc25;25.4062328509028
+Tolv största;2004;Lång_eftergymnasial_proc25;26.44121890697936
+Tolv största;2005;Lång_eftergymnasial_proc25;27.555378151017152
+Tolv största;2006;Lång_eftergymnasial_proc25;28.312553197897504
+Tolv största;2007;Lång_eftergymnasial_proc25;29.09492017328729
+Tolv största;2008;Lång_eftergymnasial_proc25;29.735072027151475
+Tolv största;2009;Lång_eftergymnasial_proc25;30.332825249608927
+Tolv största;2010;Lång_eftergymnasial_proc25;30.90188468809172
+Tolv största;2011;Lång_eftergymnasial_proc25;31.518399600275465
+Tolv största;2012;Lång_eftergymnasial_proc25;32.09805696898304
+Tolv största;2013;Lång_eftergymnasial_proc25;32.60795142785802
+Tolv största;2014;Lång_eftergymnasial_proc25;33.08845044578448
+Tolv största;2015;Lång_eftergymnasial_proc25;33.421664009251806
+Tolv största;2016;Lång_eftergymnasial_proc25;33.8031163779992
+Tolv största;2017;Lång_eftergymnasial_proc25;34.08193591689398
+Tolv största;2018;Lång_eftergymnasial_proc25;34.63023918903153
+Tolv största;2019;Lång_eftergymnasial_proc25;35.19103521393589
+Tolv största;2020;Lång_eftergymnasial_proc25;35.88582654645926
+Tolv största;2021;Lång_eftergymnasial_proc25;36.53568537880648
+Tolv största;2022;Lång_eftergymnasial_proc25;37.16587729672452
+Tolv största;2023;Lång_eftergymnasial_proc25;37.65604083887045
+Tolv största;2024;Lång_eftergymnasial_proc25;38.25558000242877
+Tolv största;2025;Lång_eftergymnasial_proc25;38.9379046018744
+Tolv största minus fem;2000;Lång_eftergymnasial_proc25;22.308841280786087
+Tolv största minus fem;2001;Lång_eftergymnasial_proc25;23.314293250774742
+Tolv största minus fem;2002;Lång_eftergymnasial_proc25;24.41225365803009
+Tolv största minus fem;2003;Lång_eftergymnasial_proc25;25.24980947213901
+Tolv största minus fem;2004;Lång_eftergymnasial_proc25;26.287674266500662
+Tolv största minus fem;2005;Lång_eftergymnasial_proc25;27.406108211330057
+Tolv största minus fem;2006;Lång_eftergymnasial_proc25;28.146986384270363
+Tolv största minus fem;2007;Lång_eftergymnasial_proc25;28.9220200028044
+Tolv största minus fem;2008;Lång_eftergymnasial_proc25;29.55759783335195
+Tolv största minus fem;2009;Lång_eftergymnasial_proc25;30.14317083592441
+Tolv största minus fem;2010;Lång_eftergymnasial_proc25;30.69680124259848
+Tolv största minus fem;2011;Lång_eftergymnasial_proc25;31.299306184386463
+Tolv största minus fem;2012;Lång_eftergymnasial_proc25;31.86306132323822
+Tolv största minus fem;2013;Lång_eftergymnasial_proc25;32.358784471573294
+Tolv största minus fem;2014;Lång_eftergymnasial_proc25;32.824579418773084
+Tolv största minus fem;2015;Lång_eftergymnasial_proc25;33.1515205657483
+Tolv största minus fem;2016;Lång_eftergymnasial_proc25;33.52849432302548
+Tolv största minus fem;2017;Lång_eftergymnasial_proc25;33.802904863481324
+Tolv största minus fem;2018;Lång_eftergymnasial_proc25;34.35358835505027
+Tolv största minus fem;2019;Lång_eftergymnasial_proc25;34.9046628116929
+Tolv största minus fem;2020;Lång_eftergymnasial_proc25;35.61409532861783
+Tolv största minus fem;2021;Lång_eftergymnasial_proc25;36.28420718282756
+Tolv största minus fem;2022;Lång_eftergymnasial_proc25;36.93320741504936
+Tolv största minus fem;2023;Lång_eftergymnasial_proc25;37.43483060313774
+Tolv största minus fem;2024;Lång_eftergymnasial_proc25;38.05495375680981
+Tolv största minus fem;2025;Lång_eftergymnasial_proc25;38.73794879449477
+Tre största;2000;Lång_eftergymnasial_proc25;23.16459174480805
+Tre största;2001;Lång_eftergymnasial_proc25;24.36847261854703
+Tre största;2002;Lång_eftergymnasial_proc25;25.4866915883338
+Tre största;2003;Lång_eftergymnasial_proc25;26.42037127250143
+Tre största;2004;Lång_eftergymnasial_proc25;27.54549880382012
+Tre största;2005;Lång_eftergymnasial_proc25;28.76821199470898
+Tre största;2006;Lång_eftergymnasial_proc25;29.652585777159768
+Tre största;2007;Lång_eftergymnasial_proc25;30.578305983527084
+Tre största;2008;Lång_eftergymnasial_proc25;31.343960772066755
+Tre största;2009;Lång_eftergymnasial_proc25;31.967106046693043
+Tre största;2010;Lång_eftergymnasial_proc25;32.56017665851234
+Tre största;2011;Lång_eftergymnasial_proc25;33.239220574652215
+Tre största;2012;Lång_eftergymnasial_proc25;33.79517104895239
+Tre största;2013;Lång_eftergymnasial_proc25;34.32872699566291
+Tre största;2014;Lång_eftergymnasial_proc25;34.83642237824994
+Tre största;2015;Lång_eftergymnasial_proc25;35.38074084532898
+Tre största;2016;Lång_eftergymnasial_proc25;35.85531310494745
+Tre största;2017;Lång_eftergymnasial_proc25;36.233888398757095
+Tre största;2018;Lång_eftergymnasial_proc25;36.98275403483936
+Tre största;2019;Lång_eftergymnasial_proc25;37.63636079264341
+Tre största;2020;Lång_eftergymnasial_proc25;38.4294111449009
+Tre största;2021;Lång_eftergymnasial_proc25;39.08705772831871
+Tre största;2022;Lång_eftergymnasial_proc25;39.92154073143957
+Tre största;2023;Lång_eftergymnasial_proc25;40.618030054055744
+Tre största;2024;Lång_eftergymnasial_proc25;41.30647824505758
+Tre största;2025;Lång_eftergymnasial_proc25;42.07751438268516
+Umeå;2000;Lång_eftergymnasial_proc25;26.783938676260554
+Umeå;2001;Lång_eftergymnasial_proc25;27.819346503741187
+Umeå;2002;Lång_eftergymnasial_proc25;28.88625130648904
+Umeå;2003;Lång_eftergymnasial_proc25;30.01764407875199
+Umeå;2004;Lång_eftergymnasial_proc25;31.528865181106426
+Umeå;2005;Lång_eftergymnasial_proc25;32.79527959578148
+Umeå;2006;Lång_eftergymnasial_proc25;33.45556695655099
+Umeå;2007;Lång_eftergymnasial_proc25;34.11142182554966
+Umeå;2008;Lång_eftergymnasial_proc25;34.57605026569968
+Umeå;2009;Lång_eftergymnasial_proc25;35.353250033231426
+Umeå;2010;Lång_eftergymnasial_proc25;35.86649253607975
+Umeå;2011;Lång_eftergymnasial_proc25;36.41863378610049
+Umeå;2012;Lång_eftergymnasial_proc25;36.89008837033258
+Umeå;2013;Lång_eftergymnasial_proc25;37.3240586525587
+Umeå;2014;Lång_eftergymnasial_proc25;37.92042491862744
+Umeå;2015;Lång_eftergymnasial_proc25;38.0333981581189
+Umeå;2016;Lång_eftergymnasial_proc25;38.35997547979441
+Umeå;2017;Lång_eftergymnasial_proc25;38.6022781571281
+Umeå;2018;Lång_eftergymnasial_proc25;39.05164831832105
+Umeå;2019;Lång_eftergymnasial_proc25;39.501704851348926
+Umeå;2020;Lång_eftergymnasial_proc25;40.25302154102309
+Umeå;2021;Lång_eftergymnasial_proc25;41.02065937977368
+Umeå;2022;Lång_eftergymnasial_proc25;41.50173764504919
+Umeå;2023;Lång_eftergymnasial_proc25;41.99041965440225
+Umeå;2024;Lång_eftergymnasial_proc25;42.64624361779723
+Umeå;2025;Lång_eftergymnasial_proc25;43.19083041477322
+Uppsala;2000;Lång_eftergymnasial_proc25;30.282552274619263
+Uppsala;2001;Lång_eftergymnasial_proc25;31.41075830071045
+Uppsala;2002;Lång_eftergymnasial_proc25;33.18937285082692
+Uppsala;2003;Lång_eftergymnasial_proc25;34.0168276086868
+Uppsala;2004;Lång_eftergymnasial_proc25;34.87333245545617
+Uppsala;2005;Lång_eftergymnasial_proc25;35.792445815456034
+Uppsala;2006;Lång_eftergymnasial_proc25;36.22735353454647
+Uppsala;2007;Lång_eftergymnasial_proc25;36.77714217732262
+Uppsala;2008;Lång_eftergymnasial_proc25;37.25025564382915
+Uppsala;2009;Lång_eftergymnasial_proc25;37.71096380981958
+Uppsala;2010;Lång_eftergymnasial_proc25;38.301385116002265
+Uppsala;2011;Lång_eftergymnasial_proc25;38.877560743211056
+Uppsala;2012;Lång_eftergymnasial_proc25;39.38417336899507
+Uppsala;2013;Lång_eftergymnasial_proc25;39.92613907973793
+Uppsala;2014;Lång_eftergymnasial_proc25;40.38165103537933
+Uppsala;2015;Lång_eftergymnasial_proc25;40.585274450731134
+Uppsala;2016;Lång_eftergymnasial_proc25;40.773830902952376
+Uppsala;2017;Lång_eftergymnasial_proc25;40.95309660282399
+Uppsala;2018;Lång_eftergymnasial_proc25;41.33955109152404
+Uppsala;2019;Lång_eftergymnasial_proc25;41.73538902832557
+Uppsala;2020;Lång_eftergymnasial_proc25;42.31698567552634
+Uppsala;2021;Lång_eftergymnasial_proc25;43.1492009708896
+Uppsala;2022;Lång_eftergymnasial_proc25;43.80708746661962
+Uppsala;2023;Lång_eftergymnasial_proc25;44.29617148443399
+Uppsala;2024;Lång_eftergymnasial_proc25;44.87246225923998
+Uppsala;2025;Lång_eftergymnasial_proc25;45.6123410268488
+Västerås;2000;Lång_eftergymnasial_proc25;16.820361490225007
+Västerås;2001;Lång_eftergymnasial_proc25;17.73875727985287
+Västerås;2002;Lång_eftergymnasial_proc25;18.77734952328513
+Västerås;2003;Lång_eftergymnasial_proc25;19.516022226700837
+Västerås;2004;Lång_eftergymnasial_proc25;20.552204375797
+Västerås;2005;Lång_eftergymnasial_proc25;21.647162792023604
+Västerås;2006;Lång_eftergymnasial_proc25;22.371860438686213
+Västerås;2007;Lång_eftergymnasial_proc25;23.124680343240325
+Västerås;2008;Lång_eftergymnasial_proc25;23.730692168871585
+Västerås;2009;Lång_eftergymnasial_proc25;24.323286346244117
+Västerås;2010;Lång_eftergymnasial_proc25;24.826480064724
+Västerås;2011;Lång_eftergymnasial_proc25;25.335084671553464
+Västerås;2012;Lång_eftergymnasial_proc25;25.887777123798312
+Västerås;2013;Lång_eftergymnasial_proc25;26.394501145594667
+Västerås;2014;Lång_eftergymnasial_proc25;26.94134328152747
+Västerås;2015;Lång_eftergymnasial_proc25;27.27792759663316
+Västerås;2016;Lång_eftergymnasial_proc25;27.497285922987224
+Västerås;2017;Lång_eftergymnasial_proc25;27.665664430235157
+Västerås;2018;Lång_eftergymnasial_proc25;28.16685159858592
+Västerås;2019;Lång_eftergymnasial_proc25;28.75423696538066
+Västerås;2020;Lång_eftergymnasial_proc25;29.309847315794094
+Västerås;2021;Lång_eftergymnasial_proc25;29.961442786069654
+Västerås;2022;Lång_eftergymnasial_proc25;30.638601147688032
+Västerås;2023;Lång_eftergymnasial_proc25;31.259602487501525
+Västerås;2024;Lång_eftergymnasial_proc25;31.96513202437373
+Västerås;2025;Lång_eftergymnasial_proc25;32.609454983438724
+Örebro;2000;Lång_eftergymnasial_proc25;17.268494729138446
+Örebro;2001;Lång_eftergymnasial_proc25;18.003727033312288
+Örebro;2002;Lång_eftergymnasial_proc25;19.07280931764132
+Örebro;2003;Lång_eftergymnasial_proc25;19.88030106096787
+Örebro;2004;Lång_eftergymnasial_proc25;20.82377804757408
+Örebro;2005;Lång_eftergymnasial_proc25;21.97196081054964
+Örebro;2006;Lång_eftergymnasial_proc25;22.716289486091465
+Örebro;2007;Lång_eftergymnasial_proc25;23.520372321742183
+Örebro;2008;Lång_eftergymnasial_proc25;24.24973477306748
+Örebro;2009;Lång_eftergymnasial_proc25;24.85609325735443
+Örebro;2010;Lång_eftergymnasial_proc25;25.50788116301184
+Örebro;2011;Lång_eftergymnasial_proc25;26.176285173935472
+Örebro;2012;Lång_eftergymnasial_proc25;26.924335320141683
+Örebro;2013;Lång_eftergymnasial_proc25;27.46684331440008
+Örebro;2014;Lång_eftergymnasial_proc25;27.70401125771529
+Örebro;2015;Lång_eftergymnasial_proc25;27.985853031789237
+Örebro;2016;Lång_eftergymnasial_proc25;28.39836481916584
+Örebro;2017;Lång_eftergymnasial_proc25;28.72699813202973
+Örebro;2018;Lång_eftergymnasial_proc25;29.048569872675884
+Örebro;2019;Lång_eftergymnasial_proc25;29.65255005040129
+Örebro;2020;Lång_eftergymnasial_proc25;30.36474279979165
+Örebro;2021;Lång_eftergymnasial_proc25;30.89941727894604
+Örebro;2022;Lång_eftergymnasial_proc25;31.32103078999483
+Örebro;2023;Lång_eftergymnasial_proc25;31.784107946026985
+Örebro;2024;Lång_eftergymnasial_proc25;32.223645430465226
+Örebro;2025;Lång_eftergymnasial_proc25;32.843258789110926
+Östergötlands län;2000;Lång_eftergymnasial_proc25;14.91356467470855
+Östergötlands län;2001;Lång_eftergymnasial_proc25;15.674124964315295
+Östergötlands län;2002;Lång_eftergymnasial_proc25;16.51416325009318
+Östergötlands län;2003;Lång_eftergymnasial_proc25;17.179637160418178
+Östergötlands län;2004;Lång_eftergymnasial_proc25;18.0252955707261
+Östergötlands län;2005;Lång_eftergymnasial_proc25;18.874362274423383
+Östergötlands län;2006;Lång_eftergymnasial_proc25;19.643492443388947
+Östergötlands län;2007;Lång_eftergymnasial_proc25;20.39895555576059
+Östergötlands län;2008;Lång_eftergymnasial_proc25;21.080641960036743
+Östergötlands län;2009;Lång_eftergymnasial_proc25;21.765332423447397
+Östergötlands län;2010;Lång_eftergymnasial_proc25;22.43619008092965
+Östergötlands län;2011;Lång_eftergymnasial_proc25;23.0622297250422
+Östergötlands län;2012;Lång_eftergymnasial_proc25;23.65874500565833
+Östergötlands län;2013;Lång_eftergymnasial_proc25;24.200205923991984
+Östergötlands län;2014;Lång_eftergymnasial_proc25;24.704410213317868
+Östergötlands län;2015;Lång_eftergymnasial_proc25;25.095761993481386
+Östergötlands län;2016;Lång_eftergymnasial_proc25;25.56798189940451
+Östergötlands län;2017;Lång_eftergymnasial_proc25;25.96278420195082
+Östergötlands län;2018;Lång_eftergymnasial_proc25;26.443475728746087
+Östergötlands län;2019;Lång_eftergymnasial_proc25;27.06167482425667
+Östergötlands län;2020;Lång_eftergymnasial_proc25;27.65242685956264
+Östergötlands län;2021;Lång_eftergymnasial_proc25;28.165067359153277
+Östergötlands län;2022;Lång_eftergymnasial_proc25;28.674255676824224
+Östergötlands län;2023;Lång_eftergymnasial_proc25;29.13067968456628
+Östergötlands län;2024;Lång_eftergymnasial_proc25;29.636140219135065
+Östergötlands län;2025;Lång_eftergymnasial_proc25;30.317993453201485
+Fem till tolv;2000;Lång_eftergymnasial_proc35;20.15328393741259
+Fem till tolv;2001;Lång_eftergymnasial_proc35;20.554437535998527
+Fem till tolv;2002;Lång_eftergymnasial_proc35;21.02424126856858
+Fem till tolv;2003;Lång_eftergymnasial_proc35;21.359955653642704
+Fem till tolv;2004;Lång_eftergymnasial_proc35;21.95149486434815
+Fem till tolv;2005;Lång_eftergymnasial_proc35;22.75716213914842
+Fem till tolv;2006;Lång_eftergymnasial_proc35;23.379489415764805
+Fem till tolv;2007;Lång_eftergymnasial_proc35;24.150152276440423
+Fem till tolv;2008;Lång_eftergymnasial_proc35;24.9731286414814
+Fem till tolv;2009;Lång_eftergymnasial_proc35;25.806917086252888
+Fem till tolv;2010;Lång_eftergymnasial_proc35;26.664911391562203
+Fem till tolv;2011;Lång_eftergymnasial_proc35;27.54895704234443
+Fem till tolv;2012;Lång_eftergymnasial_proc35;28.42063815967532
+Fem till tolv;2013;Lång_eftergymnasial_proc35;29.165387823824556
+Fem till tolv;2014;Lång_eftergymnasial_proc35;29.91400539268628
+Fem till tolv;2015;Lång_eftergymnasial_proc35;30.618919870628552
+Fem till tolv;2016;Lång_eftergymnasial_proc35;31.309395021480835
+Fem till tolv;2017;Lång_eftergymnasial_proc35;31.863336965283413
+Fem till tolv;2018;Lång_eftergymnasial_proc35;32.529471510224255
+Fem till tolv;2019;Lång_eftergymnasial_proc35;33.21231394342868
+Fem till tolv;2020;Lång_eftergymnasial_proc35;33.91045843326805
+Fem till tolv;2021;Lång_eftergymnasial_proc35;34.58198073264613
+Fem till tolv;2022;Lång_eftergymnasial_proc35;35.205282900597524
+Fem till tolv;2023;Lång_eftergymnasial_proc35;35.81156992280433
+Fem till tolv;2024;Lång_eftergymnasial_proc35;36.42689288237405
+Fem till tolv;2025;Lång_eftergymnasial_proc35;37.04639133888699
+Fyra stora;2000;Lång_eftergymnasial_proc35;23.26746581019667
+Fyra stora;2001;Lång_eftergymnasial_proc35;23.74917379768048
+Fyra stora;2002;Lång_eftergymnasial_proc35;24.4298469547374
+Fyra stora;2003;Lång_eftergymnasial_proc35;24.89074098447064
+Fyra stora;2004;Lång_eftergymnasial_proc35;25.54836464592101
+Fyra stora;2005;Lång_eftergymnasial_proc35;26.445452095069594
+Fyra stora;2006;Lång_eftergymnasial_proc35;27.132826585532204
+Fyra stora;2007;Lång_eftergymnasial_proc35;27.997641375982724
+Fyra stora;2008;Lång_eftergymnasial_proc35;28.841880221156163
+Fyra stora;2009;Lång_eftergymnasial_proc35;29.6789800056521
+Fyra stora;2010;Lång_eftergymnasial_proc35;30.521567814410574
+Fyra stora;2011;Lång_eftergymnasial_proc35;31.433921327556565
+Fyra stora;2012;Lång_eftergymnasial_proc35;32.211899395054814
+Fyra stora;2013;Lång_eftergymnasial_proc35;32.97182692140209
+Fyra stora;2014;Lång_eftergymnasial_proc35;33.67094521084206
+Fyra stora;2015;Lång_eftergymnasial_proc35;34.44727690238715
+Fyra stora;2016;Lång_eftergymnasial_proc35;35.119307818269235
+Fyra stora;2017;Lång_eftergymnasial_proc35;35.71550506121645
+Fyra stora;2018;Lång_eftergymnasial_proc35;36.49978304754622
+Fyra stora;2019;Lång_eftergymnasial_proc35;37.25827859654004
+Fyra stora;2020;Lång_eftergymnasial_proc35;37.98311615070772
+Fyra stora;2021;Lång_eftergymnasial_proc35;38.66786168264002
+Fyra stora;2022;Lång_eftergymnasial_proc35;39.47084595359927
+Fyra stora;2023;Lång_eftergymnasial_proc35;40.21018042516192
+Fyra stora;2024;Lång_eftergymnasial_proc35;40.98077181689992
+Fyra stora;2025;Lång_eftergymnasial_proc35;41.81861870695104
+Göteborg;2000;Lång_eftergymnasial_proc35;20.949053108876413
+Göteborg;2001;Lång_eftergymnasial_proc35;21.45659003325312
+Göteborg;2002;Lång_eftergymnasial_proc35;22.0999977365836
+Göteborg;2003;Lång_eftergymnasial_proc35;22.60602163763943
+Göteborg;2004;Lång_eftergymnasial_proc35;23.361821784808864
+Göteborg;2005;Lång_eftergymnasial_proc35;24.25336684630497
+Göteborg;2006;Lång_eftergymnasial_proc35;24.91763124810335
+Göteborg;2007;Lång_eftergymnasial_proc35;25.75258739681295
+Göteborg;2008;Lång_eftergymnasial_proc35;26.56569900078172
+Göteborg;2009;Lång_eftergymnasial_proc35;27.40822856302243
+Göteborg;2010;Lång_eftergymnasial_proc35;28.173809821317008
+Göteborg;2011;Lång_eftergymnasial_proc35;28.97130174460617
+Göteborg;2012;Lång_eftergymnasial_proc35;29.67826960945192
+Göteborg;2013;Lång_eftergymnasial_proc35;30.34511506377181
+Göteborg;2014;Lång_eftergymnasial_proc35;31.020447181468736
+Göteborg;2015;Lång_eftergymnasial_proc35;31.72467922128888
+Göteborg;2016;Lång_eftergymnasial_proc35;32.39306279133534
+Göteborg;2017;Lång_eftergymnasial_proc35;32.93252269058643
+Göteborg;2018;Lång_eftergymnasial_proc35;33.739589196615114
+Göteborg;2019;Lång_eftergymnasial_proc35;34.53875577875296
+Göteborg;2020;Lång_eftergymnasial_proc35;35.26246889738924
+Göteborg;2021;Lång_eftergymnasial_proc35;35.9212950836998
+Göteborg;2022;Lång_eftergymnasial_proc35;36.71548636796777
+Göteborg;2023;Lång_eftergymnasial_proc35;37.53730880620677
+Göteborg;2024;Lång_eftergymnasial_proc35;38.33211635746735
+Göteborg;2025;Lång_eftergymnasial_proc35;39.1521336605951
+Helsingborg;2000;Lång_eftergymnasial_proc35;14.747417512966916
+Helsingborg;2001;Lång_eftergymnasial_proc35;15.094905522944426
+Helsingborg;2002;Lång_eftergymnasial_proc35;15.434022659310113
+Helsingborg;2003;Lång_eftergymnasial_proc35;15.77917074491347
+Helsingborg;2004;Lång_eftergymnasial_proc35;16.231100843629463
+Helsingborg;2005;Lång_eftergymnasial_proc35;17.06882789955179
+Helsingborg;2006;Lång_eftergymnasial_proc35;17.637193889921605
+Helsingborg;2007;Lång_eftergymnasial_proc35;18.41846856776417
+Helsingborg;2008;Lång_eftergymnasial_proc35;19.170932849943227
+Helsingborg;2009;Lång_eftergymnasial_proc35;19.88007836463301
+Helsingborg;2010;Lång_eftergymnasial_proc35;20.449518091325643
+Helsingborg;2011;Lång_eftergymnasial_proc35;21.15502118852863
+Helsingborg;2012;Lång_eftergymnasial_proc35;21.78820296398076
+Helsingborg;2013;Lång_eftergymnasial_proc35;22.430710292795432
+Helsingborg;2014;Lång_eftergymnasial_proc35;22.93645420253409
+Helsingborg;2015;Lång_eftergymnasial_proc35;23.507377111841603
+Helsingborg;2016;Lång_eftergymnasial_proc35;24.0398024951943
+Helsingborg;2017;Lång_eftergymnasial_proc35;24.308682868733484
+Helsingborg;2018;Lång_eftergymnasial_proc35;25.058840835539865
+Helsingborg;2019;Lång_eftergymnasial_proc35;25.685242330731526
+Helsingborg;2020;Lång_eftergymnasial_proc35;26.26769557318368
+Helsingborg;2021;Lång_eftergymnasial_proc35;26.73297274215358
+Helsingborg;2022;Lång_eftergymnasial_proc35;27.39337827609878
+Helsingborg;2023;Lång_eftergymnasial_proc35;27.959276175865558
+Helsingborg;2024;Lång_eftergymnasial_proc35;28.348275862068967
+Helsingborg;2025;Lång_eftergymnasial_proc35;28.879302995686345
+Jönköping;2000;Lång_eftergymnasial_proc35;14.43301352444804
+Jönköping;2001;Lång_eftergymnasial_proc35;14.871047779472354
+Jönköping;2002;Lång_eftergymnasial_proc35;15.288958848662018
+Jönköping;2003;Lång_eftergymnasial_proc35;15.5153594261656
+Jönköping;2004;Lång_eftergymnasial_proc35;16.019074531967505
+Jönköping;2005;Lång_eftergymnasial_proc35;16.658262261296617
+Jönköping;2006;Lång_eftergymnasial_proc35;17.25809243552017
+Jönköping;2007;Lång_eftergymnasial_proc35;18.082180005157745
+Jönköping;2008;Lång_eftergymnasial_proc35;18.85607749014229
+Jönköping;2009;Lång_eftergymnasial_proc35;19.67402217332792
+Jönköping;2010;Lång_eftergymnasial_proc35;20.675799867490223
+Jönköping;2011;Lång_eftergymnasial_proc35;21.67481375541657
+Jönköping;2012;Lång_eftergymnasial_proc35;22.648351179557185
+Jönköping;2013;Lång_eftergymnasial_proc35;23.323974817083545
+Jönköping;2014;Lång_eftergymnasial_proc35;24.156710431882463
+Jönköping;2015;Lång_eftergymnasial_proc35;24.91876139961005
+Jönköping;2016;Lång_eftergymnasial_proc35;25.744428491166737
+Jönköping;2017;Lång_eftergymnasial_proc35;26.32846760412592
+Jönköping;2018;Lång_eftergymnasial_proc35;27.019799959175344
+Jönköping;2019;Lång_eftergymnasial_proc35;27.669521410579343
+Jönköping;2020;Lång_eftergymnasial_proc35;28.416749750747755
+Jönköping;2021;Lång_eftergymnasial_proc35;29.144337439933555
+Jönköping;2022;Lång_eftergymnasial_proc35;29.78416143007689
+Jönköping;2023;Lång_eftergymnasial_proc35;30.39953788389333
+Jönköping;2024;Lång_eftergymnasial_proc35;31.07124532030938
+Jönköping;2025;Lång_eftergymnasial_proc35;31.70667617635466
+Linköping;2000;Lång_eftergymnasial_proc35;22.1982847909848
+Linköping;2001;Lång_eftergymnasial_proc35;22.571900287397323
+Linköping;2002;Lång_eftergymnasial_proc35;23.112809169515383
+Linköping;2003;Lång_eftergymnasial_proc35;23.330739920601676
+Linköping;2004;Lång_eftergymnasial_proc35;23.94676293240241
+Linköping;2005;Lång_eftergymnasial_proc35;24.720496894409937
+Linköping;2006;Lång_eftergymnasial_proc35;25.429264285993664
+Linköping;2007;Lång_eftergymnasial_proc35;26.24689730065157
+Linköping;2008;Lång_eftergymnasial_proc35;27.18951489100399
+Linköping;2009;Lång_eftergymnasial_proc35;28.05348956649103
+Linköping;2010;Lång_eftergymnasial_proc35;29.09166619347756
+Linköping;2011;Lång_eftergymnasial_proc35;30.18785744044237
+Linköping;2012;Lång_eftergymnasial_proc35;31.1363807799653
+Linköping;2013;Lång_eftergymnasial_proc35;31.950075075075077
+Linköping;2014;Lång_eftergymnasial_proc35;32.81797836628124
+Linköping;2015;Lång_eftergymnasial_proc35;33.69456485495165
+Linköping;2016;Lång_eftergymnasial_proc35;34.49512413780486
+Linköping;2017;Lång_eftergymnasial_proc35;35.20440507888207
+Linköping;2018;Lång_eftergymnasial_proc35;35.92742727548706
+Linköping;2019;Lång_eftergymnasial_proc35;36.75429905880688
+Linköping;2020;Lång_eftergymnasial_proc35;37.40764085863361
+Linköping;2021;Lång_eftergymnasial_proc35;38.11992786293958
+Linköping;2022;Lång_eftergymnasial_proc35;38.75533318483234
+Linköping;2023;Lång_eftergymnasial_proc35;39.32120470876013
+Linköping;2024;Lång_eftergymnasial_proc35;39.94944388270981
+Linköping;2025;Lång_eftergymnasial_proc35;40.620832221925845
+Lkpg-Nkpg;2000;Lång_eftergymnasial_proc35;16.96026996681213
+Lkpg-Nkpg;2001;Lång_eftergymnasial_proc35;17.278729173667774
+Lkpg-Nkpg;2002;Lång_eftergymnasial_proc35;17.756371573286206
+Lkpg-Nkpg;2003;Lång_eftergymnasial_proc35;18.049762078688538
+Lkpg-Nkpg;2004;Lång_eftergymnasial_proc35;18.595405275725017
+Lkpg-Nkpg;2005;Lång_eftergymnasial_proc35;19.23723990297182
+Lkpg-Nkpg;2006;Lång_eftergymnasial_proc35;19.888860525622345
+Lkpg-Nkpg;2007;Lång_eftergymnasial_proc35;20.5841291189504
+Lkpg-Nkpg;2008;Lång_eftergymnasial_proc35;21.435487317135625
+Lkpg-Nkpg;2009;Lång_eftergymnasial_proc35;22.2333347726808
+Lkpg-Nkpg;2010;Lång_eftergymnasial_proc35;23.09768828225733
+Lkpg-Nkpg;2011;Lång_eftergymnasial_proc35;24.041339527984736
+Lkpg-Nkpg;2012;Lång_eftergymnasial_proc35;24.90227571407724
+Lkpg-Nkpg;2013;Lång_eftergymnasial_proc35;25.61928881525495
+Lkpg-Nkpg;2014;Lång_eftergymnasial_proc35;26.400973954205643
+Lkpg-Nkpg;2015;Lång_eftergymnasial_proc35;27.17821368032953
+Lkpg-Nkpg;2016;Lång_eftergymnasial_proc35;27.889553359946326
+Lkpg-Nkpg;2017;Lång_eftergymnasial_proc35;28.529658027032102
+Lkpg-Nkpg;2018;Lång_eftergymnasial_proc35;29.196462720606164
+Lkpg-Nkpg;2019;Lång_eftergymnasial_proc35;29.93374876332641
+Lkpg-Nkpg;2020;Lång_eftergymnasial_proc35;30.674908832085265
+Lkpg-Nkpg;2021;Lång_eftergymnasial_proc35;31.37256513158409
+Lkpg-Nkpg;2022;Lång_eftergymnasial_proc35;32.03626488559644
+Lkpg-Nkpg;2023;Lång_eftergymnasial_proc35;32.646207140321366
+Lkpg-Nkpg;2024;Lång_eftergymnasial_proc35;33.31572038360696
+Lkpg-Nkpg;2025;Lång_eftergymnasial_proc35;34.05683128854951
+Lund;2000;Lång_eftergymnasial_proc35;39.91728425902795
+Lund;2001;Lång_eftergymnasial_proc35;40.5551609201683
+Lund;2002;Lång_eftergymnasial_proc35;41.11126095751854
+Lund;2003;Lång_eftergymnasial_proc35;41.56184766900391
+Lund;2004;Lång_eftergymnasial_proc35;42.266138952773176
+Lund;2005;Lång_eftergymnasial_proc35;43.303025469240175
+Lund;2006;Lång_eftergymnasial_proc35;43.82128777923784
+Lund;2007;Lång_eftergymnasial_proc35;44.62395106266175
+Lund;2008;Lång_eftergymnasial_proc35;45.50537077779216
+Lund;2009;Lång_eftergymnasial_proc35;46.305494788315535
+Lund;2010;Lång_eftergymnasial_proc35;47.29296066252588
+Lund;2011;Lång_eftergymnasial_proc35;48.20006699822197
+Lund;2012;Lång_eftergymnasial_proc35;49.0532241555783
+Lund;2013;Lång_eftergymnasial_proc35;49.9150716187096
+Lund;2014;Lång_eftergymnasial_proc35;50.6942526426796
+Lund;2015;Lång_eftergymnasial_proc35;51.27954971857412
+Lund;2016;Lång_eftergymnasial_proc35;52.02080237741457
+Lund;2017;Lång_eftergymnasial_proc35;52.5408083948698
+Lund;2018;Lång_eftergymnasial_proc35;53.09117151792157
+Lund;2019;Lång_eftergymnasial_proc35;53.71210142690948
+Lund;2020;Lång_eftergymnasial_proc35;54.39461883408072
+Lund;2021;Lång_eftergymnasial_proc35;55.05846110761045
+Lund;2022;Lång_eftergymnasial_proc35;55.69652314068616
+Lund;2023;Lång_eftergymnasial_proc35;56.252272727272725
+Lund;2024;Lång_eftergymnasial_proc35;56.92665102850957
+Lund;2025;Lång_eftergymnasial_proc35;57.48709122203098
+Länet exkl Linköping;2000;Lång_eftergymnasial_proc35;12.9243517239105
+Länet exkl Linköping;2001;Lång_eftergymnasial_proc35;13.184849431773005
+Länet exkl Linköping;2002;Lång_eftergymnasial_proc35;13.58854068225792
+Länet exkl Linköping;2003;Lång_eftergymnasial_proc35;13.878353062754632
+Länet exkl Linköping;2004;Lång_eftergymnasial_proc35;14.3460089771226
+Länet exkl Linköping;2005;Lång_eftergymnasial_proc35;14.872077031382524
+Länet exkl Linköping;2006;Lång_eftergymnasial_proc35;15.467025218959154
+Länet exkl Linköping;2007;Lång_eftergymnasial_proc35;16.074082655157127
+Länet exkl Linköping;2008;Lång_eftergymnasial_proc35;16.841448214736026
+Länet exkl Linköping;2009;Lång_eftergymnasial_proc35;17.583720881256887
+Länet exkl Linköping;2010;Lång_eftergymnasial_proc35;18.321465551538356
+Länet exkl Linköping;2011;Lång_eftergymnasial_proc35;19.14593542688746
+Länet exkl Linköping;2012;Lång_eftergymnasial_proc35;19.90928682488593
+Länet exkl Linköping;2013;Lång_eftergymnasial_proc35;20.55375414976729
+Länet exkl Linköping;2014;Lång_eftergymnasial_proc35;21.249502439883383
+Länet exkl Linköping;2015;Lång_eftergymnasial_proc35;21.947225602393797
+Länet exkl Linköping;2016;Lång_eftergymnasial_proc35;22.608462576007604
+Länet exkl Linköping;2017;Lång_eftergymnasial_proc35;23.209864462012035
+Länet exkl Linköping;2018;Lång_eftergymnasial_proc35;23.835563814777167
+Länet exkl Linköping;2019;Lång_eftergymnasial_proc35;24.533886133716702
+Länet exkl Linköping;2020;Lång_eftergymnasial_proc35;25.296322862183548
+Länet exkl Linköping;2021;Lång_eftergymnasial_proc35;25.97810927859777
+Länet exkl Linköping;2022;Lång_eftergymnasial_proc35;26.652901226463385
+Länet exkl Linköping;2023;Lång_eftergymnasial_proc35;27.29930848747888
+Länet exkl Linköping;2024;Lång_eftergymnasial_proc35;27.986655834536904
+Länet exkl Linköping;2025;Lång_eftergymnasial_proc35;28.751259356498263
+Länet exkl Norrköping;2000;Lång_eftergymnasial_proc35;18.162366548083167
+Länet exkl Norrköping;2001;Lång_eftergymnasial_proc35;18.478020545502552
+Länet exkl Norrköping;2002;Lång_eftergymnasial_proc35;18.9449782784871
+Länet exkl Norrköping;2003;Lång_eftergymnasial_proc35;19.159330904667765
+Länet exkl Norrköping;2004;Lång_eftergymnasial_proc35;19.6973666338
+Länet exkl Norrköping;2005;Lång_eftergymnasial_proc35;20.35533402282064
+Länet exkl Norrköping;2006;Lång_eftergymnasial_proc35;21.007428979330477
+Länet exkl Norrköping;2007;Lång_eftergymnasial_proc35;21.73685083685829
+Länet exkl Norrköping;2008;Lång_eftergymnasial_proc35;22.595475788604396
+Länet exkl Norrköping;2009;Lång_eftergymnasial_proc35;23.40387567506712
+Länet exkl Norrköping;2010;Lång_eftergymnasial_proc35;24.31544346275858
+Länet exkl Norrköping;2011;Lång_eftergymnasial_proc35;25.29245333934509
+Länet exkl Norrköping;2012;Lång_eftergymnasial_proc35;26.143391890773987
+Länet exkl Norrköping;2013;Lång_eftergymnasial_proc35;26.88454040958741
+Länet exkl Norrköping;2014;Lång_eftergymnasial_proc35;27.666506851958985
+Länet exkl Norrköping;2015;Lång_eftergymnasial_proc35;28.463576777015906
+Länet exkl Norrköping;2016;Lång_eftergymnasial_proc35;29.21403335386613
+Länet exkl Norrköping;2017;Lång_eftergymnasial_proc35;29.884611513862
+Länet exkl Norrköping;2018;Lång_eftergymnasial_proc35;30.566528369658062
+Länet exkl Norrköping;2019;Lång_eftergymnasial_proc35;31.35443642919717
+Länet exkl Norrköping;2020;Lång_eftergymnasial_proc35;32.02905488873189
+Länet exkl Norrköping;2021;Lång_eftergymnasial_proc35;32.725472009953265
+Länet exkl Norrköping;2022;Lång_eftergymnasial_proc35;33.371969525699285
+Länet exkl Norrköping;2023;Lång_eftergymnasial_proc35;33.974306055917644
+Länet exkl Norrköping;2024;Lång_eftergymnasial_proc35;34.62037933363975
+Länet exkl Norrköping;2025;Lång_eftergymnasial_proc35;35.3152602898746
+Malmö;2000;Lång_eftergymnasial_proc35;16.28648722618133
+Malmö;2001;Lång_eftergymnasial_proc35;16.90581843818687
+Malmö;2002;Lång_eftergymnasial_proc35;17.53634182847067
+Malmö;2003;Lång_eftergymnasial_proc35;18.11060565879929
+Malmö;2004;Lång_eftergymnasial_proc35;18.938002820359344
+Malmö;2005;Lång_eftergymnasial_proc35;20.05620693823281
+Malmö;2006;Lång_eftergymnasial_proc35;20.975943382199887
+Malmö;2007;Lång_eftergymnasial_proc35;22.120549229477135
+Malmö;2008;Lång_eftergymnasial_proc35;23.095744988295586
+Malmö;2009;Lång_eftergymnasial_proc35;24.19463055537181
+Malmö;2010;Lång_eftergymnasial_proc35;25.123926973763755
+Malmö;2011;Lång_eftergymnasial_proc35;26.261634204101117
+Malmö;2012;Lång_eftergymnasial_proc35;27.175141753859236
+Malmö;2013;Lång_eftergymnasial_proc35;28.13564144283517
+Malmö;2014;Lång_eftergymnasial_proc35;28.92078681552366
+Malmö;2015;Lång_eftergymnasial_proc35;29.773914532842337
+Malmö;2016;Lång_eftergymnasial_proc35;30.48303748196369
+Malmö;2017;Lång_eftergymnasial_proc35;31.10439750407481
+Malmö;2018;Lång_eftergymnasial_proc35;31.955916192321663
+Malmö;2019;Lång_eftergymnasial_proc35;32.77286299232554
+Malmö;2020;Lång_eftergymnasial_proc35;33.49098133935876
+Malmö;2021;Lång_eftergymnasial_proc35;34.16559883984132
+Malmö;2022;Lång_eftergymnasial_proc35;34.9971464616124
+Malmö;2023;Lång_eftergymnasial_proc35;35.864522911566425
+Malmö;2024;Lång_eftergymnasial_proc35;36.710556644001386
+Malmö;2025;Lång_eftergymnasial_proc35;37.70839970266539
+Norrköping;2000;Lång_eftergymnasial_proc35;11.722255142639463
+Norrköping;2001;Lång_eftergymnasial_proc35;11.985558059938226
+Norrköping;2002;Lång_eftergymnasial_proc35;12.399933977057028
+Norrköping;2003;Lång_eftergymnasial_proc35;12.768784236775408
+Norrköping;2004;Lång_eftergymnasial_proc35;13.24404761904762
+Norrköping;2005;Lång_eftergymnasial_proc35;13.7539829115337
+Norrköping;2006;Lång_eftergymnasial_proc35;14.348456765251028
+Norrköping;2007;Lång_eftergymnasial_proc35;14.921360937249236
+Norrköping;2008;Lång_eftergymnasial_proc35;15.681459743267254
+Norrköping;2009;Lång_eftergymnasial_proc35;16.413179978870573
+Norrköping;2010;Lång_eftergymnasial_proc35;17.103710371037103
+Norrköping;2011;Lång_eftergymnasial_proc35;17.8948216155271
+Norrköping;2012;Lång_eftergymnasial_proc35;18.668170648189182
+Norrköping;2013;Lång_eftergymnasial_proc35;19.288502555434828
+Norrköping;2014;Lång_eftergymnasial_proc35;19.983969542130048
+Norrköping;2015;Lång_eftergymnasial_proc35;20.661862505707425
+Norrköping;2016;Lång_eftergymnasial_proc35;21.283982582087795
+Norrköping;2017;Lång_eftergymnasial_proc35;21.85491097518214
+Norrköping;2018;Lång_eftergymnasial_proc35;22.46549816572527
+Norrköping;2019;Lång_eftergymnasial_proc35;23.113198467845937
+Norrköping;2020;Lång_eftergymnasial_proc35;23.94217680553692
+Norrköping;2021;Lång_eftergymnasial_proc35;24.625202400228595
+Norrköping;2022;Lång_eftergymnasial_proc35;25.317196586360545
+Norrköping;2023;Lång_eftergymnasial_proc35;25.9712095718826
+Norrköping;2024;Lång_eftergymnasial_proc35;26.68199688450412
+Norrköping;2025;Lång_eftergymnasial_proc35;27.492830355173176
+Riket;2000;Lång_eftergymnasial_proc35;15.49873887216879
+Riket;2001;Lång_eftergymnasial_proc35;15.836511169202264
+Riket;2002;Lång_eftergymnasial_proc35;16.23097485639377
+Riket;2003;Lång_eftergymnasial_proc35;16.54787041065538
+Riket;2004;Lång_eftergymnasial_proc35;17.065617942622545
+Riket;2005;Lång_eftergymnasial_proc35;17.81652311310315
+Riket;2006;Lång_eftergymnasial_proc35;18.418726531568403
+Riket;2007;Lång_eftergymnasial_proc35;19.131603918523243
+Riket;2008;Lång_eftergymnasial_proc35;19.84914821458261
+Riket;2009;Lång_eftergymnasial_proc35;20.606945489302767
+Riket;2010;Lång_eftergymnasial_proc35;21.37240494064265
+Riket;2011;Lång_eftergymnasial_proc35;22.20964916844424
+Riket;2012;Lång_eftergymnasial_proc35;22.941752022031675
+Riket;2013;Lång_eftergymnasial_proc35;23.646801612611743
+Riket;2014;Lång_eftergymnasial_proc35;24.3614546677005
+Riket;2015;Lång_eftergymnasial_proc35;25.07388209569637
+Riket;2016;Lång_eftergymnasial_proc35;25.735919422660448
+Riket;2017;Lång_eftergymnasial_proc35;26.386604579537305
+Riket;2018;Lång_eftergymnasial_proc35;27.096997075677407
+Riket;2019;Lång_eftergymnasial_proc35;27.7944624746344
+Riket;2020;Lång_eftergymnasial_proc35;28.493750623427104
+Riket;2021;Lång_eftergymnasial_proc35;29.177391306144845
+Riket;2022;Lång_eftergymnasial_proc35;29.90746718533062
+Riket;2023;Lång_eftergymnasial_proc35;30.603753693632505
+Riket;2024;Lång_eftergymnasial_proc35;31.29255201122103
+Riket;2025;Lång_eftergymnasial_proc35;32.00878695486632
+Sex till tolv;2000;Lång_eftergymnasial_proc35;19.861140958330843
+Sex till tolv;2001;Lång_eftergymnasial_proc35;20.266228571512983
+Sex till tolv;2002;Lång_eftergymnasial_proc35;20.725874425576176
+Sex till tolv;2003;Lång_eftergymnasial_proc35;21.078415044077136
+Sex till tolv;2004;Lång_eftergymnasial_proc35;21.666456568911823
+Sex till tolv;2005;Lång_eftergymnasial_proc35;22.47668574553963
+Sex till tolv;2006;Lång_eftergymnasial_proc35;23.08666443430354
+Sex till tolv;2007;Lång_eftergymnasial_proc35;23.850617272981697
+Sex till tolv;2008;Lång_eftergymnasial_proc35;24.65650203440674
+Sex till tolv;2009;Lång_eftergymnasial_proc35;25.485978160504576
+Sex till tolv;2010;Lång_eftergymnasial_proc35;26.318232134145724
+Sex till tolv;2011;Lång_eftergymnasial_proc35;27.17197127118758
+Sex till tolv;2012;Lång_eftergymnasial_proc35;28.03267492820533
+Sex till tolv;2013;Lång_eftergymnasial_proc35;28.767575359360197
+Sex till tolv;2014;Lång_eftergymnasial_proc35;29.49915211074414
+Sex till tolv;2015;Lång_eftergymnasial_proc35;30.179542015725254
+Sex till tolv;2016;Lång_eftergymnasial_proc35;30.854290862005968
+Sex till tolv;2017;Lång_eftergymnasial_proc35;31.386041520483605
+Sex till tolv;2018;Lång_eftergymnasial_proc35;32.04404925804386
+Sex till tolv;2019;Lång_eftergymnasial_proc35;32.70631606980321
+Sex till tolv;2020;Lång_eftergymnasial_proc35;33.41086094393011
+Sex till tolv;2021;Lång_eftergymnasial_proc35;34.07655971403279
+Sex till tolv;2022;Lång_eftergymnasial_proc35;34.69813285999255
+Sex till tolv;2023;Lång_eftergymnasial_proc35;35.31019352481064
+Sex till tolv;2024;Lång_eftergymnasial_proc35;35.92367131089752
+Sex till tolv;2025;Lång_eftergymnasial_proc35;36.53575692702429
+Sex till tolv minus tio;2000;Lång_eftergymnasial_proc35;21.217621927612736
+Sex till tolv minus tio;2001;Lång_eftergymnasial_proc35;21.646340323442114
+Sex till tolv minus tio;2002;Lång_eftergymnasial_proc35;22.11353116699604
+Sex till tolv minus tio;2003;Lång_eftergymnasial_proc35;22.46335351196076
+Sex till tolv minus tio;2004;Lång_eftergymnasial_proc35;23.07019139388919
+Sex till tolv minus tio;2005;Lång_eftergymnasial_proc35;23.930469551207285
+Sex till tolv minus tio;2006;Lång_eftergymnasial_proc35;24.543032379145625
+Sex till tolv minus tio;2007;Lång_eftergymnasial_proc35;25.33882666227044
+Sex till tolv minus tio;2008;Lång_eftergymnasial_proc35;26.15234241626332
+Sex till tolv minus tio;2009;Lång_eftergymnasial_proc35;26.99811119077691
+Sex till tolv minus tio;2010;Lång_eftergymnasial_proc35;27.85398576133049
+Sex till tolv minus tio;2011;Lång_eftergymnasial_proc35;28.718162880464323
+Sex till tolv minus tio;2012;Lång_eftergymnasial_proc35;29.59342564154136
+Sex till tolv minus tio;2013;Lång_eftergymnasial_proc35;30.347420826681088
+Sex till tolv minus tio;2014;Lång_eftergymnasial_proc35;31.085015872179824
+Sex till tolv minus tio;2015;Lång_eftergymnasial_proc35;31.765821934061563
+Sex till tolv minus tio;2016;Lång_eftergymnasial_proc35;32.44934224199233
+Sex till tolv minus tio;2017;Lång_eftergymnasial_proc35;32.97456327803385
+Sex till tolv minus tio;2018;Lång_eftergymnasial_proc35;33.64047444009696
+Sex till tolv minus tio;2019;Lång_eftergymnasial_proc35;34.30516900346276
+Sex till tolv minus tio;2020;Lång_eftergymnasial_proc35;34.988974966995634
+Sex till tolv minus tio;2021;Lång_eftergymnasial_proc35;35.65178593300015
+Sex till tolv minus tio;2022;Lång_eftergymnasial_proc35;36.26162223893121
+Sex till tolv minus tio;2023;Lång_eftergymnasial_proc35;36.86669085029865
+Sex till tolv minus tio;2024;Lång_eftergymnasial_proc35;37.46395038196308
+Sex till tolv minus tio;2025;Lång_eftergymnasial_proc35;38.04291135566615
+Stockholm;2000;Lång_eftergymnasial_proc35;26.909295497301198
+Stockholm;2001;Lång_eftergymnasial_proc35;27.454371326797077
+Stockholm;2002;Lång_eftergymnasial_proc35;28.010659118150976
+Stockholm;2003;Lång_eftergymnasial_proc35;28.45827345342736
+Stockholm;2004;Lång_eftergymnasial_proc35;29.11403291160175
+Stockholm;2005;Lång_eftergymnasial_proc35;29.913206218373418
+Stockholm;2006;Lång_eftergymnasial_proc35;30.65717070918256
+Stockholm;2007;Lång_eftergymnasial_proc35;31.5389064658156
+Stockholm;2008;Lång_eftergymnasial_proc35;32.363898495200985
+Stockholm;2009;Lång_eftergymnasial_proc35;33.17649710081373
+Stockholm;2010;Lång_eftergymnasial_proc35;34.00184645549712
+Stockholm;2011;Lång_eftergymnasial_proc35;34.92215795848622
+Stockholm;2012;Lång_eftergymnasial_proc35;35.61257474879145
+Stockholm;2013;Lång_eftergymnasial_proc35;36.36986992033881
+Stockholm;2014;Lång_eftergymnasial_proc35;37.10588715807626
+Stockholm;2015;Lång_eftergymnasial_proc35;37.94243925058731
+Stockholm;2016;Lång_eftergymnasial_proc35;38.717876849348194
+Stockholm;2017;Lång_eftergymnasial_proc35;39.43895104705659
+Stockholm;2018;Lång_eftergymnasial_proc35;40.26494706942758
+Stockholm;2019;Lång_eftergymnasial_proc35;41.04205090372556
+Stockholm;2020;Lång_eftergymnasial_proc35;41.822171711087954
+Stockholm;2021;Lång_eftergymnasial_proc35;42.443990262572086
+Stockholm;2022;Lång_eftergymnasial_proc35;43.29573143218121
+Stockholm;2023;Lång_eftergymnasial_proc35;43.93052094004678
+Stockholm;2024;Lång_eftergymnasial_proc35;44.66256062124501
+Stockholm;2025;Lång_eftergymnasial_proc35;45.4499457896639
+Tolv största;2000;Lång_eftergymnasial_proc35;21.191344561673947
+Tolv största;2001;Lång_eftergymnasial_proc35;21.619349623225844
+Tolv största;2002;Lång_eftergymnasial_proc35;22.159443163958183
+Tolv största;2003;Lång_eftergymnasial_proc35;22.536884097252017
+Tolv största;2004;Lång_eftergymnasial_proc35;23.150451458205765
+Tolv största;2005;Lång_eftergymnasial_proc35;23.986592124455477
+Tolv största;2006;Lång_eftergymnasial_proc35;24.630601805687277
+Tolv största;2007;Lång_eftergymnasial_proc35;25.43264864295453
+Tolv största;2008;Lång_eftergymnasial_proc35;26.262712501372985
+Tolv största;2009;Lång_eftergymnasial_proc35;27.097604726052623
+Tolv största;2010;Lång_eftergymnasial_proc35;27.950463532511662
+Tolv största;2011;Lång_eftergymnasial_proc35;28.843945137415147
+Tolv största;2012;Lång_eftergymnasial_proc35;29.684391904801817
+Tolv största;2013;Lång_eftergymnasial_proc35;30.4342008563504
+Tolv största;2014;Lång_eftergymnasial_proc35;31.16631866540487
+Tolv största;2015;Lång_eftergymnasial_proc35;31.89503888121475
+Tolv största;2016;Lång_eftergymnasial_proc35;32.57936595374364
+Tolv största;2017;Lång_eftergymnasial_proc35;33.14739299726109
+Tolv största;2018;Lång_eftergymnasial_proc35;33.85290868933158
+Tolv största;2019;Lång_eftergymnasial_proc35;34.56096882779912
+Tolv största;2020;Lång_eftergymnasial_proc35;35.26801100574793
+Tolv största;2021;Lång_eftergymnasial_proc35;35.94394104931077
+Tolv största;2022;Lång_eftergymnasial_proc35;36.6271372515981
+Tolv största;2023;Lång_eftergymnasial_proc35;37.277773423590205
+Tolv största;2024;Lång_eftergymnasial_proc35;37.944852527216014
+Tolv största;2025;Lång_eftergymnasial_proc35;38.63713379490834
+Tolv största minus fem;2000;Lång_eftergymnasial_proc35;21.099804540827503
+Tolv största minus fem;2001;Lång_eftergymnasial_proc35;21.53275410830117
+Tolv största minus fem;2002;Lång_eftergymnasial_proc35;22.072773527089357
+Tolv största minus fem;2003;Lång_eftergymnasial_proc35;22.46471538603841
+Tolv största minus fem;2004;Lång_eftergymnasial_proc35;23.078059506006078
+Tolv största minus fem;2005;Lång_eftergymnasial_proc35;23.919873509005072
+Tolv största minus fem;2006;Lång_eftergymnasial_proc35;24.557996125659415
+Tolv största minus fem;2007;Lång_eftergymnasial_proc35;25.358626037709342
+Tolv största minus fem;2008;Lång_eftergymnasial_proc35;26.178457738679256
+Tolv största minus fem;2009;Lång_eftergymnasial_proc35;27.010706104194583
+Tolv största minus fem;2010;Lång_eftergymnasial_proc35;27.84671783606021
+Tolv största minus fem;2011;Lång_eftergymnasial_proc35;28.72177129168539
+Tolv största minus fem;2012;Lång_eftergymnasial_proc35;29.5523929161506
+Tolv största minus fem;2013;Lång_eftergymnasial_proc35;30.296394109193614
+Tolv största minus fem;2014;Lång_eftergymnasial_proc35;31.016167783507026
+Tolv största minus fem;2015;Lång_eftergymnasial_proc35;31.73144561087503
+Tolv största minus fem;2016;Lång_eftergymnasial_proc35;32.40520611882898
+Tolv största minus fem;2017;Lång_eftergymnasial_proc35;32.96039189893191
+Tolv största minus fem;2018;Lång_eftergymnasial_proc35;33.66431609059018
+Tolv största minus fem;2019;Lång_eftergymnasial_proc35;34.36157517043478
+Tolv största minus fem;2020;Lång_eftergymnasial_proc35;35.07349920094015
+Tolv största minus fem;2021;Lång_eftergymnasial_proc35;35.7461240662536
+Tolv största minus fem;2022;Lång_eftergymnasial_proc35;36.43366489403136
+Tolv största minus fem;2023;Lång_eftergymnasial_proc35;37.09200694312021
+Tolv största minus fem;2024;Lång_eftergymnasial_proc35;37.762616949443846
+Tolv största minus fem;2025;Lång_eftergymnasial_proc35;38.45679757427039
+Tre största;2000;Lång_eftergymnasial_proc35;21.381611944119644
+Tre största;2001;Lång_eftergymnasial_proc35;21.938926599412355
+Tre största;2002;Lång_eftergymnasial_proc35;22.548999561068413
+Tre största;2003;Lång_eftergymnasial_proc35;23.05830024995536
+Tre största;2004;Lång_eftergymnasial_proc35;23.80461917225665
+Tre största;2005;Lång_eftergymnasial_proc35;24.740926667637066
+Tre största;2006;Lång_eftergymnasial_proc35;25.51691511316193
+Tre största;2007;Lång_eftergymnasial_proc35;26.470681030701893
+Tre största;2008;Lång_eftergymnasial_proc35;27.34178082809276
+Tre största;2009;Lång_eftergymnasial_proc35;28.259785406402656
+Tre största;2010;Lång_eftergymnasial_proc35;29.09986108352596
+Tre största;2011;Lång_eftergymnasial_proc35;30.051697969064502
+Tre största;2012;Lång_eftergymnasial_proc35;30.821995370700865
+Tre största;2013;Lång_eftergymnasial_proc35;31.6168754756486
+Tre största;2014;Lång_eftergymnasial_proc35;32.34904038502289
+Tre största;2015;Lång_eftergymnasial_proc35;33.14701100157284
+Tre största;2016;Lång_eftergymnasial_proc35;33.86465904088241
+Tre största;2017;Lång_eftergymnasial_proc35;34.49195708057261
+Tre största;2018;Lång_eftergymnasial_proc35;35.32015081945479
+Tre största;2019;Lång_eftergymnasial_proc35;36.11788989160136
+Tre största;2020;Lång_eftergymnasial_proc35;36.85854064927865
+Tre största;2021;Lång_eftergymnasial_proc35;37.5102947287044
+Tre största;2022;Lång_eftergymnasial_proc35;38.336121420587126
+Tre största;2023;Lång_eftergymnasial_proc35;39.11078421927332
+Tre största;2024;Lång_eftergymnasial_proc35;39.90174454090458
+Tre största;2025;Lång_eftergymnasial_proc35;40.77015971764146
+Umeå;2000;Lång_eftergymnasial_proc35;25.11487462255481
+Umeå;2001;Lång_eftergymnasial_proc35;25.509093735426703
+Umeå;2002;Lång_eftergymnasial_proc35;25.82237683532
+Umeå;2003;Lång_eftergymnasial_proc35;26.33187662616516
+Umeå;2004;Lång_eftergymnasial_proc35;27.24164607821117
+Umeå;2005;Lång_eftergymnasial_proc35;28.278435345573158
+Umeå;2006;Lång_eftergymnasial_proc35;29.080358454532103
+Umeå;2007;Lång_eftergymnasial_proc35;30.019929033198856
+Umeå;2008;Lång_eftergymnasial_proc35;30.92336394252901
+Umeå;2009;Lång_eftergymnasial_proc35;32.08570326809988
+Umeå;2010;Lång_eftergymnasial_proc35;33.05676122874751
+Umeå;2011;Lång_eftergymnasial_proc35;33.96068089187245
+Umeå;2012;Lång_eftergymnasial_proc35;34.93068833652008
+Umeå;2013;Lång_eftergymnasial_proc35;35.66122196295062
+Umeå;2014;Lång_eftergymnasial_proc35;36.5473784330044
+Umeå;2015;Lång_eftergymnasial_proc35;37.23416866213044
+Umeå;2016;Lång_eftergymnasial_proc35;38.06611261555701
+Umeå;2017;Lång_eftergymnasial_proc35;38.72037587231396
+Umeå;2018;Lång_eftergymnasial_proc35;39.40423784868736
+Umeå;2019;Lång_eftergymnasial_proc35;40.21709755877848
+Umeå;2020;Lång_eftergymnasial_proc35;41.08156225659286
+Umeå;2021;Lång_eftergymnasial_proc35;41.87135788894997
+Umeå;2022;Lång_eftergymnasial_proc35;42.39180003908879
+Umeå;2023;Lång_eftergymnasial_proc35;43.0371580939274
+Umeå;2024;Lång_eftergymnasial_proc35;43.76192697510708
+Umeå;2025;Lång_eftergymnasial_proc35;44.31792112452814
+Uppsala;2000;Lång_eftergymnasial_proc35;28.925027408427734
+Uppsala;2001;Lång_eftergymnasial_proc35;29.17991539248486
+Uppsala;2002;Lång_eftergymnasial_proc35;30.07238913574434
+Uppsala;2003;Lång_eftergymnasial_proc35;30.388063188016467
+Uppsala;2004;Lång_eftergymnasial_proc35;30.77960106691407
+Uppsala;2005;Lång_eftergymnasial_proc35;31.559028377367177
+Uppsala;2006;Lång_eftergymnasial_proc35;31.98056100264302
+Uppsala;2007;Lång_eftergymnasial_proc35;32.57852241182522
+Uppsala;2008;Lång_eftergymnasial_proc35;33.34217840034636
+Uppsala;2009;Lång_eftergymnasial_proc35;33.936563803400446
+Uppsala;2010;Lång_eftergymnasial_proc35;34.786688007064406
+Uppsala;2011;Lång_eftergymnasial_proc35;35.58059140303276
+Uppsala;2012;Lång_eftergymnasial_proc35;36.38161146811666
+Uppsala;2013;Lång_eftergymnasial_proc35;37.03668125866257
+Uppsala;2014;Lång_eftergymnasial_proc35;37.63665968829961
+Uppsala;2015;Lång_eftergymnasial_proc35;38.34807460483008
+Uppsala;2016;Lång_eftergymnasial_proc35;38.88325415042972
+Uppsala;2017;Lång_eftergymnasial_proc35;39.38614900314795
+Uppsala;2018;Lång_eftergymnasial_proc35;40.03867973182052
+Uppsala;2019;Lång_eftergymnasial_proc35;40.679444711356105
+Uppsala;2020;Lång_eftergymnasial_proc35;41.3568426549949
+Uppsala;2021;Lång_eftergymnasial_proc35;42.140562544446894
+Uppsala;2022;Lång_eftergymnasial_proc35;42.8750195526357
+Uppsala;2023;Lång_eftergymnasial_proc35;43.50836904282772
+Uppsala;2024;Lång_eftergymnasial_proc35;44.21785364488597
+Uppsala;2025;Lång_eftergymnasial_proc35;44.96399567487979
+Västerås;2000;Lång_eftergymnasial_proc35;16.22991372201999
+Västerås;2001;Lång_eftergymnasial_proc35;16.676869606429825
+Västerås;2002;Lång_eftergymnasial_proc35;17.285032622455933
+Västerås;2003;Lång_eftergymnasial_proc35;17.6002001116007
+Västerås;2004;Lång_eftergymnasial_proc35;18.22751423875234
+Västerås;2005;Lång_eftergymnasial_proc35;19.01169513050401
+Västerås;2006;Lång_eftergymnasial_proc35;19.634196774314823
+Västerås;2007;Lång_eftergymnasial_proc35;20.39291332684096
+Västerås;2008;Lång_eftergymnasial_proc35;21.065018024244008
+Västerås;2009;Lång_eftergymnasial_proc35;21.894232747816
+Västerås;2010;Lång_eftergymnasial_proc35;22.73559182758749
+Västerås;2011;Lång_eftergymnasial_proc35;23.67030710351909
+Västerås;2012;Lång_eftergymnasial_proc35;24.495892457057504
+Västerås;2013;Lång_eftergymnasial_proc35;25.31405281670482
+Västerås;2014;Lång_eftergymnasial_proc35;26.2090194333185
+Västerås;2015;Lång_eftergymnasial_proc35;26.901943430320465
+Västerås;2016;Lång_eftergymnasial_proc35;27.41982720749744
+Västerås;2017;Lång_eftergymnasial_proc35;27.992400253324888
+Västerås;2018;Lång_eftergymnasial_proc35;28.71542386536568
+Västerås;2019;Lång_eftergymnasial_proc35;29.32855927396483
+Västerås;2020;Lång_eftergymnasial_proc35;29.808180783042832
+Västerås;2021;Lång_eftergymnasial_proc35;30.46134145497335
+Västerås;2022;Lång_eftergymnasial_proc35;31.087906087906088
+Västerås;2023;Lång_eftergymnasial_proc35;31.766942593714248
+Västerås;2024;Lång_eftergymnasial_proc35;32.40766821864696
+Västerås;2025;Lång_eftergymnasial_proc35;33.04549387048856
+Örebro;2000;Lång_eftergymnasial_proc35;16.86322792465872
+Örebro;2001;Lång_eftergymnasial_proc35;17.17096437621106
+Örebro;2002;Lång_eftergymnasial_proc35;17.739535078709622
+Örebro;2003;Lång_eftergymnasial_proc35;17.991666493915712
+Örebro;2004;Lång_eftergymnasial_proc35;18.43567371800148
+Örebro;2005;Lång_eftergymnasial_proc35;19.262571201077968
+Örebro;2006;Lång_eftergymnasial_proc35;19.8270649413472
+Örebro;2007;Lång_eftergymnasial_proc35;20.49551797799916
+Örebro;2008;Lång_eftergymnasial_proc35;21.393291412929205
+Örebro;2009;Lång_eftergymnasial_proc35;22.149135802469136
+Örebro;2010;Lång_eftergymnasial_proc35;22.913282890306224
+Örebro;2011;Lång_eftergymnasial_proc35;23.648087345227264
+Örebro;2012;Lång_eftergymnasial_proc35;24.64419475655431
+Örebro;2013;Lång_eftergymnasial_proc35;25.43949345184253
+Örebro;2014;Lång_eftergymnasial_proc35;25.966280089659875
+Örebro;2015;Lång_eftergymnasial_proc35;26.753131281892685
+Örebro;2016;Lång_eftergymnasial_proc35;27.405080265123942
+Örebro;2017;Lång_eftergymnasial_proc35;27.95664467483506
+Örebro;2018;Lång_eftergymnasial_proc35;28.553372613891938
+Örebro;2019;Lång_eftergymnasial_proc35;29.21849201981288
+Örebro;2020;Lång_eftergymnasial_proc35;29.965042604325976
+Örebro;2021;Lång_eftergymnasial_proc35;30.642244964379994
+Örebro;2022;Lång_eftergymnasial_proc35;31.215964459730586
+Örebro;2023;Lång_eftergymnasial_proc35;31.784957627118644
+Örebro;2024;Lång_eftergymnasial_proc35;32.26793488713654
+Örebro;2025;Lång_eftergymnasial_proc35;32.82098274490819
+Östergötlands län;2000;Lång_eftergymnasial_proc35;14.12644830518154
+Östergötlands län;2001;Lång_eftergymnasial_proc35;14.384140803607778
+Östergötlands län;2002;Lång_eftergymnasial_proc35;14.777147387458813
+Östergötlands län;2003;Lång_eftergymnasial_proc35;14.987921888733858
+Östergötlands län;2004;Lång_eftergymnasial_proc35;15.44797033519758
+Östergötlands län;2005;Lång_eftergymnasial_proc35;15.99017115123135
+Östergötlands län;2006;Lång_eftergymnasial_proc35;16.585593672667283
+Östergötlands län;2007;Lång_eftergymnasial_proc35;17.226804373065015
+Östergötlands län;2008;Lång_eftergymnasial_proc35;18.001436686204794
+Östergötlands län;2009;Lång_eftergymnasial_proc35;18.7542617836432
+Östergötlands län;2010;Lång_eftergymnasial_proc35;19.5392207320396
+Östergötlands län;2011;Lång_eftergymnasial_proc35;20.397049238247817
+Östergötlands län;2012;Lång_eftergymnasial_proc35;21.150403001582674
+Östergötlands län;2013;Lång_eftergymnasial_proc35;21.819005744099744
+Östergötlands län;2014;Lång_eftergymnasial_proc35;22.51503533763673
+Östergötlands län;2015;Lång_eftergymnasial_proc35;23.23258869908016
+Östergötlands län;2016;Lång_eftergymnasial_proc35;23.932942569927416
+Östergötlands län;2017;Lång_eftergymnasial_proc35;24.56481794884193
+Östergötlands län;2018;Lång_eftergymnasial_proc35;25.20562946382907
+Östergötlands län;2019;Lång_eftergymnasial_proc35;25.95457379958747
+Östergötlands län;2020;Lång_eftergymnasial_proc35;26.650468918830175
+Östergötlands län;2021;Lång_eftergymnasial_proc35;27.331016156966957
+Östergötlands län;2022;Lång_eftergymnasial_proc35;27.988605866566225
+Östergötlands län;2023;Lång_eftergymnasial_proc35;28.62740740307516
+Östergötlands län;2024;Lång_eftergymnasial_proc35;29.291314784569693
+Östergötlands län;2025;Lång_eftergymnasial_proc35;30.00968835782335
 Fem till tolv;2000;Lång_eftergymnasial_procent;19.35
 Fem till tolv;2001;Lång_eftergymnasial_procent;20.1625
 Fem till tolv;2002;Lång_eftergymnasial_procent;21.0
