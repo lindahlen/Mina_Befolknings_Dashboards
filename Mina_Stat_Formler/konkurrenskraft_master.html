@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analysplattform: Konkurrenskraft</title>
+    
+    <!-- Bootstrap, Chart.js & PapaParse -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-orange: #d35400;
+            --primary-dark: #a04000;
+            --bg-color: #f4f7f6;
+        }
+
+        body, html { height: 100%; margin: 0; background-color: var(--bg-color); font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; }
+        
+        /* Huvudmeny (Header) */
+        .header-bar { 
+            background: linear-gradient(135deg, var(--primary-orange), var(--primary-dark)); 
+            color: white; 
+            padding: 15px 30px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            z-index: 10;
+            position: relative;
+        }
+
+        .logotyp { height: 45px; object-fit: contain; filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.2)); border: none; }
+
+        .tillbaka-btn { color: white; text-decoration: none; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; border-radius: 6px; font-weight: 500; transition: all 0.2s ease; margin-left: 10px; display: inline-flex; align-items: center; gap: 8px;}
+        .tillbaka-btn:hover { background: white; color: var(--primary-orange); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+
+        /* Flik-design (Tabs) */
+        .nav-tabs { border-bottom: 2px solid #ddd; margin: 0 20px; padding-top: 15px; }
+        .nav-tabs .nav-link { 
+            color: #555; 
+            border: none; 
+            font-weight: 600;
+            padding: 12px 25px;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.2s;
+            background: transparent;
+            margin-right: 5px;
+        }
+        .nav-tabs .nav-link:hover { color: var(--primary-orange); background: rgba(211, 84, 0, 0.05); border-bottom: 2px solid transparent; }
+        .nav-tabs .nav-link.active { 
+            color: var(--primary-orange); 
+            background-color: white; 
+            border: 2px solid #ddd;
+            border-bottom: 2px solid white;
+            margin-bottom: -2px;
+        }
+
+        /* Innehållscontainer */
+        .tab-content { height: calc(100vh - 145px); width: 100%; padding: 20px; box-sizing: border-box; overflow-y: auto;}
+        .tab-pane { height: 100%; width: 100%; }
+        
+        /* Moduler för inbäddade sidor (Kartan) */
+        iframe { width: 100%; height: 100%; border: none; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: white; }
+
+        /* Paneler för native flikar */
+        .analysis-panel { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); min-height: 100%; display: flex; flex-direction: column;}
+        .controls-row { background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #dee2e6; margin-bottom: 20px; }
+        
+        .stat-box { background: #fff3e0; border: 1px solid #ffe0b2; padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: bold; color: var(--primary-orange); }
+        .stat-label { font-size: 0.85rem; color: #666; text-transform: uppercase; letter-spacing: 1px; }
+
+        .chart-container { flex-grow: 1; position: relative; min-height: 550px; width: 100%; margin-top: 15px; margin-bottom: 15px;}
+        
+        #loading-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.85); z-index: 100; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; font-weight: bold; color: var(--primary-orange); border-radius: 12px; }
+        
+        /* Boxen för drivkrafter / sammanfattning */
+        .drivers-panel { display: none; margin-top: 15px; padding: 15px; background-color: #fffaf0; border-left: 5px solid var(--primary-orange); border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); flex-shrink: 0;}
+    </style>
+</head>
+<body>
+
+    <!-- Huvudmeny (Header) -->
+    <div class="header-bar">
+        <div class="d-flex align-items-center gap-3">
+            <img src="../Img/Linkopingsloggo.png" alt="Linköpings kommun" class="logotyp" onerror="this.style.display='none'">
+            <h2 style="margin: 0; font-weight: 600; font-size: 1.5rem;">📈 Analysplattform: Konkurrenskraft</h2>
+        </div>
+        <div>
+            <!-- Länk tillbaka till indexkalkylatorn -->
+            <a href="konkurrens_index.html" class="tillbaka-btn" title="Öppna kalkylatorn">🧮 Konkurrenskraftsindex</a>
+            <a href="anvandarmanual_konkurrens.html" class="tillbaka-btn" target="_blank" title="Läs om hur du använder verktyget">📖 Användarguide</a>
+            <a href="../index.html" class="tillbaka-btn" title="Återvänd till portalens startmeny">🏠 Startmeny</a>
+        </div>
+    </div>
+
+    <!-- Flik-navigering -->
+    <ul class="nav nav-tabs" id="platformTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="regression-tab" data-bs-toggle="tab" data-bs-target="#regression" type="button" role="tab">📉 Regressionsanalys</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="matrix-tab" data-bs-toggle="tab" data-bs-target="#matrix" type="button" role="tab" onclick="setTimeout(triggerUpdateMatrix, 100)">⊞ Strategisk Fyrfältare</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="karta-tab" data-bs-toggle="tab" data-bs-target="#karta" type="button" role="tab">🗺️ Geografisk Analys</button>
+        </li>
+    </ul>
+
+    <!-- Innehåll i flikarna -->
+    <div class="tab-content" id="platformTabsContent">
+
+        <!-- Flik 1: Regressionsanalys -->
+        <div class="tab-pane fade show active" id="regression" role="tabpanel">
+            <div class="analysis-panel" style="position: relative;">
+                <div id="loading-overlay">
+                    <div class="spinner-border text-warning me-3" role="status"></div>
+                    <span id="loading-text">Laddar indikatorer och index...</span>
+                </div>
+                
+                <h4>Regressionsanalys (Samband)</h4>
+                <p class="text-muted mb-3">Utforska hur olika indikatorer korrelerar med varandra bland de tolv största kommunerna. Data plottas för varje år inom det valda intervallet.</p>
+                
+                <div class="row controls-row align-items-start">
+                    <div class="col-md-3">
+                        <label class="form-label font-weight-bold">X-axel (Förklarande variabel)</label>
+                        <select class="form-select" id="reg-x-axis" onchange="triggerUpdateRegression()"></select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label font-weight-bold">Y-axel (Beroende variabel)</label>
+                        <select class="form-select" id="reg-y-axis" onchange="triggerUpdateRegression()"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label font-weight-bold">Från år</label>
+                        <select class="form-select" id="reg-start-year" onchange="syncYears(); triggerUpdateRegression()"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label font-weight-bold">Till år</label>
+                        <select class="form-select" id="reg-end-year" onchange="triggerUpdateRegression()" disabled></select>
+                        <div class="form-check mt-1" style="font-size: 0.85rem;">
+                            <input class="form-check-input" type="checkbox" id="same-year-chk" checked onchange="toggleSameYear()">
+                            <label class="form-check-label text-muted" for="same-year-chk">Samma år</label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label font-weight-bold d-none d-md-block">&nbsp;</label>
+                        <button class="btn btn-primary w-100" style="background-color: var(--primary-orange); border: none;" onclick="triggerUpdateRegression()">Kör Analys</button>
+                        <div class="form-check mt-1" style="font-size: 0.85rem;">
+                            <input class="form-check-input" type="checkbox" id="per-100k-chk" onchange="triggerUpdateRegression()">
+                            <label class="form-check-label text-muted" for="per-100k-chk" title="Räknar om antalsvariabler till värde per 100 000 invånare">Antal / 100k inv</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-md-4"><div class="stat-box"><div class="stat-value" id="reg-r2">-</div><div class="stat-label">R² (Förklaringsgrad)</div></div></div>
+                    <div class="col-md-4"><div class="stat-box"><div class="stat-value" id="reg-corr">-</div><div class="stat-label">Korrelation (r)</div></div></div>
+                    <div class="col-md-4"><div class="stat-box"><div class="stat-value" id="reg-eq">-</div><div class="stat-label">Linjär Ekvation</div></div></div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="regressionChart"></canvas>
+                </div>
+                
+                <!-- Box för Step-wise / Sammanfattande drivkrafter -->
+                <div id="drivers-panel" class="drivers-panel">
+                    <div class="row">
+                        <div class="col-md-6 border-end">
+                            <h6 style="color: var(--primary-dark); font-weight: bold; margin-bottom: 10px;">💡 Bästa enskilda indikatorer</h6>
+                            <p style="font-size: 0.8rem; color: #666; margin-bottom: 8px;">De faktorer som, var och en för sig, starkast förklarar utvallet i detta index (oberoende av varandra).</p>
+                            <div id="drivers-list-single" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                        </div>
+                        <div class="col-md-6 ps-4">
+                            <h6 style="color: var(--primary-dark); font-weight: bold; margin-bottom: 10px;">🧩 Bästa kombination (Multipel Regression)</h6>
+                            <p style="font-size: 0.8rem; color: #666; margin-bottom: 8px;">Den kombination av indikatorer som tillsammans (stegvis adderat) förklarar störst andel av utvallet.</p>
+                            <div id="drivers-list-multi" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flik 2: Strategisk Fyrfältare -->
+        <div class="tab-pane fade" id="matrix" role="tabpanel">
+            <div class="analysis-panel">
+                <h4>Strategisk Fyrfältare (Portföljanalys)</h4>
+                <p class="text-muted mb-3">
+                    Placera kommunerna i en matris. För strategisk analys är det ofta bäst att korsa <strong>sammansatta framräknade index</strong> för att belysa mönster.<br>
+                    <strong>Korshåret i mitten visar medelvärdet</strong>, vilket automatiskt skapar fyra strategiska kvadranter baserat på vilka som ligger över/under snittet.
+                </p>
+                
+                <div class="row controls-row align-items-end">
+                    <div class="col-md-3">
+                        <label class="form-label font-weight-bold">X-axel (ex. Resultat / Styrka)</label>
+                        <select class="form-select" id="matrix-x-axis" onchange="triggerUpdateMatrix()"></select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label font-weight-bold">Y-axel (ex. Tillväxt / Potential)</label>
+                        <select class="form-select" id="matrix-y-axis" onchange="triggerUpdateMatrix()"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label font-weight-bold">Bubbelstorlek</label>
+                        <select class="form-select" id="matrix-r-axis" onchange="triggerUpdateMatrix()"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label font-weight-bold">År (Ögonblicksbild)</label>
+                        <select class="form-select" id="matrix-year" onchange="triggerUpdateMatrix()"></select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn btn-primary w-100" style="background-color: var(--primary-orange); border: none;" onclick="triggerUpdateMatrix()">Uppdatera</button>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="matrixChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flik 3: Kartan (Inbäddad längst till höger) -->
+        <div class="tab-pane fade" id="karta" role="tabpanel">
+            <iframe src="konkurrenskraft_dashboard.html" title="Geografisk Analys"></iframe>
+        </div>
+
+    </div>
+
+    <!-- Huvudscript för plattformen -->
+    <script>
+        let rawData = [];
+        let vikterConfig = [];
+        let uniqueIndicators = [];
+        let uniqueYears = [];
+        let regChartInstance = null;
+        let matrixChartInstance = null;
+
+        // Våra jämförelsekommuner
+        const targetMunicipalities = [
+            'Stockholm', 'Göteborg', 'Malmö', 'Uppsala', 'Linköping', 
+            'Västerås', 'Örebro', 'Helsingborg', 'Jönköping', 'Norrköping', 
+            'Umeå', 'Lund'
+        ];
+
+        // Hjälpfunktion för att få snygg rgba-färg från HEX för fyrfältaren
+        const hexToRgba = (hex, alpha) => {
+            let r = parseInt(hex.slice(1, 3), 16);
+            let g = parseInt(hex.slice(3, 5), 16);
+            let b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        };
+
+        // Kompakt stjärna för Linköping i Chart.js
+        const compactStarCanvas = (function() {
+            let c = document.createElement('canvas');
+            c.width = 24; c.height = 24;
+            let ctx = c.getContext('2d');
+            ctx.fillStyle = '#dc3545';
+            ctx.beginPath();
+            let cx=12, cy=12, outerR=10, innerR=4.8, points=5; 
+            for(let i=0; i<points*2; i++) {
+                let r = (i%2 === 0) ? outerR : innerR;
+                let angle = (i * Math.PI / points) - Math.PI/2;
+                ctx.lineTo(cx + r*Math.cos(angle), cy + r*Math.sin(angle));
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+            return c;
+        })();
+
+        // Definierade färggrupper
+        const municipalityGroups = [
+            { name: 'Sthlm, Gbg, Malmö, Uppsala', color: '#0d6efd', shape: 'circle', cities: ['Stockholm', 'Göteborg', 'Malmö', 'Uppsala'] },
+            { name: 'Linköping', color: '#dc3545', shape: compactStarCanvas, cities: ['Linköping'] }, 
+            { name: 'Vås, Örebro, Hbg, Jkpg, Nkpg', color: '#198754', shape: 'rectRounded', cities: ['Västerås', 'Örebro', 'Helsingborg', 'Jönköping', 'Norrköping'] }, 
+            { name: 'Umeå, Lund', color: '#fd7e14', shape: 'triangle', cities: ['Umeå', 'Lund'] } 
+        ];
+
+        // ==========================================
+        // MATRIS-MATEMATIK FÖR MULTIPEL REGRESSION
+        // ==========================================
+        const MatrixMath = {
+            multiply: function(a, b) {
+                let aRows = a.length, aCols = a[0].length, bCols = b[0].length;
+                let res = Array.from({length: aRows}, () => new Array(bCols).fill(0));
+                for (let r = 0; r < aRows; ++r) {
+                    for (let c = 0; c < bCols; ++c) {
+                        for (let i = 0; i < aCols; ++i) {
+                            res[r][c] += a[r][i] * b[i][c];
+                        }
+                    }
+                }
+                return res;
+            },
+            transpose: function(m) {
+                return m[0].map((x, i) => m.map(x => x[i]));
+            },
+            invert: function(M) {
+                if(M.length === 0) return null;
+                let n = M.length;
+                let I = Array.from({length: n}, (_, i) => Array.from({length: n}, (_, j) => i === j ? 1 : 0));
+                let A = M.map(r => r.slice());
+
+                for (let i = 0; i < n; i++) {
+                    let maxEl = Math.abs(A[i][i]);
+                    let maxRow = i;
+                    for (let k = i + 1; k < n; k++) {
+                        if (Math.abs(A[k][i]) > maxEl) { maxEl = Math.abs(A[k][i]); maxRow = k; }
+                    }
+                    if (maxEl < 1e-10) return null; 
+
+                    let tmp = A[i]; A[i] = A[maxRow]; A[maxRow] = tmp;
+                    tmp = I[i]; I[i] = I[maxRow]; I[maxRow] = tmp;
+
+                    let pivot = A[i][i];
+                    for (let j = 0; j < n; j++) { A[i][j] /= pivot; I[i][j] /= pivot; }
+                    for (let j = 0; j < n; j++) {
+                        if (j === i) continue;
+                        let factor = A[j][i];
+                        for (let k = 0; k < n; k++) { A[j][k] -= factor * A[i][k]; I[j][k] -= factor * I[i][k]; }
+                    }
+                }
+                return I;
+            }
+        };
+
+        function calculateMultipleR2(X, Y) {
+            let n = Y.length;
+            let meanY = Y.reduce((a,b)=>a+b,0)/n;
+            let SStot = Y.reduce((a,b)=>a + Math.pow(b - meanY, 2), 0);
+            if(SStot === 0) return 0;
+
+            let Xt = MatrixMath.transpose(X);
+            let XtX = MatrixMath.multiply(Xt, X);
+            let XtX_inv = MatrixMath.invert(XtX);
+            if(!XtX_inv) return 0; 
+
+            let Y_mat = Y.map(y => [y]);
+            let XtY = MatrixMath.multiply(Xt, Y_mat);
+            let Beta = MatrixMath.multiply(XtX_inv, XtY);
+
+            let SSres = 0;
+            for(let i=0; i<n; i++) {
+                let y_hat = 0;
+                for(let j=0; j<Beta.length; j++) { y_hat += X[i][j] * Beta[j][0]; }
+                SSres += Math.pow(Y[i] - y_hat, 2);
+            }
+            return 1 - (SSres / SStot);
+        }
+
+        // ==========================================
+        // INITIERING & LADDNING
+        // ==========================================
+        document.addEventListener("DOMContentLoaded", function() {
+            Promise.all([
+                fetch('konkurrens_data.csv').then(res => res.ok ? res.text() : Promise.reject("Hittade inte data.csv")),
+                fetch('konkurrens_vikter.csv').then(res => res.ok ? res.text() : Promise.reject("Hittade inte vikter.csv"))
+            ]).then(([dataCsv, vikterCsv]) => {
+                
+                Papa.parse(dataCsv.trim().replace(/^\uFEFF/i, ''), {
+                    header: true, delimiter: ";", skipEmptyLines: true,
+                    complete: function(res) { rawData = res.data; }
+                });
+
+                Papa.parse(vikterCsv.trim().replace(/^\uFEFF/i, ''), {
+                    header: true, delimiter: ";", skipEmptyLines: true,
+                    complete: function(res) { 
+                        vikterConfig = res.data.filter(row => row.Indikator !== 'Summa' && row.Indikator !== 'Totalt'); 
+                        processDataAndInitUI(); 
+                    }
+                });
+
+            }).catch(err => {
+                document.getElementById('loading-text').innerHTML = "Kunde inte ladda data- eller viktfilen.";
+                console.error(err);
+            });
+        });
+
+        // ==========================================
+        // GEMENSAMT UI / RULLISTOR
+        // ==========================================
+        function processDataAndInitUI() {
+            let indSet = new Set();
+            let yearSet = new Set();
+            
+            rawData.forEach(row => {
+                if(row.Indikator && row.Indikator !== 'Summa' && row.Indikator !== 'Totalt') {
+                    if(row.Indikator !== 'Bostadspriser') { indSet.add(row.Indikator); }
+                }
+                if(row.År) yearSet.add(parseInt(row.År));
+            });
+
+            uniqueIndicators = Array.from(indSet).sort();
+            uniqueYears = Array.from(yearSet).filter(y => !isNaN(y)).sort((a,b) => a - b); 
+
+            // Bygg Rullistor (inklusive platshållare för PCI, ECI, HCI)
+            const indexOptions = [
+                {val: "INDEX: Standardvikt_kombination", text: "📈 Index: Kombination"},
+                {val: "INDEX: Standardvikt_sysselsättning", text: "📈 Index: Sysselsättning"},
+                {val: "INDEX: Standardvikt_befolkning", text: "📈 Index: Befolkning"},
+                {val: "INDEX: Standardvikt_relativ_styrka", text: "📈 Index: Relativ styrka"},
+                {val: "PCI", text: "⚙️ PCI - Potential (Kommande)", disabled: true},
+                {val: "ECI", text: "⚙️ ECI - Ekonomi (Kommande)", disabled: true},
+                {val: "HCI", text: "⚙️ HCI - Humankapital (Kommande)", disabled: true}
+            ];
+
+            let htmlIndex = `<optgroup label="Framräknade Index">`;
+            indexOptions.forEach(opt => {
+                let dis = opt.disabled ? "disabled" : "";
+                htmlIndex += `<option value="${opt.val}" ${dis}>${opt.text}</option>`;
+            });
+            htmlIndex += `</optgroup>`;
+
+            let htmlData = `<optgroup label="Rådata / Indikatorer">`;
+            uniqueIndicators.forEach(ind => htmlData += `<option value="${ind}">${ind}</option>`);
+            htmlData += `</optgroup>`;
+
+            const allOptionsHTML = htmlIndex + htmlData;
+
+            // Fyll Regression
+            document.getElementById('reg-x-axis').innerHTML = allOptionsHTML;
+            document.getElementById('reg-y-axis').innerHTML = allOptionsHTML;
+            
+            // Fyll Matris
+            document.getElementById('matrix-x-axis').innerHTML = allOptionsHTML;
+            document.getElementById('matrix-y-axis').innerHTML = allOptionsHTML;
+            document.getElementById('matrix-r-axis').innerHTML = htmlData; 
+
+            // Fyll årtals-rullistorna
+            const regStartY = document.getElementById('reg-start-year');
+            const regEndY = document.getElementById('reg-end-year');
+            const matYear = document.getElementById('matrix-year');
+            
+            uniqueYears.forEach(y => {
+                regStartY.add(new Option(y, y));
+                regEndY.add(new Option(y, y));
+                matYear.add(new Option(y, y));
+            });
+
+            // Standardval Regression
+            if(uniqueIndicators.includes("Sysselsättningsgrad")) document.getElementById('reg-x-axis').value = "Sysselsättningsgrad";
+            document.getElementById('reg-y-axis').value = "INDEX: Standardvikt_kombination"; 
+            
+            // Standardval Matris
+            document.getElementById('matrix-x-axis').value = "INDEX: Standardvikt_relativ_styrka";
+            document.getElementById('matrix-y-axis').value = "INDEX: Standardvikt_kombination";
+            if(uniqueIndicators.includes("Folkmängd")) document.getElementById('matrix-r-axis').value = "Folkmängd";
+
+            if(uniqueYears.length > 0) {
+                let latestYear = uniqueYears[uniqueYears.length - 1];
+                regStartY.value = latestYear;
+                regEndY.value = latestYear;
+                matYear.value = latestYear;
+            }
+
+            toggleSameYear(); 
+            triggerUpdateRegression(); 
+        }
+
+        function toggleSameYear() {
+            const isChecked = document.getElementById('same-year-chk').checked;
+            const endSelect = document.getElementById('reg-end-year');
+            endSelect.disabled = isChecked;
+            if (isChecked) { syncYears(); triggerUpdateRegression(); }
+        }
+
+        function syncYears() {
+            if (document.getElementById('same-year-chk').checked) {
+                document.getElementById('reg-end-year').value = document.getElementById('reg-start-year').value;
+            }
+        }
+
+        // ==========================================
+        // DATA HÄMTNING OCH NORMERING
+        // ==========================================
+        function shouldScale(indName) {
+            if (indName.startsWith("INDEX:")) return false;
+            if (indName === "Folkmängd") return false; 
+            
+            let conf = vikterConfig.find(c => c.Indikator === indName);
+            let klartext = conf ? conf.Klartext.toLowerCase() : indName.toLowerCase();
+            
+            if (klartext.includes("%") || klartext.includes("andel") || klartext.includes("kvot") || 
+                klartext.includes("per capita") || klartext.includes("per 1000") || 
+                klartext.includes("median") || klartext.includes("inkomst") || 
+                indName.toLowerCase().includes("brp") || indName.toLowerCase().includes("priser") ||
+                indName.toLowerCase().includes("grad")) {
+                return false;
+            }
+            return true; 
+        }
+
+        function getVariableValue(kommun, year, indName, usePer100k = false) {
+            if (indName.startsWith("INDEX: ")) { return calculateIndexValue(kommun, year, indName); } 
+            
+            let row = rawData.find(d => d.Kommun === kommun && d.År == year && d.Indikator === indName);
+            if (!row || row.Värde === null) return null;
+            
+            let val = parseFloat(row.Värde);
+            if (isNaN(val)) return null;
+
+            if (usePer100k && shouldScale(indName)) {
+                let popRow = rawData.find(d => d.Kommun === kommun && d.År == year && d.Indikator === 'Folkmängd');
+                if (popRow && popRow.Värde !== null) {
+                    let pop = parseFloat(popRow.Värde);
+                    if (pop > 0) val = (val / pop) * 100000;
+                }
+            }
+            return val;
+        }
+
+        function calculateIndexValue(kommun, year, presetName) {
+            let presetCol = presetName.replace("INDEX: ", "");
+            let sumWeights = 0; let totalScore = 0;
+
+            vikterConfig.forEach(ind => {
+                let weightRaw = ind[presetCol];
+                if (!weightRaw) return;
+                
+                let w = parseFloat(weightRaw.toString().trim().replace(',', '.').toUpperCase());
+                if (!isNaN(w) && w > 0) {
+                    sumWeights += w;
+                    let val = getVariableValue(kommun, year, ind.Indikator, false);
+                    let indScore = 100; 
+                    
+                    if (val !== null) {
+                        let ref = getVariableValue('Riket', year, ind.Indikator, false);
+                        if (ref === null) {
+                            let sum = 0, count = 0;
+                            targetMunicipalities.forEach(k => {
+                                let r = getVariableValue(k, year, ind.Indikator, false);
+                                if (r !== null) { sum += r; count++; }
+                            });
+                            if (count > 0) ref = sum / count;
+                        }
+
+                        if (ref !== null) {
+                            let isRateOfChange = (ind.Indikator.toLowerCase().includes("förändring") && ind.Indikator.includes("%"));
+                            if (isRateOfChange) {
+                                let diff = val - ref;
+                                indScore = ind.Polaritet === 'Låg' ? 100 - (diff * 2) : 100 + (diff * 2);
+                            } else {
+                                let safeRef = Math.max(Math.abs(ref), 2.0); 
+                                indScore = ind.Polaritet === 'Låg' ? 100 - ((val - ref) / safeRef) * 100 : 100 + ((val - ref) / safeRef) * 100;
+                            }
+                            indScore = Math.max(0, Math.min(250, indScore));
+                        }
+                    }
+                    totalScore += (indScore * w);
+                }
+            });
+            return sumWeights > 0 ? (totalScore / sumWeights) : null;
+        }
+
+        // ==========================================
+        // REGRESSION
+        // ==========================================
+        function triggerUpdateRegression() {
+            let overlay = document.getElementById('loading-overlay');
+            let text = document.getElementById('loading-text');
+            text.innerText = "Beräknar regressionsanalys...";
+            overlay.style.display = 'flex';
+            setTimeout(() => { updateRegression(); overlay.style.display = 'none'; }, 50);
+        }
+
+        function updateRegression() {
+            const indX = document.getElementById('reg-x-axis').value;
+            const indY = document.getElementById('reg-y-axis').value;
+            const startYear = parseInt(document.getElementById('reg-start-year').value);
+            const endYear = parseInt(document.getElementById('reg-end-year').value);
+            const usePer100k = document.getElementById('per-100k-chk').checked;
+
+            const driversPanel = document.getElementById('drivers-panel');
+            if (!indX || !indY || isNaN(startYear) || isNaN(endYear)) return;
+
+            let plotData = [];
+            let validTargetRows = []; 
+            
+            for (let year = startYear; year <= endYear; year++) {
+                targetMunicipalities.forEach(kommun => {
+                    let valX = getVariableValue(kommun, year, indX, usePer100k);
+                    let valY = getVariableValue(kommun, year, indY, usePer100k);
+                    if (valY !== null) validTargetRows.push({ kommun: kommun, year: year, y: valY });
+                    if (valX !== null && valY !== null) plotData.push({ x: valX, y: valY, kommun: kommun, year: year });
+                });
+            }
+
+            let cleanXLabel = indX.replace("INDEX: Standardvikt_", "Index: ");
+            if (usePer100k && shouldScale(indX)) cleanXLabel += " (per 100k inv)";
+
+            let cleanYLabel = indY.replace("INDEX: Standardvikt_", "Index: ");
+            if (usePer100k && shouldScale(indY)) cleanYLabel += " (per 100k inv)";
+
+            if (plotData.length < 2) {
+                document.getElementById('reg-r2').innerText = "N/A";
+                document.getElementById('reg-corr').innerText = "N/A";
+                document.getElementById('reg-eq').innerText = "För lite data";
+                drawRegressionChart(plotData, null, cleanXLabel, cleanYLabel);
+                driversPanel.style.display = 'none';
+                return;
+            }
+
+            let n = plotData.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0, sumYY = 0;
+            plotData.forEach(p => { sumX+=p.x; sumY+=p.y; sumXY+=p.x*p.y; sumXX+=p.x*p.x; sumYY+=p.y*p.y; });
+            let denominator = (n * sumXX - sumX * sumX);
+            let slope = denominator === 0 ? 0 : (n * sumXY - sumX * sumY) / denominator;
+            let intercept = (sumY - slope * sumX) / n;
+            let rNumerator = (n * sumXY - sumX * sumY);
+            let rDenominator = Math.sqrt((n * sumXX - sumX * sumX) * (n * sumYY - sumY * sumY));
+            let r = rDenominator === 0 ? 0 : rNumerator / rDenominator;
+            let r2 = r * r;
+
+            document.getElementById('reg-r2').innerText = r2.toFixed(3);
+            document.getElementById('reg-corr').innerText = r.toFixed(3);
+            let sign = intercept >= 0 ? "+" : "-";
+            let eqSlope = Math.abs(slope) < 0.01 ? slope.toExponential(2) : slope.toFixed(2);
+            let eqIntercept = Math.abs(intercept) > 1000 ? Math.abs(intercept).toFixed(0) : Math.abs(intercept).toFixed(2);
+            document.getElementById('reg-eq').innerText = `y = ${eqSlope}x ${sign} ${eqIntercept}`;
+
+            let minX = Math.min(...plotData.map(p => p.x));
+            let maxX = Math.max(...plotData.map(p => p.x));
+            let marginX = (maxX - minX) * 0.1;
+            let trendlineData = [
+                { x: minX - marginX, y: slope * (minX - marginX) + intercept },
+                { x: maxX + marginX, y: slope * (maxX + marginX) + intercept }
+            ];
+
+            drawRegressionChart(plotData, trendlineData, cleanXLabel, cleanYLabel);
+
+            // Multipel Regression
+            if (indY.startsWith("INDEX: ") && validTargetRows.length > 2) {
+                driversPanel.style.display = 'block';
+                let driversRank = [];
+                let candidateDataMatrix = {};
+                let Y_arr = validTargetRows.map(r => r.y);
+
+                uniqueIndicators.forEach(rawInd => {
+                    let tempXVals = [];
+                    let missingData = false;
+                    for (let row of validTargetRows) {
+                        let vX = getVariableValue(row.kommun, row.year, rawInd, usePer100k);
+                        if (vX !== null) { tempXVals.push(vX); } else { missingData = true; break; }
+                    }
+
+                    if (!missingData && tempXVals.length === validTargetRows.length) {
+                        let sumX2=0, sumY2=0, sumXY2=0, sumXX2=0, sumYY2=0, n2=tempXVals.length;
+                        for(let i=0; i<n2; i++) { sumX2 += tempXVals[i]; sumY2 += Y_arr[i]; sumXY2 += tempXVals[i]*Y_arr[i]; sumXX2 += tempXVals[i]*tempXVals[i]; sumYY2 += Y_arr[i]*Y_arr[i]; }
+                        let denom2 = (n2 * sumXX2 - sumX2 * sumX2) * (n2 * sumYY2 - sumY2 * sumY2);
+                        let calcR2 = denom2 <= 0 ? 0 : Math.pow((n2 * sumXY2 - sumX2 * sumY2) / Math.sqrt(denom2), 2);
+                        let dispName = rawInd + (usePer100k && shouldScale(rawInd) ? " (100k)" : "");
+                        driversRank.push({ name: dispName, r2: calcR2 });
+                        candidateDataMatrix[rawInd] = tempXVals;
+                    }
+                });
+
+                driversRank.sort((a, b) => b.r2 - a.r2);
+                let topSingle = driversRank.slice(0, 5);
+                let htmlSingle = '';
+                topSingle.forEach((d, i) => { htmlSingle += `<div style="background: white; padding: 6px 12px; border-radius: 4px; border: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;"><b style="color:var(--primary-orange);">${i+1}.</b> ${d.name}</span><span class="badge bg-light text-dark border">R²: ${d.r2.toFixed(3)}</span></div>`; });
+                document.getElementById('drivers-list-single').innerHTML = htmlSingle || '<span class="text-muted">Ingen data tillgänglig.</span>';
+
+                let selectedVars = []; let combinedProgression = []; let currentBestR2 = 0;
+                for (let step = 1; step <= 5; step++) {
+                    let bestVar = null; let bestR2 = currentBestR2;
+                    for (let cand in candidateDataMatrix) {
+                        if (selectedVars.includes(cand)) continue;
+                        let X_mat = [];
+                        for(let i=0; i<validTargetRows.length; i++) {
+                            let row = [1];
+                            selectedVars.forEach(sv => row.push(candidateDataMatrix[sv][i]));
+                            row.push(candidateDataMatrix[cand][i]);
+                            X_mat.push(row);
+                        }
+                        let r2_multi = calculateMultipleR2(X_mat, Y_arr);
+                        if (r2_multi > bestR2 + 0.005) { bestR2 = r2_multi; bestVar = cand; }
+                    }
+                    if (bestVar) {
+                        selectedVars.push(bestVar); currentBestR2 = bestR2;
+                        let dispNameMulti = bestVar + (usePer100k && shouldScale(bestVar) ? " (100k)" : "");
+                        combinedProgression.push({ name: dispNameMulti, r2: bestR2 });
+                    } else { break; }
+                }
+
+                let htmlMulti = '';
+                combinedProgression.forEach((d, i) => {
+                    let prefix = i === 0 ? "Steg 1:" : `<span style="color:#28a745; font-weight:bold;">+</span> Adderar:`;
+                    htmlMulti += `<div style="background: white; padding: 6px 12px; border-radius: 4px; border: 1px solid #e9ecef; display: flex; justify-content: space-between; align-items: center;"><span style="font-size: 0.85rem;"><span class="text-muted" style="font-size:0.75rem; margin-right:4px;">${prefix}</span> ${d.name}</span><span class="badge bg-light text-dark border">Totalt R²: ${d.r2.toFixed(3)}</span></div>`;
+                });
+                document.getElementById('drivers-list-multi').innerHTML = htmlMulti || '<span class="text-muted">Kunde inte hitta kombinerade variabler (kollinearitet).</span>';
+            } else { driversPanel.style.display = 'none'; }
+        }
+
+        function drawRegressionChart(scatterData, trendData, labelX, labelY) {
+            const ctx = document.getElementById('regressionChart').getContext('2d');
+            if (regChartInstance) regChartInstance.destroy();
+            let datasets = [];
+            municipalityGroups.forEach(group => {
+                let groupData = scatterData.filter(d => group.cities.includes(d.kommun));
+                if (groupData.length > 0) {
+                    datasets.push({
+                        label: group.name, 
+                        data: groupData, 
+                        backgroundColor: group.color,
+                        borderColor: group.name === 'Linköping' ? 'transparent' : group.color,
+                        borderWidth: group.name === 'Linköping' ? 0 : 0, 
+                        pointStyle: group.shape,
+                        
+                        // STORLEKAR BARA FÖR REGRESSIONEN (fasta och tydliga)
+                        pointRadius: group.name === 'Linköping' ? 12 : 8, 
+                        pointHoverRadius: group.name === 'Linköping' ? 15 : 11
+                    });
+                }
+            });
+            if (trendData) {
+                datasets.push({ label: 'Trendlinje', data: trendData, type: 'line', borderColor: '#a04000', borderWidth: 2, borderDash: [5, 5], fill: false, pointRadius: 0, pointHoverRadius: 0 });
+            }
+
+            regChartInstance = new Chart(ctx, {
+                type: 'scatter',
+                data: { datasets: datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: { callbacks: { label: function(ctx) { if (ctx.dataset.type === 'line') return ''; let kom = ctx.raw.kommun; let yr = ctx.raw.year; return `${kom} (${yr}): X=${ctx.parsed.x.toLocaleString('sv-SE', {maximumFractionDigits: 1})}, Y=${ctx.parsed.y.toLocaleString('sv-SE', {maximumFractionDigits: 1})}`; } } },
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, filter: function(item) { return item.text !== 'Trendlinje'; } } }
+                    },
+                    scales: {
+                        x: { title: { display: true, text: labelX, font: { weight: 'bold' } } },
+                        y: { title: { display: true, text: labelY, font: { weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+
+        // ==========================================
+        // FYRFÄLTAREN (AKTIVERAD)
+        // ==========================================
+        
+        // Egen plugin för att rita ut kvadranterna (korshåret)
+        const quadrantPlugin = {
+            id: 'quadrants',
+            beforeDraw(chart, args, options) {
+                if (options.midX === undefined || options.midY === undefined) return;
+                const {ctx, chartArea: {left, top, right, bottom}, scales: {x, y}} = chart;
+                const pixelX = x.getPixelForValue(options.midX);
+                const pixelY = y.getPixelForValue(options.midY);
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.lineWidth = 1.5;
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.4)';
+                ctx.setLineDash([5, 5]); 
+
+                if (pixelX >= left && pixelX <= right) { ctx.moveTo(pixelX, top); ctx.lineTo(pixelX, bottom); }
+                if (pixelY >= top && pixelY <= bottom) { ctx.moveTo(left, pixelY); ctx.lineTo(right, pixelY); }
+                ctx.stroke();
+                ctx.restore();
+            }
+        };
+
+        Chart.register(quadrantPlugin); 
+
+        function triggerUpdateMatrix() {
+            setTimeout(updateMatrix, 50);
+        }
+
+        function updateMatrix() {
+            const indX = document.getElementById('matrix-x-axis').value;
+            const indY = document.getElementById('matrix-y-axis').value;
+            const indR = document.getElementById('matrix-r-axis').value;
+            const year = parseInt(document.getElementById('matrix-year').value);
+
+            if (!indX || !indY || !indR || isNaN(year)) return;
+
+            let matrixData = [];
+            let rValues = [];
+            let xValues = [];
+            let yValues = [];
+
+            targetMunicipalities.forEach(kommun => {
+                let valX = getVariableValue(kommun, year, indX, false); 
+                let valY = getVariableValue(kommun, year, indY, false);
+                let valR = getVariableValue(kommun, year, indR, false);
+
+                if (valX !== null && valY !== null && valR !== null) {
+                    matrixData.push({ x: valX, y: valY, r_raw: valR, kommun: kommun });
+                    xValues.push(valX);
+                    yValues.push(valY);
+                    rValues.push(valR);
+                }
+            });
+
+            if (matrixData.length === 0) { return; }
+
+            let midX = xValues.reduce((a,b) => a+b, 0) / xValues.length;
+            let midY = yValues.reduce((a,b) => a+b, 0) / yValues.length;
+
+            let minR = Math.min(...rValues);
+            let maxR = Math.max(...rValues);
+            
+            matrixData.forEach(d => {
+                if (maxR === minR) { d.r = 15; } 
+                else { d.r = 8 + 27 * ((d.r_raw - minR) / (maxR - minR)); }
+            });
+
+            let datasets = [];
+            municipalityGroups.forEach(group => {
+                let groupData = matrixData.filter(d => group.cities.includes(d.kommun));
+                
+                if (groupData.length > 0) {
+                    datasets.push({
+                        label: group.name,
+                        data: groupData,
+                        // FYLLDA FÄRGER MED OPACITET
+                        backgroundColor: hexToRgba(group.color, 0.8),
+                        borderColor: group.color,
+                        borderWidth: 1.5,
+                    });
+                }
+            });
+
+            let cleanXLabel = indX.replace("INDEX: Standardvikt_", "Index: ");
+            let cleanYLabel = indY.replace("INDEX: Standardvikt_", "Index: ");
+
+            drawMatrixChart(datasets, cleanXLabel, cleanYLabel, midX, midY);
+        }
+
+        function drawMatrixChart(datasets, labelX, labelY, midX, midY) {
+            const ctx = document.getElementById('matrixChart').getContext('2d');
+            if (matrixChartInstance) matrixChartInstance.destroy();
+
+            matrixChartInstance = new Chart(ctx, {
+                type: 'bubble',
+                data: { datasets: datasets },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    let kom = ctx.raw.kommun;
+                                    let x = ctx.parsed.x.toLocaleString('sv-SE', {maximumFractionDigits: 1});
+                                    let y = ctx.parsed.y.toLocaleString('sv-SE', {maximumFractionDigits: 1});
+                                    let r = ctx.raw.r_raw.toLocaleString('sv-SE', {maximumFractionDigits: 0});
+                                    return `${kom} | X: ${x} | Y: ${y} | Storlek: ${r}`; 
+                                }
+                            }
+                        },
+                        legend: { position: 'bottom' },
+                        quadrants: { midX: midX, midY: midY } 
+                    },
+                    scales: {
+                        x: { title: { display: true, text: labelX, font: { weight: 'bold' } } },
+                        y: { title: { display: true, text: labelY, font: { weight: 'bold' } } }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -40,5 +40,9 @@ Långtidsarbetslöshet 16-65 år (% av arbetskraften);Långtidsarbetslöshet;..;
 Bostadsbyggande per 1000 invånare;Bostadsbyggande;..;..;..;X;Hög;Volym och kapacitet;Antal nybyggda bostäder i nybyggda hus per 1000 invånare
 Bostäder;Bostäder;..;..;..;X;Hög;Volym och kapacitet;Antal bostäder i respektive kommun eller kommungrupp.
 Bostadspriser;Bostadspriser;Z;..;..;..;Hög;Balans och jämvikt;
+Folkmängd 20-64 år, antal;Hela_vuxen_bef;..;..;X;..;Hög;Volym och kapacitet;Antalet personer i åldern 20-64 år.
+Försörjningskvot;Försörjningskvot;X;X;X;X;Låg;Ekonomi och välfärd;Försörjngskvot, personer i icke-yrkesverksamm ålder som andel av personer i yrkesverksam ålder.
+Födda barn;Födda_barn;..;..;X;..;Hög;Volym och kapacitet;Antal födda barn
+Födda barn per 100 000 vuxna invånare;Födda_1000_vuxna;..;..;X;X;Hög;Ekonomi och välfärd;Antal födda barn per 100 000 vuxna invånare (åldern 20-64 år)
 Befolkningsförändring per år (%);Folkmängd (beräknad förändring);..;..;X;..;Hög;Tillväxt och dynamik;Visar den procentuella förändringen av folkmängden per år
 Totalt;Totalt;1;1;1;1.0000000000000002;Hög;;
