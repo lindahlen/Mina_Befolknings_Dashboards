@@ -39,7 +39,7 @@ Arbetslöshet 16-65 år (% av arbetskraften);Arbetslöshet;..;..;..;0.06;Låg;Ek
 Långtidsarbetslöshet 16-65 år (% av arbetskraften);Långtidsarbetslöshet;..;..;..;0.04;Låg;Ekonomi och välfärd;Andel långtidsarbetslösa i åldern 16-65 år som procent av arbetskraften. [inverterat värde]
 Bostadsbyggande per 1000 invånare;Bostadsbyggande;..;..;..;X;Hög;Volym och kapacitet;Antal nybyggda bostäder i nybyggda hus per 1000 invånare
 Bostäder;Bostäder;..;..;..;X;Hög;Volym och kapacitet;Antal bostäder i respektive kommun eller kommungrupp.
-Bostadspriser;Bostadspriser;Z;..;..;..;Hög;Balans och jämvikt;
+Bostadspriser;Bostadspriser;X;..;..;X;Hög;Balans och jämvikt;Försålda småhus med permanentbostad (ej tomträtt). Köpeskilling medelvärde (tkr) i löpande priser
 Folkmängd 20-64 år, antal;Hela_vuxen_bef;..;..;X;..;Hög;Volym och kapacitet;Antalet personer i åldern 20-64 år.
 Försörjningskvot;Försörjningskvot;X;X;X;X;Låg;Ekonomi och välfärd;Försörjngskvot, personer i icke-yrkesverksamm ålder som andel av personer i yrkesverksam ålder.
 Födda barn;Födda_barn;..;..;X;..;Hög;Volym och kapacitet;Antal födda barn

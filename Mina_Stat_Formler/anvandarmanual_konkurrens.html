@@ -223,6 +223,42 @@
             När en indikator är inställd på <em>Låg polaritet</em> (t.ex. arbetslöshet) använder systemet <em>symmetrisk invertering</em> (Index = 200 - Direktkvot). Detta skiljer sig från traditionell division (Basår/Värde) och förhindrar att indexet blir extremt volatilt eller exploderar uppåt när värden rör sig nära noll. Utvecklingen blir istället stabil, proportionerlig och linjär över tid, precis som man önskar i en seriös analys.
         </div>
 
+        <hr style="margin: 40px 0; border-top: 2px solid #eee;">
+
+        <h2>Standardindex</h2>
+        <p>De fyra förinställda standardindexen bygger på olika strategiska profiler. Nedan ser du exakt hur de är konstruerade och vilka vikter som används.</p>
+
+        <h3 style="color: #d35400; margin-top: 30px;">📈 Kombination (Det breda volym- och strukturmåttet)</h3>
+        <p>Detta index är kraftigt viktat mot volym och arbetsmarknad.</p>
+        <ul>
+            <li><strong>Arbetsmarknad & Ekonomi (60 %):</strong> Sysselsatta (25 %), BRP (10 %), Medianinkomst (10 %), Inpendling (10 %), KIBS (5 %).</li>
+            <li><strong>Demografi & Utbildning (40 %):</strong> Vuxen befolkning 30-59 år (15 %), Inflyttning från annat län (totalt 10 % + vuxna 5 %), Folkmängd (5 %), Eftergymnasial utbildning i procent (5 %).</li>
+        </ul>
+
+        <h3 style="color: #d35400; margin-top: 30px;">📈 Sysselsättning (Fokus på motor och arbetsmarknad)</h3>
+        <p>Ett renodlat mått på arbetsmarknadens dragningskraft och kvalitet.</p>
+        <ul>
+            <li><strong>Dragningskraft & Volym (60 %):</strong> Sysselsatta (30 %), Inpendling (20 %), KIBS (10 %).</li>
+            <li><strong>Kvalitet & Output (40 %):</strong> BRP (15 %), Eftergymnasial utbildning i procent (15 %), Medianinkomst (10 %).</li>
+        </ul>
+
+        <h3 style="color: #d35400; margin-top: 30px;">📈 Befolkning (Fokus på storlek och inflyttningsattraktivitet)</h3>
+        <p>Ett volymdrivet mått som mäter ren storlek och inflöde.</p>
+        <ul>
+            <li><strong>Befintlig volym (55 %):</strong> Folkmängd (25 %), Vuxna 30-59 år (20 %), Unga 0-19 år (10 %).</li>
+            <li><strong>Inflöde & Kapacitet (45 %):</strong> Inflyttning från annat län (totalt 20 % + vuxna 20 %), Eftergymnasial utbildning i antal (5 %).</li>
+        </ul>
+
+        <h3 style="color: #d35400; margin-top: 30px;">📈 Relativ styrka (Kvalitet och strukturteori)</h3>
+        <p>Här byter modellen skepnad. Istället för absoluta tal (volym) används endast andelar, procent och kvalitativa mått för att mäta strukturell styrka, vilket gör den perfekt för jämförelse mot Riket.</p>
+        <ul>
+            <li><strong>Arbetsmarknadsstruktur (47 %):</strong> Sysselsättningsgrad (20 %), Sysselsättningsförändring (15 %), KIBS andel (8 %), Långtidsarbetslöshet (4 % - inverterad).</li>
+            <li><strong>Ekonomi & Utbildning (36 %):</strong> Eftergymnasial utbildning andel (10 %), BRP (10 %), Medianinkomst netto (5 %), Förvärvsinkomst median (5 %), Arbetslöshet (6 % - inverterad).</li>
+            <li><strong>Demografisk struktur (17 %):</strong> Vuxen befolkning andel (10 %), Inpendling andel av dagbefolkning (5 %), Balans kvinnor/män (2 %).</li>
+        </ul>
+
+        <hr style="margin: 40px 0; border-top: 2px solid #eee;">
+
         <h2>Tillgängliga Indikatorer</h2>
         <p>Här nedanför följer en automatisk förteckning över de indikatorer som finns inlästa i systemet och som har aktiverats för användning i kalkylatorn. Beskrivningarna hanteras centralt i fliken "Standardvikt" i källdatan (Excel).</p>
         

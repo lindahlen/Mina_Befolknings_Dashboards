@@ -223,19 +223,35 @@ def build_database():
             "goals": 0,
             "yellow_cards": 0,
             "red_cards": 0,
-            "match_list": []
+            "match_list": [],
+            "admin_issues": []  # NY: Här sparar vi allt städ-jobb!
         }
 
     # Hämta in placeringar och tränare
     coaches_lookup = {}
     for _, row in df_nationer.iterrows():
-        year = str(row['Turn_ÅR'])
-        nation = str(row['Nation'])
+        # Tar bort .0 ifall Excel tolkar året som en decimal
+        year = str(row['Turn_ÅR']).replace('.0', '').strip()
+        nation = str(row['Nation']).strip()
         placering = str(row.get('Placering', '')).strip()
         
-        coaches_lookup[f"{year}_{nation}"] = str(row.get('Förbundskapten', ''))
+        # 1. BEFINTLIGT: Spara huvudtränaren
+        coaches_lookup[f"{year}_{nation}"] = str(row.get('Förbundskapten', '')).strip()
         
-        if year and nation and placering and placering != "None":
+        # 2. NYTT: Kolla efter ersättare och spara på match-nivå
+        sub_ids = row.get('Ersättare_Match_ID')
+        sub_name = row.get('Ersättare_Namn')
+        
+        if pd.notna(sub_ids) and pd.notna(sub_name) and str(sub_ids).strip() != '':
+            # Dela upp vid kommatecken ifall tränaren ersatte i flera matcher
+            exception_matches = [m.strip() for m in str(sub_ids).split(',')]
+            for m_id in exception_matches:
+                # Sparar ersättaren med en unik nyckel: "ÅR_NATION_MATCHID"
+                coaches_lookup[f"{year}_{nation}_{m_id}"] = str(sub_name).strip()
+                print(f"SKVALLER: Registrerade {sub_name} som ersättare för {nation} ({year}), match {m_id}.")
+
+        # 3. BEFINTLIGT: Din placerings-logik är intakt
+        if year and nation and placering and placering != "None" and placering != "nan":
             mapped_nation = get_mapped(nation)
             if mapped_nation not in db["placements"]:
                 db["placements"][mapped_nation] = {}
@@ -250,6 +266,7 @@ def build_database():
     # -- 3B. BYGG TURNERINGAR OCH MATCHER --
     for _, row in df_turnering.iterrows():
         ar = str(row['Turn_År'])
+        current_year = safe_int(row['Turn_År'])
         
         # 1. Hämta bästa spelare först, så vi kan använda namnet för att söka
         best_player_name = str(row.get('Bästa_Spelare')).strip() if pd.notna(row.get('Bästa_Spelare')) else ""
@@ -263,10 +280,156 @@ def build_database():
             ]
             if not match_trupp.empty:
                 best_player_country = str(match_trupp.iloc[0]['Land']).strip()
-
+        # =================================================================
+        # NYTT: BERÄKNA GENOMSNITTSÅLDER (ALLA SPELARE VS STARTELVAN)
+        # =================================================================
+        # Listor för att samla in åldern i totalt antal dagar för denna turnering
+        all_players_days = []
+        starting_players_days = []
+        
+        # Ordböcker för att kunna bryta ner per lag (Land) i den aktuella turneringen
+        team_all_days = {}      # Ex: {"Brasilien": [10200, 9800, ...]}
+        team_start_days = {}
+        
+        # 1. Hämta alla match-IDn som tillhör detta turneringsår från df_matcher
+        # Vi tittar på 'Matchdatum' och plockar ut året för att matcha med turneringen
+        df_matcher['Temp_År'] = pd.to_datetime(df_matcher['Matchdatum'], errors='coerce').dt.year
+        df_matches_this_year = df_matcher[df_matcher['Temp_År'] == current_year]
+        match_ids_this_year = df_matches_this_year['Match_ID'].unique()         
+        
+        # 2. Gå igenom alla matchdeltaganden för dessa matcher i df_spelare
+        df_players_this_year = df_spelare[df_spelare['Match_ID'].isin(match_ids_this_year)]
+        
+        for _, p_row in df_players_this_year.iterrows():
+            m_id = p_row['Match_ID']
+            player_name = str(p_row['Namn']).strip()
+            player_team = str(p_row['Land']).strip()
+            position = safe_int(p_row['Position']) # Antar att safe_int finns i din kod
+            
+            # Hämta matchdatumet från df_matcher för denna specifika match
+            match_info = df_matches_this_year[df_matches_this_year['Match_ID'] == m_id]
+            if match_info.empty or pd.isna(match_info.iloc[0]['Matchdatum']):
+                continue
+            
+            # Gör om matchdatum till ett datetime-objekt (Justera formatet '%Y-%m-%d' om det behövs)
+            try:
+                m_date = pd.to_datetime(match_info.iloc[0]['Matchdatum'])
+            except:
+                continue
+                
+            # Hämta information från df_namn för denna spelare
+            p_info = df_namn[df_namn['Namn'] == player_name]
+            
+            if p_info.empty:
+                felet = f"Hittades inte i fliken Namn"
+                print(f"SKVALLER: {felet} - '{player_name}' (Lag: {player_team}, År: {current_year}).")
+                
+                # Spara ner i vår admin-lista!
+                if "admin_issues" not in db:
+                    db["admin_issues"] = []
+                db["admin_issues"].append({
+                    "year": current_year,
+                    "team": player_team,
+                    "player": player_name,
+                    "issue": felet
+                })
+                continue
+                
+            # Plocka ut värdena
+            b_date_val = p_info.iloc[0].get('Födelsedatum')
+            b_year_val = p_info.iloc[0].get('Födelseår')
+            b_date = pd.NaT
+            
+            # FÖRSÖK 1: Riktigt födelsedatum
+            if pd.notna(b_date_val) and str(b_date_val).strip() != '':
+                try:
+                    b_date = pd.to_datetime(b_date_val)
+                except Exception as e:
+                    pass # Vi struntar i felmeddelandet här och går direkt på Försök 2
+            
+            # FÖRSÖK 2: Schablondatum från Födelseår (om Försök 1 misslyckades)
+            if pd.isna(b_date) and pd.notna(b_year_val) and str(b_year_val).strip() != '':
+                try:
+                    # Rensar året (ifall Excel skickat med decimaler typ "1895.0")
+                    clean_year = int(float(str(b_year_val).strip()))
+                    # Skapar schablondatum: 1 juli
+                    b_date = pd.to_datetime(f"{clean_year}-07-01")
+                except Exception as e:
+                    felet = f"Kunde inte skapa schablondatum från Födelseår '{b_year_val}'"
+                    print(f"SKVALLER: {felet} - '{player_name}'.")
+                    if "admin_issues" not in db:
+                        db["admin_issues"] = []
+                    db["admin_issues"].append({
+                        "year": current_year,
+                        "team": player_team,
+                        "player": player_name,
+                        "issue": felet
+                    })
+            
+            # Om vi fortfarande inte har ett datum
+            if pd.isna(b_date):
+                felet = "Saknar både giltigt Födelsedatum och Födelseår"
+                print(f"SKVALLER: {felet} - '{player_name}' (Lag: {player_team}).")
+                if "admin_issues" not in db:
+                    db["admin_issues"] = []
+                db["admin_issues"].append({
+                    "year": current_year,
+                    "team": player_team,
+                    "player": player_name,
+                    "issue": felet
+                })
+                continue
+            
+            # Räkna ut exakt ålder i antal dagar på matchdagen
+            age_in_days = (m_date - b_date).days
+            if age_in_days <= 0:
+                felet = f"Negativ eller noll ålder (Match: {m_date.date()}, Född: {b_date.date()})"
+                print(f"SKVALLER: {felet} - '{player_name}'.")
+                if "admin_issues" not in db:
+                    db["admin_issues"] = []
+                db["admin_issues"].append({
+                    "year": current_year,
+                    "team": player_team,
+                    "player": player_name,
+                    "issue": felet
+                })
+                continue
+                
+            # Initiera listor för laget om de inte redan finns
+            if player_team not in team_all_days:
+                team_all_days[player_team] = []
+            if player_team not in team_start_days:
+                team_start_days[player_team] = []
+                
+            # Sortera in i "Alla som spelat"
+            all_players_days.append(age_in_days)
+            team_all_days[player_team].append(age_in_days)
+            
+            # Sortera in i "Startelvan" (Position 1 till och med 11)
+            if 1 <= position <= 11:
+                starting_players_days.append(age_in_days)
+                team_start_days[player_team].append(age_in_days)
+                
+        # 3. Räkna ut genomsnitten för hela turneringen (totalt)
+        avg_all_tournament = sum(all_players_days) / len(all_players_days) if all_players_days else 0
+        avg_start_tournament = sum(starting_players_days) / len(starting_players_days) if starting_players_days else 0
+        
+        # 4. Räkna ut genomsnitten per lag för denna turnering
+        teams_age_stats = {}
+        # Vi samlar alla unika lag som spelade detta år
+        all_teams_this_year = set(list(team_all_days.keys()) + list(team_start_days.keys()))
+        
+        for team in all_teams_this_year:
+            t_all = team_all_days.get(team, [])
+            t_start = team_start_days.get(team, [])
+            
+            teams_age_stats[team] = {
+                "avg_all_days": sum(t_all) / len(t_all) if t_all else 0,
+                "avg_start_days": sum(t_start) / len(t_start) if t_start else 0
+            }
         # 3. Bygg turneringsobjektet (nu med best_player_country tillagd)
         db["tournaments"][ar] = {
-            "year": safe_int(row['Turn_År']),
+            "year": current_year,
             "host": str(row['Värdland']),
             "winner": str(row['Mästare']),
             "number_win": str(row['Titel_NR']),
@@ -274,6 +437,13 @@ def build_database():
             "best_player_country": best_player_country,  # Den nya nationen vi hittade i steg 2
             "opening_match": str(row.get('Premiärmatch')).strip() if pd.notna(row.get('Premiärmatch')) else "",
             "comment": str(row.get('Kommentar')).strip() if pd.notna(row.get('Kommentar')) else "",
+            # NYTT: Lägg till åldersstatistiken i turneringsobjektet!
+            "age_stats": {
+                "total_avg_all_days": avg_all_tournament,
+                "total_avg_start_days": avg_start_tournament,
+                "teams": teams_age_stats  # Innehåller lagvis uppdelning för detta år
+            },
+
             "matches": [],
             "stats": {} 
         }
@@ -325,8 +495,8 @@ def build_database():
             "home_team": home_team,
             "away_team": away_team,
             "coaches": {
-                "home": coaches_lookup.get(f"{ar}_{home_team}", "Okänd"),
-                "away": coaches_lookup.get(f"{ar}_{away_team}", "Okänd")
+                "home": coaches_lookup.get(f"{ar}_{home_team}_{m_id}", coaches_lookup.get(f"{ar}_{home_team}", "Okänd")),
+                "away": coaches_lookup.get(f"{ar}_{away_team}_{m_id}", coaches_lookup.get(f"{ar}_{away_team}", "Okänd"))
             },
             "advancement": {
                 "code": adv_code,

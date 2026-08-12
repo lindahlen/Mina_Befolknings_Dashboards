@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Användarguide: Strategisk Dashboard</title>
+    <!-- Bootstrap för snygg och responsiv design -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-orange: #d35400;
+            --primary-dark: #a04000;
+            --bg-color: #f8f9fa;
+        }
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header-bar {
+            background: linear-gradient(135deg, var(--primary-orange), var(--primary-dark));
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 40px;
+        }
+        .header-bar h1 {
+            margin: 0;
+            font-weight: 600;
+            font-size: 1.8rem;
+        }
+        .tillbaka-btn { 
+            color: white; 
+            text-decoration: none; 
+            background: rgba(255,255,255,0.15); 
+            border: 1px solid rgba(255,255,255,0.3); 
+            padding: 8px 16px; 
+            border-radius: 6px; 
+            font-weight: 500; 
+            transition: all 0.2s ease; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        .tillbaka-btn:hover { 
+            background: white; 
+            color: var(--primary-orange); 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1); 
+        }
+        .content-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 50px;
+        }
+        .welcome-heading {
+            color: var(--primary-dark);
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        h2 {
+            color: var(--primary-dark);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        h3 {
+            color: var(--primary-orange);
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        .lead-text {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .table-custom th {
+            background-color: #f1f3f5;
+            color: var(--primary-dark);
+        }
+        .highlight-box {
+            background-color: #fffaf0;
+            border-left: 5px solid var(--primary-orange);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .pro-tip-box {
+            background-color: #f0fdf4;
+            border-left: 5px solid #28a745;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-bar d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <h1>📖 Användarguide: Strategisk Dashboard</h1>
+        <a href="konkurrenskraft_master.html" class="tillbaka-btn" title="Återvänd till analysplattformen">⬅ Tillbaka till plattformen</a>
+    </div>
+
+    <div class="container content-container">
+        
+        <h2 class="welcome-heading">Välkommen till Linköpings strategiska dashboard för analys av svensk konkurrenskraft.</h2>
+        <p class="lead-text">
+            Detta verktyg är designat för att ge beslutsfattare, analytiker och strateger en djupgående och visuell förståelse för hur Sveriges största kommuner och regioner presterar, positionerar sig och utvecklas. Genom att kombinera tunga statistiska indikatorer kan vi snabbt identifiera mönster, styrkor och sårbarheter som annars döljs i stora datamängder.
+        </p>
+
+        <h2>📊 Plattformens tre huvudflikar</h2>
+        <p>Dashboarden är uppdelad i tre analytiska vyer som var och en fyller en specifik funktion:</p>
+
+        <h3>1. ⊞ Strategisk Fyrfältare (BCG-matris)</h3>
+        <p>Fyrfältaren hjälper dig att positionera och kategorisera geografiska områden baserat på två valfria dimensioner (X- och Y-axel). Bubblans storlek visar en tredje dimension (t.ex. Folkmängd eller BRP). Genom att studera matrisen kan du placera aktörer i fyra strategiska fack:</p>
+        <ul>
+            <li><strong>⭐ Stjärnor (Övre högra):</strong> Presterar över snittet i båda dimensionerna. De nationella eller regionala ledarna.</li>
+            <li><strong>💰 Kassakor (Nedre högra):</strong> Starka på X-axeln men utmaningar på Y. Trygga baser.</li>
+            <li><strong>❓ Frågetecken (Övre vänstra):</strong> Starka på Y men svaga på X. Potential finns men något håller tillbaka.</li>
+            <li><strong>⚠️ Utmanare (Nedre vänstra):</strong> Presterar under snittet i båda avseenden. Kräver strategiska insatser.</li>
+        </ul>
+        <div class="highlight-box">
+            <strong>Dynamiskt vs. Låst Kors:</strong><br>
+            Som standard anpassar sig centrumkorset efter <em>genomsnittet av de bubblor du ser på skärmen</em>. Det är perfekt för att kora vinnaren bland exempelvis bara storstäder. Men om du kryssar i <strong>"Lås kors vid Riket (100)"</strong> fixeras mitten exakt på Sverigesnittet. Då synliggörs "storstadseffekten" tydligt – storstäderna flyger ofta upp i Stjärn-kvadraten eftersom de överpresterar rejält jämfört med landets genomsnitt.
+        </div>
+        
+        <div class="pro-tip-box">
+            <strong>💡 Pro-tip för analys:</strong><br>
+            Du kan klicka på valfritt namn nere i teckenförklaringen för att dölja en specifik kommun eller grupp. Gör du detta i det dynamiska läget räknas både bubbelstorlekar och centrumkorset om omedelbart baserat enbart på de områden som är kvar på skärmen!
+        </div>
+
+        <h3>2. 📉 Regressionsanalys</h3>
+        <p>Denna flik används för att hitta och bevisa statistiska samband mellan olika indikatorer bland de 12 största kommunerna. Korrelerar högt nyföretagande med stark befolkningstillväxt? Här får du fram R²-värden (förklaringsgrad), korrelationskoefficienter och ekvationer. Systemet letar dessutom automatiskt fram vilka underliggande indikatorer som bäst driver resultatet på Y-axeln genom multipel regression.</p>
+
+        <h3>3. 🗺️ Geografisk Analys</h3>
+        <p>Här flyttas analysen ut på kartan. Verktyget låter dig spatialt visualisera index och indikatorer för att hitta kluster, regionala spridningseffekter eller geografiska klyftor. Kartan är ett utmärkt komplement när man vill förklara <em>var</em> tillväxten och attraktiviteten faktiskt sker rent fysiskt.</p>
+
+        <hr>
+
+        <h2>🔍 Analysnivåer: Mikro och Makro</h2>
+        <p>I Fyrfältaren kan du växla mellan två helt olika perspektiv beroende på vad du vill bevisa:</p>
+        <ul>
+            <li><strong>12 Kommuner (Mikroperspektiv):</strong> Här jämförs Sveriges tolv största kommuner mot varandra. Det visar hur Linköping står sig i den absoluta nationella toppen rent kommunalt.</li>
+            <li><strong>Geografiska grupper (Makroperspektiv):</strong> Här lyfter vi blicken och jämför Linköping mot strukturella block (t.ex. <em>Storstäder (3)</em>, <em>Större kommuner (5-12)</em> eller <em>Östergötlands län</em>). Perfekt för att se om Linköping beter sig som en typisk regionhuvudstad eller drar mer åt en renodlad storstadsprofil.</li>
+        </ul>
+
+        <hr>
+
+        <h2>⚖️ Relativa Index – Att tvätta bort "Stockholmseffekten"</h2>
+        <p>När man analyserar kommuner av vitt skild storlek vinner normalt sett den med störst befolkning om man bara räknar absoluta tal (volym). För att dashboarden ska mäta genuin <strong>strukturell muskelkraft</strong> använder systemet en matematisk harmonisering för alla sammansatta index:</p>
+        <ol>
+            <li><strong>Intensitetskonvertering:</strong> Alla absoluta tal (som antal inflyttade eller sysselsatta) delas automatiskt med folkmängden och konverteras till intensiteter (per capita, per 100 000 inv, eller procent).</li>
+            <li><strong>Relativ indexering (Riket = 100):</strong> Det framräknade, tvättade värdet divideras därefter med Sverigesnittet samma år. Ett värde på <strong>105</strong> innebär att platsen är 5 % starkare än riksgenomsnittet <em>i förhållande till sin egen storlek</em>.</li>
+        </ol>
+
+        <hr>
+
+        <h2>📈 Beskrivning av Sammansatta Index</h2>
+        <p>Plattformen innehåller sju förkalkylerade index som slår ihop enskilda indikatorer till breda strategiska mått.</p>
+
+        <h3>Teoretiska profil-index (PCI, ECI, HCI)</h3>
+        <p>Dessa tre index är skarpt avgränsade för att mäta en specifik egenskap hos kommunen.</p>
+
+        <h4>💎 PCI (Place Competitiveness Index) – Platsattraktivitet</h4>
+        <p>Hur bra är platsen på att locka till sig och behålla människor, oavsett arbetsmarknad?</p>
+        <table class="table table-striped table-custom table-bordered">
+            <thead>
+                <tr>
+                    <th>Indikator</th>
+                    <th>Vikt</th>
+                    <th>Riktning</th>
+                    <th>Motiv</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Bostadspriser</td><td>0.35</td><td>Hög</td><td>Marknadens yttersta kvitto på betalningsvilja för att få bo på platsen.</td></tr>
+                <tr><td>Nettoflyttning annat län (30-59 år)</td><td>0.25</td><td>Hög</td><td>Visar hur många i åldern 30-59 år som aktivt väljer kommunen framför alternativ utanför det egna länet.</td></tr>
+                <tr><td>Bostadsbyggande per 1000 inv.</td><td>0.25</td><td>Hög</td><td>Visar på lokal framtidstro och kapacitet att möta efterfrågan.</td></tr>
+                <tr><td>Födda barn per 100 000 vuxna</td><td>0.15</td><td>Hög</td><td>En indikator på social vitalitet och trygghet för familjebildning.</td></tr>
+            </tbody>
+        </table>
+
+        <h4>💎 ECI (Economic Competitiveness Index) – Ekonomisk Motor</h4>
+        <p>Hur stark, dynamisk och produktiv är den lokala ekonomin?</p>
+        <table class="table table-striped table-custom table-bordered">
+            <thead>
+                <tr>
+                    <th>Indikator</th>
+                    <th>Vikt</th>
+                    <th>Riktning</th>
+                    <th>Motiv</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>BRP per capita</td><td>0.40</td><td>Hög</td><td>Den absolut tyngsta indikatorn för lokal ekonomisk styrka och produktivitet.</td></tr>
+                <tr><td>Nettopendling</td><td>0.25</td><td>Hög</td><td>Visar att det lokala näringslivet är starkare än vad den lokala arbetskraften räcker till.</td></tr>
+                <tr><td>Nettoinkomst median</td><td>0.15</td><td>Hög</td><td>Disponibel köpkraft och välfärd för individen.</td></tr>
+                <tr><td>Förvärvsinkomst median</td><td>0.05</td><td>Hög</td><td>Värdeskapande direkt härrörande från lönearbete.</td></tr>
+                <tr><td>Nyföretagande per 1000 inv.</td><td>0.15</td><td>Hög</td><td>Det lokala entreprenörskapet och näringslivets förnyelsetakt.</td></tr>
+            </tbody>
+        </table>
+
+        <h4>💎 HCI (Human Capital Index) – Humankapital</h4>
+        <p>Vilken kunskapsnivå finns, och hur väl omsätts den på arbetsmarknaden?</p>
+        <table class="table table-striped table-custom table-bordered">
+            <thead>
+                <tr>
+                    <th>Indikator</th>
+                    <th>Vikt</th>
+                    <th>Riktning</th>
+                    <th>Motiv</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Lång eftergymn. utb 25-64 år (andel)</td><td>0.40</td><td>Hög</td><td>Grundmåttet på avancerad kompetens. 25-64 år filtrerar bort tillfälliga studentpopulationer.</td></tr>
+                <tr><td>KIBS (andel av sysselsatta)</td><td>0.30</td><td>Hög</td><td>Visar hur stor andel av den lokala arbetsmarknaden som utgörs av kunskapsintensiva tjänster.</td></tr>
+                <tr><td>Sysselsättningsgrad 20-64 år (%)</td><td>0.20</td><td>Hög</td><td>Visar att humankapitalet faktiskt aktiveras och befinner sig i arbete.</td></tr>
+                <tr><td>Långtidsarbetslöshet (% av ak)</td><td>0.10</td><td>Låg</td><td>Bestraffar strukturellt utanförskap (skalan inverteras vid indexberäkningen).</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Standardindex (Konkurrenskraftsindexets grundpelare)</h3>
+        <ul>
+            <li><strong>📈 Index: Kombination:</strong> Ett övergripande mått som väger in både arbetsmarknad och demografi för att ge en bred bild av den totala dragningskraften.</li>
+            <li><strong>📈 Index: Sysselsättning:</strong> Ett snävare mått med exklusivt fokus på den regionala arbetsmarknadens funktion, arbetstillfällen och inkomstnivåer.</li>
+            <li><strong>📈 Index: Befolkning:</strong> Ett mått som fokuserar på den rent demografiska motorn; befolkningstillväxt, inflyttning och åldersstrukturer.</li>
+            <li><strong>📈 Index: Relativ styrka:</strong> Ett renodlat strukturellt tillväxtmått som uteslutande bygger på andelar, kvoter och procentuella förändringar per år. Detta index svarar bäst på frågan: <em>Vem har starkast momentum just nu?</em></li>
+        </ul>
+        <p style="margin-top: -10px; color: var(--primary-dark);">
+            <em>📌 Det är dessa fyra standardindex som redovisas i Indexkalkylatorn: Konkurrenskraft.</em>
+        </p>
+
+    </div>
+</body>
+</html>
