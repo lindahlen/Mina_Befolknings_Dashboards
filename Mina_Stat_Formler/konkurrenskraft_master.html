@@ -248,6 +248,9 @@
         let hiddenMatrixDatasets = new Set();
         let hiddenRegressionDatasets = new Set();
 
+        // NYHET: Ordbok för att översätta Indikator -> Klartext
+        let klartextMap = {};
+
         const targetMunicipalities = [
             'Stockholm', 'Göteborg', 'Malmö', 'Uppsala', 'Linköping', 
             'Västerås', 'Örebro', 'Helsingborg', 'Jönköping', 'Norrköping', 
@@ -263,7 +266,7 @@
 
         const geoNameMap = {
             'Tre största': 'Storstäder (3)',
-            'Fyra stora': 'Storstäder (4)',
+            'Fyra stora': 'Stora städer (4)', // Användarens egna justering!
             'Fem till tolv': 'Större kommuner (5-12)',
             'Tolv största minus fem': 'Större k:n exkl Lkpg',
             'Sex till tolv minus tio': 'Större k:n exkl Lkpg-Nkpg',
@@ -323,23 +326,6 @@
             }
         };
 
-        function calculateMultipleR2(X, Y) {
-            let n = Y.length;
-            let meanY = Y.reduce((a,b)=>a+b,0)/n;
-            let SStot = Y.reduce((a,b)=>a + Math.pow(b - meanY, 2), 0);
-            if(SStot === 0) return 0;
-            let Xt = MatrixMath.transpose(X); let XtX = MatrixMath.multiply(Xt, X); let XtX_inv = MatrixMath.invert(XtX);
-            if(!XtX_inv) return 0; 
-            let Y_mat = Y.map(y => [y]); let XtY = MatrixMath.multiply(Xt, Y_mat); let Beta = MatrixMath.multiply(XtX_inv, XtY);
-            let SSres = 0;
-            for(let i=0; i<n; i++) {
-                let y_hat = 0;
-                for(let j=0; j<Beta.length; j++) { y_hat += X[i][j] * Beta[j][0]; }
-                SSres += Math.pow(Y[i] - y_hat, 2);
-            }
-            return 1 - (SSres / SStot);
-        }
-
         function resetAnalysis() {
             hiddenMatrixDatasets.clear();
             hiddenRegressionDatasets.clear();
@@ -363,7 +349,7 @@
                         
                         const nya_index = {
                             'Bostadspriser': {'PCI_Proxy': 0.35},
-                            'Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59)': {'PCI_Proxy': 0.25},
+                            'Nettoflyttning (Beräknad Inflyttning_annat_län-Utflyttning_annat_län)': {'PCI_Proxy': 0.25},
                             'Bostadsbyggande': {'PCI_Proxy': 0.25},
                             'Födda_1000_vuxna': {'PCI_Proxy': 0.15},
                             'BRP': {'ECI_Proxy': 0.40},
@@ -383,6 +369,10 @@
                                 for (let col in nya_index[ind]) {
                                     row[col] = nya_index[ind][col];
                                 }
+                            }
+                            // NYHET: Spara undan Klartext i vår ordbok!
+                            if (ind && row.Klartext) {
+                                klartextMap[ind] = row.Klartext;
                             }
                         });
 
@@ -424,7 +414,11 @@
             htmlIndex += `</optgroup>`;
 
             let htmlData = `<optgroup label="Rådata / Indikatorer">`;
-            uniqueIndicators.forEach(ind => htmlData += `<option value="${ind}">${ind}</option>`);
+            uniqueIndicators.forEach(ind => {
+                // NYHET: Slå upp Klartext, om det inte finns används det gamla namnet
+                let displayName = klartextMap[ind] || ind;
+                htmlData += `<option value="${ind}">${displayName}</option>`;
+            });
             htmlData += `</optgroup>`;
 
             const allOptionsHTML = htmlIndex + htmlData;
@@ -542,6 +536,14 @@
             return sumWeights > 0 ? (totalScore / sumWeights) : null;
         }
 
+        // NYHET: Gemensam funktion för att formatera axel-rubrikerna snyggt
+        function formatAxisLabel(indName) {
+            if (indName.startsWith("INDEX:")) {
+                return indName.replace("INDEX: Standardvikt_", "Index: ").replace("INDEX: ", "Index: ");
+            }
+            return klartextMap[indName] || indName;
+        }
+
         // ==========================================
         // REGRESSION 
         // ==========================================
@@ -580,9 +582,10 @@
 
             let visiblePlotData = plotData.filter(p => !hiddenRegressionDatasets.has(p.datasetLabel));
 
-            let cleanXLabel = indX.replace("INDEX: Standardvikt_", "Index: ").replace("INDEX: ", "Index: ");
+            // NYHET: Använder den nya formateringsfunktionen
+            let cleanXLabel = formatAxisLabel(indX);
             if (usePer100k && requiresScaling(indX)) cleanXLabel += " (per 100k inv)";
-            let cleanYLabel = indY.replace("INDEX: Standardvikt_", "Index: ").replace("INDEX: ", "Index: ");
+            let cleanYLabel = formatAxisLabel(indY);
             if (usePer100k && requiresScaling(indY)) cleanYLabel += " (per 100k inv)";
 
             if (visiblePlotData.length < 2) {
@@ -841,8 +844,9 @@
                 });
             }
 
-            let cleanXLabel = indX.replace("INDEX: Standardvikt_", "Index: ").replace("INDEX: ", "Index: ");
-            let cleanYLabel = indY.replace("INDEX: Standardvikt_", "Index: ").replace("INDEX: ", "Index: ");
+            // NYHET: Använder den nya formateringsfunktionen
+            let cleanXLabel = formatAxisLabel(indX);
+            let cleanYLabel = formatAxisLabel(indY);
 
             drawMatrixChart(datasets, cleanXLabel, cleanYLabel, midX, midY);
         }

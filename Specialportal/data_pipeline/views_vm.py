@@ -255,11 +255,16 @@ def build_dashboard():
                     <p class="text-xs text-slate-500 mt-1">Filtrera på turnering eller nation.</p>
                 </div>
                 <div class="w-full md:w-2/3 flex flex-col sm:flex-row gap-3">
-                    <select id="team-nation-filter" onchange="renderTeamData()" class="p-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 w-full sm:w-1/2">
+                    <select id="team-nation-filter" onchange="renderTeamData()" class="p-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 w-full sm:w-1/3">
                         <option value="all">Alla Nationer</option>
                     </select>
-                    <select id="team-year-filter" onchange="renderTeamData()" class="p-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 w-full sm:w-1/2">
+                    <select id="team-year-filter" onchange="renderTeamData()" class="p-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 w-full sm:w-1/3">
                         <option value="all">Alla Turneringar</option>
+                    </select>
+                    <select id="team-phase-filter" onchange="renderTeamData()" class="p-3 border border-slate-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 font-bold text-slate-700 w-full sm:w-1/3">
+                        <option value="all">Alla Matcher</option>
+                        <option value="group">Endast Gruppspel</option>
+                        <option value="knockout">Endast Slutspel/Utslagning</option>
                     </select>
                 </div>
             </div>
@@ -267,6 +272,7 @@ def build_dashboard():
             <div class="flex border-b border-slate-300 mb-6 space-x-2 overflow-x-auto no-scrollbar">
                 <button id="team-sub-btn-top" onclick="switchTeamSubTab('team-view-top')" class="px-4 py-2 font-bold text-sm text-blue-900 border-b-2 border-blue-900 bg-white rounded-t-lg shadow-sm whitespace-nowrap">⭐ Topplistor Lag</button>
                 <button id="team-sub-btn-streaks" onclick="switchTeamSubTab('team-view-streaks')" class="px-4 py-2 font-bold text-sm text-slate-500 hover:text-blue-900 border-b-2 border-transparent transition whitespace-nowrap">🔥 Sviter</button>
+                <button id="team-sub-btn-age" onclick="switchTeamSubTab('team-view-age')" class="px-4 py-2 font-bold text-sm text-slate-500 hover:text-blue-900 border-b-2 border-transparent transition">⏳ Genomsnittlig ålder</button>
             </div>
 
             <div id="team-view-top" class="team-sub-content">
@@ -317,7 +323,10 @@ def build_dashboard():
                     <div id="team-streak-results" class="max-h-[50vh] overflow-y-auto"></div>
                 </div>
             </div>
-        </div>
+            <div id="team-view-age" class="team-sub-content hidden">
+                    <div id="average-age-container" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+            </div>
+        </div></div>
         
         <!-- FLIK 6: SPELARE & STATISTIK -->
         <div id="tab-spelare" class="tab-content hidden">
@@ -1099,12 +1108,18 @@ def build_dashboard():
                 
                 // Nyhet: Smart Fas-filter
                 let isGroup = m.advancement.is_group_match;
-                let pLower = String(m.phase).toLowerCase();
+                let pLower = String(m.phase || "").toLowerCase();
                 
-                // Omspel och playoff är utslagning även om de ligger i en gruppspelsfas i db
-                if (pLower.includes("playoff") || pLower.includes("omspel")) isGroup = false;
-                // Finalomgången 1950 och dubbla gruppspel 1974-1982 är gruppspel
-                if (pLower.includes("grupp") || pLower.includes("finalomgång")) isGroup = true;
+                if (pLower.includes("playoff") || pLower.includes("omspel")) {
+                    isGroup = false;
+                } else if (pLower.includes("grupp") || pLower.includes("finalomgång")) {
+                    isGroup = true;
+                }
+
+                // Hård spärr för historiska playoff-matcher (1954, 1958)
+                if (['92', '93', '126', '127', '128'].includes(String(m.id))) {
+                    isGroup = false;
+                }
 
                 if (phaseFilter === 'group' && !isGroup) return;
                 if (phaseFilter === 'knockout' && isGroup) return;
@@ -1353,20 +1368,205 @@ def build_dashboard():
         // =========================================================
         function switchTeamSubTab(subViewId) {
             document.querySelectorAll('.team-sub-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById(subViewId).classList.remove('hidden');
             
+            // Säkerhetskoll så att vi inte får fel om elementet saknas
+            const targetView = document.getElementById(subViewId);
+            if (targetView) targetView.classList.remove('hidden');
+            
+            // Din lista, nu med den tredje fliken
             const tabs = [
                 {id: 'team-view-top', btn: 'team-sub-btn-top'},
-                {id: 'team-view-streaks', btn: 'team-sub-btn-streaks'}
+                {id: 'team-view-streaks', btn: 'team-sub-btn-streaks'},
+                {id: 'team-view-age', btn: 'team-sub-btn-age'} // <-- NY
             ];
             
             tabs.forEach(t => {
                 const btn = document.getElementById(t.btn);
-                if (t.id === subViewId) btn.className = "px-4 py-2 font-bold text-sm text-blue-900 border-b-2 border-blue-900 bg-white rounded-t-lg shadow-sm whitespace-nowrap";
-                else btn.className = "px-4 py-2 font-bold text-sm text-slate-500 hover:text-blue-900 border-b-2 border-transparent transition whitespace-nowrap";
+                if (btn) {
+                    if (t.id === subViewId) btn.className = "px-4 py-2 font-bold text-sm text-blue-900 border-b-2 border-blue-900 bg-white rounded-t-lg shadow-sm whitespace-nowrap";
+                    else btn.className = "px-4 py-2 font-bold text-sm text-slate-500 hover:text-blue-900 border-b-2 border-transparent transition whitespace-nowrap";
+                }
             });
             
+            // Din livsviktiga originalfunktion som ritar om listorna
             renderTeamData();
+
+            // Vår lilla instickare för åldersfliken
+            if (subViewId === 'team-view-age') {
+                renderAverageAgeTab();
+            }
+        }
+
+        // ==========================================
+        // INSTÄLLNINGAR FÖR ÅLDERSFLIKEN
+        // ==========================================
+        window.ageScope = 'all'; // 'all' (Alla spelare) eller 'start' (Startelvan)
+        window.ageFormat = 'ym'; // 'ym' (År & Dagar) eller 'dec' (Decimaler)
+
+        function switchAgeScope(scope) {
+            window.ageScope = scope;
+            renderAverageAgeTab();
+        }
+
+        function switchAgeFormat(format) {
+            window.ageFormat = format;
+            renderAverageAgeTab();
+        }
+
+        function formatAgeDisplay(totalDays) {
+            if (!totalDays || totalDays <= 0) return "-";
+            
+            if (window.ageFormat === 'dec') {
+                return (totalDays / 365.25).toFixed(1) + ' år';
+            } else {
+                let y = Math.floor(totalDays / 365.25);
+                let d = Math.floor(totalDays % 365.25);
+                return `${y} år ${d} dgr`;
+            }
+        }
+
+        // ==========================================
+       // HUVUDFUNKTIONEN: Ritar ut ålderslistan
+        // ==========================================
+        function renderAverageAgeTab() {
+            let container = document.getElementById('average-age-container');
+            if (!container) return;
+
+            // 1. Läs av rullistorna
+            let nationFilter = document.getElementById('team-nation-filter').value;
+            let yearFilter = document.getElementById('team-year-filter').value;
+
+            // NYTT: Återställ sidnumreringen till 0 om användaren byter nation eller år
+            if (window.lastAgeNation !== nationFilter || window.lastAgeYear !== yearFilter) {
+                window.averageAgePage = 0;
+                window.lastAgeNation = nationFilter;
+                window.lastAgeYear = yearFilter;
+            }
+            
+            let pageIndex = window.averageAgePage || 0;
+            const PAGE_SIZE = 50;
+
+            // 2. Bygg kontrollpanelen med knappar och den nya informationstexten
+            let html = `
+                <div class="flex flex-col mb-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center bg-slate-50 p-4 rounded-lg border border-slate-100 gap-4">
+                        <div class="flex space-x-2 bg-white p-1 rounded-md border border-slate-200 shadow-sm">
+                            <button onclick="switchAgeScope('all')" class="px-4 py-2 text-sm font-bold rounded transition ${window.ageScope === 'all' ? 'bg-blue-900 text-white shadow' : 'text-slate-500 hover:bg-slate-50'}">Alla spelare</button>
+                            <button onclick="switchAgeScope('start')" class="px-4 py-2 text-sm font-bold rounded transition ${window.ageScope === 'start' ? 'bg-blue-900 text-white shadow' : 'text-slate-500 hover:bg-slate-50'}">Startelvan</button>
+                        </div>
+                        <div class="flex space-x-2 bg-white p-1 rounded-md border border-slate-200 shadow-sm">
+                            <button onclick="switchAgeFormat('ym')" class="px-4 py-2 text-sm font-bold rounded transition ${window.ageFormat === 'ym' ? 'bg-blue-100 text-blue-900 shadow' : 'text-slate-500 hover:bg-slate-50'}">År & Dagar</button>
+                            <button onclick="switchAgeFormat('dec')" class="px-4 py-2 text-sm font-bold rounded transition ${window.ageFormat === 'dec' ? 'bg-blue-100 text-blue-900 shadow' : 'text-slate-500 hover:bg-slate-50'}">Decimaler</button>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2 italic flex items-center gap-1">
+                        <svg class="w-4 h-4 text-slate-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+                        Åldersdata beräknas på turneringsnivå och påverkas ej av specifika matchfaser (Gruppspel/Slutspel).
+                    </p>
+                </div>
+            `;
+
+            // 3. Filtrera datan baserat på rullistorna
+            let results = [];
+            Object.values(db.tournaments).forEach(t => {
+                if (yearFilter !== 'all' && t.year.toString() !== yearFilter) return;
+
+                if (t.age_stats && t.age_stats.teams) {
+                    for (let [team, stats] of Object.entries(t.age_stats.teams)) {
+                        if (nationFilter !== 'all' && team !== nationFilter) continue;
+
+                        let days = window.ageScope === 'all' ? stats.avg_all_days : stats.avg_start_days;
+                        if (days > 0) {
+                            results.push({ year: t.year, team: team, days: days });
+                        }
+                    }
+                }
+            });
+
+            // Sortera listan (äldst snittålder högst upp som standard)
+            results.sort((a, b) => b.days - a.days);
+
+            // ==========================================
+            // BERÄKNA TOTALSNITTET (På ALLA resultat innan vi klipper listan!)
+            // ==========================================
+            if (results.length > 0) {
+                let totalSumDays = results.reduce((sum, r) => sum + r.days, 0);
+                let overallAvgDays = totalSumDays / results.length;
+                
+                html += `
+                    <div class="mb-4 p-4 bg-blue-100 border-l-4 border-blue-700 rounded-r-lg shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div class="flex flex-col">
+                            <span class="font-bold text-blue-900 uppercase text-xs tracking-wider">Totalt genomsnitt</span>
+                            <span class="text-sm text-blue-700">Baserat på dina val (${results.length} lag)</span>
+                        </div>
+                        <span class="text-2xl font-black text-blue-800">${formatAgeDisplay(overallAvgDays)}</span>
+                    </div>
+                `;
+            }
+
+            // ==========================================
+            // NYTT: KLIPP LISTAN FÖR SIDNUMRERING
+            // ==========================================
+            let totalResults = results.length;
+            let paginatedResults = results.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE);
+
+            // 4. Bygg tabellen (Vi bygger nu enbart på 'paginatedResults')
+            html += `<div class="max-h-[65vh] overflow-y-auto border border-slate-200 rounded-lg shadow-sm">
+                        <table class="w-full text-left border-collapse bg-white overflow-hidden">
+                            <thead class="bg-slate-100 border-b border-slate-200 sticky top-0 z-10">
+                                <tr>
+                                    <th class="p-3 w-12 text-xs font-semibold text-slate-500 uppercase text-center">#</th>
+                                    <th class="p-3 text-xs font-semibold text-slate-500 uppercase">Nation</th>
+                                    <th class="p-3 w-24 text-xs font-semibold text-slate-500 uppercase text-center">Turnering</th>
+                                    <th class="p-3 text-xs font-semibold text-slate-500 uppercase text-right">Snittålder</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">`;
+            
+            if (totalResults === 0) {
+                html += `<tr><td colspan="4" class="p-6 text-center text-slate-400 italic">Ingen data hittades för vald filtrering.</td></tr>`;
+            } else {
+                paginatedResults.forEach((r, idx) => {
+                    let globalRank = (pageIndex * PAGE_SIZE) + idx + 1;
+                    html += `<tr class="hover:bg-blue-50 transition">
+                                <td class="p-3 text-xs font-bold text-slate-400 text-center">${globalRank}</td>
+                                <td class="p-3 font-bold text-slate-800">${r.team}</td>
+                                <td class="p-3 font-medium text-blue-900 text-center">${r.year}</td>
+                                <td class="p-3 font-bold text-slate-700 text-right bg-slate-50">${formatAgeDisplay(r.days)}</td>
+                            </tr>`;
+                });
+            }
+
+            html += `       </tbody>
+                        </table>
+                     </div>`;
+
+            // ==========================================
+            // NYTT: RITA UT SIDNUMRERINGSKNAPPAR
+            // ==========================================
+            if (totalResults > PAGE_SIZE) {
+                let totalPages = Math.ceil(totalResults / PAGE_SIZE);
+                html += `
+                    <div class="mt-4 flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">
+                        <button onclick="changeAverageAgePage(-1)" class="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-100 transition disabled:opacity-40 disabled:cursor-not-allowed" ${pageIndex === 0 ? 'disabled' : ''}>
+                            ← Föregående
+                        </button>
+                        <span class="text-sm font-medium text-slate-500">Sida <span class="font-bold text-slate-800">${pageIndex + 1}</span> av ${totalPages}</span>
+                        <button onclick="changeAverageAgePage(1)" class="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-100 transition disabled:opacity-40 disabled:cursor-not-allowed" ${pageIndex >= totalPages - 1 ? 'disabled' : ''}>
+                            Nästa →
+                        </button>
+                    </div>
+                `;
+            }
+
+            container.innerHTML = html;
+        }
+        // ==========================================
+        // NYTT: Funktion för att byta sida (MÅSTE ligga fritt!)
+        // ==========================================
+        function changeAverageAgePage(delta) {
+            window.averageAgePage = (window.averageAgePage || 0) + delta;
+            renderAverageAgeTab();
         }
 
         function populateTeamFilters() {
@@ -1389,17 +1589,61 @@ def build_dashboard():
         }
 
         function renderTeamData() {
-            const activeTab = document.querySelector('.team-sub-content:not(.hidden)').id;
+            const activeTabElement = document.querySelector('.team-sub-content:not(.hidden)');
+            if (!activeTabElement) return; // Liten säkerhetsspärr!
+            
+            const activeTab = activeTabElement.id;
             const nation = document.getElementById('team-nation-filter').value;
             const year = document.getElementById('team-year-filter').value;
+            
+            // NY: Hämta värdet från det nya fas-filtret (med fallback om det saknas)
+            const phaseFilterEl = document.getElementById('team-phase-filter');
+            const phaseFilter = phaseFilterEl ? phaseFilterEl.value : 'all';
 
-            let matches = Object.values(db.matches).filter(m => m.score.home_total !== null);
-            if (year !== 'all') matches = matches.filter(m => m.date.startsWith(year));
+            // Hämta alla spelade matcher
+            let matches = Object.values(db.matches).filter(m => m && m.score && m.score.home_total !== null);
+            
+            // 1. Filtrera på år
+            if (year !== 'all') {
+                matches = matches.filter(m => m.date.startsWith(year));
+            }
 
-            if (activeTab === 'team-view-top') renderTeamRecords(matches, nation, year);
-            else if (activeTab === 'team-view-streaks') renderTeamStreaks(matches, nation, year);
+            // 2. NY: Filtrera på fas med vår stensäkra playoff-logik
+            if (phaseFilter !== 'all') {
+                matches = matches.filter(m => {
+                    let isGroup = m.advancement ? m.advancement.is_group_match : false;
+                    let pLower = String(m.phase || "").toLowerCase();
+                    
+                    if (pLower.includes("playoff") || pLower.includes("omspel")) {
+                        isGroup = false;
+                    } else if (pLower.includes("grupp") || pLower.includes("finalomgång")) {
+                        isGroup = true;
+                    }
+
+                    // Hård spärr för historiska playoff-matcher
+                    if (['92', '93', '126', '127', '128'].includes(String(m.id))) {
+                        isGroup = false;
+                    }
+
+                    if (phaseFilter === 'group' && !isGroup) return false;
+                    if (phaseFilter === 'knockout' && isGroup) return false;
+                    
+                    return true; // Matchen klarade filtret!
+                });
+            }
+
+            // Här skickas den färdigfiltrerade listan 'matches' in till dina underflikar!
+            if (activeTab === 'team-view-top') {
+                renderTeamRecords(matches, nation, year);
+            } else if (activeTab === 'team-view-streaks') {
+                renderTeamStreaks(matches, nation, year);
+            } else if (activeTab === 'team-view-age') {
+                if (typeof renderAverageAgeTab === 'function') {
+                    renderAverageAgeTab(); 
+                }
+            }
         }
-
+        
         function renderTeamRecords(matches, nation, year) {
             const type = document.getElementById('team-top-type').value;
             const container = document.getElementById('team-top-results');
@@ -2306,16 +2550,20 @@ def build_dashboard():
             const type = document.getElementById('top-type-filter').value;
             const nation = document.getElementById('top-nation-filter').value;
             const container = document.getElementById('top-list-results');
-            // FIX: Sidnumrering för spelarlistor
-            if (window.lastPlayerTopType !== type) {
+            
+            // FIX: Nollställ sidnumreringen om man byter lista ELLER nation
+            if (window.lastPlayerTopType !== type || window.lastPlayerNation !== nation) {
                 window.playerTopPage = 0;
                 window.lastPlayerTopType = type;
+                window.lastPlayerNation = nation;
             }
+            
             let pageIndex = window.playerTopPage || 0;
             const PAGE_SIZE = 50;
-            let currentListTotal = 0;
+            let totalResults = 0; // Vi sparar totala antalet för att kunna rita ut knapparna
+
             let players = Object.values(db.players);
-            if (nation !== 'all') players = players.filter(p => p.nations.includes(nation));
+            if (nation !== 'all') players = players.filter(p => p.nations && p.nations.includes(nation));
 
             let html = '<table class="w-full text-left border-collapse"><thead class="bg-slate-50 sticky top-0 border-b border-slate-200 z-10"><tr>';
             html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase w-12 text-center">#</th><th class="p-3 text-xs font-semibold text-slate-500 uppercase">Spelare</th>';
@@ -2324,8 +2572,10 @@ def build_dashboard():
             if (type === 'matches') {
                 html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Matcher</th></tr></thead><tbody class="divide-y divide-slate-100">';
                 sorted = players.sort((a, b) => b.matches_played - a.matches_played).filter(p => p.matches_played > 0);
+                totalResults = sorted.length;
+                
                 sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((p, idx) => {
-                    let i = (pageIndex * PAGE_SIZE) + idx; // Fixar korrekt numrering (#)
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let yearsArr = [...p.tournaments].sort();
                     let yearStr = yearsArr.length > 1 ? `${yearsArr[0]}-${yearsArr[yearsArr.length-1]}` : (yearsArr.length === 1 ? yearsArr[0] : '');
                     let yearsDisplay = yearStr ? ` <span class="text-xs font-normal text-slate-400 ml-1">(${yearStr})</span>` : '';
@@ -2335,8 +2585,10 @@ def build_dashboard():
             else if (type === 'goals') {
                 html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Mål</th></tr></thead><tbody class="divide-y divide-slate-100">';
                 sorted = players.sort((a, b) => b.goals - a.goals).filter(p => p.goals > 0);
+                totalResults = sorted.length;
+                
                 sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((p, idx) => {
-                    let i = (pageIndex * PAGE_SIZE) + idx; // Fixar korrekt numrering (#)
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let yearsArr = [...p.tournaments].sort();
                     let yearStr = yearsArr.length > 1 ? `${yearsArr[0]}-${yearsArr[yearsArr.length-1]}` : (yearsArr.length === 1 ? yearsArr[0] : '');
                     let yearsDisplay = yearStr ? ` <span class="text-xs font-normal text-slate-400 ml-1">(${yearStr})</span>` : '';
@@ -2349,30 +2601,26 @@ def build_dashboard():
                 let scorerStats = [];
                 players.forEach(p => {
                     if (p.goals === 0) return; 
-                    
                     let matchesWithGoals = 0;
                     let goalYears = new Set();
                     
                     p.match_list.forEach(mId => {
                         let m = db.matches[mId];
                         if (!m || !m.events || !m.events.goals) return;
-                        
                         let scoredInMatch = m.events.goals.some(g => g.player.trim() === p.name);
                         if (scoredInMatch) {
                             matchesWithGoals++;
                             goalYears.add(m.date.substring(0,4));
                         }
                     });
-                    
-                    if (matchesWithGoals > 0) {
-                        scorerStats.push({ p: p, matchCount: matchesWithGoals, years: goalYears });
-                    }
+                    if (matchesWithGoals > 0) scorerStats.push({ p: p, matchCount: matchesWithGoals, years: goalYears });
                 });
                 
-                // Sortera på antal nätade matcher, vid lika: flest totala mål, sedan namn
                 scorerStats.sort((a, b) => b.matchCount - a.matchCount || b.p.goals - a.p.goals);
+                totalResults = scorerStats.length;
                 
-                scorerStats.slice(0, 50).forEach((item, i) => {
+                scorerStats.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((item, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let p = item.p;
                     let yArr = Array.from(item.years).sort();
                     let yStr = yArr.length > 1 ? `${yArr[0]}-${yArr[yArr.length-1]}` : (yArr.length === 1 ? yArr[0] : '');
@@ -2387,7 +2635,10 @@ def build_dashboard():
             else if (type === 'tournaments') {
                 html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Spelade Turneringar</th></tr></thead><tbody class="divide-y divide-slate-100">';
                 sorted = players.sort((a, b) => b.tournaments.length - a.tournaments.length).filter(p => p.tournaments.length > 0);
-                sorted.slice(0, 50).forEach((p, i) => {
+                totalResults = sorted.length;
+                
+                sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((p, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let yearsArr = [...p.tournaments].sort();
                     let yearStr = yearsArr.length > 1 ? `${yearsArr[0]}-${yearsArr[yearsArr.length-1]}` : (yearsArr.length === 1 ? yearsArr[0] : '');
                     let yearsDisplay = yearStr ? ` <span class="text-xs font-normal text-slate-400 ml-1">(${yearStr})</span>` : '';
@@ -2401,7 +2652,10 @@ def build_dashboard():
                     let bLen = b.squad_tournaments ? b.squad_tournaments.length : b.tournaments.length;
                     return bLen - aLen;
                 }).filter(p => (p.squad_tournaments ? p.squad_tournaments.length : p.tournaments.length) > 0);
-                sorted.slice(0, 50).forEach((p, i) => {
+                totalResults = sorted.length;
+                
+                sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((p, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let tList = p.squad_tournaments || p.tournaments;
                     let yearsArr = [...tList].sort();
                     let yearStr = yearsArr.length > 1 ? `${yearsArr[0]}-${yearsArr[yearsArr.length-1]}` : (yearsArr.length === 1 ? yearsArr[0] : '');
@@ -2413,7 +2667,10 @@ def build_dashboard():
             else if (type === 'yellow') {
                 html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Gula Kort</th></tr></thead><tbody class="divide-y divide-slate-100">';
                 sorted = players.sort((a, b) => b.yellow_cards - a.yellow_cards).filter(p => p.yellow_cards > 0);
-                sorted.slice(0, 50).forEach((p, i) => {
+                totalResults = sorted.length;
+                
+                sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((p, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let yearsArr = [...p.tournaments].sort();
                     let yearStr = yearsArr.length > 1 ? `${yearsArr[0]}-${yearsArr[yearsArr.length-1]}` : (yearsArr.length === 1 ? yearsArr[0] : '');
                     let yearsDisplay = yearStr ? ` <span class="text-xs font-normal text-slate-400 ml-1">(${yearStr})</span>` : '';
@@ -2423,7 +2680,10 @@ def build_dashboard():
             else if (type === 'red') {
                 html += '<th class="p-3 text-xs font-semibold text-slate-500 uppercase text-center">Röda Kort</th></tr></thead><tbody class="divide-y divide-slate-100">';
                 sorted = players.sort((a, b) => b.red_cards - a.red_cards).filter(p => p.red_cards > 0);
-                sorted.slice(0, 50).forEach((p, i) => {
+                totalResults = sorted.length;
+                
+                sorted.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((p, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let yearsArr = [...p.tournaments].sort();
                     let yearStr = yearsArr.length > 1 ? `${yearsArr[0]}-${yearsArr[yearsArr.length-1]}` : (yearsArr.length === 1 ? yearsArr[0] : '');
                     let yearsDisplay = yearStr ? ` <span class="text-xs font-normal text-slate-400 ml-1">(${yearStr})</span>` : '';
@@ -2438,14 +2698,16 @@ def build_dashboard():
                     let pMatches = p.match_list.map(mId => db.matches[mId]).filter(m => m && m.date);
                     if (pMatches.length === 0) return;
                     pMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
-                    
                     let targetMatch = type === 'oldest_player' ? pMatches[pMatches.length - 1] : pMatches[0];
                     let age = getAgeAtDate(p.birth_date, targetMatch.date);
                     if (age) ageList.push({ p: p, age: age, match: targetMatch });
                 });
                 
                 ageList.sort((a, b) => type === 'oldest_player' ? b.age.sortVal - a.age.sortVal : a.age.sortVal - b.age.sortVal);
-                ageList.slice(0, 50).forEach((item, i) => {
+                totalResults = ageList.length;
+                
+                ageList.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((item, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let isApprox = item.age.days === null;
                     html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openPlayerProfile('${item.p.name.replace(/'/g, "\\'")}')">
                         <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
@@ -2467,17 +2729,18 @@ def build_dashboard():
                         let scoredInMatch = m.events.goals.some(g => g.player.trim() === p.name);
                         if (scoredInMatch) goalMatches.push(m);
                     });
-                    
                     if (goalMatches.length === 0) return;
                     goalMatches.sort((a, b) => new Date(a.date) - new Date(b.date));
-                    
                     let targetMatch = type === 'oldest_scorer' ? goalMatches[goalMatches.length - 1] : goalMatches[0];
                     let age = getAgeAtDate(p.birth_date, targetMatch.date);
                     if (age) ageList.push({ p: p, age: age, match: targetMatch });
                 });
                 
                 ageList.sort((a, b) => type === 'oldest_scorer' ? b.age.sortVal - a.age.sortVal : a.age.sortVal - b.age.sortVal);
-                ageList.slice(0, 50).forEach((item, i) => {
+                totalResults = ageList.length;
+                
+                ageList.slice(pageIndex * PAGE_SIZE, (pageIndex + 1) * PAGE_SIZE).forEach((item, idx) => {
+                    let i = (pageIndex * PAGE_SIZE) + idx;
                     let isApprox = item.age.days === null;
                     html += `<tr class="hover:bg-blue-50 cursor-pointer" onclick="openPlayerProfile('${item.p.name.replace(/'/g, "\\'")}')">
                         <td class="p-3 text-center font-bold text-slate-400">${i+1}</td>
@@ -2489,7 +2752,30 @@ def build_dashboard():
             }
 
             html += '</tbody></table>';
+
+            // ==========================================
+            // LÄGG TILL KNAPPAR FÖR SIDNUMRERINGEN HÄR!
+            // ==========================================
+            if (totalResults > PAGE_SIZE) {
+                let totalPages = Math.ceil(totalResults / PAGE_SIZE);
+                html += `
+                    <div class="mt-4 flex justify-between items-center bg-slate-50 p-3 rounded-lg border border-slate-200 shadow-sm">
+                        <button onclick="changePlayerTopPage(-1)" class="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-100 transition disabled:opacity-40 disabled:cursor-not-allowed" ${pageIndex === 0 ? 'disabled' : ''}>
+                            ← Föregående
+                        </button>
+                        <span class="text-sm font-medium text-slate-500">Sida <span class="font-bold text-slate-800">${pageIndex + 1}</span> av ${totalPages}</span>
+                        <button onclick="changePlayerTopPage(1)" class="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-300 rounded hover:bg-slate-100 transition disabled:opacity-40 disabled:cursor-not-allowed" ${pageIndex >= totalPages - 1 ? 'disabled' : ''}>
+                            Nästa →
+                        </button>
+                    </div>
+                `;
+            }
+
             container.innerHTML = html;
+        }
+        function changePlayerTopPage(delta) {
+            window.playerTopPage = (window.playerTopPage || 0) + delta;
+            renderTopList();
         }
         function renderBestPlayersTab() {
             const tabTitle = "VM:s Bästa Spelare (Guldbollen)";
