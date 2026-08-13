@@ -1,27 +1,27 @@
 {
   "metadata": {
     "title": "Fotbolls-VM Historik 1930-",
-    "last_updated": "2026-08-12"
+    "last_updated": "2026-08-13"
   },
   "admin_warnings": [
-    "Snarlika namn (Dublettrisk): Weiss, Vladimir, Weiss, Vladimír är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): André, Andre är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Kim Bo-kyung, Kim Bok-yung är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Otamendi, Nicolás, Otamendi, Nicolas är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Gomez, Gabriel, Gómez, Gabriel är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Pérez, Luis, Pérez, Luís är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Rodríguez, Alberto, Rodriguez, Alberto är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Paulo Sergio, Paulo Sérgio är väldigt lika i 'Namn'-fliken.",
     "Snarlika namn (Dublettrisk): Rodríguez, Ignacio, Rodriguez, Ignacio är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): El-Khalej, Tahar, El Khalej, Tahar är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Pak Nam-chol 2, Pak Nam-chol är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Marín, Luis, Marin, Luis, Marin, Luís är väldigt lika i 'Namn'-fliken.",
     "Snarlika namn (Dublettrisk): Suárez, Luis, Suarez, Luis är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Ooijer, Andre, Ooijer, André är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Kozak, Jan 1, Kozak, Jan är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Sánchez, Carlos, Sanchez, Carlos är väldigt lika i 'Namn'-fliken.",
-    "Snarlika namn (Dublettrisk): Sosa, Rubén, Sosa, Rúben är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Rodriguez, Alberto, Rodríguez, Alberto är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Weiss, Vladimír, Weiss, Vladimir är väldigt lika i 'Namn'-fliken.",
     "Snarlika namn (Dublettrisk): Pérez, Hugo, Perez, Hugo är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): André, Andre är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Sosa, Rúben, Sosa, Rubén är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Gomez, Gabriel, Gómez, Gabriel är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Paulo Sérgio, Paulo Sergio är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Pérez, Luis, Pérez, Luís är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Otamendi, Nicolás, Otamendi, Nicolas är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Ooijer, André, Ooijer, Andre är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Kim Bok-yung, Kim Bo-kyung är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Pak Nam-chol 2, Pak Nam-chol är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Kozak, Jan 1, Kozak, Jan är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Marin, Luís, Marin, Luis, Marín, Luis är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): Sanchez, Carlos, Sánchez, Carlos är väldigt lika i 'Namn'-fliken.",
+    "Snarlika namn (Dublettrisk): El Khalej, Tahar, El-Khalej, Tahar är väldigt lika i 'Namn'-fliken.",
     "Tidsgap-varning: Namnet 'Joel' sträcker sig över 40 år (från 1930 till 1970). Kontrollera om det är två olika personer.",
     "Tidsgap-varning: Namnet 'Germano' sträcker sig över 64 år (från 1934 till 1998). Kontrollera om det är två olika personer.",
     "Tidsgap-varning: Namnet 'Augusto' sträcker sig över 68 år (från 1950 till 2018). Kontrollera om det är två olika personer.",
@@ -925,7 +925,6 @@
     "Saknas i 'Namn': Målskytt 'Varela, Helio' (Match 1003)",
     "Saknas i 'Namn': Målskytt 'Surman, Finn' (Match 1004)",
     "Saknas i 'Namn': Målskytt 'Ziko, Mustafa' (Match 1004)",
-    "Saknas i 'Namn': Målskytt 'Dembélé' (Match 1006)",
     "Saknas i 'Namn': Målskytt 'Holmgren Pedersen, Marcus' (Match 1007)",
     "Saknas i 'Namn': Målskytt 'Haaland, Erling' (Match 1007)",
     "Saknas i 'Namn': Målskytt 'Sarr, Ismaila' (Match 1007)",
@@ -1075,8 +1074,8 @@
     "Saknas i 'Namn': Utvisad spelare 'Melo' (Match 765)",
     "Saknas i 'Namn': Utvisad spelare 'Hennessey, Wayne' (Match 917)",
     "Saknas i 'Namn': Utvisad spelare 'Cheddira, Walid' (Match 959)",
-    "Saknas i 'Namn': Utvisad spelare 'Sithole, S' (Match 965)",
-    "Saknas i 'Namn': Utvisad spelare 'Zwane, T' (Match 965)",
+    "Saknas i 'Namn': Utvisad spelare 'Sithole, Sphephelo' (Match 965)",
+    "Saknas i 'Namn': Utvisad spelare 'Zwane, Themba' (Match 965)",
     "Saknas i 'Namn': Utvisad spelare 'Montes, César' (Match 965)",
     "Saknas i 'Namn': Utvisad spelare 'Muharemovic,Tarik' (Match 990)",
     "Saknas i 'Namn': Utvisad spelare 'Elamin, Homam' (Match 991)",
@@ -2964,25 +2963,37 @@
         "total_avg_all_days": 9093.761538461538,
         "total_avg_start_days": 9093.761538461538,
         "teams": {
-          "Peru": {
-            "avg_all_days": 8896.473684210527,
-            "avg_start_days": 8896.473684210527
-          },
-          "Rumänien": {
-            "avg_all_days": 8337.954545454546,
-            "avg_start_days": 8337.954545454546
+          "Argentina": {
+            "avg_all_days": 9080.781818181818,
+            "avg_start_days": 9080.781818181818
           },
           "Belgien": {
             "avg_all_days": 9087.09090909091,
             "avg_start_days": 9087.09090909091
           },
-          "Argentina": {
-            "avg_all_days": 9080.781818181818,
-            "avg_start_days": 9080.781818181818
-          },
           "Chile": {
             "avg_all_days": 9460.838709677419,
             "avg_start_days": 9460.838709677419
+          },
+          "Paraguay": {
+            "avg_all_days": 9074.190476190477,
+            "avg_start_days": 9074.190476190477
+          },
+          "Mexico": {
+            "avg_all_days": 8956.848484848484,
+            "avg_start_days": 8956.848484848484
+          },
+          "USA": {
+            "avg_all_days": 9932.030303030304,
+            "avg_start_days": 9932.030303030304
+          },
+          "Jugoslavien": {
+            "avg_all_days": 7945.606060606061,
+            "avg_start_days": 7945.606060606061
+          },
+          "Frankrike": {
+            "avg_all_days": 8712.272727272728,
+            "avg_start_days": 8712.272727272728
           },
           "Brasilien": {
             "avg_all_days": 9020.59090909091,
@@ -2992,29 +3003,17 @@
             "avg_all_days": 9193.136363636364,
             "avg_start_days": 9193.136363636364
           },
-          "Paraguay": {
-            "avg_all_days": 9074.190476190477,
-            "avg_start_days": 9074.190476190477
+          "Peru": {
+            "avg_all_days": 8896.473684210527,
+            "avg_start_days": 8896.473684210527
           },
           "Uruguay": {
             "avg_all_days": 9935.25,
             "avg_start_days": 9935.25
           },
-          "USA": {
-            "avg_all_days": 9932.030303030304,
-            "avg_start_days": 9932.030303030304
-          },
-          "Frankrike": {
-            "avg_all_days": 8712.272727272728,
-            "avg_start_days": 8712.272727272728
-          },
-          "Mexico": {
-            "avg_all_days": 8956.848484848484,
-            "avg_start_days": 8956.848484848484
-          },
-          "Jugoslavien": {
-            "avg_all_days": 7945.606060606061,
-            "avg_start_days": 7945.606060606061
+          "Rumänien": {
+            "avg_all_days": 8337.954545454546,
+            "avg_start_days": 8337.954545454546
           }
         }
       },
@@ -3078,29 +3077,53 @@
             "avg_all_days": 9496.727272727272,
             "avg_start_days": 9496.727272727272
           },
-          "Sverige": {
-            "avg_all_days": 10138.181818181818,
-            "avg_start_days": 10138.181818181818
+          "Spanien": {
+            "avg_all_days": 9245.454545454546,
+            "avg_start_days": 9245.454545454546
           },
-          "Ungern": {
-            "avg_all_days": 9311.136363636364,
-            "avg_start_days": 9311.136363636364
+          "Argentina": {
+            "avg_all_days": 8736.545454545454,
+            "avg_start_days": 8736.545454545454
+          },
+          "Belgien": {
+            "avg_all_days": 9036.636363636364,
+            "avg_start_days": 9036.636363636364
+          },
+          "Frankrike": {
+            "avg_all_days": 9027.636363636364,
+            "avg_start_days": 9027.636363636364
           },
           "Italien": {
             "avg_all_days": 10487.072727272727,
             "avg_start_days": 10487.072727272727
           },
-          "Rumänien": {
-            "avg_all_days": 8854.818181818182,
-            "avg_start_days": 8854.818181818182
+          "Sverige": {
+            "avg_all_days": 10138.181818181818,
+            "avg_start_days": 10138.181818181818
+          },
+          "Österrike": {
+            "avg_all_days": 9556.25,
+            "avg_start_days": 9556.25
+          },
+          "Ungern": {
+            "avg_all_days": 9311.136363636364,
+            "avg_start_days": 9311.136363636364
+          },
+          "Tjeckoslovakien": {
+            "avg_all_days": 9850.90909090909,
+            "avg_start_days": 9850.90909090909
+          },
+          "Egypten": {
+            "avg_all_days": 8893.09090909091,
+            "avg_start_days": 8893.09090909091
+          },
+          "USA": {
+            "avg_all_days": 10453.363636363636,
+            "avg_start_days": 10453.363636363636
           },
           "Tyskland": {
             "avg_all_days": 8690.272727272728,
             "avg_start_days": 8690.272727272728
-          },
-          "Belgien": {
-            "avg_all_days": 9036.636363636364,
-            "avg_start_days": 9036.636363636364
           },
           "Schweiz": {
             "avg_all_days": 9079.5,
@@ -3110,33 +3133,9 @@
             "avg_all_days": 8649.90909090909,
             "avg_start_days": 8649.90909090909
           },
-          "Tjeckoslovakien": {
-            "avg_all_days": 9850.90909090909,
-            "avg_start_days": 9850.90909090909
-          },
-          "Österrike": {
-            "avg_all_days": 9556.25,
-            "avg_start_days": 9556.25
-          },
-          "Egypten": {
-            "avg_all_days": 8893.09090909091,
-            "avg_start_days": 8893.09090909091
-          },
-          "Spanien": {
-            "avg_all_days": 9245.454545454546,
-            "avg_start_days": 9245.454545454546
-          },
-          "USA": {
-            "avg_all_days": 10453.363636363636,
-            "avg_start_days": 10453.363636363636
-          },
-          "Frankrike": {
-            "avg_all_days": 9027.636363636364,
-            "avg_start_days": 9027.636363636364
-          },
-          "Argentina": {
-            "avg_all_days": 8736.545454545454,
-            "avg_start_days": 8736.545454545454
+          "Rumänien": {
+            "avg_all_days": 8854.818181818182,
+            "avg_start_days": 8854.818181818182
           }
         }
       },
@@ -3199,6 +3198,26 @@
             "avg_all_days": 9708.363636363636,
             "avg_start_days": 9708.363636363636
           },
+          "Holländska Ostindien": {
+            "avg_all_days": 8972.363636363636,
+            "avg_start_days": 8972.363636363636
+          },
+          "Norge": {
+            "avg_all_days": 9642.09090909091,
+            "avg_start_days": 9642.09090909091
+          },
+          "Belgien": {
+            "avg_all_days": 9648.363636363636,
+            "avg_start_days": 9648.363636363636
+          },
+          "Italien": {
+            "avg_all_days": 9644.272727272728,
+            "avg_start_days": 9644.272727272728
+          },
+          "Frankrike": {
+            "avg_all_days": 9935.045454545454,
+            "avg_start_days": 9935.045454545454
+          },
           "Sverige": {
             "avg_all_days": 9891.848484848484,
             "avg_start_days": 9891.848484848484
@@ -3207,29 +3226,21 @@
             "avg_all_days": 9999.045454545454,
             "avg_start_days": 9999.045454545454
           },
-          "Norge": {
-            "avg_all_days": 9642.09090909091,
-            "avg_start_days": 9642.09090909091
+          "Polen": {
+            "avg_all_days": 9260.363636363636,
+            "avg_start_days": 9260.363636363636
+          },
+          "Tjeckoslovakien": {
+            "avg_all_days": 9900.424242424242,
+            "avg_start_days": 9900.424242424242
           },
           "Cuba": {
             "avg_all_days": 9466.09090909091,
             "avg_start_days": 9466.09090909091
           },
-          "Italien": {
-            "avg_all_days": 9644.272727272728,
-            "avg_start_days": 9644.272727272728
-          },
-          "Rumänien": {
-            "avg_all_days": 9779.363636363636,
-            "avg_start_days": 9779.363636363636
-          },
-          "Belgien": {
-            "avg_all_days": 9648.363636363636,
-            "avg_start_days": 9648.363636363636
-          },
-          "Polen": {
-            "avg_all_days": 9260.363636363636,
-            "avg_start_days": 9260.363636363636
+          "Tyskland": {
+            "avg_all_days": 9423.045454545454,
+            "avg_start_days": 9423.045454545454
           },
           "Schweiz": {
             "avg_all_days": 9702.969696969696,
@@ -3239,21 +3250,9 @@
             "avg_all_days": 9392.89090909091,
             "avg_start_days": 9392.89090909091
           },
-          "Tjeckoslovakien": {
-            "avg_all_days": 9900.424242424242,
-            "avg_start_days": 9900.424242424242
-          },
-          "Holländska Ostindien": {
-            "avg_all_days": 8972.363636363636,
-            "avg_start_days": 8972.363636363636
-          },
-          "Frankrike": {
-            "avg_all_days": 9935.045454545454,
-            "avg_start_days": 9935.045454545454
-          },
-          "Tyskland": {
-            "avg_all_days": 9423.045454545454,
-            "avg_start_days": 9423.045454545454
+          "Rumänien": {
+            "avg_all_days": 9779.363636363636,
+            "avg_start_days": 9779.363636363636
           }
         }
       },
@@ -3313,57 +3312,57 @@
         "total_avg_all_days": 9892.276859504133,
         "total_avg_start_days": 9892.276859504133,
         "teams": {
-          "Sverige": {
-            "avg_all_days": 9891.454545454546,
-            "avg_start_days": 9891.454545454546
-          },
-          "Jugoslavien": {
-            "avg_all_days": 9991.484848484848,
-            "avg_start_days": 9991.484848484848
-          },
-          "England": {
-            "avg_all_days": 10278.121212121212,
-            "avg_start_days": 10278.121212121212
+          "Spanien": {
+            "avg_all_days": 10036.727272727272,
+            "avg_start_days": 10036.727272727272
           },
           "Italien": {
             "avg_all_days": 10015.90909090909,
             "avg_start_days": 10015.90909090909
           },
+          "Sverige": {
+            "avg_all_days": 9891.454545454546,
+            "avg_start_days": 9891.454545454546
+          },
+          "England": {
+            "avg_all_days": 10278.121212121212,
+            "avg_start_days": 10278.121212121212
+          },
           "Chile": {
             "avg_all_days": 9195.424242424242,
             "avg_start_days": 9195.424242424242
-          },
-          "Brasilien": {
-            "avg_all_days": 10164.287878787878,
-            "avg_start_days": 10164.287878787878
-          },
-          "Schweiz": {
-            "avg_all_days": 10327.454545454546,
-            "avg_start_days": 10327.454545454546
           },
           "Paraguay": {
             "avg_all_days": 9887.045454545454,
             "avg_start_days": 9887.045454545454
           },
-          "Uruguay": {
-            "avg_all_days": 9694.613636363636,
-            "avg_start_days": 9694.613636363636
-          },
-          "Spanien": {
-            "avg_all_days": 10036.727272727272,
-            "avg_start_days": 10036.727272727272
+          "Mexico": {
+            "avg_all_days": 9359.424242424242,
+            "avg_start_days": 9359.424242424242
           },
           "USA": {
             "avg_all_days": 9695.969696969696,
             "avg_start_days": 9695.969696969696
           },
+          "Jugoslavien": {
+            "avg_all_days": 9991.484848484848,
+            "avg_start_days": 9991.484848484848
+          },
+          "Schweiz": {
+            "avg_all_days": 10327.454545454546,
+            "avg_start_days": 10327.454545454546
+          },
+          "Brasilien": {
+            "avg_all_days": 10164.287878787878,
+            "avg_start_days": 10164.287878787878
+          },
           "Bolivia": {
             "avg_all_days": 9468.818181818182,
             "avg_start_days": 9468.818181818182
           },
-          "Mexico": {
-            "avg_all_days": 9359.424242424242,
-            "avg_start_days": 9359.424242424242
+          "Uruguay": {
+            "avg_all_days": 9694.613636363636,
+            "avg_start_days": 9694.613636363636
           }
         }
       },
@@ -3427,69 +3426,69 @@
         "total_avg_all_days": 10021.322807017545,
         "total_avg_start_days": 10021.322807017545,
         "teams": {
-          "Ungern": {
-            "avg_all_days": 10140.290909090909,
-            "avg_start_days": 10140.290909090909
-          },
-          "Jugoslavien": {
-            "avg_all_days": 9957.666666666666,
-            "avg_start_days": 9957.666666666666
-          },
-          "England": {
-            "avg_all_days": 10941.787878787878,
-            "avg_start_days": 10941.787878787878
-          },
-          "Italien": {
-            "avg_all_days": 9912.636363636364,
-            "avg_start_days": 9912.636363636364
-          },
-          "Belgien": {
-            "avg_all_days": 10019.136363636364,
-            "avg_start_days": 10019.136363636364
+          "Schweiz": {
+            "avg_all_days": 10257.5,
+            "avg_start_days": 10257.5
           },
           "Skottland": {
             "avg_all_days": 10022.318181818182,
             "avg_start_days": 10022.318181818182
           },
-          "Brasilien": {
-            "avg_all_days": 9627.870967741936,
-            "avg_start_days": 9627.870967741936
+          "Belgien": {
+            "avg_all_days": 10019.136363636364,
+            "avg_start_days": 10019.136363636364
           },
-          "Schweiz": {
-            "avg_all_days": 10257.5,
-            "avg_start_days": 10257.5
+          "Italien": {
+            "avg_all_days": 9912.636363636364,
+            "avg_start_days": 9912.636363636364
           },
-          "Uruguay": {
-            "avg_all_days": 9981.09090909091,
-            "avg_start_days": 9981.09090909091
-          },
-          "Österrike": {
-            "avg_all_days": 10021.436363636363,
-            "avg_start_days": 10021.436363636363
-          },
-          "Tjeckoslovakien": {
-            "avg_all_days": 9394.363636363636,
-            "avg_start_days": 9394.363636363636
-          },
-          "Västtyskland": {
-            "avg_all_days": 10431.772727272728,
-            "avg_start_days": 10431.772727272728
+          "Korea": {
+            "avg_all_days": 10798.545454545454,
+            "avg_start_days": 10798.545454545454
           },
           "Turkiet": {
             "avg_all_days": 9105.575757575758,
             "avg_start_days": 9105.575757575758
           },
-          "Frankrike": {
-            "avg_all_days": 9249.227272727272,
-            "avg_start_days": 9249.227272727272
+          "England": {
+            "avg_all_days": 10941.787878787878,
+            "avg_start_days": 10941.787878787878
+          },
+          "Österrike": {
+            "avg_all_days": 10021.436363636363,
+            "avg_start_days": 10021.436363636363
+          },
+          "Ungern": {
+            "avg_all_days": 10140.290909090909,
+            "avg_start_days": 10140.290909090909
+          },
+          "Västtyskland": {
+            "avg_all_days": 10431.772727272728,
+            "avg_start_days": 10431.772727272728
           },
           "Mexico": {
             "avg_all_days": 9549.363636363636,
             "avg_start_days": 9549.363636363636
           },
-          "Korea": {
-            "avg_all_days": 10798.545454545454,
-            "avg_start_days": 10798.545454545454
+          "Tjeckoslovakien": {
+            "avg_all_days": 9394.363636363636,
+            "avg_start_days": 9394.363636363636
+          },
+          "Jugoslavien": {
+            "avg_all_days": 9957.666666666666,
+            "avg_start_days": 9957.666666666666
+          },
+          "Frankrike": {
+            "avg_all_days": 9249.227272727272,
+            "avg_start_days": 9249.227272727272
+          },
+          "Brasilien": {
+            "avg_all_days": 9627.870967741936,
+            "avg_start_days": 9627.870967741936
+          },
+          "Uruguay": {
+            "avg_all_days": 9981.09090909091,
+            "avg_start_days": 9981.09090909091
           }
         }
       },
@@ -3557,69 +3556,69 @@
         "total_avg_all_days": 10006.518954248366,
         "total_avg_start_days": 10006.518954248366,
         "teams": {
-          "Sverige": {
-            "avg_all_days": 10918.727272727272,
-            "avg_start_days": 10918.727272727272
-          },
-          "Ungern": {
-            "avg_all_days": 10130.772727272728,
-            "avg_start_days": 10130.772727272728
-          },
-          "Jugoslavien": {
-            "avg_all_days": 9824.84090909091,
-            "avg_start_days": 9824.84090909091
-          },
-          "England": {
-            "avg_all_days": 9640.795454545454,
-            "avg_start_days": 9640.795454545454
-          },
-          "Wales": {
-            "avg_all_days": 9685.636363636364,
-            "avg_start_days": 9685.636363636364
+          "Skottland": {
+            "avg_all_days": 10287.333333333334,
+            "avg_start_days": 10287.333333333334
           },
           "Sovjet": {
             "avg_all_days": 10390.218181818182,
             "avg_start_days": 10390.218181818182
           },
+          "Argentina": {
+            "avg_all_days": 10485.424242424242,
+            "avg_start_days": 10485.424242424242
+          },
+          "Wales": {
+            "avg_all_days": 9685.636363636364,
+            "avg_start_days": 9685.636363636364
+          },
+          "Sverige": {
+            "avg_all_days": 10918.727272727272,
+            "avg_start_days": 10918.727272727272
+          },
+          "England": {
+            "avg_all_days": 9640.795454545454,
+            "avg_start_days": 9640.795454545454
+          },
           "Nordirland": {
             "avg_all_days": 9928.763636363636,
             "avg_start_days": 9928.763636363636
-          },
-          "Skottland": {
-            "avg_all_days": 10287.333333333334,
-            "avg_start_days": 10287.333333333334
-          },
-          "Paraguay": {
-            "avg_all_days": 8865.666666666666,
-            "avg_start_days": 8865.666666666666
-          },
-          "Tjeckoslovakien": {
-            "avg_all_days": 9300.75,
-            "avg_start_days": 9300.75
-          },
-          "Brasilien": {
-            "avg_all_days": 9879.754098360656,
-            "avg_start_days": 9879.754098360656
           },
           "Västtyskland": {
             "avg_all_days": 10238.757575757576,
             "avg_start_days": 10238.757575757576
           },
+          "Paraguay": {
+            "avg_all_days": 8865.666666666666,
+            "avg_start_days": 8865.666666666666
+          },
+          "Ungern": {
+            "avg_all_days": 10130.772727272728,
+            "avg_start_days": 10130.772727272728
+          },
+          "Mexico": {
+            "avg_all_days": 9798.121212121212,
+            "avg_start_days": 9798.121212121212
+          },
+          "Tjeckoslovakien": {
+            "avg_all_days": 9300.75,
+            "avg_start_days": 9300.75
+          },
           "Österrike": {
             "avg_all_days": 9934.121212121212,
             "avg_start_days": 9934.121212121212
+          },
+          "Jugoslavien": {
+            "avg_all_days": 9824.84090909091,
+            "avg_start_days": 9824.84090909091
           },
           "Frankrike": {
             "avg_all_days": 10075.257575757576,
             "avg_start_days": 10075.257575757576
           },
-          "Argentina": {
-            "avg_all_days": 10485.424242424242,
-            "avg_start_days": 10485.424242424242
-          },
-          "Mexico": {
-            "avg_all_days": 9798.121212121212,
-            "avg_start_days": 9798.121212121212
+          "Brasilien": {
+            "avg_all_days": 9879.754098360656,
+            "avg_start_days": 9879.754098360656
           }
         }
       },
@@ -3696,69 +3695,69 @@
         "total_avg_all_days": 9764.76278409091,
         "total_avg_start_days": 9764.76278409091,
         "teams": {
-          "Bulgarien": {
-            "avg_all_days": 9357.878787878788,
-            "avg_start_days": 9357.878787878788
-          },
-          "Ungern": {
-            "avg_all_days": 9864.977272727272,
-            "avg_start_days": 9864.977272727272
-          },
-          "Jugoslavien": {
-            "avg_all_days": 9079.848484848484,
-            "avg_start_days": 9079.848484848484
-          },
-          "England": {
-            "avg_all_days": 9524.34090909091,
-            "avg_start_days": 9524.34090909091
-          },
-          "Colombia": {
-            "avg_all_days": 9618.515151515152,
-            "avg_start_days": 9618.515151515152
-          },
-          "Italien": {
-            "avg_all_days": 9371.121212121212,
-            "avg_start_days": 9371.121212121212
-          },
           "Sovjet": {
             "avg_all_days": 9947.84090909091,
             "avg_start_days": 9947.84090909091
-          },
-          "Chile": {
-            "avg_all_days": 9445.181818181818,
-            "avg_start_days": 9445.181818181818
-          },
-          "Brasilien": {
-            "avg_all_days": 11117.772727272728,
-            "avg_start_days": 11117.772727272728
-          },
-          "Schweiz": {
-            "avg_all_days": 10170.545454545454,
-            "avg_start_days": 10170.545454545454
-          },
-          "Uruguay": {
-            "avg_all_days": 8954.666666666666,
-            "avg_start_days": 8954.666666666666
-          },
-          "Tjeckoslovakien": {
-            "avg_all_days": 9844.136363636364,
-            "avg_start_days": 9844.136363636364
-          },
-          "Västtyskland": {
-            "avg_all_days": 9538.65909090909,
-            "avg_start_days": 9538.65909090909
-          },
-          "Spanien": {
-            "avg_all_days": 10434.363636363636,
-            "avg_start_days": 10434.363636363636
           },
           "Argentina": {
             "avg_all_days": 9412.454545454546,
             "avg_start_days": 9412.454545454546
           },
+          "Spanien": {
+            "avg_all_days": 10434.363636363636,
+            "avg_start_days": 10434.363636363636
+          },
+          "Italien": {
+            "avg_all_days": 9371.121212121212,
+            "avg_start_days": 9371.121212121212
+          },
+          "England": {
+            "avg_all_days": 9524.34090909091,
+            "avg_start_days": 9524.34090909091
+          },
+          "Chile": {
+            "avg_all_days": 9445.181818181818,
+            "avg_start_days": 9445.181818181818
+          },
+          "Colombia": {
+            "avg_all_days": 9618.515151515152,
+            "avg_start_days": 9618.515151515152
+          },
+          "Västtyskland": {
+            "avg_all_days": 9538.65909090909,
+            "avg_start_days": 9538.65909090909
+          },
+          "Ungern": {
+            "avg_all_days": 9864.977272727272,
+            "avg_start_days": 9864.977272727272
+          },
           "Mexico": {
             "avg_all_days": 10187.09090909091,
             "avg_start_days": 10187.09090909091
+          },
+          "Tjeckoslovakien": {
+            "avg_all_days": 9844.136363636364,
+            "avg_start_days": 9844.136363636364
+          },
+          "Jugoslavien": {
+            "avg_all_days": 9079.848484848484,
+            "avg_start_days": 9079.848484848484
+          },
+          "Schweiz": {
+            "avg_all_days": 10170.545454545454,
+            "avg_start_days": 10170.545454545454
+          },
+          "Brasilien": {
+            "avg_all_days": 11117.772727272728,
+            "avg_start_days": 11117.772727272728
+          },
+          "Bulgarien": {
+            "avg_all_days": 9357.878787878788,
+            "avg_start_days": 9357.878787878788
+          },
+          "Uruguay": {
+            "avg_all_days": 8954.666666666666,
+            "avg_start_days": 8954.666666666666
           }
         }
       },
@@ -3852,69 +3851,69 @@
         "total_avg_all_days": 9632.139204545454,
         "total_avg_start_days": 9632.139204545454,
         "teams": {
-          "Nordkorea": {
-            "avg_all_days": 8317.727272727272,
-            "avg_start_days": 8317.727272727272
-          },
-          "Bulgarien": {
-            "avg_all_days": 9424.30303030303,
-            "avg_start_days": 9424.30303030303
-          },
-          "Ungern": {
-            "avg_all_days": 9898.75,
-            "avg_start_days": 9898.75
-          },
-          "England": {
-            "avg_all_days": 9833.575757575758,
-            "avg_start_days": 9833.575757575758
-          },
-          "Italien": {
-            "avg_all_days": 9397.0,
-            "avg_start_days": 9397.0
-          },
           "Sovjet": {
             "avg_all_days": 9568.60606060606,
             "avg_start_days": 9568.60606060606
-          },
-          "Chile": {
-            "avg_all_days": 9203.818181818182,
-            "avg_start_days": 9203.818181818182
-          },
-          "Brasilien": {
-            "avg_all_days": 9923.272727272728,
-            "avg_start_days": 9923.272727272728
-          },
-          "Schweiz": {
-            "avg_all_days": 10112.39393939394,
-            "avg_start_days": 10112.39393939394
-          },
-          "Uruguay": {
-            "avg_all_days": 9791.34090909091,
-            "avg_start_days": 9791.34090909091
-          },
-          "Västtyskland": {
-            "avg_all_days": 9372.621212121212,
-            "avg_start_days": 9372.621212121212
-          },
-          "Spanien": {
-            "avg_all_days": 9816.727272727272,
-            "avg_start_days": 9816.727272727272
-          },
-          "Portugal": {
-            "avg_all_days": 10481.984848484848,
-            "avg_start_days": 10481.984848484848
-          },
-          "Frankrike": {
-            "avg_all_days": 9435.333333333334,
-            "avg_start_days": 9435.333333333334
           },
           "Argentina": {
             "avg_all_days": 9738.931818181818,
             "avg_start_days": 9738.931818181818
           },
+          "Spanien": {
+            "avg_all_days": 9816.727272727272,
+            "avg_start_days": 9816.727272727272
+          },
+          "Frankrike": {
+            "avg_all_days": 9435.333333333334,
+            "avg_start_days": 9435.333333333334
+          },
+          "Italien": {
+            "avg_all_days": 9397.0,
+            "avg_start_days": 9397.0
+          },
+          "England": {
+            "avg_all_days": 9833.575757575758,
+            "avg_start_days": 9833.575757575758
+          },
+          "Nordkorea": {
+            "avg_all_days": 8317.727272727272,
+            "avg_start_days": 8317.727272727272
+          },
+          "Chile": {
+            "avg_all_days": 9203.818181818182,
+            "avg_start_days": 9203.818181818182
+          },
+          "Västtyskland": {
+            "avg_all_days": 9372.621212121212,
+            "avg_start_days": 9372.621212121212
+          },
+          "Ungern": {
+            "avg_all_days": 9898.75,
+            "avg_start_days": 9898.75
+          },
           "Mexico": {
             "avg_all_days": 9330.212121212122,
             "avg_start_days": 9330.212121212122
+          },
+          "Portugal": {
+            "avg_all_days": 10481.984848484848,
+            "avg_start_days": 10481.984848484848
+          },
+          "Schweiz": {
+            "avg_all_days": 10112.39393939394,
+            "avg_start_days": 10112.39393939394
+          },
+          "Brasilien": {
+            "avg_all_days": 9923.272727272728,
+            "avg_start_days": 9923.272727272728
+          },
+          "Bulgarien": {
+            "avg_all_days": 9424.30303030303,
+            "avg_start_days": 9424.30303030303
+          },
+          "Uruguay": {
+            "avg_all_days": 9791.34090909091,
+            "avg_start_days": 9791.34090909091
           }
         }
       },
@@ -3988,34 +3987,6 @@
         "total_avg_all_days": 9650.093399750935,
         "total_avg_start_days": 9689.511461318052,
         "teams": {
-          "Bulgarien": {
-            "avg_all_days": 9706.358974358975,
-            "avg_start_days": 9658.848484848484
-          },
-          "El Salvador": {
-            "avg_all_days": 9357.538461538461,
-            "avg_start_days": 9402.060606060606
-          },
-          "Peru": {
-            "avg_all_days": 9462.423076923076,
-            "avg_start_days": 9523.59090909091
-          },
-          "England": {
-            "avg_all_days": 10198.384615384615,
-            "avg_start_days": 10387.886363636364
-          },
-          "Sverige": {
-            "avg_all_days": 9846.105263157895,
-            "avg_start_days": 9889.242424242424
-          },
-          "Italien": {
-            "avg_all_days": 10152.08695652174,
-            "avg_start_days": 10233.85
-          },
-          "Rumänien": {
-            "avg_all_days": 9047.684210526315,
-            "avg_start_days": 9104.272727272728
-          },
           "Sovjet": {
             "avg_all_days": 9655.788461538461,
             "avg_start_days": 9718.113636363636
@@ -4024,21 +3995,33 @@
             "avg_all_days": 9616.828571428572,
             "avg_start_days": 9610.30303030303
           },
-          "Brasilien": {
-            "avg_all_days": 9600.616438356165,
-            "avg_start_days": 9704.151515151516
+          "El Salvador": {
+            "avg_all_days": 9357.538461538461,
+            "avg_start_days": 9402.060606060606
           },
-          "Uruguay": {
-            "avg_all_days": 9601.121621621622,
-            "avg_start_days": 9628.666666666666
+          "Italien": {
+            "avg_all_days": 10152.08695652174,
+            "avg_start_days": 10233.85
           },
-          "Tjeckoslovakien": {
-            "avg_all_days": 9479.236842105263,
-            "avg_start_days": 9408.181818181818
+          "Sverige": {
+            "avg_all_days": 9846.105263157895,
+            "avg_start_days": 9889.242424242424
+          },
+          "England": {
+            "avg_all_days": 10198.384615384615,
+            "avg_start_days": 10387.886363636364
           },
           "Västtyskland": {
             "avg_all_days": 9968.153846153846,
             "avg_start_days": 9955.30303030303
+          },
+          "Mexico": {
+            "avg_all_days": 9834.7,
+            "avg_start_days": 9879.795454545454
+          },
+          "Tjeckoslovakien": {
+            "avg_all_days": 9479.236842105263,
+            "avg_start_days": 9408.181818181818
           },
           "Israel": {
             "avg_all_days": 8775.351351351352,
@@ -4048,9 +4031,25 @@
             "avg_all_days": 9244.74358974359,
             "avg_start_days": 9291.969696969696
           },
-          "Mexico": {
-            "avg_all_days": 9834.7,
-            "avg_start_days": 9879.795454545454
+          "Peru": {
+            "avg_all_days": 9462.423076923076,
+            "avg_start_days": 9523.59090909091
+          },
+          "Brasilien": {
+            "avg_all_days": 9600.616438356165,
+            "avg_start_days": 9704.151515151516
+          },
+          "Bulgarien": {
+            "avg_all_days": 9706.358974358975,
+            "avg_start_days": 9658.848484848484
+          },
+          "Uruguay": {
+            "avg_all_days": 9601.121621621622,
+            "avg_start_days": 9628.666666666666
+          },
+          "Rumänien": {
+            "avg_all_days": 9047.684210526315,
+            "avg_start_days": 9104.272727272728
           }
         }
       },
@@ -4128,65 +4127,65 @@
             "avg_all_days": 9819.435294117648,
             "avg_start_days": 9776.363636363636
           },
-          "Sverige": {
-            "avg_all_days": 9981.918918918918,
-            "avg_start_days": 10060.136363636364
-          },
-          "Bulgarien": {
-            "avg_all_days": 9299.921052631578,
-            "avg_start_days": 9314.90909090909
-          },
-          "Haiti": {
-            "avg_all_days": 9535.763157894737,
-            "avg_start_days": 9471.848484848484
-          },
-          "Italien": {
-            "avg_all_days": 10744.026315789473,
-            "avg_start_days": 10828.212121212122
+          "Skottland": {
+            "avg_all_days": 9548.114285714286,
+            "avg_start_days": 9534.90909090909
           },
           "Östtyskland": {
             "avg_all_days": 9429.171052631578,
             "avg_start_days": 9255.818181818182
           },
-          "Polen": {
-            "avg_all_days": 9309.730337078652,
-            "avg_start_days": 9334.636363636364
-          },
-          "Australien": {
-            "avg_all_days": 10263.972972972973,
-            "avg_start_days": 10432.969696969696
-          },
-          "Chile": {
-            "avg_all_days": 10439.0,
-            "avg_start_days": 10465.545454545454
-          },
-          "Brasilien": {
-            "avg_all_days": 9480.512195121952,
-            "avg_start_days": 9523.467532467532
-          },
-          "Skottland": {
-            "avg_all_days": 9548.114285714286,
-            "avg_start_days": 9534.90909090909
-          },
-          "Uruguay": {
-            "avg_all_days": 10155.736842105263,
-            "avg_start_days": 10104.60606060606
-          },
-          "Västtyskland": {
-            "avg_all_days": 9972.32558139535,
-            "avg_start_days": 9942.662337662337
-          },
-          "Zaire": {
-            "avg_all_days": 9564.384615384615,
-            "avg_start_days": 9558.242424242424
+          "Bulgarien": {
+            "avg_all_days": 9299.921052631578,
+            "avg_start_days": 9314.90909090909
           },
           "Argentina": {
             "avg_all_days": 9392.302631578947,
             "avg_start_days": 9430.439393939394
           },
+          "Italien": {
+            "avg_all_days": 10744.026315789473,
+            "avg_start_days": 10828.212121212122
+          },
+          "Sverige": {
+            "avg_all_days": 9981.918918918918,
+            "avg_start_days": 10060.136363636364
+          },
+          "Chile": {
+            "avg_all_days": 10439.0,
+            "avg_start_days": 10465.545454545454
+          },
+          "Australien": {
+            "avg_all_days": 10263.972972972973,
+            "avg_start_days": 10432.969696969696
+          },
+          "Haiti": {
+            "avg_all_days": 9535.763157894737,
+            "avg_start_days": 9471.848484848484
+          },
+          "Västtyskland": {
+            "avg_all_days": 9972.32558139535,
+            "avg_start_days": 9942.662337662337
+          },
+          "Polen": {
+            "avg_all_days": 9309.730337078652,
+            "avg_start_days": 9334.636363636364
+          },
           "Jugoslavien": {
             "avg_all_days": 9380.301369863013,
             "avg_start_days": 9411.984848484848
+          },
+          "Brasilien": {
+            "avg_all_days": 9480.512195121952,
+            "avg_start_days": 9523.467532467532
+          },
+          "Zaire": {
+            "avg_all_days": 9564.384615384615,
+            "avg_start_days": 9558.242424242424
+          },
+          "Uruguay": {
+            "avg_all_days": 10155.736842105263,
+            "avg_start_days": 10104.60606060606
           }
         }
       },
@@ -4270,65 +4269,65 @@
             "avg_all_days": 10342.67415730337,
             "avg_start_days": 10334.83116883117
           },
-          "Sverige": {
-            "avg_all_days": 10167.552631578947,
-            "avg_start_days": 10203.727272727272
-          },
-          "Ungern": {
-            "avg_all_days": 9945.351351351352,
-            "avg_start_days": 9931.60606060606
-          },
-          "Peru": {
-            "avg_all_days": 10088.957746478873,
-            "avg_start_days": 10075.95081967213
-          },
-          "Tunisien": {
-            "avg_all_days": 9357.888888888889,
-            "avg_start_days": 9332.09090909091
-          },
-          "Italien": {
-            "avg_all_days": 9812.03409090909,
-            "avg_start_days": 9760.896103896104
-          },
-          "Polen": {
-            "avg_all_days": 10007.131578947368,
-            "avg_start_days": 10012.09090909091
-          },
-          "Skottland": {
-            "avg_all_days": 10256.351351351352,
-            "avg_start_days": 10171.848484848484
-          },
-          "Brasilien": {
-            "avg_all_days": 9395.091954022988,
-            "avg_start_days": 9329.0
-          },
-          "Österrike": {
-            "avg_all_days": 9907.712328767124,
-            "avg_start_days": 9941.0
-          },
-          "Västtyskland": {
-            "avg_all_days": 10133.842857142858,
-            "avg_start_days": 10158.833333333334
+          "Iran": {
+            "avg_all_days": 9627.236842105263,
+            "avg_start_days": 9701.848484848484
           },
           "Spanien": {
             "avg_all_days": 9874.631578947368,
             "avg_start_days": 9810.09090909091
           },
-          "Frankrike": {
-            "avg_all_days": 9424.157894736842,
-            "avg_start_days": 9469.60606060606
-          },
-          "Iran": {
-            "avg_all_days": 9627.236842105263,
-            "avg_start_days": 9701.848484848484
-          },
           "Argentina": {
             "avg_all_days": 9336.877777777778,
             "avg_start_days": 9326.376623376624
           },
+          "Tunisien": {
+            "avg_all_days": 9357.888888888889,
+            "avg_start_days": 9332.09090909091
+          },
+          "Skottland": {
+            "avg_all_days": 10256.351351351352,
+            "avg_start_days": 10171.848484848484
+          },
+          "Italien": {
+            "avg_all_days": 9812.03409090909,
+            "avg_start_days": 9760.896103896104
+          },
+          "Sverige": {
+            "avg_all_days": 10167.552631578947,
+            "avg_start_days": 10203.727272727272
+          },
+          "Västtyskland": {
+            "avg_all_days": 10133.842857142858,
+            "avg_start_days": 10158.833333333334
+          },
+          "Ungern": {
+            "avg_all_days": 9945.351351351352,
+            "avg_start_days": 9931.60606060606
+          },
+          "Polen": {
+            "avg_all_days": 10007.131578947368,
+            "avg_start_days": 10012.09090909091
+          },
           "Mexico": {
             "avg_all_days": 8857.64705882353,
             "avg_start_days": 8872.933333333332
+          },
+          "Österrike": {
+            "avg_all_days": 9907.712328767124,
+            "avg_start_days": 9941.0
+          },
+          "Frankrike": {
+            "avg_all_days": 9424.157894736842,
+            "avg_start_days": 9469.60606060606
+          },
+          "Brasilien": {
+            "avg_all_days": 9395.091954022988,
+            "avg_start_days": 9329.0
+          },
+          "Peru": {
+            "avg_all_days": 10088.957746478873,
+            "avg_start_days": 10075.95081967213
           }
         }
       },
@@ -4408,101 +4407,101 @@
         "total_avg_all_days": 10007.986913010007,
         "total_avg_start_days": 10015.868953386103,
         "teams": {
-          "Kamerun": {
-            "avg_all_days": 10382.416666666666,
-            "avg_start_days": 10264.969696969696
-          },
           "Skottland": {
             "avg_all_days": 10072.564102564103,
             "avg_start_days": 10115.545454545454
-          },
-          "Chile": {
-            "avg_all_days": 10385.794871794871,
-            "avg_start_days": 10449.424242424242
-          },
-          "Nya Zeeland": {
-            "avg_all_days": 9494.20588235294,
-            "avg_start_days": 9518.866666666667
-          },
-          "El Salvador": {
-            "avg_all_days": 9612.342105263158,
-            "avg_start_days": 9596.030303030304
-          },
-          "Honduras": {
-            "avg_all_days": 9787.111111111111,
-            "avg_start_days": 9896.515151515152
-          },
-          "England": {
-            "avg_all_days": 10138.7,
-            "avg_start_days": 10079.745454545455
-          },
-          "Italien": {
-            "avg_all_days": 10430.046511627907,
-            "avg_start_days": 10419.532467532468
-          },
-          "Belgien": {
-            "avg_all_days": 9925.737704918032,
-            "avg_start_days": 9830.327272727272
-          },
-          "Polen": {
-            "avg_all_days": 9704.022988505747,
-            "avg_start_days": 9693.402597402597
-          },
-          "Sovjet": {
-            "avg_all_days": 9391.90625,
-            "avg_start_days": 9476.727272727272
-          },
-          "Nordirland": {
-            "avg_all_days": 10080.04918032787,
-            "avg_start_days": 10070.10909090909
-          },
-          "Brasilien": {
-            "avg_all_days": 10040.693548387097,
-            "avg_start_days": 10028.036363636364
-          },
-          "Västtyskland": {
-            "avg_all_days": 10065.224719101123,
-            "avg_start_days": 10062.584415584415
-          },
-          "Kuwait": {
-            "avg_all_days": 9684.676470588236,
-            "avg_start_days": 9789.966666666667
-          },
-          "Frankrike": {
-            "avg_all_days": 9989.791208791208,
-            "avg_start_days": 9988.12987012987
-          },
-          "Argentina": {
-            "avg_all_days": 10093.4375,
-            "avg_start_days": 10241.90909090909
-          },
-          "Ungern": {
-            "avg_all_days": 10308.615384615385,
-            "avg_start_days": 10385.121212121212
           },
           "Spanien": {
             "avg_all_days": 9748.846153846154,
             "avg_start_days": 9730.181818181818
           },
-          "Jugoslavien": {
-            "avg_all_days": 9943.297297297297,
-            "avg_start_days": 9918.787878787878
-          },
-          "Peru": {
-            "avg_all_days": 10743.75,
-            "avg_start_days": 10807.875
+          "Italien": {
+            "avg_all_days": 10430.046511627907,
+            "avg_start_days": 10419.532467532468
           },
           "Algeriet": {
             "avg_all_days": 9906.051282051281,
             "avg_start_days": 9885.787878787878
           },
-          "Tjeckoslovakien": {
-            "avg_all_days": 10290.589743589744,
-            "avg_start_days": 10144.969696969696
+          "Polen": {
+            "avg_all_days": 9704.022988505747,
+            "avg_start_days": 9693.402597402597
+          },
+          "Jugoslavien": {
+            "avg_all_days": 9943.297297297297,
+            "avg_start_days": 9918.787878787878
+          },
+          "Sovjet": {
+            "avg_all_days": 9391.90625,
+            "avg_start_days": 9476.727272727272
+          },
+          "Belgien": {
+            "avg_all_days": 9925.737704918032,
+            "avg_start_days": 9830.327272727272
+          },
+          "Nya Zeeland": {
+            "avg_all_days": 9494.20588235294,
+            "avg_start_days": 9518.866666666667
+          },
+          "England": {
+            "avg_all_days": 10138.7,
+            "avg_start_days": 10079.745454545455
+          },
+          "Peru": {
+            "avg_all_days": 10743.75,
+            "avg_start_days": 10807.875
+          },
+          "Argentina": {
+            "avg_all_days": 10093.4375,
+            "avg_start_days": 10241.90909090909
+          },
+          "El Salvador": {
+            "avg_all_days": 9612.342105263158,
+            "avg_start_days": 9596.030303030304
+          },
+          "Chile": {
+            "avg_all_days": 10385.794871794871,
+            "avg_start_days": 10449.424242424242
+          },
+          "Nordirland": {
+            "avg_all_days": 10080.04918032787,
+            "avg_start_days": 10070.10909090909
+          },
+          "Honduras": {
+            "avg_all_days": 9787.111111111111,
+            "avg_start_days": 9896.515151515152
+          },
+          "Kuwait": {
+            "avg_all_days": 9684.676470588236,
+            "avg_start_days": 9789.966666666667
+          },
+          "Brasilien": {
+            "avg_all_days": 10040.693548387097,
+            "avg_start_days": 10028.036363636364
+          },
+          "Ungern": {
+            "avg_all_days": 10308.615384615385,
+            "avg_start_days": 10385.121212121212
+          },
+          "Västtyskland": {
+            "avg_all_days": 10065.224719101123,
+            "avg_start_days": 10062.584415584415
           },
           "Österrike": {
             "avg_all_days": 10105.047619047618,
             "avg_start_days": 10154.581818181818
+          },
+          "Tjeckoslovakien": {
+            "avg_all_days": 10290.589743589744,
+            "avg_start_days": 10144.969696969696
+          },
+          "Kamerun": {
+            "avg_all_days": 10382.416666666666,
+            "avg_start_days": 10264.969696969696
+          },
+          "Frankrike": {
+            "avg_all_days": 9989.791208791208,
+            "avg_start_days": 9988.12987012987
           }
         }
       },
@@ -4596,101 +4595,101 @@
         "total_avg_all_days": 9941.844879518072,
         "total_avg_start_days": 9995.444639718806,
         "teams": {
-          "Skottland": {
-            "avg_all_days": 10103.051282051281,
-            "avg_start_days": 10100.030303030304
-          },
-          "Uruguay": {
-            "avg_all_days": 9709.788461538461,
-            "avg_start_days": 9697.181818181818
-          },
-          "Marocko": {
-            "avg_all_days": 10337.28,
-            "avg_start_days": 10377.954545454546
-          },
-          "Sydkorea": {
-            "avg_all_days": 9781.472222222223,
-            "avg_start_days": 9953.4
-          },
-          "England": {
-            "avg_all_days": 9823.784615384615,
-            "avg_start_days": 9988.745454545455
-          },
-          "Italien": {
-            "avg_all_days": 9993.686274509804,
-            "avg_start_days": 10155.681818181818
-          },
-          "Sovjet": {
-            "avg_all_days": 9496.057692307691,
-            "avg_start_days": 9458.15909090909
-          },
-          "Polen": {
-            "avg_all_days": 10043.01923076923,
-            "avg_start_days": 10077.181818181818
-          },
-          "Belgien": {
-            "avg_all_days": 9846.83908045977,
-            "avg_start_days": 9901.96
-          },
-          "Nordirland": {
-            "avg_all_days": 10062.384615384615,
-            "avg_start_days": 10084.636363636364
-          },
-          "Brasilien": {
-            "avg_all_days": 9772.261538461538,
-            "avg_start_days": 9752.145454545454
-          },
-          "Västtyskland": {
-            "avg_all_days": 10528.651685393259,
-            "avg_start_days": 10514.675324675325
-          },
-          "Frankrike": {
-            "avg_all_days": 10244.677777777777,
-            "avg_start_days": 10364.74025974026
-          },
-          "Argentina": {
-            "avg_all_days": 9765.045977011494,
-            "avg_start_days": 9751.597402597403
-          },
-          "Bulgarien": {
-            "avg_all_days": 9842.76923076923,
-            "avg_start_days": 9754.09090909091
-          },
-          "Ungern": {
-            "avg_all_days": 9904.435897435897,
-            "avg_start_days": 9863.787878787878
-          },
           "Danmark": {
             "avg_all_days": 10292.76923076923,
             "avg_start_days": 10427.09090909091
           },
-          "Paraguay": {
-            "avg_all_days": 9858.897959183674,
-            "avg_start_days": 9898.136363636364
+          "Skottland": {
+            "avg_all_days": 10103.051282051281,
+            "avg_start_days": 10100.030303030304
           },
           "Spanien": {
             "avg_all_days": 9562.761904761905,
             "avg_start_days": 9614.462962962964
           },
-          "Mexico": {
-            "avg_all_days": 9512.078125,
-            "avg_start_days": 9692.963636363636
-          },
           "Irak": {
             "avg_all_days": 9517.631578947368,
             "avg_start_days": 9643.727272727272
+          },
+          "Italien": {
+            "avg_all_days": 9993.686274509804,
+            "avg_start_days": 10155.681818181818
           },
           "Algeriet": {
             "avg_all_days": 10506.205128205129,
             "avg_start_days": 10523.454545454546
           },
+          "Polen": {
+            "avg_all_days": 10043.01923076923,
+            "avg_start_days": 10077.181818181818
+          },
+          "Sovjet": {
+            "avg_all_days": 9496.057692307691,
+            "avg_start_days": 9458.15909090909
+          },
+          "Belgien": {
+            "avg_all_days": 9846.83908045977,
+            "avg_start_days": 9901.96
+          },
+          "England": {
+            "avg_all_days": 9823.784615384615,
+            "avg_start_days": 9988.745454545455
+          },
+          "Marocko": {
+            "avg_all_days": 10337.28,
+            "avg_start_days": 10377.954545454546
+          },
           "Portugal": {
             "avg_all_days": 10326.307692307691,
             "avg_start_days": 10587.878787878788
           },
+          "Bulgarien": {
+            "avg_all_days": 9842.76923076923,
+            "avg_start_days": 9754.09090909091
+          },
+          "Uruguay": {
+            "avg_all_days": 9709.788461538461,
+            "avg_start_days": 9697.181818181818
+          },
+          "Argentina": {
+            "avg_all_days": 9765.045977011494,
+            "avg_start_days": 9751.597402597403
+          },
+          "Nordirland": {
+            "avg_all_days": 10062.384615384615,
+            "avg_start_days": 10084.636363636364
+          },
+          "Paraguay": {
+            "avg_all_days": 9858.897959183674,
+            "avg_start_days": 9898.136363636364
+          },
+          "Brasilien": {
+            "avg_all_days": 9772.261538461538,
+            "avg_start_days": 9752.145454545454
+          },
           "Kanada": {
             "avg_all_days": 9638.0,
             "avg_start_days": 9612.69696969697
+          },
+          "Ungern": {
+            "avg_all_days": 9904.435897435897,
+            "avg_start_days": 9863.787878787878
+          },
+          "Sydkorea": {
+            "avg_all_days": 9781.472222222223,
+            "avg_start_days": 9953.4
+          },
+          "Västtyskland": {
+            "avg_all_days": 10528.651685393259,
+            "avg_start_days": 10514.675324675325
+          },
+          "Mexico": {
+            "avg_all_days": 9512.078125,
+            "avg_start_days": 9692.963636363636
+          },
+          "Frankrike": {
+            "avg_all_days": 10244.677777777777,
+            "avg_start_days": 10364.74025974026
           }
         }
       },
@@ -4784,37 +4783,41 @@
         "total_avg_all_days": 9955.089272318079,
         "total_avg_start_days": 9988.149475524475,
         "teams": {
-          "Sverige": {
-            "avg_all_days": 9456.0,
-            "avg_start_days": 9318.424242424242
-          },
-          "Rumänien": {
-            "avg_all_days": 9513.961538461539,
-            "avg_start_days": 9650.295454545454
-          },
-          "Kamerun": {
-            "avg_all_days": 10279.83076923077,
-            "avg_start_days": 9994.690909090908
+          "Costa Rica": {
+            "avg_all_days": 10158.745098039215,
+            "avg_start_days": 10278.5
           },
           "Skottland": {
             "avg_all_days": 10315.74358974359,
             "avg_start_days": 10381.424242424242
           },
-          "Uruguay": {
-            "avg_all_days": 9930.557692307691,
-            "avg_start_days": 10053.113636363636
+          "Spanien": {
+            "avg_all_days": 9913.288461538461,
+            "avg_start_days": 9931.15909090909
           },
-          "Sydkorea": {
-            "avg_all_days": 9946.384615384615,
-            "avg_start_days": 9977.121212121212
+          "Italien": {
+            "avg_all_days": 9831.144444444444,
+            "avg_start_days": 9752.857142857143
           },
-          "Holland": {
-            "avg_all_days": 10127.843137254902,
-            "avg_start_days": 10249.613636363636
+          "USA": {
+            "avg_all_days": 8841.51282051282,
+            "avg_start_days": 8827.060606060606
           },
-          "Costa Rica": {
-            "avg_all_days": 10158.745098039215,
-            "avg_start_days": 10278.5
+          "Jugoslavien": {
+            "avg_all_days": 10216.6875,
+            "avg_start_days": 10421.927272727273
+          },
+          "Sovjet": {
+            "avg_all_days": 10215.897435897436,
+            "avg_start_days": 10213.333333333334
+          },
+          "Förenade Arabemiraten": {
+            "avg_all_days": 8999.333333333334,
+            "avg_start_days": 8935.272727272728
+          },
+          "Belgien": {
+            "avg_all_days": 10302.36,
+            "avg_start_days": 10368.272727272728
           },
           "England": {
             "avg_all_days": 10343.655555555555,
@@ -4824,61 +4827,57 @@
             "avg_all_days": 9843.795918367347,
             "avg_start_days": 9773.022727272728
           },
-          "Italien": {
-            "avg_all_days": 9831.144444444444,
-            "avg_start_days": 9752.857142857143
-          },
-          "Sovjet": {
-            "avg_all_days": 10215.897435897436,
-            "avg_start_days": 10213.333333333334
-          },
-          "Belgien": {
-            "avg_all_days": 10302.36,
-            "avg_start_days": 10368.272727272728
-          },
-          "Brasilien": {
-            "avg_all_days": 9725.52,
-            "avg_start_days": 9782.363636363636
-          },
-          "Västtyskland": {
-            "avg_all_days": 9988.704545454546,
-            "avg_start_days": 10078.12987012987
-          },
-          "Egypten": {
-            "avg_all_days": 9741.128205128205,
-            "avg_start_days": 9735.757575757576
-          },
-          "USA": {
-            "avg_all_days": 8841.51282051282,
-            "avg_start_days": 8827.060606060606
-          },
-          "Förenade Arabemiraten": {
-            "avg_all_days": 8999.333333333334,
-            "avg_start_days": 8935.272727272728
+          "Uruguay": {
+            "avg_all_days": 9930.557692307691,
+            "avg_start_days": 10053.113636363636
           },
           "Argentina": {
             "avg_all_days": 10213.033333333333,
             "avg_start_days": 10241.12987012987
           },
-          "Spanien": {
-            "avg_all_days": 9913.288461538461,
-            "avg_start_days": 9931.15909090909
+          "Sverige": {
+            "avg_all_days": 9456.0,
+            "avg_start_days": 9318.424242424242
           },
-          "Jugoslavien": {
-            "avg_all_days": 10216.6875,
-            "avg_start_days": 10421.927272727273
+          "Egypten": {
+            "avg_all_days": 9741.128205128205,
+            "avg_start_days": 9735.757575757576
           },
-          "Tjeckoslovakien": {
-            "avg_all_days": 10004.603174603175,
-            "avg_start_days": 10024.454545454546
+          "Brasilien": {
+            "avg_all_days": 9725.52,
+            "avg_start_days": 9782.363636363636
+          },
+          "Holland": {
+            "avg_all_days": 10127.843137254902,
+            "avg_start_days": 10249.613636363636
+          },
+          "Irland": {
+            "avg_all_days": 10420.421875,
+            "avg_start_days": 10531.290909090909
           },
           "Österrike": {
             "avg_all_days": 9202.128205128205,
             "avg_start_days": 9244.151515151516
           },
-          "Irland": {
-            "avg_all_days": 10420.421875,
-            "avg_start_days": 10531.290909090909
+          "Västtyskland": {
+            "avg_all_days": 9988.704545454546,
+            "avg_start_days": 10078.12987012987
+          },
+          "Sydkorea": {
+            "avg_all_days": 9946.384615384615,
+            "avg_start_days": 9977.121212121212
+          },
+          "Tjeckoslovakien": {
+            "avg_all_days": 10004.603174603175,
+            "avg_start_days": 10024.454545454546
+          },
+          "Kamerun": {
+            "avg_all_days": 10279.83076923077,
+            "avg_start_days": 9994.690909090908
+          },
+          "Rumänien": {
+            "avg_all_days": 9513.961538461539,
+            "avg_start_days": 9650.295454545454
           }
         }
       },
@@ -4972,53 +4971,65 @@
         "total_avg_all_days": 10039.05965697241,
         "total_avg_start_days": 10073.76923076923,
         "teams": {
-          "Sverige": {
-            "avg_all_days": 9610.932584269663,
-            "avg_start_days": 9711.42857142857
+          "Ryssland": {
+            "avg_all_days": 9504.076923076924,
+            "avg_start_days": 9495.90909090909
           },
-          "Rumänien": {
-            "avg_all_days": 9464.90625,
-            "avg_start_days": 9602.927272727273
-          },
-          "Kamerun": {
-            "avg_all_days": 10012.128205128205,
-            "avg_start_days": 9819.484848484848
-          },
-          "Marocko": {
-            "avg_all_days": 9677.95,
-            "avg_start_days": 9722.30303030303
-          },
-          "Bolivia": {
-            "avg_all_days": 10411.815789473685,
-            "avg_start_days": 10637.060606060606
-          },
-          "Sydkorea": {
-            "avg_all_days": 9930.125,
-            "avg_start_days": 10019.151515151516
-          },
-          "Holland": {
-            "avg_all_days": 9879.76923076923,
-            "avg_start_days": 10051.89090909091
-          },
-          "Nigeria": {
-            "avg_all_days": 9394.192307692309,
-            "avg_start_days": 9520.5
-          },
-          "Norge": {
-            "avg_all_days": 9794.846153846154,
-            "avg_start_days": 9780.969696969696
-          },
-          "Colombia": {
-            "avg_all_days": 10247.297297297297,
-            "avg_start_days": 10356.151515151516
+          "Spanien": {
+            "avg_all_days": 9831.107692307693,
+            "avg_start_days": 9687.49090909091
           },
           "Italien": {
             "avg_all_days": 10068.652173913044,
             "avg_start_days": 10002.792207792209
           },
+          "USA": {
+            "avg_all_days": 10089.076923076924,
+            "avg_start_days": 10112.272727272728
+          },
+          "Bolivia": {
+            "avg_all_days": 10411.815789473685,
+            "avg_start_days": 10637.060606060606
+          },
+          "Norge": {
+            "avg_all_days": 9794.846153846154,
+            "avg_start_days": 9780.969696969696
+          },
           "Belgien": {
             "avg_all_days": 11142.788461538461,
             "avg_start_days": 11212.818181818182
+          },
+          "Nigeria": {
+            "avg_all_days": 9394.192307692309,
+            "avg_start_days": 9520.5
+          },
+          "Colombia": {
+            "avg_all_days": 10247.297297297297,
+            "avg_start_days": 10356.151515151516
+          },
+          "Marocko": {
+            "avg_all_days": 9677.95,
+            "avg_start_days": 9722.30303030303
+          },
+          "Bulgarien": {
+            "avg_all_days": 10457.608695652174,
+            "avg_start_days": 10523.896103896104
+          },
+          "Saudiarabien": {
+            "avg_all_days": 8980.153846153846,
+            "avg_start_days": 9121.022727272728
+          },
+          "Argentina": {
+            "avg_all_days": 9855.450980392157,
+            "avg_start_days": 9945.25
+          },
+          "Sverige": {
+            "avg_all_days": 9610.932584269663,
+            "avg_start_days": 9711.42857142857
+          },
+          "Grekland": {
+            "avg_all_days": 10594.48717948718,
+            "avg_start_days": 10434.424242424242
           },
           "Schweiz": {
             "avg_all_days": 10218.384615384615,
@@ -5028,45 +5039,33 @@
             "avg_all_days": 10260.71264367816,
             "avg_start_days": 10314.948051948051
           },
-          "Saudiarabien": {
-            "avg_all_days": 8980.153846153846,
-            "avg_start_days": 9121.022727272728
+          "Holland": {
+            "avg_all_days": 9879.76923076923,
+            "avg_start_days": 10051.89090909091
           },
-          "USA": {
-            "avg_all_days": 10089.076923076924,
-            "avg_start_days": 10112.272727272728
+          "Irland": {
+            "avg_all_days": 10547.01923076923,
+            "avg_start_days": 10524.204545454546
           },
-          "Tyskland": {
-            "avg_all_days": 10734.234375,
-            "avg_start_days": 10717.545454545454
-          },
-          "Argentina": {
-            "avg_all_days": 9855.450980392157,
-            "avg_start_days": 9945.25
-          },
-          "Bulgarien": {
-            "avg_all_days": 10457.608695652174,
-            "avg_start_days": 10523.896103896104
-          },
-          "Spanien": {
-            "avg_all_days": 9831.107692307693,
-            "avg_start_days": 9687.49090909091
+          "Sydkorea": {
+            "avg_all_days": 9930.125,
+            "avg_start_days": 10019.151515151516
           },
           "Mexico": {
             "avg_all_days": 10093.183673469388,
             "avg_start_days": 10019.477272727272
           },
-          "Ryssland": {
-            "avg_all_days": 9504.076923076924,
-            "avg_start_days": 9495.90909090909
+          "Kamerun": {
+            "avg_all_days": 10012.128205128205,
+            "avg_start_days": 9819.484848484848
           },
-          "Grekland": {
-            "avg_all_days": 10594.48717948718,
-            "avg_start_days": 10434.424242424242
+          "Tyskland": {
+            "avg_all_days": 10734.234375,
+            "avg_start_days": 10717.545454545454
           },
-          "Irland": {
-            "avg_all_days": 10547.01923076923,
-            "avg_start_days": 10524.204545454546
+          "Rumänien": {
+            "avg_all_days": 9464.90625,
+            "avg_start_days": 9602.927272727273
           }
         }
       },
@@ -5164,49 +5163,45 @@
         "total_avg_all_days": 10135.220241518115,
         "total_avg_start_days": 10225.246263345196,
         "teams": {
-          "Japan": {
-            "avg_all_days": 9494.390243902439,
-            "avg_start_days": 9507.0
-          },
-          "Rumänien": {
-            "avg_all_days": 10238.642857142857,
-            "avg_start_days": 10365.431818181818
+          "Danmark": {
+            "avg_all_days": 10686.342857142858,
+            "avg_start_days": 10749.818181818182
           },
           "Skottland": {
             "avg_all_days": 11218.205128205129,
             "avg_start_days": 11315.787878787878
           },
-          "Chile": {
-            "avg_all_days": 10039.836363636363,
-            "avg_start_days": 9906.65909090909
+          "Spanien": {
+            "avg_all_days": 9915.583333333334,
+            "avg_start_days": 10269.066666666668
           },
-          "Kamerun": {
-            "avg_all_days": 8822.47619047619,
-            "avg_start_days": 8981.90909090909
+          "Italien": {
+            "avg_all_days": 10295.471428571429,
+            "avg_start_days": 10240.872727272726
           },
-          "Marocko": {
-            "avg_all_days": 9718.095238095239,
-            "avg_start_days": 9789.09090909091
+          "USA": {
+            "avg_all_days": 10503.095238095239,
+            "avg_start_days": 10335.30303030303
+          },
+          "Jugoslavien": {
+            "avg_all_days": 10228.818181818182,
+            "avg_start_days": 10394.09090909091
           },
           "Sydafrika": {
             "avg_all_days": 9622.292682926829,
             "avg_start_days": 9599.575757575758
           },
-          "Nigeria": {
-            "avg_all_days": 9710.37037037037,
-            "avg_start_days": 9603.454545454546
-          },
-          "Sydkorea": {
-            "avg_all_days": 9530.547619047618,
-            "avg_start_days": 9755.333333333334
-          },
           "Norge": {
             "avg_all_days": 10436.527272727273,
             "avg_start_days": 10403.068181818182
           },
-          "Holland": {
-            "avg_all_days": 9873.989130434782,
-            "avg_start_days": 9865.623376623376
+          "Nigeria": {
+            "avg_all_days": 9710.37037037037,
+            "avg_start_days": 9603.454545454546
+          },
+          "Belgien": {
+            "avg_all_days": 10930.731707317073,
+            "avg_start_days": 11388.818181818182
           },
           "England": {
             "avg_all_days": 10022.283018867925,
@@ -5216,81 +5211,85 @@
             "avg_all_days": 10524.121951219513,
             "avg_start_days": 10839.242424242424
           },
-          "Italien": {
-            "avg_all_days": 10295.471428571429,
-            "avg_start_days": 10240.872727272726
-          },
-          "Belgien": {
-            "avg_all_days": 10930.731707317073,
-            "avg_start_days": 11388.818181818182
-          },
-          "Brasilien": {
-            "avg_all_days": 10384.989010989011,
-            "avg_start_days": 10683.233766233767
-          },
-          "Jamaica": {
-            "avg_all_days": 9637.42857142857,
-            "avg_start_days": 9495.30303030303
-          },
-          "Saudiarabien": {
-            "avg_all_days": 9418.512195121952,
-            "avg_start_days": 9416.818181818182
-          },
-          "USA": {
-            "avg_all_days": 10503.095238095239,
-            "avg_start_days": 10335.30303030303
-          },
-          "Frankrike": {
-            "avg_all_days": 9906.721649484536,
-            "avg_start_days": 10118.818181818182
-          },
-          "Iran": {
-            "avg_all_days": 10119.78947368421,
-            "avg_start_days": 10123.666666666666
-          },
-          "Argentina": {
-            "avg_all_days": 9648.632352941177,
-            "avg_start_days": 9628.345454545455
-          },
-          "Kroatien": {
-            "avg_all_days": 10532.166666666666,
-            "avg_start_days": 10800.584415584415
-          },
-          "Tyskland": {
-            "avg_all_days": 11124.231884057972,
-            "avg_start_days": 11207.672727272728
+          "Marocko": {
+            "avg_all_days": 9718.095238095239,
+            "avg_start_days": 9789.09090909091
           },
           "Bulgarien": {
             "avg_all_days": 10617.756097560976,
             "avg_start_days": 10653.515151515152
           },
-          "Danmark": {
-            "avg_all_days": 10686.342857142858,
-            "avg_start_days": 10749.818181818182
+          "Iran": {
+            "avg_all_days": 10119.78947368421,
+            "avg_start_days": 10123.666666666666
+          },
+          "Saudiarabien": {
+            "avg_all_days": 9418.512195121952,
+            "avg_start_days": 9416.818181818182
+          },
+          "Argentina": {
+            "avg_all_days": 9648.632352941177,
+            "avg_start_days": 9628.345454545455
+          },
+          "Japan": {
+            "avg_all_days": 9494.390243902439,
+            "avg_start_days": 9507.0
+          },
+          "Chile": {
+            "avg_all_days": 10039.836363636363,
+            "avg_start_days": 9906.65909090909
+          },
+          "Jamaica": {
+            "avg_all_days": 9637.42857142857,
+            "avg_start_days": 9495.30303030303
           },
           "Paraguay": {
             "avg_all_days": 9702.30357142857,
             "avg_start_days": 9795.40909090909
           },
-          "Spanien": {
-            "avg_all_days": 9915.583333333334,
-            "avg_start_days": 10269.066666666668
+          "Tunisien": {
+            "avg_all_days": 9642.761904761905,
+            "avg_start_days": 9754.181818181818
+          },
+          "Brasilien": {
+            "avg_all_days": 10384.989010989011,
+            "avg_start_days": 10683.233766233767
+          },
+          "Holland": {
+            "avg_all_days": 9873.989130434782,
+            "avg_start_days": 9865.623376623376
+          },
+          "Kroatien": {
+            "avg_all_days": 10532.166666666666,
+            "avg_start_days": 10800.584415584415
+          },
+          "Österrike": {
+            "avg_all_days": 10949.142857142857,
+            "avg_start_days": 11133.424242424242
+          },
+          "Sydkorea": {
+            "avg_all_days": 9530.547619047618,
+            "avg_start_days": 9755.333333333334
           },
           "Mexico": {
             "avg_all_days": 10104.418181818182,
             "avg_start_days": 10009.568181818182
           },
-          "Jugoslavien": {
-            "avg_all_days": 10228.818181818182,
-            "avg_start_days": 10394.09090909091
+          "Kamerun": {
+            "avg_all_days": 8822.47619047619,
+            "avg_start_days": 8981.90909090909
           },
-          "Tunisien": {
-            "avg_all_days": 9642.761904761905,
-            "avg_start_days": 9754.181818181818
+          "Tyskland": {
+            "avg_all_days": 11124.231884057972,
+            "avg_start_days": 11207.672727272728
           },
-          "Österrike": {
-            "avg_all_days": 10949.142857142857,
-            "avg_start_days": 11133.424242424242
+          "Frankrike": {
+            "avg_all_days": 9906.721649484536,
+            "avg_start_days": 10118.818181818182
+          },
+          "Rumänien": {
+            "avg_all_days": 10238.642857142857,
+            "avg_start_days": 10365.431818181818
           }
         }
       },
@@ -5396,133 +5395,133 @@
         "total_avg_all_days": 10038.315336013786,
         "total_avg_start_days": 10083.370343839542,
         "teams": {
-          "Sverige": {
-            "avg_all_days": 10329.833333333334,
-            "avg_start_days": 10436.34090909091
-          },
-          "Japan": {
-            "avg_all_days": 9153.55357142857,
-            "avg_start_days": 8967.59090909091
-          },
-          "Kina": {
-            "avg_all_days": 9496.690476190477,
-            "avg_start_days": 9732.787878787878
-          },
-          "Kamerun": {
-            "avg_all_days": 9327.175,
-            "avg_start_days": 9413.060606060606
-          },
-          "Uruguay": {
-            "avg_all_days": 9491.0,
-            "avg_start_days": 9535.757575757576
-          },
-          "Turkiet": {
-            "avg_all_days": 10252.432989690722,
-            "avg_start_days": 10228.441558441558
-          },
-          "Slovenien": {
-            "avg_all_days": 10734.0,
-            "avg_start_days": 10991.939393939394
-          },
-          "Nigeria": {
-            "avg_all_days": 8768.368421052632,
-            "avg_start_days": 8857.242424242424
-          },
-          "Sydafrika": {
-            "avg_all_days": 9835.560975609756,
-            "avg_start_days": 9877.333333333334
-          },
-          "Sydkorea": {
-            "avg_all_days": 9864.989583333334,
-            "avg_start_days": 10030.57142857143
+          "Danmark": {
+            "avg_all_days": 10056.363636363636,
+            "avg_start_days": 10289.704545454546
           },
           "Costa Rica": {
             "avg_all_days": 10185.666666666666,
             "avg_start_days": 10277.39393939394
           },
-          "England": {
-            "avg_all_days": 9702.536231884058,
-            "avg_start_days": 9649.545454545454
-          },
-          "Italien": {
-            "avg_all_days": 10201.685185185184,
-            "avg_start_days": 10143.15909090909
-          },
-          "Belgien": {
-            "avg_all_days": 10739.943396226416,
-            "avg_start_days": 10926.5
-          },
-          "Polen": {
-            "avg_all_days": 10304.666666666666,
-            "avg_start_days": 10293.39393939394
-          },
-          "Brasilien": {
-            "avg_all_days": 9863.294736842105,
-            "avg_start_days": 9955.727272727272
-          },
-          "Saudiarabien": {
-            "avg_all_days": 9824.47619047619,
-            "avg_start_days": 9940.454545454546
-          },
-          "USA": {
-            "avg_all_days": 10341.173913043478,
-            "avg_start_days": 10171.727272727272
-          },
-          "Frankrike": {
-            "avg_all_days": 10657.219512195123,
-            "avg_start_days": 10865.727272727272
-          },
-          "Kroatien": {
-            "avg_all_days": 10383.142857142857,
-            "avg_start_days": 10556.454545454546
-          },
-          "Argentina": {
-            "avg_all_days": 10074.380952380952,
-            "avg_start_days": 10289.787878787878
-          },
-          "Tyskland": {
-            "avg_all_days": 10336.632653061224,
-            "avg_start_days": 10217.636363636364
-          },
-          "Danmark": {
-            "avg_all_days": 10056.363636363636,
-            "avg_start_days": 10289.704545454546
-          },
-          "Paraguay": {
-            "avg_all_days": 10517.781818181818,
-            "avg_start_days": 10636.34090909091
-          },
           "Spanien": {
             "avg_all_days": 10043.692307692309,
             "avg_start_days": 10119.64
-          },
-          "Mexico": {
-            "avg_all_days": 10385.472727272727,
-            "avg_start_days": 10066.568181818182
-          },
-          "Ecuador": {
-            "avg_all_days": 10236.09756097561,
-            "avg_start_days": 10213.212121212122
-          },
-          "Tunisien": {
-            "avg_all_days": 10063.92857142857,
-            "avg_start_days": 10158.515151515152
           },
           "Ryssland": {
             "avg_all_days": 9909.47619047619,
             "avg_start_days": 10264.39393939394
           },
+          "Kina": {
+            "avg_all_days": 9496.690476190477,
+            "avg_start_days": 9732.787878787878
+          },
+          "Italien": {
+            "avg_all_days": 10201.685185185184,
+            "avg_start_days": 10143.15909090909
+          },
+          "Polen": {
+            "avg_all_days": 10304.666666666666,
+            "avg_start_days": 10293.39393939394
+          },
+          "USA": {
+            "avg_all_days": 10341.173913043478,
+            "avg_start_days": 10171.727272727272
+          },
+          "Sydafrika": {
+            "avg_all_days": 9835.560975609756,
+            "avg_start_days": 9877.333333333334
+          },
+          "Nigeria": {
+            "avg_all_days": 8768.368421052632,
+            "avg_start_days": 8857.242424242424
+          },
+          "Belgien": {
+            "avg_all_days": 10739.943396226416,
+            "avg_start_days": 10926.5
+          },
+          "England": {
+            "avg_all_days": 9702.536231884058,
+            "avg_start_days": 9649.545454545454
+          },
           "Portugal": {
             "avg_all_days": 10724.65625,
             "avg_start_days": 10850.26923076923
+          },
+          "Uruguay": {
+            "avg_all_days": 9491.0,
+            "avg_start_days": 9535.757575757576
+          },
+          "Ecuador": {
+            "avg_all_days": 10236.09756097561,
+            "avg_start_days": 10213.212121212122
+          },
+          "Saudiarabien": {
+            "avg_all_days": 9824.47619047619,
+            "avg_start_days": 9940.454545454546
+          },
+          "Argentina": {
+            "avg_all_days": 10074.380952380952,
+            "avg_start_days": 10289.787878787878
           },
           "Senegal": {
             "avg_all_days": 9294.129032258064,
             "avg_start_days": 9367.90909090909
           },
+          "Japan": {
+            "avg_all_days": 9153.55357142857,
+            "avg_start_days": 8967.59090909091
+          },
+          "Sverige": {
+            "avg_all_days": 10329.833333333334,
+            "avg_start_days": 10436.34090909091
+          },
+          "Turkiet": {
+            "avg_all_days": 10252.432989690722,
+            "avg_start_days": 10228.441558441558
+          },
+          "Paraguay": {
+            "avg_all_days": 10517.781818181818,
+            "avg_start_days": 10636.34090909091
+          },
+          "Slovenien": {
+            "avg_all_days": 10734.0,
+            "avg_start_days": 10991.939393939394
+          },
+          "Tunisien": {
+            "avg_all_days": 10063.92857142857,
+            "avg_start_days": 10158.515151515152
+          },
+          "Brasilien": {
+            "avg_all_days": 9863.294736842105,
+            "avg_start_days": 9955.727272727272
+          },
+          "Kroatien": {
+            "avg_all_days": 10383.142857142857,
+            "avg_start_days": 10556.454545454546
+          },
           "Irland": {
             "avg_all_days": 10014.545454545454,
             "avg_start_days": 9846.795454545454
+          },
+          "Sydkorea": {
+            "avg_all_days": 9864.989583333334,
+            "avg_start_days": 10030.57142857143
+          },
+          "Mexico": {
+            "avg_all_days": 10385.472727272727,
+            "avg_start_days": 10066.568181818182
+          },
+          "Kamerun": {
+            "avg_all_days": 9327.175,
+            "avg_start_days": 9413.060606060606
+          },
+          "Tyskland": {
+            "avg_all_days": 10336.632653061224,
+            "avg_start_days": 10217.636363636364
+          },
+          "Frankrike": {
+            "avg_all_days": 10657.219512195123,
+            "avg_start_days": 10865.727272727272
           }
         }
       },
@@ -5628,49 +5627,13 @@
         "total_avg_all_days": 10128.669043374926,
         "total_avg_start_days": 10208.540946656649,
         "teams": {
-          "Elfenbenskusten": {
-            "avg_all_days": 9368.341463414634,
-            "avg_start_days": 9412.060606060606
-          },
-          "Sverige": {
-            "avg_all_days": 10701.392857142857,
-            "avg_start_days": 10723.068181818182
-          },
-          "Angola": {
-            "avg_all_days": 10188.625,
-            "avg_start_days": 10561.333333333334
-          },
-          "Japan": {
-            "avg_all_days": 10157.547619047618,
-            "avg_start_days": 10307.242424242424
-          },
-          "Trinidad & Tobago": {
-            "avg_all_days": 10579.525,
-            "avg_start_days": 10553.484848484848
-          },
-          "Ghana": {
-            "avg_all_days": 9077.145454545454,
-            "avg_start_days": 8935.454545454546
-          },
-          "Australien": {
-            "avg_all_days": 10377.351851851852,
-            "avg_start_days": 10388.454545454546
-          },
-          "Holland": {
-            "avg_all_days": 10026.55357142857,
-            "avg_start_days": 10246.318181818182
-          },
-          "Sydkorea": {
-            "avg_all_days": 10130.146341463415,
-            "avg_start_days": 9992.636363636364
-          },
           "Costa Rica": {
             "avg_all_days": 10449.761904761905,
             "avg_start_days": 10760.69696969697
           },
-          "England": {
-            "avg_all_days": 9513.63768115942,
-            "avg_start_days": 9712.345454545455
+          "Spanien": {
+            "avg_all_days": 9437.04,
+            "avg_start_days": 9457.45
           },
           "Italien": {
             "avg_all_days": 10488.010204081633,
@@ -5680,69 +5643,17 @@
             "avg_all_days": 10293.642857142857,
             "avg_start_days": 10582.939393939394
           },
-          "Brasilien": {
-            "avg_all_days": 10569.95588235294,
-            "avg_start_days": 10699.690909090908
-          },
-          "Schweiz": {
-            "avg_all_days": 9700.214285714286,
-            "avg_start_days": 9881.022727272728
-          },
-          "Saudiarabien": {
-            "avg_all_days": 10096.309523809523,
-            "avg_start_days": 10039.272727272728
-          },
           "USA": {
             "avg_all_days": 10321.243902439024,
             "avg_start_days": 10519.878787878788
-          },
-          "Frankrike": {
-            "avg_all_days": 10915.46875,
-            "avg_start_days": 11009.727272727272
-          },
-          "Iran": {
-            "avg_all_days": 9972.463414634147,
-            "avg_start_days": 10136.878787878788
-          },
-          "Argentina": {
-            "avg_all_days": 9904.042857142857,
-            "avg_start_days": 10075.272727272728
           },
           "Tyskland": {
             "avg_all_days": 9862.69387755102,
             "avg_start_days": 9824.25974025974
           },
-          "Kroatien": {
-            "avg_all_days": 10084.121951219513,
-            "avg_start_days": 10301.878787878788
-          },
-          "Serbien-Montenegro": {
-            "avg_all_days": 10679.780487804877,
-            "avg_start_days": 10770.333333333334
-          },
-          "Paraguay": {
-            "avg_all_days": 10202.142857142857,
-            "avg_start_days": 10427.575757575758
-          },
-          "Tjeckien": {
-            "avg_all_days": 10388.42857142857,
-            "avg_start_days": 10357.939393939394
-          },
-          "Spanien": {
-            "avg_all_days": 9437.04,
-            "avg_start_days": 9457.45
-          },
-          "Mexico": {
-            "avg_all_days": 10147.607142857143,
-            "avg_start_days": 10099.977272727272
-          },
-          "Ecuador": {
-            "avg_all_days": 10008.70588235294,
-            "avg_start_days": 10078.55
-          },
-          "Tunisien": {
-            "avg_all_days": 10424.309523809523,
-            "avg_start_days": 10536.060606060606
+          "England": {
+            "avg_all_days": 9513.63768115942,
+            "avg_start_days": 9712.345454545455
           },
           "Portugal": {
             "avg_all_days": 10104.279069767443,
@@ -5752,9 +5663,97 @@
             "avg_all_days": 10181.528571428571,
             "avg_start_days": 10209.527272727273
           },
+          "Ecuador": {
+            "avg_all_days": 10008.70588235294,
+            "avg_start_days": 10078.55
+          },
+          "Iran": {
+            "avg_all_days": 9972.463414634147,
+            "avg_start_days": 10136.878787878788
+          },
+          "Trinidad & Tobago": {
+            "avg_all_days": 10579.525,
+            "avg_start_days": 10553.484848484848
+          },
+          "Argentina": {
+            "avg_all_days": 9904.042857142857,
+            "avg_start_days": 10075.272727272728
+          },
+          "Saudiarabien": {
+            "avg_all_days": 10096.309523809523,
+            "avg_start_days": 10039.272727272728
+          },
+          "Tjeckien": {
+            "avg_all_days": 10388.42857142857,
+            "avg_start_days": 10357.939393939394
+          },
+          "Japan": {
+            "avg_all_days": 10157.547619047618,
+            "avg_start_days": 10307.242424242424
+          },
+          "Sverige": {
+            "avg_all_days": 10701.392857142857,
+            "avg_start_days": 10723.068181818182
+          },
+          "Paraguay": {
+            "avg_all_days": 10202.142857142857,
+            "avg_start_days": 10427.575757575758
+          },
+          "Ghana": {
+            "avg_all_days": 9077.145454545454,
+            "avg_start_days": 8935.454545454546
+          },
+          "Schweiz": {
+            "avg_all_days": 9700.214285714286,
+            "avg_start_days": 9881.022727272728
+          },
+          "Tunisien": {
+            "avg_all_days": 10424.309523809523,
+            "avg_start_days": 10536.060606060606
+          },
+          "Brasilien": {
+            "avg_all_days": 10569.95588235294,
+            "avg_start_days": 10699.690909090908
+          },
+          "Holland": {
+            "avg_all_days": 10026.55357142857,
+            "avg_start_days": 10246.318181818182
+          },
+          "Australien": {
+            "avg_all_days": 10377.351851851852,
+            "avg_start_days": 10388.454545454546
+          },
+          "Elfenbenskusten": {
+            "avg_all_days": 9368.341463414634,
+            "avg_start_days": 9412.060606060606
+          },
+          "Kroatien": {
+            "avg_all_days": 10084.121951219513,
+            "avg_start_days": 10301.878787878788
+          },
+          "Sydkorea": {
+            "avg_all_days": 10130.146341463415,
+            "avg_start_days": 9992.636363636364
+          },
+          "Serbien-Montenegro": {
+            "avg_all_days": 10679.780487804877,
+            "avg_start_days": 10770.333333333334
+          },
+          "Mexico": {
+            "avg_all_days": 10147.607142857143,
+            "avg_start_days": 10099.977272727272
+          },
           "Togo": {
             "avg_all_days": 9291.609756097561,
             "avg_start_days": 9299.060606060606
+          },
+          "Angola": {
+            "avg_all_days": 10188.625,
+            "avg_start_days": 10561.333333333334
+          },
+          "Frankrike": {
+            "avg_all_days": 10915.46875,
+            "avg_start_days": 11009.727272727272
           }
         }
       },
@@ -5860,49 +5859,29 @@
         "total_avg_all_days": 10006.396622015143,
         "total_avg_start_days": 10057.365622723963,
         "teams": {
-          "Elfenbenskusten": {
-            "avg_all_days": 10119.809523809523,
-            "avg_start_days": 10178.242424242424
+          "Danmark": {
+            "avg_all_days": 10385.904761904761,
+            "avg_start_days": 10594.030303030304
           },
-          "Japan": {
-            "avg_all_days": 10218.357142857143,
-            "avg_start_days": 10233.59090909091
+          "Spanien": {
+            "avg_all_days": 9852.525773195875,
+            "avg_start_days": 10023.766233766233
           },
-          "Ghana": {
-            "avg_all_days": 9351.231884057972,
-            "avg_start_days": 9312.836363636363
+          "Italien": {
+            "avg_all_days": 10578.47619047619,
+            "avg_start_days": 10451.939393939394
           },
-          "Slovakien": {
-            "avg_all_days": 9349.690909090908,
-            "avg_start_days": 9312.386363636364
+          "Algeriet": {
+            "avg_all_days": 9661.238095238095,
+            "avg_start_days": 9577.727272727272
           },
-          "Australien": {
-            "avg_all_days": 10956.97619047619,
-            "avg_start_days": 11179.757575757576
+          "Nordkorea": {
+            "avg_all_days": 9760.578947368422,
+            "avg_start_days": 9869.242424242424
           },
-          "Kamerun": {
-            "avg_all_days": 9666.666666666666,
-            "avg_start_days": 9555.757575757576
-          },
-          "Chile": {
-            "avg_all_days": 9374.535714285714,
-            "avg_start_days": 9158.75
-          },
-          "Uruguay": {
-            "avg_all_days": 9790.621052631579,
-            "avg_start_days": 9703.42857142857
-          },
-          "Nya Zeeland": {
-            "avg_all_days": 10266.425,
-            "avg_start_days": 10651.666666666666
-          },
-          "Slovenien": {
-            "avg_all_days": 9834.780487804877,
-            "avg_start_days": 9924.454545454546
-          },
-          "Honduras": {
-            "avg_all_days": 10345.552631578947,
-            "avg_start_days": 10494.366666666667
+          "USA": {
+            "avg_all_days": 9945.6,
+            "avg_start_days": 10024.863636363636
           },
           "Sydafrika": {
             "avg_all_days": 9737.85,
@@ -5912,81 +5891,101 @@
             "avg_all_days": 9778.42857142857,
             "avg_start_days": 9899.272727272728
           },
-          "Sydkorea": {
-            "avg_all_days": 10049.333333333334,
-            "avg_start_days": 9906.136363636364
+          "Nya Zeeland": {
+            "avg_all_days": 10266.425,
+            "avg_start_days": 10651.666666666666
           },
-          "Holland": {
-            "avg_all_days": 10193.78947368421,
-            "avg_start_days": 10414.285714285714
-          },
-          "Nordkorea": {
-            "avg_all_days": 9760.578947368422,
-            "avg_start_days": 9869.242424242424
+          "Slovakien": {
+            "avg_all_days": 9349.690909090908,
+            "avg_start_days": 9312.386363636364
           },
           "England": {
             "avg_all_days": 10729.309090909092,
             "avg_start_days": 10697.886363636364
           },
-          "Italien": {
-            "avg_all_days": 10578.47619047619,
-            "avg_start_days": 10451.939393939394
+          "Portugal": {
+            "avg_all_days": 10446.0625,
+            "avg_start_days": 10387.925925925925
           },
-          "Brasilien": {
-            "avg_all_days": 11341.09090909091,
-            "avg_start_days": 11478.08888888889
-          },
-          "Schweiz": {
-            "avg_all_days": 10054.02380952381,
-            "avg_start_days": 10069.121212121212
-          },
-          "USA": {
-            "avg_all_days": 9945.6,
-            "avg_start_days": 10024.863636363636
-          },
-          "Frankrike": {
-            "avg_all_days": 10232.390243902439,
-            "avg_start_days": 10152.39393939394
-          },
-          "Tyskland": {
-            "avg_all_days": 9192.397959183674,
-            "avg_start_days": 9272.64935064935
+          "Uruguay": {
+            "avg_all_days": 9790.621052631579,
+            "avg_start_days": 9703.42857142857
           },
           "Argentina": {
             "avg_all_days": 9732.101449275362,
             "avg_start_days": 9735.290909090909
           },
-          "Danmark": {
-            "avg_all_days": 10385.904761904761,
-            "avg_start_days": 10594.030303030304
+          "Serbien": {
+            "avg_all_days": 9764.380952380952,
+            "avg_start_days": 9936.060606060606
+          },
+          "Japan": {
+            "avg_all_days": 10218.357142857143,
+            "avg_start_days": 10233.59090909091
+          },
+          "Chile": {
+            "avg_all_days": 9374.535714285714,
+            "avg_start_days": 9158.75
           },
           "Paraguay": {
             "avg_all_days": 10459.984375,
             "avg_start_days": 10618.08
           },
-          "Spanien": {
-            "avg_all_days": 9852.525773195875,
-            "avg_start_days": 10023.766233766233
-          },
-          "Serbien": {
-            "avg_all_days": 9764.380952380952,
-            "avg_start_days": 9936.060606060606
-          },
-          "Mexico": {
-            "avg_all_days": 10324.254545454545,
-            "avg_start_days": 10441.59090909091
-          },
-          "Algeriet": {
-            "avg_all_days": 9661.238095238095,
-            "avg_start_days": 9577.727272727272
+          "Honduras": {
+            "avg_all_days": 10345.552631578947,
+            "avg_start_days": 10494.366666666667
           },
           "Grekland": {
             "avg_all_days": 10124.682926829268,
             "avg_start_days": 10246.39393939394
           },
-          "Portugal": {
-            "avg_all_days": 10446.0625,
-            "avg_start_days": 10387.925925925925
+          "Ghana": {
+            "avg_all_days": 9351.231884057972,
+            "avg_start_days": 9312.836363636363
+          },
+          "Slovenien": {
+            "avg_all_days": 9834.780487804877,
+            "avg_start_days": 9924.454545454546
+          },
+          "Schweiz": {
+            "avg_all_days": 10054.02380952381,
+            "avg_start_days": 10069.121212121212
+          },
+          "Brasilien": {
+            "avg_all_days": 11341.09090909091,
+            "avg_start_days": 11478.08888888889
+          },
+          "Holland": {
+            "avg_all_days": 10193.78947368421,
+            "avg_start_days": 10414.285714285714
+          },
+          "Australien": {
+            "avg_all_days": 10956.97619047619,
+            "avg_start_days": 11179.757575757576
+          },
+          "Elfenbenskusten": {
+            "avg_all_days": 10119.809523809523,
+            "avg_start_days": 10178.242424242424
+          },
+          "Sydkorea": {
+            "avg_all_days": 10049.333333333334,
+            "avg_start_days": 9906.136363636364
+          },
+          "Mexico": {
+            "avg_all_days": 10324.254545454545,
+            "avg_start_days": 10441.59090909091
+          },
+          "Kamerun": {
+            "avg_all_days": 9666.666666666666,
+            "avg_start_days": 9555.757575757576
+          },
+          "Tyskland": {
+            "avg_all_days": 9192.397959183674,
+            "avg_start_days": 9272.64935064935
+          },
+          "Frankrike": {
+            "avg_all_days": 10232.390243902439,
+            "avg_start_days": 10152.39393939394
           }
         }
       },
@@ -6104,53 +6103,37 @@
         "total_avg_all_days": 10031.962686567163,
         "total_avg_start_days": 10094.359477124182,
         "teams": {
-          "Elfenbenskusten": {
-            "avg_all_days": 10647.047619047618,
-            "avg_start_days": 10725.0
+          "Costa Rica": {
+            "avg_all_days": 9910.814285714287,
+            "avg_start_days": 9845.036363636364
           },
-          "Japan": {
-            "avg_all_days": 10197.073170731708,
-            "avg_start_days": 10197.787878787878
+          "Ryssland": {
+            "avg_all_days": 10305.119047619048,
+            "avg_start_days": 10363.30303030303
           },
-          "Ghana": {
-            "avg_all_days": 9353.095238095239,
-            "avg_start_days": 9420.030303030304
+          "Spanien": {
+            "avg_all_days": 10353.317073170732,
+            "avg_start_days": 10432.65625
           },
-          "Australien": {
-            "avg_all_days": 9620.738095238095,
-            "avg_start_days": 9769.545454545454
+          "Italien": {
+            "avg_all_days": 10487.02380952381,
+            "avg_start_days": 10463.121212121212
           },
-          "Kamerun": {
-            "avg_all_days": 9974.439024390244,
-            "avg_start_days": 9865.242424242424
+          "Algeriet": {
+            "avg_all_days": 9628.017857142857,
+            "avg_start_days": 9556.386363636364
           },
-          "Chile": {
-            "avg_all_days": 9971.964285714286,
-            "avg_start_days": 9852.65909090909
-          },
-          "Uruguay": {
-            "avg_all_days": 10204.535714285714,
-            "avg_start_days": 10363.295454545454
-          },
-          "Honduras": {
-            "avg_all_days": 10675.463414634147,
-            "avg_start_days": 10783.666666666666
-          },
-          "Holland": {
-            "avg_all_days": 9741.42857142857,
-            "avg_start_days": 9918.64935064935
+          "USA": {
+            "avg_all_days": 10465.50909090909,
+            "avg_start_days": 10836.90909090909
           },
           "Nigeria": {
             "avg_all_days": 9518.830188679245,
             "avg_start_days": 9407.09090909091
           },
-          "Sydkorea": {
-            "avg_all_days": 9327.357142857143,
-            "avg_start_days": 9277.787878787878
-          },
-          "Costa Rica": {
-            "avg_all_days": 9910.814285714287,
-            "avg_start_days": 9845.036363636364
+          "Belgien": {
+            "avg_all_days": 9357.0,
+            "avg_start_days": 9521.690909090908
           },
           "England": {
             "avg_all_days": 9714.880952380952,
@@ -6160,77 +6143,93 @@
             "avg_all_days": 9990.757142857143,
             "avg_start_days": 10086.981818181817
           },
-          "Italien": {
-            "avg_all_days": 10487.02380952381,
-            "avg_start_days": 10463.121212121212
+          "Portugal": {
+            "avg_all_days": 10732.692307692309,
+            "avg_start_days": 10880.21052631579
           },
-          "Belgien": {
-            "avg_all_days": 9357.0,
-            "avg_start_days": 9521.690909090908
-          },
-          "Brasilien": {
-            "avg_all_days": 10961.35064935065,
-            "avg_start_days": 11006.934426229509
-          },
-          "Schweiz": {
-            "avg_all_days": 9454.127272727274,
-            "avg_start_days": 9515.954545454546
-          },
-          "USA": {
-            "avg_all_days": 10465.50909090909,
-            "avg_start_days": 10836.90909090909
-          },
-          "Frankrike": {
-            "avg_all_days": 9678.0,
-            "avg_start_days": 9719.581818181818
-          },
-          "Kroatien": {
-            "avg_all_days": 10106.926829268292,
-            "avg_start_days": 10518.727272727272
-          },
-          "Argentina": {
-            "avg_all_days": 10304.632653061224,
-            "avg_start_days": 10194.83116883117
-          },
-          "Bosnien-Hercegovina": {
-            "avg_all_days": 9814.714285714286,
-            "avg_start_days": 9789.666666666666
-          },
-          "Tyskland": {
-            "avg_all_days": 9763.795918367347,
-            "avg_start_days": 9875.532467532468
-          },
-          "Iran": {
-            "avg_all_days": 10468.439024390244,
-            "avg_start_days": 10751.09090909091
-          },
-          "Spanien": {
-            "avg_all_days": 10353.317073170732,
-            "avg_start_days": 10432.65625
-          },
-          "Mexico": {
-            "avg_all_days": 10175.267857142857,
-            "avg_start_days": 10404.931818181818
+          "Uruguay": {
+            "avg_all_days": 10204.535714285714,
+            "avg_start_days": 10363.295454545454
           },
           "Ecuador": {
             "avg_all_days": 10152.243902439024,
             "avg_start_days": 10241.424242424242
           },
-          "Ryssland": {
-            "avg_all_days": 10305.119047619048,
-            "avg_start_days": 10363.30303030303
+          "Iran": {
+            "avg_all_days": 10468.439024390244,
+            "avg_start_days": 10751.09090909091
           },
-          "Algeriet": {
-            "avg_all_days": 9628.017857142857,
-            "avg_start_days": 9556.386363636364
+          "Argentina": {
+            "avg_all_days": 10304.632653061224,
+            "avg_start_days": 10194.83116883117
+          },
+          "Japan": {
+            "avg_all_days": 10197.073170731708,
+            "avg_start_days": 10197.787878787878
+          },
+          "Chile": {
+            "avg_all_days": 9971.964285714286,
+            "avg_start_days": 9852.65909090909
+          },
+          "Honduras": {
+            "avg_all_days": 10675.463414634147,
+            "avg_start_days": 10783.666666666666
           },
           "Grekland": {
             "avg_all_days": 10679.07142857143,
             "avg_start_days": 10491.545454545454
           },
-          "Portugal": {
-            "avg_all_days": 10732.692307692309,
-            "avg_start_days": 10880.21052631579
+          "Ghana": {
+            "avg_all_days": 9353.095238095239,
+            "avg_start_days": 9420.030303030304
+          },
+          "Schweiz": {
+            "avg_all_days": 9454.127272727274,
+            "avg_start_days": 9515.954545454546
+          },
+          "Brasilien": {
+            "avg_all_days": 10961.35064935065,
+            "avg_start_days": 11006.934426229509
+          },
+          "Holland": {
+            "avg_all_days": 9741.42857142857,
+            "avg_start_days": 9918.64935064935
+          },
+          "Kroatien": {
+            "avg_all_days": 10106.926829268292,
+            "avg_start_days": 10518.727272727272
+          },
+          "Australien": {
+            "avg_all_days": 9620.738095238095,
+            "avg_start_days": 9769.545454545454
+          },
+          "Elfenbenskusten": {
+            "avg_all_days": 10647.047619047618,
+            "avg_start_days": 10725.0
+          },
+          "Bosnien-Hercegovina": {
+            "avg_all_days": 9814.714285714286,
+            "avg_start_days": 9789.666666666666
+          },
+          "Sydkorea": {
+            "avg_all_days": 9327.357142857143,
+            "avg_start_days": 9277.787878787878
+          },
+          "Mexico": {
+            "avg_all_days": 10175.267857142857,
+            "avg_start_days": 10404.931818181818
+          },
+          "Kamerun": {
+            "avg_all_days": 9974.439024390244,
+            "avg_start_days": 9865.242424242424
+          },
+          "Tyskland": {
+            "avg_all_days": 9763.795918367347,
+            "avg_start_days": 9875.532467532468
+          },
+          "Frankrike": {
+            "avg_all_days": 9678.0,
+            "avg_start_days": 9719.581818181818
           }
         }
       },
@@ -6336,37 +6335,37 @@
         "total_avg_all_days": 10260.20713073005,
         "total_avg_start_days": 10346.64111747851,
         "teams": {
-          "Sverige": {
-            "avg_all_days": 10475.828571428572,
-            "avg_start_days": 10597.054545454546
+          "Danmark": {
+            "avg_all_days": 9908.267857142857,
+            "avg_start_days": 9893.636363636364
           },
-          "Japan": {
-            "avg_all_days": 10847.309090909092,
-            "avg_start_days": 10781.09090909091
+          "Ryssland": {
+            "avg_all_days": 10638.055555555555,
+            "avg_start_days": 10744.327272727272
           },
-          "Australien": {
-            "avg_all_days": 10036.833333333334,
-            "avg_start_days": 10265.848484848484
+          "Spanien": {
+            "avg_all_days": 10619.771929824561,
+            "avg_start_days": 10763.772727272728
           },
-          "Uruguay": {
-            "avg_all_days": 10150.457142857143,
-            "avg_start_days": 10140.018181818183
+          "Costa Rica": {
+            "avg_all_days": 10958.904761904761,
+            "avg_start_days": 11029.787878787878
           },
-          "Marocko": {
-            "avg_all_days": 10518.142857142857,
-            "avg_start_days": 10606.666666666666
+          "Polen": {
+            "avg_all_days": 10189.146341463415,
+            "avg_start_days": 10254.181818181818
+          },
+          "Panama": {
+            "avg_all_days": 10479.833333333334,
+            "avg_start_days": 10490.030303030304
           },
           "Nigeria": {
             "avg_all_days": 9190.02380952381,
             "avg_start_days": 9205.818181818182
           },
-          "Sydkorea": {
-            "avg_all_days": 9980.404761904761,
-            "avg_start_days": 10108.121212121212
-          },
-          "Costa Rica": {
-            "avg_all_days": 10958.904761904761,
-            "avg_start_days": 11029.787878787878
+          "Belgien": {
+            "avg_all_days": 10261.694736842106,
+            "avg_start_days": 10223.376623376624
           },
           "England": {
             "avg_all_days": 9435.0,
@@ -6376,93 +6375,93 @@
             "avg_all_days": 10025.666666666666,
             "avg_start_days": 9995.477272727272
           },
-          "Belgien": {
-            "avg_all_days": 10261.694736842106,
-            "avg_start_days": 10223.376623376624
-          },
-          "Polen": {
-            "avg_all_days": 10189.146341463415,
-            "avg_start_days": 10254.181818181818
-          },
-          "Brasilien": {
-            "avg_all_days": 12387.722222222223,
-            "avg_start_days": 12483.755102040815
-          },
-          "Schweiz": {
-            "avg_all_days": 9986.872727272726,
-            "avg_start_days": 10253.40909090909
-          },
-          "Egypten": {
-            "avg_all_days": 10342.142857142857,
-            "avg_start_days": 10804.636363636364
-          },
-          "Saudiarabien": {
-            "avg_all_days": 10389.756097560976,
-            "avg_start_days": 10402.181818181818
-          },
-          "Frankrike": {
-            "avg_all_days": 9667.350515463917,
-            "avg_start_days": 9741.57142857143
-          },
-          "Kroatien": {
-            "avg_all_days": 10523.35,
-            "avg_start_days": 10667.83116883117
-          },
-          "Argentina": {
-            "avg_all_days": 10779.357142857143,
-            "avg_start_days": 11018.454545454546
-          },
-          "Tyskland": {
-            "avg_all_days": 10068.857142857143,
-            "avg_start_days": 10039.39393939394
-          },
-          "Iran": {
-            "avg_all_days": 9634.738095238095,
-            "avg_start_days": 9774.333333333334
-          },
-          "Panama": {
-            "avg_all_days": 10479.833333333334,
-            "avg_start_days": 10490.030303030304
-          },
-          "Danmark": {
-            "avg_all_days": 9908.267857142857,
-            "avg_start_days": 9893.636363636364
-          },
-          "Spanien": {
-            "avg_all_days": 10619.771929824561,
-            "avg_start_days": 10763.772727272728
-          },
-          "Serbien": {
-            "avg_all_days": 10139.365853658537,
-            "avg_start_days": 10360.727272727272
-          },
-          "Mexico": {
-            "avg_all_days": 10405.69642857143,
-            "avg_start_days": 10294.568181818182
-          },
-          "Peru": {
-            "avg_all_days": 10164.47619047619,
-            "avg_start_days": 10187.242424242424
-          },
-          "Tunisien": {
-            "avg_all_days": 9660.142857142857,
-            "avg_start_days": 9617.757575757576
-          },
-          "Ryssland": {
-            "avg_all_days": 10638.055555555555,
-            "avg_start_days": 10744.327272727272
-          },
-          "Island": {
-            "avg_all_days": 10861.690476190477,
-            "avg_start_days": 11106.545454545454
+          "Marocko": {
+            "avg_all_days": 10518.142857142857,
+            "avg_start_days": 10606.666666666666
           },
           "Portugal": {
             "avg_all_days": 10190.979591836734,
             "avg_start_days": 10313.868421052632
           },
+          "Peru": {
+            "avg_all_days": 10164.47619047619,
+            "avg_start_days": 10187.242424242424
+          },
+          "Uruguay": {
+            "avg_all_days": 10150.457142857143,
+            "avg_start_days": 10140.018181818183
+          },
+          "Iran": {
+            "avg_all_days": 9634.738095238095,
+            "avg_start_days": 9774.333333333334
+          },
+          "Saudiarabien": {
+            "avg_all_days": 10389.756097560976,
+            "avg_start_days": 10402.181818181818
+          },
+          "Argentina": {
+            "avg_all_days": 10779.357142857143,
+            "avg_start_days": 11018.454545454546
+          },
           "Senegal": {
             "avg_all_days": 9755.52380952381,
             "avg_start_days": 9641.666666666666
+          },
+          "Serbien": {
+            "avg_all_days": 10139.365853658537,
+            "avg_start_days": 10360.727272727272
+          },
+          "Japan": {
+            "avg_all_days": 10847.309090909092,
+            "avg_start_days": 10781.09090909091
+          },
+          "Sverige": {
+            "avg_all_days": 10475.828571428572,
+            "avg_start_days": 10597.054545454546
+          },
+          "Egypten": {
+            "avg_all_days": 10342.142857142857,
+            "avg_start_days": 10804.636363636364
+          },
+          "Schweiz": {
+            "avg_all_days": 9986.872727272726,
+            "avg_start_days": 10253.40909090909
+          },
+          "Tunisien": {
+            "avg_all_days": 9660.142857142857,
+            "avg_start_days": 9617.757575757576
+          },
+          "Brasilien": {
+            "avg_all_days": 12387.722222222223,
+            "avg_start_days": 12483.755102040815
+          },
+          "Australien": {
+            "avg_all_days": 10036.833333333334,
+            "avg_start_days": 10265.848484848484
+          },
+          "Kroatien": {
+            "avg_all_days": 10523.35,
+            "avg_start_days": 10667.83116883117
+          },
+          "Sydkorea": {
+            "avg_all_days": 9980.404761904761,
+            "avg_start_days": 10108.121212121212
+          },
+          "Mexico": {
+            "avg_all_days": 10405.69642857143,
+            "avg_start_days": 10294.568181818182
+          },
+          "Tyskland": {
+            "avg_all_days": 10068.857142857143,
+            "avg_start_days": 10039.39393939394
+          },
+          "Frankrike": {
+            "avg_all_days": 9667.350515463917,
+            "avg_start_days": 9741.57142857143
+          },
+          "Island": {
+            "avg_all_days": 10861.690476190477,
+            "avg_start_days": 11106.545454545454
           }
         }
       },
@@ -6568,77 +6567,45 @@
         "total_avg_all_days": 11411.697324414716,
         "total_avg_start_days": 11442.954183266933,
         "teams": {
-          "Japan": {
-            "avg_all_days": 12202.333333333334,
-            "avg_start_days": 12301.875
-          },
-          "Ghana": {
-            "avg_all_days": 11717.5,
-            "avg_start_days": 11781.6
-          },
-          "Australien": {
-            "avg_all_days": 11261.0,
-            "avg_start_days": 11362.5
-          },
-          "Kamerun": {
-            "avg_all_days": 11268.0,
-            "avg_start_days": 11272.0
-          },
-          "Uruguay": {
-            "avg_all_days": 16567.615384615383,
-            "avg_start_days": 17000.75
-          },
-          "Marocko": {
-            "avg_all_days": 9199.92857142857,
-            "avg_start_days": 9199.92857142857
-          },
-          "Holland": {
-            "avg_all_days": 11234.9,
-            "avg_start_days": 11416.125
-          },
-          "Sydkorea": {
-            "avg_all_days": 11454.727272727272,
-            "avg_start_days": 11521.5
+          "Danmark": {
+            "avg_all_days": 11010.473684210527,
+            "avg_start_days": 11260.0
           },
           "Costa Rica": {
             "avg_all_days": 12129.68,
             "avg_start_days": 12038.521739130434
           },
-          "England": {
-            "avg_all_days": 10589.826086956522,
-            "avg_start_days": 10742.916666666666
-          },
-          "Belgien": {
-            "avg_all_days": 11394.083333333334,
-            "avg_start_days": 11537.67857142857
+          "Spanien": {
+            "avg_all_days": 11517.07142857143,
+            "avg_start_days": 11621.636363636364
           },
           "Polen": {
             "avg_all_days": 11641.5,
             "avg_start_days": 11724.24
           },
-          "Schweiz": {
-            "avg_all_days": 10662.433333333332,
-            "avg_start_days": 10685.52
+          "Belgien": {
+            "avg_all_days": 11394.083333333334,
+            "avg_start_days": 11537.67857142857
           },
-          "Brasilien": {
-            "avg_all_days": 12065.433333333332,
-            "avg_start_days": 11864.115384615385
+          "England": {
+            "avg_all_days": 10589.826086956522,
+            "avg_start_days": 10742.916666666666
           },
-          "Saudiarabien": {
-            "avg_all_days": 11133.846153846154,
-            "avg_start_days": 11141.454545454546
+          "Marocko": {
+            "avg_all_days": 9199.92857142857,
+            "avg_start_days": 9199.92857142857
           },
-          "Frankrike": {
-            "avg_all_days": 11132.714285714286,
-            "avg_start_days": 11228.74358974359
+          "Portugal": {
+            "avg_all_days": 11839.260869565218,
+            "avg_start_days": 11881.444444444445
           },
-          "Kroatien": {
-            "avg_all_days": 11609.702127659575,
-            "avg_start_days": 11609.702127659575
+          "Uruguay": {
+            "avg_all_days": 16567.615384615383,
+            "avg_start_days": 17000.75
           },
-          "Tyskland": {
-            "avg_all_days": 11082.42857142857,
-            "avg_start_days": 11162.823529411764
+          "Ecuador": {
+            "avg_all_days": 11576.75,
+            "avg_start_days": 11576.75
           },
           "Iran": {
             "avg_all_days": 11157.90322580645,
@@ -6648,37 +6615,69 @@
             "avg_all_days": 12592.047619047618,
             "avg_start_days": 12803.944444444445
           },
-          "Danmark": {
-            "avg_all_days": 11010.473684210527,
-            "avg_start_days": 11260.0
+          "Saudiarabien": {
+            "avg_all_days": 11133.846153846154,
+            "avg_start_days": 11141.454545454546
           },
-          "Spanien": {
-            "avg_all_days": 11517.07142857143,
-            "avg_start_days": 11621.636363636364
+          "Senegal": {
+            "avg_all_days": 11477.666666666666,
+            "avg_start_days": 11477.666666666666
           },
           "Serbien": {
             "avg_all_days": 10198.36,
             "avg_start_days": 10338.75
           },
-          "Mexico": {
-            "avg_all_days": 11381.0,
-            "avg_start_days": 11381.0
+          "Japan": {
+            "avg_all_days": 12202.333333333334,
+            "avg_start_days": 12301.875
           },
-          "Ecuador": {
-            "avg_all_days": 11576.75,
-            "avg_start_days": 11576.75
+          "Ghana": {
+            "avg_all_days": 11717.5,
+            "avg_start_days": 11781.6
           },
           "Tunisien": {
             "avg_all_days": 10661.0,
             "avg_start_days": 10451.222222222223
           },
-          "Portugal": {
-            "avg_all_days": 11839.260869565218,
-            "avg_start_days": 11881.444444444445
+          "Schweiz": {
+            "avg_all_days": 10662.433333333332,
+            "avg_start_days": 10685.52
           },
-          "Senegal": {
-            "avg_all_days": 11477.666666666666,
-            "avg_start_days": 11477.666666666666
+          "Brasilien": {
+            "avg_all_days": 12065.433333333332,
+            "avg_start_days": 11864.115384615385
+          },
+          "Holland": {
+            "avg_all_days": 11234.9,
+            "avg_start_days": 11416.125
+          },
+          "Australien": {
+            "avg_all_days": 11261.0,
+            "avg_start_days": 11362.5
+          },
+          "Kroatien": {
+            "avg_all_days": 11609.702127659575,
+            "avg_start_days": 11609.702127659575
+          },
+          "Sydkorea": {
+            "avg_all_days": 11454.727272727272,
+            "avg_start_days": 11521.5
+          },
+          "Mexico": {
+            "avg_all_days": 11381.0,
+            "avg_start_days": 11381.0
+          },
+          "Kamerun": {
+            "avg_all_days": 11268.0,
+            "avg_start_days": 11272.0
+          },
+          "Tyskland": {
+            "avg_all_days": 11082.42857142857,
+            "avg_start_days": 11162.823529411764
+          },
+          "Frankrike": {
+            "avg_all_days": 11132.714285714286,
+            "avg_start_days": 11228.74358974359
           }
         }
       },
@@ -6903,7 +6902,7 @@
         "matches_pen": 4,
         "players_used": 0,
         "debutants": 0,
-        "goalscorers": 180,
+        "goalscorers": 179,
         "top_scorers": [
           {
             "name": "Mbappé, Kylian",
@@ -377095,12 +377094,12 @@
         ],
         "cards": [
           {
-            "player": "Sithole, S",
+            "player": "Sithole, Sphephelo",
             "minute": "49",
             "type": "Red"
           },
           {
-            "player": "Zwane, T",
+            "player": "Zwane, Themba",
             "minute": "84",
             "type": "Red"
           },
@@ -379964,7 +379963,7 @@
             "note": ""
           },
           {
-            "player": "Dembélé",
+            "player": "Dembélé, Ousmane",
             "team": "Frankrike",
             "minute": "66",
             "type": "3-0",
@@ -601518,657 +601517,709 @@
   },
   "placements": {
     "Uruguay": {
-      "1930": "1.0",
-      "1950": "1.0",
-      "1954": "4.0",
-      "1962": "12.0",
-      "1966": "7.0",
-      "1970": "4.0",
-      "1974": "13.0",
-      "1986": "16.0",
-      "1990": "16.0",
-      "2002": "26.0",
-      "2010": "4.0",
-      "2014": "12.0",
-      "2018": "5.0",
-      "2022": "20.0"
+      "1930": "1",
+      "1950": "1",
+      "1954": "4",
+      "1962": "12",
+      "1966": "7",
+      "1970": "4",
+      "1974": "13",
+      "1986": "16",
+      "1990": "16",
+      "2002": "26",
+      "2010": "4",
+      "2014": "12",
+      "2018": "5",
+      "2022": "20",
+      "2026": "37"
     },
     "Argentina": {
-      "1930": "2.0",
-      "1934": "9.0",
-      "1958": "13.0",
-      "1962": "10.0",
-      "1966": "5.0",
-      "1974": "8.0",
-      "1978": "1.0",
-      "1982": "11.0",
-      "1986": "1.0",
-      "1990": "2.0",
-      "1994": "10.0",
-      "1998": "6.0",
-      "2002": "18.0",
-      "2006": "6.0",
-      "2010": "5.0",
-      "2014": "2.0",
-      "2018": "16.0",
-      "2022": "1.0",
-      "2026": "2.0"
+      "1930": "2",
+      "1934": "9",
+      "1958": "13",
+      "1962": "10",
+      "1966": "5",
+      "1974": "8",
+      "1978": "1",
+      "1982": "11",
+      "1986": "1",
+      "1990": "2",
+      "1994": "10",
+      "1998": "6",
+      "2002": "18",
+      "2006": "6",
+      "2010": "5",
+      "2014": "2",
+      "2018": "16",
+      "2022": "1",
+      "2026": "2"
     },
     "USA": {
-      "1930": "3.0",
-      "1934": "16.0",
-      "1950": "10.0",
-      "1990": "23.0",
-      "1994": "14.0",
-      "1998": "32.0",
-      "2002": "8.0",
-      "2006": "26.0",
-      "2010": "12.0",
-      "2014": "16.0",
-      "2022": "14.0"
+      "1930": "3",
+      "1934": "16",
+      "1950": "10",
+      "1990": "23",
+      "1994": "14",
+      "1998": "32",
+      "2002": "8",
+      "2006": "26",
+      "2010": "12",
+      "2014": "16",
+      "2022": "14",
+      "2026": "12"
     },
     "Serbien": {
-      "1930": "4.0",
-      "1950": "5.0",
-      "1954": "7.0",
-      "1958": "5.0",
-      "1962": "4.0",
-      "1974": "7.0",
-      "1982": "16.0",
-      "1990": "5.0",
-      "1998": "10.0",
-      "2006": "32.0",
-      "2010": "23.0",
-      "2018": "22.0",
-      "2022": "29.0"
+      "1930": "4",
+      "1950": "5",
+      "1954": "7",
+      "1958": "5",
+      "1962": "4",
+      "1974": "7",
+      "1982": "16",
+      "1990": "5",
+      "1998": "10",
+      "2006": "32",
+      "2010": "23",
+      "2018": "22",
+      "2022": "29"
     },
     "Chile": {
-      "1930": "5.0",
-      "1950": "9.0",
-      "1962": "3.0",
-      "1966": "13.0",
-      "1974": "11.0",
-      "1982": "22.0",
-      "1998": "16.0",
-      "2010": "10.0",
-      "2014": "9.0"
+      "1930": "5",
+      "1950": "9",
+      "1962": "3",
+      "1966": "13",
+      "1974": "11",
+      "1982": "22",
+      "1998": "16",
+      "2010": "10",
+      "2014": "9"
     },
     "Brasilien": {
-      "1930": "6.0",
-      "1934": "14.0",
-      "1938": "3.0",
-      "1950": "2.0",
-      "1954": "5.0",
-      "1958": "1.0",
-      "1962": "1.0",
-      "1966": "11.0",
-      "1970": "1.0",
-      "1974": "4.0",
-      "1978": "3.0",
-      "1982": "5.0",
-      "1986": "5.0",
-      "1990": "9.0",
-      "1994": "1.0",
-      "1998": "2.0",
-      "2002": "1.0",
-      "2006": "5.0",
-      "2010": "6.0",
-      "2014": "4.0",
-      "2018": "6.0",
-      "2022": "7.0"
+      "1930": "6",
+      "1934": "14",
+      "1938": "3",
+      "1950": "2",
+      "1954": "5",
+      "1958": "1",
+      "1962": "1",
+      "1966": "11",
+      "1970": "1",
+      "1974": "4",
+      "1978": "3",
+      "1982": "5",
+      "1986": "5",
+      "1990": "9",
+      "1994": "1",
+      "1998": "2",
+      "2002": "1",
+      "2006": "5",
+      "2010": "6",
+      "2014": "4",
+      "2018": "6",
+      "2022": "7",
+      "2026": "11"
     },
     "Frankrike": {
-      "1930": "7.0",
-      "1934": "10.0",
-      "1938": "6.0",
-      "1954": "11.0",
-      "1958": "3.0",
-      "1966": "14.0",
-      "1978": "12.0",
-      "1982": "4.0",
-      "1986": "3.0",
-      "1998": "1.0",
-      "2002": "28.0",
-      "2006": "2.0",
-      "2010": "30.0",
-      "2014": "7.0",
-      "2018": "1.0",
-      "2022": "2.0",
-      "2026": "4.0"
+      "1930": "7",
+      "1934": "10",
+      "1938": "6",
+      "1954": "11",
+      "1958": "3",
+      "1966": "14",
+      "1978": "12",
+      "1982": "4",
+      "1986": "3",
+      "1998": "1",
+      "2002": "28",
+      "2006": "2",
+      "2010": "30",
+      "2014": "7",
+      "2018": "1",
+      "2022": "2",
+      "2026": "4"
     },
     "Rumänien": {
-      "1930": "8.0",
-      "1934": "12.0",
-      "1938": "9.0",
-      "1970": "11.0",
-      "1990": "12.0",
-      "1994": "6.0",
-      "1998": "11.0"
+      "1930": "8",
+      "1934": "12",
+      "1938": "9",
+      "1970": "11",
+      "1990": "12",
+      "1994": "6",
+      "1998": "11"
     },
     "Paraguay": {
-      "1930": "9.0",
-      "1950": "11.0",
-      "1958": "12.0",
-      "1986": "13.0",
-      "1998": "14.0",
-      "2002": "16.0",
-      "2006": "18.0",
-      "2010": "8.0"
+      "1930": "9",
+      "1950": "11",
+      "1958": "12",
+      "1986": "13",
+      "1998": "14",
+      "2002": "16",
+      "2006": "18",
+      "2010": "8",
+      "2026": "16"
     },
     "Peru": {
-      "1930": "10.0",
-      "1970": "7.0",
-      "1978": "8.0",
-      "1982": "20.0",
-      "2018": "20.0"
+      "1930": "10",
+      "1970": "7",
+      "1978": "8",
+      "1982": "20",
+      "2018": "20"
     },
     "Belgien": {
-      "1930": "11.0",
-      "1934": "15.0",
-      "1938": "13.0",
-      "1954": "12.0",
-      "1970": "10.0",
-      "1982": "10.0",
-      "1986": "4.0",
-      "1990": "11.0",
-      "1994": "11.0",
-      "1998": "19.0",
-      "2002": "14.0",
-      "2014": "5.0",
-      "2018": "3.0",
-      "2022": "23.0"
+      "1930": "11",
+      "1934": "15",
+      "1938": "13",
+      "1954": "12",
+      "1970": "10",
+      "1982": "10",
+      "1986": "4",
+      "1990": "11",
+      "1994": "11",
+      "1998": "19",
+      "2002": "14",
+      "2014": "5",
+      "2018": "3",
+      "2022": "23",
+      "2026": "6"
     },
     "Bolivia": {
-      "1930": "12.0",
-      "1950": "13.0",
-      "1994": "21.0"
+      "1930": "12",
+      "1950": "13",
+      "1994": "21"
     },
     "Mexico": {
-      "1930": "13.0",
-      "1950": "12.0",
-      "1954": "13.0",
-      "1958": "16.0",
-      "1962": "11.0",
-      "1966": "12.0",
-      "1970": "6.0",
-      "1978": "16.0",
-      "1986": "6.0",
-      "1994": "13.0",
-      "1998": "13.0",
-      "2002": "11.0",
-      "2006": "15.0",
-      "2010": "14.0",
-      "2014": "10.0",
-      "2018": "12.0",
-      "2022": "22.0"
+      "1930": "13",
+      "1950": "12",
+      "1954": "13",
+      "1958": "16",
+      "1962": "11",
+      "1966": "12",
+      "1970": "6",
+      "1978": "16",
+      "1986": "6",
+      "1994": "13",
+      "1998": "13",
+      "2002": "11",
+      "2006": "15",
+      "2010": "14",
+      "2014": "10",
+      "2018": "12",
+      "2022": "22",
+      "2026": "9"
     },
     "Italien": {
-      "1934": "1.0",
-      "1938": "1.0",
-      "1950": "7.0",
-      "1954": "10.0",
-      "1962": "9.0",
-      "1966": "9.0",
-      "1970": "2.0",
-      "1974": "10.0",
-      "1978": "4.0",
-      "1982": "1.0",
-      "1986": "12.0",
-      "1990": "3.0",
-      "1994": "2.0",
-      "1998": "5.0",
-      "2002": "15.0",
-      "2006": "1.0",
-      "2010": "26.0",
-      "2014": "21.0"
+      "1934": "1",
+      "1938": "1",
+      "1950": "7",
+      "1954": "10",
+      "1962": "9",
+      "1966": "9",
+      "1970": "2",
+      "1974": "10",
+      "1978": "4",
+      "1982": "1",
+      "1986": "12",
+      "1990": "3",
+      "1994": "2",
+      "1998": "5",
+      "2002": "15",
+      "2006": "1",
+      "2010": "26",
+      "2014": "21"
     },
     "Tjeckien": {
-      "1934": "2.0",
-      "1938": "5.0",
-      "1954": "14.0",
-      "1958": "9.0",
-      "1962": "2.0",
-      "1970": "15.0",
-      "1982": "19.0",
-      "1990": "6.0",
-      "2006": "20.0"
+      "1934": "2",
+      "1938": "5",
+      "1954": "14",
+      "1958": "9",
+      "1962": "2",
+      "1970": "15",
+      "1982": "19",
+      "1990": "6",
+      "2006": "20",
+      "2026": "39"
     },
     "Tyskland": {
-      "1934": "3.0",
-      "1938": "10.0",
-      "1954": "1.0",
-      "1958": "4.0",
-      "1962": "7.0",
-      "1966": "2.0",
-      "1970": "3.0",
-      "1974": "1.0",
-      "1978": "6.0",
-      "1982": "2.0",
-      "1986": "2.0",
-      "1990": "1.0",
-      "1994": "5.0",
-      "1998": "7.0",
-      "2002": "2.0",
-      "2006": "3.0",
-      "2010": "3.0",
-      "2014": "1.0",
-      "2018": "23.0",
-      "2022": "17.0"
+      "1934": "3",
+      "1938": "10",
+      "1954": "1",
+      "1958": "4",
+      "1962": "7",
+      "1966": "2",
+      "1970": "3",
+      "1974": "1",
+      "1978": "6",
+      "1982": "2",
+      "1986": "2",
+      "1990": "1",
+      "1994": "5",
+      "1998": "7",
+      "2002": "2",
+      "2006": "3",
+      "2010": "3",
+      "2014": "1",
+      "2018": "23",
+      "2022": "17",
+      "2026": "18"
     },
     "Österrike": {
-      "1934": "4.0",
-      "1954": "3.0",
-      "1958": "15.0",
-      "1978": "7.0",
-      "1982": "8.0",
-      "1990": "19.0",
-      "1998": "23.0"
+      "1934": "4",
+      "1954": "3",
+      "1958": "15",
+      "1978": "7",
+      "1982": "8",
+      "1990": "19",
+      "1998": "23",
+      "2026": "28"
     },
     "Spanien": {
-      "1934": "5.0",
-      "1950": "4.0",
-      "1962": "13.0",
-      "1966": "10.0",
-      "1978": "10.0",
-      "1982": "12.0",
-      "1986": "7.0",
-      "1990": "10.0",
-      "1994": "8.0",
-      "1998": "17.0",
-      "2002": "5.0",
-      "2006": "9.0",
-      "2010": "1.0",
-      "2014": "23.0",
-      "2018": "10.0",
-      "2022": "13.0",
-      "2026": "1.0"
+      "1934": "5",
+      "1950": "4",
+      "1962": "13",
+      "1966": "10",
+      "1978": "10",
+      "1982": "12",
+      "1986": "7",
+      "1990": "10",
+      "1994": "8",
+      "1998": "17",
+      "2002": "5",
+      "2006": "9",
+      "2010": "1",
+      "2014": "23",
+      "2018": "10",
+      "2022": "13",
+      "2026": "1"
     },
     "Ungern": {
-      "1934": "6.0",
-      "1938": "2.0",
-      "1954": "2.0",
-      "1958": "10.0",
-      "1962": "5.0",
-      "1966": "6.0",
-      "1978": "15.0",
-      "1982": "14.0",
-      "1986": "18.0"
+      "1934": "6",
+      "1938": "2",
+      "1954": "2",
+      "1958": "10",
+      "1962": "5",
+      "1966": "6",
+      "1978": "15",
+      "1982": "14",
+      "1986": "18"
     },
     "Schweiz": {
-      "1934": "7.0",
-      "1938": "7.0",
-      "1950": "6.0",
-      "1954": "8.0",
-      "1962": "16.0",
-      "1966": "16.0",
-      "1994": "15.0",
-      "2006": "10.0",
-      "2010": "19.0",
-      "2014": "11.0",
-      "2018": "14.0",
-      "2022": "12.0"
+      "1934": "7",
+      "1938": "7",
+      "1950": "6",
+      "1954": "8",
+      "1962": "16",
+      "1966": "16",
+      "1994": "15",
+      "2006": "10",
+      "2010": "19",
+      "2014": "11",
+      "2018": "14",
+      "2022": "12",
+      "2026": "8"
     },
     "Sverige": {
-      "1934": "8.0",
-      "1938": "4.0",
-      "1950": "3.0",
-      "1958": "2.0",
-      "1970": "9.0",
-      "1974": "5.0",
-      "1978": "13.0",
-      "1990": "21.0",
-      "1994": "3.0",
-      "2002": "13.0",
-      "2006": "14.0",
-      "2018": "7.0"
+      "1934": "8",
+      "1938": "4",
+      "1950": "3",
+      "1958": "2",
+      "1970": "9",
+      "1974": "5",
+      "1978": "13",
+      "1990": "21",
+      "1994": "3",
+      "2002": "13",
+      "2006": "14",
+      "2018": "7",
+      "2026": "27"
     },
     "Holland": {
-      "1934": "11.0",
-      "1938": "14.0",
-      "1974": "2.0",
-      "1978": "2.0",
-      "1990": "15.0",
-      "1994": "7.0",
-      "1998": "4.0",
-      "2006": "11.0",
-      "2010": "2.0",
-      "2014": "3.0",
-      "2022": "5.0"
+      "1934": "11",
+      "1938": "14",
+      "1974": "2",
+      "1978": "2",
+      "1990": "15",
+      "1994": "7",
+      "1998": "4",
+      "2006": "11",
+      "2010": "2",
+      "2014": "3",
+      "2022": "5",
+      "2026": "17"
     },
     "Egypten": {
-      "1934": "13.0",
-      "1990": "20.0",
-      "2018": "31.0"
+      "1934": "13",
+      "1990": "20",
+      "2018": "31",
+      "2026": "15"
     },
     "Cuba": {
-      "1938": "8.0"
+      "1938": "8"
     },
     "Polen": {
-      "1938": "11.0",
-      "1974": "3.0",
-      "1978": "5.0",
-      "1982": "3.0",
-      "1986": "14.0",
-      "2002": "25.0",
-      "2006": "21.0",
-      "2018": "25.0",
-      "2022": "15.0"
+      "1938": "11",
+      "1974": "3",
+      "1978": "5",
+      "1982": "3",
+      "1986": "14",
+      "2002": "25",
+      "2006": "21",
+      "2018": "25",
+      "2022": "15"
     },
     "Norge": {
-      "1938": "12.0",
-      "1994": "17.0",
-      "1998": "15.0"
+      "1938": "12",
+      "1994": "17",
+      "1998": "15",
+      "2026": "5"
     },
     "Holländska Ostindien": {
-      "1938": "15.0"
+      "1938": "15"
     },
     "England": {
-      "1950": "8.0",
-      "1954": "6.0",
-      "1958": "11.0",
-      "1962": "8.0",
-      "1966": "1.0",
-      "1970": "8.0",
-      "1982": "6.0",
-      "1986": "8.0",
-      "1990": "4.0",
-      "1998": "9.0",
-      "2002": "6.0",
-      "2006": "7.0",
-      "2010": "13.0",
-      "2014": "25.0",
-      "2018": "4.0",
-      "2022": "6.0",
-      "2026": "3.0"
+      "1950": "8",
+      "1954": "6",
+      "1958": "11",
+      "1962": "8",
+      "1966": "1",
+      "1970": "8",
+      "1982": "6",
+      "1986": "8",
+      "1990": "4",
+      "1998": "9",
+      "2002": "6",
+      "2006": "7",
+      "2010": "13",
+      "2014": "25",
+      "2018": "4",
+      "2022": "6",
+      "2026": "3"
     },
     "Turkiet": {
-      "1954": "9.0",
-      "2002": "3.0"
+      "1954": "9",
+      "2002": "3",
+      "2026": "35"
     },
     "Skottland": {
-      "1954": "15.0",
-      "1958": "14.0",
-      "1974": "9.0",
-      "1978": "11.0",
-      "1982": "15.0",
-      "1986": "19.0",
-      "1990": "18.0",
-      "1998": "27.0"
+      "1954": "15",
+      "1958": "14",
+      "1974": "9",
+      "1978": "11",
+      "1982": "15",
+      "1986": "19",
+      "1990": "18",
+      "1998": "27",
+      "2026": "36"
     },
     "Sydkorea": {
-      "1954": "16.0",
-      "1986": "20.0",
-      "1990": "22.0",
-      "1994": "20.0",
-      "1998": "30.0",
-      "2002": "4.0",
-      "2006": "17.0",
-      "2010": "15.0",
-      "2014": "29.0",
-      "2018": "19.0",
-      "2022": "16.0"
+      "1954": "16",
+      "1986": "20",
+      "1990": "22",
+      "1994": "20",
+      "1998": "30",
+      "2002": "4",
+      "2006": "17",
+      "2010": "15",
+      "2014": "29",
+      "2018": "19",
+      "2022": "16",
+      "2026": "34"
     },
     "Wales": {
-      "1958": "6.0",
-      "2022": "30.0"
+      "1958": "6",
+      "2022": "30"
     },
     "Ryssland": {
-      "1958": "7.0",
-      "1962": "6.0",
-      "1966": "4.0",
-      "1970": "5.0",
-      "1982": "7.0",
-      "1986": "10.0",
-      "1990": "17.0",
-      "1994": "18.0",
-      "2002": "22.0",
-      "2014": "24.0",
-      "2018": "8.0"
+      "1958": "7",
+      "1962": "6",
+      "1966": "4",
+      "1970": "5",
+      "1982": "7",
+      "1986": "10",
+      "1990": "17",
+      "1994": "18",
+      "2002": "22",
+      "2014": "24",
+      "2018": "8"
     },
     "Nordirland": {
-      "1958": "8.0",
-      "1982": "9.0",
-      "1986": "21.0"
+      "1958": "8",
+      "1982": "9",
+      "1986": "21"
     },
     "Colombia": {
-      "1962": "14.0",
-      "1990": "14.0",
-      "1994": "19.0",
-      "1998": "21.0",
-      "2014": "6.0",
-      "2018": "9.0"
+      "1962": "14",
+      "1990": "14",
+      "1994": "19",
+      "1998": "21",
+      "2014": "6",
+      "2018": "9",
+      "2026": "10"
     },
     "Bulgarien": {
-      "1962": "15.0",
-      "1966": "15.0",
-      "1970": "13.0",
-      "1974": "12.0",
-      "1986": "15.0",
-      "1994": "4.0",
-      "1998": "29.0"
+      "1962": "15",
+      "1966": "15",
+      "1970": "13",
+      "1974": "12",
+      "1986": "15",
+      "1994": "4",
+      "1998": "29"
     },
     "Portugal": {
-      "1966": "3.0",
-      "1986": "17.0",
-      "2002": "21.0",
-      "2006": "4.0",
-      "2010": "11.0",
-      "2014": "18.0",
-      "2018": "13.0",
-      "2022": "8.0"
+      "1966": "3",
+      "1986": "17",
+      "2002": "21",
+      "2006": "4",
+      "2010": "11",
+      "2014": "18",
+      "2018": "13",
+      "2022": "8",
+      "2026": "13"
     },
     "Nordkorea": {
-      "1966": "8.0",
-      "2010": "32.0"
+      "1966": "8",
+      "2010": "32"
     },
     "Israel": {
-      "1970": "12.0"
+      "1970": "12"
     },
     "Marocko": {
-      "1970": "14.0",
-      "1986": "11.0",
-      "1994": "23.0",
-      "1998": "18.0",
-      "2018": "27.0",
-      "2022": "4.0"
+      "1970": "14",
+      "1986": "11",
+      "1994": "23",
+      "1998": "18",
+      "2018": "27",
+      "2022": "4",
+      "2026": "7"
     },
     "El Salvador": {
-      "1970": "16.0",
-      "1982": "24.0"
+      "1970": "16",
+      "1982": "24"
     },
     "Östtyskland": {
-      "1974": "6.0"
+      "1974": "6"
     },
     "Australien": {
-      "1974": "14.0",
-      "2006": "16.0",
-      "2010": "21.0",
-      "2014": "30.0",
-      "2018": "30.0",
-      "2022": "11.0"
+      "1974": "14",
+      "2006": "16",
+      "2010": "21",
+      "2014": "30",
+      "2018": "30",
+      "2022": "11",
+      "2026": "22"
     },
     "Haiti": {
-      "1974": "15.0"
+      "1974": "15",
+      "2026": "45"
     },
     "Kongo-Kinshasa": {
-      "1974": "16.0"
+      "1974": "16",
+      "2026": "23"
     },
     "Tunisien": {
-      "1978": "9.0",
-      "1998": "26.0",
-      "2002": "29.0",
-      "2006": "24.0",
-      "2018": "24.0",
-      "2022": "21.0"
+      "1978": "9",
+      "1998": "26",
+      "2002": "29",
+      "2006": "24",
+      "2018": "24",
+      "2022": "21",
+      "2026": "47"
     },
     "Iran": {
-      "1978": "14.0",
-      "1998": "20.0",
-      "2006": "25.0",
-      "2014": "27.0",
-      "2018": "18.0",
-      "2022": "24.0"
+      "1978": "14",
+      "1998": "20",
+      "2006": "25",
+      "2014": "27",
+      "2018": "18",
+      "2022": "24",
+      "2026": "33"
     },
     "Algeriet": {
-      "1982": "13.0",
-      "1986": "22.0",
-      "2010": "28.0",
-      "2014": "14.0"
+      "1982": "13",
+      "1986": "22",
+      "2010": "28",
+      "2014": "14",
+      "2026": "30"
     },
     "Kamerun": {
-      "1982": "17.0",
-      "1990": "7.0",
-      "1994": "22.0",
-      "1998": "25.0",
-      "2002": "20.0",
-      "2010": "29.0",
-      "2014": "32.0",
-      "2022": "19.0"
+      "1982": "17",
+      "1990": "7",
+      "1994": "22",
+      "1998": "25",
+      "2002": "20",
+      "2010": "29",
+      "2014": "32",
+      "2022": "19"
     },
     "Honduras": {
-      "1982": "18.0",
-      "2010": "31.0",
-      "2014": "31.0"
+      "1982": "18",
+      "2010": "31",
+      "2014": "31"
     },
     "Kuwait": {
-      "1982": "21.0"
+      "1982": "21"
     },
     "Nya Zeeland": {
-      "1982": "23.0",
-      "2010": "22.0"
+      "1982": "23",
+      "2010": "22",
+      "2026": "40"
     },
     "Danmark": {
-      "1986": "9.0",
-      "1998": "8.0",
-      "2002": "10.0",
-      "2010": "24.0",
-      "2018": "11.0",
-      "2022": "28.0"
+      "1986": "9",
+      "1998": "8",
+      "2002": "10",
+      "2010": "24",
+      "2018": "11",
+      "2022": "28"
     },
     "Irak": {
-      "1986": "23.0"
+      "1986": "23",
+      "2026": "48"
     },
     "Kanada": {
-      "1986": "24.0",
-      "2022": "31.0"
+      "1986": "24",
+      "2022": "31",
+      "2026": "14"
     },
     "Irland": {
-      "1990": "8.0",
-      "1994": "16.0",
-      "2002": "12.0"
+      "1990": "8",
+      "1994": "16",
+      "2002": "12"
     },
     "Costa Rica": {
-      "1990": "13.0",
-      "2002": "19.0",
-      "2006": "31.0",
-      "2014": "8.0",
-      "2018": "29.0",
-      "2022": "27.0"
+      "1990": "13",
+      "2002": "19",
+      "2006": "31",
+      "2014": "8",
+      "2018": "29",
+      "2022": "27"
     },
     "Förenade Arabemiraten": {
-      "1990": "24.0"
+      "1990": "24"
     },
     "Nigeria": {
-      "1994": "9.0",
-      "1998": "12.0",
-      "2002": "27.0",
-      "2010": "27.0",
-      "2014": "15.0",
-      "2018": "21.0"
+      "1994": "9",
+      "1998": "12",
+      "2002": "27",
+      "2010": "27",
+      "2014": "15",
+      "2018": "21"
     },
     "Saudiarabien": {
-      "1994": "12.0",
-      "1998": "28.0",
-      "2002": "32.0",
-      "2006": "29.0",
-      "2018": "26.0",
-      "2022": "26.0"
+      "1994": "12",
+      "1998": "28",
+      "2002": "32",
+      "2006": "29",
+      "2018": "26",
+      "2022": "26",
+      "2026": "38"
     },
     "Grekland": {
-      "1994": "24.0",
-      "2010": "25.0",
-      "2014": "13.0"
+      "1994": "24",
+      "2010": "25",
+      "2014": "13"
     },
     "Kroatien": {
-      "1998": "3.0",
-      "2002": "23.0",
-      "2006": "22.0",
-      "2014": "22.0",
-      "2018": "2.0",
-      "2022": "3.0"
+      "1998": "3",
+      "2002": "23",
+      "2006": "22",
+      "2014": "22",
+      "2018": "2",
+      "2022": "3",
+      "2026": "20"
     },
     "Jamaica": {
-      "1998": "22.0"
+      "1998": "22"
     },
     "Sydafrika": {
-      "1998": "24.0",
-      "2002": "17.0",
-      "2010": "20.0"
+      "1998": "24",
+      "2002": "17",
+      "2010": "20",
+      "2026": "26"
     },
     "Japan": {
-      "1998": "31.0",
-      "2002": "9.0",
-      "2006": "28.0",
-      "2010": "9.0",
-      "2014": "28.0",
-      "2018": "15.0",
-      "2022": "9.0"
+      "1998": "31",
+      "2002": "9",
+      "2006": "28",
+      "2010": "9",
+      "2014": "28",
+      "2018": "15",
+      "2022": "9",
+      "2026": "21"
     },
     "Senegal": {
-      "2002": "7.0",
-      "2018": "17.0",
-      "2022": "10.0"
+      "2002": "7",
+      "2018": "17",
+      "2022": "10",
+      "2026": "31"
     },
     "Ecuador": {
-      "2002": "24.0",
-      "2006": "12.0",
-      "2014": "17.0",
-      "2022": "18.0"
+      "2002": "24",
+      "2006": "12",
+      "2014": "17",
+      "2022": "18",
+      "2026": "25"
     },
     "Slovenien": {
-      "2002": "30.0",
-      "2010": "18.0"
+      "2002": "30",
+      "2010": "18"
     },
     "Kina": {
-      "2002": "31.0"
+      "2002": "31"
     },
     "Angola": {
-      "2006": "23.0"
+      "2006": "23"
     },
     "Elfenbenskusten": {
-      "2006": "19.0",
-      "2010": "17.0",
-      "2014": "20.0"
+      "2006": "19",
+      "2010": "17",
+      "2014": "20",
+      "2026": "19"
     },
     "Ghana": {
-      "2006": "13.0",
-      "2010": "7.0",
-      "2014": "26.0",
-      "2022": "25.0"
+      "2006": "13",
+      "2010": "7",
+      "2014": "26",
+      "2022": "25",
+      "2026": "24"
     },
     "Togo": {
-      "2006": "30.0"
+      "2006": "30"
     },
     "Trinidad & Tobago": {
-      "2006": "27.0"
+      "2006": "27"
     },
     "Ukraina": {
-      "2006": "8.0"
+      "2006": "8"
     },
     "Slovakien": {
-      "2010": "16.0"
+      "2010": "16"
     },
     "Bosnien-Hercegovina": {
-      "2014": "19.0"
+      "2014": "19",
+      "2026": "29"
     },
     "Island": {
-      "2018": "28.0"
+      "2018": "28"
     },
     "Panama": {
-      "2018": "32.0"
+      "2018": "32",
+      "2026": "43"
     },
     "Qatar": {
-      "2022": "32.0"
+      "2022": "32",
+      "2026": "41"
+    },
+    "Curaçao": {
+      "2026": "42"
+    },
+    "Jordanien": {
+      "2026": "44"
+    },
+    "Kap Verde": {
+      "2026": "32"
+    },
+    "Uzbekistan": {
+      "2026": "46"
     }
   },
   "staff": {
