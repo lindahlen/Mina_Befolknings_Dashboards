@@ -61,7 +61,16 @@
         /* Dölj standardpilar i sifferinmatning för renare UI */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
+        /* Dölj upp/ner-pilar i input-fält för alla webbläsare */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+            appearance: textfield; /* <-- HÄR ÄR FIXEN SOM VS CODE VILL HA! */
+        }
 
         /* Responsivitet för den övre listen/huvudrubriken på små skärmar */
         @media (max-width: 768px) {
@@ -360,7 +369,7 @@
             <div class="analysis-panel">
                 <h4>What-If Simulator (Multipel Regression)</h4>
                 <p class="text-muted mb-4">
-                    Justera värdena för Linköpings starkaste drivkrafter (isolerade av AI:n) för att simulera hur framtida strategiska segrar slår igenom i form av högre indexpoäng gentemot de övriga storstäderna. (Basnivå Riket = 100).
+                    Justera värdena för Linköpings starkaste drivkrafter (isolerade av AI:n) för att simulera hur framtida strategiska segrar slår igenom i form av högre indexpoäng gentemot de övriga storstäderna. (Basnivå: Genomsnittet för Sveriges 12 största kommuner = 100).
                 </p>
                 <div class="row">
                     <!-- SPALT 1: REGLAGE -->
@@ -422,7 +431,7 @@
                             
                             <div style="font-size: 0.85rem; color: #475569; margin-bottom: 15px;">
                                 <strong>🎯 Estimerad Indexpoäng:</strong><br>
-                                Visar Linköpings framtida matematiska styrka i det valda området gentemot de andra storstäderna. (Sverigesnittet = 100).
+                                Visar Linköpings framtida matematiska styrka i det valda området gentemot de andra storstäderna. (Genomsnittet för Sveriges tolv största kommuner = 100). <br>Tänk på att exempelvis Stockholm har stort genomslag vid dessa jämförelser.
                             </div>
                             
                             <div style="font-size: 0.85rem; color: #475569; margin-bottom: 15px;">
@@ -506,6 +515,12 @@
                             <div style="font-size: 0.85rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 10px;">
                                 <strong>⚙️ Data per capita:</strong><br>
                                 Klicka i "Visa per 100 tusen inv." för att normalisera råvolymer (ex. totalt antal sysselsatta). Detta gör att Linköping kan jämföras helt rättvist mot jättar som Stockholm och Göteborg.
+                            </div>
+                                <br>
+                            <!-- DITT NYA TILLÄGG -->
+                            <div style="font-size: 0.85rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 10px; background-color: #fffbeb; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 3px solid #f59e0b;">
+                                <strong>💡 Tips!</strong><br>
+                                Klicka på "Riket" i teckenförklaringen för att dölja den linjen. Då visas Linköpings position ännu tydligare i direkt relation till de elva övriga storstäderna.
                             </div>
                         </div>
                     </div>
@@ -646,6 +661,33 @@
             { name: 'Umeå, Lund', color: '#4ed4b0', shape: 'triangle', cities: ['Umeå', 'Lund'] }
         ];
 
+        // ==========================================
+        // DYNAMISK FORMATERING FÖR SIMULATOR-SPAKAR
+        // ==========================================
+        function getDriverStep(driverName) {
+            if (!driverName) return "1";
+            let nameLower = driverName.toLowerCase();
+            
+            // Tillåter finjustering för specifika indikatorer
+            if (nameLower.includes('försörjningskvot')) return "0.01";
+            if (nameLower.includes('sysselsättningsgrad')) return "0.1";
+            
+            return "1"; // Standard för alla andra (volymer, priser etc.)
+        }
+
+        function formatDriverValue(driverName, value) {
+            if (!driverName || isNaN(value)) return value;
+            let val = parseFloat(value);
+            let nameLower = driverName.toLowerCase();
+            
+            // Anpassa antalet decimaler på skärmen baserat på indikatorn
+            if (nameLower.includes('försörjningskvot')) return val.toFixed(2);
+            if (nameLower.includes('sysselsättningsgrad')) return val.toFixed(1);
+            
+            // Annars runda till heltal och lägg till tusentalsavgränsare (ex: 12 500)
+            return Math.round(val).toLocaleString('sv-SE');
+        }
+
         const MatrixMath = {
             multiply: function(a, b) {
                 let aRows = a.length, aCols = a[0].length, bCols = b[0].length;
@@ -692,8 +734,8 @@
 
         document.addEventListener("DOMContentLoaded", function() {
             Promise.all([
-                fetch('konkurrens_data.csv').then(res => res.ok ? res.text() : Promise.reject("Hittade inte data.csv")),
-                fetch('konkurrens_vikter.csv').then(res => res.ok ? res.text() : Promise.reject("Hittade inte vikter.csv"))
+                fetch('analysplattform_data.csv').then(res => res.ok ? res.text() : Promise.reject("Hittade inte data.csv")),
+                fetch('konkurrens_vikter2.csv').then(res => res.ok ? res.text() : Promise.reject("Hittade inte vikter.csv"))
             ]).then(([dataCsv, vikterCsv]) => {
                 Papa.parse(dataCsv.trim().replace(/^\uFEFF/i, ''), {
                     header: true, delimiter: ";", skipEmptyLines: true,
@@ -855,6 +897,35 @@
             return val;
         }
 
+        // ==========================================
+        // SÄKER NORMALISERING (SKYDDSNÄT FÖR INDEX)
+        // ==========================================
+        function getNormalizedScore(value, min, max, indicatorName) {
+            // Skyddsnät 1: Undvik division med noll (Kritisk fix för år 2025)
+            // Om alla kommuner har värdet 0, får alla en neutral poäng (50) istället för krasch.
+            if (max === min) {
+                return 50; 
+            }
+
+            // Standard Min-Max normalisering (0 till 100)
+            let score = ((value - min) / (max - min)) * 100;
+
+            // Skyddsnät 2: Inverterad logik för jämställdhet
+            // För "Syssgrad_kvinnor-män" är ett litet gap (värde nära 0) bäst. 
+            // Vi vänder på poängen så att Linköping belönas för jämställdhet.
+            if (indicatorName === 'Syssgrad_kvinnor-män') {
+                score = 100 - score; 
+            }
+
+            // Skyddsnät 3: Nettomigration och extremer
+            // Tvingar alltid poängen att hålla sig strikt mellan 0 och 100, 
+            // även om max/min-ramarna förskjuts av extremvärden från andra städer.
+            if (score > 100) score = 100;
+            if (score < 0) score = 0;
+
+            return score;
+        }
+
         function calculateIndexValue(kommun, year, presetName) {
             let presetCol = presetName.replace("INDEX: ", "");
             let sumWeights = 0; let totalScore = 0;
@@ -878,13 +949,58 @@
                             if (riket_pop !== null && riket_pop > 0) riket_val = (riket_val / riket_pop) * 100000;
                         }
 
-                        let indScore = 100; 
-                        if (riket_val !== 0) {
+                        let indScore = 100; // Standardvärde (Rikssnittet)
+                        let indNameLower = ind.Indikator.toLowerCase();
+                        let polaritet = ind.Polaritet ? ind.Polaritet.toString().trim().toLowerCase() : 'hög';
+
+                        // ==========================================
+                        // SÄKRA SKYDDSNÄT FÖR PROBLEMATISKA NOLLOR & NEGATIVA VÄRDEN
+                        // ==========================================
+                        
+                        // FALL 1: Förändringar (Deltan) - Lösningen på 2025 och motsatta riktningar!
+                        if (indNameLower.includes('förändring')) {
+                            // Vi använder differens istället för kvot för att hantera minus och nollor
+                            let diff = kom_val - riket_val;
+                            
+                            // För att undvika att extrema differenser (tusentals) spränger skalan
+                            // drar vi ner utslaget något, men behåller den korrekta matematiska riktningen.
+                            let scaledDiff = diff * 0.1; 
+                            
+                            if (polaritet === 'låg') {
+                                indScore = 100 - scaledDiff;
+                            } else {
+                                indScore = 100 + scaledDiff;
+                            }
+                        }
+                        
+                        // FALL 2: Jämställdhet (Syssgrad_kvinnor-män) - Noll är bäst!
+                        else if (indNameLower.includes('syssgrad_kvinnor-män')) {
+                            let absKom = Math.abs(kom_val);
+                            let absRiket = Math.abs(riket_val) === 0 ? 0.001 : Math.abs(riket_val);
+                            let kvot = absKom / absRiket;
+                            indScore = (2.0 - kvot) * 100; 
+                        }
+                        
+                        // FALL 3: Nettomigration (Kan gå på minus)
+                        else if (indNameLower.includes('inflyttning_annat-län-utflyttning')) {
+                            if (riket_val === 0) {
+                                indScore = kom_val >= 0 ? 120 : 80; 
+                            } else {
+                                let kvot = kom_val / Math.abs(riket_val);
+                                indScore = (1.0 + kvot) * 100;
+                            }
+                        }
+                        
+                        // ==========================================
+                        // STANDARD BERÄKNING (Kvot för absoluta tal)
+                        // ==========================================
+                        else if (riket_val !== 0) {
                             let kvot = kom_val / riket_val;
-                            let polaritet = ind.Polaritet ? ind.Polaritet.toString().trim().toLowerCase() : 'hög';
                             if (polaritet === 'låg') { indScore = (2.0 - kvot) * 100; } 
                             else { indScore = kvot * 100; }
                         }
+
+                        // Begränsa poängen så extrema svängningar inte spränger grafen (0-250 spann)
                         indScore = Math.max(0, Math.min(250, indScore));
                         totalScore += (indScore * w);
                     }
@@ -1322,7 +1438,7 @@
                     },
                     scales: {
                         x: { title: { display: true, text: 'Komponent 1 (Fångar Volym och Storlek)', font: { weight: 'bold' } } },
-                        y: { title: { display: true, text: 'Komponent 2 (Fångar kunskap och struktur)', } }
+                        y: { title: { display: true, text: 'Komponent 2 (Fångar kunskap och struktur)', font: { weight: 'bold' } } }
                     }
                 }
             });
@@ -1439,7 +1555,7 @@
                 
                 let displayName = klartextMap[driverName] || driverName;
                 
-                // 1. STÖDTEXT TILL HÖGER: Tog bort <br> och la till margin-left
+                // 1. STÖDTEXT TILL HÖGER
                 let unitLabel = "";
                 if (driverName === 'Total BRP (Miljarder SEK)') {
                     unitLabel = "(Miljarder kr)";
@@ -1456,13 +1572,28 @@
                 let val = parseFloat(row[`Lkpg_Val${i}`]);
                 let coef = parseFloat(row[`Coef${i}`]);
                 
-                let step = val > 1000 ? 50 : (val > 100 ? 5 : (val > 10 ? 1 : 1));
-                let displayVal = Math.round(val);
+                // ==========================================
+                // DYNAMISK FORMATERING FÖR SIMULATOR-SPAKAR
+                // ==========================================
+                // 💡 FIX 1: Använder 'driverName' istället för 'd'
+                let driverNameLower = (driverName || "").toLowerCase(); 
+                let step;
+                let displayValStr;
+
+                if (driverNameLower.includes('försörjningskvot')) {
+                    step = 0.01; // Hundradelar
+                    displayValStr = val.toFixed(2); 
+                } else if (driverNameLower.includes('sysselsättningsgrad')) {
+                    step = 0.1;  // Tiondelar
+                    displayValStr = val.toFixed(1);
+                } else {
+                    // Adaptiv skala för volymer
+                    step = val > 1000 ? 50 : (val > 100 ? 5 : (val > 10 ? 1 : 1));
+                    // 💡 FIX 2: Formaterar tusentals direkt här
+                    displayValStr = Math.round(val).toLocaleString('sv-SE'); 
+                }
                 
-                // 2. TUSENTALSAVGRÄNSARE: Formatera startvärdet med svensk standard (t.ex. 52 251)
-                let displayValStr = displayVal.toLocaleString('sv-SE');
-                
-                // 3. UI UPPDATERING: Ändrade type="number" till type="text" med inputmode="numeric" för att tillåta mellanslag
+                // 3. UI UPPDATERING: Bygger din snygga knapp-design!
                 let html = `
                 <div class="mb-4">
                     <label class="form-label text-center d-block fw-bold" style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;">${formattedName}</label>
@@ -1522,19 +1653,64 @@
         }
 
         // NY FUNKTION: Hanterar klick på plus/minus-knapparna
+        // ==========================================
+        // HANTERA PLUS/MINUS-KNAPPARNA
+        // ==========================================
         function adjustSpak(driverIndex, amount) {
             let inp = document.getElementById(`spak-${driverIndex}`);
             if (inp) {
-                // Tvätta bort mellanslag för att kunna räkna
+                // Tvätta bort mellanslag och hantera svenska kommatecken
                 let cleanStr = String(inp.value).replace(/\s/g, '').replace(',', '.');
                 let currentVal = parseFloat(cleanStr) || 0;
-                let newVal = currentVal + amount;
                 
-                // Formatera tillbaka med svensk tusentalsavgränsare
-                let dec = amount % 1 !== 0 ? 1 : 0;
-                inp.value = newVal.toLocaleString('sv-SE', {minimumFractionDigits: dec, maximumFractionDigits: dec});
+                // SÄKER MATEMATIK: Förhindrar att 0.67 + 0.01 blir 0.6800000001
+                let newVal = Math.round((currentVal + amount) * 10000) / 10000;
+                
+                // DYNAMISK PRECISION: Räkna ut hur många decimaler spaken faktiskt använder
+                let decimals = 0;
+                let amountStr = String(Math.abs(amount)).replace(',', '.');
+                if (amountStr.includes('.')) {
+                    decimals = amountStr.split('.')[1].length;
+                }
+                
+                // Formatera tillbaka till svensk standard med EXAKT rätt antal decimaler
+                if (decimals > 0) {
+                    inp.value = newVal.toLocaleString('sv-SE', {
+                        minimumFractionDigits: decimals, 
+                        maximumFractionDigits: decimals
+                    });
+                } else {
+                    inp.value = Math.round(newVal).toLocaleString('sv-SE');
+                }
+                
                 calculateScenario();
             }
+        }
+
+        // ==========================================
+        // HANTERA NÄR ANVÄNDAREN SKRIVER IN ETT TAL MANUELLT
+        // ==========================================
+        function formatSpak(element, step) {
+            let cleanStr = String(element.value).replace(/\s/g, '').replace(',', '.');
+            let val = parseFloat(cleanStr) || 0;
+            
+            // DYNAMISK PRECISION (samma logik som ovan)
+            let decimals = 0;
+            let stepStr = String(Math.abs(step)).replace(',', '.');
+            if (stepStr.includes('.')) {
+                decimals = stepStr.split('.')[1].length;
+            }
+            
+            if (decimals > 0) {
+                element.value = val.toLocaleString('sv-SE', {
+                    minimumFractionDigits: decimals,
+                    maximumFractionDigits: decimals
+                });
+            } else {
+                element.value = Math.round(val).toLocaleString('sv-SE');
+            }
+            
+            calculateScenario();
         }
 
         // Formaterar siffran snyggt om användaren klickar och skriver manuellt i fältet
