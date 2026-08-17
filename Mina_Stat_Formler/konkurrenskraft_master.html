@@ -140,10 +140,17 @@
         <div class="tab-pane fade show active" id="matrix" role="tabpanel">
             <div class="analysis-panel">
                 <h4>Strategisk Fyrfältare (Positionering)</h4>
-                <p class="text-muted mb-3">
-                    Analysera den strategiska positionen. Centrumkrysset anpassar sig automatiskt till snittet för de synliga bubblorna, 
-                    men du kan tvinga det att visa Sverigesnittet (Index 100) för att se hur gruppen presterar nationellt.
+                <p class="text-muted mb-3" style="line-height: 1.5;">
+                    Analysera städernas strategiska position. Centrumkrysset anpassar sig som standard efter snittet för de städer du ser på skärmen (visuell inzoomning), 
+                    men du kan tvinga det att låsas vid Rikssnittet för att se hur gruppen presterar nationellt.
                 </p>
+                
+                <div style="background-color: #f8f9fa; border-left: 3px solid #6c757d; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 0.85rem;">
+                    <strong>💡 Strategisk nyckel (Stockholmseffekten):</strong> 
+                    När du låser korset vid Riket kan många jämbördiga storstäder hamna i de vänstra/nedre kvadranterna. 
+                    Detta beror på att huvudstadsregionens extrema volym drar upp det nationella genomsnittet. 
+                    Om <strong>Linköping</strong> landar högt/långt till höger även när korset är låst mot Riket, bevisar det att staden orkar matcha och utmana självaste huvudstadsnivån!
+                </div>
                 
                 <div class="row controls-row align-items-end">
                     <div class="col-md-2">
@@ -186,30 +193,76 @@
                         </div>
                     </div>
                     
-                    <div class="col-md-3">
-                        <div class="matrix-summary-box">
-                            <h5 style="color: var(--primary-dark); font-size: 1.1rem; margin-bottom: 15px;">Strategisk Översikt</h5>
+                    <div class="col-md-3" style="display: flex; flex-direction: column; justify-content: flex-start; gap: 12px; max-height: 550px; overflow-y: auto; padding-right: 5px;">
+                        
+                        <!-- 1. STRATEGISK ÖVERSIKT (Kompakt) -->
+                        <div class="matrix-summary-box shadow-sm" style="background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 12px 15px; flex: 0 0 auto;">
+                            <h5 style="color: var(--primary-dark); font-size: 1.05rem; margin-bottom: 10px;">Strategisk Översikt</h5>
                             
-                            <div class="matrix-quad-title" id="quad-stars-title" style="color: #28a745;">⭐ Stjärnor (Över snittet)</div>
-                            <div class="matrix-quad-list" id="quad-stars">Laddar...</div>
+                            <div class="matrix-quad-title" id="quad-stars-title" style="color: #28a745; font-size: 0.9rem; margin-bottom: 2px;">⭐ Stjärnor (Över snittet)</div>
+                            <div class="matrix-quad-list" id="quad-stars" style="font-size: 0.8rem; margin-bottom: 8px; line-height: 1.2;">Laddar...</div>
                             
-                            <div class="matrix-quad-title" style="color: #0d6efd;">💰 Kassakor (Hög X, Låg Y)</div>
-                            <div class="matrix-quad-list" id="quad-cows">Laddar...</div>
+                            <div class="matrix-quad-title" style="color: #0d6efd; font-size: 0.9rem; margin-bottom: 2px;">💰 Kassakor (Hög X, Låg Y)</div>
+                            <div class="matrix-quad-list" id="quad-cows" style="font-size: 0.8rem; margin-bottom: 8px; line-height: 1.2;">Laddar...</div>
                             
-                            <div class="matrix-quad-title" style="color: #fd7e14;">❓ Frågetecken (Låg X, Hög Y)</div>
-                            <div class="matrix-quad-list" id="quad-questions">Laddar...</div>
+                            <div class="matrix-quad-title" style="color: #fd7e14; font-size: 0.9rem; margin-bottom: 2px;">❓ Frågetecken (Låg X, Hög Y)</div>
+                            <div class="matrix-quad-list" id="quad-questions" style="font-size: 0.8rem; margin-bottom: 8px; line-height: 1.2;">Laddar...</div>
                             
-                            <div class="matrix-quad-title" id="quad-dogs-title" style="color: #6c757d;">⚠️ Utmanare (Under snittet)</div>
-                            <div class="matrix-quad-list" id="quad-dogs" style="margin-bottom: 0;">Laddar...</div>
+                            <div class="matrix-quad-title" id="quad-dogs-title" style="color: #6c757d; font-size: 0.9rem; margin-bottom: 2px;">⚠️ Utmanare (Under snittet)</div>
+                            <div class="matrix-quad-list" id="quad-dogs" style="font-size: 0.8rem; margin-bottom: 5px; line-height: 1.2;">Laddar...</div>
+
+                            <!-- SCROLL-HINT -->
+                            <div style="font-size: 0.75rem; color: #6c757d; text-align: center; border-top: 1px dashed #dee2e6; padding-top: 8px; margin-top: 8px;">
+                                👇 <em>Se Tolkningsguide längre ner i spalten</em>
+                            </div>
                         </div>
+
+                        <!-- 2. TOLKNINGSGUIDE (Kompakt) -->
+                        <div class="matrix-summary-box shadow-sm" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; flex: 0 0 auto;">
+                            <h5 style="color: #a04000; font-size: 1.05rem; margin-bottom: 10px;">Tolkningsguide</h5>
+                            
+                            <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px;">
+                                <strong>📐 Dina Val (X och Y):</strong><br>
+                                Du styr själv vad axlarna representerar via rullistorna ovan. Diagrammet placerar automatiskt kommunerna baserat på dina valda variabler. X-axeln visas under diagrammet och Y-axeln till vänster om diagrammet.
+                            </div>
+
+                            <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px; border-top: 1px solid #dee2e6; padding-top: 8px;">
+                                <strong>🧭 Kvadranterna:</strong><br>
+                                <span style="color: #28a745; font-weight: bold;">⭐ Stjärnor:</span> Starka på både X och Y.<br>
+                                <span style="color: #0d6efd; font-weight: bold;">💰 Kassakor:</span> Starka på X, men svagare på Y.<br>
+                                <span style="color: #fd7e14; font-weight: bold;">❓ Frågetecken:</span> Starka på Y, men svagare på X.<br>
+                                <span style="color: #6c757d; font-weight: bold;">⚠️ Utmanare:</span> Presterar under snittet.
+                            </div>
+                            
+                            <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px; border-top: 1px solid #dee2e6; padding-top: 8px;">
+                                <strong>🌍 Analysnivå:</strong><br>
+                                Växla till "Geografiska grupper" för att jämföra Linköping med Riket, länet och ett antal i förväg fastställda relevanta geografiska grupper.
+                            </div>
+
+                            <div style="font-size: 0.8rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 8px;">
+                                <strong>🎯 Lås kors vid Riket (100):</strong><br>
+                                Aktivera funktionen för att fixera origo vid Sverigesnittet. Visar direkt hur Linköping presterar mot den fasta nationella baslinjen. (Ger störst insikt vid analys av Geografiska grupper).
+                            </div>
+
+                            <!-- TIPSRUTAN -->
+                            <div style="font-size: 0.8rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 8px; background-color: #fffbeb; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 3px solid #f59e0b;">
+                                <strong>💡 Tips!</strong><br>
+                                När du tittar på Geografiska grupper: Klicka på "Riket" i grafens teckenförklaring för att dölja den bubblan. Då autoskalas grafen och avstånden mellan grupperna blir mycket tydligare!
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </div>
 
+       <!-- ========================================== -->
         <!-- Flik 2: Regressionsanalys -->
+        <!-- ========================================== -->
         <div class="tab-pane fade" id="regression" role="tabpanel">
             <div class="analysis-panel" style="position: relative;">
+                
+                <!-- Laddnings-overlay -->
                 <div id="loading-overlay">
                     <div class="spinner-border text-warning me-3" role="status"></div>
                     <span id="loading-text">Laddar indikatorer och index...</span>
@@ -218,6 +271,7 @@
                 <h4>Regressionsanalys (Samband)</h4>
                 <p class="text-muted mb-3">Utforska hur olika indikatorer korrelerar med varandra bland de tolv största kommunerna. Om du klickar bort en kommungruppering i diagrammet, räknas trendlinjen om exklusivt för de resterande!</p>
                 
+                <!-- KONTROLLPANEL (Menyer och knappar) -->
                 <div class="row controls-row align-items-start">
                     <div class="col-md-3">
                         <label class="form-label font-weight-bold">X-axel (Förklarande variabel)</label>
@@ -249,30 +303,105 @@
                     </div>
                 </div>
 
-                <div class="row mb-3">
-                    <div class="col-md-4"><div class="stat-box"><div class="stat-value" id="reg-r2">-</div><div class="stat-label">R² (Förklaringsgrad)</div></div></div>
-                    <div class="col-md-4"><div class="stat-box"><div class="stat-value" id="reg-corr">-</div><div class="stat-label">Korrelation (r)</div></div></div>
-                    <div class="col-md-4"><div class="stat-box"><div class="stat-value" id="reg-eq">-</div><div class="stat-label">Linjär Ekvation</div></div></div>
-                </div>
+                <!-- HUVUD-ROW FÖR GRAF OCH HÖGERSPALT -->
+                <div class="row" style="flex-grow: 1;">
+                    
+                    <!-- VÄNSTER KOLUMN (Statistik, Graf & AI-panel) -->
+                    <div class="col-md-9" style="display: flex; flex-direction: column;">
+                        
+                        <!-- Statistik-boxarna (R2, Korrelation, Ekvation) -->
+                        <div class="row mb-3">
+                            <div class="col-md-4"><div class="stat-box"><div class="stat-value" id="reg-r2">-</div><div class="stat-label">R² (Förklaringsgrad)</div></div></div>
+                            <div class="col-md-4"><div class="stat-box"><div class="stat-value" id="reg-corr">-</div><div class="stat-label">Korrelation (r)</div></div></div>
+                            <div class="col-md-4"><div class="stat-box"><div class="stat-value" id="reg-eq">-</div><div class="stat-label">Linjär Ekvation</div></div></div>
+                        </div>
 
-                <div class="chart-container">
-                    <canvas id="regressionChart"></canvas>
-                </div>
-                
-                <div id="drivers-panel" class="drivers-panel">
-                    <div class="row">
-                        <div class="col-md-6 border-end">
-                            <h6 style="color: var(--primary-dark); font-weight: bold; margin-bottom: 10px;">💡 Bästa enskilda indikatorer</h6>
-                            <div id="drivers-list-single" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                        <!-- Diagrammet -->
+                        <div class="chart-container" style="background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 15px; min-height: 450px;">
+                            <canvas id="regressionChart"></canvas>
                         </div>
-                        <div class="col-md-6 ps-4">
-                            <h6 style="color: var(--primary-dark); font-weight: bold; margin-bottom: 10px;">🧩 Bästa kombination (Multipel Regression)</h6>
-                            <div id="drivers-list-multi" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                        
+                        <!-- Drivkrafter -->
+                        <div id="drivers-panel" class="drivers-panel mt-3">
+                            <div class="row">
+                                <div class="col-md-6 border-end">
+                                    <h6 style="color: var(--primary-dark); font-weight: bold; margin-bottom: 10px;">💡 Bästa enskilda indikatorer</h6>
+                                    <div id="drivers-list-single" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                                </div>
+                                <div class="col-md-6 ps-4">
+                                    <h6 style="color: var(--primary-dark); font-weight: bold; margin-bottom: 10px;">🧩 Bästa kombination (Multipel Regression)</h6>
+                                    <div id="drivers-list-multi" style="display: flex; flex-direction: column; gap: 4px;"></div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+
+                    </div> <!-- HÄR STÄNGS VÄNSTER KOLUMN -->
+
+                    <!-- HÖGER KOLUMN (Tolkningsguide) -->
+                    <div class="col-md-3" style="display: flex; flex-direction: column; justify-content: flex-start; max-height: 650px; overflow-y: auto; padding-right: 5px;">
+                        
+                        <div class="matrix-summary-box shadow-sm" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; flex: 0 0 auto;">
+                            <h5 style="color: #a04000; font-size: 1.05rem; margin-bottom: 10px;">Tolkningsguide</h5>
+                            
+                            <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px;">
+                                <strong>📐 Variablerna:</strong><br>
+                                <span style="font-weight: bold;">X-axel (Förklarande):</span> Den faktor du tror påverkar utfallet. (Visas under grafen).<br>
+                                <span style="font-weight: bold;">Y-axel (Beroende):</span> Det utfall du vill förstå. (Visas till vänster).
+                            </div>
+
+                            <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px; border-top: 1px solid #dee2e6; padding-top: 8px;">
+                                <strong>📊 Nyckeltal:</strong><br>
+                                <span style="color: var(--primary-dark); font-weight: bold;">R² (Förklaringsgrad):</span> Visar hur stor andel av variationen i Y som förklaras av X (0 till 1). Ett högt värde innebär att städernas punkter ligger tätt intill linjen. Ett värde på t.ex. 0.112 betyder att X förklarar ca 11 % av Y – resten beror på andra lokala faktorer!<br><br>
+                                <span style="color: var(--primary-dark); font-weight: bold;">Korrelation (R):</span> Anger riktning och styrka (-1 till 1). Positivt = båda ökar. Negativt = när en ökar, minskar den andra.<br><br>
+                                <span style="color: var(--primary-dark); font-weight: bold;">Linjär ekvation (y = kx + m):</span> Den matematiska formeln för trendlinjen (storstadsnormen). <br>
+                                <ul style="margin-top: 4px; margin-bottom: 6px; padding-left: 20px;">
+                                    <li><strong>k (lutningen):</strong> Visar hur mycket Y förändras när X ökar med 1.</li>
+                                    <li><strong>m (startvärdet):</strong> Visar vad Y teoretiskt skulle vara om X var noll.</li>
+                                </ul>
+                                
+                                <!-- EXEMPELRUTAN (Anpassad för Linköpings verkliga data 2025) -->
+                                <div style="background-color: #f1f5f9; padding: 12px; border-radius: 6px; margin-top: 10px; border-left: 3px solid #0d6efd; line-height: 1.4;">
+                                    <strong style="color: var(--primary-dark); font-size: 0.85rem;">🔍 Så läser du trenden (Linköping 2025)</strong><br>
+                                    <div style="margin-top: 6px; margin-bottom: 8px;">
+                                        Med <strong>36,6 %</strong> lång eftergymnasial utbildning (<em>20-64 år</em>) (x = 36,6) kan vi räkna ut Linköpings <em>förväntade värde</em> utifrån två verkliga, men väldigt olika, samband:
+                                    </div>
+                                    
+                                    <!-- Positivt, starkt samband -->
+                                    <div style="border-left: 2px solid #198754; padding-left: 8px; margin-bottom: 8px; background: #fff; padding-top: 6px; padding-bottom: 6px; padding-right: 6px; border-radius: 4px;">
+                                        <span style="color: #198754; font-weight: bold;">1. Starkt & Positivt (Y = HCI)</span><br>
+                                        <em>R² = 0.851 | y = 2.80x + 12.27</em><br>
+                                        Uträkning: (2.80 * 36,6) + 12.27 = <strong>124,4</strong><br>
+                                        <strong>Insikt:</strong> Här är sambandet extremt starkt. Utbildning bygger HCI. Linköpings bubbla ligger dessutom <em>över</em> trendlinjen – staden genererar alltså mer humankapital per utbildad invånare än normen!
+                                    </div>
+
+                                    <!-- Negativt, svagare samband (Kluringen) -->
+                                    <div style="border-left: 2px solid #dc3545; padding-left: 8px; margin-bottom: 8px; background: #fff; padding-top: 6px; padding-bottom: 6px; padding-right: 6px; border-radius: 4px;">
+                                        <span style="color: #dc3545; font-weight: bold;">2. Oväntat & Negativt (Y = Sysselsättning)</span><br>
+                                        <em>R² = 0.310 | y = -0.27x + 87.01</em><br>
+                                        Uträkning: (-0.27 * 36,6) + 87.01 = <strong>77,5</strong><br>
+                                        <strong>Insikt:</strong> En kluring! Trenden visar att en extremt hög andel akademiker faktiskt korrelerar svagt med en <em>lägre</em> total sysselsättningsgrad i storstäderna. Här landar universitetsstaden Linköping (77,5 %) precis <em>över</em> vad formeln förväntar sig.
+                                    </div>
+
+                                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #cbd5e1;">
+                                        <strong>🎯 Den strategiska insikten:</strong> R² visar hur "styrande" trenden är. Det första exemplet (R²=0.851) är nästan en naturlag. Det andra (R²=0.310) har stor spridning, vilket innebär att det är mycket lättare för lokala åtgärder att bryta den trenden!
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- TIPSRUTAN -->
+                            <div style="font-size: 0.8rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 8px; background-color: #fffbeb; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 3px solid #f59e0b;">
+                                <strong>💡 Tips!</strong><br>
+                                Klicka på en kommungrupp (t.ex. De fyra största kommunerna "Sthlm, Gbg, Malmö, Uppsala") i teckenförklaringen för att dölja dem. <strong>Trendlinjen räknas då automatiskt om</strong> exklusivt för de kommuner som är kvar i bild!<BR>
+                                    Du har även möjlighet att välja mellan att titta på ett specifikt år, eller flera år, för att studera sambandet. Bocka i "Samma år" ovanför diagrammet för att analysera ett enda år, eller avmarkera för att analysera ett spann av år.                        
+                            </div>
+                        </div>
+
+                    </div> <!-- HÄR STÄNGS HÖGER KOLUMN -->
+
+                </div> <!-- HÄR STÄNGS HUVUD-ROW FÖR GRAF OCH HÖGERSPALT -->
+
+            </div> <!-- HÄR STÄNGS ANALYSIS-PANEL -->
+        </div> <!-- HÄR STÄNGS TAB-PANE FÖR REGRESSION -->
 
         <!-- Flik 3: AI Klusteranalys -->
      <div class="tab-pane fade" id="cluster" role="tabpanel">
@@ -367,10 +496,34 @@
         <!-- Flik 6: Scenario-simulator -->
         <div class="tab-pane fade" id="scenario" role="tabpanel">
             <div class="analysis-panel">
-                <h4>What-If Simulator (Multipel Regression)</h4>
-                <p class="text-muted mb-4">
-                    Justera värdena för Linköpings starkaste drivkrafter (isolerade av AI:n) för att simulera hur framtida strategiska segrar slår igenom i form av högre indexpoäng gentemot de övriga storstäderna. (Basnivå: Genomsnittet för Sveriges 12 största kommuner = 100).
-                </p>
+                
+                <!-- NY LAYOUT: Rubrik/Text och Knapp på samma rad -->
+                <div class="row align-items-center mb-4 pb-3" style="border-bottom: 1px solid #dee2e6;">
+                    
+                    <!-- VÄNSTER SIDA: Rubrik och Dynamisk Text -->
+                    <div class="col-lg-8">
+                        <h4 class="mb-2" style="color: var(--primary-dark);">What-If Simulator (Multipel Regression)</h4>
+                        <p id="scenario-intro-text" class="text-muted mb-0" style="line-height: 1.5; min-height: 3em;">
+                            Laddar simulatordata...
+                        </p>
+                    </div>
+                    
+                    <!-- HÖGER SIDA: Den kompakta Strömbrytaren -->
+                    <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                        <div class="p-2" style="background-color: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--primary-orange); display: inline-block; text-align: left; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+                            <div class="form-check form-switch mb-1" style="transform: scale(1.1); transform-origin: left center;">
+                                <input class="form-check-input" type="checkbox" id="scenario-baseline-toggle" onchange="calculateScenario()" checked style="cursor: pointer;">
+                                <label class="form-check-label ms-2 fw-bold" for="scenario-baseline-toggle" style="color: var(--primary-dark); cursor: pointer; font-size: 0.9rem;">
+                                    🌍 Nationell jämförelse
+                                </label>
+                            </div>
+                            <div class="text-muted" style="font-size: 0.75rem; line-height: 1.2;">
+                                Växla mellan de sanna index-värdena (Fyrfältaren) och er egen baslinje (Nollställd till 100).
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="row">
                     <!-- SPALT 1: REGLAGE -->
                     <div class="col-md-4">
@@ -431,12 +584,15 @@
                             
                             <div style="font-size: 0.85rem; color: #475569; margin-bottom: 15px;">
                                 <strong>🎯 Estimerad Indexpoäng:</strong><br>
-                                Visar Linköpings framtida matematiska styrka i det valda området gentemot de andra storstäderna. (Genomsnittet för Sveriges tolv största kommuner = 100). <br>Tänk på att exempelvis Stockholm har stort genomslag vid dessa jämförelser.
+                                <span id="guide-est-score-text">Laddar...</span>
                             </div>
                             
                             <div style="font-size: 0.85rem; color: #475569; margin-bottom: 15px;">
                                 <strong>📍 Baslinje (Nu):</strong><br>
-                                Din startpunkt. Detta är den poäng Linköping har idag, som <em>default</em> baserat på de fem viktigaste drivkrafterna för det valda indexet. Välj i rullistan "<em>Antal spakar att visa</em>" hur många indikatorrer som du samtidigt vill visa. Du har möjlighet att välja mellan att visa en och fem viktiga drivkrafterna för respektive index. 
+                                <span id="guide-baseline-text">Laddar...</span>
+                                <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1;">
+                                    <em>💡 Tips: Välj i rullistan "Antal spakar att visa" (1 till 5) för att bestämma hur många av de starkaste drivkrafterna du vill simulera samtidigt.</em>
+                                </div>
                             </div>
                             
                             <div style="font-size: 0.85rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 10px; margin-bottom: 15px;">
@@ -747,20 +903,31 @@
                         vikterConfig = res.data.filter(row => row.Indikator !== 'Summa' && row.Indikator !== 'Totalt'); 
                         
                         const nya_index = {
-                            'Bostadspriser': {'PCI_Proxy': 0.35},
-                            'Nettoflyttning (Beräknad Inflyttning_annat_län-Utflyttning_annat_län)': {'PCI_Proxy': 0.25},
-                            'Bostadsbyggande': {'PCI_Proxy': 0.25},
-                            'Födda_1000_vuxna': {'PCI_Proxy': 0.15},
-                            'BRP': {'ECI_Proxy': 0.40},
-                            'Nettopendling (Beräknad Inpendling-Utpendling)': {'ECI_Proxy': 0.25},
-                            'Nettoinkomst_median': {'ECI_Proxy': 0.15},
-                            'Förvärvsinkomst_median': {'ECI_Proxy': 0.05},
-                            'Nyföretagande': {'ECI_Proxy': 0.15},
-                            'Lång_eftergymnasial_proc25': {'HCI_Proxy': 0.40},
-                            'KIBS (beräkning Sysselsatta)': {'HCI_Proxy': 0.30},
-                            'Sysselsättningsgrad': {'HCI_Proxy': 0.20},
-                            'Långtidsarbetslöshet': {'HCI_Proxy': 0.10}
+                            'Bostadspriser': {'PCI_Proxy': 0.35, 'Polaritet': 'hög'},
+                            'Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59)': {'PCI_Proxy': 0.25, 'Polaritet': 'hög'},
+                            'Bostadsbyggande': {'PCI_Proxy': 0.25, 'Polaritet': 'hög'},
+                            'Födda_1000_vuxna': {'PCI_Proxy': 0.15, 'Polaritet': 'hög'},
+                            
+                            'BRP': {'ECI_Proxy': 0.40, 'Polaritet': 'hög'},
+                            'Nettopendling (Beräknad Inpendling-Utpendling)': {'ECI_Proxy': 0.25, 'Polaritet': 'hög'},
+                            'Nettoinkomst_median': {'ECI_Proxy': 0.15, 'Polaritet': 'hög'},
+                            'Förvärvsinkomst_median': {'ECI_Proxy': 0.05, 'Polaritet': 'hög'},
+                            'Nyföretagande': {'ECI_Proxy': 0.15, 'Polaritet': 'hög'},
+                            
+                            'Lång_eftergymnasial_proc25': {'HCI_Proxy': 0.40, 'Polaritet': 'hög'},
+                            'KIBS (beräkning Sysselsatta)': {'HCI_Proxy': 0.30, 'Polaritet': 'hög'},
+                            'Sysselsättningsgrad': {'HCI_Proxy': 0.20, 'Polaritet': 'hög'},
+                            'Långtidsarbetslöshet': {'HCI_Proxy': 0.10, 'Polaritet': 'låg'}
                         };
+
+                        // Tvinga in de nya i vikterConfig
+                        for (let indName in nya_index) {
+                            if (!vikterConfig.find(r => r.Indikator === indName)) {
+                                vikterConfig.push({ Indikator: indName }); 
+                            }
+                        }
+
+                        // Nu körs din vanliga loop felfritt!
                         
                         vikterConfig.forEach(row => {
                             let ind = row.Indikator;
@@ -883,14 +1050,16 @@
         function getVariableValue(kommun, year, indName, usePer100k = false) {
             if (indName.startsWith("INDEX: ")) { return calculateIndexValue(kommun, year, indName); } 
             let row = rawData.find(d => d.Kommun === kommun && d.År == year && d.Indikator === indName);
-            if (!row || row.Värde === null) return null;
-            let val = parseFloat(row.Värde);
+            if (!row || row.Värde === null || row.Värde === '') return null;
+            
+            // FIX: Gör om kommatecken till punkt och rensa mellanslag innan tolkning
+            let val = parseFloat(row.Värde.toString().replace(',', '.').replace(/\s/g, ''));
             if (isNaN(val)) return null;
 
             if (usePer100k && requiresScaling(indName)) {
                 let popRow = rawData.find(d => d.Kommun === kommun && d.År == year && d.Indikator === 'Folkmängd');
                 if (popRow && popRow.Värde !== null) {
-                    let pop = parseFloat(popRow.Värde);
+                    let pop = parseFloat(popRow.Värde.toString().replace(',', '.').replace(/\s/g, ''));
                     if (pop > 0) val = (val / pop) * 100000;
                 }
             }
@@ -938,69 +1107,36 @@
                 if (!isNaN(w) && w > 0) {
                     let kom_val = getVariableValue(kommun, year, ind.Indikator, false);
                     let riket_val = getVariableValue('Riket', year, ind.Indikator, false);
-                    
-                    if (kom_val !== null && riket_val !== null) {
+                    let indNameLower = ind.Indikator.toLowerCase();
+
+                    // ==========================================
+                    // SÄKERHETSNÄTET BEHÅLLS: Om Riket är NaN/saknas 
+                    // räknar motorn internt ut 12-stadssnittet som reserv-baslinje!
+                    // ==========================================
+                    if (kom_val !== null && (riket_val === null || isNaN(riket_val) || riket_val === 0)) {
+                        let sum = 0, count = 0;
+                        targetMunicipalities.forEach(k => {
+                            let v = getVariableValue(k, year, ind.Indikator, false);
+                            if (v !== null && !isNaN(v)) { sum += v; count++; }
+                        });
+                        riket_val = count > 0 ? (sum / count) : 1;
+                    }
+
+                    if (kom_val !== null && riket_val !== null && riket_val !== 0) {
                         sumWeights += w;
                         
-                        if (requiresScaling(ind.Indikator)) {
-                            let kom_pop = getVariableValue(kommun, year, 'Folkmängd', false);
-                            let riket_pop = getVariableValue('Riket', year, 'Folkmängd', false);
-                            if (kom_pop !== null && kom_pop > 0) kom_val = (kom_val / kom_pop) * 100000;
-                            if (riket_pop !== null && riket_pop > 0) riket_val = (riket_val / riket_pop) * 100000;
-                        }
-
-                        let indScore = 100; // Standardvärde (Rikssnittet)
-                        let indNameLower = ind.Indikator.toLowerCase();
+                        let indScore = 100; 
                         let polaritet = ind.Polaritet ? ind.Polaritet.toString().trim().toLowerCase() : 'hög';
 
-                        // ==========================================
-                        // SÄKRA SKYDDSNÄT FÖR PROBLEMATISKA NOLLOR & NEGATIVA VÄRDEN
-                        // ==========================================
-                        
-                        // FALL 1: Förändringar (Deltan) - Lösningen på 2025 och motsatta riktningar!
-                        if (indNameLower.includes('förändring')) {
-                            // Vi använder differens istället för kvot för att hantera minus och nollor
-                            let diff = kom_val - riket_val;
-                            
-                            // För att undvika att extrema differenser (tusentals) spränger skalan
-                            // drar vi ner utslaget något, men behåller den korrekta matematiska riktningen.
-                            let scaledDiff = diff * 0.1; 
-                            
-                            if (polaritet === 'låg') {
-                                indScore = 100 - scaledDiff;
-                            } else {
-                                indScore = 100 + scaledDiff;
-                            }
-                        }
-                        
-                        // FALL 2: Jämställdhet (Syssgrad_kvinnor-män) - Noll är bäst!
-                        else if (indNameLower.includes('syssgrad_kvinnor-män')) {
-                            let absKom = Math.abs(kom_val);
-                            let absRiket = Math.abs(riket_val) === 0 ? 0.001 : Math.abs(riket_val);
-                            let kvot = absKom / absRiket;
-                            indScore = (2.0 - kvot) * 100; 
-                        }
-                        
-                        // FALL 3: Nettomigration (Kan gå på minus)
-                        else if (indNameLower.includes('inflyttning_annat-län-utflyttning')) {
-                            if (riket_val === 0) {
-                                indScore = kom_val >= 0 ? 120 : 80; 
-                            } else {
-                                let kvot = kom_val / Math.abs(riket_val);
-                                indScore = (1.0 + kvot) * 100;
-                            }
-                        }
-                        
-                        // ==========================================
-                        // STANDARD BERÄKNING (Kvot för absoluta tal)
-                        // ==========================================
-                        else if (riket_val !== 0) {
-                            let kvot = kom_val / riket_val;
-                            if (polaritet === 'låg') { indScore = (2.0 - kvot) * 100; } 
-                            else { indScore = kvot * 100; }
+                        let kvot = kom_val / riket_val;
+
+                        // Om det är långtidsarbetslöshet (låg är bra)
+                        if (polaritet === 'låg' || indNameLower.includes('arbetslöshet')) {
+                            indScore = (2.0 - kvot) * 100;
+                        } else {
+                            indScore = kvot * 100;
                         }
 
-                        // Begränsa poängen så extrema svängningar inte spränger grafen (0-250 spann)
                         indScore = Math.max(0, Math.min(250, indScore));
                         totalScore += (indScore * w);
                     }
@@ -1104,6 +1240,7 @@
             if (regChartInstance) regChartInstance.destroy();
             let datasets = [];
             
+            // 1. HÄR SKAPAS STÄDERNA (Det är här vi gör prickarna större!)
             municipalityGroups.forEach(group => {
                 let groupData = scatterData.filter(d => group.cities.includes(d.kommun));
                 if (groupData.length > 0) {
@@ -1114,13 +1251,32 @@
                         borderColor: group.color,
                         borderWidth: 1.5,
                         pointStyle: group.shape,
+                        
+                        // --- NYA STORLEKAR FÖR STÄDERNA ---
+                        radius: 8,              // Standardstorlek (gör bubblan stor)
+                        hoverRadius: 12,        // Storlek när muspekaren hålls över
+                        pointRadius: 8,         // Fallback för att garantera att det slår igenom
+                        pointHoverRadius: 12,   // Fallback
+                        // ----------------------------------
+                        
                         hidden: hiddenRegressionDatasets.has(group.name)
                     });
                 }
             });
             
+            // 2. HÄR SKAPAS TRENDLINJEN (Här ska pointRadius vara 0, annars får linjen "knutar")
             if (trendData) {
-                datasets.push({ label: 'Trendlinje', data: trendData, type: 'line', borderColor: '#a04000', borderWidth: 2, borderDash: [5, 5], fill: false, pointRadius: 0, pointHoverRadius: 0 });
+                datasets.push({ 
+                    label: 'Trendlinje', 
+                    data: trendData, 
+                    type: 'line', 
+                    borderColor: '#a04000', 
+                    borderWidth: 2, 
+                    borderDash: [5, 5], 
+                    fill: false, 
+                    pointRadius: 0, 
+                    pointHoverRadius: 0 
+                });
             }
 
             regChartInstance = new Chart(ctx, {
@@ -1171,8 +1327,11 @@
                 if (pixelY >= top && pixelY <= bottom) { ctx.moveTo(left, pixelY); ctx.lineTo(right, pixelY); }
                 ctx.stroke();
                 
-                ctx.font = 'bold 16px "Segoe UI"';
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+                // ==========================================
+                // FIX: Tydligare stålgrå färg och lite större font
+                // ==========================================
+                ctx.font = 'bold 18px "Segoe UI"';
+                ctx.fillStyle = 'rgba(108, 117, 125, 0.20)'; // 20% opacitet för perfekt läsbarhet
                 ctx.textAlign = 'center';
                 
                 if(pixelX > left && pixelY > top) {
@@ -1190,7 +1349,7 @@
             setTimeout(updateMatrix, 50);
         }
 
-        function updateMatrix() {
+       function updateMatrix() {
             const indX = document.getElementById('matrix-x-axis').value;
             const indY = document.getElementById('matrix-y-axis').value;
             const indR = document.getElementById('matrix-r-axis').value;
@@ -1237,13 +1396,20 @@
                 }
             });
 
-            let isBothIndex = indX.startsWith("INDEX:") && indY.startsWith("INDEX:");
-            
+            // ==========================================
+            // FIX: DYNAMISKT KORS FÖR BÅDE INDEX OCH RÅDATA
+            // ==========================================
             let midX, midY;
-            if (lockAt100 && isBothIndex) {
-                midX = 100.0;
-                midY = 100.0;
+            if (lockAt100) {
+                // Hämta Rikets äkta värden oavsett om det är Index eller Procent
+                let riketX = getVariableValue('Riket', year, indX, false);
+                let riketY = getVariableValue('Riket', year, indY, false);
+                
+                // Om Rikets värde finns, använd det. Annars fallback till det synliga snittet.
+                midX = (riketX !== null && !isNaN(riketX)) ? riketX : (visibleXValues.length ? visibleXValues.reduce((a,b)=>a+b,0)/visibleXValues.length : 0);
+                midY = (riketY !== null && !isNaN(riketY)) ? riketY : (visibleYValues.length ? visibleYValues.reduce((a,b)=>a+b,0)/visibleYValues.length : 0);
             } else {
+                // Visuell inzoomning (Snittet av städerna på skärmen)
                 midX = visibleXValues.length ? visibleXValues.reduce((a,b)=>a+b,0)/visibleXValues.length : 0;
                 midY = visibleYValues.length ? visibleYValues.reduce((a,b)=>a+b,0)/visibleYValues.length : 0;
             }
@@ -1271,7 +1437,8 @@
                 }
             });
 
-            let crossLabel = (lockAt100 && isBothIndex) ? "100" : "snittet";
+            // Dynamisk titel som speglar om det är Riket eller Städernas snitt
+            let crossLabel = lockAt100 ? "Rikssnittet" : "snittet";
             document.getElementById('quad-stars-title').innerText = `⭐ Stjärnor (Över ${crossLabel})`;
             document.getElementById('quad-dogs-title').innerText = `⚠️ Utmanare (Under ${crossLabel})`;
 
@@ -1317,7 +1484,6 @@
                 });
             }
 
-            // NYHET: Använder den nya formateringsfunktionen
             let cleanXLabel = formatAxisLabel(indX);
             let cleanYLabel = formatAxisLabel(indY);
 
@@ -1615,7 +1781,8 @@
             const row = scenarioData.find(d => d.Target_Index === target && parseInt(d.Model_Size) === numSpakar);
             if(!row) return;
 
-            let score = parseFloat(row.Intercept);
+            // 1. Räkna ut den råa poängen från Python-modellen
+            let rawScore = parseFloat(row.Intercept);
             
             for (let i = 1; i <= numSpakar; i++) {
                 let coef = parseFloat(row[`Coef${i}`]);
@@ -1625,91 +1792,135 @@
                 let inp = document.querySelector(`.scenario-input[data-driver="${i}"]`);
                 
                 if (inp) {
-                    // NYTT: Tvätta bort mellanslag och kommatecken innan vi räknar matte
                     let cleanStr = String(inp.value).replace(/\s/g, '').replace(',', '.');
                     val = parseFloat(cleanStr) || 0;
                 } else {
                     val = parseFloat(row[`Lkpg_Val${i}`]) || 0;
                 }
                 
-                score += (val * coef);
+                rawScore += (val * coef);
             }
 
-            const baseScore = parseFloat(row.Lkpg_Baseline_Score);
-            const diff = score - baseScore;
+            // 2. Diffen (Hur många poäng reglagen genererar)
+            const csvBaseScore = parseFloat(row.Lkpg_Baseline_Score);
+            const diff = rawScore - csvBaseScore;
+
+            // ==========================================
+            // FIX 2.0: BOMB-SÄKER HÄMTNING AV SANNA VÄRDEN
+            // ==========================================
+            let displayBaseScore = 100.0;
+            let displayNewScore = 100.0;
             
-            document.getElementById('scenario-new-score').innerText = score.toFixed(1);
+            let toggle = document.getElementById('scenario-baseline-toggle');
+            let useNational = toggle ? toggle.checked : true;
+
+            if (useNational) {
+                // TVINGA FRAM EXAKT RÄTT STRÄNG OAVSETT VAD CSV-FILEN SÄGER
+                let targetStr = "";
+                let targetUpper = String(target).toUpperCase();
+                if (targetUpper.includes("PCI")) targetStr = "INDEX: PCI_Proxy";
+                else if (targetUpper.includes("ECI")) targetStr = "INDEX: ECI_Proxy";
+                else if (targetUpper.includes("HCI")) targetStr = "INDEX: HCI_Proxy";
+                else targetStr = target; // Fallback om det är något helt annat
+                
+                // Säkra året (tvinga 2025 som fallback om dropdownen är dold)
+                let yearSelect = document.getElementById('matrix-year');
+                let simYear = (yearSelect && yearSelect.value) ? parseInt(yearSelect.value) : 2025;
+                if (isNaN(simYear)) simYear = 2025;
+
+                // Anropa Master-motorn!
+                let realNationalScore = calculateIndexValue('Linköping', simYear, targetStr);
+                
+                // SKVALLER-LOGG: Tryck F12 i webbläsaren för att se varför matematiken gör som den gör
+                console.log(`Simulator Debug -> Letar efter: ${targetStr} (År: ${simYear}). Master-motorn returnerade: ${realNationalScore}. CSV-reserven var: ${csvBaseScore}`);
+                
+                if (realNationalScore !== null && !isNaN(realNationalScore)) {
+                    displayBaseScore = realNationalScore;
+                    displayNewScore = realNationalScore + diff; 
+                } else {
+                    displayBaseScore = csvBaseScore; // Fallback (Bör ej ske nu!)
+                    displayNewScore = rawScore;
+                }
+            } else {
+                // Tävla mot sig själv
+                displayBaseScore = 100.0;
+                displayNewScore = 100.0 + diff;
+            }
+
+            const finalDiff = displayNewScore - displayBaseScore;
+            
+            // 3. Skriv ut de sanna värdena
+            document.getElementById('scenario-base-score').innerText = displayBaseScore.toFixed(1);
+            document.getElementById('scenario-new-score').innerText = displayNewScore.toFixed(1);
             
             let badge = document.getElementById('scenario-diff-badge');
-            badge.innerText = (diff >= 0 ? "+" : "") + diff.toFixed(1);
+            badge.innerText = (finalDiff >= 0 ? "+" : "") + finalDiff.toFixed(1);
             
-            if (Math.abs(diff) < 0.05) {
+            if (Math.abs(finalDiff) < 0.05) {
                 badge.className = "badge bg-secondary";
-            } else if (diff > 0) {
+            } else if (finalDiff > 0) {
                 badge.className = "badge bg-success";
             } else {
                 badge.className = "badge bg-danger";
             }
+
+            // 4. Uppdatera Tolkningsguiden dynamiskt!
+            let introText = document.getElementById('scenario-intro-text');
+            let guideEst = document.getElementById('guide-est-score-text');
+            let guideBase = document.getElementById('guide-baseline-text');
+
+            if (useNational) {
+                // TEXTER NÄR KNAPPEN ÄR PÅ (Nationell Konkurrens)
+                if (introText) introText.innerHTML = "Justera värdena för Linköpings starkaste drivkrafter (isolerade av AI:n) för att simulera hur framtida strategiska segrar slår igenom i form av högre indexpoäng gentemot de övriga storstäderna. <strong style='color: var(--primary-dark);'>Baslinjen är dynamiskt kopplad till Fyrfältaren (Riket=100).</strong>";
+                if (guideEst) guideEst.innerHTML = "Visar Linköpings framtida matematiska styrka i det valda området gentemot de andra storstäderna. (Sverigesnittet = 100).<br><span style='font-size: 0.85rem; display: inline-block; margin-top: 6px;'><em>💡 Tänk på att exempelvis Stockholm har ett extremt stort genomslag vid dessa jämförelser.</em></span>";
+                if (guideBase) guideBase.innerHTML = "Din startpunkt. Detta är Linköpings sanna, nationella konkurrenskraft idag, hämtad direkt från Fyrfältaren. Ett värde på t.ex. 138 betyder att Linköping presterar 38 % över riksnormen.";
+            } else {
+                // TEXTER NÄR KNAPPEN ÄR AV (Egen Utveckling)
+                if (introText) introText.innerHTML = "Justera värdena för Linköpings starkaste drivkrafter för att simulera er egen lokala utveckling. Här är Linköpings nuvarande position nollställd till <strong style='color: var(--primary-dark);'>Index 100</strong> för att isolerat mäta hur mycket era egna strategiska insatser lyfter resultatet.";
+                if (guideEst) guideEst.innerHTML = "Visar den isolerade effekten av era lokala insatser. Indexet mäter nu enbart hur mycket ni förbättrar er jämfört med er nuvarande nivå.";
+                if (guideBase) guideBase.innerHTML = "Din startpunkt. För att tydligt visa effekten av era strategier är Linköpings nuvarande nivå nollställd till exakt <strong>Index 100</strong>. Varje poäng över 100 är ren förbättring!";
+            }
         }
 
-        // NY FUNKTION: Hanterar klick på plus/minus-knapparna
         // ==========================================
         // HANTERA PLUS/MINUS-KNAPPARNA
         // ==========================================
         function adjustSpak(driverIndex, amount) {
             let inp = document.getElementById(`spak-${driverIndex}`);
             if (inp) {
-                // Tvätta bort mellanslag och hantera svenska kommatecken
                 let cleanStr = String(inp.value).replace(/\s/g, '').replace(',', '.');
                 let currentVal = parseFloat(cleanStr) || 0;
-                
-                // SÄKER MATEMATIK: Förhindrar att 0.67 + 0.01 blir 0.6800000001
                 let newVal = Math.round((currentVal + amount) * 10000) / 10000;
                 
-                // DYNAMISK PRECISION: Räkna ut hur många decimaler spaken faktiskt använder
                 let decimals = 0;
                 let amountStr = String(Math.abs(amount)).replace(',', '.');
-                if (amountStr.includes('.')) {
-                    decimals = amountStr.split('.')[1].length;
-                }
+                if (amountStr.includes('.')) { decimals = amountStr.split('.')[1].length; }
                 
-                // Formatera tillbaka till svensk standard med EXAKT rätt antal decimaler
                 if (decimals > 0) {
-                    inp.value = newVal.toLocaleString('sv-SE', {
-                        minimumFractionDigits: decimals, 
-                        maximumFractionDigits: decimals
-                    });
+                    inp.value = newVal.toLocaleString('sv-SE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
                 } else {
                     inp.value = Math.round(newVal).toLocaleString('sv-SE');
                 }
-                
                 calculateScenario();
             }
         }
 
         // ==========================================
-        // HANTERA NÄR ANVÄNDAREN SKRIVER IN ETT TAL MANUELLT
+        // HANTERA MANUELL INMATNING (Rensade bort dubbletten)
         // ==========================================
         function formatSpak(element, step) {
             let cleanStr = String(element.value).replace(/\s/g, '').replace(',', '.');
             let val = parseFloat(cleanStr) || 0;
             
-            // DYNAMISK PRECISION (samma logik som ovan)
             let decimals = 0;
             let stepStr = String(Math.abs(step)).replace(',', '.');
-            if (stepStr.includes('.')) {
-                decimals = stepStr.split('.')[1].length;
-            }
+            if (stepStr.includes('.')) { decimals = stepStr.split('.')[1].length; }
             
             if (decimals > 0) {
-                element.value = val.toLocaleString('sv-SE', {
-                    minimumFractionDigits: decimals,
-                    maximumFractionDigits: decimals
-                });
+                element.value = val.toLocaleString('sv-SE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
             } else {
                 element.value = Math.round(val).toLocaleString('sv-SE');
             }
-            
             calculateScenario();
         }
 
