@@ -358,7 +358,31 @@
                                     <li><strong>k (lutningen):</strong> Visar hur mycket Y förändras när X ökar med 1.</li>
                                     <li><strong>m (startvärdet):</strong> Visar vad Y teoretiskt skulle vara om X var noll.</li>
                                 </ul>
+                                <!-- NY SEKTION: Tolkning av trendlinjen -->
+                            <div style="font-size: 0.85rem; color: #475569; margin-bottom: 12px; padding: 12px; background-color: #f0f9ff; border-left: 3px solid #0ea5e9; border-radius: 6px; line-height: 1.5;">
+                                <strong style="color: #0369a1; font-size: 0.9rem;">📈 Hur ska trendlinjen tolkas?</strong><br>
+                                Trendlinjen är inte en gräns, utan en <strong>förväntad måttstock (normen)</strong> för storstäderna. Den visar vad en stads resultat på Y-axeln <em>borde</em> vara, givet dess värde på X-axeln.
                                 
+                                <ul style="margin-top: 8px; margin-bottom: 8px; padding-left: 20px;">
+                                    <li><strong style="color: #15803d;">Över linjen (Överprestation):</strong> Städer här får ut mer effekt än förväntat. Om Y-axeln är positiv (t.ex. HCI), innebär det att staden har en extra stark lokal motor som lyfter resultatet högre än vad X-axeln ensam kan förklara.</li>
+                                    <li><strong style="color: #b91c1c;">Under linjen (Potential):</strong> Städer här får inte ut den förväntade utväxlingen. Det finns strukturella hinder som gör att staden presterar sämre än jämbördiga kommuner på Y-axeln.</li>
+                                </ul>
+
+                                <div style="border-top: 1px dashed #7dd3fc; margin-top: 8px; padding-top: 8px;">
+                                    <strong>🎯 Strategiskt fokus för Linköping:</strong> 
+                                    Leta upp Linköpings bubbla 
+                                    <svg width="16" height="16" viewBox="0 0 24 24" style="vertical-align: -0.15em; margin: 0 4px;">
+                                        <g stroke="#007bff" stroke-width="4" stroke-linecap="round">
+                                            <line x1="12" y1="2" x2="12" y2="22" />
+                                            <line x1="2" y1="12" x2="22" y2="12" />
+                                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+                                            <line x1="4.93" y1="19.07" x2="19.07" y2="4.93" />
+                                        </g>
+                                    </svg> 
+                                    <em>(den blå stjärnan)</em>. 
+                                    Avståndet från stjärnan vertikalt ner (eller upp) till trendlinjen visar exakt hur mycket Linköping över- eller underpresterar jämfört med storstadsnormen.
+                                </div>
+                             </div>
                                 <!-- EXEMPELRUTAN (Anpassad för Linköpings verkliga data 2025) -->
                                 <div style="background-color: #f1f5f9; padding: 12px; border-radius: 6px; margin-top: 10px; border-left: 3px solid #0d6efd; line-height: 1.4;">
                                     <strong style="color: var(--primary-dark); font-size: 0.85rem;">🔍 Så läser du trenden (Linköping 2025)</strong><br>
@@ -392,7 +416,7 @@
                             <div style="font-size: 0.8rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 8px; background-color: #fffbeb; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 3px solid #f59e0b;">
                                 <strong>💡 Tips!</strong><br>
                                 Klicka på en kommungrupp (t.ex. De fyra största kommunerna "Sthlm, Gbg, Malmö, Uppsala") i teckenförklaringen för att dölja dem. <strong>Trendlinjen räknas då automatiskt om</strong> exklusivt för de kommuner som är kvar i bild!<BR>
-                                    Du har även möjlighet att välja mellan att titta på ett specifikt år, eller flera år, för att studera sambandet. Bocka i "Samma år" ovanför diagrammet för att analysera ett enda år, eller avmarkera för att analysera ett spann av år.                        
+                                      Du har även möjlighet att välja mellan att titta på ett specifikt år, eller flera år, för att studera sambandet. Bocka i "Samma år" ovanför diagrammet för att analysera ett enda år, eller avmarkera för att analysera ett spann av år.                        
                             </div>
                         </div>
 
@@ -1005,8 +1029,8 @@
                 matYear.add(new Option(y, y));
             });
 
-            if(uniqueIndicators.includes("Sysselsättningsgrad")) document.getElementById('reg-x-axis').value = "Sysselsättningsgrad";
-            document.getElementById('reg-y-axis').value = "INDEX: Standardvikt_kombination"; 
+            if(uniqueIndicators.includes("Lång_eftergymnasial_proc25")) document.getElementById('reg-x-axis').value = "Lång_eftergymnasial_proc25";
+            document.getElementById('reg-y-axis').value = "INDEX: HCI_Proxy";
             
             document.getElementById('matrix-x-axis').value = "INDEX: ECI_Proxy";
             document.getElementById('matrix-y-axis').value = "INDEX: PCI_Proxy";
