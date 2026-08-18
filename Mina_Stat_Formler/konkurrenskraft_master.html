@@ -123,6 +123,32 @@ canvas, .leaflet-container, .chart-container {
         padding: 10px !important;
     }
 }
+/* ========================================= */
+/* KART-FIX: Återställ höjden för Folium-kartor */
+/* ========================================= */
+
+/* Tvingar iframes (som visar Folium-html) att ta upp ordentligt med plats */
+iframe {
+    width: 100% !important;
+    height: 75vh !important; /* Tar upp 75% av skärmens höjd */
+    min-height: 600px !important; /* Får aldrig bli mindre än 600px hög */
+    border: none !important;
+    display: block;
+}
+
+/* Om kartan ligger i en specifik behållare istället för iframe */
+.map-container, #map, .leaflet-container {
+    height: 75vh !important;
+    min-height: 600px !important;
+}
+
+/* På små mobilskärmar kan vi göra kartan aningen lägre så att man ser att man kan skrolla förbi den */
+@media (max-width: 768px) {
+    iframe, .map-container, #map {
+        height: 65vh !important;
+        min-height: 450px !important;
+    }
+}
     </style>
 </head>
 <body>
