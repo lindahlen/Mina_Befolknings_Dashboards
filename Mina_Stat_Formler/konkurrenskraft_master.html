@@ -2,7 +2,7 @@
 <html lang="sv">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Analysplattform: Konkurrenskraft</title>
     
     <!-- Bootstrap, Chart.js & PapaParse -->
@@ -72,19 +72,56 @@
             appearance: textfield; /* <-- HÄR ÄR FIXEN SOM VS CODE VILL HA! */
         }
 
-        /* Responsivitet för den övre listen/huvudrubriken på små skärmar */
-        @media (max-width: 768px) {
-            h1, h2, .h1, .h2 {
-                font-size: 1.5rem !important; /* Krymper huvudrubrikerna */
-                word-wrap: break-word; /* Tvingar långa ord att byta rad */
-                white-space: normal !important;
-            }
-            .navbar, .header-container {
-                flex-direction: column !important; /* Staplar eventuella loggor/titlar */
-                text-align: center !important;
-                padding: 10px !important;
-            }
-        }
+        /* ========================================= */
+/* FIX FÖR IPHONE (Touch, Skroll & Klick)    */
+/* ========================================= */
+
+/* 1. Tillåt skrollning över diagram och kartor */
+canvas, .leaflet-container {
+    touch-action: pan-y !important;
+}
+
+/* 2. Aktivera mjuk iOS-skrollning överallt */
+body, html, .tab-pane, .container, .container-fluid {
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* 3. APPLE-FIXEN: Tvinga iPhone att förstå att flikarna är klickbara */
+.nav-tabs .nav-link, .nav-tabs .nav-item, button, .form-check-input {
+    cursor: pointer !important; /* Denna rad är magisk för iOS */
+    -webkit-tap-highlight-color: rgba(0,0,0,0); /* Tar bort den fula svarta rutan vid klick */
+    touch-action: manipulation !important; /* Säger till iOS att "detta är en knapp, zooma inte!" */
+}
+
+/* ========================================= */
+/* MOBILANPASSNING (Skärmar under 768px)     */
+/* ========================================= */
+@media (max-width: 768px) {
+    
+    /* Din befintliga fix för rubriker och navbar */
+    h1, h2, .h1, .h2 {
+        font-size: 1.5rem !important; 
+        word-wrap: break-word; 
+        white-space: normal !important;
+    }
+    .navbar, .header-container {
+        flex-direction: column !important; 
+        text-align: center !important;
+        padding: 10px !important;
+    }
+
+    /* Den nya fixen: Skapar utrymme för tummen att skrolla */
+    .container, .container-fluid {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+        overflow-x: hidden; /* Förhindrar att skärmen kan vickas i sidled */
+    }
+    
+    /* Begränsar höjden på diagrammen så tummen kommer åt bakgrunden */
+    .chart-container, canvas {
+        max-height: 60vh !important;
+    }
+}
     </style>
 </head>
 <body>
