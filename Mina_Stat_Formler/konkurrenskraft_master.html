@@ -73,32 +73,45 @@
         }
 
         /* ========================================= */
-/* FIX FÖR IPHONE (Touch, Skroll & Klick)    */
+/* IOS SAFARI "NUCLEAR RESET" (Låser upp skärmen) */
 /* ========================================= */
 
-/* 1. Tillåt skrollning över diagram och kartor */
-canvas, .leaflet-container {
-    touch-action: pan-y !important;
-}
-
-/* 2. Aktivera mjuk iOS-skrollning överallt */
-body, html, .tab-pane, .container, .container-fluid {
+/* 1. LÅS UPP SKROLLNINGEN: Tvinga iPhone att tillåta vanlig vertikal skroll */
+html, body {
+    position: relative !important;
+    height: auto !important; /* Dödar alla 100vh-låsningar */
+    min-height: 100% !important;
+    overflow-y: auto !important; /* Tvingar fram huvudskrollbaren */
+    overflow-x: hidden !important;
     -webkit-overflow-scrolling: touch !important;
 }
 
-/* 3. APPLE-FIXEN: Tvinga iPhone att förstå att flikarna är klickbara */
-.nav-tabs .nav-link, .nav-tabs .nav-item, button, .form-check-input {
-    cursor: pointer !important; /* Denna rad är magisk för iOS */
-    -webkit-tap-highlight-color: rgba(0,0,0,0); /* Tar bort den fula svarta rutan vid klick */
-    touch-action: manipulation !important; /* Säger till iOS att "detta är en knapp, zooma inte!" */
+/* 2. FIXA FLIKARNA: Tvinga iOS att rita om skärmen direkt när du byter flik */
+.tab-content, .tab-content > .tab-pane {
+    height: auto !important;
+    overflow: visible !important;
+}
+
+/* Bootstraps övergångar (fade) kraschar ibland iOS. Vi tvingar fram innehållet: */
+.tab-pane:not(.active) {
+    display: none !important;
+}
+.tab-pane.active {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+/* 3. SLÄPP TOUCH-KAPNINGEN: Låt tummen skrolla över diagram och kartor */
+canvas, .leaflet-container, .chart-container {
+    touch-action: pan-y !important;
+    pointer-events: auto !important;
 }
 
 /* ========================================= */
-/* MOBILANPASSNING (Skärmar under 768px)     */
+/* DIN BEFINTLIGA RESPONSIVITET FÖR RUBRIKER */
 /* ========================================= */
 @media (max-width: 768px) {
-    
-    /* Din befintliga fix för rubriker och navbar */
     h1, h2, .h1, .h2 {
         font-size: 1.5rem !important; 
         word-wrap: break-word; 
@@ -108,18 +121,6 @@ body, html, .tab-pane, .container, .container-fluid {
         flex-direction: column !important; 
         text-align: center !important;
         padding: 10px !important;
-    }
-
-    /* Den nya fixen: Skapar utrymme för tummen att skrolla */
-    .container, .container-fluid {
-        padding-left: 15px !important;
-        padding-right: 15px !important;
-        overflow-x: hidden; /* Förhindrar att skärmen kan vickas i sidled */
-    }
-    
-    /* Begränsar höjden på diagrammen så tummen kommer åt bakgrunden */
-    .chart-container, canvas {
-        max-height: 60vh !important;
     }
 }
     </style>
