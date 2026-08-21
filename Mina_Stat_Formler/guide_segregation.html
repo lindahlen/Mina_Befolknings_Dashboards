@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Jimmy Lindahl, Analys & Utredning, Linköpings kommun">
+    <title>Användarguide - Segregationsanalys</title>
+    
+    <style>
+        :root {
+            --primary-bg: #f4f7f6;
+            --topbar-bg: #1a252f;
+            --text-main: #333;
+            --text-muted: #666;
+            --linkoping-blue: #3498db;
+            --accent-orange: #e65c00;
+            --box-bg: #fff;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--primary-bg); 
+            margin: 0; 
+            padding: 0; 
+            color: var(--text-main); 
+            line-height: 1.6;
+        }
+        
+        /* --- TOPP-MENY --- */
+        .top-navbar { 
+            background-color: var(--topbar-bg); 
+            color: white; 
+            padding: 10px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .logo-container { display: flex; align-items: center; gap: 15px; }
+        .logo-img { height: 40px; width: auto; }
+        .platform-title { font-size: 18px; font-weight: bold; letter-spacing: 0.5px; }
+        .nav-button { 
+            background-color: rgba(255,255,255,0.1); 
+            color: white; 
+            border: 1px solid rgba(255,255,255,0.3); 
+            padding: 8px 15px; 
+            border-radius: 4px; 
+            text-decoration: none; 
+            font-size: 13px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: all 0.2s; 
+        }
+        .nav-button:hover { background-color: rgba(255,255,255,0.2); border-color: white; }
+
+        /* --- INNEHÅLL --- */
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        h1 { color: #2c3e50; font-size: 32px; border-bottom: 3px solid var(--accent-orange); padding-bottom: 10px; display: inline-block; margin-top: 0;}
+        h2 { color: #2c3e50; font-size: 24px; margin-top: 40px; border-bottom: 1px solid #ccc; padding-bottom: 5px;}
+        h3 { color: #2980b9; font-size: 18px; margin-top: 25px;}
+
+        .lead-text {
+            font-size: 18px;
+            color: #444;
+            margin-bottom: 40px;
+            background: #e8f4f8;
+            padding: 20px;
+            border-left: 5px solid var(--linkoping-blue);
+            border-radius: 4px;
+        }
+
+        /* --- FLIK-KORT --- */
+        .tab-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .tab-grid { grid-template-columns: 1fr; }
+        }
+
+        .tab-card {
+            background: var(--box-bg);
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-top: 4px solid var(--linkoping-blue);
+        }
+        
+        .tab-card.special { border-top-color: var(--accent-orange); }
+        .tab-card.ai { border-top-color: #8e44ad; }
+
+        .tab-icon { font-size: 24px; margin-right: 10px; }
+        .tab-title { font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 10px; display: flex; align-items: center; }
+        
+        .badge {
+            display: inline-block;
+            background: #eee;
+            color: #333;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .nytta-box {
+            background: #fdfaf3;
+            border-left: 4px solid #f1c40f;
+            padding: 10px 15px;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        /* --- INDEX-TABELL --- */
+        .index-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        .index-table th {
+            background: #2c3e50;
+            color: white;
+            text-align: left;
+            padding: 15px;
+        }
+        .index-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .index-table tr:last-child td { border-bottom: none; }
+        .index-table tr:hover { background-color: #f8f9fa; }
+        
+        .weight-tag {
+            background: #eafaf1;
+            color: #1e8449;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- TOPP-MENY -->
+    <div class="top-navbar">
+        <div class="logo-container">
+            <!-- Dölj ikon om bilden inte finns i foldern -->
+            <img src="Img/Linkopingsloggo.png" alt="Linköping Logotyp" class="logo-img" onerror="this.style.display='none'">
+            <div class="platform-title">Användarguide: Segregation & Socioekonomi</div>
+        </div>
+        <div class="nav-links">
+            <a href="segregation_master.html" class="nav-button">⬅ Tillbaka till Dashboard</a>
+        </div>
+    </div>
+
+    <!-- INNEHÅLL -->
+    <div class="container">
+        <h1>Vägledning för Analysplattformen</h1>
+        
+        <div class="lead-text">
+            <strong>Välkommen!</strong> Detta verktyg är utvecklat för att omvandla Linköpings kommuns demografiska och strukturella data till handlingskraftiga insikter. Plattformen hjälper beslutsfattare, strateger och planerare att bryta segregation, förstå dolda samhällsstrukturer och simulera framtida stadsutveckling.
+        </div>
+
+        <h2>Del 1: Plattformens Analysverktyg (Flik för Flik)</h2>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Plattformen är uppdelad i 9 moduler. De är sorterade från grundläggande sambandsanalys upp till avancerad AI-klustring och framtidssimuleringar.</p>
+
+        <div class="tab-grid">
+            
+            <div class="tab-card">
+                <div class="badge">Grundanalys</div>
+                <div class="tab-title"><span class="tab-icon">1️⃣</span> Multivariat Regression</div>
+                <p><strong>Funktion:</strong> Testar enkla hypoteser. Du väljer en drivkraft (X) och ett utfall (Y). Modellen ritar upp stadens basområden som bubblor och beräknar den matematiska "norm-linjen" för Linköping.</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Avslöjar omedelbart om ett område presterar bättre eller sämre än vad statistiken "kräver". Avvikelser från linjen visar var vi har lokala skyddsfaktorer att lära av, eller dolda problem att åtgärda.
+                </div>
+            </div>
+
+            <div class="tab-card">
+                <div class="badge">Strategi</div>
+                <div class="tab-title"><span class="tab-icon">2️⃣</span> SEI-analys (Fyrfältare)</div>
+                <p><strong>Funktion:</strong> Låser Y-axeln till det övergripande SEI-indexet. Ett hårkors placeras exakt över Linköpings genomsnitt och delar in staden i fyra kvadranter baserat på din valda drivkraft.</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Ett extremt kraftfullt underlag för resursfördelning. Det identifierar exakt vilka områden som tillhör <i>Riskzonen</i> (behöver akuta insatser), <i>Buffertzonen</i>, eller den <i>Starka Zonen</i>.
+                </div>
+            </div>
+
+            <div class="tab-card">
+                <div class="badge">Utforskande</div>
+                <div class="tab-title"><span class="tab-icon">3️⃣</span> Drivkraftsprofil (Tornado)</div>
+                <p><strong>Funktion:</strong> Scannar blixtsnabbt igenom hela databasen och rangordnar alla variabler utifrån hur starkt de korrelerar med ditt valda problem/utfall.</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Tar bort gissningsleken. Svarar objektivt på frågan: <i>"Vilka är de absolut starkaste strukturella orsakerna till X i vår kommun?"</i>
+                </div>
+            </div>
+
+            <div class="tab-card">
+                <div class="badge">Avancerad Statistik</div>
+                <div class="tab-title"><span class="tab-icon">4️⃣</span> Modellbyggare</div>
+                <p><strong>Funktion:</strong> Skapar en Multipel Regressionsmodell där flera variabler samverkar. Knappen "Auto-Select" använder en straff-algoritm för att bygga en stabil modell med högt förklaringsvärde utan att variablerna överlappar varandra (Lågt Cronbach's Alpha).</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Säkerställer att kommunens analyser är vetenskapligt korrekta och rensar bort variabler som mäter samma sak, vilket ger träffsäkra prediktioner.
+                </div>
+            </div>
+
+            <div class="tab-card">
+                <div class="badge">Datakvalitet</div>
+                <div class="tab-title"><span class="tab-icon">5️⃣</span> Heatmap (Korrelation)</div>
+                <p><strong>Funktion:</strong> En färgkodad matris som korsar alla strukturella indikatorer med varandra för att hitta överlappningar (multikollinearitet).</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Synliggör nätverket av utmaningar. Visar t.ex. hur ohälsa, trångboddhet och inkomst rör sig som en enhetlig massa i vissa delar av staden.
+                </div>
+            </div>
+
+            <div class="tab-card ai">
+                <div class="badge" style="background:#f4ecf7; color:#8e44ad;">Maskininlärning</div>
+                <div class="tab-title"><span class="tab-icon">6️⃣</span> Klusteranalys (AI)</div>
+                <p><strong>Funktion:</strong> Använder K-Means-algoritmer för att klustra ihop basområden till "familjer" baserat på deras statistiska likheter, oberoende av deras geografiska placering.</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Upptäcker "Stadsdelar med inre klyftor". Varnar politiker när ett övergripande stadsdelsnamn döljer det faktum att ena gatan är en resursstark zon, medan gatan bredvid är ett riskområde.
+                </div>
+            </div>
+
+            <div class="tab-card">
+                <div class="badge">Övergripande</div>
+                <div class="tab-title"><span class="tab-icon">7️⃣</span> Tidsserie & Makro</div>
+                <p><strong>Funktion:</strong> Istället för att titta på enskilda områden, utvärderas Linköping som <i>ett enda system över tid</i> genom Variationskoefficient (CV), Standardavvikelse och Segregationsindex.</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Svarar på huvudfrågan: <i>"Ökar eller minskar klyftorna i kommunen totalt sett?"</i>. Systemet kan avslöja om en grupp krymper totalt, men samtidigt blir mer isolerad i ett fåtal områden.
+                </div>
+            </div>
+
+            <div class="tab-card special">
+                <div class="badge" style="background:#fdf2e9; color:#e65c00;">Beslutsstöd</div>
+                <div class="tab-title"><span class="tab-icon">8️⃣</span> Scenario-Simulator</div>
+                <p><strong>Funktion:</strong> Välj ett basområde och dra i "spakar" för dess starkaste drivkrafter. Upplåtelseformer (Bostadsrätt, Hyresrätt, Äganderätt) fungerar som ett strikt nollsummespel där 100% alltid förblir 100%.</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Ger möjlighet att svara på "Vad händer om?" innan budgetbeslut tas. <i>Exempel: Vilken matematisk effekt får det på segregationen om vi river hyresrätter och bygger 15% nya bostadsrätter i Skäggetorp?</i>
+                </div>
+            </div>
+
+            <div class="tab-card special">
+                <div class="badge" style="background:#fdf2e9; color:#e65c00;">Teori & Forskning</div>
+                <div class="tab-title"><span class="tab-icon">9️⃣</span> Lyckoparadoxen</div>
+                <p><strong>Funktion:</strong> Testar Lagen om avtagande avkastning genom att jämföra en rak linje mot en logaritmisk kurva.</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping (Språngbrädor):</strong> Förklarar fenomenet när individer får jobb och högre inkomst, men därefter flyttar från området. Individerna lyfts, men områdets utsatthet förblir konstant. Identifierar geografiska "språngbrädor" för socioekonomisk karriär.
+                </div>
+            </div>
+
+        </div>
+
+        <h2 id="index-section">Del 2: Hur indexen är konstruerade</h2>
+        <p>För att göra den massiva mängden data från SCB begriplig, använder Linköpings kommun sammanvägda index. Dessa bygger statistiskt på <strong>Z-scores (Standardpoäng)</strong>.</p>
+        
+        <div class="lead-text" style="font-size: 15px; padding: 15px;">
+            <strong>Vad är Z-score?</strong><br>
+            I en databas kan en siffra vara "350 tkr" (inkomst) och en annan "14%" (arbetslöshet). För att kunna plussa ihop Äpplen och Päron omvandlas alla värden till Z-scores. Ett Z-värde på <strong>0</strong> betyder att basområdet ligger exakt på kommunens genomsnitt. Ett värde på <strong>+1.0</strong> betyder att området ligger en standardavvikelse <i>över</i> snittet, och <strong>-1.0</strong> betyder att det ligger under. 
+        </div>
+
+        <h3>De 4 Tematiska Indexen</h3>
+        <p>I de 4 under-indexen nedan <strong>viktas alla ingående komponenter lika (1:1)</strong> efter att de Z-transformerats. Riktningen på variablerna är justerad så att höga positiva indexvärden alltid indikerar hög koncentration av det indexet beskriver.</p>
+
+        <table class="index-table">
+            <thead>
+                <tr>
+                    <th style="width: 30%;">Indexnamn</th>
+                    <th style="width: 70%;">Inkluderade Variabler (Komponenter)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Index: Ekonomisk Utsatthet</strong><br><span style="font-size: 12px; color:#ccc;">Mäter ekonomisk skörhet.</span></td>
+                    <td>
+                        • Långvarigt ekonomiskt bistånd <span class="weight-tag">Lika vikt</span><br>
+                        • Låg ekonomisk standard <span class="weight-tag">Lika vikt</span><br>
+                        • Inskrivna arbetslösa <span class="weight-tag">Lika vikt</span><br>
+                        • Trångbodda hushåll <span class="weight-tag">Lika vikt</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Index: Socialt & Humankapital</strong><br><span style="font-size: 12px; color:#ccc;">Mäter kunskapsnivå & förankring.</span></td>
+                    <td>
+                        • Förgymnasial utbildning <span class="weight-tag">Lika vikt</span><br>
+                        • UVAS (Unga varken arbetar/studerar) <span class="weight-tag">Lika vikt</span><br>
+                        • Andel ej självförsörjande <span class="weight-tag">Lika vikt</span><br>
+                        • Lång eftergymnasial utb. <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
+                        • Behöriga till yrkesprogram <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
+                        • Valdeltagande <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Index: Fysisk Bostadssegregation</strong><br><span style="font-size: 12px; color:#ccc;">Mäter stadsbyggnad & rörlighet.</span></td>
+                    <td>
+                        • Andel hyresrätter <span class="weight-tag">Lika vikt</span><br>
+                        • Andel små bostäder <span class="weight-tag">Lika vikt</span><br>
+                        • Bilinnehav <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
+                        • Kvarboende minst tre år <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Index: Demografisk Koncentration</strong><br><span style="font-size: 12px; color:#ccc;">Mäter demografisk sammansättning.</span></td>
+                    <td>
+                        • Utrikes födda <span class="weight-tag">Lika vikt</span><br>
+                        • Ensamstående hushåll <span class="weight-tag">Lika vikt</span><br>
+                        • Inskrivna förskolebarn <span class="weight-tag">Lika vikt</span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3 style="margin-top: 40px; color: #d35400;">Huvudmåttet: Samlat SEI (1-6)</h3>
+        <p><strong>Index: Samlat SEI (16 indikatorer)</strong> är plattformens master-variabel. Den utgörs av en sammanslagning av alla 16 kärnvariabler från de fyra ovanstående indexen. Z-poängen för dessa 16 slås ihop till ett totalt värde, som därefter bryts ner i 6 fasta kategorier (Deciler/Standardavvikelser). Syftet med att göra om ett flytande poängsystem till kategorierna 1-6 är att göra statistiken greppbar för policy- och resursfördelning.</p>
+        
+        <div class="nytta-box" style="border-left-color: #d35400; margin-bottom: 50px;">
+            <strong>Observera: Omvänd logik i graferna!</strong><br>
+            Medan de tematiska under-indexen har höga värden för att beskriva "Mycket problem", fungerar SEI 1-6 som ett betygssystem. 
+            <br><br>
+            • <strong>SEI 1:</strong> Extremt utsatt basområde, stora utmaningar.<br>
+            • <strong>SEI 3-4:</strong> Genomsnittligt normalområde i Linköping.<br>
+            • <strong>SEI 6:</strong> Extremt resursstarkt och välmående område.<br><br>
+            <i>Detta innebär att om du ritar ut SEI 1-6 i Tornado- eller Regressionsfliken, så betyder en grön stapel/positiv linje att drivkraften korrelerar med <strong>välmående och styrka</strong>, inte med utsatthet.</i>
+        </div>
+
+    </div>
+
+</body>
+</html>
