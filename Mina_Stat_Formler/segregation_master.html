@@ -874,7 +874,7 @@
         // Globala variabler för Simulatorn
         let currentSimModel = null;
         let currentSimArea = null;
-        let currentSimTotalConstraint = null; // SPARA TOTALEN FÖR RÄTTER
+        let currentSimTotalConstraint = null; 
 
         const core16_keywords = [
             "långvarigt ekonomiskt bistånd", "inskrivna arbetslösa", "valdeltagande", "ej självförsörjande", 
@@ -2051,6 +2051,7 @@
             if(currentClusterData.length === 0) return;
             const xVar = document.getElementById('clusterVisX').value;
             const yVar = document.getElementById('clusterVisY').value;
+            const selectedYear = document.getElementById('yearSelect6').value;
 
             let k = parseInt(document.getElementById('clusterCount').value);
             let activeColors = getClusterColors(k);
@@ -2080,7 +2081,13 @@
             // --- SKAPA DYNAMISK ANALYSTEXT ---
             let totalDist = bestClusterAvgSei - worstClusterAvgSei;
             let uniqueAreasCount = new Set(currentClusterData.map(d => d.label)).size;
-            let dText = `Klustermotorn har nu delat in <b>${currentClusterData.length}</b> analyserade datapunkter (totalt ${uniqueAreasCount} unika basområden över tid) i <b>${k}</b> naturliga grupper. Avståndet mellan det mest resursstarka klustret (snitt-SEI ${bestClusterAvgSei.toFixed(2)}) och det mest utsatta klustret (snitt-SEI ${worstClusterAvgSei.toFixed(2)}) uppgår till <b>${totalDist.toFixed(2)} SEI-enheter</b>. Detta ger ett direkt mått på segregationsdjupet för dina valda drivkrafter!`;
+            
+            let tidText = "";
+            if (selectedYear === "all" || selectedYear === "last5" || selectedYear === "last10") {
+                tidText = ` (totalt ${uniqueAreasCount} unika basområden över tid)`;
+            }
+
+            let dText = `Klustermotorn har nu delat in <b>${currentClusterData.length}</b> analyserade datapunkter${tidText} i <b>${k}</b> naturliga grupper. Avståndet mellan det mest resursstarka klustret (snitt-SEI ${bestClusterAvgSei.toFixed(2)}) och det mest utsatta klustret (snitt-SEI ${worstClusterAvgSei.toFixed(2)}) uppgår till <b>${totalDist.toFixed(2)} SEI-enheter</b>. Detta ger ett direkt mått på segregationsdjupet för dina valda drivkrafter!`;
             document.getElementById('dynamicAnalysisText').innerHTML = dText;
 
             // Analysera Stadsdelssplittring & Riskområden
@@ -2206,7 +2213,7 @@
                     if (r.tid != year) return false;
                     if (exTot && r.basområde === 'Hela kommunen') return false;
                     if (exSma && r.basområde !== 'Hela kommunen') {
-                        if (r.Inkluderad != "1" || parseFloat(row['Folkmängd']) < 25) return false;
+                        if (r.Inkluderad != "1" || parseFloat(r['Folkmängd']) < 25) return false;
                     }
                     if (exSpe && (r.Områdestyp === 'Studentområde' || r.Områdestyp === 'Verksamhetsområde')) return false;
                     return true;
@@ -2215,14 +2222,15 @@
                 let vals = rows.map(r => parseFloat(r[targetVar])).filter(v => !isNaN(v));
                 let cv = null, std = null, seg = null;
 
+                // STABILISERAD MATEMATIK FÖR FLIK 7
                 if (vals.length > 2) {
-                    let sumVals = 0;
-                    vals.forEach(v => sumVals += v);
-                    let mean = sumVals / vals.length;
+                    let sum = 0;
+                    for (let i = 0; i < vals.length; i++) { sum += vals[i]; }
+                    let mean = sum / vals.length;
                     
-                    let sqDiff = 0;
-                    vals.forEach(v => sqDiff += Math.pow(v - mean, 2));
-                    let variance = sqDiff / vals.length;
+                    let sqDiffSum = 0;
+                    for (let i = 0; i < vals.length; i++) { sqDiffSum += Math.pow(vals[i] - mean, 2); }
+                    let variance = sqDiffSum / vals.length;
                     
                     std = Math.sqrt(variance);
                     cv = mean !== 0 ? (std / Math.abs(mean)) : 0;
@@ -2259,13 +2267,15 @@
                     }
                 }
 
-                timeDataCV.push({ x: year, y: cv });
-                timeDataStd.push({ x: year, y: std });
-                timeDataSeg.push({ x: year, y: seg });
+                if (cv !== null || std !== null || seg !== null) {
+                    timeDataCV.push({ x: year, y: cv });
+                    timeDataStd.push({ x: year, y: std });
+                    timeDataSeg.push({ x: year, y: seg });
+                }
             });
 
-            if(years.length > 0) {
-                let latestYear = years[years.length - 1];
+            if(years.length > 0 && timeDataCV.length > 0) {
+                let latestYear = timeDataCV[timeDataCV.length - 1].x;
                 let latestCV = timeDataCV[timeDataCV.length - 1].y;
                 let latestStd = timeDataStd[timeDataStd.length - 1].y;
                 let latestSeg = timeDataSeg[timeDataSeg.length - 1].y;
@@ -2294,10 +2304,9 @@
             chartInstance7 = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: years,
                     datasets: [{
                         label: `${metricLabel} för ${targetVar.replace(' (20-64 år)', '')}`,
-                        data: activeData.map(d => d.y),
+                        data: activeData,
                         borderColor: '#2980b9',
                         backgroundColor: 'rgba(41, 128, 185, 0.2)',
                         borderWidth: 3,
@@ -2312,10 +2321,10 @@
                     plugins: {
                         datalabels: { display: false },
                         legend: { position: 'top' },
-                        tooltip: { callbacks: { label: (c) => `${metricLabel}: ${c.raw ? c.raw.toFixed(4) : '-'}` } }
+                        tooltip: { callbacks: { label: (c) => `${metricLabel}: ${c.raw.y ? c.raw.y.toFixed(4) : '-'}` } }
                     },
                     scales: {
-                        x: { title: { display: true, text: 'År' } },
+                        x: { type: 'category', labels: years, title: { display: true, text: 'År' } },
                         y: { 
                             title: { display: true, text: metricLabel },
                             suggestedMin: minY - padding,
