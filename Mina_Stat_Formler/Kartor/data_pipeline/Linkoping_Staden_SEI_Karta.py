@@ -811,7 +811,9 @@ ui_html = f"""
 
 <!-- HEADER MED LOGO OCH RUBRIK -->
 <div style="position: absolute; top: 10px; left: 60px; z-index: 9999; background: rgba(255,255,255,0.95); padding: 10px 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); display: flex; align-items: center; gap: 15px;">
-    <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" style="height: 40px;" onerror="this.style.display='none'">
+    <a href="../segregation_master.html" title="Tillbaka till Analysplattformen">
+        <img src="Img/Linkopingsloggo.png" alt="Linköpings kommun" style="height: 40px; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onerror="this.style.display='none'">
+    </a>
     <h4 style="margin: 0; color: #2c3e50; font-weight: bold; font-family: sans-serif;">SEI-analys Linköping (Staden)</h4>
 </div>
 

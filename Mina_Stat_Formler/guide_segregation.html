@@ -99,6 +99,7 @@
         
         .tab-card.special { border-top-color: var(--accent-orange); }
         .tab-card.ai { border-top-color: #8e44ad; }
+        .tab-card.geo { border-top-color: #16a085; }
 
         .tab-icon { font-size: 24px; margin-right: 10px; }
         .tab-title { font-size: 18px; font-weight: bold; color: #2c3e50; margin-bottom: 10px; display: flex; align-items: center; }
@@ -144,6 +145,7 @@
         .index-table td {
             padding: 15px;
             border-bottom: 1px solid #eee;
+            vertical-align: top;
         }
         .index-table tr:last-child td { border-bottom: none; }
         .index-table tr:hover { background-color: #f8f9fa; }
@@ -182,7 +184,7 @@
         </div>
 
         <h2>Del 1: Plattformens Analysverktyg (Flik för Flik)</h2>
-        <p style="color: var(--text-muted); margin-bottom: 30px;">Plattformen är uppdelad i 9 moduler. De är sorterade från grundläggande sambandsanalys upp till avancerad AI-klustring och framtidssimuleringar.</p>
+        <p style="color: var(--text-muted); margin-bottom: 30px;">Plattformen är uppdelad i 10 moduler. De sträcker sig från grundläggande sambandsanalys upp till avancerad AI-klustring, framtidssimuleringar och geografisk maskininlärning.</p>
 
         <div class="tab-grid">
             
@@ -267,18 +269,36 @@
                 </div>
             </div>
 
+            <div class="tab-card geo">
+                <div class="badge" style="background:#e8f8f5; color:#16a085;">Geografisk AI</div>
+                <div class="tab-title"><span class="tab-icon">🔟</span> Geografisk Analys (PCA)</div>
+                <p><strong>Funktion:</strong> En interaktiv karta baserad på Principalkomponentanalys (Faktoranalys). Den komprimerar de 18 tyngsta socioekonomiska och demografiska variablerna till tre övergripande "faktorer" och visar deras utbredning på kartan över tid (2015–2025).</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Synliggör de "osynliga gränserna" i staden. Perfekt för stadsplanering och för att visuellt följa upp om kommunala satsningar eller nybyggnationer faktiskt förändrar ett specifikt områdes strukturella profil över en 10-årsperiod.
+                </div>
+            </div>
+
         </div>
 
         <h2 id="index-section">Del 2: Hur indexen är konstruerade</h2>
-        <p>För att göra den massiva mängden data från SCB begriplig, använder Linköpings kommun sammanvägda index. Dessa bygger statistiskt på <strong>Z-scores (Standardpoäng)</strong>.</p>
+        <p>För att göra det enklare att tolka data och undvika att drunkna i hundratals variabler, har de demografiska och socioekonomiska variablerna vägts samman i fyra sammanvägda huvudindex. Dessa index bygger statistiskt på Z-scores (Standardpoäng). Det är index för Ekonomisk Utsatthet, Socialt & Humankapital, Fysisk Bostadssegregation och Demografisk Koncentration.</p>
         
         <div class="lead-text" style="font-size: 15px; padding: 15px;">
             <strong>Vad är Z-score?</strong><br>
             I en databas kan en siffra vara "350 tkr" (inkomst) och en annan "14%" (arbetslöshet). För att kunna plussa ihop Äpplen och Päron omvandlas alla värden till Z-scores. Ett Z-värde på <strong>0</strong> betyder att basområdet ligger exakt på kommunens genomsnitt. Ett värde på <strong>+1.0</strong> betyder att området ligger en standardavvikelse <i>över</i> snittet, och <strong>-1.0</strong> betyder att det ligger under. 
         </div>
 
-        <h3>De 4 Tematiska Indexen</h3>
-        <p>I de 4 under-indexen nedan <strong>viktas alla ingående komponenter lika (1:1)</strong> efter att de Z-transformerats. Riktningen på variablerna är justerad så att höga positiva indexvärden alltid indikerar hög koncentration av det indexet beskriver.</p>
+        <p>Här visas först en översikt och beskrivning hur den här typen av index ofta tas fram, och längre ned visas mer i detalj vilka variabler som Linköpings kommun har valt att inkludera i respektive index.</p>
+
+        <ol style="color: #444; line-height: 1.8; margin-bottom: 30px;">
+            <li><strong>Index: Ekonomisk Utsatthet</strong> – Mäter graden av ekonomisk skörhet. Höga värden (röda) indikerar hög utsatthet. <br><em>Består i regel av</em>: Andel hushåll med låg ekonomisk standard, Långvarigt ekonomiskt bistånd, Trångboddhet, m.fl.</li>
+            <li><strong>Index: Socialt & Humankapital</strong> – Mäter befolkningens utbildningsnivå och förankring på arbetsmarknaden. <br><em>Består i regel av</em>: Förgymnasial/Eftergymnasial utbildning, Inskrivna arbetslösa, Andel ej självförsörjande, Valdeltagande, m.fl.</li>
+            <li><strong>Index: Fysisk Bostadssegregation</strong> – Mäter stadsbyggnadens struktur och rörlighet. <br><em>Består i regel av</em>: Andel hyresrätter vs äganderätter, Bilinnehav, Kvarboende minst tre år (visar om området fungerar som genomgångsområde eller slutdestination).</li>
+            <li><strong>Index: Demografisk Koncentration</strong> – Mäter åldersstruktur och migration. <br><em>Består i regel av</em>: Andel utrikes födda, Andel ensamstående hushåll, Barn i förskole-/skolålder, m.fl.</li>
+        </ol>
+
+        <h3>Detaljerad sammansättning för Linköping</h3>
+        <p>I indexen nedan <strong>viktas samtliga inkluderade variabler lika (1:1)</strong> efter att de Z-transformerats. Riktningen på variablerna är justerad så att höga positiva indexvärden alltid indikerar hög koncentration av det indexet beskriver. Variabler som markerats som <i>(Inverterad)</i> spegelvänds matematiskt innan de slås ihop (t.ex. räknas hög gymnasiebehörighet som ett skyddande/negativt värde för social utsatthet).</p>
 
         <table class="index-table">
             <thead>
@@ -289,51 +309,52 @@
             </thead>
             <tbody>
                 <tr>
-                    <td><strong>Index: Ekonomisk Utsatthet</strong><br><span style="font-size: 12px; color:#ccc;">Mäter ekonomisk skörhet.</span></td>
+                    <td><strong>Index: Ekonomisk Utsatthet</strong><br><span style="font-size: 12px; color:#777;">Mäter ekonomisk skörhet.</span></td>
                     <td>
                         • Långvarigt ekonomiskt bistånd <span class="weight-tag">Lika vikt</span><br>
-                        • Låg ekonomisk standard <span class="weight-tag">Lika vikt</span><br>
                         • Inskrivna arbetslösa <span class="weight-tag">Lika vikt</span><br>
-                        • Trångbodda hushåll <span class="weight-tag">Lika vikt</span>
+                        • Låg ekonomisk standard <span class="weight-tag">Lika vikt</span><br>
+                        • Ej självförsörjande <span class="weight-tag">Lika vikt</span><br>
+                        • UVAS (Unga varken arbetar/studerar) <span class="weight-tag">Lika vikt</span>
                     </td>
                 </tr>
                 <tr>
-                    <td><strong>Index: Socialt & Humankapital</strong><br><span style="font-size: 12px; color:#ccc;">Mäter kunskapsnivå & förankring.</span></td>
+                    <td><strong>Index: Socialt & Humankapital</strong><br><span style="font-size: 12px; color:#777;">Mäter kunskapsnivå & förankring.</span></td>
                     <td>
                         • Förgymnasial utbildning <span class="weight-tag">Lika vikt</span><br>
-                        • UVAS (Unga varken arbetar/studerar) <span class="weight-tag">Lika vikt</span><br>
-                        • Andel ej självförsörjande <span class="weight-tag">Lika vikt</span><br>
-                        • Lång eftergymnasial utb. <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
-                        • Behöriga till yrkesprogram <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
+                        • Ohälsotal <span class="weight-tag">Lika vikt</span><br>
+                        • Gymnasiebehörighet <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
+                        • Inskrivna barn i förskolan <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
                         • Valdeltagande <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span>
                     </td>
                 </tr>
                 <tr>
-                    <td><strong>Index: Fysisk Bostadssegregation</strong><br><span style="font-size: 12px; color:#ccc;">Mäter stadsbyggnad & rörlighet.</span></td>
+                    <td><strong>Index: Fysisk Bostadssegregation</strong><br><span style="font-size: 12px; color:#777;">Mäter stadsbyggnad & rörlighet.</span></td>
                     <td>
-                        • Andel hyresrätter <span class="weight-tag">Lika vikt</span><br>
-                        • Andel små bostäder <span class="weight-tag">Lika vikt</span><br>
+                        • Trångbodda <span class="weight-tag">Lika vikt</span><br>
+                        • Små bostäder <span class="weight-tag">Lika vikt</span><br>
+                        • Hyresrätt <span class="weight-tag">Lika vikt</span><br>
+                        • Boyta per person <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
                         • Bilinnehav <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
-                        • Kvarboende minst tre år <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span>
+                        • Kvarboende <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span>
                     </td>
                 </tr>
                 <tr>
-                    <td><strong>Index: Demografisk Koncentration</strong><br><span style="font-size: 12px; color:#ccc;">Mäter demografisk sammansättning.</span></td>
+                    <td><strong>Index: Demografisk Koncentration</strong><br><span style="font-size: 12px; color:#777;">Mäter demografisk sammansättning.</span></td>
                     <td>
                         • Utrikes födda <span class="weight-tag">Lika vikt</span><br>
-                        • Ensamstående hushåll <span class="weight-tag">Lika vikt</span><br>
-                        • Inskrivna förskolebarn <span class="weight-tag">Lika vikt</span>
+                        • Utländsk bakgrund <span class="weight-tag">Lika vikt</span>
                     </td>
                 </tr>
             </tbody>
         </table>
 
         <h3 style="margin-top: 40px; color: #d35400;">Huvudmåttet: Samlat SEI (1-6)</h3>
-        <p><strong>Index: Samlat SEI (16 indikatorer)</strong> är plattformens master-variabel. Den utgörs av en sammanslagning av alla 16 kärnvariabler från de fyra ovanstående indexen. Z-poängen för dessa 16 slås ihop till ett totalt värde, som därefter bryts ner i 6 fasta kategorier (Deciler/Standardavvikelser). Syftet med att göra om ett flytande poängsystem till kategorierna 1-6 är att göra statistiken greppbar för policy- och resursfördelning.</p>
+        <p><strong>Index: Samlat SEI (16 variabler)</strong> är plattformens master-variabel. Den utgörs av en sammanslagning av 16 kärnvariabler. Z-poängen för dessa 16 variabler slås ihop till ett totalt värde, som därefter bryts ner i 6 fasta kategorier (Deciler/Standardavvikelser) för varje basområde. Ett sammanfattande medelvärde för dessa 16 variabler tas därefter fram respektive år för varje basområde. Syftet med att göra om ett flytande poängsystem till kategorierna 1-6 är att göra statistiken greppbar för policy- och resursfördelning.<br>Vid sidan om det SEI-index som redovisas för respektive år finns det i dashboarden även ett summerat värde för perioden 2015-2024, benämnt SEIsnitt medel.</p>
         
-        <div class="nytta-box" style="border-left-color: #d35400; margin-bottom: 50px;">
+        <div class="nytta-box" style="border-left-color: #d35400; margin-bottom: 20px;">
             <strong>Observera: Omvänd logik i graferna!</strong><br>
-            Medan de tematiska under-indexen har höga värden för att beskriva "Mycket problem", fungerar SEI 1-6 som ett betygssystem. 
+            Medan de tematiska huvudindexen har höga värden för att beskriva "Mycket problem", fungerar SEI 1-6 som ett betygssystem. 
             <br><br>
             • <strong>SEI 1:</strong> Extremt utsatt basområde, stora utmaningar.<br>
             • <strong>SEI 3-4:</strong> Genomsnittligt normalområde i Linköping.<br>
@@ -341,7 +362,109 @@
             <i>Detta innebär att om du ritar ut SEI 1-6 i Tornado- eller Regressionsfliken, så betyder en grön stapel/positiv linje att drivkraften korrelerar med <strong>välmående och styrka</strong>, inte med utsatthet.</i>
         </div>
 
-    </div>
+        <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <p style="margin-top: 0; font-weight: bold; color: #2c3e50;">Följande 16 variabler ingår i SEI-index:</p>
+            <ul style="color: #444; font-size: 13px; column-count: 2; column-gap: 40px; margin-bottom: 0;">
+                <li>Långvarigt ekonomiskt bistånd</li>
+                <li>Inskrivna arbetslösa</li>
+                <li>Valdeltagande</li>
+                <li>Ej självförsörjande</li>
+                <li>Behöriga gymnasiets yrkesprogram</li>
+                <li>Inskrivna barn i förskolan</li>
+                <li>Trångbodda hushåll</li>
+                <li>Ohälsotal 50-64 år</li>
+                <li>Låg ekonomisk standard</li>
+                <li>UVAS (Unga varken arbetar eller studerar)</li>
+                <li>Hyresrätt</li>
+                <li>Små bostäder</li>
+                <li>Kvm per person</li>
+                <li>Bilinnehav</li>
+                <li>Förgymnasial utbildning 20-64 år</li>
+                <li>Kvarboende minst tre år</li>
+            </ul>
+        </div>
+
+
+        <h2 id="pca-section">Del 3: Matematiken bakom Kartans Faktoranalys (PCA)</h2>
+        <p>I plattformens tionde flik, <strong>Geografisk Analys</strong>, visualiseras staden utifrån en Principalkomponentanalys (PCA). Till skillnad från de förutbestämda indexen i Del 2, där vi (forskare/analytiker) i förväg bestämt vilka variabler som hör ihop, låter PCA-algoritmen datan "tala för sig själv".</p>
+        
+        <div class="lead-text" style="font-size: 15px; padding: 15px; border-left-color: #16a085; background: #e8f8f5;">
+            <strong>Vad är PCA och Faktorladdningar?</strong><br>
+            PCA (Principal Component Analysis) är en maskininlärningsteknik. Den tar 22 variabler för alla Linköpings basområden och letar matematiskt efter variabler som "rör sig tillsammans" (korrelerar). Om områden med många små lägenheter också ofta har många ensamstående, bakar algoritmen ihop dessa till en ny övergripande dimension – en <i>Faktor</i>. <br><br>
+            Hur mycket en specifik variabel bidrar till en faktor kallas för <strong>Faktorladdning</strong>. Genom PCA kan vi koka ner 22 variabler till 3 stycken <i>Faktorer</i>, som tillsammans förklarar den absoluta merparten av alla statistiska skillnader i kommunen.
+        </div>
+
+        <div class="nytta-box" style="border-left-color: #3498db; margin-bottom: 30px;">
+            <strong>Hantering av Data och Matematik (Multikollinearitet)</strong><br>
+            I vanliga regressionsmodeller (som i Flik 4) är <i>multikollinearitet</i> ett problem – alltså när många variabler mäter ungefär samma sak och "stör" varandra. I en Faktoranalys (PCA) är det tvärtom: Algoritmen utnyttjar överlappningen för att statistiskt slå samman dessa variabler till de tre oberoende huvudfaktorerna. <br><br>
+            <strong>Observera gällande aktuellt dataår:</strong> Eftersom PCA-beräkningens matematik bygger på en komplett matris och är extremt känslig för tomma celler (data som saknas), tas faktorvärdena <i>inte</i> fram för det allra senast tillgängliga året förrän all statistik är komplett. Detta skiljer sig från övriga flikar i dashboarden, som löpande använder det senast publicerade året även om vissa uppgifter dröjer från SCB. Detta genom att utnyttja "<em>fill nearest year (value)</em>" för att fylla i saknade celler inför beräkningar. Därför är PCA-kartan alltid ett år efter övriga flikar.
+        </div>
+
+        <h3>Kartans Tre Faktorer i Linköping</h3>
+        <p>Genom analys av databasen (inklusive student- och verksamhetsområden för att ge matematiken korrekt räckvidd) har algoritmen identifierat följande tre matematiska huvudaxlar. Faktorladdningarna avgör om ett område dras mot extremfärgerna i kartan.</p>
+
+        <table class="index-table" style="margin-bottom: 40px;">
+            <thead>
+                <tr>
+                    <th style="width: 25%; background:#16a085;">Faktor (Karta)</th>
+                    <th style="width: 75%; background:#16a085;">Matematiska Drivkrafter (Faktorladdningar)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Faktor 1: Socioekonomi & Utsatthet</strong><br><span style="font-size: 12px; color:#777;">Grön vs. Röd färgskala</span></td>
+                    <td>
+                        <p style="margin-top:0;">Fångar den strukturella klyftan mellan utsatthet och resursstyrka, starkt präglad av barnfattigdom och självförsörjning.</p>
+                        • <strong>Drar mot Rött (Positiv laddning):</strong> Låg ekonomisk standard, barnfattigdom, ej självförsörjande, utrikes födda.<br>
+                        • <strong>Drar mot Grönt (Negativ laddning):</strong> Nettoinkomst (tkr), bilinnehav, kvarboende minst tre år, sysselsättningsgrad.
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Faktor 2: Demografi & Utbildning</strong><br><span style="font-size: 12px; color:#777;">Lila vs. Orange färgskala</span></td>
+                    <td>
+                        <p style="margin-top:0;">Ställer studenter och unga vuxna mot områden med fler skolungdomar och lägre utbildningsnivå.</p>
+                        • <strong>Drar mot Orange (Positiv laddning):</strong> Skolungdomar 6-15 år, förgymnasial utbildning, UVAS, inskrivna arbetslösa.<br>
+                        • <strong>Drar mot Lila (Negativ laddning):</strong> Små bostäder, ensamstående hushåll, lång eftergymnasial utbildning, hyresrätt.
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Faktor 3: Livsfas & Bebyggelse</strong><br><span style="font-size: 12px; color:#777;">Blå vs. Brun färgskala</span></td>
+                    <td>
+                        <p style="margin-top:0;">Fångar skillnaden mellan en äldre befolkning i rymliga bostäder och yngre, mer internationella områden med många barnfamiljer.</p>
+                        • <strong>Drar mot Brun (Positiv laddning):</strong> Äldre 80+ år, kvm per person, ohälsotal 50-64 år, sysselsättningsgrad.<br>
+                        • <strong>Drar mot Blå (Negativ laddning):</strong> Skolungdomar 6-15 år, lång eftergymnasial utbildning, utrikes födda, totalt ekonomiskt bistånd.
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+            <p style="margin-top: 0; font-weight: bold; color: #2c3e50;">Följande 22 variabler ingår i den Geografiska Faktoranalysen (PCA):</p>
+            <ul style="color: #444; font-size: 13px; column-count: 2; column-gap: 40px; margin-bottom: 0;">
+                <li>Långvarigt ekonomiskt bistånd</li>
+                <li>Ekonomiskt bistånd (totalt)</li>
+                <li>Inskrivna arbetslösa</li>
+                <li>Ej självförsörjande</li>
+                <li>Trångbodda hushåll</li>
+                <li>Ohälsotal 50-64 år</li>
+                <li>Låg ekonomisk standard</li>
+                <li>UVAS (Unga varken arbetar eller studerar)</li>
+                <li>Hyresrätt</li>
+                <li>Små bostäder</li>
+                <li>Kvm per person</li>
+                <li>Bilinnehav</li>
+                <li>Förgymnasial utbildning 20-64 år</li>
+                <li>Lång eftergymnasial utbildning 20-64 år</li>
+                <li>Kvarboende minst tre år</li>
+                <li>Ensamstående hushåll</li>
+                <li>Utrikes födda</li>
+                <li>Nettoinkomst (tkr)</li>
+                <li>Barnfattigdom</li>
+                <li>Sysselsättningsgrad</li>
+                <li>Skolungdomar 6-15 år</li>
+                <li>Äldre 80+ år</li>
+            </ul>
+        </div>
 
 </body>
 </html>

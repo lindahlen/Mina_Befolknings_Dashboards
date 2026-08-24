@@ -219,6 +219,7 @@
             #btn-flik7 { font-size: 0; } #btn-flik7::after { content: "Tidsserie"; font-size: 11px; }
             #btn-flik8 { font-size: 0; } #btn-flik8::after { content: "Simulator"; font-size: 11px; }
             #btn-flik9 { font-size: 0; } #btn-flik9::after { content: "Lyckoparadox"; font-size: 11px; }
+            #btn-flik10 { font-size: 0; } #btn-flik10::after { content: "Faktoranalys"; font-size: 11px; }
             .platform-title { display: none; }
         }
     </style>
@@ -249,6 +250,7 @@
         <button class="tab-btn" id="btn-flik7" onclick="openTab('flik7', this)">7. Tidsserie & Makro</button>
         <button class="tab-btn" id="btn-flik8" onclick="openTab('flik8', this)">8. Scenario-Simulator</button>
         <button class="tab-btn" id="btn-flik9" onclick="openTab('flik9', this)">9. Lyckoparadoxen</button>
+        <button class="tab-btn" id="btn-flik10" onclick="openTab('flik10', this)">10. Faktoranalys (PCA)</button>
     </div>
 
     <!-- ========================================== -->
@@ -301,7 +303,7 @@
                 <h3 style="margin-top:0; color:#2c3e50;">💡 Tolkningsguide</h3>
                 <p><strong>📐 Variabler & Nyckeltal</strong><br>
                 <b>X-axel (Drivkraft):</b> Den faktor du tror påverkar utfallet.<br>
-                <b>Y-axel (Utfall):</b> Det resultat du vill förstå.<br>
+                <b>Y-axel (Utfall):</b> Det resultat du vill förstå.<br><br>
                 <b>R² (Förklaringsgrad):</b> Går från 0 till 1. Visar hur stor andel av spridningen i Y som förklaras av X.<br>
                 <b>Korrelation (R):</b> Visar sambandets riktning. <span style="color:#27ae60; font-weight:bold;">Grönt</span> = Båda ökar. <span style="color:#e74c3c; font-weight:bold;">Rött</span> = Negativt.<br>
                 <b>Linjär ekvation:</b> Formeln visar matematikens beräkning av trenden.</p>
@@ -846,6 +848,25 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- ========================================== -->
+<!-- FLIK 10: GEOGRAFISK ANALYS (KARTA via IFrame) -->
+<!-- ========================================== -->
+<div id="flik10" class="tab-content">
+    <div style="margin-bottom: 15px;">
+        <h3 style="color: #2c3e50; margin: 0 0 5px 0;">Geografisk Faktoranalys (PCA)</h3>
+        <p style="font-size: 13px; color: #555; margin: 0;">En interaktiv kartering av Linköpings demografiska och socioekonomiska strukturer över tid.</p>
+    </div>
+    
+    <!-- Container för Iframe som fyller skärmen snyggt -->
+    <div style="position: relative; width: 100%; height: 80vh; min-height: 700px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <iframe 
+            src="Linkoping_PCA_Dashboard.html" 
+            title="Geografisk Segregationsanalys" 
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;">
+        </iframe>
+    </div>
     </div>
 
     <!-- ========================================== -->
