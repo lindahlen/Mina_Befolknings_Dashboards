@@ -281,11 +281,29 @@
         </div>
 
         <h2 id="index-section">Del 2: Hur indexen är konstruerade</h2>
-        <p>För att göra det enklare att tolka data och undvika att drunkna i hundratals variabler, har de demografiska och socioekonomiska variablerna vägts samman i fyra sammanvägda huvudindex. Dessa index bygger statistiskt på Z-scores (Standardpoäng). Det är index för Ekonomisk Utsatthet, Socialt & Humankapital, Fysisk Bostadssegregation och Demografisk Koncentration.</p>
+        <p>För att göra det enklare att tolka data och undvika att drunkna i hundratals variabler, har de demografiska och socioekonomiska variablerna vägts samman i <strong>fem</strong> sammanvägda huvudindex. Dessa index bygger statistiskt på Z-scores (Standardpoäng). Det är index för Ekonomisk Utsatthet, Socialt & Humankapital, Fysisk Bostadssegregation, Demografisk Koncentration samt Strukturell Ojämlikhet.</p>
         
-        <div class="lead-text" style="font-size: 15px; padding: 15px;">
+        <div class="lead-text" style="font-size: 15px; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #2c3e50; margin-bottom: 20px;">
             <strong>Vad är Z-score?</strong><br>
-            I en databas kan en siffra vara "350 tkr" (inkomst) och en annan "14%" (arbetslöshet). För att kunna plussa ihop Äpplen och Päron omvandlas alla värden till Z-scores. Ett Z-värde på <strong>0</strong> betyder att basområdet ligger exakt på kommunens genomsnitt. Ett värde på <strong>+1.0</strong> betyder att området ligger en standardavvikelse <i>över</i> snittet, och <strong>-1.0</strong> betyder att det ligger under. 
+            För att kunna plussa ihop Äpplen och Päron (t.ex. inkomst i kronor och arbetslöshet i procent) omvandlas de flesta variabler till standardpoäng (Z-scores). Ett värde på <strong>0</strong> betyder att basområdet ligger exakt på kommunens genomsnitt. Ett värde på <strong>+1.0</strong> ligger över snittet, och <strong>-1.0</strong> under snittet. 
+            <br><br>
+            <strong style="color: #d35400; font-size: 16px;">Bra eller Dåligt? (Viktigt för tolkning & simulering)</strong><br>
+            Eftersom dashboarden innehåller olika typer av index, ser en "förbättring" olika ut beroende på vad du analyserar:
+            
+            <ul style="margin-top: 10px; margin-bottom: 0; line-height: 1.6;">
+                <li>
+                    <span style="color: #27ae60; font-weight: bold;">HÖGRE är BÄTTRE (Samlat SEI 1-6):</span><br>
+                    Detta klassiska index mäter socioekonomisk resursstyrka. Ett högt värde (upp mot 6) betyder mycket goda levnadsvillkor. Ett lågt värde (ner mot 1) betyder utsatthet.
+                </li>
+                <li style="margin-top: 8px;">
+                    <span style="color: #2980b9; font-weight: bold;">LÄGRE är BÄTTRE (Index 1-4, Z-scores):</span><br>
+                    De första fyra Z-score-indexen mäter <i>graden av utmaningar och utsatthet</i>. Här vill man att stapeln ska vara så låg (så mycket <strong>minus</strong>) som möjligt.
+                </li>
+                <li style="margin-top: 8px;">
+                    <span style="color: #8e44ad; font-weight: bold;">NOLL är BÄST (Strukturell Ojämlikhet):</span><br>
+                    Jämställdhetsindexet mäter <i>obalans</i>. Här är målet alltid <strong>0 (noll)</strong>, vilket betyder perfekt jämställdhet. Plusvärden (traditionell obalans) och minusvärden (matriarkal obalans) indikerar båda bristande jämställdhet.
+                </li>
+            </ul>
         </div>
 
         <p>Här visas först en översikt och beskrivning hur den här typen av index ofta tas fram, och längre ned visas mer i detalj vilka variabler som Linköpings kommun har valt att inkludera i respektive index.</p>
@@ -295,10 +313,11 @@
             <li><strong>Index: Socialt & Humankapital</strong> – Mäter befolkningens utbildningsnivå och förankring på arbetsmarknaden. <br><em>Består i regel av</em>: Förgymnasial/Eftergymnasial utbildning, Inskrivna arbetslösa, Andel ej självförsörjande, Valdeltagande, m.fl.</li>
             <li><strong>Index: Fysisk Bostadssegregation</strong> – Mäter stadsbyggnadens struktur och rörlighet. <br><em>Består i regel av</em>: Andel hyresrätter vs äganderätter, Bilinnehav, Kvarboende minst tre år (visar om området fungerar som genomgångsområde eller slutdestination).</li>
             <li><strong>Index: Demografisk Koncentration</strong> – Mäter åldersstruktur och migration. <br><em>Består i regel av</em>: Andel utrikes födda, Andel ensamstående hushåll, Barn i förskole-/skolålder, m.fl.</li>
+            <li><strong>Index: Strukturell Ojämlikhet</strong> – Mäter jämställdhet och klyftan mellan män och kvinnor lokalt. Höga värden indikerar en traditionell obalans där kvinnor halkar efter ekonomiskt. <br><em>Består i regel av</em>: Klyftor i ohälsotal, utbildning, sysselsättningsgrad och inkomstfördelning.</li>
         </ol>
 
         <h3>Detaljerad sammansättning för Linköping</h3>
-        <p>I indexen nedan <strong>viktas samtliga inkluderade variabler lika (1:1)</strong> efter att de Z-transformerats. Riktningen på variablerna är justerad så att höga positiva indexvärden alltid indikerar hög koncentration av det indexet beskriver. Variabler som markerats som <i>(Inverterad)</i> spegelvänds matematiskt innan de slås ihop (t.ex. räknas hög gymnasiebehörighet som ett skyddande/negativt värde för social utsatthet).</p>
+        <p>I indexen nedan <strong>viktas samtliga inkluderade variabler lika (1:1)</strong> efter att de Z-transformerats. Riktningen på variablerna är justerad så att höga positiva indexvärden alltid indikerar hög koncentration av det indexet beskriver (alltså en försämring/ökad utsatthet). Variabler som markerats som <i>(Inverterad)</i> spegelvänds matematiskt innan de slås ihop (t.ex. räknas hög gymnasiebehörighet som ett skyddande/negativt värde för social utsatthet, och hög kvinnlig sysselsättning som ett skyddande/negativt värde för ojämlikhetsindexet).</p>
 
         <table class="index-table">
             <thead>
@@ -322,7 +341,7 @@
                     <td><strong>Index: Socialt & Humankapital</strong><br><span style="font-size: 12px; color:#777;">Mäter kunskapsnivå & förankring.</span></td>
                     <td>
                         • Förgymnasial utbildning <span class="weight-tag">Lika vikt</span><br>
-                        • Ohälsotal <span class="weight-tag">Lika vikt</span><br>
+                        • Ohälsotal 50-64 år <span class="weight-tag">Lika vikt</span><br>
                         • Gymnasiebehörighet <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
                         • Inskrivna barn i förskolan <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
                         • Valdeltagande <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span>
@@ -346,12 +365,24 @@
                         • Utländsk bakgrund <span class="weight-tag">Lika vikt</span>
                     </td>
                 </tr>
+                <tr>
+                    <td><strong>Index: Strukturell Ojämlikhet</strong><br><span style="font-size: 12px; color:#777;">Mäter klyftan mellan könen.</span></td>
+                    <td>
+                        • Diff: Ohälsotal 20-64 år <span class="weight-tag">Lika vikt</span><br>
+                        • Kvinnors andel nettoinkomst <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
+                        • Kvinnors andel förvärvsinkomst <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
+                        • Diff: Sysselsättningsgrad <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
+                        • Diff: Lång eftergymn utb <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span>
+                    </td>
+                </tr>
             </tbody>
         </table>
 
         <h3 style="margin-top: 40px; color: #d35400;">Huvudmåttet: Samlat SEI (1-6)</h3>
-        <p><strong>Index: Samlat SEI (16 variabler)</strong> är plattformens master-variabel. Den utgörs av en sammanslagning av 16 kärnvariabler. Z-poängen för dessa 16 variabler slås ihop till ett totalt värde, som därefter bryts ner i 6 fasta kategorier (Deciler/Standardavvikelser) för varje basområde. Ett sammanfattande medelvärde för dessa 16 variabler tas därefter fram respektive år för varje basområde. Syftet med att göra om ett flytande poängsystem till kategorierna 1-6 är att göra statistiken greppbar för policy- och resursfördelning.<br>Vid sidan om det SEI-index som redovisas för respektive år finns det i dashboarden även ett summerat värde för perioden 2015-2024, benämnt SEIsnitt medel.</p>
-        
+<p><strong>Index: Samlat SEI (16 variabler)</strong> är plattformens master-variabel. Den utgörs av en sammanslagning av 16 kärnvariabler. Z-poängen för dessa 16 variabler slås ihop till ett totalt värde, som därefter bryts ner i 6 fasta kategorier (Deciler/Standardavvikelser) för varje basområde. Ett sammanfattande medelvärde för dessa 16 variabler tas därefter fram respektive år för varje basområde. Syftet med att göra om ett flytande poängsystem till kategorierna 1-6 är att göra statistiken greppbar för policy- och resursfördelning.<br>
+Vid sidan om det SEI-index som redovisas för respektive år finns det i dashboarden även ett summerat värde för perioden 2015-2024, benämnt SEI medel (2015-2024). 
+<a href="https://statisticsstudio.com/public/factsheet/694105075542322140070e51" target="_blank" style="color: #2980b9; text-decoration: none; font-weight: bold;"> 🔗 Externt faktablad om socioekonomisk struktur</a> <em>(öppnas i ny flik)</em>.</p>
+
         <div class="nytta-box" style="border-left-color: #d35400; margin-bottom: 20px;">
             <strong>Observera: Omvänd logik i graferna!</strong><br>
             Medan de tematiska huvudindexen har höga värden för att beskriva "Mycket problem", fungerar SEI 1-6 som ett betygssystem. 

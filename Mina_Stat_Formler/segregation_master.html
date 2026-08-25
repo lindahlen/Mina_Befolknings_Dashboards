@@ -1576,8 +1576,29 @@
             
             validVariables.forEach(v => {
                 let vLower = v.toLowerCase();
+                
+                // 1. Ta alltid bort målvariabeln själv
                 if (v === outcomeVar) return;
-                if (['seisnitt medel', 'bostadsrätt', 'nettopendling'].includes(vLower)) return;
+                
+                // 2. DET NYA SMARTA FILTRET
+                // Kollar om målvariabeln (det vi försöker förklara) är ett Index eller SEI-samlingsmått
+                let isOutcomeIndex = outcomeVar.includes("Index:") || outcomeVar.includes("SEI");
+                
+                if (isOutcomeIndex) {
+                    // Om det ÄR ett index, förbjud andra Index, SEI-medel och PCA-faktorer som drivkrafter
+                    if (v.startsWith("Index:")) return;
+                    if (v.startsWith("PCA_Faktor")) return;
+                    if (v === "SEI medel (2015-2024)") return;
+                } else {
+                    // Valfritt extraskydd: Även om vi kollar på en vanlig variabel (t.ex. Ohälsotal), 
+                    // vill vi oftast inte att "SEI medel" dyker upp som drivkraft. 
+                    // Vill du att Index ska få vara drivkrafter till vanliga variabler? 
+                    // Om inte, kan du avkommentera nästa rad:
+                    // if (v.startsWith("Index:") || v.startsWith("PCA_Faktor") || v === "SEI medel (2015-2024)") return;
+                }
+
+                // 3. Behåll dina andra viktiga rensningar (men 'seisnitt medel' är nu borttaget härifrån)
+                if (['bostadsrätt', 'nettopendling'].includes(vLower)) return;
                 if (vLower.includes('kvinnor') || vLower.includes(' män')) return;
                 if (vLower.includes('nettoinkomst, andel')) return;
 
@@ -1923,7 +1944,7 @@
             const grid = document.getElementById('clusterCheckboxes'); 
             grid.innerHTML = '';
             
-            let clusterTargets = ["Index: Socialt & Humankapital", "Index: Ekonomisk Utsatthet", "Index: Fysisk Bostadssegregation", "Index: Demografisk Koncentration"];
+            let clusterTargets = ["Index: Socialt & Humankapital", "Index: Ekonomisk Utsatthet", "Index: Fysisk Bostadssegregation", "Index: Demografisk Koncentration", "Index: Strukturell Ojämlikhet"];
             
             multiRegKeywords.forEach(keyword => {
                 const foundVar = findVariable(keyword, true);
@@ -2228,6 +2249,12 @@
 
             let isIndex = targetVar.includes('Index:');
             let isPercentage = getUnit(targetVar) === ' %'; 
+            
+            // --- 1. NY SPÄRR: Identifiera nollsumme-variabler och förändringsmått ---
+            let targetLower = targetVar.toLowerCase();
+            let isNettoVar = targetLower.includes('netto') || 
+                             targetLower.includes('överskott') || 
+                             targetLower.includes('befolkningsförändring');
 
             years.forEach(year => {
                 let rows = rawData.filter(r => {
@@ -2254,10 +2281,19 @@
                     let variance = sqDiffSum / vals.length;
                     
                     std = Math.sqrt(variance);
-                    cv = mean !== 0 ? (std / Math.abs(mean)) : 0;
+                    
+                    // --- 2. APPLICERA CV-SPÄRR ---
+                    if (isNettoVar) {
+                        cv = null; // Stäng av CV för netto-variabler
+                    } else {
+                        // Allmän säkerhet: Räkna bara ut CV om medelvärdet är tillräckligt långt från noll
+                        cv = Math.abs(mean) > 0.001 ? (std / Math.abs(mean)) : null;
+                    }
                 }
                 
-                if (!isIndex && rows.length > 0) {
+                // --- 3. APPLICERA SEGREGATIONS-SPÄRR ---
+                // Kör endast segregationsindex om det varken är ett Index ELLER en Netto-variabel
+                if (!isIndex && !isNettoVar && rows.length > 0) {
                     let totalA = 0; 
                     let totalPop = 0;
                     
@@ -2305,9 +2341,9 @@
                 document.getElementById('valStd_year').innerText = `År ${latestYear}`;
                 document.getElementById('valSeg_year').innerText = `År ${latestYear}`;
 
-                document.getElementById('valCV').innerText = latestCV !== null ? latestCV.toFixed(3) : '-';
+                document.getElementById('valCV').innerText = latestCV !== null ? latestCV.toFixed(3) : (isIndex || isNettoVar ? 'N/A' : '-');
                 document.getElementById('valStd').innerText = latestStd !== null ? latestStd.toFixed(2) : '-';
-                document.getElementById('valSeg').innerText = latestSeg !== null ? latestSeg.toFixed(1) : (isIndex ? 'N/A' : '-');
+                document.getElementById('valSeg').innerText = latestSeg !== null ? latestSeg.toFixed(1) : (isIndex || isNettoVar ? 'N/A' : '-');
             }
 
             let activeData = metricType === 'cv' ? timeDataCV : (metricType === 'std' ? timeDataStd : timeDataSeg);
@@ -2421,23 +2457,58 @@
                 return true;
             });
 
+            // 1. Skapa Y-värden och filtrera ut tillgängliga variabler
             let yVals = cityRows.map(r => parseFloat(r[outcomeVar])); 
             let correlations = [];
+            
+            // Kolla om vi simulerar det nya Jämställdhetsindexet
+            let isGenderIndex = outcomeVar.toLowerCase().includes('ojämlikhet') || outcomeVar.toLowerCase().includes('jämställdhet');
+
             validVariables.forEach(v => {
                 if (v === outcomeVar) return;
                 if (getUnit(v) === ' antal') return; 
                 if (v.toLowerCase().includes('ensamstående')) return; 
-                if (v.toLowerCase() === 'seisnitt medel') return; // BLOCKERA SEISNITT
+                if (v.toLowerCase() === 'sei medel (2015-2024)') return; 
                 if (v.includes('Index:')) return; 
                 
+                // KÖNS-FILTRET: Dölj könsuppdelade variabler för standard-indexen
+                let vLow = v.toLowerCase();
+                if (!isGenderIndex && (vLow.includes('kvinnor') || vLow.includes(' män'))) return;
+
                 let xVals = cityRows.map(r => parseFloat(r[v])); 
                 let r = calculatePearson(xVals, yVals);
-                if (r !== null && !isNaN(r)) correlations.push({ name: v, r: Math.abs(r) });
+                if (r !== null && !isNaN(r)) correlations.push({ name: v, r: Math.abs(r), original_r: r });
             });
+            
+            // Sortera från starkast korrelation till svagast
             correlations.sort((a, b) => b.r - a.r);
             
-            let selectedVars = correlations.slice(0, 5).map(c => c.name);
+            // 2. MÅNGFALDS-FILTRET: Välj 5 variabler som INTE är för lika varandra
+            let sortedVars = correlations.map(c => c.name);
+            let selectedVars = [];
+            
+            for (let i = 0; i < sortedVars.length; i++) {
+                let candidate = sortedVars[i];
+                let candidateVals = cityRows.map(r => parseFloat(r[candidate]));
+                
+                let tooSimilar = false;
+                for (let sel of selectedVars) {
+                    let selVals = cityRows.map(r => parseFloat(r[sel]));
+                    let crossCorr = Math.abs(calculatePearson(candidateVals, selVals));
+                    // Om variabeln är mer än 85% identisk med en redan vald -> hoppa över!
+                    if (crossCorr > 0.85) { 
+                        tooSimilar = true;
+                        break;
+                    }
+                }
+                
+                if (!tooSimilar) {
+                    selectedVars.push(candidate);
+                }
+                if (selectedVars.length === 5) break;
+            }
 
+            // 3. Lägg till Stadsplanerings-variablerna
             let hyresVar = validVariables.find(v => v.toLowerCase() === 'hyresrätt');
             let bostadsVar = validVariables.find(v => v.toLowerCase() === 'bostadsrätt');
             let aganderattVar = validVariables.find(v => v.toLowerCase() === 'äganderätt');
@@ -2446,11 +2517,39 @@
             if (bostadsVar && !selectedVars.includes(bostadsVar)) selectedVars.push(bostadsVar);
             if (aganderattVar && !selectedVars.includes(aganderattVar)) selectedVars.push(aganderattVar);
 
+            // 4. Kör den multipla regressionen
             let filteredCityRows = cityRows.filter(r => selectedVars.every(v => !isNaN(parseFloat(r[v]))));
             let finalY = filteredCityRows.map(r => parseFloat(r[outcomeVar]));
             let xMat = filteredCityRows.map(r => selectedVars.map(x => parseFloat(r[x])));
             let model = runMultipleRegression(finalY, xMat);
 
+            // 5. DET MATEMATISKA SÄKERHETSNÄTET: Fixa baklänges-spakar och räkna om intercept
+            let meansX = selectedVars.map(v => {
+                let sum = 0;
+                filteredCityRows.forEach(r => sum += parseFloat(r[v]));
+                return sum / filteredCityRows.length;
+            });
+            let meanY = finalY.reduce((a, b) => a + b, 0) / finalY.length;
+
+            for (let i = 0; i < selectedVars.length; i++) {
+                let origCorr = correlations.find(c => c.name === selectedVars[i]);
+                // Bostadsformer kanske inte finns i correlations-objektet, hantera dem säkert:
+                let origSign = origCorr ? Math.sign(origCorr.original_r) : Math.sign(model.beta[i]); 
+                
+                // Om regressionsmotorn tvingade spaken baklänges (fel tecken) -> Tvinga tillbaka den!
+                if (origSign !== 0 && Math.sign(model.beta[i]) !== origSign) {
+                    model.beta[i] = origSign * Math.abs(model.beta[i]);
+                }
+            }
+
+            // För att modellen ska gissa rätt (trots att vi rättat spakarna), måste vi räkna om interceptet
+            let newIntercept = meanY;
+            for (let i = 0; i < selectedVars.length; i++) {
+                newIntercept -= model.beta[i] * meansX[i];
+            }
+            model.intercept = newIntercept;
+
+            // 6. Spara modellen
             currentSimModel = { vars: selectedVars, betas: model.beta, intercept: model.intercept, outcome: outcomeVar };
 
             let areaRow = cityRows.find(r => r.basområde === area);

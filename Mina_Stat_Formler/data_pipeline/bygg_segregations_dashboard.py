@@ -1,5 +1,6 @@
 import os
 import sys
+import traceback  # <--- LÄGG TILL DENNA RAD!
 import pandas as pd
 import numpy as np
 from pyaxis import pyaxis
@@ -62,7 +63,8 @@ rename_dict = {
     'Inflytting inom länet': 'Inflyttning inom länet',
     'Utflytting inom länet': 'Utflyttning inom länet',
     'Utfyttning': 'Utflyttning',
-    'SEIsnitt 16 indikatorer': 'Index: Samlat SEI (16 indikatorer)'
+    'SEIsnitt 16 indikatorer': 'Index: Samlat SEI (16 indikatorer)',
+    'SEIsnitt medel': 'SEI medel (2015-2024)'
 }
 px_merged.rename(columns={k: v for k, v in rename_dict.items() if k in px_merged.columns and v not in px_merged.columns}, inplace=True)
 
@@ -86,6 +88,35 @@ calc_if_exists(px_merged, 'Migrationsnetto', lambda d: d['Invandring'] - d['Utva
 calc_if_exists(px_merged, 'Födelseöverskott', lambda d: d['Födda'] - d['Döda'], ['Födda', 'Döda'])
 calc_if_exists(px_merged, 'Nettoflyttning förvärvsarbetande', lambda d: d['Inflyttning av förvärvsarbetande från annat basområde'] - d['Utflyttning av förvärvsarbetande till annat basområde'], ['Inflyttning av förvärvsarbetande från annat basområde', 'Utflyttning av förvärvsarbetande till annat basområde'])
 
+# ==========================================
+# --- 4B. JÄMSTÄLLDHETSBERÄKNINGAR ---
+# ==========================================
+
+# 1. Skapa nämnare (Total befolkning 20-64 per kön) genom att summera utbildningskategorierna
+utb_k_cols = ['Förgymnasial utb kvinnor', 'Gymnasial utb kvinnor', 'Kort eftergymnasial utb kvinnor', 'Lång eftergymnasial utb kvinnor', 'Uppgift saknas utb kvinnor']
+calc_if_exists(px_merged, 'Total utb 20-64 kvinnor', lambda d: d[utb_k_cols].sum(axis=1), utb_k_cols)
+
+utb_m_cols = ['Förgymnasial utb män', 'Gymnasial utb män', 'Kort eftergymnasial utb män', 'Lång eftergymnasial utb män', 'Uppgift saknas utb män']
+calc_if_exists(px_merged, 'Total utb 20-64 män', lambda d: d[utb_m_cols].sum(axis=1), utb_m_cols)
+
+# 2. Räkna om till andelar (%)
+calc_if_exists(px_merged, 'Förgymnasial utb kvinnor (%)', lambda d: (d['Förgymnasial utb kvinnor'] / d['Total utb 20-64 kvinnor']) * 100, ['Förgymnasial utb kvinnor', 'Total utb 20-64 kvinnor'])
+calc_if_exists(px_merged, 'Förgymnasial utb män (%)', lambda d: (d['Förgymnasial utb män'] / d['Total utb 20-64 män']) * 100, ['Förgymnasial utb män', 'Total utb 20-64 män'])
+
+calc_if_exists(px_merged, 'Lång eftergymn utb kvinnor (%)', lambda d: (d['Lång eftergymnasial utb kvinnor'] / d['Total utb 20-64 kvinnor']) * 100, ['Lång eftergymnasial utb kvinnor', 'Total utb 20-64 kvinnor'])
+calc_if_exists(px_merged, 'Lång eftergymn utb män (%)', lambda d: (d['Lång eftergymnasial utb män'] / d['Total utb 20-64 män']) * 100, ['Lång eftergymnasial utb män', 'Total utb 20-64 män'])
+
+# 3. Klyftorna (Alltid: Kvinnor minus Män) 
+# Ett plusvärde = Kvinnor har högre siffra. Minusvärde = Män har högre.
+calc_if_exists(px_merged, 'Diff: Förgymnasial utb', lambda d: d['Förgymnasial utb kvinnor (%)'] - d['Förgymnasial utb män (%)'], ['Förgymnasial utb kvinnor (%)', 'Förgymnasial utb män (%)'])
+calc_if_exists(px_merged, 'Diff: Lång eftergymn utb', lambda d: d['Lång eftergymn utb kvinnor (%)'] - d['Lång eftergymn utb män (%)'], ['Lång eftergymn utb kvinnor (%)', 'Lång eftergymn utb män (%)'])
+
+# Ohälsotal är redan en färdig kvot/dagar per person, så vi tar differensen direkt
+calc_if_exists(px_merged, 'Diff: Ohälsotal 20-64 år', lambda d: d['Ohälsotal kvinnor 20-64 år'] - d['Ohälsotal män 20-64 år'], ['Ohälsotal kvinnor 20-64 år', 'Ohälsotal män 20-64 år'])
+
+# Sysselsättning (om du har dessa kolumner sedan tidigare)
+calc_if_exists(px_merged, 'Diff: Sysselsättningsgrad', lambda d: d['Sysselsättningsgrad kvinnor'] - d['Sysselsättningsgrad män'], ['Sysselsättningsgrad kvinnor', 'Sysselsättningsgrad män'])
+
 # --- 5. Z-SCORE INDEX MOTOR ---
 def get_col(df, substring):
     for c in df.columns:
@@ -104,6 +135,17 @@ index_config = {
     },
     "Index: Demografisk Koncentration": {
         "pos": ["Utrikes födda", "Utländsk bakgrund"], "neg": []
+    },
+    "Index: Strukturell Ojämlikhet": {
+        # POS: Saker som ofta drabbar kvinnor hårdast och driver Ojämlikhet (högt värde = sämre jämställdhet)
+        "pos": ["Diff: Ohälsotal 20-64 år"], 
+        # NEG: Saker som bygger kvinnors självständighet och motverkar ojämlikheten (Sänker indexets negativa poäng)
+        "neg": [
+            "Kvinnors andel nettoinkomst", 
+            "Kvinnors andel förvärvsinkomst", 
+            "Diff: Sysselsättningsgrad", 
+            "Diff: Lång eftergymn utb"
+        ]
     }
 }
 
@@ -123,6 +165,23 @@ for idx_name, config in index_config.items():
     if valid_vars > 0:
         px_merged[idx_name] = z_scores.sum(axis=1).round(3)
 
+# --- 5B. DEFINIERA GRUNDVARIABLER FÖR DRIVKRAFTSANALYS ---
+# Här skapar vi en lista som enbart innehåller "rena" variabler, 
+# så att Index och SEI-samlingsmått aldrig visas som drivkrafter till varandra.
+
+alla_numeriska = px_merged.select_dtypes(include=['float64', 'int64']).columns.tolist()
+
+grundvariabler = [
+    col for col in alla_numeriska 
+    if not str(col).startswith("Index:") 
+    and col != "SEI medel (2015-2024)"
+    and col not in ['basområde', 'tid', 'OBJECTID'] # Lägg till ev. andra ID-kolumner här
+]
+
+# (Om din kod längre ner använder en specifik variabel, t.ex. 'features' eller 'analys_kolumner' 
+# för att bygga Tornado-diagrammet eller korrelationsmatrisen, 
+# se till att den nu pekar på 'grundvariabler' istället för alla kolumner).
+
 # --- 6. EXCEL METADATA ---
 if os.path.exists(file_excel):
     df_excel = pd.read_excel(file_excel)
@@ -137,6 +196,21 @@ if os.path.exists(file_excel):
 else:
     final_df = px_merged
 
+# --- 7 STÄDNING AV RÅDATA FÖR JÄMSTÄLLDHET ---
+# Vi tar bort de grundvariabler som enbart användes för att räkna ut klyftorna, 
+# så att de inte skräpar ner dashboardens gränssnitt.
+
+ra_kolumner_att_dolja = [
+    'Förgymnasial utb män', 'Gymnasial utb män', 'Kort eftergymnasial utb män', 'Lång eftergymnasial utb män', 'Uppgift saknas utb män',
+    'Förgymnasial utb kvinnor', 'Gymnasial utb kvinnor', 'Kort eftergymnasial utb kvinnor', 'Lång eftergymnasial utb kvinnor', 'Uppgift saknas utb kvinnor',
+    'Ohälsotal totalt 20-64 år', 'Ohälsotal män 20-64 år', 'Ohälsotal kvinnor 20-64 år',
+    'Total utb 20-64 kvinnor', 'Total utb 20-64 män', 
+    'Förgymnasial utb kvinnor (%)', 'Förgymnasial utb män (%)', 
+    'Lång eftergymn utb kvinnor (%)', 'Lång eftergymn utb män (%)'
+]
+
+# Drop-funktionen ignorerar kolumner som eventuellt inte existerar (felsäkert)
+final_df = final_df.drop(columns=[col for col in ra_kolumner_att_dolja if col in final_df.columns])
 
 # ==========================================
 # 8. AVSLUT OCH SPARA
