@@ -499,7 +499,7 @@ try:
             style_function=lambda feature: {'fillOpacity': 0, 'color': '#e74c3c', 'weight': 3, 'dashArray': '5, 5', 'className': 'border-2022-layer'}
         ).add_to(m)
 
-    minimap = MiniMap(toggleDisplay=True, position="topleft", zoomLevelOffset=-4, tile_layer="cartodbpositron")
+    minimap = MiniMap(toggleDisplay=True, position="topleft", zoomLevelOffset=-4, tile_layer="OpenStreetMap")
     m.add_child(minimap)
 
     # =====================================================================
@@ -752,7 +752,7 @@ try:
             }});
 
             // Bakgrundskartor
-            var tileBlek = L.tileLayer('https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{ attribution: '&copy; CARTO' }}).addTo(map);
+            tileBlek = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ attribution: 'Tiles &copy; Esri', crossOrigin: true }}).addTo(map);
             var tileFarg = L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{ attribution: '&copy; OSM' }});
             var tileFlyg = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ attribution: '&copy; Esri' }});
             

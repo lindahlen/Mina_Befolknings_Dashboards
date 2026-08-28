@@ -460,7 +460,7 @@
         <!-- 3. Stadsdel & Tidsval (Grönt kort) -->
         <div class="control-card green" style="flex: 1.2; min-width: 200px;">
             
-            <!-- STADSDELSMARKERING (Ny) -->
+            <!-- STADSDELSMARKERING -->
             <label class="control-label">📍 Visa basområden i (Stadsdel)</label>
             <select id="stadsdelSelect2" class="modern-select" style="margin-bottom: 12px;">
                 <option value="none">-- Ingen markerad --</option>
@@ -477,14 +477,28 @@
                 <option value="Ramshäll/Vimanshäll">Ramshäll & Vimanshäll</option>
             </select>
                     
-            <label class="control-label">📅 År</label>
-            <select id="yearSelect2" class="modern-select"></select>
+            <!-- ÅR & ANIMERING (Samma beprövade logik som i Flik 1) -->
+            <label class="control-label">📅 År & Animering</label>
+            <div style="display: flex; gap: 8px;">
+                <select id="yearSelect2" class="modern-select" style="flex: 1;"></select>
+                <button id="playBtn-yearSelect2" class="nav-button" style="background:#27ae60; padding: 8px 12px; margin: 0; min-width: 100px; display: flex; align-items: center; justify-content: center; color: white; border: none; border-radius: 4px; cursor: pointer;" onclick="toggleAnimation('yearSelect2', updateTab2)">
+                    ▶️ Spela upp
+                </button>
+            </div>
         </div>
         
         <!-- 4. Geografiska Filter (Neutralt grått kort) -->
-        <div class="control-card" style="flex: 1; min-width: 180px;">
-            <label class="control-label">⚙️ Filter</label>
-            <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 5px;">
+        <div class="control-card" style="flex: 1.2; min-width: 250px;">
+            <label class="control-label">⚙️ Filter & Inställningar</label>
+            
+            <!-- Grid-layout: 2 kolumner normalt, bryter till 1 kolumn på små skärmar -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; padding-top: 5px;">
+                
+                <!-- Låsknappen tar alltid hela bredden (grid-column: 1 / -1) -->
+                <label class="check-item" style="grid-column: 1 / -1; color: #e67e22; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 2px;">
+                    <input type="checkbox" id="lockCrosshair2"> 🔒 Lås hårkors & axlar
+                </label>
+                
                 <label class="check-item"><input type="checkbox" id="exTot2" checked> Exkl. Total</label>
                 <label class="check-item"><input type="checkbox" id="exSma2" checked> Exkl. Små omr.</label>
                 <label class="check-item"><input type="checkbox" id="exSpe2"> Exkl. Studentomr.</label> 
@@ -2044,7 +2058,7 @@ function toggleAnimation(selectId, updateFunction) {
             if (stadsdelPoints.length > 0) {
                 newDatasets.push({
                     type: 'bubble',
-                    label: `📌 Markerad: {selectedStadsdel.replace('/', ' & ')}`,
+                    label: (selectedStadsdel && selectedStadsdel !== 'Alla') ? `📌 Markerad: ${selectedStadsdel.replace('/', ' & ')}` : 'Alla basområden',
                     data: stadsdelPoints,
                     backgroundColor: 'rgba(40, 40, 40, 0.25)', // Lätt transparent mörkgrå fyllning
                     borderColor: 'rgba(10, 10, 10, 0.95)',     // Skarp, nästan svart kantlinje för maximal kontrast
@@ -2180,152 +2194,325 @@ function toggleAnimation(selectId, updateFunction) {
         }
 
         function updateTab2() {
-            if (rawData.length === 0) return;
-            const xVar = document.getElementById('xVar2').value; 
-            const yVar = 'Index: Samlat SEI (16 indikatorer)'; 
-            const bubbleSizeVar = document.getElementById('bubbleSizeVar2').value; 
-            const colorVar = document.getElementById('colorVar2').value;
-            const selectedYear = document.getElementById('yearSelect2').value;
-            const exTot = document.getElementById('exTot2').checked; 
-            const exSma = document.getElementById('exSma2').checked; 
-            const exSpe = document.getElementById('exSpe2').checked;
-            const selectedStadsdel2 = document.getElementById('stadsdelSelect2') ? document.getElementById('stadsdelSelect2').value : 'none';
+    if (rawData.length === 0) return;
+    const xVar = document.getElementById('xVar2').value; 
+    const yVar = 'Index: Samlat SEI (16 indikatorer)'; 
+    const bubbleSizeVar = document.getElementById('bubbleSizeVar2').value; 
+    const colorVar = document.getElementById('colorVar2').value;
+    const selectedYear = document.getElementById('yearSelect2').value;
+    const exTot = document.getElementById('exTot2').checked; 
+    const exSma = document.getElementById('exSma2').checked; 
+    const exSpe = document.getElementById('exSpe2').checked;
+    const selectedStadsdel2 = document.getElementById('stadsdelSelect2') ? document.getElementById('stadsdelSelect2').value : 'none';
 
-            let yearLabel = selectedYear;
-            if (selectedYear === 'all') yearLabel = 'Samtliga år';
-            else if (selectedYear === 'last5') yearLabel = `Senaste 5 åren`;
-            else if (selectedYear === 'last10') yearLabel = `Senaste 10 åren`;
-            document.getElementById('dynYear').innerText = yearLabel;
+    let yearLabel = selectedYear;
+    if (selectedYear === 'all') yearLabel = 'Samtliga år';
+    else if (selectedYear === 'last5') yearLabel = `Senaste 5 åren`;
+    else if (selectedYear === 'last10') yearLabel = `Senaste 10 åren`;
+    document.getElementById('dynYear').innerText = yearLabel;
 
-            let allPlotData = []; let groupedData = {}; let sumY = 0; let countY = 0;
+    let allPlotData = []; 
+    let groupedData = {}; 
+    let sumY = 0; let countY = 0;
+    
+    // === ANTI-BLINK-MAGIN: Hitta alla möjliga kategorier och skapa tomma fack ===
+    let allPossibleCategories = [...new Set(rawData.map(row => {
+        let cat = (colorVar !== 'none' && row.basområde !== 'Hela kommunen') ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
+        if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) cat = 'SEI ' + cat;
+        if (row.basområde === 'Hela kommunen') cat = 'Hela kommunen';
+        return cat;
+    }))];
+    allPossibleCategories.forEach(cat => groupedData[cat] = []);
+
+    // Fyll på med faktiska data
+    rawData.forEach(row => {
+        if (isYearMatch(row.tid, selectedYear)) {
+            if (exTot && row.basområde === 'Hela kommunen') return;
+            if (exSma && row.basområde !== 'Hela kommunen') {
+                if (row.Inkluderad != "1" || parseFloat(row['Folkmängd']) < 25) return;
+            }
+            if (exSpe && (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) return;
+
+            let xVal = parseFloat(row[xVar]); 
+            let yVal = parseFloat(row[yVar]); 
+            let pop = parseFloat(row[bubbleSizeVar]) || 10; 
             
-            rawData.forEach(row => {
-                if (isYearMatch(row.tid, selectedYear)) {
-                    if (exTot && row.basområde === 'Hela kommunen') return;
-                    
-                    if (exSma && row.basområde !== 'Hela kommunen') {
-                        if (row.Inkluderad != "1" || parseFloat(row['Folkmängd']) < 25) return;
-                    }
-                    
-                    if (exSpe && (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) return;
+            if (!isNaN(xVal) && !isNaN(yVal)) {
+                sumY += yVal; countY++; 
+                let pt = { x: xVal, y: yVal, r: Math.max(4, Math.sqrt(pop)/5), label: row.basområde, pop: pop, rawRow: row };
+                allPlotData.push(pt);
+                
+                let cat = (colorVar !== 'none' && row.basområde !== 'Hela kommunen') ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
+                if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) cat = 'SEI ' + cat;
+                if (row.basområde === 'Hela kommunen') cat = 'Hela kommunen';
+                
+                groupedData[cat].push(pt);
+            }
+        }
+    });
 
-                    let xVal = parseFloat(row[xVar]); 
-                    let yVal = parseFloat(row[yVar]); 
-                    let pop = parseFloat(row[bubbleSizeVar]) || 10; 
-                    
-                    if (!isNaN(xVal) && !isNaN(yVal)) {
-                        sumY += yVal; countY++; 
-                        let pt = { x: xVal, y: yVal, r: Math.max(4, Math.sqrt(pop)/5), label: row.basområde, pop: pop, rawRow: row };
-                        allPlotData.push(pt);
-                        
-                        let cat = (colorVar !== 'none' && row.basområde !== 'Hela kommunen') ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
-                        
-                        if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) {
-                            cat = 'SEI ' + cat;
-                        }
+    // === LÅS HÅRKORS & SKALOR LOGIK ===
+    const isCrosshairLocked = document.getElementById('lockCrosshair2') ? document.getElementById('lockCrosshair2').checked : false;
+    
+    let currentMeanX = 0; 
+    let currentMeanY = countY > 0 ? (sumY / countY) : 3.5; 
+    let finalMeanX, finalMeanY;
 
-                        if (row.basområde === 'Hela kommunen') cat = 'Hela kommunen';
-                        
-                        if(!groupedData[cat]) groupedData[cat] = []; 
-                        groupedData[cat].push(pt);
-                    }
+    if (isCrosshairLocked) {
+        if (lockedMeanY2 === null) {
+            // LÅSNING PRECIS AKTIVERAD! Spara värdena.
+            lockedMeanX2 = currentMeanX;
+            lockedMeanY2 = currentMeanY;
+            
+            // Fånga axlarnas exakta utsträckning just det här året (om diagrammet finns)
+            if (typeof window.chartInstance2 !== 'undefined' && window.chartInstance2 !== null) {
+                lockedScales2 = {
+                    xMin: window.chartInstance2.scales.x.min,
+                    xMax: window.chartInstance2.scales.x.max,
+                    yMin: window.chartInstance2.scales.y.min,
+                    yMax: window.chartInstance2.scales.y.max
+                };
+            }
+        }
+        finalMeanX = lockedMeanX2;
+        finalMeanY = lockedMeanY2;
+    } else {
+        // FRITT LÄGE - Nollställ allt i minnet!
+        lockedMeanY2 = null;
+        lockedScales2 = null;
+        finalMeanX = currentMeanX;
+        finalMeanY = currentMeanY;
+    }
+
+    const updateCounts = (data) => {
+        let q1=0, q2=0, q3=0, q4=0;
+        data.forEach(pt => { 
+            if (pt.x > finalMeanX && pt.y >= finalMeanY) q1++; 
+            else if (pt.x <= finalMeanX && pt.y >= finalMeanY) q2++; 
+            else if (pt.x <= finalMeanX && pt.y < finalMeanY) q3++; 
+            else if (pt.x > finalMeanX && pt.y < finalMeanY) q4++; 
+        });
+        document.getElementById('count-q1').innerText = q1; document.getElementById('count-q2').innerText = q2; 
+        document.getElementById('count-q3').innerText = q3; document.getElementById('count-q4').innerText = q4;
+    };
+    updateCounts(allPlotData);
+
+    let chartDatasets = []; 
+    // Sortera nycklarna så de hamnar i samma ordning varje gång
+    let sortedKeys = sortCategories(Object.keys(groupedData), colorVar);
+
+    sortedKeys.forEach(cat => { 
+        let colors;
+        if (colorVar === 'none') {
+            colors = defaultColor;
+        } else {
+            colors = colorPalette[cat];
+            if (!colors && cat !== 'Hela kommunen' && cat !== 'Okänd karaktär') {
+                if (!dynamicCategoryColors[cat]) {
+                    dynamicCategoryColors[cat] = fallbackColors[dynamicColorIndex % fallbackColors.length];
+                    dynamicColorIndex++;
+                }
+                colors = dynamicCategoryColors[cat];
+            }
+            if (!colors) colors = defaultColor;
+        }
+        chartDatasets.push({ label: cat, data: groupedData[cat], backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1 }); 
+    });
+
+    // === 1. ANIMATION & SPÅRHISTORIK ===
+    let focusPoint = [];
+    let trailPoints = [];
+    let focusBg = 'transparent';
+    let focusBorder = 'transparent';
+    let trailColor = 'transparent';
+
+    if (trackedAreaFlik2 && selectedYear !== 'all') {
+        let activePoint = allPlotData.find(p => p.label === trackedAreaFlik2);
+        if (activePoint) {
+            focusPoint = [activePoint];
+            trailPoints = [{ x: activePoint.x, y: activePoint.y, year: selectedYear }];
+        }
+        
+        let trailData = rawData.filter(d => 
+            d.basområde === trackedAreaFlik2 && parseInt(d.tid) <= parseInt(selectedYear)
+        ).sort((a, b) => parseInt(a.tid) - parseInt(b.tid));
+
+        trailPoints = trailData.map(d => ({ x: parseFloat(d[xVar]), y: parseFloat(d[yVar]), year: d.tid })).filter(p => !isNaN(p.x) && !isNaN(p.y));
+        
+        focusBg = 'rgba(255, 234, 0, 0.95)';
+        focusBorder = 'rgba(211, 84, 0, 1)';
+        trailColor = 'rgba(211, 84, 0, 0.85)';
+    }
+
+    // SPÅRET (Alltid med)
+    chartDatasets.push({
+        type: 'line', label: trackedAreaFlik2 ? `Spårhistorik: ${trackedAreaFlik2}` : 'Spårhistorik', data: trailPoints,
+        borderColor: trailColor, borderWidth: 3, pointBackgroundColor: trailColor, pointRadius: 4, fill: false, showLine: true, order: 3,
+        animation: false // HINDAR SPÅRET FRÅN ATT GLIDA
+    });
+
+    // GLÖDBUBBLAN (Alltid med)
+    chartDatasets.push({
+        type: 'bubble', label: trackedAreaFlik2 ? `Nuvarande Position: ${trackedAreaFlik2}` : 'Nuvarande Position', data: focusPoint,
+        backgroundColor: focusBg, borderColor: focusBorder, borderWidth: 3, order: -2,
+        // HÄR ÄR LÖSNINGEN PÅ NOLLÄGES-FLYGET!
+        animation: false 
+    });
+
+    // === 2. STADSDELSMARKERING ===
+    let stadsdelPoints2 = [];
+    if (selectedStadsdel2 !== 'none') {
+        let valdaStadsdelar = selectedStadsdel2.split('/');
+        stadsdelPoints2 = allPlotData.filter(p => {
+            let s = p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL'];
+            return valdaStadsdelar.includes(s);
+        });
+    }
+
+    // LÖSNING PÅ PULSERANDET OCH VITA SKÄRMEN:
+    // Vi tog bort if (stadsdelPoints2.length > 0). Denna MÅSTE alltid läggas till i arrayen!
+    chartDatasets.push({
+        type: 'bubble',
+        label: (selectedStadsdel2 && selectedStadsdel2 !== 'none') ? `📌 Markerad: ${selectedStadsdel2.replace('/', ' & ')}` : 'Alla basområden',
+        data: stadsdelPoints2, // Blir helt enkelt en tom array [] om inget är valt
+        backgroundColor: 'rgba(40, 40, 40, 0.25)', 
+        borderColor: 'rgba(10, 10, 10, 0.95)', 
+        borderWidth: 3,
+        order: -1, 
+        // HINDAR MARKERINGEN FRÅN ATT FLYGA FRÅN ORIGO:
+        animation: false 
+    });
+
+    // === 3. RITA DIAGRAMMET ELLER UPPDATERA MJUKT ===
+    const playBtn2 = document.getElementById('playBtn-yearSelect2');
+    const isPlaying2 = playBtn2 && (playBtn2.innerText.includes('Paus') || playBtn2.innerText.includes('⏸'));
+
+    if (typeof window.chartInstance2 !== 'undefined' && window.chartInstance2 !== null) {
+        
+        // ====================================================================
+        // 🚀 LÖSNINGEN: UTVECKLAD IN-PLACE UPDATE (Nu med färguppdatering!)
+        // ====================================================================
+        if (window.chartInstance2.data.datasets.length === chartDatasets.length) {
+            
+            // Kirurgisk uppdatering! Chart.js minns positionerna.
+            window.chartInstance2.data.datasets.forEach((dataset, index) => {
+                
+                // 1. Uppdatera data (koordinaterna) och tooltip-etiketten
+                dataset.data = chartDatasets[index].data;
+                dataset.label = chartDatasets[index].label; 
+                
+                // 2. MAGIN FÖR SPÅRET: Uppdatera färgerna! (Annars förblir det osynligt)
+                dataset.backgroundColor = chartDatasets[index].backgroundColor;
+                dataset.borderColor = chartDatasets[index].borderColor;
+                
+                // 3. Om det är en linje (spårhistoriken), uppdatera punkterna på linjen
+                if (chartDatasets[index].pointBackgroundColor) {
+                    dataset.pointBackgroundColor = chartDatasets[index].pointBackgroundColor;
                 }
             });
+            
+        } else {
+            // Om antalet lager ändrats (Fallback)
+            window.chartInstance2.data.datasets = chartDatasets; 
+        }
+        // Tvinga teckenförklaringen (legenden) att visas om vi har valt en färgkodning!
+        window.chartInstance2.options.plugins.legend.display = (colorVar !== 'none');
+        
+        // ==========================================
+        // 🚀 LÖSNINGEN FÖR ATT FRYSA AXLARNA
+        // ==========================================
+        if (isCrosshairLocked && lockedScales2) {
+            window.chartInstance2.options.scales.x.min = lockedScales2.xMin;
+            window.chartInstance2.options.scales.x.max = lockedScales2.xMax;
+            window.chartInstance2.options.scales.y.min = lockedScales2.yMin;
+            window.chartInstance2.options.scales.y.max = lockedScales2.yMax;
+        } else {
+            // Ta bort låsningen om man har kryssat ur rutan, så auto-zoom fungerar igen!
+            delete window.chartInstance2.options.scales.x.min;
+            delete window.chartInstance2.options.scales.x.max;
+            delete window.chartInstance2.options.scales.y.min;
+            delete window.chartInstance2.options.scales.y.max;
+        }
 
-            const meanX = 0; 
-            const meanY = countY > 0 ? (sumY / countY) : 3.5; 
-
-            const updateCounts = (data) => {
-                let q1=0, q2=0, q3=0, q4=0;
-                data.forEach(pt => { 
-                    if (pt.x > meanX && pt.y >= meanY) q1++; 
-                    else if (pt.x <= meanX && pt.y >= meanY) q2++; 
-                    else if (pt.x <= meanX && pt.y < meanY) q3++; 
-                    else if (pt.x > meanX && pt.y < meanY) q4++; 
-                });
-                document.getElementById('count-q1').innerText = q1; document.getElementById('count-q2').innerText = q2; 
-                document.getElementById('count-q3').innerText = q3; document.getElementById('count-q4').innerText = q4;
-            };
-            updateCounts(allPlotData);
-
-            let chartDatasets = []; 
-            let sortedKeys = sortCategories(Object.keys(groupedData), colorVar);
-
-            sortedKeys.forEach(cat => { 
-                let colors;
-                if (colorVar === 'none') {
-                    colors = defaultColor;
-                } else {
-                    colors = colorPalette[cat];
-                    if (!colors && cat !== 'Hela kommunen' && cat !== 'Okänd karaktär') {
-                        if (!dynamicCategoryColors[cat]) {
-                            dynamicCategoryColors[cat] = fallbackColors[dynamicColorIndex % fallbackColors.length];
-                            dynamicColorIndex++;
+        // Sätt hastigheten baserat på om vi spelar upp eller byter manuellt
+        let animSpeed = isPlaying2 ? 1500 : 400;
+        window.chartInstance2.options.animation.duration = animSpeed;
+               
+        // Magin: Nu glider de mjukt från sin nuvarande position!
+        window.chartInstance2.update(); 
+        
+    } else {
+        // SKAPA DIAGRAMMET FÖRSTA GÅNGEN
+        const ctx = document.getElementById('quadrantChart2').getContext('2d');
+        window.chartInstance2 = new Chart(ctx, {
+            type: 'bubble', 
+            data: { datasets: chartDatasets }, 
+            options: {
+                responsive: true, 
+                maintainAspectRatio: false,
+                animation: { duration: 400, easing: 'easeInOutQuad' },
+                
+                onClick: (event, elements, chart) => {
+                    if (elements.length > 0) {
+                        const el = elements[0];
+                        const ds = chart.data.datasets[el.datasetIndex];
+                        if (ds.type !== 'line' && ds.data[el.index] && ds.data[el.index].label) {
+                            trackedAreaFlik2 = ds.data[el.index].label;
+                            updateTab2();
                         }
-                        colors = dynamicCategoryColors[cat];
+                    } else {
+                        trackedAreaFlik2 = null; 
+                        updateTab2();
                     }
-                    if (!colors) colors = defaultColor;
-                }
-
-                chartDatasets.push({ label: cat, data: groupedData[cat], backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1 }); 
-            });
-
-            // ========================================================================
-            // 🚀 HÄR LÄGGER VI IN DEN NYA DELEN (B) FÖR STADSDELSMARKERING
-            // ========================================================================
-            // 1. Hämta valet från den nya rullistan (görs oftast högst upp i funktionen, 
-                
-            let stadsdelPoints2 = [];
-            if (selectedStadsdel2 !== 'none') {
-                let valdaStadsdelar = selectedStadsdel2.split('/');
-                
-                stadsdelPoints2 = allPlotData.filter(p => {
-                    let s = p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL'];
-                    return valdaStadsdelar.includes(s);
-                });
-            }
-
-            if (stadsdelPoints2.length > 0) {
-                // Notera: Jag använder chartDatasets.push här för att matcha din kod
-                chartDatasets.push({
-                    type: 'bubble',
-                    label: `📌 Markerad: ${selectedStadsdel2.replace('/', ' & ')}`,
-                    data: stadsdelPoints2,
-                    backgroundColor: 'rgba(40, 40, 40, 0.25)', // Mörkgrå fyllning
-                    borderColor: 'rgba(10, 10, 10, 0.95)',     // Nästan svart kant
-                    borderWidth: 3,
-                    order: -1, // Ritas över vanliga bubblor
-                    animation: false // Ingen fördröjning
-                });
-            }
-            // ========================================================================
-
-            const ctx = document.getElementById('quadrantChart2').getContext('2d');
-            if (chartInstance2) chartInstance2.destroy();
-            chartInstance2 = new Chart(ctx, {
-                type: 'bubble', 
-                data: { datasets: chartDatasets },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: {
-                        datalabels: { display: false },
-                        legend: { 
-                            display: colorVar !== 'none', 
-                            position: 'top',
-                            onClick: function(e, legendItem, legend) {
-                                const index = legendItem.datasetIndex; const ci = legend.chart;
-                                ci.setDatasetVisibility(index, !ci.isDatasetVisible(index));
-                                let visData = []; ci.data.datasets.forEach((ds, i) => { if (ci.isDatasetVisible(i)) visData.push(...ds.data); });
-                                updateCounts(visData); ci.update();
+                },
+                plugins: {
+                    datalabels: { display: false },
+                    legend: { 
+                        display: colorVar !== 'none', 
+                        position: 'top',
+                        labels: {
+                            filter: (item, chartData) => {
+                                if (item.text.startsWith('Spårhistorik') || item.text.startsWith('Nuvarande Position') || item.text.startsWith('📌 Markerad:')) return false;
+                                if (item.text === 'Okänd karaktär' || item.text === '..') return false;
+                                const ds = chartData.datasets[item.datasetIndex];
+                                if (ds && ds.data.length === 0) return false;
+                                return true;
                             }
                         },
-                        quadrantPlugin: { active: true, meanX: meanX, meanY: meanY },
-                        tooltip: { callbacks: { label: (c) => `${c.raw.label}: X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}` } }
+                        onClick: function(e, legendItem, legend) {
+                            const index = legendItem.datasetIndex; 
+                            const ci = legend.chart;
+                            ci.setDatasetVisibility(index, !ci.isDatasetVisible(index));
+                            let visData = []; 
+                            ci.data.datasets.forEach((ds, i) => { 
+                                if (ci.isDatasetVisible(i) && !ds.label.startsWith('Spårhistorik') && !ds.label.startsWith('Nuvarande Position') && !ds.label.startsWith('📌 Markerad:')) {
+                                    visData.push(...ds.data); 
+                                }
+                            });
+                            updateCounts(visData); 
+                            ci.update();
+                        }
                     },
-                    scales: { x: { title: { display: true, text: `${xVar} (Snitt=0)` } }, y: { title: { display: true, text: `Samlat SEI (1-6)` } } }
+                    quadrantPlugin: { active: true, meanX: finalMeanX, meanY: finalMeanY },
+                    tooltip: { 
+                        callbacks: { 
+                            label: (c) => {
+                                if (c.dataset.label.startsWith('Spårhistorik')) return `${c.raw.year}: X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
+                                if (c.dataset.label.startsWith('Nuvarande Position') || c.dataset.label.startsWith('📌 Markerad:')) return `${c.raw.label} (Vald): X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
+                                if (c.dataset.type === 'line') return false;
+                                return `${c.raw.label}: X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
+                            } 
+                        } 
+                    }
+                },
+                scales: { 
+                    x: { title: { display: true, text: `${xVar} (Snitt=0)` } }, 
+                    y: { title: { display: true, text: `Samlat SEI (1-6)` } } 
                 }
-            });
-        }
+            }
+        });
+    }
+}
 
         function updateTab3() {
             if (rawData.length === 0) return;
@@ -3837,13 +4024,43 @@ function populateDropdownWithGroups(selectId, variablesArray, filterFunc = null)
 // MASTER CONFIG V2.0 - ANIMERING & SPÅRNING
 // ==========================================
 let trackedAreaFlik1 = null; // Sparar vilket område (bubbla) som klickats på
+let trackedAreaFlik2 = null; // Sparar vilket område som klickats på i Fyrfältaren
+let lockedMeanX2 = 0;
+let lockedMeanY2 = null; // null betyder att det inte är låst ännu
+let lockedScales2 = null; // Vårt nya minne för diagrammets ramar!
 let watermarkYear = "";      // Årtalet som visas i bakgrunden (sätts av animeringen)
 
-// Plugin för att rita det stålgrå årtalet i bakgrunden
+// Plugin för att rita det stålgrå årtalet i bakgrunden (Nu helt isolerad och händelsestyrd)
 const yearWatermarkPlugin = {
     id: 'yearWatermark',
     beforeDraw: (chart) => {
-        if (watermarkYear !== "") {
+        const canvasId = chart.canvas.id;
+        let textToDraw = "";
+        let isActuallyPlaying = false; // Vår nya spärr!
+
+        // FLIK 1 (Bubbeldiagrammet)
+        if (canvasId === 'regChart1') {
+            const btn1 = document.getElementById('playBtn-yearSelect1');
+            // Kolla om knappen indikerar att vi spelar (t.ex. innehåller ordet "Paus" eller liknande)
+            // Justera 'Paus' nedan om din knapp ändrar text till något annat!
+            if (btn1 && (btn1.innerText.includes('Paus') || btn1.innerText.includes('⏸'))) {
+                isActuallyPlaying = true;
+                const yearDropdown = document.getElementById('yearSelect1');
+                if (yearDropdown) textToDraw = yearDropdown.value;
+            }
+        } 
+        // FLIK 2 (Fyrfältaren)
+        else if (canvasId === 'quadrantChart2') {
+            const btn2 = document.getElementById('playBtn-yearSelect2');
+            if (btn2 && (btn2.innerText.includes('Paus') || btn2.innerText.includes('⏸'))) {
+                isActuallyPlaying = true;
+                const yearDropdown = document.getElementById('yearSelect2');
+                if (yearDropdown) textToDraw = yearDropdown.value;
+            }
+        }
+        
+        // Rita BARA ut stämpeln om vi faktiskt spelar upp just den fliken, och har ett årtal
+        if (isActuallyPlaying && textToDraw !== "") {
             const ctx = chart.ctx;
             const chartArea = chart.chartArea;
             ctx.save();
@@ -3852,7 +4069,7 @@ const yearWatermarkPlugin = {
             ctx.font = `bold ${fontSize}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(watermarkYear, chartArea.left + (chartArea.width / 2), chartArea.top + (chartArea.height / 2));
+            ctx.fillText(textToDraw, chartArea.left + (chartArea.width / 2), chartArea.top + (chartArea.height / 2));
             ctx.restore();
         }
     }
@@ -3958,6 +4175,15 @@ Chart.register(yearWatermarkPlugin); // Aktivera pluginen
                             trackedAreaFlik1 = null; // Radera spår om man byter variabel/filter
                             updateTab1(); 
                         }); 
+                    });
+                    ['xVar2', 'bubbleSizeVar2', 'colorVar2', 'exTot2', 'exSma2', 'exSpe2', 'stadsdelSelect2'].forEach(id => { 
+                        const lockBox = document.getElementById('lockCrosshair2');
+                        if (lockBox) {
+                            lockBox.addEventListener('change', () => {
+                                trackedAreaFlik2 = null; // Radera spåret om man byter variabler
+                                updateTab2(); 
+                            });
+                        }
                     });
 
                     // SPECIAL-LYSSNARE FÖR ÅR (Stänger av animation/spår direkt man rör den)

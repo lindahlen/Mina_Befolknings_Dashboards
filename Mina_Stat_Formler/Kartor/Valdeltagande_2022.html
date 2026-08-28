@@ -508,7 +508,7 @@
             
             var tileBlek, tileFarg, tileFlyg;
             try {
-                tileBlek = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '&copy; CARTO', crossOrigin: true }).addTo(map);
+                tileBlek = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri', crossOrigin: true }).addTo(map);
                 tileFarg = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OSM', crossOrigin: true });
                 tileFlyg = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri', crossOrigin: true });
 
@@ -1433,7 +1433,7 @@
         
     
             var tile_layer_5d352784b545aa233f89998dedf61c41 = L.tileLayer(
-                "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 {"attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors \u0026copy; \u003ca href=\"https://carto.com/attributions\"\u003eCARTO\u003c/a\u003e", "detect_retina": false, "max_native_zoom": 20, "max_zoom": 20, "min_zoom": 0, "no_wrap": false, "opacity": 1, "subdomains": "abcd", "tms": false}
             );
             var mini_map_ada1668be1c10cba8e5ff1654273fb58 = new L.Control.MiniMap(

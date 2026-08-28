@@ -492,7 +492,7 @@ try:
             style_function=lambda feature: {'fillColor': '#ffffff', 'color': '#2c3e50', 'weight': 2, 'fillOpacity': 0.6, 'className': 'polygon-layer valdistrikt-polygon'}
         ).add_to(m)
 
-    minimap = MiniMap(toggleDisplay=True, position="topleft", zoomLevelOffset=-4, tile_layer="cartodbpositron")
+    minimap = MiniMap(toggleDisplay=True, position="topleft", zoomLevelOffset=-4, tile_layer="OpenStreetMap")
     m.add_child(minimap)
 
     # =====================================================================
@@ -951,7 +951,7 @@ try:
             
             var tileBlek, tileFarg, tileFlyg;
             try {{
-                tileBlek = L.tileLayer('https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{ attribution: '&copy; CARTO', crossOrigin: true }}).addTo(map);
+                tileBlek = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ attribution: 'Tiles &copy; Esri', crossOrigin: true }}).addTo(map);
                 tileFarg = L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{ attribution: '&copy; OSM', crossOrigin: true }});
                 tileFlyg = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ attribution: 'Tiles &copy; Esri', crossOrigin: true }});
 
