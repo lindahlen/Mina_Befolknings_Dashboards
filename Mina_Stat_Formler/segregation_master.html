@@ -1120,9 +1120,16 @@
                 <button class="magic-btn" style="background-color: #95a5a6; margin-top: 20px; box-shadow: none;" onclick="loadAreaForSimulation()">🔄 Återställ till verkligheten</button>
             </div>
             
-            <div class="chart-container" style="flex: 2; height: 500px;">
+            <div class="chart-container" style="flex: 2; display: flex; flex-direction: column;">
                 <h3 style="margin-top:0; color:#2c3e50; text-align: center;">Simulerat Utfall</h3>
-                <div class="canvas-wrapper"><canvas id="simChart8"></canvas></div>
+                
+                <!-- DYNAMISK ANALYS WIDGET (Ny!) -->
+                <div id="simAnalysisWidget" style="display: none; margin-bottom: 15px; padding: 15px; border-radius: 8px; border-left: 6px solid #ccc; background-color: #f8f9fa; box-shadow: 0 2px 5px rgba(0,0,0,0.05); transition: all 0.3s ease;">
+                    <h4 id="simAnalysisTitle" style="margin-top: 0; margin-bottom: 8px; font-size: 16px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Analyseras...</h4>
+                    <p id="simAnalysisText" style="margin: 0; font-size: 14.5px; line-height: 1.5; color: #333;"></p>
+                </div>
+                
+                <div class="canvas-wrapper" style="flex: 1; min-height: 400px;"><canvas id="simChart8"></canvas></div>
             </div>
             
             <div class="guide-container blue" style="flex: 1;">
@@ -2369,16 +2376,15 @@ function toggleAnimation(selectId, updateFunction) {
         });
     }
 
-    // LÖSNING PÅ PULSERANDET OCH VITA SKÄRMEN:
-    // Vi tog bort if (stadsdelPoints2.length > 0). Denna MÅSTE alltid läggas till i arrayen!
+    // HÄR ÄR DEN ÅTERSTÄLLDA MAGIN FÖR ETIKETTEN:
     chartDatasets.push({
         type: 'bubble',
         label: (selectedStadsdel2 && selectedStadsdel2 !== 'none') ? `📌 Markerad: ${selectedStadsdel2.replace('/', ' & ')}` : 'Alla basområden',
-        data: stadsdelPoints2, // Blir helt enkelt en tom array [] om inget är valt
+        data: stadsdelPoints2, // Tom array om inget är valt, så animationen inte går sönder
         backgroundColor: 'rgba(40, 40, 40, 0.25)', 
         borderColor: 'rgba(10, 10, 10, 0.95)', 
         borderWidth: 3,
-        order: -1, 
+        order: -1,
         // HINDAR MARKERINGEN FRÅN ATT FLYGA FRÅN ORIGO:
         animation: false 
     });
@@ -3803,7 +3809,50 @@ function toggleAnimation(selectId, updateFunction) {
                     },
                     scales: { y: { beginAtZero: false, suggestedMin: 1, suggestedMax: 6 } }
                 }
-            });
+            }); // <-- HÄR SLUTAR CHART.JS
+
+            // ==========================================
+            // 🚀 DYNAMISK ANALYS-WIDGET FÖR FLIK 8 (INUTI FUNKTIONEN!)
+            // ==========================================
+            const analysisWidget = document.getElementById('simAnalysisWidget');
+            const analysisTitle = document.getElementById('simAnalysisTitle');
+            const analysisText = document.getElementById('simAnalysisText');
+
+            if (analysisWidget && analysisTitle && analysisText && currentSimArea) {
+                // Gör rutan synlig
+                analysisWidget.style.display = 'block';
+
+                // Räkna ut skillnaden (Verklighet minus Gissning)
+                let diff = currentSimArea.originalY - predictedY;
+                
+                // TOLERANSNIVÅ: Hur mycket får det diffa innan vi kallar det en avvikelse?
+                let tolerance = 0.25; 
+
+                if (diff > tolerance) {
+                    // VERKLIGHETEN ÄR SÄMRE (Högre stapel = mer utsatthet)
+                    analysisWidget.style.borderLeftColor = '#e74c3c'; // Röd larm-kant
+                    analysisWidget.style.backgroundColor = '#fdeaea'; // Ljusröd bakgrund
+                    analysisTitle.innerHTML = '📈 Dolda utmaningar upptäckta';
+                    analysisTitle.style.color = '#c0392b';
+                    analysisText.innerHTML = `<b>${currentSimArea.name}</b> har en märkbart högre utsatthet (<b>${currentSimArea.originalY.toFixed(2)}</b>) än vad statistiken antyder att den borde ha (<b>${predictedY.toFixed(2)}</b>). Detta indikerar att området har strukturella problem eller dolda utmaningar utöver vad dess demografiska grundförutsättningar kan förklara.`;
+                
+                } else if (diff < -tolerance) {
+                    // VERKLIGHETEN ÄR BÄTTRE (X-Faktorn!)
+                    analysisWidget.style.borderLeftColor = '#27ae60'; // Grön succé-kant
+                    analysisWidget.style.backgroundColor = '#eafaf1'; // Ljusgrön bakgrund
+                    analysisTitle.innerHTML = '📉 X-Faktorn! (Lokal skyddsfaktor)';
+                    analysisTitle.style.color = '#1e8449';
+                    analysisText.innerHTML = `<b>${currentSimArea.name}</b> överpresterar! Verkligheten (<b>${currentSimArea.originalY.toFixed(2)}</b>) är betydligt starkare (lägre värde) än modellens gissning (<b>${predictedY.toFixed(2)}</b>). Det finns en "X-faktor" här – t.ex. extremt stark lokalsammanhållning eller en engagerad skola – som får området att slå oddsen.`;
+                
+                } else {
+                    // FÖLJER NORMEN
+                    analysisWidget.style.borderLeftColor = '#3498db'; // Blå info-kant
+                    analysisWidget.style.backgroundColor = '#ebf5fb'; // Ljusblå bakgrund
+                    analysisTitle.innerHTML = '⚖️ Följer den statistiska mallen';
+                    analysisTitle.style.color = '#2980b9';
+                    analysisText.innerHTML = `<b>${currentSimArea.name}</b> fungerar väl i enlighet med "Linköpings-mallen". Utfallet (<b>${currentSimArea.originalY.toFixed(2)}</b>) matchar vad vi kan förvänta oss (<b>${predictedY.toFixed(2)}</b>) utifrån områdets fem tyngsta demografiska och strukturella drivkrafter.`;
+                }
+            }
         }
 
         // ==========================================
