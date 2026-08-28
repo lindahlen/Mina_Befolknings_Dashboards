@@ -222,6 +222,59 @@
             #btn-flik10 { font-size: 0; } #btn-flik10::after { content: "Faktoranalys"; font-size: 11px; }
             .platform-title { display: none; }
         }
+    /* ========================================= */
+/* MODERNA KONTROLLPANELER (V2.0 DESIGN)     */
+/* ========================================= */
+
+.modern-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+    padding-bottom: 15px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eaecee;
+}
+
+/* Standardkortet (Neutral grå/blå) */
+.control-card {
+    background-color: #f8f9f9;
+    border: 2px solid #7f8c8d;
+    padding: 12px;
+    border-radius: 8px;
+    flex: 1;
+    min-width: 250px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Färgvarianter för att vägleda användaren (Affordance) */
+.control-card.blue { background-color: #ebf5fb; border-color: #2980b9; }
+.control-card.red  { background-color: #fdedec; border-color: #e74c3c; }
+.control-card.green { background-color: #e9f7ef; border-color: #27ae60; }
+
+.control-label {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block;
+    color: #2c3e50;
+}
+
+.modern-select {
+    width: 100%;
+    border: 1px solid #bdc3c7;
+    border-radius: 4px;
+    padding: 8px;
+    background-color: #fff;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+}
+.modern-select:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+}
     </style>
 </head>
 <body>
@@ -256,40 +309,78 @@
     <!-- ========================================== -->
     <!-- FLIK 1: MULTIVARIAT REGRESSION             -->
     <!-- ========================================== -->
-    <div id="flik1" class="tab-content active">
-        <div class="controls">
-            <div class="control-group">
-                <label>X-axel (Drivkraft)</label>
-                <select id="xVar1"></select>
-                <br>
-                <label>Y-axel (Utfall)</label>
-                <select id="yVar1"></select>
+    <<div id="flik1" class="tab-content active">
+    
+    <!-- MODERNA KONTROLLPANELEN (V2.0) -->
+    <div class="modern-controls">
+        
+        <!-- 1. Huvudvariabler (Blått kort för analys) -->
+        <div class="control-card blue" style="flex: 1.5; min-width: 250px;">
+            <label class="control-label">➡️ X-axel (Drivkraft)</label>
+            <select id="xVar1" class="modern-select" style="margin-bottom: 12px;"></select>
+            
+            <label class="control-label">⬆️ Y-axel (Utfall)</label>
+            <select id="yVar1" class="modern-select"></select>
+        </div>
+        
+        <!-- 2. Visualisering (Rött kort för utseende) -->
+        <div class="control-card red" style="flex: 1.5; min-width: 250px;">
+            <label class="control-label">🫧 Bubbelstorlek (Volym)</label>
+            <select id="bubbleSizeVar1" class="modern-select" style="margin-bottom: 12px;">
+                <option value="Folkmängd">Folkmängd (Invånarantal)</option>
+                <option value="Förvärvsarbetande dagbefolkning">Arbetsplatser (Dagbefolkning)</option>
+            </select>
+            
+            <label class="control-label">🎨 Färgkodning</label>
+            <select id="colorVar1" class="modern-select">
+                <option value="none">Enfärgad (Blå)</option>
+                <option value="Karaktär_bas">Karaktär (Stad/Tätort/Landsbygd)</option>
+                <option value="Karaktär_detalj">Karaktär (Detaljnivå)</option>
+                <option value="SEI_indikatorer16">SEI-index (1-6)</option>
+            </select>
+        </div>
+       
+        <!-- 3. Stadsdel, Tidsval & Animering (Grönt kort) -->
+        <div class="control-card green" style="flex: 1.2; min-width: 200px;">
+            
+            <!-- STADSDELSMARKERING (Ny) -->
+            <label class="control-label">📍 Visa basområden i (Stadsdel)</label>
+            <select id="stadsdelSelect1" class="modern-select" style="margin-bottom: 12px;">
+                <option value="none">-- Ingen markerad --</option>
+                <option value="Berga">Berga</option>
+                <option value="Gottfridsberg">Gottfridsberg</option>
+                <option value="Innerstaden">Innerstaden</option>
+                <option value="Lambohov">Lambohov</option>
+                <option value="Ryd">Ryd</option>
+                <option value="Skäggetorp">Skäggetorp</option>
+                <option value="Tannefors">Tannefors</option>
+                <option value="Vasastaden">Vasastaden</option>
+                <option value="Östra Valla">Östra Valla</option>
+                <option value="Ekholmen/Johannelund">Ekholmen & Johannelund</option>
+                <option value="Ramshäll/Vimanshäll">Ramshäll & Vimanshäll</option>
+            </select>
+
+            <!-- ÅR & ANIMERING (Befintlig) -->
+            <label class="control-label">📅 År & Animering</label>
+            <div style="display: flex; gap: 8px;">
+                <select id="yearSelect1" class="modern-select" style="flex: 1;"></select>
+                <button id="playBtn-yearSelect1" class="nav-button" style="background:#27ae60; padding: 8px 12px; margin: 0; min-width: 100px; display: flex; align-items: center; justify-content: center;" onclick="toggleAnimation('yearSelect1', updateTab1)">
+                    ▶️ Spela upp
+                </button>
             </div>
-            <div class="control-group">
-                <label>Bubbelstorlek (Volym)</label>
-                <select id="bubbleSizeVar1">
-                    <option value="Folkmängd">Folkmängd (Invånarantal)</option>
-                    <option value="Förvärvsarbetande dagbefolkning">Arbetsplatser (Dagbefolkning)</option>
-                </select>
-                <br>
-                <label>Färgkodning</label>
-                <select id="colorVar1">
-                    <option value="none">Enfärgad (Blå)</option>
-                    <option value="Karaktär_bas">Karaktär (Stad/Tätort/Landsbygd)</option>
-                    <option value="Karaktär_detalj">Karaktär (Detaljnivå)</option>
-                    <option value="SEI_indikatorer16">SEI-index (1-6)</option>
-                </select>
-            </div>
-            <div class="control-group" style="flex: 0.5;">
-                <label>År</label>
-                <select id="yearSelect1"></select>
-            </div>
-            <div class="checkbox-group">
+        </div>
+        
+        <!-- 4. Geografiska Filter (Neutralt grått kort) -->
+        <div class="control-card" style="flex: 1; min-width: 180px;">
+            <label class="control-label">⚙️ Filter</label>
+            <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 5px;">
                 <label class="check-item"><input type="checkbox" id="exTot1" checked> Exkl. Total</label>
                 <label class="check-item"><input type="checkbox" id="exSma1" checked> Exkl. Små omr.</label>
                 <label class="check-item"><input type="checkbox" id="exSpe1"> Exkl. Studentomr.</label> 
             </div>
         </div>
+        
+    </div> <!-- Slut modern-controls -->
         <div class="stats-container">
             <div class="stat-box"><div class="stat-value" id="r2Value1">-</div><div class="stat-label">R² (Förklaringsgrad)</div></div>
             <div class="stat-box"><div class="stat-value" id="rValue1">-</div><div class="stat-label">Korrelation (R)</div></div>
@@ -311,10 +402,27 @@
                 Linjen visar vad ett basområdes resultat <i>borde</i> vara, givet dess X-värde. Avvikelser från linjen indikerar lokala strukturella hinder eller dolda tillgångar! <br>Det innebär att basområden över linjen överpresterar och får ut mer effekt än förväntat. Basomåden under linjen lyckas däremot inte få ut full utväxling av sin inneboende potential.</p>
                 <div class="info-box">
                     <strong>🌟 Smarta Analysverktyg & Synvillor</strong><br><br>
-                    <b>Dynamisk omräkning:</b> Om du klickar på en färg i teckenförklaringen för att dölja den, så räknas Trendlinjen och R²-värdet om automatiskt för de områden som är kvar.<br>Byt till en grupperad färgindelning i rullistan för färgkodning över diagrammet.<br><br>
+                    <b>Dynamisk omräkning:</b> Om du klickar på en färg i teckenförklaringen för att dölja den, så räknas Trendlinjen och R²-värdet om automatiskt för de områden som är kvar.<br>Byt till en grupperad färgindelning i rullistan för Färgkodning över diagrammet.<br><br>
                     <i>Observera:</i> När du döljer områden zoomar grafen in för att optimera utrymmet. Detta är en optisk synvilla – bubblorna behåller alltid sina exakta ursprungsvärden.<br><br>
                     <b>Filter & Volatilitet:</b> Rutan "Exkl. Små omr." rensar bort områden med extremt liten befolkning för att minska det matematiska bruset i trenderna. Valet "Exkludera Studentomr." rensar alltid bort både Student- och Verksamhetsområden. 
                 </div>
+                <hr style="border-top: 1px dashed #bdc3c7; margin: 15px 0;">
+
+<h6 class="fw-bold" style="color: #2c3e50; font-size: 0.95rem;">
+    ⏱️ Interaktiv Tidsanimering
+</h6>
+<p style="font-size: 0.85rem; color: #34495e; margin-bottom: 10px;">
+    <strong>Spela upp utvecklingen:</strong> Tryck på knappen <em>▶️ Spela upp</em> för att starta en animation (likt Gapminder) som visar hur områdena har rört sig genom åren. 
+    <br><br>
+    <strong>Spåra ett specifikt område:</strong> Klicka på en enskild bubbla i diagrammet. Då tänds en glödande markering och du kan se dess unika spårhistorik (orange linje) byggas upp från startåret till idag när du spelar upp animationen.
+</p>
+
+<h6 class="fw-bold" style="color: #2c3e50; font-size: 0.95rem;">
+    📍 Analysera Stadsdelar
+</h6>
+<p style="font-size: 0.85rem; color: #34495e; margin-bottom: 0;">
+    <strong>Visa basområden i:</strong> Använd rullistan för att lägga ett överliggande raster på diagrammet. De basområden som tillhör den valda stadsdelen (t.ex. Ryd eller Skäggetorp) markeras med en skarp <strong>mörkgrå inramning</strong>. Detta gör det enkelt att se hur en stadsdels olika delar klustrar sig, och hur hela stadsdelen rör sig som en grupp när tidsanimeringen är igång.
+</p>
             </div>
         </div>
     </div>
@@ -323,36 +431,67 @@
     <!-- FLIK 2: SEI FYRFÄLTARE                     -->
     <!-- ========================================== -->
     <div id="flik2" class="tab-content">
-        <div class="controls">
-            <div class="control-group">
-                <label>Övergripande Drivkraft (X-axel)</label>
-                <select id="xVar2"></select>
-            </div>
-            <div class="control-group">
-                <label>Bubbelstorlek (Volym)</label>
-                <select id="bubbleSizeVar2">
-                    <option value="Folkmängd">Folkmängd (Invånarantal)</option>
-                    <option value="Förvärvsarbetande dagbefolkning">Arbetsplatser (Dagbefolkning)</option>
-                </select>
-            </div>
-            <div class="control-group">
-                <label>Färgkodning</label>
-                <select id="colorVar2">
-                    <option value="none">Enfärgad (Blå)</option>
-                    <option value="Karaktär_bas">Karaktär (Stad/Tätort/Landsbygd)</option>
-                    <option value="Karaktär_detalj">Karaktär (Detaljnivå)</option>
-                </select>
-            </div>
-            <div class="control-group" style="flex: 0.5;">
-                <label>År</label>
-                <select id="yearSelect2"></select>
-            </div>
-            <div class="checkbox-group">
+    
+    <!-- MODERNA KONTROLLPANELEN (V2.0) -->
+    <div class="modern-controls">
+        
+        <!-- 1. Drivkraft (Blått kort för analys) -->
+        <div class="control-card blue" style="flex: 1; min-width: 250px;">
+            <label class="control-label">➡️ Övergripande Drivkraft (X-axel)</label>
+            <select id="xVar2" class="modern-select"></select>
+        </div>
+        
+        <!-- 2. Visualisering (Rött kort för utseende) -->
+        <div class="control-card red" style="flex: 1.5; min-width: 250px;">
+            <label class="control-label">🫧 Bubbelstorlek (Volym)</label>
+            <select id="bubbleSizeVar2" class="modern-select" style="margin-bottom: 12px;">
+                <option value="Folkmängd">Folkmängd (Invånarantal)</option>
+                <option value="Förvärvsarbetande dagbefolkning">Arbetsplatser (Dagbefolkning)</option>
+            </select>
+            
+            <label class="control-label">🎨 Färgkodning</label>
+            <select id="colorVar2" class="modern-select">
+                <option value="none">Enfärgad (Blå)</option>
+                <option value="Karaktär_bas">Karaktär (Stad/Tätort/Landsbygd)</option>
+                <option value="Karaktär_detalj">Karaktär (Detaljnivå)</option>
+            </select>
+        </div>
+        
+        <!-- 3. Stadsdel & Tidsval (Grönt kort) -->
+        <div class="control-card green" style="flex: 1.2; min-width: 200px;">
+            
+            <!-- STADSDELSMARKERING (Ny) -->
+            <label class="control-label">📍 Visa basområden i (Stadsdel)</label>
+            <select id="stadsdelSelect2" class="modern-select" style="margin-bottom: 12px;">
+                <option value="none">-- Ingen markerad --</option>
+                <option value="Berga">Berga</option>
+                <option value="Gottfridsberg">Gottfridsberg</option>
+                <option value="Innerstaden">Innerstaden</option>
+                <option value="Lambohov">Lambohov</option>
+                <option value="Ryd">Ryd</option>
+                <option value="Skäggetorp">Skäggetorp</option>
+                <option value="Tannefors">Tannefors</option>
+                <option value="Vasastaden">Vasastaden</option>
+                <option value="Östra Valla">Östra Valla</option>
+                <option value="Ekholmen/Johannelund">Ekholmen & Johannelund</option>
+                <option value="Ramshäll/Vimanshäll">Ramshäll & Vimanshäll</option>
+            </select>
+                    
+            <label class="control-label">📅 År</label>
+            <select id="yearSelect2" class="modern-select"></select>
+        </div>
+        
+        <!-- 4. Geografiska Filter (Neutralt grått kort) -->
+        <div class="control-card" style="flex: 1; min-width: 180px;">
+            <label class="control-label">⚙️ Filter</label>
+            <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 5px;">
                 <label class="check-item"><input type="checkbox" id="exTot2" checked> Exkl. Total</label>
                 <label class="check-item"><input type="checkbox" id="exSma2" checked> Exkl. Små omr.</label>
                 <label class="check-item"><input type="checkbox" id="exSpe2"> Exkl. Studentomr.</label> 
             </div>
         </div>
+        
+    </div> <!-- Slut modern-controls -->
         <div class="main-content">
             <div class="chart-container">
                 <div class="canvas-wrapper"><canvas id="quadrantChart2"></canvas></div>
@@ -379,29 +518,43 @@
     <!-- FLIK 3: DRIVKRAFTSPROFIL (TORNADO)         -->
     <!-- ========================================== -->
     <div id="flik3" class="tab-content">
-        <div class="controls">
-            <div class="control-group">
-                <label>Målvariabel (Vad vill du förstå?)</label>
-                <select id="outcomeVar3"></select>
-            </div>
-            <div class="control-group">
-                <label>Antal variabler</label>
-                <select id="topCount3">
-                    <option value="10">Topp 10 starkaste</option>
-                    <option value="20" selected>Topp 20 starkaste</option>
-                    <option value="all">Alla variabler</option>
-                </select>
-            </div>
-            <div class="control-group" style="flex: 0.5;">
-                <label>År</label>
-                <select id="yearSelect3"></select>
-            </div>
-            <div class="checkbox-group">
-                <label class="check-item"><input type="checkbox" id="exTot3" checked> Exkl. Total</label>
+    
+    <!-- MODERNA KONTROLLPANELEN (V2.0) -->
+    <div class="modern-controls">
+        
+        <!-- 1. Målvariabel (Blått kort för huvudfokus) -->
+        <div class="control-card blue" style="flex: 1.5; min-width: 250px;">
+            <label class="control-label">🎯 Målvariabel (Vad vill du förstå?)</label>
+            <select id="outcomeVar3" class="modern-select"></select>
+        </div>
+        
+        <!-- 2. Antal variabler (Rött kort för visningsinställningar) -->
+        <div class="control-card red" style="flex: 1; min-width: 180px;">
+            <label class="control-label">📊 Antal variabler</label>
+            <select id="topCount3" class="modern-select">
+                <option value="10">Topp 10 starkaste</option>
+                <option value="20" selected>Topp 20 starkaste</option>
+                <option value="all">Alla variabler</option>
+            </select>
+        </div>
+        
+        <!-- 3. Tidsval (Grönt kort) -->
+        <div class="control-card green" style="flex: 0.8; min-width: 120px;">
+            <label class="control-label">📅 År</label>
+            <select id="yearSelect3" class="modern-select"></select>
+        </div>
+        
+        <!-- 4. Geografiska Filter (Neutralt grått kort) -->
+        <div class="control-card" style="flex: 1; min-width: 180px;">
+            <label class="control-label">⚙️ Filter</label>
+            <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 5px;">
+                <label class="check-item"><input type="checkbox" id="exTot3" checked> Exkl. Hela kommunen</label>
                 <label class="check-item"><input type="checkbox" id="exSma3" checked> Exkl. Små omr.</label>
                 <label class="check-item"><input type="checkbox" id="exSpe3"> Exkl. Studentomr.</label> 
             </div>
         </div>
+        
+    </div> <!-- Slut modern-controls -->
         <div class="main-content">
             <div class="chart-container tall">
                 <div class="canvas-wrapper"><canvas id="tornadoChart3"></canvas></div>
@@ -431,35 +584,53 @@
     <!-- FLIK 4: MODELLBYGGARE (MULTIPEL REGRESSION)-->
     <!-- ========================================== -->
     <div id="flik4" class="tab-content">
-        <div class="model-builder">
-            <div class="model-panel" style="flex: 1.2;">
-                <h3 style="margin-top:0; color:#2c3e50;">1. Bygg prediktionsmodell</h3>
-                <label>Utfallsvariabel (Y)</label>
-                <select id="outcomeVar4" style="width: 100%; margin-bottom: 15px;"></select>
+    <div class="model-builder">
+        <!-- Vänster panel: Inställningar -->
+        <div class="model-panel" style="flex: 1.2;">
+            <h3 style="margin-top:0; color:#2c3e50; margin-bottom: 15px;">🛠️ 1. Bygg prediktionsmodell</h3>
+            
+            <!-- Nya moderna kontrollgruppen -->
+            <div class="modern-controls" style="border-bottom: none; margin-bottom: 10px; padding-bottom: 0;">
                 
-                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
-                    <div style="flex: 1;">
-                        <label>År</label>
-                        <select id="yearSelect4" style="width: 100%;"></select>
-                    </div>
-                    <div style="flex: 1;">
-                        <label>Filter</label>
+                <!-- Utfallsvariabel (Blå kort för huvudfokus) -->
+                <div class="control-card blue" style="flex-basis: 100%;">
+                    <label class="control-label">🎯 Utfallsvariabel (Y)</label>
+                    <select id="outcomeVar4" class="modern-select"></select>
+                </div>
+                
+                <!-- År (Grönt kort för tid/avgränsning) -->
+                <div class="control-card green" style="flex: 1; min-width: 120px;">
+                    <label class="control-label">📅 År</label>
+                    <select id="yearSelect4" class="modern-select"></select>
+                </div>
+                
+                <!-- Filter (Neutralt grått kort) -->
+                <div class="control-card" style="flex: 1; min-width: 150px;">
+                    <label class="control-label">⚙️ Filter</label>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
                         <label class="check-item"><input type="checkbox" id="exTot4" checked> Exkl. Total</label>
                         <label class="check-item"><input type="checkbox" id="exSma4" checked> Exkl. Små omr.</label>
                         <label class="check-item"><input type="checkbox" id="exSpe4"> Exkl. Student</label>
                     </div>
                 </div>
-                <label>2. Drivkrafter (X)</label>
-                <div style="display:flex; gap:8px; margin-top:5px; margin-bottom:10px;">
-                    <button class="nav-button" style="background:#34495e; padding:6px;" onclick="checkCore16()">16 SEI</button>
-                    <button class="nav-button" style="background:#34495e; padding:6px;" onclick="checkAll20()">Alla 20</button>
-                    <button class="nav-button" style="background:#e74c3c; padding:6px;" onclick="clearAllChecks()">Rensa</button>
+                
+            </div> <!-- Slut modern-controls -->
+
+            <!-- Drivkrafter (Rött/Varmt kort för att signalera maskinrummet) -->
+            <div class="control-card red" style="margin-bottom: 15px;">
+                <label class="control-label">🚀 2. Välj Drivkrafter (X)</label>
+                <div style="display:flex; gap:8px; margin-bottom:10px;">
+                    <button class="nav-button" style="background:#34495e; padding:6px; flex:1;" onclick="checkCore16()">16 SEI</button>
+                    <button class="nav-button" style="background:#34495e; padding:6px; flex:1;" onclick="checkAll20()">Alla 20</button>
+                    <button class="nav-button" style="background:#e74c3c; padding:6px; flex:1;" onclick="clearAllChecks()">Rensa</button>
                 </div>
                 
-                <div class="var-grid" id="checkboxGrid4"></div>
+                <div class="var-grid" id="checkboxGrid4" style="margin-bottom: 10px;"></div>
                 
-                <button class="magic-btn" onclick="runAutoOptimize()">✨ Auto-Select Optimal Modell</button>
+                <button class="magic-btn" style="width: 100%;" onclick="runAutoOptimize()">✨ Auto-Select Optimal Modell</button>
             </div>
+            
+        </div>
             
             <div class="model-panel" style="flex: 2; display: flex; flex-direction: column;">
                 <h3 style="margin-top:0; color:#2c3e50;">Resultat (Gissning vs Verklighet)</h3>
@@ -501,17 +672,28 @@
     <!-- FLIK 5: HEATMAP                            -->
     <!-- ========================================== -->
     <div id="flik5" class="tab-content">
-        <div class="controls">
-            <div class="control-group" style="flex: 0.5;">
-                <label>År</label>
-                <select id="yearSelect5"></select>
-            </div>
-            <div class="checkbox-group" style="flex-direction: row; align-items: center; gap: 20px;">
-                <label class="check-item"><input type="checkbox" id="exTot5" checked> Exkludera Total</label>
-                <label class="check-item"><input type="checkbox" id="exSma5" checked> Exkludera Små områden</label>
-                <label class="check-item"><input type="checkbox" id="exSpe5"> Exkludera Studentomr.</label> 
+    
+    <!-- MODERNA KONTROLLPANELEN (V2.0) -->
+    <div class="modern-controls">
+        
+        <!-- 1. Tidsval (Grönt kort för konsekvens över alla flikar) -->
+        <div class="control-card green" style="flex: 1; min-width: 200px; max-width: 300px;">
+            <label class="control-label">📅 År</label>
+            <select id="yearSelect5" class="modern-select"></select>
+        </div>
+        
+        <!-- 2. Geografiska Filter (Neutralt grått kort) -->
+        <div class="control-card" style="flex: 2; min-width: 300px;">
+            <label class="control-label">⚙️ Filter</label>
+            <!-- flex-direction: row utnyttjar bredden bättre när vi har färre kort -->
+            <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px; padding-top: 5px;">
+                <label class="check-item"><input type="checkbox" id="exTot5" checked> Exkl. Hela kommunen</label>
+                <label class="check-item"><input type="checkbox" id="exSma5" checked> Exkl. Små omr.</label>
+                <label class="check-item"><input type="checkbox" id="exSpe5"> Exkl. Studentomr.</label> 
             </div>
         </div>
+        
+    </div> <!-- Slut modern-controls -->
         <div class="main-content heatmap-wrapper">
             <div class="heatmap-container" id="heatmap-container"></div>
             
@@ -533,91 +715,124 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- FLIK 6: KLUSTERANALYS (K-MEANS)            -->
-    <!-- ========================================== -->
-    <div id="flik6" class="tab-content">
-        <div class="model-builder">
-            <div class="model-panel" style="flex: 1.2;">
-                <h3 style="margin-top:0; color:#2c3e50;">1. Klusterinställningar</h3>
-                <label>Antal Grupper (K)</label>
-                <select id="clusterCount" style="width: 100%; margin-bottom: 15px;">
-                    <option value="2">2 Kluster</option>
-                    <option value="3" selected>3 Kluster</option>
-                    <option value="4">4 Kluster</option>
-                    <option value="5">5 Kluster</option>
-                    <option value="6">6 Kluster</option>
-                </select>
+   <!-- ========================================== -->
+<!-- FLIK 6: KLUSTERANALYS (K-MEANS)            -->
+<!-- ========================================== -->
+<div id="flik6" class="tab-content">
+    <div class="model-builder">
+        
+        <!-- VÄNSTER PANEL: INSTÄLLNINGAR & MODELLBYGGE -->
+        <div class="model-panel" style="flex: 1.2;">
+            <h3 style="margin-top:0; color:#2c3e50; margin-bottom: 15px;">🛠️ 1. Klusterinställningar</h3>
+            
+            <!-- Nya moderna kontrollgruppen -->
+            <div class="modern-controls" style="border-bottom: none; margin-bottom: 10px; padding-bottom: 0;">
                 
-                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                    <div style="flex: 1;">
-                        <label>År</label>
-                        <select id="yearSelect6" style="width: 100%;"></select>
-                    </div>
-                    <div style="flex: 1;">
-                        <label>Filter</label>
+                <!-- Hyperparametrar (Rött kort för maskininlärnings-motor) -->
+                <div class="control-card red" style="flex: 1; min-width: 150px;">
+                    <label class="control-label">🧠 Antal Grupper (K)</label>
+                    <select id="clusterCount" class="modern-select">
+                        <option value="2">2 Kluster</option>
+                        <option value="3" selected>3 Kluster</option>
+                        <option value="4">4 Kluster</option>
+                        <option value="5">5 Kluster</option>
+                        <option value="6">6 Kluster</option>
+                    </select>
+                </div>
+                
+                <!-- Tidsval (Grönt kort) -->
+                <div class="control-card green" style="flex: 1; min-width: 120px;">
+                    <label class="control-label">📅 År</label>
+                    <select id="yearSelect6" class="modern-select"></select>
+                </div>
+                
+                <!-- Filter (Neutralt grått kort) -->
+                <div class="control-card" style="flex: 1.5; min-width: 180px;">
+                    <label class="control-label">⚙️ Filter</label>
+                    <div style="display: flex; flex-direction: column; gap: 5px;">
                         <label class="check-item"><input type="checkbox" id="exTot6" checked> Exkl. Total</label>
                         <label class="check-item"><input type="checkbox" id="exSma6" checked> Exkl. Små omr.</label>
                         <label class="check-item"><input type="checkbox" id="exSpe6"> Exkl. Student</label>
                     </div>
                 </div>
                 
-                <label>2. Välj variabler att klustra på</label>
-                <div style="display:flex; gap:8px; margin-top:5px; margin-bottom:10px;">
-                    <button class="nav-button" style="background:#34495e; padding:6px;" onclick="checkCore16_cluster()">16 SEI</button>
-                    <button class="nav-button" style="background:#34495e; padding:6px;" onclick="checkAll20_cluster()">Alla 20</button>
-                    <button class="nav-button" style="background:#e74c3c; padding:6px;" onclick="clearAllChecks_cluster()">Rensa</button>
+            </div> <!-- Slut modern-controls -->
+
+            <!-- Variabel-valet (Blått kort för fokus) -->
+            <div class="control-card blue" style="margin-bottom: 15px;">
+                <label class="control-label">📍 2. Välj variabler att klustra på</label>
+                
+                <!-- Knapparna -->
+                <div style="display:flex; gap:8px; margin-bottom:10px;">
+                    <button class="nav-button" style="background:#2980b9; padding:6px; flex:1;" onclick="checkCore16_cluster()">16 SEI</button>
+                    <button class="nav-button" style="background:#34495e; padding:6px; flex:1;" onclick="checkAll20_cluster()">Alla 20</button>
+                    <button class="nav-button" style="background:#e74c3c; padding:6px; flex:1;" onclick="clearAllChecks_cluster()">Rensa</button>
                 </div>
                 
+                <!-- Varningsrutan -->
                 <div id="clusterWarning" style="display:none; color:#c0392b; font-size:11px; font-weight:bold; margin-bottom:10px; background:#fdedec; padding:8px; border-radius:4px; border:1px solid #e74c3c;">
                     ⚠️ Varning: Du blandar nu variabler med helt olika skalor (t.ex. Index och Procent). I K-means kommer variablerna med de största siffrorna att helt dominera algoritmen, vilket kan göra klustringen mycket missvisande!
                 </div>
 
-                <div class="var-grid" id="clusterCheckboxes" style="max-height: 250px;"></div>
+                <div class="var-grid" id="clusterCheckboxes" style="max-height: 250px; margin-bottom: 15px;"></div>
                 
-                <button class="magic-btn cluster-btn" onclick="runKMeans()">🧠 Generera Kluster</button>
+                <button class="magic-btn cluster-btn" style="width: 100%;" onclick="runKMeans()">🧠 Generera Kluster</button>
+            </div>
+        </div>
+
+        <!-- HÖGER PANEL: VISUALISERING & INSIKTER -->
+        <div class="model-panel" style="flex: 2; display: flex; flex-direction: column;">
+            <h3 style="margin-top:0; color:#2c3e50; margin-bottom: 15px;">📊 Klustervisualisering</h3>
+            
+            <!-- Visningsinställningar för diagrammet (Blått kort i högerspalten) -->
+            <div class="modern-controls" style="border-bottom: none; margin-bottom: 15px; padding-bottom: 0;">
+                <div class="control-card blue" style="flex: 1; display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <label class="control-label">➡️ Visa på X-axel</label>
+                        <select id="clusterVisX" class="modern-select"></select>
+                    </div>
+                    <div style="flex: 1; min-width: 200px;">
+                        <label class="control-label">⬆️ Visa på Y-axel</label>
+                        <select id="clusterVisY" class="modern-select"></select>
+                    </div>
+                </div>
             </div>
 
-            <div class="model-panel" style="flex: 2; display: flex; flex-direction: column;">
-                <h3 style="margin-top:0; color:#2c3e50;">Klustervisualisering</h3>
-                
-                <div class="insight-box analysis" id="clusterDynamicAnalysisPanel" style="display: none;">
-                    <strong style="color: #2980b9; font-size: 13px;">📊 Automatisk Klusteranalys</strong>
-                    <p style="font-size: 12px; color: #444; margin: 5px 0;" id="dynamicAnalysisText"></p>
+            <!-- Automatisk analys -->
+            <div class="insight-box analysis" id="clusterDynamicAnalysisPanel" style="display: none; margin-bottom: 15px;">
+                <strong style="color: #2980b9; font-size: 13px;">📊 Automatisk Klusteranalys</strong>
+                <p style="font-size: 12px; color: #444; margin: 5px 0;" id="dynamicAnalysisText"></p>
+            </div>
+            
+            <!-- Grafen -->
+            <div class="canvas-wrapper" style="flex: 1; min-height: 350px; background: #fafafa; border-radius: 4px; border: 1px solid #eee; padding: 10px; position:relative; margin-bottom: 15px;">
+                <div id="emptyClusterMsg" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#7f8c8d; font-weight:bold; pointer-events:none;">
+                    👈 Välj variabler till vänster och klicka "Generera"
                 </div>
-                
-                <div style="display: flex; gap: 15px; margin-bottom: 15px; margin-top: 15px;">
-                    <div style="flex: 1;"><label>Visa på X-axel</label><select id="clusterVisX" style="width:100%;"></select></div>
-                    <div style="flex: 1;"><label>Visa på Y-axel</label><select id="clusterVisY" style="width:100%;"></select></div>
-                </div>
-                
-                <div class="canvas-wrapper" style="flex: 1; min-height: 350px; background: #fafafa; border-radius: 4px; border: 1px solid #eee; padding: 10px; position:relative;">
-                    <div id="emptyClusterMsg" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#7f8c8d; font-weight:bold; pointer-events:none;">
-                        👈 Välj variabler till vänster och klicka "Generera"
+                <canvas id="clusterChart"></canvas>
+            </div>
+            
+            <!-- DYNAMISKA INSIKTER -->
+            <div id="clusterAnalysisPanel" style="display: none;">
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <div class="insight-box" style="flex: 1; min-width: 250px;">
+                        <strong style="color: #c0392b; font-size: 13px;">📍 Utsatta basområden (Risk-klustret)</strong>
+                        <p style="font-size: 11px; color: #666; margin: 5px 0;">Sämsta SEI-klustret & avstånd till stadsbästa:</p>
+                        <ul class="insight-list" id="riskClusterList"></ul>
                     </div>
-                    <canvas id="clusterChart"></canvas>
-                </div>
-                
-                <!-- DYNAMISKA INSIKTER -->
-                <div id="clusterAnalysisPanel" style="display: none;">
-                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                        <div class="insight-box" style="flex: 1; min-width: 250px;">
-                            <strong style="color: #c0392b; font-size: 13px;">📍 Utsatta basområden (Risk-klustret)</strong>
-                            <p style="font-size: 11px; color: #666; margin: 5px 0;">Sämsta SEI-klustret & avstånd till stadsbästa:</p>
-                            <ul class="insight-list" id="riskClusterList"></ul>
-                        </div>
-                        <div class="insight-box warning" style="flex: 1; min-width: 250px;">
-                            <strong style="color: #d35400; font-size: 13px;">⚠️ Stadsdelar med inre klyftor</strong>
-                            <p style="font-size: 11px; color: #666; margin: 5px 0;">Stadsdelar vars basområden splittras över stora klustersteg:</p>
-                            <ul class="insight-list" id="stadsdelVarianceList"></ul>
-                            
-                            <!-- EXTERN KART-LÄNK -->
-                            <div style="margin-top: 10px; font-weight: bold;">
-                                <a href="Kartor/Linkoping_SEI_Staden.html" target="_blank" style="color: #2980b9; text-decoration: none;">🔗 Klicka här för att öppna den detaljerade SEI-kartan över Staden</a>
-                            </div>
+                    <div class="insight-box warning" style="flex: 1; min-width: 250px;">
+                        <strong style="color: #d35400; font-size: 13px;">⚠️ Stadsdelar med inre klyftor</strong>
+                        <p style="font-size: 11px; color: #666; margin: 5px 0;">Stadsdelar vars basområden splittras över stora klustersteg:</p>
+                        <ul class="insight-list" id="stadsdelVarianceList"></ul>
+                        
+                        <!-- EXTERN KART-LÄNK -->
+                        <div style="margin-top: 10px; font-weight: bold;">
+                            <a href="Kartor/Linkoping_SEI_Staden.html" target="_blank" style="color: #2980b9; text-decoration: none;">🔗 Klicka här för att öppna den detaljerade SEI-kartan över Staden</a>
                         </div>
                     </div>
                 </div>
+            </div>
+            <!-- Slut på Höger Panel -->
                 
                 <div class="info-box" style="border-left-color:#1abc9c; background-color:#e8f8f5; margin-top: 15px;">
                     <strong>💡 Tolkningsguide: Metod och Val av Variabler för Klusteranalys</strong><br><br>
@@ -635,26 +850,54 @@
     <!-- FLIK 7: SYSTEMUTVECKLING (TIDSSERIER)      -->
     <!-- ========================================== -->
     <div id="flik7" class="tab-content">
-        <div class="controls">
-            <div class="control-group">
-                <label>Analysera spridning för variabel</label>
-                <select id="outcomeVar7"></select>
+        
+        <!-- KONTROLLER - NU MED TYDLIG FÄRGKODNING OCH GRUPPERING -->
+        <div class="controls" style="display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; padding-bottom: 15px;">
+            
+            <!-- 1. Huvudvariabel (Neutral, stabil gråblå) -->
+            <div class="control-group" style="border: 2px solid #7f8c8d; background-color: #f8f9f9; padding: 12px; border-radius: 8px; flex: 1; min-width: 250px;">
+                <label style="color: #2c3e50; font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block;">
+                    📊 Analysera spridning för variabel
+                </label>
+                <select id="outcomeVar7" style="width: 100%; border: 1px solid #bdc3c7; border-radius: 4px; padding: 6px;"></select>
             </div>
-            <div class="control-group">
-                <label>Mätmetod (Makronivå)</label>
-                <select id="metricType7">
+
+            <!-- 2. Vänster Axel (Blått tema - matchar vänster axel/linje i grafen) -->
+            <div class="control-group" style="border: 2px solid #2980b9; background-color: #ebf5fb; padding: 12px; border-radius: 8px; flex: 1; min-width: 220px;">
+                <label style="color: #154360; font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block;">
+                    📉 Mätmetod (Vänster axel)
+                </label>
+                <select id="metricType7_1" style="width: 100%; border: 1px solid #85c1e9; border-radius: 4px; padding: 6px; background-color: #fff;">
                     <option value="cv">Variationskoefficient (CV)</option>
                     <option value="std">Standardavvikelse (Absolut spridning)</option>
-                    <option value="dissimilarity">Segregationsindex (Index of Dissimilarity)</option>
+                    <option value="dissimilarity">Segregationsindex (Hoover-index)</option>
+                    <option value="segEff">Segregationseffektivitet (Index / STD)</option>
                 </select>
             </div>
-            <div class="checkbox-group">
-                <label class="check-item"><input type="checkbox" id="exTot7" checked> Exkl. Total</label>
-                <label class="check-item"><input type="checkbox" id="exSma7" checked> Exkl. Små omr.</label>
-                <label class="check-item"><input type="checkbox" id="exSpe7"> Exkl. Studentomr.</label> 
+
+            <!-- 3. Höger Axel (Rött tema - matchar höger axel/linje i grafen) -->
+            <div class="control-group" style="border: 2px solid #e74c3c; background-color: #fdedec; padding: 12px; border-radius: 8px; flex: 1; min-width: 220px;">
+                <label style="color: #7b241c; font-weight: bold; font-size: 14px; margin-bottom: 5px; display: block;">
+                    📈 Mätmetod (Höger axel)
+                </label>
+                <select id="metricType7_2" style="width: 100%; border: 1px solid #f1948a; border-radius: 4px; padding: 6px; background-color: #fff;">
+                    <option value="cv">Variationskoefficient (CV)</option>
+                    <option value="std">Standardavvikelse (Absolut spridning)</option>
+                    <option value="dissimilarity">Segregationsindex (Hoover-index)</option>
+                    <option value="segEff">Segregationseffektivitet (Index / STD)</option>
+                    <option value="none" selected>-- Ingen --</option>
+                </select>
+            </div>
+
+            <!-- Filter (Neutrala) -->
+            <div class="checkbox-group" style="padding: 12px; flex: 1; min-width: 200px; display: flex; flex-direction: column; justify-content: center;">
+                <label class="check-item"><input type="checkbox" id="exTot7" checked> Exkl. Hela kommunen</label>
+                <label class="check-item"><input type="checkbox" id="exSma7" checked> Exkl. Små områden (<25 inv)</label>
+                <label class="check-item"><input type="checkbox" id="exSpe7"> Exkl. Student-/Verksamhetsomr.</label> 
             </div>
         </div>
         
+        <!-- STATISTIK-BOXAR -->
         <div class="stats-container" id="macroStatsContainer">
             <div class="stat-box" style="background:#ebf5fb; border-color:#85c1e9;">
                 <div class="stat-value" id="valCV">-</div><div class="stat-label">CV (Variationskoefficient)</div>
@@ -668,66 +911,192 @@
                 <div class="stat-value" id="valSeg">-</div><div class="stat-label">Segregationsindex (0-100)</div>
                 <div style="font-size: 10px; color:#555; margin-top:3px;" id="valSeg_year"></div>
             </div>
-        </div>
+            <!-- 4. NY: CV Slope / Trend -->
+            <div class="stat-box" style="flex: 1; min-width: 120px; background: #f8f9fa; border: 1px solid #bdc3c7; border-radius: 8px; padding: 10px; text-align: center;">
+                <div class="stat-label" style="font-size: 0.8rem; color: #7f8c8d; text-transform: uppercase;">📉 CV Trend (Lutning)</div>
+                <div class="stat-value fw-bold" id="valCVSlope" style="font-size: 1.5rem; color: #8e44ad;">-</div>
+                <div class="stat-year" style="font-size: 0.75rem; color: #95a5a6;">Enheter / år</div>
+            </div>
 
-        <div class="main-content">
-            <div class="chart-container tall">
+            <!-- 5. NY: Segregationseffektivitet -->
+            <div class="stat-box" style="flex: 1; min-width: 120px; background: #f8f9fa; border: 1px solid #bdc3c7; border-radius: 8px; padding: 10px; text-align: center;">
+                <div class="stat-label" style="font-size: 0.8rem; color: #7f8c8d; text-transform: uppercase;">⚙️ Seg. Effektivitet</div>
+                <div class="stat-value fw-bold" id="valSegEff" style="font-size: 1.5rem; color: #d35400;">-</div>
+                <div class="stat-year" id="valSegEff_year" style="font-size: 0.75rem; color: #95a5a6;">-</div>
+            </div>
+        </div>
+        
+        <!-- HUVUDINNEHÅLL (Graf + Guide) -->
+        <!-- flex-wrap: wrap tillåter innehållet att flöda korrekt -->
+        <div class="main-content" style="display: flex; flex-wrap: wrap; gap: 20px;">
+            
+            <!-- LARM-RUTAN: width:100% och flex-basis:100% garanterar att den ALLTID lägger sig överst, 
+                 och inte tvingar grafen att trilla ner i högerspalten -->
+            <div id="divergenceAlert7" style="display: none; width: 100%; flex-basis: 100%; grid-column: 1 / -1; background-color: #fdf2e9; border-left: 5px solid #d35400; padding: 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); box-sizing: border-box;"></div>
+
+            <!-- Diagrammet -->
+            <div class="chart-container tall" style="flex: 2; min-width: 60%;">
                 <div class="canvas-wrapper"><canvas id="timeSeriesChart7"></canvas></div>
             </div>
-            <div class="guide-container blue">
+            
+            <!-- Tolkningsguiden -->
+            <div class="guide-container blue" style="flex: 1; min-width: 30%;">
                 <h3 style="margin-top:0; color:#2c3e50;">📈 Tolkningsguide: Systemutveckling & Makro</h3>
                 <p>Medan de andra flikarna analyserar enskilda basområden (mikronivå), tittar denna flik på hela Linköpings kommun som <b>ett enda system</b> över tid.</p>
 
                 <div class="info-box" style="border-left-color:#2980b9; background-color:#ebf5fb;">
                     <strong>Förstå Makromåtten</strong><br><br>
-                    📏 <b>Variationskoefficient (CV):</b> Ett av de bästa måtten på segregation! Den mäter standardavvikelsen i relation till medelvärdet. Om linjen går <b>uppåt</b> betyder det att klyftorna i kommunen ökar, oavsett om själva medelvärdet går upp eller ner.<br><br>
-                    📊 <b>Standardavvikelse (Std):</b> Ett absolut mått. Den mäter hur mycket värdena i de olika basområdena avviker från kommunens snitt. Om gruppen som mäts växer, ökar ofta standardavvikelsen rent matematiskt eftersom skillnaderna i antal blir större i absoluta tal.<br><br>
-                    🔄 <b>Segregationsindex (0-100):</b> Ett relativt mått. Det mäter sorteringen – hur stor andel av gruppen som skulle behöva flytta för att fördelningen ska bli helt jämn över staden. Detta är oberoende av hur stor gruppen är totalt sett.
+                    📏 <b>Variationskoefficient (CV):</b> Ett av de bästa måtten på segregation! Den mäter standardavvikelsen i relation till medelvärdet. Om linjen går <b>uppåt</b> betyder det att klyftorna i kommunen ökar, oavsett om själva snittet för hela staden går upp eller ner. <br><em>Måttet kan inte beräknas för netton.</em><br><br>
+                    📊 <b>Standardavvikelse (STD):</b> Ett absolut mått. Den mäter hur mycket värdena i de olika basområdena avviker från kommunens snitt i rena tal. Om gruppen som mäts växer (t.ex. total folkmängd), ökar ofta standardavvikelsen rent matematiskt eftersom skillnaderna blir större i absoluta tal.<br><br>
+                    🔄 <b>Segregationsindex (Index of Dissimilarity):</b> Ett relativt mått. För att göra detta index lätt att förstå kallas det ofta för <i>Hoover- eller Robin Hood-index</i>. Det mäter exakt hur stor andel av en grupp som rent teoretiskt skulle behöva byta stadsdel för att fördelningen ska bli helt jämn över Linköping. <i>(Exempel: Ett index på 35 innebär att 35 % av de berörda hushållen skulle behöva flytta). Hoover-index kan inte beräknas för sammansatta index eller för netton.<br>
+                        <br></i>
+                    📉 <b>CV Trend (Lutning):</b> Mäter den övergripande riktningen för Variationskoefficienten över hela tidsperioden med hjälp av linjär regression. Ett positivt värde (+) visar att spridningen/klyftorna strukturellt accelererar, medan ett negativt värde (-) innebär att skillnaderna minskar över tid. <em>Detta mått redovisas enbart som ett nyckeltal (KPI) i rutorna ovanför diagrammet</em>.<br><br>
+
+                    ⚙️ <b>Segregationseffektivitet:</b> Ett analytiskt djuplodande mått (Segregationsindex dividerat med Standardavvikelsen). Det visar hur extrem "sorteringen" i staden är per enhet absolut skillnad. Om kvoten ökar är det en varningssignal: staden blir alltmer "effektiv" på att isolera grupper geografiskt, även om det totala antalet berörda personer (standardavvikelsen) kanske minskar.
                 </div>
 
                 <div class="info-box" style="border-left-color:#8e44ad; background-color:#f5eef8;">
-                    <strong>🧠 Absolut spridning vs. Relativ sortering</strong><br><br>
-                    När kurvorna pekar åt olika håll är det inte ett mätfel, utan en viktig signal om staden!<br><br>
-                    <b>Fall A: Gruppen växer (t.ex. Utrikes födda)</b><br>
-                    Om Std ökar men Segregationsindex minskar: <i>"Skillnaderna mellan områden blir större i rena antal, men vi bor faktiskt lite mer blandat rent relativt sett."</i><br><br>
-                    <b>Fall B: Gruppen krymper (t.ex. Ekonomiskt bistånd)</b><br>
-                    Om Std minskar men Segregationsindex ökar: <i>"Företeelsen minskar totalt sett i hela staden, men de som finns kvar blir alltmer koncentrerade och isolerade till specifika enklaver."</i>
+                    <strong>🧠 Läs av stadens strukturella signaler (<em>Absolut spridning vs. Relativ sortering</em>)</strong><br><br>
+                    När du har två kurvor aktiverade samtidigt tittar algoritmen på deras riktning. Detta är de fyra strukturella signaler systemet letar efter:<br><br>
+                    
+                    <b>När kurvorna går åt OLIKA håll (Saxar):</b><br>
+                    <span style="font-size: 13px; color: #555; display: block; margin-bottom: 5px;"><i>(Observera: Larmar endast när du specifikt jämför Standardavvikelse med Segregationsindex)</i></span>
+                    <span style="color:#d35400;"><b>Fall A (Spridd tillväxt):</b></span> STD ökar men relativ segregation minskar. <i>"Skillnaderna mellan områden blir större i rena antal (gruppen växer totalt), men vi bor faktiskt lite mer blandat rent relativt sett." <em>Gruppen växer, t.ex. Utländsk bakgrund.</em></i><br><br>
+                    <span style="color:#c0392b;"><b>Fall B (Enklavisering):</b></span> STD minskar men relativ segregation ökar. <i>"Företeelsen minskar totalt i hela staden, men de som finns kvar isoleras och koncentreras till specifika enklaver. <b>Här ökar segregationseffektiviteten sannolikt kraftigt.</b>" <em>Gruppen krymper, t.ex. Ekonomiskt bistånd.</em></i><br><br>
+                    
+                    <hr style="border:0; border-top: 1px solid #d7bde2; margin: 10px 0;">
+                    
+                    <b>När kurvorna går åt SAMMA håll (Kräver kraftig lutning):</b><br>
+                    <span style="color:#c0392b;"><b>Fall C (Dubbel Segregering):</b></span> Båda kurvorna pekar skarpt uppåt. Klyftorna ökar i rena antal samtidigt som befolkningen sorterar upp sig i staden. En stark varningssignal.<br><br>
+                    <span style="color:#27ae60;"><b>Fall D (Ökad Integration):</b></span> Båda kurvorna pekar skarpt nedåt. En mycket positiv signal om att skillnaderna mellan basområdena krymper och att staden blir mer blandad.<br><br>
+
+                    <div style="background-color: #ffffff; padding: 10px; border-radius: 4px; border: 1px solid #d5dbdb; margin-top: 10px; font-size: 13.5px;">
+                        <strong style="color: #2c3e50;">💡 Automatisk larmfunktion</strong><br>
+                        Om systemet upptäcker att de två valda axlarna uppfyller kriterierna för Fall A, B, C eller D, <b>tänds automatiskt en informativ signalruta</b> ovanför diagrammet.
+                    </div>
                 </div>
 
                 <div class="alert-box">
                     <strong>⚠️ Filtervarning för historik</strong><br>
-                    När du analyserar trendlinjer över många år är det <b>kritiskt</b> att ha rutan "Exkl. Små omr." markerad. Om ett nybyggt område bara hade ett fåtal invånare för 10 år sedan, kan minsta förändring skapa extrema procenttal som drar isär hela kommunens värden och skapar falska spikar i grafen!
+                    När du analyserar trendlinjer över många år är det <b>kritiskt</b> att ha rutan "Exkl. Små omr." markerad. Om ett nybyggt område bara hade ett fåtal invånare för 10 år sedan, kan minsta förändring skapa extrema procenttal som drar isär hela kommunens värden och skapar falska spikar i grafen.
                 </div>
-            </div>
-        </div>
-    </div>
+                <!-- UTFÄLLBAR FÖRDJUPNING -->
+                <details style="margin-top: 20px; border: 1px solid #bdc3c7; border-radius: 6px; background-color: #ffffff; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <summary style="padding: 12px 15px; background-color: #f8f9fa; cursor: pointer; font-weight: bold; color: #2c3e50; display: flex; align-items: center; user-select: none;">
+                        <span>📚 Fördjupning: Så hänger måtten ihop i praktiken (Klicka för att fälla ut)</span>
+                    </summary>
+                    <div style="padding: 15px; font-size: 0.9rem; color: #34495e; line-height: 1.6; border-top: 1px solid #bdc3c7;">
+                        <p>För att förstå hur Linköping utvecklas räcker det inte med ett enda mätetal. De fem makromåtten fungerar som olika linser som kompletterar varandra:</p>
+
+                        <ul style="padding-left: 20px; margin-bottom: 20px;">
+                            <li style="margin-bottom: 10px;"><b>1. Standardavvikelse (STD) – Klyftornas råa storlek:</b><br>
+                            Mäter den genomsnittliga skillnaden mellan kommunens stadsdelar i absoluta tal (t.ex. kronor eller procentenheter). Det ger dig den faktiska <i>volymen</i> av klyftorna, men tillåter inte att du jämför inkomstspridningen direkt med den demografiska spridningen, eftersom enheterna är olika (kronor vs. procent).</li>
+                            
+                            <li style="margin-bottom: 10px;"><b>2. Variationskoefficienten (CV) – Jämförelse av ojämlikhetstyper:</b><br>
+                            Genom att dela STD med medelvärdet får du ett standardiserat procenttal. Nu kan du jämföra äpplen och päron och svara på frågan: <i>"Är kommunen mer ojämlik när det gäller inkomstfördelning eller när det gäller ohälsa?"</i></li>
+
+                            <li style="margin-bottom: 10px;"><b>3. CV Trend (Slope) – Stabiliteten över tid:</b><br>
+                            Mäter hur stabil och pålitlig trendlinjen är över tid. Det avslöjar om klyftorna ökar i en förutsägbar takt, eller om förändringen beror på tillfälligt brus. Visar om kommunen är på väg mot en varaktig strukturell förändring.<br>
+                            <span style="color: #c0392b;"><b>Viktigt:</b></span> <i>Detta mått redovisas enbart som ett nyckeltal (KPI) i rutorna ovanför för hela perioden. Det ritas alltså inte ut som en egen kurva i diagrammet. Måttet är multiplicerat med 100 för att visa enheter/år. Ett värde över +0.50 är en stark signal om att klyftorna ökar kraftigt (mer än 5 enheter per decennium).</i></li>
+
+                            <li style="margin-bottom: 10px;"><b>4. Segregationsindex – Det geografiska mönstret:</b><br>
+                            Detta är det geografiska nyckelmåttet. STD och CV berättar bara <i>att</i> det finns stora skillnader. Segregationsindexet visar hur fysiskt isolerade grupperna är. Det mäter exakt hur stor andel av en viss grupp som rent teoretiskt skulle behöva flytta för att Linköping ska bli helt integrerat.</li>
+
+                            <li><b>5. Segregationseffektivitet – Utvärdering av sorteringsmaskineriet:</b><br>
+                            Detta är det analytiska utvärderingsverktyget (Index dividerat med STD). Ordet "effektivitet" syftar här på <i>hur duktig staden är på att isolera invånare geografiskt</i>. Föreställ dig att framgångsrika insatser gör att arbetslösheten totalt i staden rasar (STD sjunker). Men om de som får jobb främst bor i resursstarka områden, medan de som är kvar i arbetslöshet nu uteslutande bor i ett fåtal utsatta stadsdelar, förblir Segregationsindexet högt. Resultatet? Kvoten (effektiviteten) ökar. Kommunens generella insatser fungerade, men staden blev samtidigt ännu mer extrem och "effektiv" på att geografiskt isolera det kvarvarande problemet.</li>
+                        </ul>
+
+                        <div style="background-color: #fdfefe; border: 1px solid #d5dbdb; border-radius: 4px; padding: 15px;">
+                            <strong style="color: #2c3e50; font-size: 0.95rem;">💡 Lathund för kommunstyrelsen</strong>
+                            <table style="width: 100%; margin-top: 10px; border-collapse: collapse; font-size: 0.85rem;">
+                                <thead>
+                                    <tr style="background-color: #ecf0f1; text-align: left;">
+                                        <th style="padding: 8px; border: 1px solid #bdc3c7;">Frågan politikerna ställer</th>
+                                        <th style="padding: 8px; border: 1px solid #bdc3c7;">Rätt mått</th>
+                                        <th style="padding: 8px; border: 1px solid #bdc3c7;">Exempel på svar från analysen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;">Hur mycket skiljer sig snittinkomsten i kronor mellan våra områden?</td>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;"><b>STD</b></td>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;">"Den genomsnittliga skillnaden mellan områdena är 85 000 kr."</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;">Ökar klyftorna i inkomst snabbare än de etniska skillnaderna?</td>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;"><b>CV</b></td>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;">"Inkomstskillnaderna har ett CV på 32 %, medan etnisk spridning har 45 %. Den etniska ojämlikheten är alltså relativt sett större."</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;">Är ökningen av klyftor en långsiktig och säker trend?</td>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;"><b>CV Trend</b></td>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;">"Ja, CV-trenden är +0.83, vilket betyder att klyftorna ökar i en stabil, förutsägbar takt strukturellt år för år."</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;">Bor gruppen isolerat och helt separerat från övriga Linköpingsbor?</td>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;"><b>Index</b></td>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;">"Indexet är 45, vilket betyder att 45 % ur gruppen teoretiskt måste flytta till andra stadsdelar för en helt integrerad mix."</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;">Motverkar våra satsningar i utsatta områden faktiskt segregationen?</td>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;"><b>Effektivitet</b></td>
+                                        <td style="padding: 8px; border: 1px solid #bdc3c7;">"Problemet (STD) har totalt sett sjunkit, men effektiviteten ökar. Generella insatser biter, men vi misslyckas med den geografiska isoleringen."</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- DEN NYA STRATEGISKA VISIONEN -->
+                        <div style="background-color: #e8f6f3; border-left: 4px solid #1abc9c; padding: 15px; border-radius: 0 4px 4px 0; margin-top: 15px;">
+                            <strong style="color: #16a085; font-size: 0.95rem;">🎯 Vår strategiska vision</strong><br>
+                            <i style="color: #2c3e50; display: block; margin-top: 5px; font-size: 0.95rem;">"Vårt mål är att slå sönder effektiviteten i segregationen. Ju lägre denna siffra är, och ju mer den sjunker, desto mer blandad och motståndskraftig blir vår stad, oavsett vilka konjunkturer vi möter i samhället."</i>
+                        </div>
+                    </div>
+                </details>
+            </div> <!-- Stänger guide-container -->
+
+        </div> <!-- Stänger main-content -->
+    </div> <!-- Stänger flik7 -->
 
     <!-- ========================================== -->
     <!-- FLIK 8: SCENARIO-SIMULATOR                 -->
     <!-- ========================================== -->
     <div id="flik8" class="tab-content">
-        <div class="controls">
-            <div class="control-group">
-                <label>Sortera lista på</label>
-                <select id="simSort8" onchange="populateSimDropdowns()" style="margin-bottom: 10px;">
-                    <option value="stadsdel">Stadsdel -> Basområde</option>
-                    <option value="namn">Basområde (A-Ö)</option>
-                </select>
-                <label>Välj Område att Simulera</label>
-                <select id="simArea8"></select>
-            </div>
-            <div class="control-group">
-                <label>Utfall (Y) att försöka påverka</label>
-                <select id="simOutcome8"></select>
-            </div>
-            <div class="control-group" style="flex: 0.5;">
-                <label>År</label>
-                <select id="yearSelect8"></select>
-            </div>
-            <div style="display: flex; align-items: flex-end;">
-                <button class="magic-btn" style="margin-top: 0; background-color: #3498db; box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);" onclick="loadAreaForSimulation()">⚙️ Ladda Område</button>
-            </div>
+    
+    <!-- MODERNA KONTROLLPANELEN (V2.0) -->
+    <div class="modern-controls">
+        
+        <!-- 1. Områdesval (Blått kort för geografiskt fokus) -->
+        <div class="control-card blue" style="flex: 1.5; min-width: 250px;">
+            <label class="control-label">📍 Sortering & Val av Område</label>
+            <select id="simSort8" class="modern-select" onchange="populateSimDropdowns()" style="margin-bottom: 12px;">
+                <option value="stadsdel">Stadsdel -> Basområde</option>
+                <option value="namn">Basområde (A-Ö)</option>
+            </select>
+            
+            <select id="simArea8" class="modern-select"></select>
         </div>
+        
+        <!-- 2. Utfallsvariabel (Rött kort för analysmål) -->
+        <div class="control-card red" style="flex: 1.5; min-width: 250px;">
+            <label class="control-label">🎯 Utfall (Y) att försöka påverka</label>
+            <select id="simOutcome8" class="modern-select"></select>
+        </div>
+        
+        <!-- 3. Tidsval (Grönt kort) -->
+        <div class="control-card green" style="flex: 0.8; min-width: 120px;">
+            <label class="control-label">📅 År</label>
+            <select id="yearSelect8" class="modern-select"></select>
+        </div>
+        
+        <!-- 4. Ladda-knapp (Expanderar för att fylla utrymmet snyggt) -->
+        <div style="flex: 1; min-width: 150px; display: flex; align-items: flex-end;">
+            <button class="magic-btn" style="width: 100%; height: 42px; margin: 0; background-color: #3498db; box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2); display: flex; justify-content: center; align-items: center; font-size: 15px;" onclick="loadAreaForSimulation()">
+                ⚙️ Ladda Område
+            </button>
+        </div>
+        
+    </div> <!-- Slut modern-controls -->
         
         <div class="main-content" id="simulationContent" style="display: none;">
             <div class="model-panel" style="flex: 1.2;">
@@ -748,7 +1117,7 @@
                 
                 <div class="info-box" style="border-left-color:#2980b9; background-color:#ebf5fb;">
                     <strong>Så fungerar motorn bakom kulisserna:</strong><br><br>
-                    1. Motorn letar upp de <b>5 starkaste korrelationerna</b> för din valda målvariabel. Den filtrerar automatiskt bort fusk-variabler som <i>Ensamstående</i>, samt blockerar meningslösa referens-variabler (som att gissa ett medelvärde med hjälp av SEIsnitt).<br><br>
+                    1. Motorn letar upp de <b>5 starkaste korrelationerna</b> för din valda målvariabel. Den filtrerar automatiskt bort fusk-variabler som <i>Ensamstående</i>, samt blockerar meningslösa referens-variabler (som att visa ett medelvärde för ett index med hjälp av ett annat index).<br><br>
                     2. <b>Stadsplanering:</b> Om variablerna "Bostadsrätt", "Äganderätt" eller "Hyresrätt" finns i datan men missade top 5, tvingas de in som extra spakar så att du alltid kan simulera nybyggnation! (Saknar området andelar för dessa sätts de smart till 0 % i starten).<br><br>
                     3. Den bygger en multipel regressionsmodell baserad på hela Linköping. Sedan laddar den in ditt basområde. När du drar i en slider, använder motorn koefficienterna (lutningen) från stadens ekvation för att förutspå effekten.
                 </div>
@@ -782,24 +1151,56 @@
     <!-- FLIK 9: LYCKOPARADOXEN                     -->
     <!-- ========================================== -->
     <div id="flik9" class="tab-content">
-        <div class="controls">
-            <div class="control-group">
-                <label>X-axel (Resurs / Inkomst / Nettoflytt)</label>
-                <select id="xVar9"></select>
-                <br>
-                <label>Y-axel (Utfall / Utsatthet / SEI)</label>
-                <select id="yVar9"></select>
-            </div>
-            <div class="control-group" style="flex: 0.5;">
-                <label>År</label>
-                <select id="yearSelect9"></select>
-            </div>
-            <div class="checkbox-group">
+    
+    <!-- MODERNA KONTROLLPANELEN (V2.0) -->
+    <div class="modern-controls">
+        
+        <!-- 1. Huvudvariabler (Blått kort för analys) -->
+        <div class="control-card blue" style="flex: 1.5; min-width: 250px;">
+            <label class="control-label">➡️ X-axel (Resurs / Inkomst / Nettoflytt)</label>
+            <select id="xVar9" class="modern-select" style="margin-bottom: 12px;"></select>
+            
+            <label class="control-label">⬆️ Y-axel (Utfall / Utsatthet / SEI)</label>
+            <select id="yVar9" class="modern-select"></select>
+        </div>
+        
+        <!-- 2. Stadsdel & Tidsval (Grönt kort) -->
+        <div class="control-card green" style="flex: 1.2; min-width: 200px;">
+            
+            <!-- STADSDELSMARKERING -->
+            <label class="control-label">📍 Visa basområden i (Stadsdel)</label>
+            <select id="stadsdelSelect9" class="modern-select" style="margin-bottom: 12px;">
+                <option value="none">-- Ingen markerad --</option>
+                <option value="Berga">Berga</option>
+                <option value="Gottfridsberg">Gottfridsberg</option>
+                <option value="Innerstaden">Innerstaden</option>
+                <option value="Lambohov">Lambohov</option>
+                <option value="Ryd">Ryd</option>
+                <option value="Skäggetorp">Skäggetorp</option>
+                <option value="Tannefors">Tannefors</option>
+                <option value="Vasastaden">Vasastaden</option>
+                <option value="Östra Valla">Östra Valla</option>
+                <!-- DINA NYA KOMBO-OMRÅDEN -->
+                <option value="Ekholmen/Johannelund">Ekholmen & Johannelund</option>
+                <option value="Ramshäll/Vimanshäll">Ramshäll & Vimanshäll</option>
+            </select>
+
+            <!-- ÅR -->
+            <label class="control-label">📅 År</label>
+            <select id="yearSelect9" class="modern-select"></select>
+        </div>
+        
+        <!-- 3. Geografiska Filter (Neutralt grått kort) -->
+        <div class="control-card" style="flex: 1; min-width: 180px;">
+            <label class="control-label">⚙️ Filter</label>
+            <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 5px;">
                 <label class="check-item"><input type="checkbox" id="exTot9" checked> Exkl. Total</label>
                 <label class="check-item"><input type="checkbox" id="exSma9" checked> Exkl. Små omr.</label>
                 <label class="check-item"><input type="checkbox" id="exSpe9"> Exkl. Studentomr.</label> 
             </div>
         </div>
+        
+    </div> <!-- Slut modern-controls -->
         
         <div class="stats-container">
             <div class="stat-box" style="background:#e8f8f5; border-color:#a3e4d7;">
@@ -823,30 +1224,79 @@
                 <div class="canvas-wrapper" style="height: calc(100% - 50px);"><canvas id="paradoxChart9"></canvas></div>
             </div>
             <div class="guide-container yellow">
-                <h3 style="margin-top:0; color:#2c3e50;">💡 Lyckoparadoxen (Easterlin)</h3>
-                <p>Paradoxen (eller Lagen om avtagande avkastning) är ett känt fenomen inom segregation och ekonomi.</p>
-                <p>Den innebär att i botten av skalan (t.ex. vid hög utsatthet) gör en liten ökning av resurser en <b>enorm skillnad</b> för utfallet.</p>
-                <p>Men när man väl har nått en viss grundnivå av trygghet, ger ytterligare resurser nästan <b>ingen mätbar effekt alls</b>. Kurvan planar ut.</p>
-                
-                <div class="info-box" style="border-left-color:#f1c40f; background-color:#fef9e7;">
-                    <strong>Så läser du grafen:</strong><br><br>
-                    Den <span style="color:#34495e; font-weight:bold;">Mörkblå streckade linjen</span> är det normala linjära antagandet ("Mer är alltid bättre").<br><br>
-                    Den <span style="color:#8e44ad; font-weight:bold;">Lila solida kurvan</span> är den logaritmiska modellen ("Lyckoparadoxen").<br><br>
-                    Om den lila kurvan har ett högre R²-värde innebär det matematiskt att effekten planar ut i toppen. Resurserna har nått sin bristningsgräns för att skapa ytterligare nytta.
-                </div>
+    <h3 style="margin-top:0; color:#2c3e50;">💡 Lyckoparadoxen (Easterlin)</h3>
+    <p>Paradoxen (eller Lagen om avtagande avkastning) är ett känt fenomen inom segregation och ekonomi.</p>
+    <p>Den innebär att i botten av skalan (t.ex. vid hög utsatthet) gör en liten ökning av resurser en <b>enorm skillnad</b> för utfallet.</p>
+    <p>Men när man väl har nått en viss grundnivå av trygghet, ger ytterligare resurser nästan <b>ingen mätbar effekt alls</b>. Kurvan planar ut.</p>
+    
+    <div class="info-box" style="border-left-color:#f1c40f; background-color:#fef9e7;">
+        <strong>Så läser du grafen:</strong><br><br>
+        Den <span style="color:#34495e; font-weight:bold;">Mörkblå streckade linjen</span> är det normala linjära antagandet ("Mer är alltid bättre").<br><br>
+        Den <span style="color:#8e44ad; font-weight:bold;">Lila solida kurvan</span> är den logaritmiska modellen ("Lyckoparadoxen").<br><br>
+        Om den lila kurvan har ett högre R²-värde innebär det matematiskt att effekten planar ut i toppen. Resurserna har nått sin bristningsgräns för att skapa ytterligare nytta.
+    </div>
 
-                <div class="info-box" style="border-left-color:#3498db; background-color:#ebf5fb;">
-                    <strong>Socioekonomiska Språngbrädor</strong><br><br>
-                    När du tittar på <i>Nettoflyttning Förvärvsarbetande</i> (X) mot <i>Ekonomisk utsatthet/Demografisk Koncentration</i> (Y) slår paradoxen ofta till. Varför?<br><br>
-                    När individer i utsatta områden får jobb och gör socioekonomisk karriär stiger deras inkomst ("lycka"), men kort därefter väljer de att flytta ut. Området fylls på underifrån av nya utsatta. Effekten blir att <b>individerna lyfts, men områdets utsatthet förblir konstant</b>.<br><br>
-                    <i>💡 Tips: När paradoxen är bevisad färgar systemet plupparna <span style="color:#e74c3c;">Röda (Insatszon)</span>, <span style="color:#f1c40f;">Gula (Övergång)</span> och <span style="color:#27ae60;">Gröna (Mättnad)</span>. Använd Zoom-reglaget ovanför grafen för att granska språngbrädorna (röda pluppar) närmare, och klicka på dem för att se deras namn!</i>
-                </div>
+    <div class="info-box" style="border-left-color:#3498db; background-color:#ebf5fb;">
+        <strong>Socioekonomiska Språngbrädor</strong><br><br>
+        När du tittar på <i>Nettoflyttning Förvärvsarbetande</i> (X) mot <i>Ekonomisk utsatthet/Demografisk Koncentration</i> (Y) slår paradoxen ofta till. Varför?<br><br>
+        När individer i utsatta områden får jobb och gör socioekonomisk karriär stiger deras inkomst ("lycka"), men kort därefter väljer de att flytta ut. Området fylls på underifrån av nya utsatta. Effekten blir att <b>individerna lyfts, men områdets utsatthet förblir konstant</b>.<br><br>
+        <i>💡 Tips: När paradoxen är bevisad färgar systemet plupparna <span style="color:#e74c3c;">Röda (Insatszon)</span>, <span style="color:#f1c40f;">Gula (Övergång)</span> och <span style="color:#27ae60;">Gröna (Mättnad)</span>. Använd Zoom-reglaget ovanför grafen för att granska språngbrädorna (röda pluppar) närmare, och klicka på dem för att se deras namn!</i>
+    </div>
 
-                <div class="alert-box">
-                    <strong>⚠️ Varning: Val av X och Y</strong><br>
-                    Logaritmen fungerar bara om <b>X-axeln</b> är bränslet/insatsen (det du tillför, t.ex Pengar eller Nettoflytt) och <b>Y-axeln</b> är resultatet (t.ex. Utsatthet). Om du vänder på dem (Sätter SEI/Utsatthet på X) får du istället <i>Symtomet</i> – "Vilken nettoflyttning kan vi förvänta oss som ett symtom av ett visst SEI?" Detta uppvisar sällan en paradox, och slutsatsen blir missvisande!
-                </div>
+    <div class="alert-box">
+        <strong>⚠️ Varning: Val av X och Y</strong><br>
+        Logaritmen fungerar bara om <b>X-axeln</b> är bränslet/insatsen (det du tillför, t.ex Pengar eller Nettoflytt) och <b>Y-axeln</b> är resultatet (t.ex. Utsatthet). Om du vänder på dem (Sätter SEI/Utsatthet på X) får du istället <i>Symtomet</i> – "Vilken nettoflyttning kan vi förvänta oss som ett symtom av ett visst SEI?" Detta uppvisar sällan en paradox, och slutsatsen blir missvisande!
+    </div>
+
+    <!-- NY UTFÄLLBAR TOGGLE FÖR FÖRDJUPNING -->
+    <details style="margin-top: 15px; background: #ffffff; padding: 10px 15px; border: 1px solid #d5dbdb; border-radius: 5px;">
+        <summary style="cursor: pointer; font-weight: bold; color: #2980b9; font-size: 15px; outline: none;">
+            🔍 Lathund: Att matcha rätt X och Y (Klicka för att läsa mer)
+        </summary>
+        <div style="margin-top: 15px; font-size: 14px; line-height: 1.6; color: #444;">
+            <p><strong>Kan en variabel vara både resurs och utfall?</strong><br>
+            Ja! Allt beror på din orsakskedja. <i>Lång eftergymnasial utbildning</i> kan vara ett utfall (Y) om du mäter hur en inflyttning av förvärvsarbetande (X) förändrar stadsdelen. Men den kan också vara en resurs (X) som driver ett nytt utfall, exempelvis lägre Ohälsotal (Y).</p>
+
+            <p><strong>Exempel på hur du tolkar vanliga kombinationer:</strong></p>
+            <ul style="padding-left: 20px;">
+                <li style="margin-bottom: 8px;">
+                    <strong>Nettoflytt (X) mot Trångboddhet (Y):</strong><br> 
+                    I utsatta områden minskar trångboddheten radikalt när nya inkomster (inflyttande arbetare) landar i området. I välbärgade områden planar kurvan ut – man bor redan rymligt.
+                </li>
+                <li style="margin-bottom: 8px;">
+                    <strong>Nettoflytt (X) mot Sysselsättningsgrad (Y):</strong><br> 
+                    I utsatta områden (språngbrädor) är nettoflyttningen av arbetande ofta <i>negativ</i> (individer får jobb och flyttar därifrån). Denna <i>utflyttning</i> suger resurser ur området och håller sysselsättningsgraden permanent låg. Om arbetare däremot flyttar <i>till</i> ett redan starkt område, rubbar de sällan snittet eftersom sysselsättningen redan ligger nära max.
+                </li>
+                <li style="margin-bottom: 8px;">
+                    <strong>Utbildningsmysteriet:</strong><br> 
+                    Drar du in resurser mot <i>Lång eftergymnasial utbildning (%)</i> planar kurvan ut (ett område kan demografiskt sett inte bestå av 100% akademiker). Drar du resurser mot <i>Förgymnasial utbildning (%)</i> är sambandet ofta linjärt; de med svagast utbildning "försvinner" inte automatiskt bara för att fler tjänstemän flyttar till stadsdelen.
+                </li>
+            </ul>
+            
+            <p style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;"><strong>Goda exempel på X-variabler (Drivkrafter):</strong></p>
+            <ul style="padding-left: 20px;">
+                <li>Nettoinkomst / Förvärvsinkomst</li>
+                <li>Nettoflyttning förvärvsarbetande</li>
+                <li>Andel Lång eftergymnasial utbildning (%)</li>
+                <li>Bilinnehav per 1000 inv / Andel hushåll med bil</li>
+            </ul>
+
+            <p><strong>Goda exempel på Y-variabler (Utfall):</strong></p>
+            <ul style="padding-left: 20px;">
+                <li>Alla 5 Sammanvägda Z-score index</li>
+                <li>Samlat SEI (1-6)</li>
+                <li>Ohälsotal <i>(Perfekt för paradoxen: pengar ger snabbt friskare befolkning, men stagnerar snabbt)</i></li>
+                <li>Trångboddhet (%) / Boyta per person</li>
+                <li>Valdeltagande (%)</li>
+            </ul>
+
+            <div style="background-color: #fdedec; padding: 10px; border-left: 3px solid #e74c3c; margin-top: 15px; font-size: 13px;">
+                <strong>⚠️ Antal vs. Procent (Storleksfällan)</strong><br>
+                När du jämför områden i en scatter-plot bör du i princip <strong>alltid använda andelar (%) eller kvoter</strong> på X-axeln. Om du använder absoluta <i>Antal</i> (t.ex. Antal eftergymnasialt utbildade) kommer grafen bara att spegla att vissa stadsdelar har en större folkmängd än andra, vilket ger skeva och obrukbara resultat.
             </div>
+        </div>
+    </details>
+</div>
         </div>
     </div>
 
@@ -907,6 +1357,156 @@
         const multiRegKeywords = [...core16_keywords, ...extra4_keywords];
         const heatmapKeywords = [...multiRegKeywords, "folkmängd"];
 
+        /**
+ * Master Config v2.0 - Auto-kategorisering av SCB/Linköpings-variabler
+ * Sorterar in variabler i <optgroup> baserat på kommunens specifika categoryOrder.
+ */
+function populateDropdownWithGroups(selectId, variablesArray) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    
+    select.innerHTML = ''; // Rensa gamla värden
+
+    // 1. Din exakta, briljanta lista från tidigare!
+    const categoryOrder = [
+        "🌟 Sammansatta Index (Z-score)", 
+        "📊 Demografi & Befolkning (Antal)", 
+        "🔄 Demografiska netton (Antal)", 
+        "🚚 Befolkningsförändringar (Antal)", 
+        "🏠 Bostäder & Hushåll (Antal)", 
+        "💼 Arbete & Utbildning (Antal)", 
+        "💰 Ekonomi & Inkomst", 
+        "🤝 Socioekonomi (%)", 
+        "🎓 Utbildning & Arbetsmarknad (%)", 
+        "🌍 Demografi och Val (%)", 
+        "🏘️ Bostadsmarknad & Bilinnehav (%)", 
+        "📉 Index, Kvoter & Ytor", 
+        "📌 Övriga variabler"
+    ];
+
+    // 2. Skapa tomma "fack" för varje kategori i rätt ordning
+    const groups = {};
+    categoryOrder.forEach(cat => groups[cat] = []);
+
+    // 3. Den smarta sorteringsmotorn
+    variablesArray.forEach(varName => {
+        let lower = varName.toLowerCase();
+        let isPercent = lower.includes('(%)') || lower.includes('%') || lower.includes('andel');
+        
+        // Z-scores och Index
+        if (lower.includes('z-score') || lower.includes('samlat sei') || lower.includes('utsatt')) {
+            groups["🌟 Sammansatta Index (Z-score)"].push(varName);
+        }
+        // Ekonomi & Inkomst (Ofta i kronor eller prisbasbelopp)
+        else if (lower.includes('inkomst') || lower.includes('ekonomi')) {
+            groups["💰 Ekonomi & Inkomst"].push(varName);
+        }
+        // ==========================================
+        // PROCENT-VARIABLER (%)
+        // ==========================================
+        else if (isPercent) {
+            if (lower.includes('bistånd') || lower.includes('arbetslös') || lower.includes('sei') || lower.includes('förvärv')) {
+                groups["🤝 Socioekonomi (%)"].push(varName);
+            } else if (lower.includes('utbildning') || lower.includes('gymnasie') || lower.includes('högskola')) {
+                groups["🎓 Utbildning & Arbetsmarknad (%)"].push(varName);
+            } else if (lower.includes('hyresrätt') || lower.includes('trångbodd') || lower.includes('bil') || lower.includes('småhus')) {
+                groups["🏘️ Bostadsmarknad & Bilinnehav (%)"].push(varName);
+            } else {
+                groups["🌍 Demografi och Val (%)"].push(varName);
+            }
+        }
+        // ==========================================
+        // ABSOLUTA TAL (Antal) OCH ÖVRIGT
+        // ==========================================
+        else {
+            if (lower.includes('netto')) {
+                groups["🔄 Demografiska netton (Antal)"].push(varName);
+            } else if (lower.includes('inflytt') || lower.includes('utflytt') || lower.includes('födda') || lower.includes('döda')) {
+                groups["🚚 Befolkningsförändringar (Antal)"].push(varName);
+            } else if (lower.includes('bostad') || lower.includes('hushåll')) {
+                groups["🏠 Bostäder & Hushåll (Antal)"].push(varName);
+            } else if (lower.includes('arbete') || lower.includes('utbildning')) {
+                groups["💼 Arbete & Utbildning (Antal)"].push(varName);
+            } else if (lower.includes('kvot') || lower.includes('yta') || lower.includes('index')) {
+                groups["📉 Index, Kvoter & Ytor"].push(varName);
+            } else if (lower.includes('folkmängd') || lower.includes('ålder') || lower.includes('invånare')) {
+                groups["📊 Demografi & Befolkning (Antal)"].push(varName);
+            } else {
+                groups["📌 Övriga variabler"].push(varName);
+            }
+        }
+    });
+
+    // 4. Bygg HTML-strukturen för rullistan
+    categoryOrder.forEach(cat => {
+        if (groups[cat].length > 0) {
+            let optgroup = document.createElement('optgroup');
+            optgroup.label = cat; 
+            
+            // Sortera variablerna i bokstavsordning inom sin kategori
+            groups[cat].sort().forEach(v => {
+                let option = document.createElement('option');
+                option.value = v;
+                option.textContent = v;
+                optgroup.appendChild(option);
+            });
+            
+            select.appendChild(optgroup);
+        }
+    });
+}
+// ==========================================
+// TIDSANIMERING (GAPMINDER-EFFEKTEN) - UPPDATERAD
+// ==========================================
+let animationInterval = null;
+let isPlaying = false;
+
+function toggleAnimation(selectId, updateFunction) {
+    const select = document.getElementById(selectId);
+    const btn = document.getElementById('playBtn-' + selectId);
+    
+    if (isPlaying) {
+        clearInterval(animationInterval);
+        isPlaying = false;
+        btn.innerHTML = '▶️ Spela upp';
+        btn.style.background = '#27ae60';
+        return;
+    }
+
+    let validYears = Array.from(select.options)
+        .map(opt => opt.value)
+        .filter(v => !isNaN(v)) 
+        .sort((a, b) => parseInt(a) - parseInt(b)); 
+
+    if (validYears.length === 0) return;
+
+    isPlaying = true;
+    btn.innerHTML = '⏸️ Pausa';
+    btn.style.background = '#e74c3c'; 
+
+    let currentIndex = validYears.indexOf(select.value);
+    
+    if (currentIndex === -1 || currentIndex >= validYears.length - 1) {
+        currentIndex = -1; 
+    }
+
+    animationInterval = setInterval(() => {
+        currentIndex++; 
+        
+        if (currentIndex >= validYears.length) {
+            clearInterval(animationInterval);
+            isPlaying = false;
+            btn.innerHTML = '▶️ Spela upp';
+            btn.style.background = '#27ae60';
+            return;
+        }
+
+        select.value = validYears[currentIndex];
+        watermarkYear = validYears[currentIndex]; 
+        updateFunction(); 
+        
+    }, 2000); // 2000 ms (2 sekunder) ger gott om tid för en majestätisk glidning
+}
         function getClusterColors(k) {
             if (k === 2) return ['rgba(231, 76, 60, 0.85)', 'rgba(46, 204, 113, 0.85)']; 
             if (k === 3) return ['rgba(231, 76, 60, 0.85)', 'rgba(241, 196, 15, 0.85)', 'rgba(46, 204, 113, 0.85)']; 
@@ -1317,10 +1917,23 @@
             const exTot = document.getElementById('exTot1').checked; 
             const exSma = document.getElementById('exSma1').checked; 
             const exSpe = document.getElementById('exSpe1').checked;
+            const selectedStadsdel = document.getElementById('stadsdelSelect1') ? document.getElementById('stadsdelSelect1').value : 'none';
 
             let allPlotData = []; 
             let groupedData = {}; 
             let minX = Infinity, maxX = -Infinity;
+
+            // 1. DATAINLÄSNING OCH GRUPPERING
+            let allPossibleCategories = new Set();
+            rawData.forEach(r => {
+                if (r.basområde !== 'Hela kommunen') {
+                    let c = (colorVar !== 'none') ? (r[colorVar] || 'Okänd karaktär') : 'Basområden';
+                    if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(c)) c = 'SEI ' + c;
+                    allPossibleCategories.add(c);
+                }
+            });
+            if (exTot === false) allPossibleCategories.add('Hela kommunen');
+            allPossibleCategories.forEach(c => groupedData[c] = []);
 
             rawData.forEach(row => {
                 if (isYearMatch(row.tid, selectedYear)) {
@@ -1330,7 +1943,6 @@
                     if (exSma && row.basområde !== 'Hela kommunen') {
                         if (row.Inkluderad != "1" || parseFloat(row['Folkmängd']) < 25) return;
                     }
-
                     if (exSpe && (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) return;
 
                     let xVal = parseFloat(row[xVar]); 
@@ -1341,14 +1953,9 @@
                         allPlotData.push(pt);
                         
                         let cat = (colorVar !== 'none' && row.basområde !== 'Hela kommunen') ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
-                        
-                        if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) {
-                            cat = 'SEI ' + cat;
-                        }
-                        
+                        if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) cat = 'SEI ' + cat;
                         if (row.basområde === 'Hela kommunen') cat = 'Hela kommunen';
                         
-                        if(!groupedData[cat]) groupedData[cat] = []; 
                         groupedData[cat].push(pt);
                         
                         if(xVal < minX) minX = xVal; 
@@ -1357,14 +1964,14 @@
                 }
             });
 
-            let chartDatasets = [];
+            let newDatasets = [];
             let sortedKeys = sortCategories(Object.keys(groupedData), colorVar);
 
+            // 2. BYGG STANDARD-LAGREN (BUBBLORNA)
             sortedKeys.forEach(cat => {
                 let colors;
-                if (colorVar === 'none') {
-                    colors = defaultColor;
-                } else {
+                if (colorVar === 'none') { colors = defaultColor; } 
+                else {
                     colors = colorPalette[cat];
                     if (!colors && cat !== 'Hela kommunen' && cat !== 'Okänd karaktär') {
                         if (!dynamicCategoryColors[cat]) {
@@ -1375,62 +1982,201 @@
                     }
                     if (!colors) colors = defaultColor; 
                 }
-
-                chartDatasets.push({ label: cat, data: groupedData[cat], backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1 });
+                
+                let stableData = groupedData[cat].sort((a, b) => a.label.localeCompare(b.label));
+                newDatasets.push({ label: cat, data: stableData, backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1, order: 2 });
             });
 
+            // 3. BYGG SPÅR OCH FOKUSBUBBLA
+            let trailPoints = [];
+            let focusPoint = [];
+            let focusBg = 'rgba(255, 234, 0, 0)'; 
+            let focusBorder = 'rgba(211, 84, 0, 0)';
+            let trailColor = 'rgba(211, 84, 0, 0)'; 
+
+            if (trackedAreaFlik1 && selectedYear !== 'all') {
+                let activePoint = allPlotData.find(p => p.label === trackedAreaFlik1);
+                
+                if (activePoint) {
+                    focusPoint = [activePoint];
+                    trailPoints = [{ x: activePoint.x, y: activePoint.y, year: selectedYear }];
+                }
+
+                if (typeof watermarkYear !== 'undefined' && watermarkYear !== "") {
+                    let trailData = rawData.filter(d => 
+                        d.basområde === trackedAreaFlik1 && parseInt(d.tid) <= parseInt(selectedYear)
+                    ).sort((a, b) => parseInt(a.tid) - parseInt(b.tid));
+
+                    trailPoints = trailData.map(d => ({ x: parseFloat(d[xVar]), y: parseFloat(d[yVar]), year: d.tid })).filter(p => !isNaN(p.x) && !isNaN(p.y));
+                    
+                    focusBg = 'rgba(255, 234, 0, 0.95)';
+                    focusBorder = 'rgba(211, 84, 0, 1)';
+                    trailColor = 'rgba(211, 84, 0, 0.85)';
+                }
+            }
+
+            // A) Spåret (Här ligger killswitchen för animationen)
+            newDatasets.push({
+                type: 'line', label: trackedAreaFlik1 ? `Spårhistorik: ${trackedAreaFlik1}` : 'Spårhistorik', data: trailPoints,
+                borderColor: trailColor, borderWidth: 3, pointBackgroundColor: trailColor, pointRadius: 4, fill: false, showLine: true, order: 3,
+                animation: false 
+            });
+
+            // B) Glödbubblan
+            newDatasets.push({
+                type: 'bubble', label: trackedAreaFlik1 ? `Nuvarande Position: ${trackedAreaFlik1}` : 'Nuvarande Position', data: focusPoint,
+                backgroundColor: focusBg, borderColor: focusBorder, borderWidth: 3, order: -2
+            });
+
+            // 3.5 BYGG STADSDELSMARKERING (Mörkgrå gloria. Nu med stöd för multi-val!)
+            let stadsdelPoints = [];
+            if (selectedStadsdel !== 'none') {
+                // Klyv strängen till en array (t.ex. ["Ekholmen", "Johannelund"])
+                let valdaStadsdelar = selectedStadsdel.split('/');
+                
+                stadsdelPoints = allPlotData.filter(p => {
+                    let s = p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL'];
+                    // Byt ut === mot .includes()
+                    return valdaStadsdelar.includes(s);
+                });
+            }
+
+            if (stadsdelPoints.length > 0) {
+                newDatasets.push({
+                    type: 'bubble',
+                    label: `📌 Markerad: {selectedStadsdel.replace('/', ' & ')}`,
+                    data: stadsdelPoints,
+                    backgroundColor: 'rgba(40, 40, 40, 0.25)', // Lätt transparent mörkgrå fyllning
+                    borderColor: 'rgba(10, 10, 10, 0.95)',     // Skarp, nästan svart kantlinje för maximal kontrast
+                    borderWidth: 3,
+                    order: -1, 
+                    animation: false 
+                });
+            }
+
+            // 4. BYGG TRENDLINJE
+            let trendData = [];
             const reg = calculateLinearRegression(allPlotData);
             if (reg && isFinite(reg.k)) {
                 let xMargin = (maxX - minX) * 0.05;
-                chartDatasets.push({ 
-                    type: 'line', label: 'Trendlinje (Normen)', 
-                    data: [ { x: minX - xMargin, y: reg.k * (minX - xMargin) + reg.m }, { x: maxX + xMargin, y: reg.k * (maxX + xMargin) + reg.m } ], 
-                    borderColor: '#34495e', borderWidth: 2, borderDash: [5, 5], fill: false, pointRadius: 0, order: -1 
-                });
-                document.getElementById('r2Value1').innerText = reg.r2.toFixed(3); 
-                document.getElementById('rValue1').innerText = reg.r.toFixed(3);
-                document.getElementById('eqValue1').innerText = `y = ${reg.k.toFixed(3)}x ${reg.m >= 0 ? "+" : "-"} ${Math.abs(reg.m).toFixed(2)}`;
+                trendData = [ { x: minX - xMargin, y: reg.k * (minX - xMargin) + reg.m }, { x: maxX + xMargin, y: reg.k * (maxX + xMargin) + reg.m } ];
+                
+                if (document.getElementById('r2Value1')) document.getElementById('r2Value1').innerText = reg.r2.toFixed(3); 
+                if (document.getElementById('rValue1')) document.getElementById('rValue1').innerText = reg.r.toFixed(3);
+                if (document.getElementById('eqValue1')) document.getElementById('eqValue1').innerText = `y = ${reg.k.toFixed(3)}x ${reg.m >= 0 ? "+" : "-"} ${Math.abs(reg.m).toFixed(2)}`;
             }
-
-            const ctx = document.getElementById('regChart1').getContext('2d');
-            if (chartInstance1) chartInstance1.destroy();
-            chartInstance1 = new Chart(ctx, {
-                type: 'bubble', 
-                data: { datasets: chartDatasets },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: { 
-                        datalabels: { display: false },
-                        legend: { 
-                            display: colorVar !== 'none', 
-                            position: 'top', 
-                            labels: { filter: (item) => item.text !== 'Trendlinje (Normen)' },
-                            onClick: function(e, legendItem, legend) {
-                                const index = legendItem.datasetIndex; const ci = legend.chart;
-                                ci.setDatasetVisibility(index, !ci.isDatasetVisible(index));
-                                let visData = []; 
-                                ci.data.datasets.forEach((ds, i) => { if (ds.type !== 'line' && ci.isDatasetVisible(i)) visData.push(...ds.data); });
-                                const liveReg = calculateLinearRegression(visData);
-                                if (liveReg && isFinite(liveReg.k)) {
-                                    const lIdx = ci.data.datasets.findIndex(d => d.type === 'line');
-                                    if (lIdx !== -1) {
-                                        let vMinX = Infinity, vMaxX = -Infinity; 
-                                        visData.forEach(p => { if(p.x < vMinX) vMinX = p.x; if(p.x > vMaxX) vMaxX = p.x; });
-                                        let vMargin = (vMaxX - vMinX) * 0.05; if (!isFinite(vMinX)) { vMinX = 0; vMaxX = 10; vMargin = 0; }
-                                        ci.data.datasets[lIdx].data = [{ x: vMinX-vMargin, y: liveReg.k*(vMinX-vMargin)+liveReg.m }, { x: vMaxX+vMargin, y: liveReg.k*(vMaxX+vMargin)+liveReg.m }];
-                                    }
-                                    document.getElementById('r2Value1').innerText = liveReg.r2.toFixed(3); 
-                                    document.getElementById('rValue1').innerText = liveReg.r.toFixed(3);
-                                }
-                                ci.update();
-                            }
-                        }, 
-                        quadrantPlugin: { active: false },
-                        tooltip: { callbacks: { label: (c) => c.dataset.type === 'line' ? false : `${c.raw.label}: X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}` } } 
-                    },
-                    scales: { x: { title: { display: true, text: xVar } }, y: { title: { display: true, text: yVar } } }
-                }
+            newDatasets.push({ 
+                type: 'line', label: 'Trendlinje (Normen)', data: trendData,
+                borderColor: '#34495e', borderWidth: 2, borderDash: [5, 5], fill: false, pointRadius: 0, order: 0
             });
+
+            // 5. DEN SKOTTSÄKRA UPPDATERINGEN
+            if (typeof chartInstance1 !== 'undefined' && chartInstance1) {
+                
+                // Rensa bort gamla lager som inte finns mer
+                let newLabels = newDatasets.map(d => d.label);
+                for (let i = chartInstance1.data.datasets.length - 1; i >= 0; i--) {
+                    if (!newLabels.includes(chartInstance1.data.datasets[i].label)) {
+                        chartInstance1.data.datasets.splice(i, 1);
+                    }
+                }
+
+                // Uppdatera eller lägg till lager
+                newDatasets.forEach(newDs => {
+                    let existingDs = chartInstance1.data.datasets.find(ds => ds.label === newDs.label);
+                    if (existingDs) {
+                        existingDs.data = newDs.data; // Direkt överföring är säkrast
+                        existingDs.backgroundColor = newDs.backgroundColor;
+                        existingDs.borderColor = newDs.borderColor;
+                        existingDs.borderWidth = newDs.borderWidth;
+                        existingDs.order = newDs.order;
+                        existingDs.pointBackgroundColor = newDs.pointBackgroundColor;
+                        
+                        if (newDs.animation !== undefined) {
+                            existingDs.animation = newDs.animation;
+                        } else {
+                            delete existingDs.animation;
+                        }
+                    } else {
+                        chartInstance1.data.datasets.push(newDs);
+                    }
+                });
+
+                chartInstance1.options.scales.x.title.text = xVar;
+                chartInstance1.options.scales.y.title.text = yVar;
+                chartInstance1.options.plugins.legend.display = (colorVar !== 'none');
+                
+                // Sätt hastighet baserat på isPlaying
+                let animSpeed = (typeof isPlaying !== 'undefined' && isPlaying) ? 1500 : 400;
+                chartInstance1.options.animation.duration = animSpeed;
+                
+                chartInstance1.update(); 
+            } else {
+                // SKAPA DIAGRAMMET FÖRSTA GÅNGEN
+                const ctx = document.getElementById('regChart1').getContext('2d');
+                chartInstance1 = new Chart(ctx, {
+                    type: 'bubble', 
+                    data: { datasets: newDatasets },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        animation: { duration: 400, easing: 'easeInOutQuad' },
+                        onClick: (event, elements, chart) => {
+                            if (elements.length > 0) {
+                                const el = elements[0];
+                                const ds = chart.data.datasets[el.datasetIndex];
+                                if (ds.type !== 'line' && ds.data[el.index] && ds.data[el.index].label) {
+                                    trackedAreaFlik1 = ds.data[el.index].label;
+                                    updateTab1();
+                                }
+                            } else {
+                                trackedAreaFlik1 = null;
+                                updateTab1();
+                            }
+                        },
+                        plugins: { 
+                            datalabels: { display: false },
+                            legend: { 
+                                display: colorVar !== 'none', 
+                                position: 'top', 
+                                labels: { 
+                                    filter: (item, chartData) => {
+                                        // 1. Dölj våra system-linjer
+                                        if (item.text === 'Trendlinje (Normen)' || 
+                                            item.text.startsWith('Spårhistorik') || 
+                                            item.text.startsWith('Nuvarande Position')) {
+                                            return false;
+                                        }
+                                        
+                                        // 2. Dölj oönskade text-värden
+                                        if (item.text === 'Okänd karaktär' || item.text === '..') {
+                                            return false;
+                                        }
+                                        
+                                        // 3. MAGIN: Dölj kategorier som är helt tomma på bubblor!
+                                        const ds = chartData.datasets[item.datasetIndex];
+                                        if (ds && ds.data.length === 0) {
+                                            return false;
+                                        }
+                                        
+                                        return true;
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: { 
+                                    label: (c) => {
+                                        if (c.dataset.label.startsWith('Spårhistorik')) return `${c.raw.year}: X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
+                                        if (c.dataset.label.startsWith('Nuvarande Position')) return `${c.raw.label} (Vald): X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
+                                        if (c.dataset.type === 'line') return false;
+                                        return `${c.raw.label}: X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
+                                    } 
+                                } 
+                            } 
+                        },
+                        scales: { x: { title: { display: true, text: xVar } }, y: { title: { display: true, text: yVar } } }
+                    }
+                });
+            }
         }
 
         function updateTab2() {
@@ -1443,6 +2189,7 @@
             const exTot = document.getElementById('exTot2').checked; 
             const exSma = document.getElementById('exSma2').checked; 
             const exSpe = document.getElementById('exSpe2').checked;
+            const selectedStadsdel2 = document.getElementById('stadsdelSelect2') ? document.getElementById('stadsdelSelect2').value : 'none';
 
             let yearLabel = selectedYear;
             if (selectedYear === 'all') yearLabel = 'Samtliga år';
@@ -1522,6 +2269,36 @@
 
                 chartDatasets.push({ label: cat, data: groupedData[cat], backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1 }); 
             });
+
+            // ========================================================================
+            // 🚀 HÄR LÄGGER VI IN DEN NYA DELEN (B) FÖR STADSDELSMARKERING
+            // ========================================================================
+            // 1. Hämta valet från den nya rullistan (görs oftast högst upp i funktionen, 
+                
+            let stadsdelPoints2 = [];
+            if (selectedStadsdel2 !== 'none') {
+                let valdaStadsdelar = selectedStadsdel2.split('/');
+                
+                stadsdelPoints2 = allPlotData.filter(p => {
+                    let s = p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL'];
+                    return valdaStadsdelar.includes(s);
+                });
+            }
+
+            if (stadsdelPoints2.length > 0) {
+                // Notera: Jag använder chartDatasets.push här för att matcha din kod
+                chartDatasets.push({
+                    type: 'bubble',
+                    label: `📌 Markerad: ${selectedStadsdel2.replace('/', ' & ')}`,
+                    data: stadsdelPoints2,
+                    backgroundColor: 'rgba(40, 40, 40, 0.25)', // Mörkgrå fyllning
+                    borderColor: 'rgba(10, 10, 10, 0.95)',     // Nästan svart kant
+                    borderWidth: 3,
+                    order: -1, // Ritas över vanliga bubblor
+                    animation: false // Ingen fördröjning
+                });
+            }
+            // ========================================================================
 
             const ctx = document.getElementById('quadrantChart2').getContext('2d');
             if (chartInstance2) chartInstance2.destroy();
@@ -2233,28 +3010,41 @@
         // ==========================================
         // FLIK 7: SYSTEMUTVECKLING (TIDSSERIER)
         // ==========================================
+        // Hjälpfunktion för att räkna ut lutning (trend) över tid
+        function calculateSlope(dataArr) {
+            if (dataArr.length < 2) return 0;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            let n = dataArr.length;
+            for (let i = 0; i < n; i++) {
+                sumX += i;
+                sumY += dataArr[i].y;
+                sumXY += i * dataArr[i].y;
+                sumX2 += i * i;
+            }
+            return (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        }
+
         function updateTab7() {
             if(rawData.length === 0) return;
             const targetVar = document.getElementById('outcomeVar7').value;
-            const metricType = document.getElementById('metricType7').value;
+            const metric1 = document.getElementById('metricType7_1').value;
+            const metric2 = document.getElementById('metricType7_2').value;
             const exTot = document.getElementById('exTot7').checked; 
             const exSma = document.getElementById('exSma7').checked; 
             const exSpe = document.getElementById('exSpe7').checked;
 
             let years = [...new Set(rawData.map(r => r.tid))].filter(y => y !== undefined).sort((a,b) => a - b);
             
-            let timeDataCV = [];
-            let timeDataStd = [];
-            let timeDataSeg = [];
+            // Nya datalagret inkluderat
+            let timeDataCV = []; let timeDataStd = []; let timeDataSeg = []; let timeDataSegEff = [];
 
             let isIndex = targetVar.includes('Index:');
             let isPercentage = getUnit(targetVar) === ' %'; 
-            
-            // --- 1. NY SPÄRR: Identifiera nollsumme-variabler och förändringsmått ---
             let targetLower = targetVar.toLowerCase();
-            let isNettoVar = targetLower.includes('netto') || 
-                             targetLower.includes('överskott') || 
-                             targetLower.includes('befolkningsförändring');
+            let isNettoVar = targetLower.includes('netto') || targetLower.includes('överskott') || targetLower.includes('befolkningsförändring');
+
+            // LÄGG TILL DENNA RAD:
+            let isFolkmangd = targetLower.includes('folkmängd');
 
             years.forEach(year => {
                 let rows = rawData.filter(r => {
@@ -2268,52 +3058,35 @@
                 });
                 
                 let vals = rows.map(r => parseFloat(r[targetVar])).filter(v => !isNaN(v));
-                let cv = null, std = null, seg = null;
+                let cv = null, std = null, seg = null, segEff = null;
 
-                // STABILISERAD MATEMATIK FÖR FLIK 7
                 if (vals.length > 2) {
-                    let sum = 0;
-                    for (let i = 0; i < vals.length; i++) { sum += vals[i]; }
+                    let sum = 0; for (let i = 0; i < vals.length; i++) { sum += vals[i]; }
                     let mean = sum / vals.length;
                     
-                    let sqDiffSum = 0;
-                    for (let i = 0; i < vals.length; i++) { sqDiffSum += Math.pow(vals[i] - mean, 2); }
+                    let sqDiffSum = 0; for (let i = 0; i < vals.length; i++) { sqDiffSum += Math.pow(vals[i] - mean, 2); }
                     let variance = sqDiffSum / vals.length;
-                    
                     std = Math.sqrt(variance);
                     
-                    // --- 2. APPLICERA CV-SPÄRR ---
-                    if (isNettoVar) {
-                        cv = null; // Stäng av CV för netto-variabler
-                    } else {
-                        // Allmän säkerhet: Räkna bara ut CV om medelvärdet är tillräckligt långt från noll
-                        cv = Math.abs(mean) > 0.001 ? (std / Math.abs(mean)) : null;
-                    }
+                    if (isNettoVar) { cv = null; } 
+                    else { cv = Math.abs(mean) > 0.001 ? (std / Math.abs(mean)) : null; }
                 }
                 
-                // --- 3. APPLICERA SEGREGATIONS-SPÄRR ---
-                // Kör endast segregationsindex om det varken är ett Index ELLER en Netto-variabel
                 if (!isIndex && !isNettoVar && rows.length > 0) {
-                    let totalA = 0; 
-                    let totalPop = 0;
-                    
+                    let totalA = 0; let totalPop = 0;
                     rows.forEach(r => {
-                        let pop = parseFloat(r['Folkmängd']);
-                        let val = parseFloat(r[targetVar]);
+                        let pop = parseFloat(r['Folkmängd']); let val = parseFloat(r[targetVar]);
                         if(!isNaN(pop) && !isNaN(val) && pop > 0) {
                             let groupPop = isPercentage ? (val / 100) * pop : val;
-                            totalA += groupPop;
-                            totalPop += pop;
+                            totalA += groupPop; totalPop += pop;
                         }
                     });
                     
                     let totalB = totalPop - totalA;
-                    
                     if (totalA > 0 && totalB > 0) {
                         let dissimilarity = 0;
                         rows.forEach(r => {
-                            let pop = parseFloat(r['Folkmängd']);
-                            let val = parseFloat(r[targetVar]);
+                            let pop = parseFloat(r['Folkmängd']); let val = parseFloat(r[targetVar]);
                             if(!isNaN(pop) && !isNaN(val) && pop > 0) {
                                 let groupPop = isPercentage ? (val / 100) * pop : val;
                                 let nonGroupPop = pop - groupPop;
@@ -2324,69 +3097,146 @@
                     }
                 }
 
-                if (cv !== null || std !== null || seg !== null) {
-                    timeDataCV.push({ x: year, y: cv });
-                    timeDataStd.push({ x: year, y: std });
-                    timeDataSeg.push({ x: year, y: seg });
+                // 🚀 MATEMATIK: Segregationseffektivitet (Index / StdDev)
+                if (seg !== null && std !== null && std > 0.001) {
+                    segEff = seg / std;
                 }
+
+                if (cv !== null) timeDataCV.push({ x: year, y: cv });
+                if (std !== null) timeDataStd.push({ x: year, y: std });
+                if (seg !== null) timeDataSeg.push({ x: year, y: seg });
+                if (segEff !== null) timeDataSegEff.push({ x: year, y: segEff });
             });
 
-            if(years.length > 0 && timeDataCV.length > 0) {
-                let latestYear = timeDataCV[timeDataCV.length - 1].x;
-                let latestCV = timeDataCV[timeDataCV.length - 1].y;
-                let latestStd = timeDataStd[timeDataStd.length - 1].y;
-                let latestSeg = timeDataSeg[timeDataSeg.length - 1].y;
+            // 🚀 MATEMATIK: Linjär Regression för CV Slope (Minsta kvadrat-metoden)
+            let calculateCVSlope = (dataArr) => {
+                if (dataArr.length < 2) return null;
+                let n = dataArr.length;
+                let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+                // Använder index 0, 1, 2 för att få en stabil tidsenhetsförändring
+                dataArr.forEach((p, i) => {
+                    let x = i; let y = p.y;
+                    sumX += x; sumY += y; sumXY += x * y; sumXX += x * x;
+                });
+                return (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            };
 
-                document.getElementById('valCV_year').innerText = `År ${latestYear}`;
-                document.getElementById('valStd_year').innerText = `År ${latestYear}`;
-                document.getElementById('valSeg_year').innerText = `År ${latestYear}`;
+            // Uppdatera stat-boxarna
+            if(years.length > 0 && timeDataStd.length > 0) {
+                let getLatest = (arr) => arr.length > 0 ? arr[arr.length - 1] : {x: '-', y: null};
+                let lCV = getLatest(timeDataCV); let lStd = getLatest(timeDataStd); 
+                let lSeg = getLatest(timeDataSeg); let lSegEff = getLatest(timeDataSegEff);
+                let cvSlope = calculateCVSlope(timeDataCV);
 
-                document.getElementById('valCV').innerText = latestCV !== null ? latestCV.toFixed(3) : (isIndex || isNettoVar ? 'N/A' : '-');
-                document.getElementById('valStd').innerText = latestStd !== null ? latestStd.toFixed(2) : '-';
-                document.getElementById('valSeg').innerText = latestSeg !== null ? latestSeg.toFixed(1) : (isIndex || isNettoVar ? 'N/A' : '-');
+                document.getElementById('valCV_year').innerText = lCV.x !== '-' ? `År ${lCV.x}` : '';
+                document.getElementById('valStd_year').innerText = lStd.x !== '-' ? `År ${lStd.x}` : '';
+                document.getElementById('valSeg_year').innerText = lSeg.x !== '-' ? `År ${lSeg.x}` : '';
+                if(document.getElementById('valSegEff_year')) document.getElementById('valSegEff_year').innerText = lSegEff.x !== '-' ? `År ${lSegEff.x}` : '';
+
+                document.getElementById('valCV').innerText = lCV.y !== null ? lCV.y.toFixed(3) : (isIndex || isNettoVar ? 'N/A' : '-');
+                document.getElementById('valStd').innerText = lStd.y !== null ? lStd.y.toFixed(2) : '-';
+                document.getElementById('valSeg').innerText = lSeg.y !== null ? lSeg.y.toFixed(1) : (isIndex || isNettoVar || isFolkmangd ? 'N/A' : '-');
+                
+                // Nya KPI:er
+                if(document.getElementById('valSegEff')) document.getElementById('valSegEff').innerText = lSegEff.y !== null ? lSegEff.y.toFixed(2) : (isIndex || isNettoVar || isFolkmangd ? 'N/A' : '-');
+                if(document.getElementById('valCVSlope')) {
+                    let slopeEl = document.getElementById('valCVSlope');
+                    if (cvSlope !== null) {
+                        // Multiplicera med 100 för att få procentenheter per år
+                        let cvSlopeScaled = cvSlope * 100; 
+                        let sign = cvSlopeScaled > 0 ? '+' : '';
+                        
+                        slopeEl.innerText = `${sign}${cvSlopeScaled.toFixed(2)}`;
+                        
+                        // Färgkodning: > +0.5 är en varningssignal, < -0.5 är mycket positivt
+                        slopeEl.style.color = cvSlopeScaled > 0.5 ? '#c0392b' : (cvSlopeScaled < -0.5 ? '#27ae60' : '#7f8c8d');
+                    } else {
+                        slopeEl.innerText = '-';
+                    }
+                }
             }
 
-            let activeData = metricType === 'cv' ? timeDataCV : (metricType === 'std' ? timeDataStd : timeDataSeg);
-            let metricLabel = metricType === 'cv' ? 'Variationskoefficient (CV)' : (metricType === 'std' ? 'Standardavvikelse' : 'Segregationsindex (0-100)');
+            // SMART AVVIKELSE- OCH TREND-LARM
+            let alertBox = document.getElementById('divergenceAlert7');
+            alertBox.style.display = 'none';
 
-            let validY = activeData.map(d => d.y).filter(y => y !== null);
-            let minY = Math.min(...validY);
-            let maxY = Math.max(...validY);
-            let range = maxY - minY;
-            if (range === 0) range = 1;
-            let padding = range * 0.15;
+            if (metric1 !== 'none' && metric2 !== 'none' && metric1 !== metric2) {
+                let getArr = (m) => m === 'cv' ? timeDataCV : (m === 'std' ? timeDataStd : (m === 'segEff' ? timeDataSegEff : timeDataSeg));
+                let arr1 = getArr(metric1);
+                let arr2 = getArr(metric2);
 
+                if (arr1.length > 2 && arr2.length > 2) {
+                    let slope1 = calculateSlope(arr1);
+                    let slope2 = calculateSlope(arr2);
+                    let t = 0.05; 
+
+                    let isStd1 = metric1 === 'std'; let isStd2 = metric2 === 'std';
+                    let hasStd = isStd1 || isStd2;
+                    let hasSeg = metric1 === 'dissimilarity' || metric2 === 'dissimilarity';
+                    let isStdVsSeg = hasStd && hasSeg;
+
+                    if ((slope1 > t && slope2 < -t) || (slope1 < -t && slope2 > t)) {
+                        let stdGoingUp = (isStd1 && slope1 > t) || (isStd2 && slope2 > t);
+                        if (isStdVsSeg && stdGoingUp) {
+                            alertBox.innerHTML = "<h4 style='margin:0 0 5px 0; color:#d35400;'>💡 Fall A: Spridd tillväxt</h4>Befolkningsgruppen verkar växa totalt i Linköping. Skillnaderna mellan stadsdelarna blir större i rena antal, <b>men</b> staden har blivit bättre på att absorbera gruppen relativt sett.";
+                            alertBox.style.display = 'block';
+                        } else if (isStdVsSeg && !stdGoingUp) {
+                            alertBox.innerHTML = "<h4 style='margin:0 0 5px 0; color:#c0392b;'>⚠️ Fall B: Enklavisering</h4>Företeelsen verkar minska i kommunen som helhet, <b>men</b> de invånare som är kvar isoleras alltmer. <br><i>(Observera: Här ökar segregationseffektiviteten sannolikt kraftigt)</i>";
+                            alertBox.style.display = 'block';
+                        }
+                    }
+                    else if (slope1 > t && slope2 > t) {
+                        alertBox.innerHTML = "<h4 style='margin:0 0 5px 0; color:#c0392b;'>📉 Fall C: Dubbel Segregering (Växande klyftor)</h4>Både absolut avstånd och relativ sortering ökar kraftigt.";
+                        alertBox.style.display = 'block';
+                    }
+                    else if (slope1 < -t && slope2 < -t) {
+                        alertBox.innerHTML = "<h4 style='margin:0 0 5px 0; color:#27ae60;'>📈 Fall D: Positiv Integration (Minskande klyftor)</h4>Både den absoluta och relativa spridningen minskar över tid. Mycket positiv signal.";
+                        alertBox.style.display = 'block';
+                    }
+                }
+            }
+
+            let isSingleLine = (metric1 === 'none' || metric2 === 'none');
+
+            let getDatasetConfig = (type, isSecondAxis) => {
+                if(type === 'none') return null;
+                let data = type === 'cv' ? timeDataCV : (type === 'std' ? timeDataStd : (type === 'segEff' ? timeDataSegEff : timeDataSeg));
+                let label = type === 'cv' ? 'Variationskoefficient (CV)' : (type === 'std' ? 'Standardavvikelse' : (type === 'segEff' ? 'Segregationseffektivitet' : 'Segregationsindex'));
+                let color = isSecondAxis ? '#e74c3c' : '#2980b9'; 
+                let bg = isSecondAxis ? 'rgba(231, 76, 60, 0.15)' : 'rgba(41, 128, 185, 0.15)'; 
+                
+                return {
+                    label: label, data: data, borderColor: color, backgroundColor: bg, borderWidth: 3, pointRadius: 5, pointBackgroundColor: color, fill: isSingleLine, tension: 0.1, yAxisID: isSecondAxis ? 'y1' : 'y'
+                };
+            };
+
+            let datasets = [];
+            let ds1 = getDatasetConfig(metric1, false); let ds2 = getDatasetConfig(metric2, true);
+            if (ds1) datasets.push(ds1); if (ds2) datasets.push(ds2);
+
+            let getAxisLimits = (dataset) => {
+                if (!dataset || !dataset.data) return {};
+                let validY = dataset.data.map(d => d.y).filter(y => y !== null);
+                if (validY.length === 0) return {};
+                let minY = Math.min(...validY); let maxY = Math.max(...validY); let range = maxY - minY;
+                if (range === 0) range = Math.abs(minY * 0.1) || 1; 
+                let padding = range * 0.25; 
+                return { suggestedMin: minY - padding, suggestedMax: maxY + padding };
+            };
+
+            let limits1 = getAxisLimits(ds1); let limits2 = getAxisLimits(ds2);
             const ctx = document.getElementById('timeSeriesChart7').getContext('2d');
             if (chartInstance7) chartInstance7.destroy();
+            
             chartInstance7 = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: `${metricLabel} för ${targetVar.replace(' (20-64 år)', '')}`,
-                        data: activeData,
-                        borderColor: '#2980b9',
-                        backgroundColor: 'rgba(41, 128, 185, 0.2)',
-                        borderWidth: 3,
-                        pointRadius: 5,
-                        pointBackgroundColor: '#2980b9',
-                        fill: true,
-                        tension: 0.1
-                    }]
-                },
+                type: 'line', data: { datasets: datasets },
                 options: {
                     responsive: true, maintainAspectRatio: false,
-                    plugins: {
-                        datalabels: { display: false },
-                        legend: { position: 'top' },
-                        tooltip: { callbacks: { label: (c) => `${metricLabel}: ${c.raw.y ? c.raw.y.toFixed(4) : '-'}` } }
-                    },
+                    plugins: { datalabels: { display: false }, legend: { position: 'top' }, tooltip: { mode: 'index', intersect: false } },
                     scales: {
                         x: { type: 'category', labels: years, title: { display: true, text: 'År' } },
-                        y: { 
-                            title: { display: true, text: metricLabel },
-                            suggestedMin: minY - padding,
-                            suggestedMax: maxY + padding
-                        }
+                        y: { type: 'linear', display: ds1 !== null, position: 'left', title: { display: true, text: ds1 ? ds1.label : '' }, suggestedMin: limits1.suggestedMin, suggestedMax: limits1.suggestedMax },
+                        y1: { type: 'linear', display: ds2 !== null, position: 'right', title: { display: true, text: ds2 ? ds2.label : '' }, suggestedMin: limits2.suggestedMin, suggestedMax: limits2.suggestedMax, grid: { drawOnChartArea: false } }
                     }
                 }
             });
@@ -2780,6 +3630,7 @@
             const exTot = document.getElementById('exTot9').checked; 
             const exSma = document.getElementById('exSma9').checked;
             const exSpe = document.getElementById('exSpe9').checked;
+            const selectedStadsdel9 = document.getElementById('stadsdelSelect9') ? document.getElementById('stadsdelSelect9').value : 'none';
             
             const zoomPercent = parseFloat(document.getElementById('paradoxZoom').value) / 100;
 
@@ -2871,29 +3722,70 @@
                 }
             });
 
+            // ========================================================================
+            // 🚀 BYGG STADSDELSMARKERING FÖR FLIK 9 (Hanterar dubbla områden!)
+            // ========================================================================
+            let stadsdelPoints9 = [];
+            if (selectedStadsdel9 !== 'none') {
+                // Klyv strängen vid snedstreck
+                let valdaStadsdelar = selectedStadsdel9.split('/');
+
+                // I Flik 9 heter grundarrayen plotData
+                stadsdelPoints9 = plotData.filter(p => {
+                    let s = p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL'];
+                    return valdaStadsdelar.includes(s); 
+                });
+            }
+
+            // 1. Bygg ihop alla diagrammets lager dynamiskt
+            let finalDatasets9 = [
+                { 
+                    label: 'Basområden', 
+                    data: plotData, 
+                    backgroundColor: plotData.map(p => p.color), 
+                    borderColor: 'rgba(255,255,255,0.5)',
+                    pointRadius: 6 
+                }
+            ];
+
+            // 2. Lägg in den mörkgrå stadsdelsglorian om något är valt
+            if (stadsdelPoints9.length > 0) {
+                finalDatasets9.push({
+                    type: 'scatter', // Flik 9 är scatter!
+                    label: `📌 Markerad: ${selectedStadsdel9.replace('/', ' & ')}`,
+                    data: stadsdelPoints9,
+                    backgroundColor: 'rgba(40, 40, 40, 0.25)', 
+                    borderColor: 'rgba(10, 10, 10, 0.95)',     
+                    borderWidth: 3,
+                    pointRadius: 10, // Måste vara större än 6 för att rama in bas-punkten!
+                    order: -1, 
+                    animation: false 
+                });
+            }
+
+            // 3. Lägg till regressionslinjerna sist
+            finalDatasets9.push({ type: 'line', label: 'Linjär Trend', data: linData, borderColor: '#34495e', borderDash: [5, 5], borderWidth: 2, fill: false, pointRadius: 0 });
+            finalDatasets9.push({ type: 'line', label: 'Logaritmisk Kurva (Paradoxen)', data: logData, borderColor: '#8e44ad', borderWidth: 3, fill: false, pointRadius: 0, tension: 0.4 });
+            // ========================================================================
+
+
+            // --- RITA UPP DIAGRAMMET ---
             const ctx = document.getElementById('paradoxChart9').getContext('2d');
             if (chartInstance9) chartInstance9.destroy();
             
             chartInstance9 = new Chart(ctx, {
                 type: 'scatter',
                 data: {
-                    datasets: [
-                        { 
-                            label: 'Basområden', 
-                            data: plotData, 
-                            backgroundColor: plotData.map(p => p.color), 
-                            borderColor: 'rgba(255,255,255,0.5)',
-                            pointRadius: 6 
-                        },
-                        { type: 'line', label: 'Linjär Trend', data: linData, borderColor: '#34495e', borderDash: [5, 5], borderWidth: 2, fill: false, pointRadius: 0 },
-                        { type: 'line', label: 'Logaritmisk Kurva (Paradoxen)', data: logData, borderColor: '#8e44ad', borderWidth: 3, fill: false, pointRadius: 0, tension: 0.4 }
-                    ]
+                    datasets: finalDatasets9 // Vi skickar in vår nya, sammanslagna lista här!
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     plugins: { 
                         datalabels: { display: false },
-                        legend: { labels: { filter: (item) => item.text === 'Basområden' } },
+                        legend: { 
+                            // Släpp in markeringen i teckenförklaringen om vi vill se den
+                            labels: { filter: (item) => item.text === 'Basområden' || item.text.startsWith('📌') } 
+                        },
                         tooltip: { callbacks: { label: (c) => c.dataset.type === 'line' ? false : `${c.raw.label}: X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}` } } 
                     },
                     scales: { 
@@ -2907,10 +3799,66 @@
             });
         }
 
-
         // ==========================================
         // SYSTEM INITIERING & INLÄSNING AV DATA
         // ==========================================
+        // ==========================================
+// MASTER CONFIG V2.0 - DYNAMISKA RULLISTOR
+// ==========================================
+function populateDropdownWithGroups(selectId, variablesArray, filterFunc = null) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    select.innerHTML = '';
+
+    // Förbered facken baserat på din categoryOrder
+    let groupedVars = {};
+    categoryOrder.forEach(cat => groupedVars[cat] = []);
+
+    // Sortera in variablerna (och applicera eventuellt filter)
+    variablesArray.forEach(v => {
+        if (filterFunc && !filterFunc(v)) return; // Hoppa över om den inte klarar filtret
+        let cat = getCategory(v); 
+        if (groupedVars[cat]) groupedVars[cat].push(v);
+    });
+
+    // Bygg HTML
+    categoryOrder.forEach(cat => {
+        if (groupedVars[cat] && groupedVars[cat].length > 0) {
+            let optgroup = document.createElement('optgroup');
+            optgroup.label = cat;
+            groupedVars[cat].sort().forEach(v => {
+                optgroup.appendChild(new Option(v, v));
+            });
+            select.appendChild(optgroup);
+        }
+    });
+}
+// ==========================================
+// MASTER CONFIG V2.0 - ANIMERING & SPÅRNING
+// ==========================================
+let trackedAreaFlik1 = null; // Sparar vilket område (bubbla) som klickats på
+let watermarkYear = "";      // Årtalet som visas i bakgrunden (sätts av animeringen)
+
+// Plugin för att rita det stålgrå årtalet i bakgrunden
+const yearWatermarkPlugin = {
+    id: 'yearWatermark',
+    beforeDraw: (chart) => {
+        if (watermarkYear !== "") {
+            const ctx = chart.ctx;
+            const chartArea = chart.chartArea;
+            ctx.save();
+            ctx.fillStyle = 'rgba(127, 140, 141, 0.15)'; // Stålgrå, diskret
+            const fontSize = chartArea.height * 0.4;
+            ctx.font = `bold ${fontSize}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(watermarkYear, chartArea.left + (chartArea.width / 2), chartArea.top + (chartArea.height / 2));
+            ctx.restore();
+        }
+    }
+};
+Chart.register(yearWatermarkPlugin); // Aktivera pluginen
+
         document.addEventListener('DOMContentLoaded', () => {
             Papa.parse("segregation_base.csv", {
                 download: true, header: true,
@@ -2948,49 +3896,24 @@
                     const ignoreCols = ['basområde', 'tid', 'Karaktär_bas', 'Karaktär_detalj', 'Inkluderad', 'Ingår', 'SEI_indikatorer16', 'Stadsdelskod_(Nyko3)', 'Stadsdel', 'KodNyko4', 'Områdestyp'];
                     validVariables = headers.filter(h => !ignoreCols.includes(h) && h !== "");
 
-                    let groupedVars = {}; 
-                    categoryOrder.forEach(cat => groupedVars[cat] = []); 
-                    validVariables.forEach(v => { 
-                        let cat = getCategory(v); 
-                        if(groupedVars[cat]) groupedVars[cat].push(v); 
-                    });
+                    // Bygg alla rullistor med standardvariabler (Flik 1, 3, 7, 8, 9)
+                    populateDropdownWithGroups('xVar1', validVariables);
+                    populateDropdownWithGroups('yVar1', validVariables);
+                    populateDropdownWithGroups('outcomeVar3', validVariables);
+                    populateDropdownWithGroups('outcomeVar7', validVariables);
+                    populateDropdownWithGroups('simOutcome8', validVariables); // Nu får även simulatorn optgroups!
+                    populateDropdownWithGroups('xVar9', validVariables);
+                    populateDropdownWithGroups('yVar9', validVariables);
 
-                    const xSelect1 = document.getElementById('xVar1'); 
-                    const ySelect1 = document.getElementById('yVar1');
-                    const outcomeSelect3 = document.getElementById('outcomeVar3'); 
-                    const xSelect2 = document.getElementById('xVar2');
-                    const outcomeSelect4 = document.getElementById('outcomeVar4'); 
-                    const outcomeSelect7 = document.getElementById('outcomeVar7');
-                    const yearSelect8 = document.getElementById('yearSelect8');
-                    const xVar9 = document.getElementById('xVar9');
-                    const yVar9 = document.getElementById('yVar9');
+                    // Flik 2: Tidsmaskin / 4-fältare (Bara Index - EXKLUDERAR Samlat SEI och Strukturell Ojämlikhet)
+                    populateDropdownWithGroups('xVar2', validVariables, v => 
+                        v.startsWith('Index:') && 
+                        v !== 'Index: Samlat SEI (16 indikatorer)' && 
+                        v !== 'Index: Strukturell Ojämlikhet'
+                    );
 
-                    categoryOrder.forEach(cat => {
-                        if (groupedVars[cat].length > 0) {
-                            let optX1 = document.createElement('optgroup'); optX1.label = cat; 
-                            let optY1 = document.createElement('optgroup'); optY1.label = cat;
-                            let optO3 = document.createElement('optgroup'); optO3.label = cat; 
-                            let optO4 = document.createElement('optgroup'); optO4.label = cat;
-                            let optO7 = document.createElement('optgroup'); optO7.label = cat;
-                            let optX9 = document.createElement('optgroup'); optX9.label = cat;
-                            let optY9 = document.createElement('optgroup'); optY9.label = cat;
-                            
-                            groupedVars[cat].sort().forEach(v => {
-                                optX1.appendChild(new Option(v, v)); 
-                                optY1.appendChild(new Option(v, v)); 
-                                optO3.appendChild(new Option(v, v));
-                                if (v.startsWith('Index:') && v !== 'Index: Samlat SEI (16 indikatorer)') xSelect2.appendChild(new Option(v, v));
-                                if (v.startsWith('Index:')) optO4.appendChild(new Option(v, v)); 
-                                optO7.appendChild(new Option(v, v));
-                                optX9.appendChild(new Option(v, v));
-                                optY9.appendChild(new Option(v, v));
-                            });
-                            xSelect1.appendChild(optX1); ySelect1.appendChild(optY1); outcomeSelect3.appendChild(optO3);
-                            if(optO4.children.length > 0) outcomeSelect4.appendChild(optO4);
-                            outcomeSelect7.appendChild(optO7);
-                            xVar9.appendChild(optX9); yVar9.appendChild(optY9);
-                        }
-                    });
+                    // Special-rullistor (Flik 2 och 4 som BARA ska visa Index)
+                    populateDropdownWithGroups('outcomeVar4', validVariables, v => v.startsWith('Index:'));
 
                     const years = [...new Set(rawData.map(row => row.tid).filter(y => y !== undefined))].sort().reverse();
                     globalLatestYear = years.length > 0 ? parseInt(years[0]) : null;
@@ -3008,28 +3931,59 @@
                         else if (globalLatestYear) sel.value = globalLatestYear.toString();
                     });
 
+                    // ==========================================
+                    // SÄTT STANDARDVÄRDEN (Uppdaterat för Master Config v2.0)
+                    // ==========================================
                     if(validVariables.includes('Index: Ekonomisk Utsatthet')) { 
-                        xSelect1.value = 'Index: Ekonomisk Utsatthet'; xSelect2.value = 'Index: Ekonomisk Utsatthet'; 
+                        if(document.getElementById('xVar1')) document.getElementById('xVar1').value = 'Index: Ekonomisk Utsatthet'; 
+                        if(document.getElementById('xVar2')) document.getElementById('xVar2').value = 'Index: Ekonomisk Utsatthet'; 
                     }
                     if(validVariables.includes('Nettoflyttning förvärvsarbetande')) {
-                        xVar9.value = 'Nettoflyttning förvärvsarbetande';
+                        if(document.getElementById('xVar9')) document.getElementById('xVar9').value = 'Nettoflyttning förvärvsarbetande';
                     }
                     
                     if(validVariables.includes('Index: Samlat SEI (16 indikatorer)')) {
-                        ySelect1.value = 'Index: Samlat SEI (16 indikatorer)'; 
-                        outcomeSelect3.value = 'Index: Samlat SEI (16 indikatorer)'; 
-                        outcomeSelect4.value = 'Index: Samlat SEI (16 indikatorer)';
-                        outcomeSelect7.value = 'Index: Samlat SEI (16 indikatorer)';
+                        if(document.getElementById('yVar1')) document.getElementById('yVar1').value = 'Index: Samlat SEI (16 indikatorer)'; 
+                        if(document.getElementById('outcomeVar3')) document.getElementById('outcomeVar3').value = 'Index: Samlat SEI (16 indikatorer)'; 
+                        if(document.getElementById('outcomeVar4')) document.getElementById('outcomeVar4').value = 'Index: Samlat SEI (16 indikatorer)';
+                        if(document.getElementById('outcomeVar7')) document.getElementById('outcomeVar7').value = 'Index: Samlat SEI (16 indikatorer)';
                     }
                     if(validVariables.includes('Index: Demografisk Koncentration')) {
-                        yVar9.value = 'Index: Demografisk Koncentration';
+                        if(document.getElementById('yVar9')) document.getElementById('yVar9').value = 'Index: Demografisk Koncentration';
                     }
 
                     // EVENT LISTENERS
-                    ['xVar1', 'yVar1', 'bubbleSizeVar1', 'colorVar1', 'yearSelect1', 'exTot1', 'exSma1', 'exSpe1'].forEach(id => { 
-                        document.getElementById(id).addEventListener('change', updateTab1); 
+                    ['xVar1', 'yVar1', 'bubbleSizeVar1', 'colorVar1', 'exTot1', 'exSma1', 'exSpe1', 'stadsdelSelect1'].forEach(id => { 
+                        document.getElementById(id).addEventListener('change', () => {
+                            trackedAreaFlik1 = null; // Radera spår om man byter variabel/filter
+                            updateTab1(); 
+                        }); 
                     });
-                    ['xVar2', 'bubbleSizeVar2', 'colorVar2', 'yearSelect2', 'exTot2', 'exSma2', 'exSpe2'].forEach(id => { 
+
+                    // SPECIAL-LYSSNARE FÖR ÅR (Stänger av animation/spår direkt man rör den)
+                    const yearDropdown = document.getElementById('yearSelect1');
+                    
+                    // När man klickar på rullistan
+                    yearDropdown.addEventListener('mousedown', () => {
+                        if (isPlaying) {
+                            clearInterval(animationInterval);
+                            isPlaying = false;
+                            document.getElementById('playBtn-yearSelect1').innerHTML = '▶️ Spela upp';
+                            document.getElementById('playBtn-yearSelect1').style.background = '#27ae60';
+                        }
+                        watermarkYear = "";
+                        trackedAreaFlik1 = null; // Stäng av spåret direkt
+                        updateTab1();
+                    });
+
+                    // När värdet faktiskt ändras
+                    yearDropdown.addEventListener('change', () => {
+                        watermarkYear = "";
+                        trackedAreaFlik1 = null;
+                        updateTab1();
+                    });
+                    
+                    ['xVar2', 'bubbleSizeVar2', 'colorVar2', 'yearSelect2', 'exTot2', 'exSma2', 'exSpe2', 'stadsdelSelect2'].forEach(id => { 
                         document.getElementById(id).addEventListener('change', updateTab2); 
                     });
                     ['outcomeVar3', 'topCount3', 'yearSelect3', 'exTot3', 'exSma3', 'exSpe3'].forEach(id => { 
@@ -3047,13 +4001,13 @@
                     ['clusterVisX', 'clusterVisY'].forEach(id => { 
                         document.getElementById(id).addEventListener('change', updateTab6Vis); 
                     });
-                    ['outcomeVar7', 'metricType7', 'exTot7', 'exSma7', 'exSpe7'].forEach(id => { 
+                    ['outcomeVar7', 'metricType7_1', 'metricType7_2', 'exTot7', 'exSma7', 'exSpe7'].forEach(id => { 
                         document.getElementById(id).addEventListener('change', updateTab7); 
                     });
                     ['yearSelect8', 'simArea8', 'simOutcome8'].forEach(id => {
                         document.getElementById(id).addEventListener('change', loadAreaForSimulation);
                     });
-                    ['xVar9', 'yVar9', 'yearSelect9', 'exTot9', 'exSma9', 'exSpe9'].forEach(id => {
+                    ['xVar9', 'yVar9', 'yearSelect9', 'exTot9', 'exSma9', 'exSpe9', , 'stadsdelSelect9'].forEach(id => {
                         document.getElementById(id).addEventListener('change', updateTab9);
                     });
 

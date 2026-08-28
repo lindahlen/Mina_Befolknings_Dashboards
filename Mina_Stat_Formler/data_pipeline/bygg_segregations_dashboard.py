@@ -134,7 +134,7 @@ index_config = {
         "pos": ["Trångbodda", "Små bostäder", "Hyresrätt"], "neg": ["Boyta per person", "Bilinnehav", "Kvarboende"]
     },
     "Index: Demografisk Koncentration": {
-        "pos": ["Utrikes födda", "Utländsk bakgrund"], "neg": []
+        "pos": ["Utrikes födda", "Utländsk bakgrund", "Ensamstående hushåll"], "neg": []
     },
     "Index: Strukturell Ojämlikhet": {
         # POS: Saker som ofta drabbar kvinnor hårdast och driver Ojämlikhet (högt värde = sämre jämställdhet)
