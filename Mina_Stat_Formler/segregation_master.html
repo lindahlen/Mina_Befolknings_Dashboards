@@ -1385,103 +1385,10 @@
         const heatmapKeywords = [...multiRegKeywords, "folkmängd"];
 
         /**
- * Master Config v2.0 - Auto-kategorisering av SCB/Linköpings-variabler
+ * Master Config v2.0 - Auto-kategorisering av SCB/Linköpings-variabler, nu med med Smart Kategori-filter! [Nu bortrensad]
  * Sorterar in variabler i <optgroup> baserat på kommunens specifika categoryOrder.
  */
-function populateDropdownWithGroups(selectId, variablesArray) {
-    const select = document.getElementById(selectId);
-    if (!select) return;
-    
-    select.innerHTML = ''; // Rensa gamla värden
 
-    // 1. Din exakta, briljanta lista från tidigare!
-    const categoryOrder = [
-        "🌟 Sammansatta Index (Z-score)", 
-        "📊 Demografi & Befolkning (Antal)", 
-        "🔄 Demografiska netton (Antal)", 
-        "🚚 Befolkningsförändringar (Antal)", 
-        "🏠 Bostäder & Hushåll (Antal)", 
-        "💼 Arbete & Utbildning (Antal)", 
-        "💰 Ekonomi & Inkomst", 
-        "🤝 Socioekonomi (%)", 
-        "🎓 Utbildning & Arbetsmarknad (%)", 
-        "🌍 Demografi och Val (%)", 
-        "🏘️ Bostadsmarknad & Bilinnehav (%)", 
-        "📉 Index, Kvoter & Ytor", 
-        "📌 Övriga variabler"
-    ];
-
-    // 2. Skapa tomma "fack" för varje kategori i rätt ordning
-    const groups = {};
-    categoryOrder.forEach(cat => groups[cat] = []);
-
-    // 3. Den smarta sorteringsmotorn
-    variablesArray.forEach(varName => {
-        let lower = varName.toLowerCase();
-        let isPercent = lower.includes('(%)') || lower.includes('%') || lower.includes('andel');
-        
-        // Z-scores och Index
-        if (lower.includes('z-score') || lower.includes('samlat sei') || lower.includes('utsatt')) {
-            groups["🌟 Sammansatta Index (Z-score)"].push(varName);
-        }
-        // Ekonomi & Inkomst (Ofta i kronor eller prisbasbelopp)
-        else if (lower.includes('inkomst') || lower.includes('ekonomi')) {
-            groups["💰 Ekonomi & Inkomst"].push(varName);
-        }
-        // ==========================================
-        // PROCENT-VARIABLER (%)
-        // ==========================================
-        else if (isPercent) {
-            if (lower.includes('bistånd') || lower.includes('arbetslös') || lower.includes('sei') || lower.includes('förvärv')) {
-                groups["🤝 Socioekonomi (%)"].push(varName);
-            } else if (lower.includes('utbildning') || lower.includes('gymnasie') || lower.includes('högskola')) {
-                groups["🎓 Utbildning & Arbetsmarknad (%)"].push(varName);
-            } else if (lower.includes('hyresrätt') || lower.includes('trångbodd') || lower.includes('bil') || lower.includes('småhus')) {
-                groups["🏘️ Bostadsmarknad & Bilinnehav (%)"].push(varName);
-            } else {
-                groups["🌍 Demografi och Val (%)"].push(varName);
-            }
-        }
-        // ==========================================
-        // ABSOLUTA TAL (Antal) OCH ÖVRIGT
-        // ==========================================
-        else {
-            if (lower.includes('netto')) {
-                groups["🔄 Demografiska netton (Antal)"].push(varName);
-            } else if (lower.includes('inflytt') || lower.includes('utflytt') || lower.includes('födda') || lower.includes('döda')) {
-                groups["🚚 Befolkningsförändringar (Antal)"].push(varName);
-            } else if (lower.includes('bostad') || lower.includes('hushåll')) {
-                groups["🏠 Bostäder & Hushåll (Antal)"].push(varName);
-            } else if (lower.includes('arbete') || lower.includes('utbildning')) {
-                groups["💼 Arbete & Utbildning (Antal)"].push(varName);
-            } else if (lower.includes('kvot') || lower.includes('yta') || lower.includes('index')) {
-                groups["📉 Index, Kvoter & Ytor"].push(varName);
-            } else if (lower.includes('folkmängd') || lower.includes('ålder') || lower.includes('invånare')) {
-                groups["📊 Demografi & Befolkning (Antal)"].push(varName);
-            } else {
-                groups["📌 Övriga variabler"].push(varName);
-            }
-        }
-    });
-
-    // 4. Bygg HTML-strukturen för rullistan
-    categoryOrder.forEach(cat => {
-        if (groups[cat].length > 0) {
-            let optgroup = document.createElement('optgroup');
-            optgroup.label = cat; 
-            
-            // Sortera variablerna i bokstavsordning inom sin kategori
-            groups[cat].sort().forEach(v => {
-                let option = document.createElement('option');
-                option.value = v;
-                option.textContent = v;
-                optgroup.appendChild(option);
-            });
-            
-            select.appendChild(optgroup);
-        }
-    });
-}
 // ==========================================
 // TIDSANIMERING (GAPMINDER-EFFEKTEN) - UPPDATERAD
 // ==========================================
@@ -1617,7 +1524,14 @@ function toggleAnimation(selectId, updateFunction) {
 
         function getCategory(varName) {
             const n = varName.toLowerCase();
+
+            // 🚀 SNABBSPÅR FÖR SPECIFIKA VARIABLER (Läggs högst upp)
+            // Tvingar specifika variabler till rätt fack oavsett vad de heter
+            if (n === 'befolkningsförändring') return "🔄 Demografiska netton (Antal)";
+            if (n === 'medelålder') return "📊 Demografi & Befolkning (Antal)";
+            if (n === 'sei medel (2015-2024)') return "🌟 Sammansatta Index (Z-score)";
             
+              // ... här under fortsätter din vanliga logik ...
             if (n.includes('index:')) return "🌟 Sammansatta Index (Z-score)";
             if (n.includes('kvot') || n.includes('gini') || n.includes('meritvärde') || n.includes('kvm') || n.includes('boende per')) return "📉 Index, Kvoter & Ytor";
             
@@ -4231,33 +4145,121 @@ function toggleAnimation(selectId, updateFunction) {
         // ==========================================
 // MASTER CONFIG V2.0 - DYNAMISKA RULLISTOR
 // ==========================================
+// ==========================================
+// MASTER CONFIG V2.0 - DYNAMISKA RULLISTOR & KATEGORIFILTER
+// ==========================================
 function populateDropdownWithGroups(selectId, variablesArray, filterFunc = null) {
     const select = document.getElementById(selectId);
     if (!select) return;
-    select.innerHTML = '';
+    
+    // Spara undan det nuvarande valet
+    let currentVarValue = select.value; 
+    select.innerHTML = ''; 
 
-    // Förbered facken baserat på din categoryOrder
-    let groupedVars = {};
-    categoryOrder.forEach(cat => groupedVars[cat] = []);
+    // 1. Din exakta, briljanta lista!
+    const categoryOrder = [
+        "🌟 Sammansatta Index (Z-score)", 
+        "📊 Demografi & Befolkning (Antal)", 
+        "🔄 Demografiska netton (Antal)", 
+        "🚚 Befolkningsförändringar (Antal)", 
+        "🏠 Bostäder & Hushåll (Antal)", 
+        "💼 Arbete & Utbildning (Antal)", 
+        "💰 Ekonomi & Inkomst", 
+        "🤝 Socioekonomi (%)", 
+        "🎓 Utbildning & Arbetsmarknad (%)", 
+        "🌍 Demografi och Val (%)", 
+        "🏘️ Bostadsmarknad & Bilinnehav (%)", 
+        "📉 Index, Kvoter & Ytor", 
+        "📌 Övriga variabler"
+    ];
 
-    // Sortera in variablerna (och applicera eventuellt filter)
+    // 2. Skapa tomma "fack" för varje kategori
+    const groups = {};
+    categoryOrder.forEach(cat => groups[cat] = []);
+
+    // 3. Den smarta sorteringsmotorn (Använder nu DIN getCategory-funktion!)
     variablesArray.forEach(v => {
-        if (filterFunc && !filterFunc(v)) return; // Hoppa över om den inte klarar filtret
-        let cat = getCategory(v); 
-        if (groupedVars[cat]) groupedVars[cat].push(v);
-    });
+        // Hoppa över variabeln om den inte klarar ett eventuellt inskickat filter!
+        if (filterFunc && !filterFunc(v)) return;
 
-    // Bygg HTML
-    categoryOrder.forEach(cat => {
-        if (groupedVars[cat] && groupedVars[cat].length > 0) {
-            let optgroup = document.createElement('optgroup');
-            optgroup.label = cat;
-            groupedVars[cat].sort().forEach(v => {
-                optgroup.appendChild(new Option(v, v));
-            });
-            select.appendChild(optgroup);
+        // Magin händer här: Vi hämtar kategorin från din befintliga smarta funktion!
+        let cat = getCategory(v); 
+        
+        // Lägg i rätt fack (eller i Övrigt om något blivit felstavat)
+        if (groups[cat]) {
+            groups[cat].push(v);
+        } else {
+            groups["📌 Övriga variabler"].push(v);
         }
     });
+
+    // ==============================================================
+    // 4. AUTO-INJICERADE KATEGORIFILTER
+    // ==============================================================
+    let catSelectId = selectId + '_category_filter';
+    let catSelect = document.getElementById(catSelectId);
+    
+    // Skapa rullistan om den inte finns
+    if (!catSelect) {
+        catSelect = document.createElement('select');
+        catSelect.id = catSelectId;
+        catSelect.style.cssText = "display: block !important; width: 100% !important; margin-bottom: 8px !important; padding: 6px !important; background-color: #e8f4f8 !important; border: 1px solid #3498db !important; border-radius: 4px !important; font-weight: bold !important; color: #2c3e50 !important; cursor: pointer !important;";
+        select.parentNode.insertBefore(catSelect, select);
+        
+        catSelect.addEventListener('change', function(e) {
+            const selectedCat = this.value;
+            const prevVar = select.value;
+            select.innerHTML = ''; 
+            
+            if (selectedCat === 'Alla') {
+                categoryOrder.forEach(cat => {
+                    if (groups[cat] && groups[cat].length > 0) {
+                        let optgroup = document.createElement('optgroup');
+                        optgroup.label = cat; 
+                        groups[cat].sort().forEach(v => optgroup.appendChild(new Option(v, v)));
+                        select.appendChild(optgroup);
+                    }
+                });
+            } else {
+                if (groups[selectedCat]) {
+                    groups[selectedCat].sort().forEach(v => select.appendChild(new Option(v, v)));
+                }
+            }
+            
+            if (Array.from(select.options).some(opt => opt.value === prevVar)) {
+                select.value = prevVar;
+            }
+            if (e && e.isTrusted) {
+                select.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+    }
+    
+    // Fyll på kategorierna
+    catSelect.innerHTML = '<option value="Alla">-- 🔎 Välj kategori för att filtrera listan nedan... --</option>';
+    categoryOrder.forEach(cat => {
+        if (groups[cat] && groups[cat].length > 0) {
+            catSelect.appendChild(new Option(cat, cat));
+        }
+    });
+    
+    // Detektera och applicera aktiv kategori
+    let activeCat = 'Alla';
+    if (currentVarValue) {
+        for (let cat of categoryOrder) {
+            if (groups[cat].includes(currentVarValue)) {
+                activeCat = cat;
+                break;
+            }
+        }
+    }
+    catSelect.value = activeCat;
+    catSelect.dispatchEvent(new Event('change'));
+    
+    // Sätt tillbaka rätt variabel
+    if (currentVarValue && Array.from(select.options).some(opt => opt.value === currentVarValue)) {
+        select.value = currentVarValue;
+    }
 }
 // ==========================================
 // MASTER CONFIG V2.0 - ANIMERING & SPÅRNING

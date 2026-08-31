@@ -68,9 +68,23 @@ rename_dict = {
 }
 px_merged.rename(columns={k: v for k, v in rename_dict.items() if k in px_merged.columns and v not in px_merged.columns}, inplace=True)
 
-def fill_nearest_year(group):
-    return group.ffill().bfill()
-px_merged = px_merged.groupby('basområde', group_keys=False).apply(fill_nearest_year)
+# ==========================================
+# 3B. HANTERING AV SAKNADE VÄRDEN med "fill_nearest_year" (T.ex. 2025 års inkomst/sysselsättning)
+# ==========================================
+
+# 1. KRITISKT: Sortera alltid på basområde och tid först!
+px_merged = px_merged.sort_values(by=['basområde', 'tid'])
+
+# 2. Identifiera vilka kolumner som faktiskt ska fyllas (allt utom nycklarna)
+fyll_kolumner = px_merged.columns.difference(['basområde', 'tid'])
+
+# 3. 100% gruppsäker fyllning via transform (stjäl aldrig värden från grannen!)
+# Lambda-funktionen körs strikt isolerat inom varje basområde.
+px_merged[fyll_kolumner] = px_merged.groupby('basområde')[fyll_kolumner].transform(lambda x: x.ffill().bfill())
+
+# 4. DEFRAGMENTERA MINNET FÖR ATT SLIPPA PERFORMANCE-VARNINGEN
+# Detta "limmar ihop" tabellen i minnet innan vi skapar massa nya indexkolumner.
+px_merged = px_merged.copy()
 
 # --- 4. BERÄKNINGAR ---
 def calc_if_exists(df, new_col, calc_func, required_cols):
@@ -203,17 +217,33 @@ else:
 ra_kolumner_att_dolja = [
     'Förgymnasial utb män', 'Gymnasial utb män', 'Kort eftergymnasial utb män', 'Lång eftergymnasial utb män', 'Uppgift saknas utb män',
     'Förgymnasial utb kvinnor', 'Gymnasial utb kvinnor', 'Kort eftergymnasial utb kvinnor', 'Lång eftergymnasial utb kvinnor', 'Uppgift saknas utb kvinnor',
-    'Ohälsotal totalt 20-64 år', 'Ohälsotal män 20-64 år', 'Ohälsotal kvinnor 20-64 år',
+    'Ohälsotal män 20-64 år', 'Ohälsotal kvinnor 20-64 år',
     'Total utb 20-64 kvinnor', 'Total utb 20-64 män', 
     'Förgymnasial utb kvinnor (%)', 'Förgymnasial utb män (%)', 
-    'Lång eftergymn utb kvinnor (%)', 'Lång eftergymn utb män (%)'
+    'Lång eftergymn utb kvinnor (%)', 'Lång eftergymn utb män (%)',
+# 🚀 NYA TILLÄGG: Bara fyll på listan med exakta namn (måste matcha stavningen i datan)
+    'Utländsk bakgrund kvinnor', 'Utländsk bakgrund män',
+    'Uppgift saknas utb', 'Diff: Ohälsotal 20-64 år', 'Diff: Sysselsättningsgrad', 'Diff: Lång eftergymn utb', 'Diff: Förgymnasial utb'
+
 ]
 
 # Drop-funktionen ignorerar kolumner som eventuellt inte existerar (felsäkert)
 final_df = final_df.drop(columns=[col for col in ra_kolumner_att_dolja if col in final_df.columns])
 
+# --- 8. SÄTT ALIAS / BYT NAMN PÅ VARIABLER ---
+# Här döper vi om kolumner så de ser snyggare och tydligare ut i dashboarden.
+
+alias_ordlista = {
+    'Ohälsotal totalt 20-64 år': 'Ohälsotal 20-64 år',
+    'Nettoinkomst, andel': 'Nettoinkomstens andel av kommunens nivå'
+    # Lägg till hur många du vill här...
+}
+
+# Applicera namnbytet på din dataframe (byt ut 'df' mot vad din dataframe heter)
+final_df = final_df.rename(columns=alias_ordlista)
+
 # ==========================================
-# 8. AVSLUT OCH SPARA
+# 9. AVSLUT OCH SPARA
 # ==========================================
 print("\n⏳ Sorterar och sparar master-filen...")
 try:
