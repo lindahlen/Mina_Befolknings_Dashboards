@@ -1,16 +1,16 @@
 ﻿Target_Index;Indikator;Vikt_Procent
-PCI (Platsattraktivitet);Försörjningskvot;11.202811264103167
-PCI (Platsattraktivitet);Födda_barn;10.87614583956011
-PCI (Platsattraktivitet);KIBS (beräkning Sysselsatta);4.926453454301904
-PCI (Platsattraktivitet);Nettoflyttning (Beräknad Inflyttning_annat_län-Utflyttning_annat_län);4.269125798707388
-PCI (Platsattraktivitet);Vuxen_bef (Beräkning Folkmängd);3.845621542099113
-ECI (Ekonomisk Motor);Nattbefolkning;8.923100960310295
-ECI (Ekonomisk Motor);Sysselsatta;7.735435472762902
-ECI (Ekonomisk Motor);Bostäder;6.484799970141516
-ECI (Ekonomisk Motor);KIBS;6.100495678844048
-ECI (Ekonomisk Motor);Nettoinkomst_belopp_summa;5.932547641062159
-HCI (Humankapital);Nyföretagande;8.615503437050943
-HCI (Humankapital);Förvärvsinkomst_median;6.537229877489437
-HCI (Humankapital);Födda_barn;6.0916693132705415
-HCI (Humankapital);KIBS (beräkning Sysselsatta);6.0091238048566025
-HCI (Humankapital);Födda_1000_vuxna;5.801909463364628
+PCI (Platsattraktivitet);Skattekraft;8.223673802056922
+PCI (Platsattraktivitet);Födda_barn;7.222728067888362
+PCI (Platsattraktivitet);Nettoflytt_eget_län;5.489123669702341
+PCI (Platsattraktivitet);KIBS (beräkning Sysselsatta);5.362088712232502
+PCI (Platsattraktivitet);Försörjningskvot;5.060275606788016
+ECI (Ekonomisk Motor);Nattbefolkning;7.757449636057068
+ECI (Ekonomisk Motor);KIBS (beräkning Sysselsatta);6.303571224986397
+ECI (Ekonomisk Motor);Bostäder;5.740855674242906
+ECI (Ekonomisk Motor);Inpendling;5.319915797621975
+ECI (Ekonomisk Motor);Andel_Privat;4.766806803383728
+HCI (Humankapital);Nattbefolkning;8.933601078317473
+HCI (Humankapital);Nyföretagande;6.567313456426904
+HCI (Humankapital);Andel_Privat;6.501764512463347
+HCI (Humankapital);Förvärvsinkomst_median;5.362845943887284
+HCI (Humankapital);Total BRP (Miljarder SEK);4.6387745051928535

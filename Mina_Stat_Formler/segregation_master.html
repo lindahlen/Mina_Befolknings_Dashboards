@@ -513,6 +513,12 @@
             <div class="guide-container purple">
                 <h3 style="margin-top:0; color:#2c3e50;">📊 Strategisk Fyrfältare: <span id="dynYear">-</span></h3>
                 <p>Denna vy korsar den övergripande segregationen (SEI) med specifika strukturella drivkrafter för att placera in Linköpings basområden i fyra strategiska zoner.</p>
+        
+                <!-- 🚀 NYTT: Tydlig metodnotis för Y-axeln -->
+                <div style="font-size: 0.9em; color: #555; background-color: #f8f9fa; padding: 8px 12px; border-radius: 4px; border-left: 3px solid #7f8c8d; margin-bottom: 15px;">
+                    <i>💡 <b>Metodnotis för Y-axeln:</b> Här används det dynamiska SEI-indexet "Samlat SEI (16 indikatorer)" som beräknas med nya, unika värden för varje enskilt år. Det är detta som gör det möjligt att spåra områdenas faktiska förflyttning över tid, till skillnad från referensvariabeln "SEI medel (2015-2024)" som utgör ett fastlåst historiskt snitt för perioden.</i>
+                </div>
+       
                 <div class="info-box" style="border-left-color:#8e44ad; background-color:#f5eef8;">
                     <strong>Fasta kvadranter & Synvillor</strong><br><br>
                     Hårkorset är fastlåst på hela kommunens totala genomsnitt för att ge en absolut måttstock. Rutorna nedan räknar dynamiskt ut hur många basområden som befinner sig i varje zon av de som just nu är synliga i diagrammet.<br><br>
@@ -674,7 +680,7 @@
                 <div class="info-box" style="border-left-color:#27ae60; background-color:#eafaf1; margin-top: 15px;">
                     <strong>💡 Tolkningsguide: Regression & Multikollinearitet</strong><br><br>
                     Du befinner dig nu i "Köket" där vi bygger prediktionsmodeller. Den Heliga Graalen i modellbyggande är att hitta en kombination av drivkrafter som ger ett <b>Högt Justerat R²</b> (modellen förklarar verkligheten bra) men ett <b>Lågt Cronbach's Alpha</b>.<br><br>
-                    • <b>Multikollinearitet (Cronbach's Alpha):</b> Mäter den interna konsistensen (överlappningen) mellan dina valda X-variabler. Om värdet är <b>rött (>0.80)</b> betyder det att du har valt variabler som i princip mäter samma sak. De kannibaliserar på varandra och gör modellen instabil. Försök byta ut dem tills värdet sjunker!<br>
+                    • <b>Multikollinearitet (Cronbach's Alpha):</b> Mäter den interna konsistensen (överlappningen) mellan dina valda X-variabler. Om värdet är <b style="color: #e74c3c;">rött (>0.80)</b> betyder det att du har valt variabler som i princip mäter samma sak. De kannibaliserar på varandra och gör modellen instabil. Försök byta ut dem tills värdet sjunker!<br>
                     • <b>Auto-Select Optimal Modell:</b> AI:n strävar nu efter balans. Den söker den högsta förklaringsgraden, men <i>straffar</i> och väljer bort variabler som drar Cronbach's Alpha över 0.80, såvida de inte bidrar med en exceptionellt hög och unik förklaringskraft. Givetvis ignoreras 'Ensamstående hushåll' i auto-läget, då detta är en känd proxy för låg inkomst i en svensk kontext.<br>
                     • <b>Takeffekter:</b> För SEI-indexet bildas ofta en vertikal "vägg" uppåt 5-6 i grafen. Detta är en takeffekt (Ceiling Effect) som uppstår när modellen vill gissa högre än skalan tillåter.
                 </div>
@@ -802,11 +808,11 @@
             <div class="modern-controls" style="border-bottom: none; margin-bottom: 15px; padding-bottom: 0;">
                 <div class="control-card blue" style="flex: 1; display: flex; gap: 15px; flex-wrap: wrap;">
                     <div style="flex: 1; min-width: 200px;">
-                        <label class="control-label">➡️ Visa på X-axel</label>
+                        <label class="control-label">➡️ Visa på X-axel (Drivkraft)</label>
                         <select id="clusterVisX" class="modern-select"></select>
                     </div>
                     <div style="flex: 1; min-width: 200px;">
-                        <label class="control-label">⬆️ Visa på Y-axel</label>
+                        <label class="control-label">⬆️ Visa på Y-axel (Utfall)</label>
                         <select id="clusterVisY" class="modern-select"></select>
                     </div>
                 </div>
@@ -2075,17 +2081,37 @@ function toggleAnimation(selectId, updateFunction) {
                 });
             }
 
-            // 4. BYGG TRENDLINJE
+            // 4. BYGG TRENDLINJE OCH UPPDATERA KPI:ER
             let trendData = [];
             const reg = calculateLinearRegression(allPlotData);
+            
             if (reg && isFinite(reg.k)) {
                 let xMargin = (maxX - minX) * 0.05;
                 trendData = [ { x: minX - xMargin, y: reg.k * (minX - xMargin) + reg.m }, { x: maxX + xMargin, y: reg.k * (maxX + xMargin) + reg.m } ];
                 
-                if (document.getElementById('r2Value1')) document.getElementById('r2Value1').innerText = reg.r2.toFixed(3); 
-                if (document.getElementById('rValue1')) document.getElementById('rValue1').innerText = reg.r.toFixed(3);
-                if (document.getElementById('eqValue1')) document.getElementById('eqValue1').innerText = `y = ${reg.k.toFixed(3)}x ${reg.m >= 0 ? "+" : "-"} ${Math.abs(reg.m).toFixed(2)}`;
+                // 🚀 DYNAMISK FÄRGKODNING 
+                // Om r är över eller lika med 0 -> Grönt. Om r är under 0 -> Rött.
+                let signalColor = reg.r >= 0 ? '#27ae60' : '#e74c3c';
+                
+                let boxR2 = document.getElementById('r2Value1');
+                let boxR = document.getElementById('rValue1');
+                let boxEq = document.getElementById('eqValue1');
+
+                if (boxR2) {
+                    boxR2.innerText = reg.r2.toFixed(3);
+                    boxR2.style.color = signalColor;
+                    boxR2.style.fontWeight = 'bold';
+                }
+                if (boxR) {
+                    boxR.innerText = reg.r.toFixed(3);
+                    boxR.style.color = signalColor;
+                    boxR.style.fontWeight = 'bold';
+                }
+                if (boxEq) {
+                    boxEq.innerText = `y = ${reg.k.toFixed(3)}x ${reg.m >= 0 ? "+" : "-"} ${Math.abs(reg.m).toFixed(2)}`;
+                }
             }
+            
             newDatasets.push({ 
                 type: 'line', label: 'Trendlinje (Normen)', data: trendData,
                 borderColor: '#34495e', borderWidth: 2, borderDash: [5, 5], fill: false, pointRadius: 0, order: 0
@@ -2473,15 +2499,27 @@ function toggleAnimation(selectId, updateFunction) {
                 },
                 plugins: {
                     datalabels: { display: false },
-                    legend: { 
+                   legend: { 
                         display: colorVar !== 'none', 
                         position: 'top',
                         labels: {
                             filter: (item, chartData) => {
-                                if (item.text.startsWith('Spårhistorik') || item.text.startsWith('Nuvarande Position') || item.text.startsWith('📌 Markerad:')) return false;
+                                // 1. Göm de faktiska system-lagren (glödbubbla och spår)
+                                if (item.text.startsWith('Spårhistorik') || item.text.startsWith('Nuvarande Position')) return false;
                                 if (item.text === 'Okänd karaktär' || item.text === '..') return false;
+                                
+                                // 2. NYTT: Göm den tomma gråa ytan när ingen stadsdel är vald!
+                                if (item.text === 'Alla basområden') return false;
+
+                                // 3. LÅT STADSDELSMARKERINGEN SYNAS (Bara när den faktiskt används)
+                                if (item.text.startsWith('📌 Markerad:')) {
+                                    return true;
+                                }
+
+                                // 4. Göm vanliga kategorier (t.ex. SEI-grupper) bara om de är helt tomma
                                 const ds = chartData.datasets[item.datasetIndex];
                                 if (ds && ds.data.length === 0) return false;
+                                
                                 return true;
                             }
                         },
@@ -2489,9 +2527,15 @@ function toggleAnimation(selectId, updateFunction) {
                             const index = legendItem.datasetIndex; 
                             const ci = legend.chart;
                             ci.setDatasetVisibility(index, !ci.isDatasetVisible(index));
+                            
                             let visData = []; 
                             ci.data.datasets.forEach((ds, i) => { 
-                                if (ci.isDatasetVisible(i) && !ds.label.startsWith('Spårhistorik') && !ds.label.startsWith('Nuvarande Position') && !ds.label.startsWith('📌 Markerad:')) {
+                                // Säkerställ att vi inte dubbelräknar markeringar eller spår
+                                if (ci.isDatasetVisible(i) && 
+                                    !ds.label.startsWith('Spårhistorik') && 
+                                    !ds.label.startsWith('Nuvarande Position') && 
+                                    !ds.label.startsWith('📌 Markerad:') && 
+                                    ds.label !== 'Alla basområden') {
                                     visData.push(...ds.data); 
                                 }
                             });
@@ -2942,10 +2986,22 @@ function toggleAnimation(selectId, updateFunction) {
             const ySel = document.getElementById('clusterVisY');
             xSel.innerHTML = ''; ySel.innerHTML = ''; 
             
+            // 1. Fyll på rullistorna med de variabler som används i klustringen
             clusterTargets.forEach(t => { 
                 xSel.add(new Option(t, t)); 
                 ySel.add(new Option(t, t)); 
             });
+
+            // 2. 🚀 LÄGG TILL SEI MEDEL LÄNGST NER I VISUALISERINGEN (Flik 6)
+            if (validVariables.includes('SEI medel (2015-2024)')) {
+                xSel.add(new Option('SEI medel (2015-2024)', 'SEI medel (2015-2024)'));
+                ySel.add(new Option('SEI medel (2015-2024)', 'SEI medel (2015-2024)'));
+            } else if (validVariables.includes('SEIsnitt medel')) {
+                xSel.add(new Option('SEI medel (2015-2024)', 'SEIsnitt medel'));
+                ySel.add(new Option('SEI medel (2015-2024)', 'SEIsnitt medel'));
+            }
+
+            // Välj det andra alternativet för Y som standard (så att X och Y inte visar samma sak direkt)
             if(ySel.options.length > 1) ySel.selectedIndex = 1;
         }
 
@@ -3475,6 +3531,15 @@ function toggleAnimation(selectId, updateFunction) {
                     outcomeSelect.add(new Option(v, v));
                 }
             });
+            
+            // NYTT: Hantera aliaset korrekt. Texten är parameter 1, Värdet som skickas är parameter 2.
+            if (validVariables.includes('SEI medel (2015-2024)')) {
+                outcomeSelect.add(new Option('SEI medel (2015-2024)', 'SEI medel (2015-2024)'));
+            } else if (validVariables.includes('SEIsnitt medel')) {
+                // Fallback om den heter originalnamnet i datan
+                outcomeSelect.add(new Option('SEI medel (2015-2024)', 'SEIsnitt medel'));
+            }
+
             if(validVariables.includes('Index: Samlat SEI (16 indikatorer)')) {
                 outcomeSelect.value = 'Index: Samlat SEI (16 indikatorer)';
             }
@@ -3490,11 +3555,18 @@ function toggleAnimation(selectId, updateFunction) {
             document.getElementById('simInitMsg').style.display = 'none';
             document.getElementById('simulationContent').style.display = 'flex';
             document.getElementById('simErrorBox').style.display = 'block';
+            
+            // 🚀 LÖSNING PÅ ZOMBIEWIDGETEN: Göm alltid förra analysen innan vi räknar!
+            const analysisWidget = document.getElementById('simAnalysisWidget');
+            if (analysisWidget) analysisWidget.style.display = 'none';
+
+            // Dynamisk befolkningsgräns! 50 invånare för Ojämlikhet, annars 25.
+            let minPop = outcomeVar.toLowerCase().includes('strukturell ojämlikhet') ? 50 : 25;
 
             let cityRows = rawData.filter(row => {
                 if (!isYearMatch(row.tid, selectedYear)) return false;
                 if (row.basområde === 'Hela kommunen') return false;
-                if (row.Inkluderad != "1" || parseFloat(row['Folkmängd']) < 25) return false;
+                if (row.Inkluderad != "1" || parseFloat(row['Folkmängd']) < minPop) return false;
                 if (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde') return false;
                 if (isNaN(parseFloat(row[outcomeVar]))) return false;
                 return true;
@@ -3597,9 +3669,39 @@ function toggleAnimation(selectId, updateFunction) {
 
             let areaRow = cityRows.find(r => r.basområde === area);
             if (!areaRow) {
-                document.getElementById('simErrorBox').innerHTML = `<strong>⚠️ Ett fel uppstod: Data saknas för ${area}</strong><br><br>Området saknar registrerat värde för basvariabeln detta år.`;
-                document.getElementById('simErrorBox').style.borderColor = "#c0392b";
-                document.getElementById('simErrorBox').style.backgroundColor = "#fdedec";
+                // Kolla om felet berodde på 50-gränsen
+                let rawPopCheck = rawData.find(r => r.basområde === area && isYearMatch(r.tid, selectedYear));
+                let rawPop = rawPopCheck ? parseFloat(rawPopCheck['Folkmängd']) : 0;
+                
+                const analysisWidget = document.getElementById('simAnalysisWidget');
+                const analysisTitle = document.getElementById('simAnalysisTitle');
+                const analysisText = document.getElementById('simAnalysisText');
+
+                if (minPop === 50 && rawPop >= 25 && rawPop < 50) {
+                    // 🚀 ANVÄND ANALYS-WIDGETEN FÖR ATT VISA POPULATIONS-VARNINGEN TYDLIGT
+                    if (analysisWidget && analysisTitle && analysisText) {
+                        analysisWidget.style.display = 'block';
+                        analysisWidget.style.borderLeftColor = '#f39c12'; // Orange varning
+                        analysisWidget.style.backgroundColor = '#fef9e7'; // Ljusgul bakgrund
+                        analysisTitle.innerHTML = '⚠️ För litet befolkningsunderlag för detta index';
+                        analysisTitle.style.color = '#d68910';
+                        analysisText.innerHTML = `För att mäta <i>Strukturell ojämlikhet</i> med statistisk signifikans krävs minst 50 invånare. Just detta år har <b>${area}</b> endast ${rawPop} invånare.<br><br>Ett så litet underlag gör att enskilda individer får orimligt stor procentuell påverkan på jämställdhetsindexet, vilket ger missvisande utslag. <b>Prova att byta utfallsvariabel eller välj ett annat år!</b>`;
+                    }
+                } else {
+                    // STANDARD-FEL (Saknar datavärden helt)
+                    if (analysisWidget && analysisTitle && analysisText) {
+                        analysisWidget.style.display = 'block';
+                        analysisWidget.style.borderLeftColor = '#c0392b'; 
+                        analysisWidget.style.backgroundColor = '#fdedec'; 
+                        analysisTitle.innerHTML = `⚠️ Data saknas för ${area}`;
+                        analysisTitle.style.color = '#c0392b';
+                        analysisText.innerHTML = `Området saknar registrerat värde ("..") för den valda utfallsvariabeln det här året, varför simuleringen avbryts.`;
+                    }
+                }
+                
+                // Töm spakarna och ta bort diagrammet så att varningen är det enda man ser
+                document.getElementById('slidersContainer8').innerHTML = '';
+                if(chartInstance8) chartInstance8.destroy();
                 return;
             }
             
@@ -3812,46 +3914,134 @@ function toggleAnimation(selectId, updateFunction) {
             }); // <-- HÄR SLUTAR CHART.JS
 
             // ==========================================
-            // 🚀 DYNAMISK ANALYS-WIDGET FÖR FLIK 8 (INUTI FUNKTIONEN!)
+            // 🚀 DYNAMISK ANALYS-WIDGET FÖR FLIK 8 (V2.1 - Smarta Index)
             // ==========================================
             const analysisWidget = document.getElementById('simAnalysisWidget');
             const analysisTitle = document.getElementById('simAnalysisTitle');
             const analysisText = document.getElementById('simAnalysisText');
 
             if (analysisWidget && analysisTitle && analysisText && currentSimArea) {
-                // Gör rutan synlig
                 analysisWidget.style.display = 'block';
 
-                // Räkna ut skillnaden (Verklighet minus Gissning)
-                let diff = currentSimArea.originalY - predictedY;
-                
-                // TOLERANSNIVÅ: Hur mycket får det diffa innan vi kallar det en avvikelse?
+                let y = currentSimArea.originalY;
+                let pred = predictedY;
+                let diff = y - pred;
                 let tolerance = 0.25; 
+                let outcome = currentSimModel.outcome;
 
-                if (diff > tolerance) {
-                    // VERKLIGHETEN ÄR SÄMRE (Högre stapel = mer utsatthet)
-                    analysisWidget.style.borderLeftColor = '#e74c3c'; // Röd larm-kant
-                    analysisWidget.style.backgroundColor = '#fdeaea'; // Ljusröd bakgrund
-                    analysisTitle.innerHTML = '📈 Dolda utmaningar upptäckta';
-                    analysisTitle.style.color = '#c0392b';
-                    analysisText.innerHTML = `<b>${currentSimArea.name}</b> har en märkbart högre utsatthet (<b>${currentSimArea.originalY.toFixed(2)}</b>) än vad statistiken antyder att den borde ha (<b>${predictedY.toFixed(2)}</b>). Detta indikerar att området har strukturella problem eller dolda utmaningar utöver vad dess demografiska grundförutsättningar kan förklara.`;
+                // --- 1. Identifiera Index-typ ---
+                let isSEI = outcome.toLowerCase().includes('sei');
+                let isInequality = outcome.toLowerCase().includes('strukturell ojämlikhet');
+                // Standard är: högt värde = utsatthet/dåligt
+
+                // --- 2. Beräkna extremer (Topp 10% och Botten 10%) ---
+                // Hämta alla giltiga värden i kommunen för det valda året för att hitta extremerna
+                let selectedYear = document.getElementById('yearSelect8').value;
+                let allYValues = rawData.filter(r => 
+                    isYearMatch(r.tid, selectedYear) && 
+                    r.basområde !== 'Hela kommunen' && 
+                    r.Inkluderad == "1" && 
+                    parseFloat(r['Folkmängd']) >= 25 &&
+                    r.Områdestyp !== 'Studentområde' && 
+                    r.Områdestyp !== 'Verksamhetsområde' &&
+                    !isNaN(parseFloat(r[outcome]))
+                ).map(r => parseFloat(r[outcome])).sort((a, b) => a - b);
                 
-                } else if (diff < -tolerance) {
-                    // VERKLIGHETEN ÄR BÄTTRE (X-Faktorn!)
-                    analysisWidget.style.borderLeftColor = '#27ae60'; // Grön succé-kant
-                    analysisWidget.style.backgroundColor = '#eafaf1'; // Ljusgrön bakgrund
-                    analysisTitle.innerHTML = '📉 X-Faktorn! (Lokal skyddsfaktor)';
-                    analysisTitle.style.color = '#1e8449';
-                    analysisText.innerHTML = `<b>${currentSimArea.name}</b> överpresterar! Verkligheten (<b>${currentSimArea.originalY.toFixed(2)}</b>) är betydligt starkare (lägre värde) än modellens gissning (<b>${predictedY.toFixed(2)}</b>). Det finns en "X-faktor" här – t.ex. extremt stark lokalsammanhållning eller en engagerad skola – som får området att slå oddsen.`;
+                let rankIndex = allYValues.indexOf(y);
+                let totalAreas = allYValues.length;
+                let limit = Math.max(3, Math.floor(totalAreas * 0.10)); // ca Top/bottom 10%
                 
+                let isBottomExtreme = rankIndex < limit;
+                let isTopExtreme = rankIndex >= (totalAreas - limit);
+                
+                let extremeBadge = "";
+
+                // --- 3. Sätt upp logiken per Indextyp ---
+                let status = "normal";
+                let t_title = "", t_text = "", t_border = "", t_bg = "", t_color = "";
+
+                if (isInequality) {
+                    // OJÄMLIKHET: Nära noll = Bra. Långt ifrån noll = Dåligt.
+                    if (Math.abs(diff) > tolerance) status = "avvikelse"; 
+
+                    let absY = Math.abs(y);
+                    let allAbsY = allYValues.map(v => Math.abs(v)).sort((a, b) => a - b);
+                    let absRank = allAbsY.indexOf(absY);
+                    
+                    if (absRank < limit) {
+                        extremeBadge = "<br><br>🌟 <b>Extremt Jämställt:</b> Området tillhör de absolut mest strukturellt balanserade i hela kommunen.";
+                    } else if (absRank >= (totalAreas - limit)) {
+                        let riktning = y > 0 ? "kraftig övervikt åt det positiva hållet (oftast mansdominans)" : "kraftig övervikt åt det negativa hållet (oftast kvinnodominans)";
+                        extremeBadge = `<br><br>⚠️ <b>Extrem Obalans:</b> Området tillhör de med allra högst strukturell ojämlikhet i kommunen. Det extrema värdet (${y.toFixed(2)}) indikerar ${riktning}.`;
+                    }
+
+                    if (status === "avvikelse") {
+                        t_border = '#e67e22'; t_bg = '#fdf2e9'; t_color = '#d35400';
+                        t_title = '🔍 Överraskande Ojämlikhetsstruktur';
+                        t_text = `<b>${currentSimArea.name}</b> avviker markant från stadens normala mönster. Området har ett värde på <b>${y.toFixed(2)}</b>, medan statistiken pekade på <b>${pred.toFixed(2)}</b>. Ett värde nära noll är det optimala (balans). Ett högt positivt eller negativt värde innebär strukturell snedfördelning. Här bryter området mot mallen, vilket kräver djupare analys.`;
+                    } else {
+                        t_border = '#3498db'; t_bg = '#ebf5fb'; t_color = '#2980b9';
+                        t_title = '⚖️ Följer förväntat mönster för ojämlikhet';
+                        t_text = `<b>${currentSimArea.name}</b> ligger helt i linje med den statistiska mallen för ojämlikhet (<b>${y.toFixed(2)}</b> vs gissade <b>${pred.toFixed(2)}</b>). Kom ihåg: Målet är alltid noll (0). Ett stort avstånd från noll – även om det var förväntat av modellen – innebär fortfarande strukturella utmaningar.`;
+                    }
+
+                } else if (isSEI) {
+                    // SEI: Högt värde = BRA
+                    if (isTopExtreme) {
+                        extremeBadge = "<br><br>🏆 <b>Toppresterande:</b> Området tillhör de absolut starkaste socioekonomiska områdena i kommunen.";
+                    } else if (isBottomExtreme) {
+                        extremeBadge = "<br><br>⚠️ <b>Stort Stödbehov:</b> Området tillhör de med lägst samlat SEI i kommunen och har mycket stora utmaningar.";
+                    }
+
+                    if (diff > tolerance) {
+                        // Högre än väntat = BRA (X-faktor)
+                        t_border = '#27ae60'; t_bg = '#eafaf1'; t_color = '#1e8449';
+                        t_title = '📈 X-Faktorn! (Överpresterar)';
+                        t_text = `<b>${currentSimArea.name}</b> slår oddsen! SEI-värdet (<b>${y.toFixed(2)}</b>) är avsevärt högre (starkare) än modellens gissning (<b>${pred.toFixed(2)}</b>). Det indikerar en lokal "X-faktor" – t.ex. ett extremt starkt civilsamhälle eller lokalsamhälle – som lyfter området mer än vad demografin förutspår.`;
+                    } else if (diff < -tolerance) {
+                        // Lägre än väntat = DÅLIGT (Dolda utmaningar)
+                        t_border = '#e74c3c'; t_bg = '#fdeaea'; t_color = '#c0392b';
+                        t_title = '📉 Dolda utmaningar upptäckta';
+                        t_text = `<b>${currentSimArea.name}</b> underpresterar. SEI-värdet (<b>${y.toFixed(2)}</b>) är lägre (sämre) än vad det borde vara utifrån dess 5 starkaste drivkrafter (<b>${pred.toFixed(2)}</b>). Något i den lokala strukturen agerar som en bromskloss.`;
+                    } else {
+                        // Följer mallen
+                        t_border = '#3498db'; t_bg = '#ebf5fb'; t_color = '#2980b9';
+                        t_title = '⚖️ Följer den statistiska mallen';
+                        t_text = `<b>${currentSimArea.name}</b> fungerar exakt enligt Linköpings-mallen. Områdets samlade socioekonomiska index (<b>${y.toFixed(2)}</b>) matchar förväntningarna (<b>${pred.toFixed(2)}</b>) väl.`;
+                    }
+
                 } else {
-                    // FÖLJER NORMEN
-                    analysisWidget.style.borderLeftColor = '#3498db'; // Blå info-kant
-                    analysisWidget.style.backgroundColor = '#ebf5fb'; // Ljusblå bakgrund
-                    analysisTitle.innerHTML = '⚖️ Följer den statistiska mallen';
-                    analysisTitle.style.color = '#2980b9';
-                    analysisText.innerHTML = `<b>${currentSimArea.name}</b> fungerar väl i enlighet med "Linköpings-mallen". Utfallet (<b>${currentSimArea.originalY.toFixed(2)}</b>) matchar vad vi kan förvänta oss (<b>${predictedY.toFixed(2)}</b>) utifrån områdets fem tyngsta demografiska och strukturella drivkrafter.`;
+                    // STANDARD (Utsatthet): Högt värde = DÅLIGT
+                    if (isTopExtreme) {
+                        extremeBadge = "<br><br>⚠️ <b>Extremt Utsatt:</b> Området tillhör de allra mest utsatta i hela kommunen för detta index.";
+                    } else if (isBottomExtreme) {
+                        extremeBadge = "<br><br>🏆 <b>Mycket Gynnsamt:</b> Området har extremt låg utsatthet och tillhör kommunens allra starkaste.";
+                    }
+
+                    if (diff > tolerance) {
+                        // Högre än väntat = DÅLIGT (Dolda utmaningar)
+                        t_border = '#e74c3c'; t_bg = '#fdeaea'; t_color = '#c0392b';
+                        t_title = '📈 Dolda utmaningar upptäckta';
+                        t_text = `<b>${currentSimArea.name}</b> har en märkbart högre utsatthet (<b>${y.toFixed(2)}</b>) än vad statistiken antyder att den borde ha (<b>${pred.toFixed(2)}</b>). Detta indikerar att området har strukturella problem utöver vad de fem tyngsta demografiska variablerna kan förklara.`;
+                    } else if (diff < -tolerance) {
+                        // Lägre än väntat = BRA (X-faktor)
+                        t_border = '#27ae60'; t_bg = '#eafaf1'; t_color = '#1e8449';
+                        t_title = '📉 X-Faktorn! (Lokal skyddsfaktor)';
+                        t_text = `<b>${currentSimArea.name}</b> överpresterar! Utsattheten (<b>${y.toFixed(2)}</b>) är betydligt lägre (bättre) än modellens gissning (<b>${pred.toFixed(2)}</b>). Det finns en "X-faktor" här som får området att slå oddsen.`;
+                    } else {
+                        // Följer mallen
+                        t_border = '#3498db'; t_bg = '#ebf5fb'; t_color = '#2980b9';
+                        t_title = '⚖️ Följer den statistiska mallen';
+                        t_text = `<b>${currentSimArea.name}</b> fungerar helt i enlighet med "Linköpings-mallen". Utfallet (<b>${y.toFixed(2)}</b>) matchar modellens förväntningar väl (<b>${pred.toFixed(2)}</b>).`;
+                    }
                 }
+
+                // --- 4. Applicera stylingen och texten ---
+                analysisWidget.style.borderLeftColor = t_border;
+                analysisWidget.style.backgroundColor = t_bg;
+                analysisTitle.innerHTML = t_title;
+                analysisTitle.style.color = t_color;
+                analysisText.innerHTML = t_text + extremeBadge;
             }
         }
 
@@ -4180,6 +4370,21 @@ Chart.register(yearWatermarkPlugin); // Aktivera pluginen
 
                     // Special-rullistor (Flik 2 och 4 som BARA ska visa Index)
                     populateDropdownWithGroups('outcomeVar4', validVariables, v => v.startsWith('Index:'));
+                    // 2. Fånga upp rullistan
+                    const ySelect4 = document.getElementById('outcomeVar4');
+                    
+                    // 3. 🚀 Leta upp OptGroup-mappen och tvinga in SEI medel inuti den!
+                    if (ySelect4) {
+                        // Leta upp mappen (optgroup) som funktionen skapade
+                        let optGroup = ySelect4.querySelector('optgroup'); 
+                        let targetContainer = optGroup ? optGroup : ySelect4; // Fallback
+                        
+                        if (validVariables.includes('SEI medel (2015-2024)')) {
+                            targetContainer.appendChild(new Option('SEI medel (2015-2024)', 'SEI medel (2015-2024)'));
+                        } else if (validVariables.includes('SEIsnitt medel')) {
+                            targetContainer.appendChild(new Option('SEI medel (2015-2024)', 'SEIsnitt medel'));
+                        }
+                    }
 
                     const years = [...new Set(rawData.map(row => row.tid).filter(y => y !== undefined))].sort().reverse();
                     globalLatestYear = years.length > 0 ? parseInt(years[0]) : null;

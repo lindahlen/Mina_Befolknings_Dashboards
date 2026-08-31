@@ -15,6 +15,7 @@ Inflyttningsandel eget län av inrikes inflyttning;Inflyttningsandel (Beräknad 
 Sysselsättning 15-74 år, antal;Sysselsatta;0.25;0.3;..;..;Hög;Volym och kapacitet;Sysselsatta i åldern 15-74 år med arbetsplats i kommunen eller kommungruppen (Dagbefolkningen).
 KIBS 15-74 år, antal;KIBS;0.05;0.1;..;..;Hög;Volym och kapacitet;Sysselsatta inom Kunskapsintensiva tjänstenäringar (KIBS) i åldern 15-74 år. Utgår från SNI-bokstav J och SNI-bokstav M. De SNI-koder som ofta ingår i KIBS är 62-63 och 69-74.
 KIBS 15-74 år, andel av sysselsatta (%);KIBS (beräkning Sysselsatta);..;..;..;0.08;Hög;Struktur och kvalitet;Andel (%) sysselsatta inom KIBS av samtliga sysselsatta i kommunen eller kommungruppen.
+Andel (%) inom privat sektor;Andel_Privat;..;X;..;X;Hög;Balans och jämvikt;Andel (%) sysselsatta inom privat sektor av samtliga sysselsatta i kommunen eller kommungruppen.
 Inpendling över kommungräns 15-74 år, antal;Inpendling;0.1;0.2;..;..;Hög;Volym och kapacitet;Inpendling över kommungräns av personer i åldern 15-74 år.
 Utpendling över kommungräns 15-74 år, antal;Utpendling;X;X;..;..;Låg;Volym och kapacitet;Utpendling över kommungräns av personer i åldern 15-74 år. [inverterat värde]
 Inpendling över kommungräns 15-74 år, andel av dagbef (%);Inpendling (beräkning Sysselsatta);..;..;..;0.05;Hög;Balans och jämvikt;Andel inpendlande i åldern 15-74 år av samtliga sysselsatta i dagbefolkningen i respektive kommun eller kommungrupp.
@@ -26,7 +27,7 @@ Förvärvsarbetande nattbefolkning;Nattbefolkning;X;X;..;..;Hög;Volym och kapac
 Dagbefolkningens andel av nattbefolkningen;Dagbefolkningsandel;X;X;..;X;Hög;Balans och jämvikt;Dagbefolkningens andel (%) av nattbefolkningen
 Nyföretagande per 1000 invånare;Nyföretagande;X;X;..;X;Hög;Tillväxt och dynamik;Nyföretagande per 1000 invånare
 Nettoinkomst 20-64 år, median (tkr);Nettoinkomst_median;0.1;0.1;..;0.05;Hög;Ekonomi och välfärd;Nettoinkomst 20-64 år, median (tkr)
-Nettoinkomst, summerad;Nettoinkomst_belopp_summa;Z;..;..;..;Hög;Ekonomi och välfärd;
+Nettoinkomst, summerad;Nettoinkomst_belopp_summa;Z;..;..;..;Hög;Ekonomi och välfärd;Summerad nettoinkomst
 Förvärvsinkomst 20-64 år, median (tkr);Förvärvsinkomst_median;..;..;..;0.05;Hög;Ekonomi och välfärd;Förvärvsinkomst 20-64 år, median (tkr)
 BRP per capita (tkr);BRP;0.1;0.15;..;0.1;Hög;Ekonomi och välfärd;Bruttoregionprodukten (BRP) per capita (tkr)
 Lång eftergymnasial utb 20-64 år, antal;Lång_eftergymnasial_antal;..;..;0.05;..;Hög;Volym och kapacitet;Lång eftergymnasial utbildning för personer i åldern 20-64 år. Avser antal med minst tre års högskole-/universitetsutbildning inklusive forskarutbildning.
@@ -44,5 +45,9 @@ Folkmängd 20-64 år, antal;Hela_vuxen_bef;..;..;X;..;Hög;Volym och kapacitet;A
 Försörjningskvot;Försörjningskvot;X;X;X;X;Låg;Ekonomi och välfärd;Försörjngskvot, personer i icke-yrkesverksamm ålder som andel av personer i yrkesverksam ålder.
 Födda barn;Födda_barn;..;..;X;..;Hög;Volym och kapacitet;Antal födda barn
 Födda barn per 100 000 vuxna invånare;Födda_1000_vuxna;..;..;X;X;Hög;Ekonomi och välfärd;Antal födda barn per 100 000 vuxna invånare (åldern 20-64 år)
+Medelålder;Medelålder;..;..;X;X;Låg;Struktur och kvalitet;Genomsnittlig ålder för kommunens invånare.
 Befolkningsförändring per år (%);Folkmängd (beräknad förändring);..;..;X;..;Hög;Tillväxt och dynamik;Visar den procentuella förändringen av folkmängden per år
+Skatteunderlag;Skatteunderlag;X;X;X;X;Hög;Ekonomi och välfärd;Totalt skatteunderlag, miljoner kronor, (tillbakaskrivet två år).
+Skattekraft;Skattekraft;X;X;..;X;Hög;Ekonomi och välfärd;Skattekraft, skattekronor per invånare, (tillbakaskrivet två år).
+Skattesats;Skattesats;X;X;..;X;Låg;Ekonomi och välfärd;Utdebitering, kronor per skattekrona
 Totalt;Totalt;1;1;1;1.0000000000000002;Hög;;

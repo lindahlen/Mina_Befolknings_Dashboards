@@ -1,4 +1,628 @@
 ﻿Kommun;År;Indikator;Värde
+Fem till tolv;2000;Andel_Privat;66.32902769521809
+Fem till tolv;2001;Andel_Privat;65.96783310210164
+Fem till tolv;2002;Andel_Privat;65.64285161066141
+Fem till tolv;2003;Andel_Privat;64.96131151426903
+Fem till tolv;2004;Andel_Privat;65.36722719022717
+Fem till tolv;2005;Andel_Privat;65.62236005857702
+Fem till tolv;2006;Andel_Privat;65.84758056263932
+Fem till tolv;2007;Andel_Privat;66.70485877687818
+Fem till tolv;2008;Andel_Privat;67.59158168598573
+Fem till tolv;2009;Andel_Privat;67.24387067617309
+Fem till tolv;2010;Andel_Privat;67.58659570456058
+Fem till tolv;2011;Andel_Privat;68.25808198876449
+Fem till tolv;2012;Andel_Privat;68.27847514938163
+Fem till tolv;2013;Andel_Privat;68.04098645362974
+Fem till tolv;2014;Andel_Privat;67.8273063665397
+Fem till tolv;2015;Andel_Privat;67.64775516815989
+Fem till tolv;2016;Andel_Privat;67.31758827888787
+Fem till tolv;2017;Andel_Privat;67.40941281569552
+Fem till tolv;2018;Andel_Privat;67.45838002241075
+Fem till tolv;2019;Andel_Privat;67.61003177713506
+Fem till tolv;2020;Andel_Privat;66.99699984622985
+Fem till tolv;2021;Andel_Privat;67.37056514450416
+Fem till tolv;2022;Andel_Privat;67.19345719652587
+Fem till tolv;2023;Andel_Privat;66.7613933432981
+Fem till tolv;2024;Andel_Privat;66.58822152333487
+Fem till tolv;2025;Andel_Privat;65.41848014482147
+Fyra stora;2000;Andel_Privat;75.90320736339054
+Fyra stora;2001;Andel_Privat;76.22654634882376
+Fyra stora;2002;Andel_Privat;76.29503629269483
+Fyra stora;2003;Andel_Privat;75.67150382935075
+Fyra stora;2004;Andel_Privat;75.7511368024525
+Fyra stora;2005;Andel_Privat;75.56724171226888
+Fyra stora;2006;Andel_Privat;75.81021149980047
+Fyra stora;2007;Andel_Privat;76.66338655116299
+Fyra stora;2008;Andel_Privat;77.56103248488763
+Fyra stora;2009;Andel_Privat;77.56435508449519
+Fyra stora;2010;Andel_Privat;78.08632903594844
+Fyra stora;2011;Andel_Privat;78.76913453835049
+Fyra stora;2012;Andel_Privat;78.77915046035405
+Fyra stora;2013;Andel_Privat;78.96352359583057
+Fyra stora;2014;Andel_Privat;79.03473424722449
+Fyra stora;2015;Andel_Privat;78.9867068327306
+Fyra stora;2016;Andel_Privat;78.86006769256319
+Fyra stora;2017;Andel_Privat;78.80853417004025
+Fyra stora;2018;Andel_Privat;78.63815569959169
+Fyra stora;2019;Andel_Privat;78.94521357511822
+Fyra stora;2020;Andel_Privat;78.35291635621317
+Fyra stora;2021;Andel_Privat;78.75632779741899
+Fyra stora;2022;Andel_Privat;78.17355690285
+Fyra stora;2023;Andel_Privat;77.96814101256922
+Fyra stora;2024;Andel_Privat;77.68377657908853
+Fyra stora;2025;Andel_Privat;76.76345227779112
+Göteborg;2000;Andel_Privat;73.79307220044856
+Göteborg;2001;Andel_Privat;74.54671054097618
+Göteborg;2002;Andel_Privat;74.6530332723789
+Göteborg;2003;Andel_Privat;74.42086108354906
+Göteborg;2004;Andel_Privat;74.85556661777878
+Göteborg;2005;Andel_Privat;75.13679613054813
+Göteborg;2006;Andel_Privat;75.12345298513084
+Göteborg;2007;Andel_Privat;75.65414226579304
+Göteborg;2008;Andel_Privat;75.96313587980748
+Göteborg;2009;Andel_Privat;75.3994969486772
+Göteborg;2010;Andel_Privat;75.71006959446434
+Göteborg;2011;Andel_Privat;76.15977003680577
+Göteborg;2012;Andel_Privat;76.2015106333137
+Göteborg;2013;Andel_Privat;76.1268223531579
+Göteborg;2014;Andel_Privat;75.91659340523272
+Göteborg;2015;Andel_Privat;75.94993643102165
+Göteborg;2016;Andel_Privat;75.67615441351553
+Göteborg;2017;Andel_Privat;75.69178782724659
+Göteborg;2018;Andel_Privat;75.94618928204505
+Göteborg;2019;Andel_Privat;76.1038060033171
+Göteborg;2020;Andel_Privat;75.41766376356726
+Göteborg;2021;Andel_Privat;75.71671878190044
+Göteborg;2022;Andel_Privat;74.96394243151637
+Göteborg;2023;Andel_Privat;74.75228244101059
+Göteborg;2024;Andel_Privat;74.89650912914537
+Göteborg;2025;Andel_Privat;73.97271092225466
+Helsingborg;2000;Andel_Privat;78.70105233015964
+Helsingborg;2001;Andel_Privat;78.97302683083055
+Helsingborg;2002;Andel_Privat;78.40566658584738
+Helsingborg;2003;Andel_Privat;73.57179123553408
+Helsingborg;2004;Andel_Privat;74.09740855211766
+Helsingborg;2005;Andel_Privat;73.85555276592184
+Helsingborg;2006;Andel_Privat;74.04490210952758
+Helsingborg;2007;Andel_Privat;74.34454593634068
+Helsingborg;2008;Andel_Privat;76.8683106966264
+Helsingborg;2009;Andel_Privat;76.968992998419
+Helsingborg;2010;Andel_Privat;77.48922532876561
+Helsingborg;2011;Andel_Privat;78.26649617156326
+Helsingborg;2012;Andel_Privat;78.34288046188958
+Helsingborg;2013;Andel_Privat;77.87423184774178
+Helsingborg;2014;Andel_Privat;77.73720478237823
+Helsingborg;2015;Andel_Privat;76.7510615788177
+Helsingborg;2016;Andel_Privat;76.12340143535947
+Helsingborg;2017;Andel_Privat;76.7075500429137
+Helsingborg;2018;Andel_Privat;77.0154606961389
+Helsingborg;2019;Andel_Privat;77.36165902548247
+Helsingborg;2020;Andel_Privat;76.52398102249923
+Helsingborg;2021;Andel_Privat;77.1027063634706
+Helsingborg;2022;Andel_Privat;76.91500524658971
+Helsingborg;2023;Andel_Privat;75.90665607299383
+Helsingborg;2024;Andel_Privat;75.21691138720608
+Helsingborg;2025;Andel_Privat;73.7095115681234
+Jönköping;2000;Andel_Privat;66.14657292279985
+Jönköping;2001;Andel_Privat;65.49933811267557
+Jönköping;2002;Andel_Privat;65.65793435712135
+Jönköping;2003;Andel_Privat;65.66878338877129
+Jönköping;2004;Andel_Privat;66.16905585763718
+Jönköping;2005;Andel_Privat;66.30140118234968
+Jönköping;2006;Andel_Privat;66.48074875657466
+Jönköping;2007;Andel_Privat;66.98527035138754
+Jönköping;2008;Andel_Privat;67.13419780557047
+Jönköping;2009;Andel_Privat;66.78884361874499
+Jönköping;2010;Andel_Privat;66.97001410565592
+Jönköping;2011;Andel_Privat;67.7363540911847
+Jönköping;2012;Andel_Privat;67.87711951269512
+Jönköping;2013;Andel_Privat;67.8104813959606
+Jönköping;2014;Andel_Privat;67.8824633600462
+Jönköping;2015;Andel_Privat;67.93299728137744
+Jönköping;2016;Andel_Privat;67.74070074230018
+Jönköping;2017;Andel_Privat;67.93569659811698
+Jönköping;2018;Andel_Privat;68.2128045619492
+Jönköping;2019;Andel_Privat;68.68411974395339
+Jönköping;2020;Andel_Privat;68.1413869783317
+Jönköping;2021;Andel_Privat;68.64621234058089
+Jönköping;2022;Andel_Privat;67.58682533142677
+Jönköping;2023;Andel_Privat;66.71042236402309
+Jönköping;2024;Andel_Privat;66.42355351741634
+Jönköping;2025;Andel_Privat;64.35777634099033
+Linköping;2000;Andel_Privat;68.07498262892359
+Linköping;2001;Andel_Privat;67.39269985817721
+Linköping;2002;Andel_Privat;66.33566494837834
+Linköping;2003;Andel_Privat;66.19237083820202
+Linköping;2004;Andel_Privat;66.71728489709264
+Linköping;2005;Andel_Privat;67.20715148301964
+Linköping;2006;Andel_Privat;66.8180642193923
+Linköping;2007;Andel_Privat;67.96111056552421
+Linköping;2008;Andel_Privat;68.94961950785981
+Linköping;2009;Andel_Privat;68.3706339940075
+Linköping;2010;Andel_Privat;68.44030138041028
+Linköping;2011;Andel_Privat;69.25922936174793
+Linköping;2012;Andel_Privat;69.49110019542599
+Linköping;2013;Andel_Privat;69.49293109927561
+Linköping;2014;Andel_Privat;69.49182568203675
+Linköping;2015;Andel_Privat;69.26995746364626
+Linköping;2016;Andel_Privat;68.99883150831798
+Linköping;2017;Andel_Privat;68.54686095472394
+Linköping;2018;Andel_Privat;68.18771275733506
+Linköping;2019;Andel_Privat;68.36150672168242
+Linköping;2020;Andel_Privat;67.71458256527131
+Linköping;2021;Andel_Privat;67.69588676030494
+Linköping;2022;Andel_Privat;67.47941567065074
+Linköping;2023;Andel_Privat;67.79563599882957
+Linköping;2024;Andel_Privat;67.83289652341406
+Linköping;2025;Andel_Privat;67.54393279272894
+Lkpg-Nkpg;2000;Andel_Privat;68.43279558744246
+Lkpg-Nkpg;2001;Andel_Privat;67.86748334162513
+Lkpg-Nkpg;2002;Andel_Privat;67.09414048088799
+Lkpg-Nkpg;2003;Andel_Privat;66.78300244386867
+Lkpg-Nkpg;2004;Andel_Privat;67.16446952376319
+Lkpg-Nkpg;2005;Andel_Privat;67.73714770354906
+Lkpg-Nkpg;2006;Andel_Privat;67.67692026364121
+Lkpg-Nkpg;2007;Andel_Privat;68.38598853269573
+Lkpg-Nkpg;2008;Andel_Privat;69.11260963733275
+Lkpg-Nkpg;2009;Andel_Privat;69.02028349909938
+Lkpg-Nkpg;2010;Andel_Privat;69.17088983244304
+Lkpg-Nkpg;2011;Andel_Privat;69.6825774945657
+Lkpg-Nkpg;2012;Andel_Privat;69.77745819545231
+Lkpg-Nkpg;2013;Andel_Privat;69.58949973662753
+Lkpg-Nkpg;2014;Andel_Privat;69.22271600717887
+Lkpg-Nkpg;2015;Andel_Privat;68.73640085922239
+Lkpg-Nkpg;2016;Andel_Privat;68.20334083095233
+Lkpg-Nkpg;2017;Andel_Privat;67.75813141235538
+Lkpg-Nkpg;2018;Andel_Privat;67.83183658637874
+Lkpg-Nkpg;2019;Andel_Privat;68.1577409564742
+Lkpg-Nkpg;2020;Andel_Privat;67.58000126734682
+Lkpg-Nkpg;2021;Andel_Privat;67.77203675628847
+Lkpg-Nkpg;2022;Andel_Privat;68.11845427201237
+Lkpg-Nkpg;2023;Andel_Privat;68.10546536051751
+Lkpg-Nkpg;2024;Andel_Privat;68.25393961265488
+Lkpg-Nkpg;2025;Andel_Privat;67.42287567204703
+Lund;2000;Andel_Privat;57.29070545875626
+Lund;2001;Andel_Privat;56.76184054087626
+Lund;2002;Andel_Privat;56.87616136707015
+Lund;2003;Andel_Privat;56.89766331526948
+Lund;2004;Andel_Privat;57.05355176444677
+Lund;2005;Andel_Privat;57.157993878031554
+Lund;2006;Andel_Privat;57.92324258300923
+Lund;2007;Andel_Privat;59.599399408696186
+Lund;2008;Andel_Privat;60.99922245430013
+Lund;2009;Andel_Privat;60.18911945118277
+Lund;2010;Andel_Privat;59.9978837258518
+Lund;2011;Andel_Privat;59.628780728956
+Lund;2012;Andel_Privat;59.28857864250705
+Lund;2013;Andel_Privat;58.82577034095738
+Lund;2014;Andel_Privat;58.82480391732028
+Lund;2015;Andel_Privat;59.156175668619824
+Lund;2016;Andel_Privat;58.50880962612807
+Lund;2017;Andel_Privat;59.239745149974944
+Lund;2018;Andel_Privat;58.54046722763508
+Lund;2019;Andel_Privat;58.98739216987392
+Lund;2020;Andel_Privat;58.64259850045094
+Lund;2021;Andel_Privat;58.88088452607136
+Lund;2022;Andel_Privat;59.17288796531466
+Lund;2023;Andel_Privat;58.64398235664776
+Lund;2024;Andel_Privat;58.563779527559056
+Lund;2025;Andel_Privat;58.47919121751535
+Länet exkl Linköping;2000;Andel_Privat;68.98578349614804
+Länet exkl Linköping;2001;Andel_Privat;68.7112844979835
+Länet exkl Linköping;2002;Andel_Privat;68.35052974170763
+Länet exkl Linköping;2003;Andel_Privat;67.83865439318716
+Länet exkl Linköping;2004;Andel_Privat;68.3790749512399
+Länet exkl Linköping;2005;Andel_Privat;68.69988469629355
+Länet exkl Linköping;2006;Andel_Privat;68.92804951431273
+Länet exkl Linköping;2007;Andel_Privat;69.30625458408154
+Länet exkl Linköping;2008;Andel_Privat;70.00795477625076
+Länet exkl Linköping;2009;Andel_Privat;69.97056195132208
+Länet exkl Linköping;2010;Andel_Privat;70.25538994562886
+Länet exkl Linköping;2011;Andel_Privat;70.805802448432
+Länet exkl Linköping;2012;Andel_Privat;70.69196521449673
+Länet exkl Linköping;2013;Andel_Privat;70.28125025751744
+Länet exkl Linköping;2014;Andel_Privat;69.76632852673892
+Länet exkl Linköping;2015;Andel_Privat;69.32431553619041
+Länet exkl Linköping;2016;Andel_Privat;68.3000936106748
+Länet exkl Linköping;2017;Andel_Privat;67.97052861375332
+Länet exkl Linköping;2018;Andel_Privat;68.28887583840756
+Länet exkl Linköping;2019;Andel_Privat;68.38796792871692
+Länet exkl Linköping;2020;Andel_Privat;68.18539976825029
+Länet exkl Linköping;2021;Andel_Privat;68.7806499875322
+Länet exkl Linköping;2022;Andel_Privat;69.25255528712135
+Länet exkl Linköping;2023;Andel_Privat;68.65282278443381
+Länet exkl Linköping;2024;Andel_Privat;69.04804442657853
+Länet exkl Linköping;2025;Andel_Privat;66.8175899178279
+Länet exkl Norrköping;2000;Andel_Privat;68.55494654756387
+Länet exkl Norrköping;2001;Andel_Privat;68.126547894863
+Länet exkl Norrköping;2002;Andel_Privat;67.4170579029734
+Länet exkl Norrköping;2003;Andel_Privat;67.09738317905274
+Länet exkl Norrköping;2004;Andel_Privat;67.78440100029883
+Länet exkl Norrköping;2005;Andel_Privat;68.03214688508041
+Länet exkl Norrköping;2006;Andel_Privat;67.87765707280592
+Länet exkl Norrköping;2007;Andel_Privat;68.75426336612651
+Länet exkl Norrköping;2008;Andel_Privat;69.73634366239867
+Länet exkl Norrköping;2009;Andel_Privat;69.14542938441683
+Länet exkl Norrköping;2010;Andel_Privat;69.32538346140893
+Länet exkl Norrköping;2011;Andel_Privat;70.21424721523536
+Länet exkl Norrköping;2012;Andel_Privat;70.26895226836116
+Länet exkl Norrköping;2013;Andel_Privat;70.09306939359017
+Länet exkl Norrköping;2014;Andel_Privat;70.00367443100355
+Länet exkl Norrköping;2015;Andel_Privat;69.8621095884578
+Länet exkl Norrköping;2016;Andel_Privat;69.20497386015705
+Länet exkl Norrköping;2017;Andel_Privat;68.85684381904873
+Länet exkl Norrköping;2018;Andel_Privat;68.64664396887159
+Länet exkl Norrköping;2019;Andel_Privat;68.59728863433345
+Länet exkl Norrköping;2020;Andel_Privat;68.26007885199984
+Länet exkl Norrköping;2021;Andel_Privat;68.54899513818475
+Länet exkl Norrköping;2022;Andel_Privat;68.3236964804814
+Länet exkl Norrköping;2023;Andel_Privat;68.19581300173147
+Länet exkl Norrköping;2024;Andel_Privat;68.4226506755731
+Länet exkl Norrköping;2025;Andel_Privat;67.05952793621782
+Malmö;2000;Andel_Privat;72.4173388478852
+Malmö;2001;Andel_Privat;72.41430556484391
+Malmö;2002;Andel_Privat;72.25533679370322
+Malmö;2003;Andel_Privat;71.67559133839781
+Malmö;2004;Andel_Privat;72.00080470304222
+Malmö;2005;Andel_Privat;72.20825224673649
+Malmö;2006;Andel_Privat;72.23117450886977
+Malmö;2007;Andel_Privat;73.07547752318823
+Malmö;2008;Andel_Privat;73.68678748420308
+Malmö;2009;Andel_Privat;73.75026018760366
+Malmö;2010;Andel_Privat;73.62638074148894
+Malmö;2011;Andel_Privat;73.66438983704134
+Malmö;2012;Andel_Privat;73.55433946343038
+Malmö;2013;Andel_Privat;73.52722764681695
+Malmö;2014;Andel_Privat;73.26354642543794
+Malmö;2015;Andel_Privat;72.87595906425878
+Malmö;2016;Andel_Privat;72.8500823723229
+Malmö;2017;Andel_Privat;72.52557847553388
+Malmö;2018;Andel_Privat;72.53744231859028
+Malmö;2019;Andel_Privat;73.21370837374717
+Malmö;2020;Andel_Privat;72.24580054837116
+Malmö;2021;Andel_Privat;72.56755125445144
+Malmö;2022;Andel_Privat;72.41484562042751
+Malmö;2023;Andel_Privat;72.32276956501205
+Malmö;2024;Andel_Privat;71.94812223176945
+Malmö;2025;Andel_Privat;70.77491402441328
+Norrköping;2000;Andel_Privat;68.86853190589187
+Norrköping;2001;Andel_Privat;68.43921907021895
+Norrköping;2002;Andel_Privat;68.01821837137723
+Norrköping;2003;Andel_Privat;67.51251415835434
+Norrköping;2004;Andel_Privat;67.71084771409014
+Norrköping;2005;Andel_Privat;68.39479551185995
+Norrköping;2006;Andel_Privat;68.74010284148532
+Norrköping;2007;Andel_Privat;68.90851996273163
+Norrköping;2008;Andel_Privat;69.3143151744286
+Norrköping;2009;Andel_Privat;69.83622197487676
+Norrköping;2010;Andel_Privat;70.07633847936475
+Norrköping;2011;Andel_Privat;70.20698620091994
+Norrköping;2012;Andel_Privat;70.13557474775831
+Norrköping;2013;Andel_Privat;69.71083395747175
+Norrköping;2014;Andel_Privat;68.87625439854034
+Norrköping;2015;Andel_Privat;68.0512551802982
+Norrköping;2016;Andel_Privat;67.18793246609465
+Norrköping;2017;Andel_Privat;66.75722326454033
+Norrköping;2018;Andel_Privat;67.37814778732324
+Norrköping;2019;Andel_Privat;67.89146410401356
+Norrköping;2020;Andel_Privat;67.40362230779368
+Norrköping;2021;Andel_Privat;67.8715719445515
+Norrköping;2022;Andel_Privat;68.9604008902451
+Norrköping;2023;Andel_Privat;68.52061891759435
+Norrköping;2024;Andel_Privat;68.81534812569295
+Norrköping;2025;Andel_Privat;67.25905866091199
+Riket;2000;Andel_Privat;69.25597316794467
+Riket;2001;Andel_Privat;69.197050460282
+Riket;2002;Andel_Privat;69.0730319283468
+Riket;2003;Andel_Privat;68.62356531336884
+Riket;2004;Andel_Privat;68.85458415946005
+Riket;2005;Andel_Privat;69.03031905618693
+Riket;2006;Andel_Privat;69.2396084067158
+Riket;2007;Andel_Privat;70.07986910095048
+Riket;2008;Andel_Privat;70.90673050150575
+Riket;2009;Andel_Privat;70.78913637188684
+Riket;2010;Andel_Privat;71.38790999653973
+Riket;2011;Andel_Privat;72.1337002840909
+Riket;2012;Andel_Privat;72.12656814449917
+Riket;2013;Andel_Privat;72.07572593316912
+Riket;2014;Andel_Privat;71.94846313375855
+Riket;2015;Andel_Privat;71.8652500505254
+Riket;2016;Andel_Privat;71.45670600052813
+Riket;2017;Andel_Privat;71.48751763263208
+Riket;2018;Andel_Privat;71.45574978192525
+Riket;2019;Andel_Privat;71.63593769442795
+Riket;2020;Andel_Privat;71.29862416069624
+Riket;2021;Andel_Privat;71.72687321506554
+Riket;2022;Andel_Privat;71.39429484962916
+Riket;2023;Andel_Privat;71.20139527199458
+Riket;2024;Andel_Privat;70.95474278614662
+Riket;2025;Andel_Privat;68.93151256441705
+Sex till tolv;2000;Andel_Privat;66.03621587661877
+Sex till tolv;2001;Andel_Privat;65.72926846947728
+Sex till tolv;2002;Andel_Privat;65.5269228137737
+Sex till tolv;2003;Andel_Privat;64.75574425204317
+Sex till tolv;2004;Andel_Privat;65.1464745815012
+Sex till tolv;2005;Andel_Privat;65.36383445406213
+Sex till tolv;2006;Andel_Privat;65.69012678772559
+Sex till tolv;2007;Andel_Privat;66.50223119325844
+Sex till tolv;2008;Andel_Privat;67.3716080040308
+Sex till tolv;2009;Andel_Privat;67.059056971196
+Sex till tolv;2010;Andel_Privat;67.4476824570117
+Sex till tolv;2011;Andel_Privat;68.09538697666486
+Sex till tolv;2012;Andel_Privat;68.08055293937623
+Sex till tolv;2013;Andel_Privat;67.80251191360482
+Sex till tolv;2014;Andel_Privat;67.549569598017
+Sex till tolv;2015;Andel_Privat;67.37494411345747
+Sex till tolv;2016;Andel_Privat;67.03381163165675
+Sex till tolv;2017;Andel_Privat;67.21784651424065
+Sex till tolv;2018;Andel_Privat;67.33567613266686
+Sex till tolv;2019;Andel_Privat;67.48130907709115
+Sex till tolv;2020;Andel_Privat;66.87390161961399
+Sex till tolv;2021;Andel_Privat;67.31493017096301
+Sex till tolv;2022;Andel_Privat;67.1446172494071
+Sex till tolv;2023;Andel_Privat;66.58294266137756
+Sex till tolv;2024;Andel_Privat;66.37487619051056
+Sex till tolv;2025;Andel_Privat;65.04981622864663
+Sex till tolv minus tio;2000;Andel_Privat;65.58386043874364
+Sex till tolv minus tio;2001;Andel_Privat;65.2916363045176
+Sex till tolv minus tio;2002;Andel_Privat;65.13028379461643
+Sex till tolv minus tio;2003;Andel_Privat;64.32477973411015
+Sex till tolv minus tio;2004;Andel_Privat;64.75026579312112
+Sex till tolv minus tio;2005;Andel_Privat;64.90505497545122
+Sex till tolv minus tio;2006;Andel_Privat;65.23009790029629
+Sex till tolv minus tio;2007;Andel_Privat;66.13900478698191
+Sex till tolv minus tio;2008;Andel_Privat;67.07903495468263
+Sex till tolv minus tio;2009;Andel_Privat;66.6418973968382
+Sex till tolv minus tio;2010;Andel_Privat;67.05039454436822
+Sex till tolv minus tio;2011;Andel_Privat;67.77653350110097
+Sex till tolv minus tio;2012;Andel_Privat;67.7720877660893
+Sex till tolv minus tio;2013;Andel_Privat;67.51554148517592
+Sex till tolv minus tio;2014;Andel_Privat;67.35202295733342
+Sex till tolv minus tio;2015;Andel_Privat;67.27302312003178
+Sex till tolv minus tio;2016;Andel_Privat;67.01032618755843
+Sex till tolv minus tio;2017;Andel_Privat;67.28833296201788
+Sex till tolv minus tio;2018;Andel_Privat;67.32921903052065
+Sex till tolv minus tio;2019;Andel_Privat;67.41943524863666
+Sex till tolv minus tio;2020;Andel_Privat;66.79412205727995
+Sex till tolv minus tio;2021;Andel_Privat;67.23113819810372
+Sex till tolv minus tio;2022;Andel_Privat;66.87417389745279
+Sex till tolv minus tio;2023;Andel_Privat;66.2965530800832
+Sex till tolv minus tio;2024;Andel_Privat;66.01487290539225
+Sex till tolv minus tio;2025;Andel_Privat;64.725009020517
+Stockholm;2000;Andel_Privat;81.02164750127653
+Stockholm;2001;Andel_Privat;81.27735414880657
+Stockholm;2002;Andel_Privat;81.43021297179686
+Stockholm;2003;Andel_Privat;80.58854233348762
+Stockholm;2004;Andel_Privat;80.25320083341724
+Stockholm;2005;Andel_Privat;79.82285734983768
+Stockholm;2006;Andel_Privat;80.17114181996804
+Stockholm;2007;Andel_Privat;81.18779143856489
+Stockholm;2008;Andel_Privat;82.27137489765542
+Stockholm;2009;Andel_Privat;82.45412501077497
+Stockholm;2010;Andel_Privat;83.17503001037647
+Stockholm;2011;Andel_Privat;84.06577000295296
+Stockholm;2012;Andel_Privat;84.07575263436084
+Stockholm;2013;Andel_Privat;84.35453448549805
+Stockholm;2014;Andel_Privat;84.74357025644525
+Stockholm;2015;Andel_Privat;84.68117666806293
+Stockholm;2016;Andel_Privat;84.62072508026924
+Stockholm;2017;Andel_Privat;84.6294137036268
+Stockholm;2018;Andel_Privat;84.37372014387559
+Stockholm;2019;Andel_Privat;84.76723825326748
+Stockholm;2020;Andel_Privat;84.49223037332979
+Stockholm;2021;Andel_Privat;84.95951771757036
+Stockholm;2022;Andel_Privat;84.25314243804297
+Stockholm;2023;Andel_Privat;84.06373174781267
+Stockholm;2024;Andel_Privat;83.67930448092287
+Stockholm;2025;Andel_Privat;82.84819564965792
+Tolv största;2000;Andel_Privat;72.90136074087427
+Tolv största;2001;Andel_Privat;73.0058063015647
+Tolv största;2002;Andel_Privat;72.88929520586863
+Tolv största;2003;Andel_Privat;72.2263637137265
+Tolv största;2004;Andel_Privat;72.40501224485436
+Tolv största;2005;Andel_Privat;72.38835138629014
+Tolv största;2006;Andel_Privat;72.62400843941423
+Tolv största;2007;Andel_Privat;73.49646726972807
+Tolv största;2008;Andel_Privat;74.40449923018838
+Tolv största;2009;Andel_Privat;74.31763024451324
+Tolv största;2010;Andel_Privat;74.7912520289071
+Tolv största;2011;Andel_Privat;75.47922852507575
+Tolv största;2012;Andel_Privat;75.51402526039011
+Tolv största;2013;Andel_Privat;75.5767782046115
+Tolv största;2014;Andel_Privat;75.56487498046263
+Tolv största;2015;Andel_Privat;75.50311785957655
+Tolv största;2016;Andel_Privat;75.32222253030267
+Tolv största;2017;Andel_Privat;75.32153946765935
+Tolv största;2018;Andel_Privat;75.2023056515418
+Tolv största;2019;Andel_Privat;75.44936720892561
+Tolv största;2020;Andel_Privat;74.80652133820975
+Tolv största;2021;Andel_Privat;75.23291852651853
+Tolv största;2022;Andel_Privat;74.81467188057074
+Tolv största;2023;Andel_Privat;74.54084658329097
+Tolv största;2024;Andel_Privat;74.28284405687963
+Tolv största;2025;Andel_Privat;73.29633816583886
+Tolv största minus fem;2000;Andel_Privat;73.12894377518336
+Tolv största minus fem;2001;Andel_Privat;73.27045862312409
+Tolv största minus fem;2002;Andel_Privat;73.20407771048929
+Tolv största minus fem;2003;Andel_Privat;72.51749489390309
+Tolv största minus fem;2004;Andel_Privat;72.67480404827043
+Tolv största minus fem;2005;Andel_Privat;72.63153238092342
+Tolv största minus fem;2006;Andel_Privat;72.89532437595209
+Tolv största minus fem;2007;Andel_Privat;73.7522585279487
+Tolv största minus fem;2008;Andel_Privat;74.65637655845639
+Tolv största minus fem;2009;Andel_Privat;74.59348147935484
+Tolv största minus fem;2010;Andel_Privat;75.08298954357015
+Tolv största minus fem;2011;Andel_Privat;75.76383057833942
+Tolv största minus fem;2012;Andel_Privat;75.78879646078472
+Tolv största minus fem;2013;Andel_Privat;75.85507627813898
+Tolv största minus fem;2014;Andel_Privat;75.84619812392988
+Tolv största minus fem;2015;Andel_Privat;75.79155952131634
+Tolv största minus fem;2016;Andel_Privat;75.61508347192785
+Tolv största minus fem;2017;Andel_Privat;75.63403395408265
+Tolv största minus fem;2018;Andel_Privat;75.527141097676
+Tolv största minus fem;2019;Andel_Privat;75.78414535883394
+Tolv största minus fem;2020;Andel_Privat;75.1463644442541
+Tolv största minus fem;2021;Andel_Privat;75.5896637914768
+Tolv största minus fem;2022;Andel_Privat;75.15729933943955
+Tolv största minus fem;2023;Andel_Privat;74.85870406127641
+Tolv största minus fem;2024;Andel_Privat;74.58571208985757
+Tolv största minus fem;2025;Andel_Privat;73.56848504812028
+Tre största;2000;Andel_Privat;77.73734283057098
+Tre största;2001;Andel_Privat;78.06598606668712
+Tre största;2002;Andel_Privat;78.10663069562365
+Tre största;2003;Andel_Privat;77.45405308885279
+Tre största;2004;Andel_Privat;77.43846629826658
+Tre största;2005;Andel_Privat;77.31229085092134
+Tre största;2006;Andel_Privat;77.48928970011161
+Tre största;2007;Andel_Privat;78.33856972317415
+Tre största;2008;Andel_Privat;79.13442459350624
+Tre största;2009;Andel_Privat;79.12241577950623
+Tre största;2010;Andel_Privat;79.61484143569018
+Tre största;2011;Andel_Privat;80.25672821522835
+Tre största;2012;Andel_Privat;80.27117460184645
+Tre största;2013;Andel_Privat;80.42271106729719
+Tre största;2014;Andel_Privat;80.5524395722331
+Tre största;2015;Andel_Privat;80.45690791026648
+Tre största;2016;Andel_Privat;80.31260687173219
+Tre största;2017;Andel_Privat;80.2499560943135
+Tre största;2018;Andel_Privat;80.15528679716355
+Tre största;2019;Andel_Privat;80.50383972789095
+Tre största;2020;Andel_Privat;79.97139094132875
+Tre största;2021;Andel_Privat;80.3623498157418
+Tre största;2022;Andel_Privat;79.73106352892597
+Tre största;2023;Andel_Privat;79.52059446168896
+Tre största;2024;Andel_Privat;79.29933238707919
+Tre största;2025;Andel_Privat;78.39390768155158
+Umeå;2000;Andel_Privat;55.67512021095084
+Umeå;2001;Andel_Privat;55.52020055925176
+Umeå;2002;Andel_Privat;56.12443413520894
+Umeå;2003;Andel_Privat;56.03070586032578
+Umeå;2004;Andel_Privat;56.99515580941363
+Umeå;2005;Andel_Privat;57.36466410609464
+Umeå;2006;Andel_Privat;57.8955712926752
+Umeå;2007;Andel_Privat;59.06141047326452
+Umeå;2008;Andel_Privat;59.63947553829498
+Umeå;2009;Andel_Privat;58.8897556824226
+Umeå;2010;Andel_Privat;59.585359172772726
+Umeå;2011;Andel_Privat;60.320962888666
+Umeå;2012;Andel_Privat;60.26537682201452
+Umeå;2013;Andel_Privat;60.41151734985395
+Umeå;2014;Andel_Privat;60.0658595949794
+Umeå;2015;Andel_Privat;60.232390841986735
+Umeå;2016;Andel_Privat;60.34192224026471
+Umeå;2017;Andel_Privat;60.44613136927086
+Umeå;2018;Andel_Privat;60.60838861228892
+Umeå;2019;Andel_Privat;60.48237476808905
+Umeå;2020;Andel_Privat;60.06436041834272
+Umeå;2021;Andel_Privat;60.45204991087344
+Umeå;2022;Andel_Privat;60.04603975408707
+Umeå;2023;Andel_Privat;59.76747035519312
+Umeå;2024;Andel_Privat;59.37943069036973
+Umeå;2025;Andel_Privat;58.07116362137656
+Uppsala;2000;Andel_Privat;55.257884701796144
+Uppsala;2001;Andel_Privat;55.94967427285685
+Uppsala;2002;Andel_Privat;56.14744323602366
+Uppsala;2003;Andel_Privat;56.19253974334418
+Uppsala;2004;Andel_Privat;57.109285985567794
+Uppsala;2005;Andel_Privat;56.2237598217427
+Uppsala;2006;Andel_Privat;57.21932441974352
+Uppsala;2007;Andel_Privat;57.92899604795589
+Uppsala;2008;Andel_Privat;59.39834398343984
+Uppsala;2009;Andel_Privat;59.65905216501876
+Uppsala;2010;Andel_Privat;60.57420359123895
+Uppsala;2011;Andel_Privat;61.73062147857264
+Uppsala;2012;Andel_Privat;61.783201931145946
+Uppsala;2013;Andel_Privat;62.34964892642719
+Uppsala;2014;Andel_Privat;61.72399561098864
+Uppsala;2015;Andel_Privat;62.15105763938036
+Uppsala;2016;Andel_Privat;62.2593006698967
+Uppsala;2017;Andel_Privat;62.273114873918864
+Uppsala;2018;Andel_Privat;61.24111087540008
+Uppsala;2019;Andel_Privat;61.427180168216026
+Uppsala;2020;Andel_Privat;60.444544028680255
+Uppsala;2021;Andel_Privat;60.76478233185343
+Uppsala;2022;Andel_Privat;60.32761775092541
+Uppsala;2023;Andel_Privat;60.177768023702406
+Uppsala;2024;Andel_Privat;59.3773084413404
+Uppsala;2025;Andel_Privat;58.164870571805935
+Västerås;2000;Andel_Privat;72.2018031084667
+Västerås;2001;Andel_Privat;71.93703168134613
+Västerås;2002;Andel_Privat;71.16609939831916
+Västerås;2003;Andel_Privat;70.95274214292782
+Västerås;2004;Andel_Privat;70.94828422652738
+Västerås;2005;Andel_Privat;71.02366806272524
+Västerås;2006;Andel_Privat;71.38354768878136
+Västerås;2007;Andel_Privat;72.35520875431342
+Västerås;2008;Andel_Privat;73.05356922697571
+Västerås;2009;Andel_Privat;73.40497506175558
+Västerås;2010;Andel_Privat;74.1306863163023
+Västerås;2011;Andel_Privat;75.25373222399244
+Västerås;2012;Andel_Privat;75.3833000028983
+Västerås;2013;Andel_Privat;75.08123678571935
+Västerås;2014;Andel_Privat;74.57769190333443
+Västerås;2015;Andel_Privat;74.53212966992854
+Västerås;2016;Andel_Privat;74.28726619406414
+Västerås;2017;Andel_Privat;74.49973994689442
+Västerås;2018;Andel_Privat;74.48942646802462
+Västerås;2019;Andel_Privat;74.52124653339116
+Västerås;2020;Andel_Privat;74.22468543243924
+Västerås;2021;Andel_Privat;74.46999756025528
+Västerås;2022;Andel_Privat;73.84325303297194
+Västerås;2023;Andel_Privat;73.50195798340025
+Västerås;2024;Andel_Privat;73.36531887879676
+Västerås;2025;Andel_Privat;70.5965120154034
+Örebro;2000;Andel_Privat;62.24911800948667
+Örebro;2001;Andel_Privat;62.04562588088761
+Örebro;2002;Andel_Privat;61.68077717139062
+Örebro;2003;Andel_Privat;62.05424045635464
+Örebro;2004;Andel_Privat;62.60289280261895
+Örebro;2005;Andel_Privat;63.03313112459169
+Örebro;2006;Andel_Privat;63.09993325647716
+Örebro;2007;Andel_Privat;63.94979251890873
+Örebro;2008;Andel_Privat;64.38134642560568
+Örebro;2009;Andel_Privat;63.27054794520548
+Örebro;2010;Andel_Privat;63.87483278078288
+Örebro;2011;Andel_Privat;65.00766131320583
+Örebro;2012;Andel_Privat;64.95584139292062
+Örebro;2013;Andel_Privat;64.56586722280153
+Örebro;2014;Andel_Privat;64.56545396939099
+Örebro;2015;Andel_Privat;64.47102289582266
+Örebro;2016;Andel_Privat;64.45868945868945
+Örebro;2017;Andel_Privat;64.22753848903413
+Örebro;2018;Andel_Privat;64.52600911377276
+Örebro;2019;Andel_Privat;64.19809560496444
+Örebro;2020;Andel_Privat;62.79611697375094
+Örebro;2021;Andel_Privat;63.41251889788695
+Örebro;2022;Andel_Privat;63.35176840092858
+Örebro;2023;Andel_Privat;63.12016834145409
+Örebro;2024;Andel_Privat;62.91378004814485
+Örebro;2025;Andel_Privat;62.94428352359856
+Östergötlands län;2000;Andel_Privat;68.64990725319043
+Östergötlands län;2001;Andel_Privat;68.22274829089139
+Östergötlands län;2002;Andel_Privat;67.60068910421886
+Östergötlands län;2003;Andel_Privat;67.22306105405211
+Östergötlands län;2004;Andel_Privat;67.76204865444832
+Östergötlands län;2005;Andel_Privat;68.14147591108173
+Östergötlands län;2006;Andel_Privat;68.13839400981152
+Östergötlands län;2007;Andel_Privat;68.8013438934996
+Östergötlands län;2008;Andel_Privat;69.60721421810916
+Östergötlands län;2009;Andel_Privat;69.35651929794253
+Östergötlands län;2010;Andel_Privat;69.55814469361671
+Östergötlands län;2011;Andel_Privat;70.2119966113602
+Östergötlands län;2012;Andel_Privat;70.22772171089909
+Östergötlands län;2013;Andel_Privat;69.97481362079387
+Östergötlands län;2014;Andel_Privat;69.65795954661031
+Östergötlands län;2015;Andel_Privat;69.30275445342541
+Östergötlands län;2016;Andel_Privat;68.57753734448765
+Östergötlands län;2017;Andel_Privat;68.19950377805345
+Östergötlands län;2018;Andel_Privat;68.2483849141247
+Östergötlands län;2019;Andel_Privat;68.37718485438825
+Östergötlands län;2020;Andel_Privat;67.99293024785236
+Östergötlands län;2021;Andel_Privat;68.3370626934466
+Östergötlands län;2022;Andel_Privat;68.52263284495955
+Östergötlands län;2023;Andel_Privat;68.29656011118831
+Östergötlands län;2024;Andel_Privat;68.54465621062087
+Östergötlands län;2025;Andel_Privat;67.12115140004529
 Fem till tolv;2000;Arbetslöshet;8.4625
 Fem till tolv;2001;Arbetslöshet;8.4625
 Fem till tolv;2002;Arbetslöshet;8.4625
@@ -3196,7 +3820,7 @@ Göteborg;2021;Dagbefolkningsandel;123.54165214707436
 Göteborg;2022;Dagbefolkningsandel;123.01482446051828
 Göteborg;2023;Dagbefolkningsandel;123.0373334495012
 Göteborg;2024;Dagbefolkningsandel;122.5742270718042
-Göteborg;2025;Dagbefolkningsandel;122.79821435833588
+Göteborg;2025;Dagbefolkningsandel;122.57422707180422
 Helsingborg;2000;Dagbefolkningsandel;111.63589866538798
 Helsingborg;2001;Dagbefolkningsandel;110.65086427530812
 Helsingborg;2002;Dagbefolkningsandel;111.01241973314876
@@ -3222,7 +3846,7 @@ Helsingborg;2021;Dagbefolkningsandel;109.77482307527342
 Helsingborg;2022;Dagbefolkningsandel;107.5117629254602
 Helsingborg;2023;Dagbefolkningsandel;107.49077084136869
 Helsingborg;2024;Dagbefolkningsandel;107.5345396325894
-Helsingborg;2025;Dagbefolkningsandel;107.3799566615599
+Helsingborg;2025;Dagbefolkningsandel;107.5345396325894
 Jönköping;2000;Dagbefolkningsandel;105.67867796424062
 Jönköping;2001;Dagbefolkningsandel;105.3082284783199
 Jönköping;2002;Dagbefolkningsandel;105.6689823407753
@@ -3248,7 +3872,7 @@ Jönköping;2021;Dagbefolkningsandel;108.58818543480936
 Jönköping;2022;Dagbefolkningsandel;109.46740067652716
 Jönköping;2023;Dagbefolkningsandel;108.5207412781112
 Jönköping;2024;Dagbefolkningsandel;108.0562474465926
-Jönköping;2025;Dagbefolkningsandel;108.03120758049
+Jönköping;2025;Dagbefolkningsandel;108.0562474465926
 Linköping;2000;Dagbefolkningsandel;108.17850548229488
 Linköping;2001;Dagbefolkningsandel;108.49881758398394
 Linköping;2002;Dagbefolkningsandel;109.51558476866734
@@ -3274,7 +3898,7 @@ Linköping;2021;Dagbefolkningsandel;113.1281430318906
 Linköping;2022;Dagbefolkningsandel;113.18542568542568
 Linköping;2023;Dagbefolkningsandel;113.46653228197071
 Linköping;2024;Dagbefolkningsandel;112.7974070380396
-Linköping;2025;Dagbefolkningsandel;113.90748919599184
+Linköping;2025;Dagbefolkningsandel;112.7974070380396
 Lkpg-Nkpg;2000;Dagbefolkningsandel;106.1274250906658
 Lkpg-Nkpg;2001;Dagbefolkningsandel;106.28922639481256
 Lkpg-Nkpg;2002;Dagbefolkningsandel;106.71059951217426
@@ -3326,7 +3950,7 @@ Lund;2021;Dagbefolkningsandel;131.60161133490763
 Lund;2022;Dagbefolkningsandel;130.35364936042137
 Lund;2023;Dagbefolkningsandel;130.071305630686
 Lund;2024;Dagbefolkningsandel;130.557428820501
-Lund;2025;Dagbefolkningsandel;132.5970031416024
+Lund;2025;Dagbefolkningsandel;130.557428820501
 Länet exkl Linköping;2000;Dagbefolkningsandel;93.11033326760008
 Länet exkl Linköping;2001;Dagbefolkningsandel;92.93045587046518
 Länet exkl Linköping;2002;Dagbefolkningsandel;92.82041393495308
@@ -3404,7 +4028,7 @@ Malmö;2021;Dagbefolkningsandel;124.13104150147038
 Malmö;2022;Dagbefolkningsandel;119.68878791684268
 Malmö;2023;Dagbefolkningsandel;118.857957639345
 Malmö;2024;Dagbefolkningsandel;117.21476584757836
-Malmö;2025;Dagbefolkningsandel;117.7929131054131
+Malmö;2025;Dagbefolkningsandel;117.21476584757836
 Norrköping;2000;Dagbefolkningsandel;103.73232583433511
 Norrköping;2001;Dagbefolkningsandel;103.7450110037674
 Norrköping;2002;Dagbefolkningsandel;103.48147875395831
@@ -3430,7 +4054,7 @@ Norrköping;2021;Dagbefolkningsandel;101.14213930922952
 Norrköping;2022;Dagbefolkningsandel;100.2075940134375
 Norrköping;2023;Dagbefolkningsandel;99.5802889173964
 Norrköping;2024;Dagbefolkningsandel;99.7187001427492
-Norrköping;2025;Dagbefolkningsandel;99.22327651356116
+Norrköping;2025;Dagbefolkningsandel;99.7187001427492
 Riket;2000;Dagbefolkningsandel;99.72692356444124
 Riket;2001;Dagbefolkningsandel;99.7372652769868
 Riket;2002;Dagbefolkningsandel;99.72328144418344
@@ -3456,7 +4080,7 @@ Riket;2021;Dagbefolkningsandel;99.89812861981014
 Riket;2022;Dagbefolkningsandel;99.44541898815096
 Riket;2023;Dagbefolkningsandel;99.41256980954236
 Riket;2024;Dagbefolkningsandel;99.31880523108345
-Riket;2025;Dagbefolkningsandel;99.194237644672
+Riket;2025;Dagbefolkningsandel;99.31880523108345
 Sex till tolv;2000;Dagbefolkningsandel;108.37291281167124
 Sex till tolv;2001;Dagbefolkningsandel;108.16453985076242
 Sex till tolv;2002;Dagbefolkningsandel;108.70069882891042
@@ -3534,7 +4158,7 @@ Stockholm;2021;Dagbefolkningsandel;136.72522690895846
 Stockholm;2022;Dagbefolkningsandel;139.11938861609713
 Stockholm;2023;Dagbefolkningsandel;139.05791099425022
 Stockholm;2024;Dagbefolkningsandel;138.41212168350953
-Stockholm;2025;Dagbefolkningsandel;139.20806087508865
+Stockholm;2025;Dagbefolkningsandel;138.41212168350953
 Tolv största;2000;Dagbefolkningsandel;123.3860836825836
 Tolv största;2001;Dagbefolkningsandel;122.76115921251753
 Tolv största;2002;Dagbefolkningsandel;121.99068933535376
@@ -3586,7 +4210,7 @@ Tolv största minus fem;2021;Dagbefolkningsandel;121.68098171858624
 Tolv största minus fem;2022;Dagbefolkningsandel;121.5508827805022
 Tolv största minus fem;2023;Dagbefolkningsandel;121.24601154026196
 Tolv största minus fem;2024;Dagbefolkningsandel;120.8317258595257
-Tolv största minus fem;2025;Dagbefolkningsandel;121.1093062282394
+Tolv största minus fem;2025;Dagbefolkningsandel;121.16928915928658
 Tre största;2000;Dagbefolkningsandel;135.9477603511978
 Tre största;2001;Dagbefolkningsandel;134.81735587437797
 Tre största;2002;Dagbefolkningsandel;133.3774777609336
@@ -3638,7 +4262,7 @@ Umeå;2021;Dagbefolkningsandel;105.4178379759775
 Umeå;2022;Dagbefolkningsandel;104.95204201206543
 Umeå;2023;Dagbefolkningsandel;104.6860970569372
 Umeå;2024;Dagbefolkningsandel;104.63311651260985
-Umeå;2025;Dagbefolkningsandel;103.83145041652402
+Umeå;2025;Dagbefolkningsandel;104.63311651260985
 Uppsala;2000;Dagbefolkningsandel;97.69712625936604
 Uppsala;2001;Dagbefolkningsandel;98.52194249728996
 Uppsala;2002;Dagbefolkningsandel;96.83588156496836
@@ -3664,7 +4288,7 @@ Uppsala;2021;Dagbefolkningsandel;97.19389268970896
 Uppsala;2022;Dagbefolkningsandel;95.61683292379294
 Uppsala;2023;Dagbefolkningsandel;94.9453420529589
 Uppsala;2024;Dagbefolkningsandel;95.23230902056086
-Uppsala;2025;Dagbefolkningsandel;95.025261407604
+Uppsala;2025;Dagbefolkningsandel;95.23230902056086
 Västerås;2000;Dagbefolkningsandel;106.15519202169538
 Västerås;2001;Dagbefolkningsandel;104.53663145237482
 Västerås;2002;Dagbefolkningsandel;105.13168382315531
@@ -3690,7 +4314,7 @@ Västerås;2021;Dagbefolkningsandel;103.43604728383583
 Västerås;2022;Dagbefolkningsandel;102.8187337380746
 Västerås;2023;Dagbefolkningsandel;102.27069506189945
 Västerås;2024;Dagbefolkningsandel;103.35377394200924
-Västerås;2025;Dagbefolkningsandel;102.2295404648346
+Västerås;2025;Dagbefolkningsandel;103.35377394200924
 Örebro;2000;Dagbefolkningsandel;106.48918768312632
 Örebro;2001;Dagbefolkningsandel;107.77328364272212
 Örebro;2002;Dagbefolkningsandel;108.0572080796901
@@ -3716,7 +4340,7 @@ Västerås;2025;Dagbefolkningsandel;102.2295404648346
 Örebro;2022;Dagbefolkningsandel;110.72945149380678
 Örebro;2023;Dagbefolkningsandel;110.8454323205109
 Örebro;2024;Dagbefolkningsandel;110.50291608906872
-Örebro;2025;Dagbefolkningsandel;109.94342662320634
+Örebro;2025;Dagbefolkningsandel;110.50291608906872
 Östergötlands län;2000;Dagbefolkningsandel;98.15200572987573
 Östergötlands län;2001;Dagbefolkningsandel;98.14827883848062
 Östergötlands län;2002;Dagbefolkningsandel;98.4031487809704
@@ -3742,7 +4366,7 @@ Västerås;2025;Dagbefolkningsandel;102.2295404648346
 Östergötlands län;2022;Dagbefolkningsandel;98.74586489544556
 Östergötlands län;2023;Dagbefolkningsandel;98.77687255192178
 Östergötlands län;2024;Dagbefolkningsandel;98.81767455889006
-Östergötlands län;2025;Dagbefolkningsandel;98.91376004481116
+Östergötlands län;2025;Dagbefolkningsandel;98.81767455889006
 Fem till tolv;2000;Folkmängd;944194.0
 Fem till tolv;2001;Folkmängd;950643.0
 Fem till tolv;2002;Folkmängd;957705.0
@@ -9782,7 +10406,7 @@ Västerås;2025;Inpendling;17623.0
 Östergötlands län;2022;Inpendling;11874.0
 Östergötlands län;2023;Inpendling;11681.0
 Östergötlands län;2024;Inpendling;11920.0
-Östergötlands län;2025;Inpendling;11681.0
+Östergötlands län;2025;Inpendling;11920.0
 Fem till tolv;2000;KIBS;30873.665035556514
 Fem till tolv;2001;KIBS;32768.16256514283
 Fem till tolv;2002;KIBS;37855.174997085895
@@ -14775,6 +15399,630 @@ Västerås;2025;Långtidsarbetslöshet;3.9
 Östergötlands län;2023;Långtidsarbetslöshet;3.1
 Östergötlands län;2024;Långtidsarbetslöshet;3.0
 Östergötlands län;2025;Långtidsarbetslöshet;3.3
+Fem till tolv;2000;Medelålder;39.2875
+Fem till tolv;2001;Medelålder;39.4
+Fem till tolv;2002;Medelålder;39.475
+Fem till tolv;2003;Medelålder;39.5125
+Fem till tolv;2004;Medelålder;39.6125
+Fem till tolv;2005;Medelålder;39.6625
+Fem till tolv;2006;Medelålder;39.725
+Fem till tolv;2007;Medelålder;39.725
+Fem till tolv;2008;Medelålder;39.7
+Fem till tolv;2009;Medelålder;39.6875
+Fem till tolv;2010;Medelålder;39.725
+Fem till tolv;2011;Medelålder;39.7875
+Fem till tolv;2012;Medelålder;39.81249999999999
+Fem till tolv;2013;Medelålder;39.8625
+Fem till tolv;2014;Medelålder;39.8625
+Fem till tolv;2015;Medelålder;39.9125
+Fem till tolv;2016;Medelålder;39.9125
+Fem till tolv;2017;Medelålder;39.8625
+Fem till tolv;2018;Medelålder;39.8625
+Fem till tolv;2019;Medelålder;39.925
+Fem till tolv;2020;Medelålder;39.9875
+Fem till tolv;2021;Medelålder;40.125
+Fem till tolv;2022;Medelålder;40.2625
+Fem till tolv;2023;Medelålder;40.462500000000006
+Fem till tolv;2024;Medelålder;40.7125
+Fem till tolv;2025;Medelålder;40.9125
+Fyra stora;2000;Medelålder;39.35
+Fyra stora;2001;Medelålder;39.325
+Fyra stora;2002;Medelålder;39.375
+Fyra stora;2003;Medelålder;39.375
+Fyra stora;2004;Medelålder;39.375
+Fyra stora;2005;Medelålder;39.35
+Fyra stora;2006;Medelålder;39.275000000000006
+Fyra stora;2007;Medelålder;39.2
+Fyra stora;2008;Medelålder;39.1
+Fyra stora;2009;Medelålder;38.95
+Fyra stora;2010;Medelålder;38.875
+Fyra stora;2011;Medelålder;38.85
+Fyra stora;2012;Medelålder;38.8
+Fyra stora;2013;Medelålder;38.8
+Fyra stora;2014;Medelålder;38.8
+Fyra stora;2015;Medelålder;38.825
+Fyra stora;2016;Medelålder;38.825
+Fyra stora;2017;Medelålder;38.825
+Fyra stora;2018;Medelålder;38.825
+Fyra stora;2019;Medelålder;38.875
+Fyra stora;2020;Medelålder;39.0
+Fyra stora;2021;Medelålder;39.1
+Fyra stora;2022;Medelålder;39.25
+Fyra stora;2023;Medelålder;39.4
+Fyra stora;2024;Medelålder;39.6
+Fyra stora;2025;Medelålder;39.85
+Göteborg;2000;Medelålder;39.4
+Göteborg;2001;Medelålder;39.3
+Göteborg;2002;Medelålder;39.3
+Göteborg;2003;Medelålder;39.3
+Göteborg;2004;Medelålder;39.3
+Göteborg;2005;Medelålder;39.3
+Göteborg;2006;Medelålder;39.2
+Göteborg;2007;Medelålder;39.2
+Göteborg;2008;Medelålder;39.1
+Göteborg;2009;Medelålder;39.0
+Göteborg;2010;Medelålder;39.0
+Göteborg;2011;Medelålder;39.0
+Göteborg;2012;Medelålder;38.9
+Göteborg;2013;Medelålder;38.9
+Göteborg;2014;Medelålder;38.9
+Göteborg;2015;Medelålder;38.9
+Göteborg;2016;Medelålder;38.9
+Göteborg;2017;Medelålder;38.9
+Göteborg;2018;Medelålder;38.9
+Göteborg;2019;Medelålder;39.0
+Göteborg;2020;Medelålder;39.1
+Göteborg;2021;Medelålder;39.2
+Göteborg;2022;Medelålder;39.3
+Göteborg;2023;Medelålder;39.4
+Göteborg;2024;Medelålder;39.6
+Göteborg;2025;Medelålder;39.8
+Helsingborg;2000;Medelålder;41.1
+Helsingborg;2001;Medelålder;41.1
+Helsingborg;2002;Medelålder;41.2
+Helsingborg;2003;Medelålder;41.2
+Helsingborg;2004;Medelålder;41.2
+Helsingborg;2005;Medelålder;41.2
+Helsingborg;2006;Medelålder;41.1
+Helsingborg;2007;Medelålder;41.1
+Helsingborg;2008;Medelålder;41.0
+Helsingborg;2009;Medelålder;41.0
+Helsingborg;2010;Medelålder;41.0
+Helsingborg;2011;Medelålder;41.0
+Helsingborg;2012;Medelålder;41.0
+Helsingborg;2013;Medelålder;41.0
+Helsingborg;2014;Medelålder;40.9
+Helsingborg;2015;Medelålder;40.8
+Helsingborg;2016;Medelålder;40.8
+Helsingborg;2017;Medelålder;40.7
+Helsingborg;2018;Medelålder;40.7
+Helsingborg;2019;Medelålder;40.7
+Helsingborg;2020;Medelålder;40.7
+Helsingborg;2021;Medelålder;40.9
+Helsingborg;2022;Medelålder;41.0
+Helsingborg;2023;Medelålder;41.3
+Helsingborg;2024;Medelålder;41.5
+Helsingborg;2025;Medelålder;41.7
+Jönköping;2000;Medelålder;40.0
+Jönköping;2001;Medelålder;40.1
+Jönköping;2002;Medelålder;40.2
+Jönköping;2003;Medelålder;40.2
+Jönköping;2004;Medelålder;40.3
+Jönköping;2005;Medelålder;40.3
+Jönköping;2006;Medelålder;40.3
+Jönköping;2007;Medelålder;40.2
+Jönköping;2008;Medelålder;40.2
+Jönköping;2009;Medelålder;40.2
+Jönköping;2010;Medelålder;40.2
+Jönköping;2011;Medelålder;40.2
+Jönköping;2012;Medelålder;40.2
+Jönköping;2013;Medelålder;40.3
+Jönköping;2014;Medelålder;40.3
+Jönköping;2015;Medelålder;40.3
+Jönköping;2016;Medelålder;40.3
+Jönköping;2017;Medelålder;40.3
+Jönköping;2018;Medelålder;40.2
+Jönköping;2019;Medelålder;40.3
+Jönköping;2020;Medelålder;40.3
+Jönköping;2021;Medelålder;40.4
+Jönköping;2022;Medelålder;40.5
+Jönköping;2023;Medelålder;40.6
+Jönköping;2024;Medelålder;40.8
+Jönköping;2025;Medelålder;41.0
+Linköping;2000;Medelålder;39.0
+Linköping;2001;Medelålder;39.1
+Linköping;2002;Medelålder;39.2
+Linköping;2003;Medelålder;39.2
+Linköping;2004;Medelålder;39.3
+Linköping;2005;Medelålder;39.3
+Linköping;2006;Medelålder;39.4
+Linköping;2007;Medelålder;39.4
+Linköping;2008;Medelålder;39.3
+Linköping;2009;Medelålder;39.2
+Linköping;2010;Medelålder;39.2
+Linköping;2011;Medelålder;39.3
+Linköping;2012;Medelålder;39.4
+Linköping;2013;Medelålder;39.4
+Linköping;2014;Medelålder;39.4
+Linköping;2015;Medelålder;39.5
+Linköping;2016;Medelålder;39.4
+Linköping;2017;Medelålder;39.4
+Linköping;2018;Medelålder;39.4
+Linköping;2019;Medelålder;39.4
+Linköping;2020;Medelålder;39.5
+Linköping;2021;Medelålder;39.6
+Linköping;2022;Medelålder;39.8
+Linköping;2023;Medelålder;40.0
+Linköping;2024;Medelålder;40.3
+Linköping;2025;Medelålder;40.5
+Lkpg-Nkpg;2000;Medelålder;39.65
+Lkpg-Nkpg;2001;Medelålder;39.75
+Lkpg-Nkpg;2002;Medelålder;39.8
+Lkpg-Nkpg;2003;Medelålder;39.85
+Lkpg-Nkpg;2004;Medelålder;39.95
+Lkpg-Nkpg;2005;Medelålder;40.0
+Lkpg-Nkpg;2006;Medelålder;40.05
+Lkpg-Nkpg;2007;Medelålder;40.05
+Lkpg-Nkpg;2008;Medelålder;39.95
+Lkpg-Nkpg;2009;Medelålder;39.85
+Lkpg-Nkpg;2010;Medelålder;39.900000000000006
+Lkpg-Nkpg;2011;Medelålder;40.0
+Lkpg-Nkpg;2012;Medelålder;40.0
+Lkpg-Nkpg;2013;Medelålder;39.95
+Lkpg-Nkpg;2014;Medelålder;39.95
+Lkpg-Nkpg;2015;Medelålder;40.0
+Lkpg-Nkpg;2016;Medelålder;39.95
+Lkpg-Nkpg;2017;Medelålder;39.95
+Lkpg-Nkpg;2018;Medelålder;40.0
+Lkpg-Nkpg;2019;Medelålder;40.05
+Lkpg-Nkpg;2020;Medelålder;40.15
+Lkpg-Nkpg;2021;Medelålder;40.2
+Lkpg-Nkpg;2022;Medelålder;40.4
+Lkpg-Nkpg;2023;Medelålder;40.65
+Lkpg-Nkpg;2024;Medelålder;40.95
+Lkpg-Nkpg;2025;Medelålder;41.15
+Lund;2000;Medelålder;37.4
+Lund;2001;Medelålder;37.6
+Lund;2002;Medelålder;37.7
+Lund;2003;Medelålder;37.8
+Lund;2004;Medelålder;37.9
+Lund;2005;Medelålder;38.0
+Lund;2006;Medelålder;38.1
+Lund;2007;Medelålder;38.0
+Lund;2008;Medelålder;38.0
+Lund;2009;Medelålder;38.1
+Lund;2010;Medelålder;38.1
+Lund;2011;Medelålder;38.2
+Lund;2012;Medelålder;38.3
+Lund;2013;Medelålder;38.4
+Lund;2014;Medelålder;38.5
+Lund;2015;Medelålder;38.6
+Lund;2016;Medelålder;38.7
+Lund;2017;Medelålder;38.6
+Lund;2018;Medelålder;38.7
+Lund;2019;Medelålder;38.8
+Lund;2020;Medelålder;38.9
+Lund;2021;Medelålder;39.0
+Lund;2022;Medelålder;39.2
+Lund;2023;Medelålder;39.3
+Lund;2024;Medelålder;39.5
+Lund;2025;Medelålder;39.7
+Länet exkl Linköping;2000;Medelålder;40.6
+Länet exkl Linköping;2001;Medelålder;40.766666666666666
+Länet exkl Linköping;2002;Medelålder;40.83333333333333
+Länet exkl Linköping;2003;Medelålder;40.93333333333333
+Länet exkl Linköping;2004;Medelålder;41.03333333333333
+Länet exkl Linköping;2005;Medelålder;41.13333333333333
+Länet exkl Linköping;2006;Medelålder;41.2
+Länet exkl Linköping;2007;Medelålder;41.266666666666666
+Länet exkl Linköping;2008;Medelålder;41.23333333333333
+Länet exkl Linköping;2009;Medelålder;41.2
+Länet exkl Linköping;2010;Medelålder;41.3
+Länet exkl Linköping;2011;Medelålder;41.4
+Länet exkl Linköping;2012;Medelålder;41.36666666666666
+Länet exkl Linköping;2013;Medelålder;41.33333333333333
+Länet exkl Linköping;2014;Medelålder;41.33333333333333
+Länet exkl Linköping;2015;Medelålder;41.4
+Länet exkl Linköping;2016;Medelålder;41.33333333333333
+Länet exkl Linköping;2017;Medelålder;41.33333333333333
+Länet exkl Linköping;2018;Medelålder;41.36666666666666
+Länet exkl Linköping;2019;Medelålder;41.46666666666666
+Länet exkl Linköping;2020;Medelålder;41.56666666666666
+Länet exkl Linköping;2021;Medelålder;41.63333333333333
+Länet exkl Linköping;2022;Medelålder;41.83333333333333
+Länet exkl Linköping;2023;Medelålder;42.06666666666666
+Länet exkl Linköping;2024;Medelålder;42.36666666666666
+Länet exkl Linköping;2025;Medelålder;42.56666666666666
+Länet exkl Norrköping;2000;Medelålder;39.43333333333333
+Länet exkl Norrköping;2001;Medelålder;39.56666666666666
+Länet exkl Norrköping;2002;Medelålder;39.66666666666667
+Länet exkl Norrköping;2003;Medelålder;39.7
+Länet exkl Norrköping;2004;Medelålder;39.8
+Länet exkl Norrköping;2005;Medelålder;39.83333333333333
+Länet exkl Norrköping;2006;Medelålder;39.93333333333334
+Länet exkl Norrköping;2007;Medelålder;39.96666666666667
+Länet exkl Norrköping;2008;Medelålder;39.9
+Länet exkl Norrköping;2009;Medelålder;39.833333333333336
+Länet exkl Norrköping;2010;Medelålder;39.86666666666667
+Länet exkl Norrköping;2011;Medelålder;39.96666666666666
+Länet exkl Norrköping;2012;Medelålder;40.03333333333333
+Länet exkl Norrköping;2013;Medelålder;40.03333333333333
+Länet exkl Norrköping;2014;Medelålder;40.03333333333333
+Länet exkl Norrköping;2015;Medelålder;40.13333333333333
+Länet exkl Norrköping;2016;Medelålder;40.03333333333333
+Länet exkl Norrköping;2017;Medelålder;40.03333333333333
+Länet exkl Norrköping;2018;Medelålder;40.03333333333333
+Länet exkl Norrköping;2019;Medelålder;40.06666666666666
+Länet exkl Norrköping;2020;Medelålder;40.16666666666666
+Länet exkl Norrköping;2021;Medelålder;40.26666666666667
+Länet exkl Norrköping;2022;Medelålder;40.46666666666666
+Länet exkl Norrköping;2023;Medelålder;40.66666666666666
+Länet exkl Norrköping;2024;Medelålder;40.96666666666666
+Länet exkl Norrköping;2025;Medelålder;41.16666666666666
+Malmö;2000;Medelålder;40.6
+Malmö;2001;Medelålder;40.5
+Malmö;2002;Medelålder;40.4
+Malmö;2003;Medelålder;40.3
+Malmö;2004;Medelålder;40.2
+Malmö;2005;Medelålder;40.1
+Malmö;2006;Medelålder;39.9
+Malmö;2007;Medelålder;39.7
+Malmö;2008;Medelålder;39.5
+Malmö;2009;Medelålder;39.2
+Malmö;2010;Medelålder;39.0
+Malmö;2011;Medelålder;38.9
+Malmö;2012;Medelålder;38.8
+Malmö;2013;Medelålder;38.7
+Malmö;2014;Medelålder;38.6
+Malmö;2015;Medelålder;38.5
+Malmö;2016;Medelålder;38.5
+Malmö;2017;Medelålder;38.4
+Malmö;2018;Medelålder;38.4
+Malmö;2019;Medelålder;38.4
+Malmö;2020;Medelålder;38.5
+Malmö;2021;Medelålder;38.5
+Malmö;2022;Medelålder;38.7
+Malmö;2023;Medelålder;38.8
+Malmö;2024;Medelålder;39.0
+Malmö;2025;Medelålder;39.2
+Norrköping;2000;Medelålder;40.3
+Norrköping;2001;Medelålder;40.4
+Norrköping;2002;Medelålder;40.4
+Norrköping;2003;Medelålder;40.5
+Norrköping;2004;Medelålder;40.6
+Norrköping;2005;Medelålder;40.7
+Norrköping;2006;Medelålder;40.7
+Norrköping;2007;Medelålder;40.7
+Norrköping;2008;Medelålder;40.6
+Norrköping;2009;Medelålder;40.5
+Norrköping;2010;Medelålder;40.6
+Norrköping;2011;Medelålder;40.7
+Norrköping;2012;Medelålder;40.6
+Norrköping;2013;Medelålder;40.5
+Norrköping;2014;Medelålder;40.5
+Norrköping;2015;Medelålder;40.5
+Norrköping;2016;Medelålder;40.5
+Norrköping;2017;Medelålder;40.5
+Norrköping;2018;Medelålder;40.6
+Norrköping;2019;Medelålder;40.7
+Norrköping;2020;Medelålder;40.8
+Norrköping;2021;Medelålder;40.8
+Norrköping;2022;Medelålder;41.0
+Norrköping;2023;Medelålder;41.3
+Norrköping;2024;Medelålder;41.6
+Norrköping;2025;Medelålder;41.8
+Riket;2000;Medelålder;40.3
+Riket;2001;Medelålder;40.5
+Riket;2002;Medelålder;40.6
+Riket;2003;Medelålder;40.7
+Riket;2004;Medelålder;40.8
+Riket;2005;Medelålder;40.9
+Riket;2006;Medelålder;40.9
+Riket;2007;Medelålder;41.0
+Riket;2008;Medelålder;41.0
+Riket;2009;Medelålder;41.0
+Riket;2010;Medelålder;41.1
+Riket;2011;Medelålder;41.1
+Riket;2012;Medelålder;41.2
+Riket;2013;Medelålder;41.2
+Riket;2014;Medelålder;41.2
+Riket;2015;Medelålder;41.2
+Riket;2016;Medelålder;41.2
+Riket;2017;Medelålder;41.2
+Riket;2018;Medelålder;41.2
+Riket;2019;Medelålder;41.3
+Riket;2020;Medelålder;41.4
+Riket;2021;Medelålder;41.6
+Riket;2022;Medelålder;41.7
+Riket;2023;Medelålder;41.9
+Riket;2024;Medelålder;42.2
+Riket;2025;Medelålder;42.4
+Sex till tolv;2000;Medelålder;39.32857142857142
+Sex till tolv;2001;Medelålder;39.442857142857136
+Sex till tolv;2002;Medelålder;39.51428571428572
+Sex till tolv;2003;Medelålder;39.55714285714286
+Sex till tolv;2004;Medelålder;39.65714285714286
+Sex till tolv;2005;Medelålder;39.71428571428572
+Sex till tolv;2006;Medelålder;39.771428571428565
+Sex till tolv;2007;Medelålder;39.771428571428565
+Sex till tolv;2008;Medelålder;39.75714285714286
+Sex till tolv;2009;Medelålder;39.75714285714286
+Sex till tolv;2010;Medelålder;39.8
+Sex till tolv;2011;Medelålder;39.85714285714285
+Sex till tolv;2012;Medelålder;39.871428571428574
+Sex till tolv;2013;Medelålder;39.92857142857143
+Sex till tolv;2014;Medelålder;39.92857142857143
+Sex till tolv;2015;Medelålder;39.97142857142857
+Sex till tolv;2016;Medelålder;39.98571428571428
+Sex till tolv;2017;Medelålder;39.92857142857143
+Sex till tolv;2018;Medelålder;39.92857142857143
+Sex till tolv;2019;Medelålder;40.0
+Sex till tolv;2020;Medelålder;40.05714285714286
+Sex till tolv;2021;Medelålder;40.2
+Sex till tolv;2022;Medelålder;40.32857142857142
+Sex till tolv;2023;Medelålder;40.52857142857143
+Sex till tolv;2024;Medelålder;40.771428571428565
+Sex till tolv;2025;Medelålder;40.971428571428575
+Sex till tolv minus tio;2000;Medelålder;39.16666666666666
+Sex till tolv minus tio;2001;Medelålder;39.28333333333333
+Sex till tolv minus tio;2002;Medelålder;39.36666666666667
+Sex till tolv minus tio;2003;Medelålder;39.4
+Sex till tolv minus tio;2004;Medelålder;39.5
+Sex till tolv minus tio;2005;Medelålder;39.55
+Sex till tolv minus tio;2006;Medelålder;39.61666666666667
+Sex till tolv minus tio;2007;Medelålder;39.61666666666667
+Sex till tolv minus tio;2008;Medelålder;39.61666666666667
+Sex till tolv minus tio;2009;Medelålder;39.63333333333333
+Sex till tolv minus tio;2010;Medelålder;39.66666666666666
+Sex till tolv minus tio;2011;Medelålder;39.71666666666667
+Sex till tolv minus tio;2012;Medelålder;39.75
+Sex till tolv minus tio;2013;Medelålder;39.83333333333333
+Sex till tolv minus tio;2014;Medelålder;39.833333333333336
+Sex till tolv minus tio;2015;Medelålder;39.88333333333333
+Sex till tolv minus tio;2016;Medelålder;39.9
+Sex till tolv minus tio;2017;Medelålder;39.833333333333336
+Sex till tolv minus tio;2018;Medelålder;39.81666666666667
+Sex till tolv minus tio;2019;Medelålder;39.88333333333333
+Sex till tolv minus tio;2020;Medelålder;39.93333333333333
+Sex till tolv minus tio;2021;Medelålder;40.1
+Sex till tolv minus tio;2022;Medelålder;40.21666666666667
+Sex till tolv minus tio;2023;Medelålder;40.4
+Sex till tolv minus tio;2024;Medelålder;40.63333333333333
+Sex till tolv minus tio;2025;Medelålder;40.83333333333333
+Stockholm;2000;Medelålder;39.9
+Stockholm;2001;Medelålder;39.9
+Stockholm;2002;Medelålder;39.9
+Stockholm;2003;Medelålder;39.8
+Stockholm;2004;Medelålder;39.8
+Stockholm;2005;Medelålder;39.7
+Stockholm;2006;Medelålder;39.6
+Stockholm;2007;Medelålder;39.4
+Stockholm;2008;Medelålder;39.3
+Stockholm;2009;Medelålder;39.1
+Stockholm;2010;Medelålder;39.0
+Stockholm;2011;Medelålder;38.9
+Stockholm;2012;Medelålder;38.8
+Stockholm;2013;Medelålder;38.8
+Stockholm;2014;Medelålder;38.8
+Stockholm;2015;Medelålder;38.9
+Stockholm;2016;Medelålder;38.9
+Stockholm;2017;Medelålder;39.0
+Stockholm;2018;Medelålder;39.1
+Stockholm;2019;Medelålder;39.2
+Stockholm;2020;Medelålder;39.4
+Stockholm;2021;Medelålder;39.7
+Stockholm;2022;Medelålder;39.9
+Stockholm;2023;Medelålder;40.2
+Stockholm;2024;Medelålder;40.4
+Stockholm;2025;Medelålder;40.7
+Tolv största;2000;Medelålder;39.30833333333334
+Tolv största;2001;Medelålder;39.375
+Tolv största;2002;Medelålder;39.44166666666667
+Tolv största;2003;Medelålder;39.46666666666667
+Tolv största;2004;Medelålder;39.53333333333333
+Tolv största;2005;Medelålder;39.55833333333333
+Tolv största;2006;Medelålder;39.575
+Tolv största;2007;Medelålder;39.55
+Tolv största;2008;Medelålder;39.5
+Tolv största;2009;Medelålder;39.44166666666667
+Tolv största;2010;Medelålder;39.44166666666667
+Tolv största;2011;Medelålder;39.475
+Tolv största;2012;Medelålder;39.475
+Tolv största;2013;Medelålder;39.50833333333333
+Tolv största;2014;Medelålder;39.50833333333333
+Tolv största;2015;Medelålder;39.55
+Tolv största;2016;Medelålder;39.55
+Tolv största;2017;Medelålder;39.51666666666666
+Tolv största;2018;Medelålder;39.51666666666666
+Tolv största;2019;Medelålder;39.575
+Tolv största;2020;Medelålder;39.65833333333333
+Tolv största;2021;Medelålder;39.78333333333333
+Tolv största;2022;Medelålder;39.925
+Tolv största;2023;Medelålder;40.10833333333333
+Tolv största;2024;Medelålder;40.34166666666667
+Tolv största;2025;Medelålder;40.55833333333333
+Tolv största minus fem;2000;Medelålder;39.33636363636364
+Tolv största minus fem;2001;Medelålder;39.4
+Tolv största minus fem;2002;Medelålder;39.46363636363637
+Tolv största minus fem;2003;Medelålder;39.49090909090909
+Tolv största minus fem;2004;Medelålder;39.554545454545455
+Tolv största minus fem;2005;Medelålder;39.581818181818186
+Tolv största minus fem;2006;Medelålder;39.59090909090909
+Tolv största minus fem;2007;Medelålder;39.56363636363636
+Tolv största minus fem;2008;Medelålder;39.51818181818182
+Tolv största minus fem;2009;Medelålder;39.46363636363637
+Tolv största minus fem;2010;Medelålder;39.46363636363636
+Tolv största minus fem;2011;Medelålder;39.49090909090909
+Tolv största minus fem;2012;Medelålder;39.48181818181818
+Tolv största minus fem;2013;Medelålder;39.518181818181816
+Tolv största minus fem;2014;Medelålder;39.518181818181816
+Tolv största minus fem;2015;Medelålder;39.554545454545455
+Tolv största minus fem;2016;Medelålder;39.56363636363636
+Tolv största minus fem;2017;Medelålder;39.52727272727272
+Tolv största minus fem;2018;Medelålder;39.52727272727272
+Tolv största minus fem;2019;Medelålder;39.59090909090909
+Tolv största minus fem;2020;Medelålder;39.67272727272728
+Tolv största minus fem;2021;Medelålder;39.8
+Tolv största minus fem;2022;Medelålder;39.93636363636364
+Tolv största minus fem;2023;Medelålder;40.118181818181824
+Tolv största minus fem;2024;Medelålder;40.345454545454544
+Tolv största minus fem;2025;Medelålder;40.56363636363636
+Tre största;2000;Medelålder;39.96666666666667
+Tre största;2001;Medelålder;39.9
+Tre största;2002;Medelålder;39.86666666666667
+Tre största;2003;Medelålder;39.8
+Tre största;2004;Medelålder;39.766666666666666
+Tre största;2005;Medelålder;39.7
+Tre största;2006;Medelålder;39.56666666666667
+Tre största;2007;Medelålder;39.43333333333333
+Tre största;2008;Medelålder;39.3
+Tre största;2009;Medelålder;39.1
+Tre största;2010;Medelålder;39.0
+Tre största;2011;Medelålder;38.93333333333333
+Tre största;2012;Medelålder;38.833333333333336
+Tre största;2013;Medelålder;38.8
+Tre största;2014;Medelålder;38.76666666666667
+Tre största;2015;Medelålder;38.76666666666667
+Tre största;2016;Medelålder;38.76666666666667
+Tre största;2017;Medelålder;38.76666666666667
+Tre största;2018;Medelålder;38.8
+Tre största;2019;Medelålder;38.86666666666667
+Tre största;2020;Medelålder;39.0
+Tre största;2021;Medelålder;39.13333333333333
+Tre största;2022;Medelålder;39.3
+Tre största;2023;Medelålder;39.46666666666667
+Tre största;2024;Medelålder;39.66666666666666
+Tre största;2025;Medelålder;39.9
+Umeå;2000;Medelålder;36.8
+Umeå;2001;Medelålder;37.0
+Umeå;2002;Medelålder;37.1
+Umeå;2003;Medelålder;37.2
+Umeå;2004;Medelålder;37.4
+Umeå;2005;Medelålder;37.5
+Umeå;2006;Medelålder;37.7
+Umeå;2007;Medelålder;37.9
+Umeå;2008;Medelålder;38.0
+Umeå;2009;Medelålder;38.1
+Umeå;2010;Medelålder;38.2
+Umeå;2011;Medelålder;38.3
+Umeå;2012;Medelålder;38.4
+Umeå;2013;Medelålder;38.6
+Umeå;2014;Medelålder;38.7
+Umeå;2015;Medelålder;38.8
+Umeå;2016;Medelålder;38.8
+Umeå;2017;Medelålder;38.9
+Umeå;2018;Medelålder;38.9
+Umeå;2019;Medelålder;38.9
+Umeå;2020;Medelålder;39.0
+Umeå;2021;Medelålder;39.2
+Umeå;2022;Medelålder;39.4
+Umeå;2023;Medelålder;39.6
+Umeå;2024;Medelålder;39.9
+Umeå;2025;Medelålder;40.1
+Uppsala;2000;Medelålder;37.5
+Uppsala;2001;Medelålder;37.6
+Uppsala;2002;Medelålder;37.9
+Uppsala;2003;Medelålder;38.1
+Uppsala;2004;Medelålder;38.2
+Uppsala;2005;Medelålder;38.3
+Uppsala;2006;Medelålder;38.4
+Uppsala;2007;Medelålder;38.5
+Uppsala;2008;Medelålder;38.5
+Uppsala;2009;Medelålder;38.5
+Uppsala;2010;Medelålder;38.5
+Uppsala;2011;Medelålder;38.6
+Uppsala;2012;Medelålder;38.7
+Uppsala;2013;Medelålder;38.8
+Uppsala;2014;Medelålder;38.9
+Uppsala;2015;Medelålder;39.0
+Uppsala;2016;Medelålder;39.0
+Uppsala;2017;Medelålder;39.0
+Uppsala;2018;Medelålder;38.9
+Uppsala;2019;Medelålder;38.9
+Uppsala;2020;Medelålder;39.0
+Uppsala;2021;Medelålder;39.0
+Uppsala;2022;Medelålder;39.1
+Uppsala;2023;Medelålder;39.2
+Uppsala;2024;Medelålder;39.4
+Uppsala;2025;Medelålder;39.7
+Västerås;2000;Medelålder;40.1
+Västerås;2001;Medelålder;40.2
+Västerås;2002;Medelålder;40.3
+Västerås;2003;Medelålder;40.3
+Västerås;2004;Medelålder;40.4
+Västerås;2005;Medelålder;40.5
+Västerås;2006;Medelålder;40.6
+Västerås;2007;Medelålder;40.6
+Västerås;2008;Medelålder;40.7
+Västerås;2009;Medelålder;40.7
+Västerås;2010;Medelålder;40.8
+Västerås;2011;Medelålder;40.9
+Västerås;2012;Medelålder;40.9
+Västerås;2013;Medelålder;41.0
+Västerås;2014;Medelålder;41.0
+Västerås;2015;Medelålder;41.1
+Västerås;2016;Medelålder;41.1
+Västerås;2017;Medelålder;40.9
+Västerås;2018;Medelålder;40.9
+Västerås;2019;Medelålder;41.0
+Västerås;2020;Medelålder;41.0
+Västerås;2021;Medelålder;41.1
+Västerås;2022;Medelålder;41.1
+Västerås;2023;Medelålder;41.3
+Västerås;2024;Medelålder;41.6
+Västerås;2025;Medelålder;41.7
+Örebro;2000;Medelålder;39.6
+Örebro;2001;Medelålder;39.7
+Örebro;2002;Medelålder;39.7
+Örebro;2003;Medelålder;39.7
+Örebro;2004;Medelålder;39.8
+Örebro;2005;Medelålder;39.8
+Örebro;2006;Medelålder;39.9
+Örebro;2007;Medelålder;39.9
+Örebro;2008;Medelålder;39.8
+Örebro;2009;Medelålder;39.7
+Örebro;2010;Medelålder;39.7
+Örebro;2011;Medelålder;39.7
+Örebro;2012;Medelålder;39.7
+Örebro;2013;Medelålder;39.7
+Örebro;2014;Medelålder;39.6
+Örebro;2015;Medelålder;39.7
+Örebro;2016;Medelålder;39.7
+Örebro;2017;Medelålder;39.6
+Örebro;2018;Medelålder;39.5
+Örebro;2019;Medelålder;39.6
+Örebro;2020;Medelålder;39.7
+Örebro;2021;Medelålder;40.0
+Örebro;2022;Medelålder;40.1
+Örebro;2023;Medelålder;40.3
+Örebro;2024;Medelålder;40.5
+Örebro;2025;Medelålder;40.8
+Östergötlands län;2000;Medelålder;40.3
+Östergötlands län;2001;Medelålder;40.5
+Östergötlands län;2002;Medelålder;40.6
+Östergötlands län;2003;Medelålder;40.7
+Östergötlands län;2004;Medelålder;40.8
+Östergötlands län;2005;Medelålder;40.9
+Östergötlands län;2006;Medelålder;41.0
+Östergötlands län;2007;Medelålder;41.1
+Östergötlands län;2008;Medelålder;41.1
+Östergötlands län;2009;Medelålder;41.1
+Östergötlands län;2010;Medelålder;41.2
+Östergötlands län;2011;Medelålder;41.3
+Östergötlands län;2012;Medelålder;41.3
+Östergötlands län;2013;Medelålder;41.3
+Östergötlands län;2014;Medelålder;41.3
+Östergötlands län;2015;Medelålder;41.4
+Östergötlands län;2016;Medelålder;41.3
+Östergötlands län;2017;Medelålder;41.3
+Östergötlands län;2018;Medelålder;41.3
+Östergötlands län;2019;Medelålder;41.4
+Östergötlands län;2020;Medelålder;41.5
+Östergötlands län;2021;Medelålder;41.6
+Östergötlands län;2022;Medelålder;41.8
+Östergötlands län;2023;Medelålder;42.0
+Östergötlands län;2024;Medelålder;42.3
+Östergötlands län;2025;Medelålder;42.5
 Fem till tolv;2000;Nattbefolkning;425443.0
 Fem till tolv;2001;Nattbefolkning;431618.0
 Fem till tolv;2002;Nattbefolkning;439016.0
@@ -14852,7 +16100,7 @@ Göteborg;2021;Nattbefolkning;301317.0
 Göteborg;2022;Nattbefolkning;315627.0
 Göteborg;2023;Nattbefolkning;321374.0
 Göteborg;2024;Nattbefolkning;319661.0
-Göteborg;2025;Nattbefolkning;319661.0
+Göteborg;2025;Nattbefolkning;320245.13584740006
 Helsingborg;2000;Nattbefolkning;50052.0
 Helsingborg;2001;Nattbefolkning;50794.0
 Helsingborg;2002;Nattbefolkning;52014.0
@@ -14878,7 +16126,7 @@ Helsingborg;2021;Nattbefolkning;69945.0
 Helsingborg;2022;Nattbefolkning;72686.0
 Helsingborg;2023;Nattbefolkning;72596.0
 Helsingborg;2024;Nattbefolkning;72453.0
-Helsingborg;2025;Nattbefolkning;72453.0
+Helsingborg;2025;Nattbefolkning;72348.84741759935
 Jönköping;2000;Nattbefolkning;54643.0
 Jönköping;2001;Nattbefolkning;55235.0
 Jönköping;2002;Nattbefolkning;56571.0
@@ -14904,7 +16152,7 @@ Jönköping;2021;Nattbefolkning;73147.0
 Jönköping;2022;Nattbefolkning;75385.0
 Jönköping;2023;Nattbefolkning;75815.0
 Jönköping;2024;Nattbefolkning;75879.0
-Jönköping;2025;Nattbefolkning;75879.0
+Jönköping;2025;Nattbefolkning;75861.41656503073
 Linköping;2000;Nattbefolkning;61197.0
 Linköping;2001;Nattbefolkning;61738.0
 Linköping;2002;Nattbefolkning;62529.0
@@ -14930,7 +16178,7 @@ Linköping;2021;Nattbefolkning;80933.0
 Linköping;2022;Nattbefolkning;83160.0
 Linköping;2023;Nattbefolkning;84335.0
 Linköping;2024;Nattbefolkning;84228.0
-Linköping;2025;Nattbefolkning;84228.0
+Linköping;2025;Nattbefolkning;85056.91976380689
 Lkpg-Nkpg;2000;Nattbefolkning;113604.0
 Lkpg-Nkpg;2001;Nattbefolkning;115356.0
 Lkpg-Nkpg;2002;Nattbefolkning;116845.0
@@ -14982,7 +16230,7 @@ Lund;2021;Nattbefolkning;57592.0
 Lund;2022;Nattbefolkning;59805.0
 Lund;2023;Nattbefolkning;61005.0
 Lund;2024;Nattbefolkning;60797.0
-Lund;2025;Nattbefolkning;60797.0
+Lund;2025;Nattbefolkning;61746.77360629921
 Länet exkl Linköping;2000;Nattbefolkning;121704.0
 Länet exkl Linköping;2001;Nattbefolkning;122469.0
 Länet exkl Linköping;2002;Nattbefolkning;124464.0
@@ -15060,7 +16308,7 @@ Malmö;2021;Nattbefolkning;160163.0
 Malmö;2022;Nattbefolkning;175186.0
 Malmö;2023;Nattbefolkning;178137.0
 Malmö;2024;Nattbefolkning;179712.0
-Malmö;2025;Nattbefolkning;179712.0
+Malmö;2025;Nattbefolkning;180598.40709426583
 Norrköping;2000;Nattbefolkning;52407.0
 Norrköping;2001;Nattbefolkning;53618.0
 Norrköping;2002;Nattbefolkning;54316.0
@@ -15086,7 +16334,7 @@ Norrköping;2021;Nattbefolkning;69256.0
 Norrköping;2022;Nattbefolkning;71293.0
 Norrköping;2023;Nattbefolkning;71716.0
 Norrköping;2024;Nattbefolkning;71454.0
-Norrköping;2025;Nattbefolkning;71454.0
+Norrköping;2025;Nattbefolkning;71099.00138941518
 Riket;2000;Nattbefolkning;4062965.0
 Riket;2001;Nattbefolkning;4101856.0
 Riket;2002;Nattbefolkning;4147174.0
@@ -15112,7 +16360,7 @@ Riket;2021;Nattbefolkning;5109384.0
 Riket;2022;Nattbefolkning;5281104.0
 Riket;2023;Nattbefolkning;5315355.0
 Riket;2024;Nattbefolkning;5296723.0
-Riket;2025;Nattbefolkning;5296723.0
+Riket;2025;Nattbefolkning;5290079.7465047045
 Sex till tolv;2000;Nattbefolkning;364246.0
 Sex till tolv;2001;Nattbefolkning;369880.0
 Sex till tolv;2002;Nattbefolkning;376487.0
@@ -15190,7 +16438,7 @@ Stockholm;2021;Nattbefolkning;521685.0
 Stockholm;2022;Nattbefolkning;538058.0
 Stockholm;2023;Nattbefolkning;539673.0
 Stockholm;2024;Nattbefolkning;539991.0
-Stockholm;2025;Nattbefolkning;539991.0
+Stockholm;2025;Nattbefolkning;543096.2193606481
 Tolv största;2000;Nattbefolkning;1191507.9530217052
 Tolv största;2001;Nattbefolkning;1211860.5017606458
 Tolv största;2002;Nattbefolkning;1224832.0
@@ -15242,7 +16490,7 @@ Tolv största minus fem;2021;Nattbefolkning;1589702.0
 Tolv största minus fem;2022;Nattbefolkning;1657830.0
 Tolv största minus fem;2023;Nattbefolkning;1674832.0
 Tolv största minus fem;2024;Nattbefolkning;1674470.0
-Tolv största minus fem;2025;Nattbefolkning;1674470.0
+Tolv största minus fem;2025;Nattbefolkning;1673641.080236193
 Tre största;2000;Nattbefolkning;681781.0
 Tre största;2001;Nattbefolkning;694082.0
 Tre största;2002;Nattbefolkning;699220.0
@@ -15294,7 +16542,7 @@ Umeå;2021;Nattbefolkning;66521.0
 Umeå;2022;Nattbefolkning;69123.0
 Umeå;2023;Nattbefolkning;70165.0
 Umeå;2024;Nattbefolkning;70104.0
-Umeå;2025;Nattbefolkning;70104.0
+Umeå;2025;Nattbefolkning;69566.88515650562
 Uppsala;2000;Nattbefolkning;84283.95302170512
 Uppsala;2001;Nattbefolkning;86160.50176064583
 Uppsala;2002;Nattbefolkning;86596.0
@@ -15320,7 +16568,7 @@ Uppsala;2021;Nattbefolkning;117957.0
 Uppsala;2022;Nattbefolkning;122902.0
 Uppsala;2023;Nattbefolkning;124776.0
 Uppsala;2024;Nattbefolkning;125092.0
-Uppsala;2025;Nattbefolkning;125092.0
+Uppsala;2025;Nattbefolkning;124820.0334765966
 Västerås;2000;Nattbefolkning;57155.0
 Västerås;2001;Nattbefolkning;58215.0
 Västerås;2002;Nattbefolkning;58967.0
@@ -15346,7 +16594,7 @@ Västerås;2021;Nattbefolkning;75290.0
 Västerås;2022;Nattbefolkning;78404.0
 Västerås;2023;Nattbefolkning;79403.0
 Västerås;2024;Nattbefolkning;79254.0
-Västerås;2025;Nattbefolkning;79254.0
+Västerås;2025;Nattbefolkning;78391.9124670378
 Örebro;2000;Nattbefolkning;55631.0
 Örebro;2001;Nattbefolkning;56617.0
 Örebro;2002;Nattbefolkning;57824.0
@@ -15372,7 +16620,7 @@ Västerås;2025;Nattbefolkning;79254.0
 Örebro;2022;Nattbefolkning;79361.0
 Örebro;2023;Nattbefolkning;80172.0
 Örebro;2024;Nattbefolkning;80073.0
-Örebro;2025;Nattbefolkning;80073.0
+Örebro;2025;Nattbefolkning;79667.58083473661
 Östergötlands län;2000;Nattbefolkning;182901.0
 Östergötlands län;2001;Nattbefolkning;184207.0
 Östergötlands län;2002;Nattbefolkning;186993.0
@@ -15398,7 +16646,7 @@ Västerås;2025;Nattbefolkning;79254.0
 Östergötlands län;2022;Nattbefolkning;231554.0
 Östergötlands län;2023;Nattbefolkning;233091.0
 Östergötlands län;2024;Nattbefolkning;232085.0
-Östergötlands län;2025;Nattbefolkning;232085.0
+Östergötlands län;2025;Nattbefolkning;232310.668131734
 Fem till tolv;2002;Nettoflytt_eget_län;636.0
 Fem till tolv;2003;Nettoflytt_eget_län;27.0
 Fem till tolv;2004;Nettoflytt_eget_län;157.0
@@ -17801,6 +19049,1878 @@ Västerås;2025;Nyföretagande;687.8467971939331
 Östergötlands län;2023;Nyföretagande;513.2332849683863
 Östergötlands län;2024;Nyföretagande;533.9012473220258
 Östergötlands län;2025;Nyföretagande;533.7707346755205
+Fem till tolv;2000;Skattekraft;1216.2331046373945
+Fem till tolv;2001;Skattekraft;1286.6438820882286
+Fem till tolv;2002;Skattekraft;1354.0338622018264
+Fem till tolv;2003;Skattekraft;1404.262485710703
+Fem till tolv;2004;Skattekraft;1442.0218751962705
+Fem till tolv;2005;Skattekraft;1488.1343003536856
+Fem till tolv;2006;Skattekraft;1543.9290741589623
+Fem till tolv;2007;Skattekraft;1612.8013673622506
+Fem till tolv;2008;Skattekraft;1686.1461970856533
+Fem till tolv;2009;Skattekraft;1697.153449116166
+Fem till tolv;2010;Skattekraft;1717.4030415265602
+Fem till tolv;2011;Skattekraft;1757.1924457822413
+Fem till tolv;2012;Skattekraft;1809.1971223459327
+Fem till tolv;2013;Skattekraft;1854.776748928613
+Fem till tolv;2014;Skattekraft;1891.7011673411985
+Fem till tolv;2015;Skattekraft;1966.1860474946448
+Fem till tolv;2016;Skattekraft;2032.5898840407085
+Fem till tolv;2017;Skattekraft;2088.7489119449588
+Fem till tolv;2018;Skattekraft;2141.175770589373
+Fem till tolv;2019;Skattekraft;2177.59175155228
+Fem till tolv;2020;Skattekraft;2208.455704179646
+Fem till tolv;2021;Skattekraft;2308.115431029424
+Fem till tolv;2022;Skattekraft;2413.3728087235104
+Fem till tolv;2023;Skattekraft;2515.4253146744068
+Fem till tolv;2024;Skattekraft;2590.9987968713654
+Fem till tolv;2025;Skattekraft;2674.075143980449
+Fyra stora;2000;Skattekraft;1387.9621399476823
+Fyra stora;2001;Skattekraft;1473.5871338047982
+Fyra stora;2002;Skattekraft;1534.3026522696923
+Fyra stora;2003;Skattekraft;1574.7160491486218
+Fyra stora;2004;Skattekraft;1611.6970769383013
+Fyra stora;2005;Skattekraft;1666.1266872408378
+Fyra stora;2006;Skattekraft;1727.2611937329052
+Fyra stora;2007;Skattekraft;1810.40030005572
+Fyra stora;2008;Skattekraft;1887.370211242392
+Fyra stora;2009;Skattekraft;1882.8924179648704
+Fyra stora;2010;Skattekraft;1906.784871019943
+Fyra stora;2011;Skattekraft;1960.045752818228
+Fyra stora;2012;Skattekraft;2022.498744594456
+Fyra stora;2013;Skattekraft;2073.928104561751
+Fyra stora;2014;Skattekraft;2131.3644020553893
+Fyra stora;2015;Skattekraft;2230.411403677698
+Fyra stora;2016;Skattekraft;2317.826456091253
+Fyra stora;2017;Skattekraft;2394.560274593476
+Fyra stora;2018;Skattekraft;2470.343802880059
+Fyra stora;2019;Skattekraft;2523.2767009336617
+Fyra stora;2020;Skattekraft;2578.742708705636
+Fyra stora;2021;Skattekraft;2717.6419887329384
+Fyra stora;2022;Skattekraft;2850.214065707948
+Fyra stora;2023;Skattekraft;2964.516467584817
+Fyra stora;2024;Skattekraft;3057.412519097459
+Fyra stora;2025;Skattekraft;3160.8618458754504
+Göteborg;2000;Skattekraft;1276.0059101907964
+Göteborg;2001;Skattekraft;1359.373773253803
+Göteborg;2002;Skattekraft;1430.8758719871307
+Göteborg;2003;Skattekraft;1490.4352009705997
+Göteborg;2004;Skattekraft;1532.0724538335307
+Göteborg;2005;Skattekraft;1586.7794499135982
+Göteborg;2006;Skattekraft;1644.9892497708047
+Göteborg;2007;Skattekraft;1723.644483710299
+Göteborg;2008;Skattekraft;1791.7940331509385
+Göteborg;2009;Skattekraft;1774.9275619419311
+Göteborg;2010;Skattekraft;1794.4549013043284
+Göteborg;2011;Skattekraft;1840.6645989230824
+Göteborg;2012;Skattekraft;1904.3450822959608
+Göteborg;2013;Skattekraft;1943.593407479499
+Göteborg;2014;Skattekraft;1994.132810984117
+Göteborg;2015;Skattekraft;2084.324777905471
+Göteborg;2016;Skattekraft;2174.8131647025007
+Göteborg;2017;Skattekraft;2257.982160808029
+Göteborg;2018;Skattekraft;2335.5914301901835
+Göteborg;2019;Skattekraft;2377.809733100171
+Göteborg;2020;Skattekraft;2404.6266567876846
+Göteborg;2021;Skattekraft;2524.584332540776
+Göteborg;2022;Skattekraft;2652.3177864791464
+Göteborg;2023;Skattekraft;2771.6964155761675
+Göteborg;2024;Skattekraft;2866.37449034718
+Göteborg;2025;Skattekraft;2964.884503034551
+Helsingborg;2000;Skattekraft;1216.0323432735674
+Helsingborg;2001;Skattekraft;1283.2118266504658
+Helsingborg;2002;Skattekraft;1351.674120228464
+Helsingborg;2003;Skattekraft;1417.2395425870136
+Helsingborg;2004;Skattekraft;1453.8822733311877
+Helsingborg;2005;Skattekraft;1504.235552424178
+Helsingborg;2006;Skattekraft;1559.4907163523492
+Helsingborg;2007;Skattekraft;1624.45393884115
+Helsingborg;2008;Skattekraft;1687.362923458037
+Helsingborg;2009;Skattekraft;1700.2547542439563
+Helsingborg;2010;Skattekraft;1721.9551468140614
+Helsingborg;2011;Skattekraft;1748.9473764794143
+Helsingborg;2012;Skattekraft;1796.3048533834303
+Helsingborg;2013;Skattekraft;1846.085014550076
+Helsingborg;2014;Skattekraft;1858.346140205698
+Helsingborg;2015;Skattekraft;1932.8977804204224
+Helsingborg;2016;Skattekraft;2002.4333496979657
+Helsingborg;2017;Skattekraft;2059.8727181376653
+Helsingborg;2018;Skattekraft;2108.2281745349514
+Helsingborg;2019;Skattekraft;2145.4438382498274
+Helsingborg;2020;Skattekraft;2181.511254019292
+Helsingborg;2021;Skattekraft;2301.847324277692
+Helsingborg;2022;Skattekraft;2412.558370591157
+Helsingborg;2023;Skattekraft;2497.726461607603
+Helsingborg;2024;Skattekraft;2541.116831370692
+Helsingborg;2025;Skattekraft;2587.022084776396
+Jönköping;2000;Skattekraft;1181.6132200350144
+Jönköping;2001;Skattekraft;1251.4758770441745
+Jönköping;2002;Skattekraft;1328.9650112581276
+Jönköping;2003;Skattekraft;1385.8639182168597
+Jönköping;2004;Skattekraft;1432.7299106956732
+Jönköping;2005;Skattekraft;1473.5502004712107
+Jönköping;2006;Skattekraft;1529.698675876066
+Jönköping;2007;Skattekraft;1600.6353620189316
+Jönköping;2008;Skattekraft;1674.217364207297
+Jönköping;2009;Skattekraft;1678.9544925631872
+Jönköping;2010;Skattekraft;1704.2439277134915
+Jönköping;2011;Skattekraft;1747.2351038540978
+Jönköping;2012;Skattekraft;1798.320950277267
+Jönköping;2013;Skattekraft;1837.4363522378017
+Jönköping;2014;Skattekraft;1893.9231118510668
+Jönköping;2015;Skattekraft;1966.4691320981167
+Jönköping;2016;Skattekraft;2039.490897802612
+Jönköping;2017;Skattekraft;2106.545631760025
+Jönköping;2018;Skattekraft;2162.9340190487133
+Jönköping;2019;Skattekraft;2192.7828694154423
+Jönköping;2020;Skattekraft;2208.9912727221663
+Jönköping;2021;Skattekraft;2315.1505442996536
+Jönköping;2022;Skattekraft;2417.5682566809546
+Jönköping;2023;Skattekraft;2499.7434336108813
+Jönköping;2024;Skattekraft;2552.440164167581
+Jönköping;2025;Skattekraft;2624.019828436988
+Linköping;2000;Skattekraft;1265.018623092635
+Linköping;2001;Skattekraft;1342.348122561344
+Linköping;2002;Skattekraft;1405.268535382702
+Linköping;2003;Skattekraft;1440.7587113065306
+Linköping;2004;Skattekraft;1471.9673951151103
+Linköping;2005;Skattekraft;1515.940596936848
+Linköping;2006;Skattekraft;1570.2698802135951
+Linköping;2007;Skattekraft;1628.0749748872595
+Linköping;2008;Skattekraft;1702.9176036034764
+Linköping;2009;Skattekraft;1704.340313774276
+Linköping;2010;Skattekraft;1725.562780024041
+Linköping;2011;Skattekraft;1776.8607381867052
+Linköping;2012;Skattekraft;1826.5228486207336
+Linköping;2013;Skattekraft;1878.1973608873384
+Linköping;2014;Skattekraft;1924.236737972492
+Linköping;2015;Skattekraft;2012.1007282664125
+Linköping;2016;Skattekraft;2076.461490081313
+Linköping;2017;Skattekraft;2140.2725208175625
+Linköping;2018;Skattekraft;2182.5515108610603
+Linköping;2019;Skattekraft;2234.3438556034616
+Linköping;2020;Skattekraft;2270.982164552656
+Linköping;2021;Skattekraft;2365.553655899038
+Linköping;2022;Skattekraft;2462.108439879285
+Linköping;2023;Skattekraft;2584.9621275477293
+Linköping;2024;Skattekraft;2680.745082869641
+Linköping;2025;Skattekraft;2779.3418907998466
+Lkpg-Nkpg;2000;Skattekraft;1207.9281974569933
+Lkpg-Nkpg;2001;Skattekraft;1277.1790530678963
+Lkpg-Nkpg;2002;Skattekraft;1345.1807298863257
+Lkpg-Nkpg;2003;Skattekraft;1387.8947894328253
+Lkpg-Nkpg;2004;Skattekraft;1422.1305515800432
+Lkpg-Nkpg;2005;Skattekraft;1465.0523490342307
+Lkpg-Nkpg;2006;Skattekraft;1515.19638846703
+Lkpg-Nkpg;2007;Skattekraft;1577.2691698465064
+Lkpg-Nkpg;2008;Skattekraft;1647.7662148094084
+Lkpg-Nkpg;2009;Skattekraft;1654.692199865666
+Lkpg-Nkpg;2010;Skattekraft;1678.275086267389
+Lkpg-Nkpg;2011;Skattekraft;1723.0938598416303
+Lkpg-Nkpg;2012;Skattekraft;1770.8884890163731
+Lkpg-Nkpg;2013;Skattekraft;1818.500375064712
+Lkpg-Nkpg;2014;Skattekraft;1855.740970316613
+Lkpg-Nkpg;2015;Skattekraft;1932.3864400467585
+Lkpg-Nkpg;2016;Skattekraft;1996.9950538654384
+Lkpg-Nkpg;2017;Skattekraft;2062.915975114127
+Lkpg-Nkpg;2018;Skattekraft;2116.874236067524
+Lkpg-Nkpg;2019;Skattekraft;2157.8332059747504
+Lkpg-Nkpg;2020;Skattekraft;2196.066784812428
+Lkpg-Nkpg;2021;Skattekraft;2288.3107247124863
+Lkpg-Nkpg;2022;Skattekraft;2392.4879647715
+Lkpg-Nkpg;2023;Skattekraft;2504.9669350891168
+Lkpg-Nkpg;2024;Skattekraft;2596.875549095091
+Lkpg-Nkpg;2025;Skattekraft;2690.88099405046
+Lund;2000;Skattekraft;1275.8115373731655
+Lund;2001;Skattekraft;1358.1437835016363
+Lund;2002;Skattekraft;1422.770462739786
+Lund;2003;Skattekraft;1467.1518391999605
+Lund;2004;Skattekraft;1504.362915709455
+Lund;2005;Skattekraft;1547.923369549273
+Lund;2006;Skattekraft;1619.2998082992854
+Lund;2007;Skattekraft;1691.9343502459965
+Lund;2008;Skattekraft;1774.0868738996376
+Lund;2009;Skattekraft;1788.2030655904423
+Lund;2010;Skattekraft;1806.304757077692
+Lund;2011;Skattekraft;1848.037898733724
+Lund;2012;Skattekraft;1896.954404603807
+Lund;2013;Skattekraft;1932.8906038095736
+Lund;2014;Skattekraft;1957.2123344370864
+Lund;2015;Skattekraft;2041.340705616516
+Lund;2016;Skattekraft;2105.4141148285
+Lund;2017;Skattekraft;2143.6911456701355
+Lund;2018;Skattekraft;2210.040016917721
+Lund;2019;Skattekraft;2241.0373394164967
+Lund;2020;Skattekraft;2274.2871662127504
+Lund;2021;Skattekraft;2367.2277352091446
+Lund;2022;Skattekraft;2472.948342472582
+Lund;2023;Skattekraft;2550.841213312048
+Lund;2024;Skattekraft;2661.319249183069
+Lund;2025;Skattekraft;2788.5839508902563
+Länet exkl Linköping;2000;Skattekraft;1127.030631576299
+Länet exkl Linköping;2001;Skattekraft;1186.4302036475474
+Länet exkl Linköping;2002;Skattekraft;1255.334588248818
+Länet exkl Linköping;2003;Skattekraft;1315.8261144165417
+Länet exkl Linköping;2004;Skattekraft;1350.493410444392
+Länet exkl Linköping;2005;Skattekraft;1393.505510160873
+Länet exkl Linköping;2006;Skattekraft;1439.5961143364375
+Länet exkl Linköping;2007;Skattekraft;1507.3170209882971
+Länet exkl Linköping;2008;Skattekraft;1580.307565426973
+Länet exkl Linköping;2009;Skattekraft;1591.5245595150418
+Länet exkl Linköping;2010;Skattekraft;1615.5684859440871
+Länet exkl Linköping;2011;Skattekraft;1649.9131249977977
+Länet exkl Linköping;2012;Skattekraft;1698.6990952209017
+Länet exkl Linköping;2013;Skattekraft;1742.1622410880038
+Länet exkl Linköping;2014;Skattekraft;1770.9906830586028
+Länet exkl Linköping;2015;Skattekraft;1837.4963699414063
+Länet exkl Linköping;2016;Skattekraft;1901.51811750729
+Länet exkl Linköping;2017;Skattekraft;1964.124210638981
+Länet exkl Linköping;2018;Skattekraft;2016.143790197272
+Länet exkl Linköping;2019;Skattekraft;2047.6749414767687
+Länet exkl Linköping;2020;Skattekraft;2083.089290082038
+Länet exkl Linköping;2021;Skattekraft;2166.685844097351
+Länet exkl Linköping;2022;Skattekraft;2276.468603291192
+Länet exkl Linköping;2023;Skattekraft;2378.197012732294
+Länet exkl Linköping;2024;Skattekraft;2451.9514735012863
+Länet exkl Linköping;2025;Skattekraft;2528.836847590845
+Länet exkl Norrköping;2000;Skattekraft;1182.686255386552
+Länet exkl Norrköping;2001;Skattekraft;1250.2772336743049
+Länet exkl Norrköping;2002;Skattekraft;1314.9223637272305
+Länet exkl Norrköping;2003;Skattekraft;1368.372025875996
+Länet exkl Norrköping;2004;Skattekraft;1400.3669661842378
+Länet exkl Norrköping;2005;Skattekraft;1444.7217831660728
+Länet exkl Norrköping;2006;Skattekraft;1495.1709896992506
+Länet exkl Norrköping;2007;Skattekraft;1559.0642201211035
+Länet exkl Norrköping;2008;Skattekraft;1636.486857398453
+Länet exkl Norrköping;2009;Skattekraft;1643.0341243302043
+Länet exkl Norrköping;2010;Skattekraft;1665.2146919810946
+Länet exkl Norrköping;2011;Skattekraft;1706.715215741616
+Länet exkl Norrköping;2012;Skattekraft;1757.4056885235034
+Länet exkl Norrköping;2013;Skattekraft;1805.2640751860413
+Länet exkl Norrköping;2014;Skattekraft;1843.388023023121
+Länet exkl Norrköping;2015;Skattekraft;1921.412972335448
+Länet exkl Norrköping;2016;Skattekraft;1985.7262535892205
+Länet exkl Norrköping;2017;Skattekraft;2047.086101292293
+Länet exkl Norrköping;2018;Skattekraft;2088.36005464088
+Länet exkl Norrköping;2019;Skattekraft;2131.8766210397
+Länet exkl Norrköping;2020;Skattekraft;2166.667696490361
+Länet exkl Norrköping;2021;Skattekraft;2253.186818592696
+Länet exkl Norrköping;2022;Skattekraft;2355.1372126612646
+Länet exkl Norrköping;2023;Skattekraft;2468.687239213169
+Länet exkl Norrköping;2024;Skattekraft;2548.227907630105
+Länet exkl Norrköping;2025;Skattekraft;2631.7213728939632
+Malmö;2000;Skattekraft;1111.014373273647
+Malmö;2001;Skattekraft;1170.2077386555488
+Malmö;2002;Skattekraft;1228.3741586026872
+Malmö;2003;Skattekraft;1277.058513087124
+Malmö;2004;Skattekraft;1303.6909884001757
+Malmö;2005;Skattekraft;1342.6684017089922
+Malmö;2006;Skattekraft;1387.3894093627373
+Malmö;2007;Skattekraft;1442.4521280194872
+Malmö;2008;Skattekraft;1489.0955729666532
+Malmö;2009;Skattekraft;1483.336679040111
+Malmö;2010;Skattekraft;1488.9902763887171
+Malmö;2011;Skattekraft;1524.0609572869714
+Malmö;2012;Skattekraft;1565.291560251886
+Malmö;2013;Skattekraft;1605.2863633168688
+Malmö;2014;Skattekraft;1641.3596682877146
+Malmö;2015;Skattekraft;1716.0310502396349
+Malmö;2016;Skattekraft;1785.1863352146463
+Malmö;2017;Skattekraft;1847.152409983425
+Malmö;2018;Skattekraft;1895.0320205827657
+Malmö;2019;Skattekraft;1944.6778589401629
+Malmö;2020;Skattekraft;2001.3105368890267
+Malmö;2021;Skattekraft;2111.0905787934007
+Malmö;2022;Skattekraft;2204.2073216799067
+Malmö;2023;Skattekraft;2298.1114673338247
+Malmö;2024;Skattekraft;2364.176630821236
+Malmö;2025;Skattekraft;2440.5034866508063
+Norrköping;2000;Skattekraft;1145.7131400420626
+Norrköping;2001;Skattekraft;1206.1010936076032
+Norrköping;2002;Skattekraft;1279.3605994987956
+Norrköping;2003;Skattekraft;1329.8029377838366
+Norrköping;2004;Skattekraft;1367.2855879752433
+Norrköping;2005;Skattekraft;1408.858972096083
+Norrköping;2006;Skattekraft;1454.3650319217618
+Norrköping;2007;Skattekraft;1520.9741079886328
+Norrköping;2008;Skattekraft;1586.6703107918163
+Norrköping;2009;Skattekraft;1599.1149210082472
+Norrköping;2010;Skattekraft;1625.036524413687
+Norrköping;2011;Skattekraft;1662.4484202628942
+Norrköping;2012;Skattekraft;1708.3497320698737
+Norrköping;2013;Skattekraft;1751.459823998684
+Norrköping;2014;Skattekraft;1778.841391749148
+Norrköping;2015;Skattekraft;1843.4049695333308
+Norrköping;2016;Skattekraft;1908.14635161413
+Norrköping;2017;Skattekraft;1975.9024175637032
+Norrköping;2018;Skattekraft;2042.2231005957256
+Norrköping;2019;Skattekraft;2070.698675011001
+Norrköping;2020;Skattekraft;2110.11444263232
+Norrköping;2021;Skattekraft;2199.802018579795
+Norrköping;2022;Skattekraft;2312.5275633958104
+Norrköping;2023;Skattekraft;2412.7153613524106
+Norrköping;2024;Skattekraft;2499.668919851014
+Norrköping;2025;Skattekraft;2587.883773354546
+Riket;2000;Skattekraft;1242.55538123599
+Riket;2001;Skattekraft;1317.6977589725952
+Riket;2002;Skattekraft;1382.3917981278607
+Riket;2003;Skattekraft;1435.305776616119
+Riket;2004;Skattekraft;1473.8072652926428
+Riket;2005;Skattekraft;1523.7265566076524
+Riket;2006;Skattekraft;1577.6355259157074
+Riket;2007;Skattekraft;1653.965233525215
+Riket;2008;Skattekraft;1730.2665943703278
+Riket;2009;Skattekraft;1737.1787199264463
+Riket;2010;Skattekraft;1760.5413161391184
+Riket;2011;Skattekraft;1800.2779753565778
+Riket;2012;Skattekraft;1857.9169942568424
+Riket;2013;Skattekraft;1902.6367816072889
+Riket;2014;Skattekraft;1942.20103812778
+Riket;2015;Skattekraft;2018.776233966503
+Riket;2016;Skattekraft;2088.184543048016
+Riket;2017;Skattekraft;2154.9157618958125
+Riket;2018;Skattekraft;2210.970182846156
+Riket;2019;Skattekraft;2251.9364393761216
+Riket;2020;Skattekraft;2287.8456581106907
+Riket;2021;Skattekraft;2392.2026542226104
+Riket;2022;Skattekraft;2514.374774985753
+Riket;2023;Skattekraft;2627.1072538310623
+Riket;2024;Skattekraft;2709.6945420681145
+Riket;2025;Skattekraft;2799.7025007471766
+Sex till tolv;2000;Skattekraft;1208.2226710364405
+Sex till tolv;2001;Skattekraft;1277.500477587668
+Sex till tolv;2002;Skattekraft;1345.62183412165
+Sex till tolv;2003;Skattekraft;1398.2624793037369
+Sex till tolv;2004;Skattekraft;1437.1078416684147
+Sex till tolv;2005;Skattekraft;1483.5800754684649
+Sex till tolv;2006;Skattekraft;1539.6217420444996
+Sex till tolv;2007;Skattekraft;1610.2985212278002
+Sex till tolv;2008;Skattekraft;1683.401998597475
+Sex till tolv;2009;Skattekraft;1695.9678853687346
+Sex till tolv;2010;Skattekraft;1716.053441055898
+Sex till tolv;2011;Skattekraft;1753.949290163008
+Sex till tolv;2012;Skattekraft;1806.348443720193
+Sex till tolv;2013;Skattekraft;1850.923315215367
+Sex till tolv;2014;Skattekraft;1886.3570492328056
+Sex till tolv;2015;Skattekraft;1958.676678609576
+Sex till tolv;2016;Skattekraft;2025.39939328405
+Sex till tolv;2017;Skattekraft;2080.3156663304044
+Sex till tolv;2018;Skattekraft;2134.38952970234
+Sex till tolv;2019;Skattekraft;2168.2970608708406
+Sex till tolv;2020;Skattekraft;2198.196519024561
+Sex till tolv;2021;Skattekraft;2298.7051934786564
+Sex till tolv;2022;Skattekraft;2405.397736756017
+Sex till tolv;2023;Skattekraft;2504.068705067906
+Sex till tolv;2024;Skattekraft;2576.376512840601
+Sex till tolv;2025;Skattekraft;2656.921866669843
+Sex till tolv minus tio;2000;Skattekraft;1219.3119607680885
+Sex till tolv minus tio;2001;Skattekraft;1290.1494576968985
+Sex till tolv minus tio;2002;Skattekraft;1357.304643261608
+Sex till tolv minus tio;2003;Skattekraft;1410.3062236671628
+Sex till tolv minus tio;2004;Skattekraft;1449.3439355415792
+Sex till tolv minus tio;2005;Skattekraft;1496.59288900936
+Sex till tolv minus tio;2006;Skattekraft;1554.4369052120428
+Sex till tolv minus tio;2007;Skattekraft;1625.8012985180344
+Sex till tolv minus tio;2008;Skattekraft;1700.1656408840677
+Sex till tolv minus tio;2009;Skattekraft;1712.707293134756
+Sex till tolv minus tio;2010;Skattekraft;1731.7273734849778
+Sex till tolv minus tio;2011;Skattekraft;1769.6161448802711
+Sex till tolv minus tio;2012;Skattekraft;1823.138187514264
+Sex till tolv minus tio;2013;Skattekraft;1867.9970788942408
+Sex till tolv minus tio;2014;Skattekraft;1904.7828372720533
+Sex till tolv minus tio;2015;Skattekraft;1978.465339092613
+Sex till tolv minus tio;2016;Skattekraft;2045.5400953250776
+Sex till tolv minus tio;2017;Skattekraft;2098.096340585139
+Sex till tolv minus tio;2018;Skattekraft;2149.931738298802
+Sex till tolv minus tio;2019;Skattekraft;2184.6899797746587
+Sex till tolv minus tio;2020;Skattekraft;2212.895031890989
+Sex till tolv minus tio;2021;Skattekraft;2315.205465846543
+Sex till tolv minus tio;2022;Skattekraft;2420.8282861127204
+Sex till tolv minus tio;2023;Skattekraft;2519.1406321034347
+Sex till tolv minus tio;2024;Skattekraft;2588.9234372567294
+Sex till tolv minus tio;2025;Skattekraft;2668.15622482542
+Stockholm;2000;Skattekraft;1561.7899961084725
+Stockholm;2001;Skattekraft;1680.7541711482115
+Stockholm;2002;Skattekraft;1732.1538802450182
+Stockholm;2003;Skattekraft;1755.5325375038894
+Stockholm;2004;Skattekraft;1794.513779599605
+Stockholm;2005;Skattekraft;1856.5219872431708
+Stockholm;2006;Skattekraft;1925.2150699017093
+Stockholm;2007;Skattekraft;2024.416377522596
+Stockholm;2008;Skattekraft;2118.716980200464
+Stockholm;2009;Skattekraft;2118.577265717968
+Stockholm;2010;Skattekraft;2150.710741577172
+Stockholm;2011;Skattekraft;2212.804457587664
+Stockholm;2012;Skattekraft;2281.6547232009625
+Stockholm;2013;Skattekraft;2343.217110393228
+Stockholm;2014;Skattekraft;2412.916164559002
+Stockholm;2015;Skattekraft;2529.852216962132
+Stockholm;2016;Skattekraft;2628.745247798516
+Stockholm;2017;Skattekraft;2713.1141413471387
+Stockholm;2018;Skattekraft;2807.679435932294
+Stockholm;2019;Skattekraft;2875.184919405425
+Stockholm;2020;Skattekraft;2953.858896152021
+Stockholm;2021;Skattekraft;3127.24848534385
+Stockholm;2022;Skattekraft;3293.899556028547
+Stockholm;2023;Skattekraft;3419.550975132034
+Stockholm;2024;Skattekraft;3526.579641493249
+Stockholm;2025;Skattekraft;3647.915464598731
+Tolv största;2000;Skattekraft;1325.556955468099
+Tolv största;2001;Skattekraft;1405.7008884868096
+Tolv största;2002;Skattekraft;1468.806052365618
+Tolv största;2003;Skattekraft;1512.7112206262852
+Tolv största;2004;Skattekraft;1549.9509350075257
+Tolv största;2005;Skattekraft;1601.380076814754
+Tolv största;2006;Skattekraft;1660.8031933920488
+Tolv största;2007;Skattekraft;1738.867951384968
+Tolv största;2008;Skattekraft;1814.773398998924
+Tolv största;2009;Skattekraft;1816.2348689328653
+Tolv största;2010;Skattekraft;1839.162516479321
+Tolv största;2011;Skattekraft;1887.9446438529387
+Tolv största;2012;Skattekraft;1946.945920170693
+Tolv största;2013;Skattekraft;1996.583973824409
+Tolv största;2014;Skattekraft;2046.913868769868
+Tolv största;2015;Skattekraft;2137.435310437149
+Tolv största;2016;Skattekraft;2217.369799234265
+Tolv största;2017;Skattekraft;2286.666053084845
+Tolv största;2018;Skattekraft;2354.283605822004
+Tolv största;2019;Skattekraft;2401.424440316955
+Tolv största;2020;Skattekraft;2448.023497314174
+Tolv största;2021;Skattekraft;2573.098886849456
+Tolv största;2022;Skattekraft;2696.411241127915
+Tolv största;2023;Skattekraft;2806.7102330257994
+Tolv största;2024;Skattekraft;2893.729225187266
+Tolv största;2025;Skattekraft;2990.190118548373
+Tolv största minus fem;2000;Skattekraft;1328.827314393098
+Tolv största minus fem;2001;Skattekraft;1409.1197182494914
+Tolv största minus fem;2002;Skattekraft;1472.2375724850067
+Tolv största minus fem;2003;Skattekraft;1516.6067366433151
+Tolv största minus fem;2004;Skattekraft;1554.167718208197
+Tolv största minus fem;2005;Skattekraft;1605.9900192480331
+Tolv största minus fem;2006;Skattekraft;1665.663130143012
+Tolv största minus fem;2007;Skattekraft;1744.8182504105455
+Tolv största minus fem;2008;Skattekraft;1820.7511843913487
+Tolv största minus fem;2009;Skattekraft;1822.225593567473
+Tolv största minus fem;2010;Skattekraft;1845.226667094452
+Tolv största minus fem;2011;Skattekraft;1893.8296304739688
+Tolv största minus fem;2012;Skattekraft;1953.285962676554
+Tolv största minus fem;2013;Skattekraft;2002.796926699906
+Tolv största minus fem;2014;Skattekraft;2053.3315698052297
+Tolv största minus fem;2015;Skattekraft;2143.957064845975
+Tolv största minus fem;2016;Skattekraft;2224.7227398221835
+Tolv största minus fem;2017;Skattekraft;2294.310170700808
+Tolv största minus fem;2018;Skattekraft;2363.2614621059342
+Tolv största minus fem;2019;Skattekraft;2410.145288480192
+Tolv största minus fem;2020;Skattekraft;2457.2941176844824
+Tolv största minus fem;2021;Skattekraft;2583.949882628219
+Tolv största minus fem;2022;Skattekraft;2708.616333567109
+Tolv största minus fem;2023;Skattekraft;2818.2170710840533
+Tolv största minus fem;2024;Skattekraft;2904.742634783425
+Tolv största minus fem;2025;Skattekraft;3001.0835530132645
+Tre största;2000;Skattekraft;1392.200103323342
+Tre största;2001;Skattekraft;1489.0172859012291
+Tre största;2002;Skattekraft;1547.42384304828
+Tre största;2003;Skattekraft;1586.6045720254265
+Tre största;2004;Skattekraft;1623.9914858577088
+Tre största;2005;Skattekraft;1679.6007990827964
+Tre största;2006;Skattekraft;1740.686532126961
+Tre största;2007;Skattekraft;1825.719703389561
+Tre största;2008;Skattekraft;1903.3341850090053
+Tre största;2009;Skattekraft;1897.1653126103847
+Tre största;2010;Skattekraft;1921.2495338257256
+Tre största;2011;Skattekraft;1974.4520551598105
+Tre största;2012;Skattekraft;2037.3719740513864
+Tre största;2013;Skattekraft;2088.5814795595097
+Tre största;2014;Skattekraft;2146.4024376129505
+Tre största;2015;Skattekraft;2247.426265688744
+Tre största;2016;Skattekraft;2337.777282256297
+Tre största;2017;Skattekraft;2417.771578184432
+Tre största;2018;Skattekraft;2498.260588736131
+Tre största;2019;Skattekraft;2554.5722838230954
+Tre största;2020;Skattekraft;2612.0533569430954
+Tre största;2021;Skattekraft;2756.28809823218
+Tre största;2022;Skattekraft;2895.567018709972
+Tre största;2023;Skattekraft;3011.6066333553545
+Tre största;2024;Skattekraft;3106.783994201636
+Tre största;2025;Skattekraft;3212.0914705384844
+Umeå;2000;Skattekraft;1199.5177587262706
+Umeå;2001;Skattekraft;1267.698988629221
+Umeå;2002;Skattekraft;1323.614175076273
+Umeå;2003;Skattekraft;1370.089976556057
+Umeå;2004;Skattekraft;1414.1420605174146
+Umeå;2005;Skattekraft;1464.0387150363856
+Umeå;2006;Skattekraft;1524.1515709983369
+Umeå;2007;Skattekraft;1603.412334147498
+Umeå;2008;Skattekraft;1681.1794762614436
+Umeå;2009;Skattekraft;1695.5774709620864
+Umeå;2010;Skattekraft;1716.2193759580164
+Umeå;2011;Skattekraft;1761.1814708281456
+Umeå;2012;Skattekraft;1822.275649223319
+Umeå;2013;Skattekraft;1872.301413615662
+Umeå;2014;Skattekraft;1918.445319488684
+Umeå;2015;Skattekraft;1990.395522326271
+Umeå;2016;Skattekraft;2054.7391205285944
+Umeå;2017;Skattekraft;2108.4026223217143
+Umeå;2018;Skattekraft;2152.683705818957
+Umeå;2019;Skattekraft;2189.4321999053536
+Umeå;2020;Skattekraft;2206.521071384691
+Umeå;2021;Skattekraft;2316.0301380947653
+Umeå;2022;Skattekraft;2423.367489696374
+Umeå;2023;Skattekraft;2548.5570023517744
+Umeå;2024;Skattekraft;2614.209416829921
+Umeå;2025;Skattekraft;2684.4091266068185
+Uppsala;2000;Skattekraft;1352.631636229611
+Uppsala;2001;Skattekraft;1344.977894383233
+Uppsala;2002;Skattekraft;1424.8662848619438
+Uppsala;2003;Skattekraft;1475.554743757922
+Uppsala;2004;Skattekraft;1509.3587293218216
+Uppsala;2005;Skattekraft;1553.865625068191
+Uppsala;2006;Skattekraft;1614.972973264862
+Uppsala;2007;Skattekraft;1682.1974928149043
+Uppsala;2008;Skattekraft;1753.6713029978812
+Uppsala;2009;Skattekraft;1763.3850403849017
+Uppsala;2010;Skattekraft;1785.4004560461506
+Uppsala;2011;Skattekraft;1838.490807545962
+Uppsala;2012;Skattekraft;1896.6070326958668
+Uppsala;2013;Skattekraft;1949.390591572084
+Uppsala;2014;Skattekraft;2002.9127805480275
+Uppsala;2015;Skattekraft;2085.120356357614
+Uppsala;2016;Skattekraft;2148.523250015148
+Uppsala;2017;Skattekraft;2199.568922396937
+Uppsala;2018;Skattekraft;2238.0797996127267
+Uppsala;2019;Skattekraft;2265.943570787851
+Uppsala;2020;Skattekraft;2307.1515016742287
+Uppsala;2021;Skattekraft;2405.659186181585
+Uppsala;2022;Skattekraft;2487.0446848930374
+Uppsala;2023;Skattekraft;2589.127253606382
+Uppsala;2024;Skattekraft;2665.211115411909
+Uppsala;2025;Skattekraft;2754.587572883121
+Västerås;2000;Skattekraft;1281.34696979292
+Västerås;2001;Skattekraft;1351.1608072050644
+Västerås;2002;Skattekraft;1419.2642472576065
+Västerås;2003;Skattekraft;1469.90852931447
+Västerås;2004;Skattekraft;1503.4271146595022
+Västerås;2005;Skattekraft;1550.1993420952904
+Västerås;2006;Skattekraft;1605.8982846825156
+Västerås;2007;Skattekraft;1685.7127901411825
+Västerås;2008;Skattekraft;1764.9980695554038
+Västerås;2009;Skattekraft;1781.9562146892656
+Västerås;2010;Skattekraft;1793.8370491301464
+Västerås;2011;Skattekraft;1829.225212495224
+Västerås;2012;Skattekraft;1892.9672097310304
+Västerås;2013;Skattekraft;1941.4835609402592
+Västerås;2014;Skattekraft;1983.3405241402347
+Västerås;2015;Skattekraft;2049.814761255492
+Västerås;2016;Skattekraft;2113.329263329263
+Västerås;2017;Skattekraft;2164.373159977087
+Västerås;2018;Skattekraft;2216.4875918936336
+Västerås;2019;Skattekraft;2250.1541717245814
+Västerås;2020;Skattekraft;2275.581642033803
+Västerås;2021;Skattekraft;2367.685127328836
+Västerås;2022;Skattekraft;2471.4565750411275
+Västerås;2023;Skattekraft;2599.3786874772954
+Västerås;2024;Skattekraft;2681.138488738374
+Västerås;2025;Skattekraft;2771.848783378331
+Örebro;2000;Skattekraft;1166.5123543761624
+Örebro;2001;Skattekraft;1235.4392062335332
+Örebro;2002;Skattekraft;1302.0315487571702
+Örebro;2003;Skattekraft;1354.3646268845814
+Örebro;2004;Skattekraft;1391.283804003717
+Örebro;2005;Skattekraft;1442.8769386141405
+Örebro;2006;Skattekraft;1494.1811330702374
+Örebro;2007;Skattekraft;1555.336619923483
+Örebro;2008;Skattekraft;1627.161184484075
+Örebro;2009;Skattekraft;1639.299732847783
+Örebro;2010;Skattekraft;1656.370884393917
+Örebro;2011;Skattekraft;1693.249028230541
+Örebro;2012;Skattekraft;1741.874892049053
+Örebro;2013;Skattekraft;1786.492080313516
+Örebro;2014;Skattekraft;1825.667166837285
+Örebro;2015;Skattekraft;1900.3467406380028
+Örebro;2016;Skattekraft;1968.1718054163173
+Örebro;2017;Skattekraft;2015.237106679708
+Örebro;2018;Skattekraft;2061.206126480925
+Örebro;2019;Skattekraft;2100.6833830027745
+Örebro;2020;Skattekraft;2139.921090158012
+Örebro;2021;Skattekraft;2232.7007968812704
+Örebro;2022;Skattekraft;2336.441916523785
+Örebro;2023;Skattekraft;2426.3812536084542
+Örebro;2024;Skattekraft;2494.7795678781067
+Örebro;2025;Skattekraft;2569.079856362406
+Östergötlands län;2000;Skattekraft;1171.702585420997
+Östergötlands län;2001;Skattekraft;1237.1114770238844
+Östergötlands län;2002;Skattekraft;1304.316487599108
+Östergötlands län;2003;Skattekraft;1356.8476031400564
+Östergötlands län;2004;Skattekraft;1390.4733286857856
+Östergötlands län;2005;Skattekraft;1433.9843815682327
+Östergötlands län;2006;Skattekraft;1482.922055861003
+Östergötlands län;2007;Skattekraft;1547.5976036634197
+Östergötlands län;2008;Skattekraft;1621.4113037580732
+Östergötlands län;2009;Skattekraft;1629.742967787856
+Östergötlands län;2010;Skattekraft;1653.0530069220422
+Östergötlands län;2011;Skattekraft;1693.3016296468131
+Östergötlands län;2012;Skattekraft;1742.463991295207
+Östergötlands län;2013;Skattekraft;1788.8285432387495
+Östergötlands län;2014;Skattekraft;1823.636918831499
+Östergötlands län;2015;Skattekraft;1897.426519260155
+Östergötlands län;2016;Skattekraft;1961.8119684586543
+Östergötlands län;2017;Skattekraft;2025.158689912043
+Östergötlands län;2018;Skattekraft;2074.199006462543
+Östergötlands län;2019;Skattekraft;2113.060290658332
+Östergötlands län;2020;Skattekraft;2149.2985242680206
+Östergötlands län;2021;Skattekraft;2236.76826256536
+Östergötlands län;2022;Skattekraft;2342.034108054044
+Östergötlands län;2023;Skattekraft;2451.4840206818576
+Östergötlands län;2024;Skattekraft;2533.326560072474
+Östergötlands län;2025;Skattekraft;2618.2783965318995
+Fem till tolv;2000;Skattesats;30.65625
+Fem till tolv;2001;Skattesats;30.71875
+Fem till tolv;2002;Skattesats;246.25
+Fem till tolv;2003;Skattesats;248.25
+Fem till tolv;2004;Skattesats;249.75
+Fem till tolv;2005;Skattesats;251.3
+Fem till tolv;2006;Skattesats;251.3
+Fem till tolv;2007;Skattesats;251.52
+Fem till tolv;2008;Skattesats;251.12
+Fem till tolv;2009;Skattesats;251.17
+Fem till tolv;2010;Skattesats;251.27
+Fem till tolv;2011;Skattesats;251.27
+Fem till tolv;2012;Skattesats;251.27
+Fem till tolv;2013;Skattesats;253.07
+Fem till tolv;2014;Skattesats;255.47
+Fem till tolv;2015;Skattesats;255.52
+Fem till tolv;2016;Skattesats;256.57
+Fem till tolv;2017;Skattesats;257.07
+Fem till tolv;2018;Skattesats;257.07
+Fem till tolv;2019;Skattesats;258.85
+Fem till tolv;2020;Skattesats;260.55
+Fem till tolv;2021;Skattesats;260.55
+Fem till tolv;2022;Skattesats;260.55
+Fem till tolv;2023;Skattesats;260.55
+Fem till tolv;2024;Skattesats;261.3
+Fem till tolv;2025;Skattesats;261.3
+Fyra stora;2000;Skattesats;30.0625
+Fyra stora;2001;Skattesats;30.2125
+Fyra stora;2002;Skattesats;120.4
+Fyra stora;2003;Skattesats;124.13
+Fyra stora;2004;Skattesats;125.28
+Fyra stora;2005;Skattesats;125.48
+Fyra stora;2006;Skattesats;125.48
+Fyra stora;2007;Skattesats;125.08
+Fyra stora;2008;Skattesats;124.36
+Fyra stora;2009;Skattesats;124.26
+Fyra stora;2010;Skattesats;124.51
+Fyra stora;2011;Skattesats;124.51
+Fyra stora;2012;Skattesats;124.51
+Fyra stora;2013;Skattesats;125.01
+Fyra stora;2014;Skattesats;125.31
+Fyra stora;2015;Skattesats;126.31
+Fyra stora;2016;Skattesats;127.36
+Fyra stora;2017;Skattesats;127.36
+Fyra stora;2018;Skattesats;127.36
+Fyra stora;2019;Skattesats;127.69
+Fyra stora;2020;Skattesats;127.69
+Fyra stora;2021;Skattesats;127.69
+Fyra stora;2022;Skattesats;127.69
+Fyra stora;2023;Skattesats;127.69
+Fyra stora;2024;Skattesats;128.23
+Fyra stora;2025;Skattesats;128.47
+Göteborg;2000;Skattesats;31.3
+Göteborg;2001;Skattesats;32.05
+Göteborg;2002;Skattesats;31.8
+Göteborg;2003;Skattesats;31.8
+Göteborg;2004;Skattesats;31.8
+Göteborg;2005;Skattesats;32.0
+Göteborg;2006;Skattesats;32.0
+Göteborg;2007;Skattesats;32.0
+Göteborg;2008;Skattesats;31.75
+Göteborg;2009;Skattesats;31.75
+Göteborg;2010;Skattesats;32.0
+Göteborg;2011;Skattesats;32.0
+Göteborg;2012;Skattesats;32.0
+Göteborg;2013;Skattesats;32.25
+Göteborg;2014;Skattesats;32.25
+Göteborg;2015;Skattesats;32.6
+Göteborg;2016;Skattesats;32.6
+Göteborg;2017;Skattesats;32.6
+Göteborg;2018;Skattesats;32.6
+Göteborg;2019;Skattesats;32.6
+Göteborg;2020;Skattesats;32.6
+Göteborg;2021;Skattesats;32.6
+Göteborg;2022;Skattesats;32.6
+Göteborg;2023;Skattesats;32.6
+Göteborg;2024;Skattesats;32.6
+Göteborg;2025;Skattesats;32.6
+Helsingborg;2000;Skattesats;29.1
+Helsingborg;2001;Skattesats;29.1
+Helsingborg;2002;Skattesats;29.1
+Helsingborg;2003;Skattesats;30.1
+Helsingborg;2004;Skattesats;30.6
+Helsingborg;2005;Skattesats;30.6
+Helsingborg;2006;Skattesats;30.6
+Helsingborg;2007;Skattesats;30.6
+Helsingborg;2008;Skattesats;30.6
+Helsingborg;2009;Skattesats;30.5
+Helsingborg;2010;Skattesats;30.6
+Helsingborg;2011;Skattesats;30.6
+Helsingborg;2012;Skattesats;30.6
+Helsingborg;2013;Skattesats;30.6
+Helsingborg;2014;Skattesats;30.9
+Helsingborg;2015;Skattesats;30.9
+Helsingborg;2016;Skattesats;30.9
+Helsingborg;2017;Skattesats;30.9
+Helsingborg;2018;Skattesats;30.9
+Helsingborg;2019;Skattesats;31.39
+Helsingborg;2020;Skattesats;31.39
+Helsingborg;2021;Skattesats;31.39
+Helsingborg;2022;Skattesats;31.39
+Helsingborg;2023;Skattesats;31.39
+Helsingborg;2024;Skattesats;31.39
+Helsingborg;2025;Skattesats;31.39
+Jönköping;2000;Skattesats;30.5
+Jönköping;2001;Skattesats;30.5
+Jönköping;2002;Skattesats;30.75
+Jönköping;2003;Skattesats;30.75
+Jönköping;2004;Skattesats;31.75
+Jönköping;2005;Skattesats;31.75
+Jönköping;2006;Skattesats;31.75
+Jönköping;2007;Skattesats;31.75
+Jönköping;2008;Skattesats;31.75
+Jönköping;2009;Skattesats;32.15
+Jönköping;2010;Skattesats;32.15
+Jönköping;2011;Skattesats;32.15
+Jönköping;2012;Skattesats;32.15
+Jönköping;2013;Skattesats;32.15
+Jönköping;2014;Skattesats;32.55
+Jönköping;2015;Skattesats;32.6
+Jönköping;2016;Skattesats;32.6
+Jönköping;2017;Skattesats;32.6
+Jönköping;2018;Skattesats;32.6
+Jönköping;2019;Skattesats;33.4
+Jönköping;2020;Skattesats;33.4
+Jönköping;2021;Skattesats;33.4
+Jönköping;2022;Skattesats;33.4
+Jönköping;2023;Skattesats;33.4
+Jönköping;2024;Skattesats;33.4
+Jönköping;2025;Skattesats;33.4
+Linköping;2000;Skattesats;30.25
+Linköping;2001;Skattesats;30.25
+Linköping;2002;Skattesats;30.25
+Linköping;2003;Skattesats;30.25
+Linköping;2004;Skattesats;30.25
+Linköping;2005;Skattesats;30.25
+Linköping;2006;Skattesats;30.25
+Linköping;2007;Skattesats;30.25
+Linköping;2008;Skattesats;30.25
+Linköping;2009;Skattesats;30.25
+Linköping;2010;Skattesats;30.25
+Linköping;2011;Skattesats;30.25
+Linköping;2012;Skattesats;30.25
+Linköping;2013;Skattesats;30.9
+Linköping;2014;Skattesats;30.9
+Linköping;2015;Skattesats;30.9
+Linköping;2016;Skattesats;30.9
+Linköping;2017;Skattesats;30.9
+Linköping;2018;Skattesats;30.9
+Linköping;2019;Skattesats;30.9
+Linköping;2020;Skattesats;31.75
+Linköping;2021;Skattesats;31.75
+Linköping;2022;Skattesats;31.75
+Linköping;2023;Skattesats;31.75
+Linköping;2024;Skattesats;31.75
+Linköping;2025;Skattesats;31.75
+Lkpg-Nkpg;2000;Skattesats;30.775
+Lkpg-Nkpg;2001;Skattesats;30.775
+Lkpg-Nkpg;2002;Skattesats;61.55
+Lkpg-Nkpg;2003;Skattesats;61.55
+Lkpg-Nkpg;2004;Skattesats;61.55
+Lkpg-Nkpg;2005;Skattesats;61.55
+Lkpg-Nkpg;2006;Skattesats;61.55
+Lkpg-Nkpg;2007;Skattesats;61.55
+Lkpg-Nkpg;2008;Skattesats;61.55
+Lkpg-Nkpg;2009;Skattesats;61.55
+Lkpg-Nkpg;2010;Skattesats;61.55
+Lkpg-Nkpg;2011;Skattesats;61.55
+Lkpg-Nkpg;2012;Skattesats;61.55
+Lkpg-Nkpg;2013;Skattesats;62.85
+Lkpg-Nkpg;2014;Skattesats;62.85
+Lkpg-Nkpg;2015;Skattesats;62.85
+Lkpg-Nkpg;2016;Skattesats;63.35
+Lkpg-Nkpg;2017;Skattesats;63.35
+Lkpg-Nkpg;2018;Skattesats;63.35
+Lkpg-Nkpg;2019;Skattesats;63.35
+Lkpg-Nkpg;2020;Skattesats;65.05
+Lkpg-Nkpg;2021;Skattesats;65.05
+Lkpg-Nkpg;2022;Skattesats;65.05
+Lkpg-Nkpg;2023;Skattesats;65.05
+Lkpg-Nkpg;2024;Skattesats;65.05
+Lkpg-Nkpg;2025;Skattesats;65.05
+Lund;2000;Skattesats;29.88
+Lund;2001;Skattesats;29.88
+Lund;2002;Skattesats;29.88
+Lund;2003;Skattesats;30.88
+Lund;2004;Skattesats;30.88
+Lund;2005;Skattesats;31.63
+Lund;2006;Skattesats;31.63
+Lund;2007;Skattesats;31.38
+Lund;2008;Skattesats;31.23
+Lund;2009;Skattesats;31.23
+Lund;2010;Skattesats;31.23
+Lund;2011;Skattesats;31.23
+Lund;2012;Skattesats;31.23
+Lund;2013;Skattesats;31.23
+Lund;2014;Skattesats;31.93
+Lund;2015;Skattesats;31.93
+Lund;2016;Skattesats;31.93
+Lund;2017;Skattesats;31.93
+Lund;2018;Skattesats;31.93
+Lund;2019;Skattesats;32.42
+Lund;2020;Skattesats;32.42
+Lund;2021;Skattesats;32.42
+Lund;2022;Skattesats;32.42
+Lund;2023;Skattesats;32.42
+Lund;2024;Skattesats;32.42
+Lund;2025;Skattesats;32.42
+Länet exkl Linköping;2000;Skattesats;31.12
+Länet exkl Linköping;2001;Skattesats;31.12
+Länet exkl Linköping;2002;Skattesats;0.5
+Länet exkl Linköping;2003;Skattesats;0.5399999999999991
+Länet exkl Linköping;2004;Skattesats;0.620000000000001
+Länet exkl Linköping;2005;Skattesats;0.629999999999999
+Länet exkl Linköping;2006;Skattesats;0.629999999999999
+Länet exkl Linköping;2007;Skattesats;0.6499999999999986
+Länet exkl Linköping;2008;Skattesats;0.6499999999999986
+Länet exkl Linköping;2009;Skattesats;0.6600000000000001
+Länet exkl Linköping;2010;Skattesats;0.6900000000000013
+Länet exkl Linköping;2011;Skattesats;0.6900000000000013
+Länet exkl Linköping;2012;Skattesats;0.7300000000000004
+Länet exkl Linköping;2013;Skattesats;0.7300000000000004
+Länet exkl Linköping;2014;Skattesats;0.7900000000000027
+Länet exkl Linköping;2015;Skattesats;0.7900000000000027
+Länet exkl Linköping;2016;Skattesats;1.0100000000000016
+Länet exkl Linköping;2017;Skattesats;1.0100000000000016
+Länet exkl Linköping;2018;Skattesats;1.0100000000000016
+Länet exkl Linköping;2019;Skattesats;1.0
+Länet exkl Linköping;2020;Skattesats;1.0300000000000011
+Länet exkl Linköping;2021;Skattesats;1.0300000000000011
+Länet exkl Linköping;2022;Skattesats;1.0300000000000011
+Länet exkl Linköping;2023;Skattesats;1.0300000000000011
+Länet exkl Linköping;2024;Skattesats;1.0600000000000025
+Länet exkl Linköping;2025;Skattesats;1.0499999999999972
+Länet exkl Norrköping;2000;Skattesats;30.42
+Länet exkl Norrköping;2001;Skattesats;30.42
+Länet exkl Norrköping;2002;Skattesats;-0.5500000000000007
+Länet exkl Norrköping;2003;Skattesats;-0.5100000000000016
+Länet exkl Norrköping;2004;Skattesats;-0.4299999999999997
+Länet exkl Norrköping;2005;Skattesats;-0.4200000000000017
+Länet exkl Norrköping;2006;Skattesats;-0.4200000000000017
+Länet exkl Norrköping;2007;Skattesats;-0.4000000000000021
+Länet exkl Norrköping;2008;Skattesats;-0.4000000000000021
+Länet exkl Norrköping;2009;Skattesats;-0.3900000000000005
+Länet exkl Norrköping;2010;Skattesats;-0.3599999999999994
+Länet exkl Norrköping;2011;Skattesats;-0.3599999999999994
+Länet exkl Norrköping;2012;Skattesats;-0.3200000000000003
+Länet exkl Norrköping;2013;Skattesats;-0.3200000000000003
+Länet exkl Norrköping;2014;Skattesats;-0.259999999999998
+Länet exkl Norrköping;2015;Skattesats;-0.259999999999998
+Länet exkl Norrköping;2016;Skattesats;-0.5400000000000027
+Länet exkl Norrköping;2017;Skattesats;-0.5400000000000027
+Länet exkl Norrköping;2018;Skattesats;-0.5400000000000027
+Länet exkl Norrköping;2019;Skattesats;-0.5500000000000043
+Länet exkl Norrköping;2020;Skattesats;-0.519999999999996
+Länet exkl Norrköping;2021;Skattesats;-0.519999999999996
+Länet exkl Norrköping;2022;Skattesats;-0.519999999999996
+Länet exkl Norrköping;2023;Skattesats;-0.519999999999996
+Länet exkl Norrköping;2024;Skattesats;-0.4899999999999949
+Länet exkl Norrköping;2025;Skattesats;-0.5
+Malmö;2000;Skattesats;30.05
+Malmö;2001;Skattesats;30.05
+Malmö;2002;Skattesats;30.05
+Malmö;2003;Skattesats;31.23
+Malmö;2004;Skattesats;31.23
+Malmö;2005;Skattesats;31.23
+Malmö;2006;Skattesats;31.23
+Malmö;2007;Skattesats;31.23
+Malmö;2008;Skattesats;31.23
+Malmö;2009;Skattesats;31.23
+Malmö;2010;Skattesats;31.23
+Malmö;2011;Skattesats;31.23
+Malmö;2012;Skattesats;31.23
+Malmö;2013;Skattesats;31.33
+Malmö;2014;Skattesats;31.63
+Malmö;2015;Skattesats;31.93
+Malmö;2016;Skattesats;31.93
+Malmö;2017;Skattesats;31.93
+Malmö;2018;Skattesats;31.93
+Malmö;2019;Skattesats;32.42
+Malmö;2020;Skattesats;32.42
+Malmö;2021;Skattesats;32.42
+Malmö;2022;Skattesats;32.42
+Malmö;2023;Skattesats;32.42
+Malmö;2024;Skattesats;32.42
+Malmö;2025;Skattesats;32.42
+Norrköping;2000;Skattesats;31.3
+Norrköping;2001;Skattesats;31.3
+Norrköping;2002;Skattesats;31.3
+Norrköping;2003;Skattesats;31.3
+Norrköping;2004;Skattesats;31.3
+Norrköping;2005;Skattesats;31.3
+Norrköping;2006;Skattesats;31.3
+Norrköping;2007;Skattesats;31.3
+Norrköping;2008;Skattesats;31.3
+Norrköping;2009;Skattesats;31.3
+Norrköping;2010;Skattesats;31.3
+Norrköping;2011;Skattesats;31.3
+Norrköping;2012;Skattesats;31.3
+Norrköping;2013;Skattesats;31.95
+Norrköping;2014;Skattesats;31.95
+Norrköping;2015;Skattesats;31.95
+Norrköping;2016;Skattesats;32.45
+Norrköping;2017;Skattesats;32.45
+Norrköping;2018;Skattesats;32.45
+Norrköping;2019;Skattesats;32.45
+Norrköping;2020;Skattesats;33.3
+Norrköping;2021;Skattesats;33.3
+Norrköping;2022;Skattesats;33.3
+Norrköping;2023;Skattesats;33.3
+Norrköping;2024;Skattesats;33.3
+Norrköping;2025;Skattesats;33.3
+Riket;2000;Skattesats;30.38
+Riket;2001;Skattesats;30.53
+Riket;2002;Skattesats;30.52
+Riket;2003;Skattesats;31.17
+Riket;2004;Skattesats;31.51
+Riket;2005;Skattesats;31.6
+Riket;2006;Skattesats;31.6
+Riket;2007;Skattesats;31.55
+Riket;2008;Skattesats;31.44
+Riket;2009;Skattesats;31.52
+Riket;2010;Skattesats;31.56
+Riket;2011;Skattesats;31.55
+Riket;2012;Skattesats;31.6
+Riket;2013;Skattesats;31.73
+Riket;2014;Skattesats;31.86
+Riket;2015;Skattesats;31.99
+Riket;2016;Skattesats;32.1
+Riket;2017;Skattesats;32.12
+Riket;2018;Skattesats;32.12
+Riket;2019;Skattesats;32.19
+Riket;2020;Skattesats;32.28
+Riket;2021;Skattesats;32.27
+Riket;2022;Skattesats;32.24
+Riket;2023;Skattesats;32.24
+Riket;2024;Skattesats;32.37
+Riket;2025;Skattesats;32.41
+Sex till tolv;2000;Skattesats;30.714285714285715
+Sex till tolv;2001;Skattesats;30.785714285714285
+Sex till tolv;2002;Skattesats;216.0
+Sex till tolv;2003;Skattesats;218.0
+Sex till tolv;2004;Skattesats;219.5
+Sex till tolv;2005;Skattesats;221.05
+Sex till tolv;2006;Skattesats;221.05
+Sex till tolv;2007;Skattesats;221.27
+Sex till tolv;2008;Skattesats;220.87000000000003
+Sex till tolv;2009;Skattesats;220.92
+Sex till tolv;2010;Skattesats;221.02
+Sex till tolv;2011;Skattesats;221.02
+Sex till tolv;2012;Skattesats;221.02
+Sex till tolv;2013;Skattesats;222.17
+Sex till tolv;2014;Skattesats;224.57
+Sex till tolv;2015;Skattesats;224.62
+Sex till tolv;2016;Skattesats;225.67
+Sex till tolv;2017;Skattesats;226.17
+Sex till tolv;2018;Skattesats;226.17
+Sex till tolv;2019;Skattesats;227.95
+Sex till tolv;2020;Skattesats;228.8
+Sex till tolv;2021;Skattesats;228.8
+Sex till tolv;2022;Skattesats;228.8
+Sex till tolv;2023;Skattesats;228.8
+Sex till tolv;2024;Skattesats;229.55
+Sex till tolv;2025;Skattesats;229.55
+Sex till tolv minus tio;2000;Skattesats;30.616666666666664
+Sex till tolv minus tio;2001;Skattesats;30.7
+Sex till tolv minus tio;2002;Skattesats;184.7
+Sex till tolv minus tio;2003;Skattesats;186.7
+Sex till tolv minus tio;2004;Skattesats;188.2
+Sex till tolv minus tio;2005;Skattesats;189.75
+Sex till tolv minus tio;2006;Skattesats;189.75
+Sex till tolv minus tio;2007;Skattesats;189.97
+Sex till tolv minus tio;2008;Skattesats;189.57
+Sex till tolv minus tio;2009;Skattesats;189.62
+Sex till tolv minus tio;2010;Skattesats;189.72
+Sex till tolv minus tio;2011;Skattesats;189.72
+Sex till tolv minus tio;2012;Skattesats;189.72
+Sex till tolv minus tio;2013;Skattesats;190.22
+Sex till tolv minus tio;2014;Skattesats;192.62
+Sex till tolv minus tio;2015;Skattesats;192.67
+Sex till tolv minus tio;2016;Skattesats;193.22000000000003
+Sex till tolv minus tio;2017;Skattesats;193.72000000000003
+Sex till tolv minus tio;2018;Skattesats;193.72000000000003
+Sex till tolv minus tio;2019;Skattesats;195.5
+Sex till tolv minus tio;2020;Skattesats;195.5
+Sex till tolv minus tio;2021;Skattesats;195.5
+Sex till tolv minus tio;2022;Skattesats;195.5
+Sex till tolv minus tio;2023;Skattesats;195.5
+Sex till tolv minus tio;2024;Skattesats;196.25
+Sex till tolv minus tio;2025;Skattesats;196.25
+Stockholm;2000;Skattesats;28.25
+Stockholm;2001;Skattesats;28.1
+Stockholm;2002;Skattesats;27.9
+Stockholm;2003;Skattesats;29.7
+Stockholm;2004;Skattesats;30.35
+Stockholm;2005;Skattesats;30.35
+Stockholm;2006;Skattesats;30.35
+Stockholm;2007;Skattesats;30.05
+Stockholm;2008;Skattesats;29.68
+Stockholm;2009;Skattesats;29.58
+Stockholm;2010;Skattesats;29.58
+Stockholm;2011;Skattesats;29.58
+Stockholm;2012;Skattesats;29.58
+Stockholm;2013;Skattesats;29.43
+Stockholm;2014;Skattesats;29.43
+Stockholm;2015;Skattesats;29.78
+Stockholm;2016;Skattesats;29.98
+Stockholm;2017;Skattesats;29.98
+Stockholm;2018;Skattesats;29.98
+Stockholm;2019;Skattesats;29.82
+Stockholm;2020;Skattesats;29.82
+Stockholm;2021;Skattesats;29.82
+Stockholm;2022;Skattesats;29.82
+Stockholm;2023;Skattesats;29.82
+Stockholm;2024;Skattesats;30.36
+Stockholm;2025;Skattesats;30.6
+Tolv största;2000;Skattesats;30.45833333333333
+Tolv största;2001;Skattesats;30.55
+Tolv största;2002;Skattesats;366.65
+Tolv största;2003;Skattesats;372.38
+Tolv största;2004;Skattesats;375.03
+Tolv största;2005;Skattesats;376.78
+Tolv största;2006;Skattesats;376.78
+Tolv största;2007;Skattesats;376.6
+Tolv största;2008;Skattesats;375.48
+Tolv största;2009;Skattesats;375.43
+Tolv största;2010;Skattesats;375.78
+Tolv största;2011;Skattesats;375.78
+Tolv största;2012;Skattesats;375.78
+Tolv största;2013;Skattesats;378.08
+Tolv största;2014;Skattesats;380.78
+Tolv största;2015;Skattesats;381.83
+Tolv största;2016;Skattesats;383.93
+Tolv största;2017;Skattesats;384.43
+Tolv största;2018;Skattesats;384.43
+Tolv största;2019;Skattesats;386.54
+Tolv största;2020;Skattesats;388.24
+Tolv största;2021;Skattesats;388.24
+Tolv största;2022;Skattesats;388.24
+Tolv största;2023;Skattesats;388.24
+Tolv största;2024;Skattesats;389.53
+Tolv största;2025;Skattesats;389.77
+Tolv största minus fem;2000;Skattesats;30.477272727272727
+Tolv största minus fem;2001;Skattesats;30.577272727272724
+Tolv största minus fem;2002;Skattesats;336.4
+Tolv största minus fem;2003;Skattesats;342.12999999999994
+Tolv största minus fem;2004;Skattesats;344.78
+Tolv största minus fem;2005;Skattesats;346.53
+Tolv största minus fem;2006;Skattesats;346.53
+Tolv största minus fem;2007;Skattesats;346.35
+Tolv största minus fem;2008;Skattesats;345.23
+Tolv största minus fem;2009;Skattesats;345.17999999999995
+Tolv största minus fem;2010;Skattesats;345.53
+Tolv största minus fem;2011;Skattesats;345.53
+Tolv största minus fem;2012;Skattesats;345.53
+Tolv största minus fem;2013;Skattesats;347.18
+Tolv största minus fem;2014;Skattesats;349.88
+Tolv största minus fem;2015;Skattesats;350.93000000000006
+Tolv största minus fem;2016;Skattesats;353.03000000000003
+Tolv största minus fem;2017;Skattesats;353.53000000000003
+Tolv största minus fem;2018;Skattesats;353.53000000000003
+Tolv största minus fem;2019;Skattesats;355.64
+Tolv största minus fem;2020;Skattesats;356.49
+Tolv största minus fem;2021;Skattesats;356.49
+Tolv största minus fem;2022;Skattesats;356.49
+Tolv största minus fem;2023;Skattesats;356.49
+Tolv största minus fem;2024;Skattesats;357.78
+Tolv största minus fem;2025;Skattesats;358.02
+Tre största;2000;Skattesats;29.866666666666664
+Tre största;2001;Skattesats;30.066666666666663
+Tre största;2002;Skattesats;89.75
+Tre största;2003;Skattesats;92.73
+Tre största;2004;Skattesats;93.38
+Tre största;2005;Skattesats;93.58
+Tre största;2006;Skattesats;93.58
+Tre största;2007;Skattesats;93.28
+Tre största;2008;Skattesats;92.66
+Tre största;2009;Skattesats;92.56
+Tre största;2010;Skattesats;92.81
+Tre största;2011;Skattesats;92.81
+Tre största;2012;Skattesats;92.81
+Tre största;2013;Skattesats;93.01
+Tre största;2014;Skattesats;93.31
+Tre största;2015;Skattesats;94.31
+Tre största;2016;Skattesats;94.51
+Tre största;2017;Skattesats;94.51
+Tre största;2018;Skattesats;94.51
+Tre största;2019;Skattesats;94.84
+Tre största;2020;Skattesats;94.84
+Tre största;2021;Skattesats;94.84
+Tre största;2022;Skattesats;94.84
+Tre största;2023;Skattesats;94.84
+Tre största;2024;Skattesats;95.38
+Tre största;2025;Skattesats;95.62
+Umeå;2000;Skattesats;32.3
+Umeå;2001;Skattesats;32.3
+Umeå;2002;Skattesats;32.3
+Umeå;2003;Skattesats;32.3
+Umeå;2004;Skattesats;32.3
+Umeå;2005;Skattesats;33.1
+Umeå;2006;Skattesats;33.1
+Umeå;2007;Skattesats;33.1
+Umeå;2008;Skattesats;33.1
+Umeå;2009;Skattesats;33.1
+Umeå;2010;Skattesats;33.1
+Umeå;2011;Skattesats;33.1
+Umeå;2012;Skattesats;33.1
+Umeå;2013;Skattesats;33.1
+Umeå;2014;Skattesats;33.6
+Umeå;2015;Skattesats;33.6
+Umeå;2016;Skattesats;33.65
+Umeå;2017;Skattesats;34.15
+Umeå;2018;Skattesats;34.15
+Umeå;2019;Skattesats;34.15
+Umeå;2020;Skattesats;34.15
+Umeå;2021;Skattesats;34.15
+Umeå;2022;Skattesats;34.15
+Umeå;2023;Skattesats;34.15
+Umeå;2024;Skattesats;34.15
+Umeå;2025;Skattesats;34.15
+Uppsala;2000;Skattesats;30.65
+Uppsala;2001;Skattesats;30.65
+Uppsala;2002;Skattesats;30.65
+Uppsala;2003;Skattesats;31.4
+Uppsala;2004;Skattesats;31.9
+Uppsala;2005;Skattesats;31.9
+Uppsala;2006;Skattesats;31.9
+Uppsala;2007;Skattesats;31.8
+Uppsala;2008;Skattesats;31.7
+Uppsala;2009;Skattesats;31.7
+Uppsala;2010;Skattesats;31.7
+Uppsala;2011;Skattesats;31.7
+Uppsala;2012;Skattesats;31.7
+Uppsala;2013;Skattesats;32.0
+Uppsala;2014;Skattesats;32.0
+Uppsala;2015;Skattesats;32.0
+Uppsala;2016;Skattesats;32.85
+Uppsala;2017;Skattesats;32.85
+Uppsala;2018;Skattesats;32.85
+Uppsala;2019;Skattesats;32.85
+Uppsala;2020;Skattesats;32.85
+Uppsala;2021;Skattesats;32.85
+Uppsala;2022;Skattesats;32.85
+Uppsala;2023;Skattesats;32.85
+Uppsala;2024;Skattesats;32.85
+Uppsala;2025;Skattesats;32.85
+Västerås;2000;Skattesats;30.27
+Västerås;2001;Skattesats;30.77
+Västerås;2002;Skattesats;30.77
+Västerås;2003;Skattesats;30.77
+Västerås;2004;Skattesats;30.77
+Västerås;2005;Skattesats;30.77
+Västerås;2006;Skattesats;30.77
+Västerås;2007;Skattesats;31.24
+Västerås;2008;Skattesats;30.99
+Västerås;2009;Skattesats;30.74
+Västerås;2010;Skattesats;30.74
+Västerås;2011;Skattesats;30.74
+Västerås;2012;Skattesats;30.74
+Västerås;2013;Skattesats;31.24
+Västerås;2014;Skattesats;31.24
+Västerås;2015;Skattesats;31.24
+Västerås;2016;Skattesats;31.24
+Västerås;2017;Skattesats;31.24
+Västerås;2018;Skattesats;31.24
+Västerås;2019;Skattesats;31.24
+Västerås;2020;Skattesats;31.24
+Västerås;2021;Skattesats;31.24
+Västerås;2022;Skattesats;31.24
+Västerås;2023;Skattesats;31.24
+Västerås;2024;Skattesats;31.24
+Västerås;2025;Skattesats;31.24
+Örebro;2000;Skattesats;31.65
+Örebro;2001;Skattesats;31.65
+Örebro;2002;Skattesats;31.9
+Örebro;2003;Skattesats;31.9
+Örebro;2004;Skattesats;31.9
+Örebro;2005;Skattesats;31.9
+Örebro;2006;Skattesats;31.9
+Örebro;2007;Skattesats;31.9
+Örebro;2008;Skattesats;31.9
+Örebro;2009;Skattesats;31.9
+Örebro;2010;Skattesats;31.9
+Örebro;2011;Skattesats;31.9
+Örebro;2012;Skattesats;31.9
+Örebro;2013;Skattesats;31.9
+Örebro;2014;Skattesats;32.4
+Örebro;2015;Skattesats;32.4
+Örebro;2016;Skattesats;32.9
+Örebro;2017;Skattesats;32.9
+Örebro;2018;Skattesats;32.9
+Örebro;2019;Skattesats;32.9
+Örebro;2020;Skattesats;32.9
+Örebro;2021;Skattesats;32.9
+Örebro;2022;Skattesats;32.9
+Örebro;2023;Skattesats;32.9
+Örebro;2024;Skattesats;33.65
+Örebro;2025;Skattesats;33.65
+Östergötlands län;2000;Skattesats;30.76
+Östergötlands län;2001;Skattesats;30.76
+Östergötlands län;2002;Skattesats;30.75
+Östergötlands län;2003;Skattesats;30.79
+Östergötlands län;2004;Skattesats;30.87
+Östergötlands län;2005;Skattesats;30.88
+Östergötlands län;2006;Skattesats;30.88
+Östergötlands län;2007;Skattesats;30.9
+Östergötlands län;2008;Skattesats;30.9
+Östergötlands län;2009;Skattesats;30.91
+Östergötlands län;2010;Skattesats;30.94
+Östergötlands län;2011;Skattesats;30.94
+Östergötlands län;2012;Skattesats;30.98
+Östergötlands län;2013;Skattesats;31.63
+Östergötlands län;2014;Skattesats;31.69
+Östergötlands län;2015;Skattesats;31.69
+Östergötlands län;2016;Skattesats;31.91
+Östergötlands län;2017;Skattesats;31.91
+Östergötlands län;2018;Skattesats;31.91
+Östergötlands län;2019;Skattesats;31.9
+Östergötlands län;2020;Skattesats;32.78
+Östergötlands län;2021;Skattesats;32.78
+Östergötlands län;2022;Skattesats;32.78
+Östergötlands län;2023;Skattesats;32.78
+Östergötlands län;2024;Skattesats;32.81
+Östergötlands län;2025;Skattesats;32.8
+Fem till tolv;2000;Skatteunderlag;114836.0
+Fem till tolv;2001;Skatteunderlag;122313.9
+Fem till tolv;2002;Skatteunderlag;129676.5
+Fem till tolv;2003;Skatteunderlag;135494.90000000002
+Fem till tolv;2004;Skatteunderlag;140054.5
+Fem till tolv;2005;Skatteunderlag;145537.6
+Fem till tolv;2006;Skatteunderlag;152238.19999999998
+Fem till tolv;2007;Skatteunderlag;160789.2
+Fem till tolv;2008;Skatteunderlag;170110.40000000002
+Fem till tolv;2009;Skatteunderlag;173414.80000000002
+Fem till tolv;2010;Skatteunderlag;177176.40000000002
+Fem till tolv;2011;Skatteunderlag;182897.2
+Fem till tolv;2012;Skatteunderlag;190296.6
+Fem till tolv;2013;Skatteunderlag;197182.8
+Fem till tolv;2014;Skatteunderlag;203650.9
+Fem till tolv;2015;Skatteunderlag;213970.0
+Fem till tolv;2016;Skatteunderlag;224907.9
+Fem till tolv;2017;Skatteunderlag;235404.3
+Fem till tolv;2018;Skatteunderlag;244706.2
+Fem till tolv;2019;Skatteunderlag;252299.7
+Fem till tolv;2020;Skatteunderlag;257925.1
+Fem till tolv;2021;Skatteunderlag;271404.6
+Fem till tolv;2022;Skatteunderlag;286035.60000000003
+Fem till tolv;2023;Skatteunderlag;299945.1
+Fem till tolv;2024;Skatteunderlag;310757.4
+Fem till tolv;2025;Skatteunderlag;321978.9703063403
+Fyra stora;2000;Skatteunderlag;229579.5
+Fyra stora;2001;Skatteunderlag;245678.1
+Fyra stora;2002;Skatteunderlag;257490.2
+Fyra stora;2003;Skatteunderlag;265751.60000000003
+Fyra stora;2004;Skatteunderlag;273613.3
+Fyra stora;2005;Skatteunderlag;285000.80000000005
+Fyra stora;2006;Skatteunderlag;299519.7
+Fyra stora;2007;Skatteunderlag;318088.60000000003
+Fyra stora;2008;Skatteunderlag;337371.2
+Fyra stora;2009;Skatteunderlag;343704.5
+Fyra stora;2010;Skatteunderlag;354199.4
+Fyra stora;2011;Skatteunderlag;369965.3000000001
+Fyra stora;2012;Skatteunderlag;387856.0
+Fyra stora;2013;Skatteunderlag;404242.6
+Fyra stora;2014;Skatteunderlag;421712.4
+Fyra stora;2015;Skatteunderlag;447065.0
+Fyra stora;2016;Skatteunderlag;471750.0
+Fyra stora;2017;Skatteunderlag;495038.7
+Fyra stora;2018;Skatteunderlag;518401.4
+Fyra stora;2019;Skatteunderlag;537025.7
+Fyra stora;2020;Skatteunderlag;551952.8
+Fyra stora;2021;Skatteunderlag;585832.3
+Fyra stora;2022;Skatteunderlag;621661.8999999999
+Fyra stora;2023;Skatteunderlag;652496.3
+Fyra stora;2024;Skatteunderlag;678203.5
+Fyra stora;2025;Skatteunderlag;704924.9780230516
+Göteborg;2000;Skatteunderlag;59588.2
+Göteborg;2001;Skatteunderlag;64062.8
+Göteborg;2002;Skatteunderlag;67955.3
+Göteborg;2003;Skatteunderlag;71251.0
+Göteborg;2004;Skatteunderlag;73755.5
+Göteborg;2005;Skatteunderlag;76949.6
+Göteborg;2006;Skatteunderlag;80564.5
+Göteborg;2007;Skatteunderlag;85062.2
+Göteborg;2008;Skatteunderlag;89625.0
+Göteborg;2009;Skatteunderlag;90047.4
+Göteborg;2010;Skatteunderlag;92190.3
+Göteborg;2011;Skatteunderlag;95783.4
+Göteborg;2012;Skatteunderlag;100185.5
+Göteborg;2013;Skatteunderlag;103646.2
+Göteborg;2014;Skatteunderlag;107911.5
+Göteborg;2015;Skatteunderlag;114260.6
+Göteborg;2016;Skatteunderlag;121058.8
+Göteborg;2017;Skatteunderlag;127359.0
+Göteborg;2018;Skatteunderlag;133565.0
+Göteborg;2019;Skatteunderlag;137742.0
+Göteborg;2020;Skatteunderlag;140203.2
+Göteborg;2021;Skatteunderlag;148331.7
+Göteborg;2022;Skatteunderlag;158301.2
+Göteborg;2023;Skatteunderlag;167581.2
+Göteborg;2024;Skatteunderlag;174560.2
+Göteborg;2025;Skatteunderlag;181829.84382520235
+Helsingborg;2000;Skatteunderlag;14317.2
+Helsingborg;2001;Skatteunderlag;15207.6
+Helsingborg;2002;Skatteunderlag;16139.8
+Helsingborg;2003;Skatteunderlag;17028.7
+Helsingborg;2004;Skatteunderlag;17618.0
+Helsingborg;2005;Skatteunderlag;18361.0
+Helsingborg;2006;Skatteunderlag;19242.4
+Helsingborg;2007;Skatteunderlag;20303.4
+Helsingborg;2008;Skatteunderlag;21388.0
+Helsingborg;2009;Skatteunderlag;21824.3
+Helsingborg;2010;Skatteunderlag;22243.7
+Helsingborg;2011;Skatteunderlag;22845.8
+Helsingborg;2012;Skatteunderlag;23713.2
+Helsingborg;2013;Skatteunderlag;24550.9
+Helsingborg;2014;Skatteunderlag;25151.6
+Helsingborg;2015;Skatteunderlag;26656.4
+Helsingborg;2016;Skatteunderlag;28143.6
+Helsingborg;2017;Skatteunderlag;29518.8
+Helsingborg;2018;Skatteunderlag;30656.8
+Helsingborg;2019;Skatteunderlag;31695.5
+Helsingborg;2020;Skatteunderlag;32565.6
+Helsingborg;2021;Skatteunderlag;34552.8
+Helsingborg;2022;Skatteunderlag;36423.6
+Helsingborg;2023;Skatteunderlag;37792.1
+Helsingborg;2024;Skatteunderlag;38648.1
+Helsingborg;2025;Skatteunderlag;39523.48860237986
+Jönköping;2000;Skatteunderlag;13836.1
+Jönköping;2001;Skatteunderlag;14754.4
+Jönköping;2002;Skatteunderlag;15759.0
+Jönköping;2003;Skatteunderlag;16538.9
+Jönköping;2004;Skatteunderlag;17182.3
+Jönköping;2005;Skatteunderlag;17824.8
+Jönköping;2006;Skatteunderlag;18692.0
+Jönköping;2007;Skatteunderlag;19801.3
+Jönköping;2008;Skatteunderlag;20953.5
+Jönköping;2009;Skatteunderlag;21210.4
+Jönköping;2010;Skatteunderlag;21709.0
+Jönköping;2011;Skatteunderlag;22417.9
+Jönköping;2012;Skatteunderlag;23284.3
+Jönköping;2013;Skatteunderlag;24033.3
+Jönköping;2014;Skatteunderlag;25026.3
+Jönköping;2015;Skatteunderlag;26215.0
+Jönköping;2016;Skatteunderlag;27593.7
+Jönköping;2017;Skatteunderlag;28961.0
+Jönköping;2018;Skatteunderlag;30112.8
+Jönköping;2019;Skatteunderlag;30936.0
+Jönköping;2020;Skatteunderlag;31462.0
+Jönköping;2021;Skatteunderlag;33240.7
+Jönköping;2022;Skatteunderlag;35082.3
+Jönköping;2023;Skatteunderlag;36536.5
+Jönköping;2024;Skatteunderlag;37687.8
+Jönköping;2025;Skatteunderlag;38875.37856225966
+Linköping;2000;Skatteunderlag;16846.0
+Linköping;2001;Skatteunderlag;17992.7
+Linköping;2002;Skatteunderlag;18980.4
+Linköping;2003;Skatteunderlag;19627.6
+Linköping;2004;Skatteunderlag;20153.0
+Linköping;2005;Skatteunderlag;20864.8
+Linköping;2006;Skatteunderlag;21760.8
+Linköping;2007;Skatteunderlag;22852.8
+Linköping;2008;Skatteunderlag;24158.1
+Linköping;2009;Skatteunderlag;24660.1
+Linköping;2010;Skatteunderlag;25265.0
+Linköping;2011;Skatteunderlag;26179.2
+Linköping;2012;Skatteunderlag;27127.7
+Linköping;2013;Skatteunderlag;28210.9
+Linköping;2014;Skatteunderlag;29225.5
+Linköping;2015;Skatteunderlag;30778.3
+Linköping;2016;Skatteunderlag;32354.8
+Linköping;2017;Skatteunderlag;33927.6
+Linköping;2018;Skatteunderlag;35146.5
+Linköping;2019;Skatteunderlag;36431.2
+Linköping;2020;Skatteunderlag;37384.0
+Linköping;2021;Skatteunderlag;39156.3
+Linköping;2022;Skatteunderlag;41036.7
+Linköping;2023;Skatteunderlag;43273.3
+Linköping;2024;Skatteunderlag;45045.9
+Linköping;2025;Skatteunderlag;46891.11084225146
+Lkpg-Nkpg;2000;Skatteunderlag;30846.5
+Lkpg-Nkpg;2001;Skatteunderlag;32815.2
+Lkpg-Nkpg;2002;Skatteunderlag;34755.3
+Lkpg-Nkpg;2003;Skatteunderlag;36113.3
+Lkpg-Nkpg;2004;Skatteunderlag;37163.4
+Lkpg-Nkpg;2005;Skatteunderlag;38425.1
+Lkpg-Nkpg;2006;Skatteunderlag;40007.7
+Lkpg-Nkpg;2007;Skatteunderlag;42120.5
+Lkpg-Nkpg;2008;Skatteunderlag;44477.0
+Lkpg-Nkpg;2009;Skatteunderlag;45329.3
+Lkpg-Nkpg;2010;Skatteunderlag;46398.6
+Lkpg-Nkpg;2011;Skatteunderlag;47894.600000000006
+Lkpg-Nkpg;2012;Skatteunderlag;49699.100000000006
+Lkpg-Nkpg;2013;Skatteunderlag;51636.5
+Lkpg-Nkpg;2014;Skatteunderlag;53290.2
+Lkpg-Nkpg;2015;Skatteunderlag;56039.4
+Lkpg-Nkpg;2016;Skatteunderlag;58947.3
+Lkpg-Nkpg;2017;Skatteunderlag;61773.4
+Lkpg-Nkpg;2018;Skatteunderlag;64079.9
+Lkpg-Nkpg;2019;Skatteunderlag;66077.6
+Lkpg-Nkpg;2020;Skatteunderlag;67659.5
+Lkpg-Nkpg;2021;Skatteunderlag;70934.20000000001
+Lkpg-Nkpg;2022;Skatteunderlag;74596.1
+Lkpg-Nkpg;2023;Skatteunderlag;78297.0
+Lkpg-Nkpg;2024;Skatteunderlag;81286.1
+Lkpg-Nkpg;2025;Skatteunderlag;84390.0642949135
+Lund;2000;Skatteunderlag;12623.9
+Lund;2001;Skatteunderlag;13530.1
+Lund;2002;Skatteunderlag;14284.9
+Lund;2003;Skatteunderlag;14817.5
+Lund;2004;Skatteunderlag;15257.7
+Lund;2005;Skatteunderlag;15828.6
+Lund;2006;Skatteunderlag;16725.1
+Lund;2007;Skatteunderlag;17813.7
+Lund;2008;Skatteunderlag;19045.0
+Lund;2009;Skatteunderlag;19517.7
+Lund;2010;Skatteunderlag;19957.5
+Lund;2011;Skatteunderlag;20636.3
+Lund;2012;Skatteunderlag;21426.1
+Lund;2013;Skatteunderlag;22091.2
+Lund;2014;Skatteunderlag;22697.4
+Lund;2015;Skatteunderlag;23849.8
+Lund;2016;Skatteunderlag;24958.0
+Lund;2017;Skatteunderlag;25997.4
+Lund;2018;Skatteunderlag;27172.0
+Lund;2019;Skatteunderlag;27998.4
+Lund;2020;Skatteunderlag;28642.6
+Lund;2021;Skatteunderlag;30152.8
+Lund;2022;Skatteunderlag;31748.7
+Lund;2023;Skatteunderlag;33234.4
+Lund;2024;Skatteunderlag;35020.3
+Lund;2025;Skatteunderlag;36902.16799731604
+Länet exkl Linköping;2000;Skatteunderlag;31351.4
+Länet exkl Linköping;2001;Skatteunderlag;33021.2
+Länet exkl Linköping;2002;Skatteunderlag;34945.0
+Länet exkl Linköping;2003;Skatteunderlag;36667.6
+Länet exkl Linköping;2004;Skatteunderlag;37689.3
+Länet exkl Linköping;2005;Skatteunderlag;38832.4
+Länet exkl Linköping;2006;Skatteunderlag;40220.3
+Länet exkl Linköping;2007;Skatteunderlag;42271.5
+Länet exkl Linköping;2008;Skatteunderlag;44455.00000000001
+Länet exkl Linköping;2009;Skatteunderlag;44947.2
+Länet exkl Linköping;2010;Skatteunderlag;45757.100000000006
+Länet exkl Linköping;2011;Skatteunderlag;46814.8
+Länet exkl Linköping;2012;Skatteunderlag;48457.600000000006
+Länet exkl Linköping;2013;Skatteunderlag;50112.6
+Länet exkl Linköping;2014;Skatteunderlag;51398.4
+Länet exkl Linköping;2015;Skatteunderlag;53782.59999999999
+Länet exkl Linköping;2016;Skatteunderlag;56339.7
+Länet exkl Linköping;2017;Skatteunderlag;58722.6
+Länet exkl Linköping;2018;Skatteunderlag;60595.0
+Länet exkl Linköping;2019;Skatteunderlag;61930.7
+Länet exkl Linköping;2020;Skatteunderlag;63022.2
+Länet exkl Linköping;2021;Skatteunderlag;65905.59999999999
+Länet exkl Linköping;2022;Skatteunderlag;69486.7
+Länet exkl Linköping;2023;Skatteunderlag;72509.8
+Länet exkl Linköping;2024;Skatteunderlag;74640.1
+Länet exkl Linköping;2025;Skatteunderlag;76829.35091771177
+Länet exkl Norrköping;2000;Skatteunderlag;34196.9
+Länet exkl Norrköping;2001;Skatteunderlag;36191.4
+Länet exkl Norrköping;2002;Skatteunderlag;38150.5
+Länet exkl Norrköping;2003;Skatteunderlag;39809.5
+Länet exkl Norrköping;2004;Skatteunderlag;40831.9
+Länet exkl Norrköping;2005;Skatteunderlag;42136.9
+Länet exkl Norrköping;2006;Skatteunderlag;43734.2
+Länet exkl Norrköping;2007;Skatteunderlag;45856.600000000006
+Länet exkl Norrköping;2008;Skatteunderlag;48294.2
+Länet exkl Norrköping;2009;Skatteunderlag;48938.100000000006
+Länet exkl Norrköping;2010;Skatteunderlag;49888.50000000001
+Länet exkl Norrköping;2011;Skatteunderlag;51278.6
+Länet exkl Norrköping;2012;Skatteunderlag;53013.9
+Länet exkl Norrköping;2013;Skatteunderlag;54897.9
+Länet exkl Norrköping;2014;Skatteunderlag;56559.2
+Länet exkl Norrköping;2015;Skatteunderlag;59299.8
+Länet exkl Norrköping;2016;Skatteunderlag;62102.0
+Länet exkl Norrköping;2017;Skatteunderlag;64804.4
+Länet exkl Norrköping;2018;Skatteunderlag;66808.1
+Länet exkl Norrköping;2019;Skatteunderlag;68715.5
+Länet exkl Norrköping;2020;Skatteunderlag;70130.7
+Länet exkl Norrköping;2021;Skatteunderlag;73284.0
+Länet exkl Norrköping;2022;Skatteunderlag;76964.0
+Länet exkl Norrköping;2023;Skatteunderlag;80759.40000000001
+Länet exkl Norrköping;2024;Skatteunderlag;83445.8
+Länet exkl Norrköping;2025;Skatteunderlag;86221.50830730118
+Malmö;2000;Skatteunderlag;28839.6
+Malmö;2001;Skatteunderlag;30705.9
+Malmö;2002;Skatteunderlag;32611.0
+Malmö;2003;Skatteunderlag;34119.3
+Malmö;2004;Skatteunderlag;35087.8
+Malmö;2005;Skatteunderlag;36422.7
+Malmö;2006;Skatteunderlag;38325.8
+Malmö;2007;Skatteunderlag;40504.2
+Malmö;2008;Skatteunderlag;42667.8
+Malmö;2009;Skatteunderlag;43596.6
+Malmö;2010;Skatteunderlag;44515.3
+Malmö;2011;Skatteunderlag;46153.9
+Malmö;2012;Skatteunderlag;48173.1
+Malmö;2013;Skatteunderlag;50244.5
+Malmö;2014;Skatteunderlag;52212.8
+Malmö;2015;Skatteunderlag;55354.7
+Malmö;2016;Skatteunderlag;58642.3
+Malmö;2017;Skatteunderlag;61627.1
+Malmö;2018;Skatteunderlag;64300.9
+Malmö;2019;Skatteunderlag;66929.2
+Malmö;2020;Skatteunderlag;69635.4
+Malmö;2021;Skatteunderlag;74257.4
+Malmö;2022;Skatteunderlag;78773.3
+Malmö;2023;Skatteunderlag;83222.2
+Malmö;2024;Skatteunderlag;86444.7
+Malmö;2025;Skatteunderlag;89791.98048225112
+Norrköping;2000;Skatteunderlag;14000.5
+Norrköping;2001;Skatteunderlag;14822.5
+Norrköping;2002;Skatteunderlag;15774.9
+Norrköping;2003;Skatteunderlag;16485.7
+Norrköping;2004;Skatteunderlag;17010.4
+Norrköping;2005;Skatteunderlag;17560.3
+Norrköping;2006;Skatteunderlag;18246.9
+Norrköping;2007;Skatteunderlag;19267.7
+Norrköping;2008;Skatteunderlag;20318.9
+Norrköping;2009;Skatteunderlag;20669.2
+Norrköping;2010;Skatteunderlag;21133.6
+Norrköping;2011;Skatteunderlag;21715.4
+Norrköping;2012;Skatteunderlag;22571.4
+Norrköping;2013;Skatteunderlag;23425.6
+Norrköping;2014;Skatteunderlag;24064.7
+Norrköping;2015;Skatteunderlag;25261.1
+Norrköping;2016;Skatteunderlag;26592.5
+Norrköping;2017;Skatteunderlag;27845.8
+Norrköping;2018;Skatteunderlag;28933.4
+Norrköping;2019;Skatteunderlag;29646.4
+Norrköping;2020;Skatteunderlag;30275.5
+Norrköping;2021;Skatteunderlag;31777.9
+Norrköping;2022;Skatteunderlag;33559.4
+Norrköping;2023;Skatteunderlag;35023.7
+Norrköping;2024;Skatteunderlag;36240.2
+Norrköping;2025;Skatteunderlag;37498.95345266205
+Riket;2000;Skatteunderlag;1103736.1
+Riket;2001;Skatteunderlag;1173953.8
+Riket;2002;Skatteunderlag;1235967.2
+Riket;2003;Skatteunderlag;1288283.1
+Riket;2004;Skatteunderlag;1328105.5
+Riket;2005;Skatteunderlag;1378630.0
+Riket;2006;Skatteunderlag;1437739.8
+Riket;2007;Skatteunderlag;1518824.2
+Riket;2008;Skatteunderlag;1601594.8
+Riket;2009;Skatteunderlag;1622643.4
+Riket;2010;Skatteunderlag;1657650.0
+Riket;2011;Skatteunderlag;1707177.5
+Riket;2012;Skatteunderlag;1775405.6
+Riket;2013;Skatteunderlag;1835067.3
+Riket;2014;Skatteunderlag;1893132.3
+Riket;2015;Skatteunderlag;1988699.9
+Riket;2016;Skatteunderlag;2087172.4
+Riket;2017;Skatteunderlag;2180826.9
+Riket;2018;Skatteunderlag;2261863.4
+Riket;2019;Skatteunderlag;2325707.4
+Riket;2020;Skatteunderlag;2374622.5
+Riket;2021;Skatteunderlag;2500408.2
+Riket;2022;Skatteunderlag;2645513.5
+Riket;2023;Skatteunderlag;2772046.6
+Riket;2024;Skatteunderlag;2868946.0
+Riket;2025;Skatteunderlag;2969232.60630467
+Sex till tolv;2000;Skatteunderlag;97990.0
+Sex till tolv;2001;Skatteunderlag;104321.2
+Sex till tolv;2002;Skatteunderlag;110696.1
+Sex till tolv;2003;Skatteunderlag;115867.3
+Sex till tolv;2004;Skatteunderlag;119901.5
+Sex till tolv;2005;Skatteunderlag;124672.8
+Sex till tolv;2006;Skatteunderlag;130477.4
+Sex till tolv;2007;Skatteunderlag;137936.4
+Sex till tolv;2008;Skatteunderlag;145952.3
+Sex till tolv;2009;Skatteunderlag;148754.7
+Sex till tolv;2010;Skatteunderlag;151911.4
+Sex till tolv;2011;Skatteunderlag;156718.0
+Sex till tolv;2012;Skatteunderlag;163168.9
+Sex till tolv;2013;Skatteunderlag;168971.9
+Sex till tolv;2014;Skatteunderlag;174425.4
+Sex till tolv;2015;Skatteunderlag;183191.7
+Sex till tolv;2016;Skatteunderlag;192553.1
+Sex till tolv;2017;Skatteunderlag;201476.7
+Sex till tolv;2018;Skatteunderlag;209559.7
+Sex till tolv;2019;Skatteunderlag;215868.5
+Sex till tolv;2020;Skatteunderlag;220541.1
+Sex till tolv;2021;Skatteunderlag;232248.3
+Sex till tolv;2022;Skatteunderlag;244998.9
+Sex till tolv;2023;Skatteunderlag;256671.8
+Sex till tolv;2024;Skatteunderlag;265711.5
+Sex till tolv;2025;Skatteunderlag;275087.85946408886
+Sex till tolv minus tio;2000;Skatteunderlag;83989.5
+Sex till tolv minus tio;2001;Skatteunderlag;89498.7
+Sex till tolv minus tio;2002;Skatteunderlag;94921.2
+Sex till tolv minus tio;2003;Skatteunderlag;99381.6
+Sex till tolv minus tio;2004;Skatteunderlag;102891.1
+Sex till tolv minus tio;2005;Skatteunderlag;107112.5
+Sex till tolv minus tio;2006;Skatteunderlag;112230.5
+Sex till tolv minus tio;2007;Skatteunderlag;118668.7
+Sex till tolv minus tio;2008;Skatteunderlag;125633.4
+Sex till tolv minus tio;2009;Skatteunderlag;128085.5
+Sex till tolv minus tio;2010;Skatteunderlag;130777.8
+Sex till tolv minus tio;2011;Skatteunderlag;135002.6
+Sex till tolv minus tio;2012;Skatteunderlag;140597.5
+Sex till tolv minus tio;2013;Skatteunderlag;145546.3
+Sex till tolv minus tio;2014;Skatteunderlag;150360.69999999998
+Sex till tolv minus tio;2015;Skatteunderlag;157930.6
+Sex till tolv minus tio;2016;Skatteunderlag;165960.6
+Sex till tolv minus tio;2017;Skatteunderlag;173630.9
+Sex till tolv minus tio;2018;Skatteunderlag;180626.3
+Sex till tolv minus tio;2019;Skatteunderlag;186222.1
+Sex till tolv minus tio;2020;Skatteunderlag;190265.6
+Sex till tolv minus tio;2021;Skatteunderlag;200470.4
+Sex till tolv minus tio;2022;Skatteunderlag;211439.5
+Sex till tolv minus tio;2023;Skatteunderlag;221648.1
+Sex till tolv minus tio;2024;Skatteunderlag;229471.3
+Sex till tolv minus tio;2025;Skatteunderlag;237588.9060114268
+Stockholm;2000;Skatteunderlag;117188.6
+Stockholm;2001;Skatteunderlag;126888.2
+Stockholm;2002;Skatteunderlag;131322.9
+Stockholm;2003;Skatteunderlag;133722.6
+Stockholm;2004;Skatteunderlag;137288.2
+Stockholm;2005;Skatteunderlag;143144.9
+Stockholm;2006;Skatteunderlag;150722.2
+Stockholm;2007;Skatteunderlag;160974.1
+Stockholm;2008;Skatteunderlag;171641.5
+Stockholm;2009;Skatteunderlag;175718.4
+Stockholm;2010;Skatteunderlag;182180.9
+Stockholm;2011;Skatteunderlag;191258.0
+Stockholm;2012;Skatteunderlag;201067.4
+Stockholm;2013;Skatteunderlag;210350.6
+Stockholm;2014;Skatteunderlag;220055.3
+Stockholm;2015;Skatteunderlag;233635.9
+Stockholm;2016;Skatteunderlag;245950.4
+Stockholm;2017;Skatteunderlag;257681.0
+Stockholm;2018;Skatteunderlag;270142.0
+Stockholm;2019;Skatteunderlag;280064.0
+Stockholm;2020;Skatteunderlag;288164.0
+Stockholm;2021;Skatteunderlag;306085.7
+Stockholm;2022;Skatteunderlag;324366.1
+Stockholm;2023;Skatteunderlag;338174.1
+Stockholm;2024;Skatteunderlag;351097.1
+Stockholm;2025;Skatteunderlag;364513.9400930172
+Tolv största;2000;Skatteunderlag;344415.50000000006
+Tolv största;2001;Skatteunderlag;367992.0
+Tolv största;2002;Skatteunderlag;387166.6999999999
+Tolv största;2003;Skatteunderlag;401246.50000000006
+Tolv största;2004;Skatteunderlag;413667.8
+Tolv största;2005;Skatteunderlag;430538.4
+Tolv största;2006;Skatteunderlag;451757.9
+Tolv största;2007;Skatteunderlag;478877.8000000001
+Tolv största;2008;Skatteunderlag;507481.6
+Tolv största;2009;Skatteunderlag;517119.29999999993
+Tolv största;2010;Skatteunderlag;531375.7999999999
+Tolv största;2011;Skatteunderlag;552862.5
+Tolv största;2012;Skatteunderlag;578152.5999999999
+Tolv största;2013;Skatteunderlag;601425.4
+Tolv största;2014;Skatteunderlag;625363.2999999999
+Tolv största;2015;Skatteunderlag;661035.0
+Tolv största;2016;Skatteunderlag;696657.8999999999
+Tolv största;2017;Skatteunderlag;730442.9999999999
+Tolv största;2018;Skatteunderlag;763107.6
+Tolv största;2019;Skatteunderlag;789325.4000000001
+Tolv största;2020;Skatteunderlag;809877.9
+Tolv största;2021;Skatteunderlag;857236.9000000001
+Tolv största;2022;Skatteunderlag;907697.5
+Tolv största;2023;Skatteunderlag;952441.4
+Tolv största;2024;Skatteunderlag;988960.9
+Tolv största;2025;Skatteunderlag;1026903.948329392
+Tolv största minus fem;2000;Skatteunderlag;327569.50000000006
+Tolv största minus fem;2001;Skatteunderlag;349999.3
+Tolv största minus fem;2002;Skatteunderlag;368186.2999999999
+Tolv största minus fem;2003;Skatteunderlag;381618.9000000001
+Tolv största minus fem;2004;Skatteunderlag;393514.8
+Tolv största minus fem;2005;Skatteunderlag;409673.6
+Tolv största minus fem;2006;Skatteunderlag;429997.1
+Tolv största minus fem;2007;Skatteunderlag;456025.00000000006
+Tolv största minus fem;2008;Skatteunderlag;483323.5
+Tolv största minus fem;2009;Skatteunderlag;492459.2
+Tolv största minus fem;2010;Skatteunderlag;506110.79999999993
+Tolv största minus fem;2011;Skatteunderlag;526683.3
+Tolv största minus fem;2012;Skatteunderlag;551024.8999999999
+Tolv största minus fem;2013;Skatteunderlag;573214.5
+Tolv största minus fem;2014;Skatteunderlag;596137.7999999999
+Tolv största minus fem;2015;Skatteunderlag;630256.7
+Tolv största minus fem;2016;Skatteunderlag;664303.0999999999
+Tolv största minus fem;2017;Skatteunderlag;696515.3999999999
+Tolv största minus fem;2018;Skatteunderlag;727961.1
+Tolv största minus fem;2019;Skatteunderlag;752894.2000000002
+Tolv största minus fem;2020;Skatteunderlag;772493.9
+Tolv största minus fem;2021;Skatteunderlag;818080.6000000001
+Tolv största minus fem;2022;Skatteunderlag;866660.7999999999
+Tolv största minus fem;2023;Skatteunderlag;909168.1
+Tolv största minus fem;2024;Skatteunderlag;943915.0
+Tolv största minus fem;2025;Skatteunderlag;980012.8374871406
+Tre största;2000;Skatteunderlag;205616.4
+Tre största;2001;Skatteunderlag;221656.9
+Tre största;2002;Skatteunderlag;231889.2
+Tre största;2003;Skatteunderlag;239092.9
+Tre största;2004;Skatteunderlag;246131.5
+Tre största;2005;Skatteunderlag;256517.2
+Tre största;2006;Skatteunderlag;269612.5
+Tre största;2007;Skatteunderlag;286540.5
+Tre största;2008;Skatteunderlag;303934.3
+Tre största;2009;Skatteunderlag;309362.4
+Tre största;2010;Skatteunderlag;318886.5
+Tre största;2011;Skatteunderlag;333195.3
+Tre största;2012;Skatteunderlag;349426.0
+Tre största;2013;Skatteunderlag;364241.3
+Tre största;2014;Skatteunderlag;380179.6
+Tre största;2015;Skatteunderlag;403251.2
+Tre största;2016;Skatteunderlag;425651.5
+Tre största;2017;Skatteunderlag;446667.1
+Tre största;2018;Skatteunderlag;468007.9
+Tre största;2019;Skatteunderlag;484735.2
+Tre största;2020;Skatteunderlag;498002.6
+Tre största;2021;Skatteunderlag;528674.8
+Tre största;2022;Skatteunderlag;561440.6
+Tre största;2023;Skatteunderlag;588977.5
+Tre största;2024;Skatteunderlag;612102.0
+Tre största;2025;Skatteunderlag;636135.7644004707
+Umeå;2000;Skatteunderlag;12536.4
+Umeå;2001;Skatteunderlag;13311.6
+Umeå;2002;Skatteunderlag;14099.8
+Umeå;2003;Skatteunderlag;14785.6
+Umeå;2004;Skatteunderlag;15469.3
+Umeå;2005;Skatteunderlag;16215.4
+Umeå;2006;Skatteunderlag;16953.9
+Umeå;2007;Skatteunderlag;17921.5
+Umeå;2008;Skatteunderlag;18951.6
+Umeå;2009;Skatteunderlag;19342.3
+Umeå;2010;Skatteunderlag;19817.7
+Umeå;2011;Skatteunderlag;20511.6
+Umeå;2012;Skatteunderlag;21374.2
+Umeå;2013;Skatteunderlag;22158.5
+Umeå;2014;Skatteunderlag;22947.1
+Umeå;2015;Skatteunderlag;24039.4
+Umeå;2016;Skatteunderlag;25251.1
+Umeå;2017;Skatteunderlag;26371.9
+Umeå;2018;Skatteunderlag;27364.7
+Umeå;2019;Skatteunderlag;28222.0
+Umeå;2020;Skatteunderlag;28734.2
+Umeå;2021;Skatteunderlag;30339.3
+Umeå;2022;Skatteunderlag;32045.4
+Umeå;2023;Skatteunderlag;33919.0
+Umeå;2024;Skatteunderlag;35095.5
+Umeå;2025;Skatteunderlag;36312.80757834842
+Uppsala;2000;Skatteunderlag;23963.1
+Uppsala;2001;Skatteunderlag;24021.2
+Uppsala;2002;Skatteunderlag;25601.0
+Uppsala;2003;Skatteunderlag;26658.7
+Uppsala;2004;Skatteunderlag;27481.8
+Uppsala;2005;Skatteunderlag;28483.6
+Uppsala;2006;Skatteunderlag;29907.2
+Uppsala;2007;Skatteunderlag;31548.1
+Uppsala;2008;Skatteunderlag;33436.9
+Uppsala;2009;Skatteunderlag;34342.1
+Uppsala;2010;Skatteunderlag;35312.9
+Uppsala;2011;Skatteunderlag;36770.0
+Uppsala;2012;Skatteunderlag;38430.0
+Uppsala;2013;Skatteunderlag;40001.3
+Uppsala;2014;Skatteunderlag;41532.8
+Uppsala;2015;Skatteunderlag;43813.8
+Uppsala;2016;Skatteunderlag;46098.5
+Uppsala;2017;Skatteunderlag;48371.6
+Uppsala;2018;Skatteunderlag;50393.5
+Uppsala;2019;Skatteunderlag;52290.5
+Uppsala;2020;Skatteunderlag;53950.2
+Uppsala;2021;Skatteunderlag;57157.5
+Uppsala;2022;Skatteunderlag;60221.3
+Uppsala;2023;Skatteunderlag;63518.8
+Uppsala;2024;Skatteunderlag;66101.5
+Uppsala;2025;Skatteunderlag;68789.21362258102
+Västerås;2000;Skatteunderlag;16187.0
+Västerås;2001;Skatteunderlag;17267.7
+Västerås;2002;Skatteunderlag;18294.6
+Västerås;2003;Skatteunderlag;19106.9
+Västerås;2004;Skatteunderlag;19697.0
+Västerås;2005;Skatteunderlag;20452.4
+Västerås;2006;Skatteunderlag;21345.6
+Västerås;2007;Skatteunderlag;22542.7
+Västerås;2008;Skatteunderlag;23771.7
+Västerås;2009;Skatteunderlag;24223.2
+Västerås;2010;Skatteunderlag;24612.7
+Västerås;2011;Skatteunderlag;25373.0
+Västerås;2012;Skatteunderlag;26596.0
+Västerås;2013;Skatteunderlag;27594.5
+Västerås;2014;Skatteunderlag;28501.0
+Västerås;2015;Skatteunderlag;29767.0
+Västerås;2016;Skatteunderlag;31154.7
+Västerås;2017;Skatteunderlag;32494.6
+Västerås;2018;Skatteunderlag;33707.9
+Västerås;2019;Skatteunderlag;34663.4
+Västerås;2020;Skatteunderlag;35396.9
+Västerås;2021;Skatteunderlag;37134.3
+Västerås;2022;Skatteunderlag;39210.4
+Västerås;2023;Skatteunderlag;41502.2
+Västerås;2024;Skatteunderlag;43068.2
+Västerås;2025;Skatteunderlag;44693.28978319222
+Örebro;2000;Skatteunderlag;14488.9
+Örebro;2001;Skatteunderlag;15427.3
+Örebro;2002;Skatteunderlag;16343.1
+Örebro;2003;Skatteunderlag;17104.0
+Örebro;2004;Skatteunderlag;17666.8
+Örebro;2005;Skatteunderlag;18430.3
+Örebro;2006;Skatteunderlag;19271.5
+Örebro;2007;Skatteunderlag;20286.1
+Örebro;2008;Skatteunderlag;21523.6
+Örebro;2009;Skatteunderlag;21967.6
+Örebro;2010;Skatteunderlag;22437.2
+Örebro;2011;Skatteunderlag;23218.0
+Örebro;2012;Skatteunderlag;24203.7
+Örebro;2013;Skatteunderlag;25117.9
+Örebro;2014;Skatteunderlag;26037.3
+Örebro;2015;Skatteunderlag;27403.0
+Örebro;2016;Skatteunderlag;28859.5
+Örebro;2017;Skatteunderlag;30287.2
+Örebro;2018;Skatteunderlag;31612.1
+Örebro;2019;Skatteunderlag;32706.8
+Örebro;2020;Skatteunderlag;33464.3
+Örebro;2021;Skatteunderlag;35050.5
+Örebro;2022;Skatteunderlag;36929.1
+Örebro;2023;Skatteunderlag;38663.9
+Örebro;2024;Skatteunderlag;39951.4
+Örebro;2025;Skatteunderlag;41281.7734879306
+Östergötlands län;2000;Skatteunderlag;48197.4
+Östergötlands län;2001;Skatteunderlag;51013.9
+Östergötlands län;2002;Skatteunderlag;53925.4
+Östergötlands län;2003;Skatteunderlag;56295.2
+Östergötlands län;2004;Skatteunderlag;57842.3
+Östergötlands län;2005;Skatteunderlag;59697.2
+Östergötlands län;2006;Skatteunderlag;61981.1
+Östergötlands län;2007;Skatteunderlag;65124.3
+Östergötlands län;2008;Skatteunderlag;68613.1
+Östergötlands län;2009;Skatteunderlag;69607.3
+Östergötlands län;2010;Skatteunderlag;71022.1
+Östergötlands län;2011;Skatteunderlag;72994.0
+Östergötlands län;2012;Skatteunderlag;75585.3
+Östergötlands län;2013;Skatteunderlag;78323.5
+Östergötlands län;2014;Skatteunderlag;80623.9
+Östergötlands län;2015;Skatteunderlag;84560.9
+Östergötlands län;2016;Skatteunderlag;88694.5
+Östergötlands län;2017;Skatteunderlag;92650.2
+Östergötlands län;2018;Skatteunderlag;95741.5
+Östergötlands län;2019;Skatteunderlag;98361.9
+Östergötlands län;2020;Skatteunderlag;100406.2
+Östergötlands län;2021;Skatteunderlag;105061.9
+Östergötlands län;2022;Skatteunderlag;110523.4
+Östergötlands län;2023;Skatteunderlag;115783.1
+Östergötlands län;2024;Skatteunderlag;119686.0
+Östergötlands län;2025;Skatteunderlag;123720.46175996323
 Fem till tolv;2000;Sysselsatta;460946.0
 Fem till tolv;2001;Sysselsatta;467064.0
 Fem till tolv;2002;Sysselsatta;477723.0
@@ -18502,7 +21622,7 @@ Göteborg;2021;Sysselsättningsgrad;76.8
 Göteborg;2022;Sysselsättningsgrad;78.6
 Göteborg;2023;Sysselsättningsgrad;78.8
 Göteborg;2024;Sysselsättningsgrad;77.99999999999999
-Göteborg;2025;Sysselsättningsgrad;77.99999999999999
+Göteborg;2025;Sysselsättningsgrad;78.14253410987641
 Helsingborg;2000;Sysselsättningsgrad;69.8
 Helsingborg;2001;Sysselsättningsgrad;70.3
 Helsingborg;2002;Sysselsättningsgrad;71.0
@@ -18528,7 +21648,7 @@ Helsingborg;2021;Sysselsättningsgrad;75.2
 Helsingborg;2022;Sysselsättningsgrad;77.5
 Helsingborg;2023;Sysselsättningsgrad;77.1
 Helsingborg;2024;Sysselsättningsgrad;76.6
-Helsingborg;2025;Sysselsättningsgrad;76.6
+Helsingborg;2025;Sysselsättningsgrad;76.48988602525925
 Jönköping;2000;Sysselsättningsgrad;78.0
 Jönköping;2001;Sysselsättningsgrad;78.3
 Jönköping;2002;Sysselsättningsgrad;79.1
@@ -18554,7 +21674,7 @@ Jönköping;2021;Sysselsättningsgrad;81.4
 Jönköping;2022;Sysselsättningsgrad;82.6
 Jönköping;2023;Sysselsättningsgrad;82.4
 Jönköping;2024;Sysselsättningsgrad;81.4
-Jönköping;2025;Sysselsättningsgrad;81.4
+Jönköping;2025;Sysselsättningsgrad;81.38113718411553
 Linköping;2000;Sysselsättningsgrad;73.6
 Linköping;2001;Sysselsättningsgrad;73.8
 Linköping;2002;Sysselsättningsgrad;73.8
@@ -18580,7 +21700,7 @@ Linköping;2021;Sysselsättningsgrad;76.6
 Linköping;2022;Sysselsättningsgrad;77.7
 Linköping;2023;Sysselsättningsgrad;78.1
 Linköping;2024;Sysselsättningsgrad;77.5
-Linköping;2025;Sysselsättningsgrad;77.5
+Linköping;2025;Sysselsättningsgrad;78.26270695843465
 Lkpg-Nkpg;2000;Sysselsättningsgrad;72.19999999999999
 Lkpg-Nkpg;2001;Sysselsättningsgrad;72.8
 Lkpg-Nkpg;2002;Sysselsättningsgrad;72.9
@@ -18632,7 +21752,7 @@ Lund;2021;Sysselsättningsgrad;68.6
 Lund;2022;Sysselsättningsgrad;70.3
 Lund;2023;Sysselsättningsgrad;70.2
 Lund;2024;Sysselsättningsgrad;69.10000000000001
-Lund;2025;Sysselsättningsgrad;69.10000000000001
+Lund;2025;Sysselsättningsgrad;70.17948346456693
 Länet exkl Linköping;2000;Sysselsättningsgrad;70.8
 Länet exkl Linköping;2001;Sysselsättningsgrad;71.8
 Länet exkl Linköping;2002;Sysselsättningsgrad;72.0
@@ -18658,7 +21778,7 @@ Länet exkl Linköping;2021;Sysselsättningsgrad;78.5
 Länet exkl Linköping;2022;Sysselsättningsgrad;80.1
 Länet exkl Linköping;2023;Sysselsättningsgrad;80.4
 Länet exkl Linköping;2024;Sysselsättningsgrad;79.9
-Länet exkl Linköping;2025;Sysselsättningsgrad;79.9
+Länet exkl Linköping;2025;Sysselsättningsgrad;79.50303987200539
 Länet exkl Norrköping;2000;Sysselsättningsgrad;73.6
 Länet exkl Norrköping;2001;Sysselsättningsgrad;73.8
 Länet exkl Norrköping;2002;Sysselsättningsgrad;73.8
@@ -18684,7 +21804,7 @@ Länet exkl Norrköping;2021;Sysselsättningsgrad;76.6
 Länet exkl Norrköping;2022;Sysselsättningsgrad;77.7
 Länet exkl Norrköping;2023;Sysselsättningsgrad;78.1
 Länet exkl Norrköping;2024;Sysselsättningsgrad;77.5
-Länet exkl Norrköping;2025;Sysselsättningsgrad;77.5
+Länet exkl Norrköping;2025;Sysselsättningsgrad;78.26270695843465
 Malmö;2000;Sysselsättningsgrad;63.6
 Malmö;2001;Sysselsättningsgrad;64.3
 Malmö;2002;Sysselsättningsgrad;63.4
@@ -18710,7 +21830,7 @@ Malmö;2021;Sysselsättningsgrad;69.9
 Malmö;2022;Sysselsättningsgrad;74.9
 Malmö;2023;Sysselsättningsgrad;74.8
 Malmö;2024;Sysselsättningsgrad;73.89999999999999
-Malmö;2025;Sysselsättningsgrad;73.89999999999999
+Malmö;2025;Sysselsättningsgrad;74.26450256113249
 Norrköping;2000;Sysselsättningsgrad;70.8
 Norrköping;2001;Sysselsättningsgrad;71.8
 Norrköping;2002;Sysselsättningsgrad;72.0
@@ -18736,7 +21856,7 @@ Norrköping;2021;Sysselsättningsgrad;78.5
 Norrköping;2022;Sysselsättningsgrad;80.1
 Norrköping;2023;Sysselsättningsgrad;80.4
 Norrköping;2024;Sysselsättningsgrad;79.9
-Norrköping;2025;Sysselsättningsgrad;79.9
+Norrköping;2025;Sysselsättningsgrad;79.50303987200539
 Riket;2000;Sysselsättningsgrad;75.2
 Riket;2001;Sysselsättningsgrad;75.7
 Riket;2002;Sysselsättningsgrad;75.9
@@ -18762,7 +21882,7 @@ Riket;2021;Sysselsättningsgrad;79.6
 Riket;2022;Sysselsättningsgrad;81.4
 Riket;2023;Sysselsättningsgrad;81.6
 Riket;2024;Sysselsättningsgrad;81.0
-Riket;2025;Sysselsättningsgrad;81.0
+Riket;2025;Sysselsättningsgrad;80.89840821709593
 Sex till tolv;2000;Sysselsättningsgrad;72.27142857142857
 Sex till tolv;2001;Sysselsättningsgrad;72.82857142857144
 Sex till tolv;2002;Sysselsättningsgrad;73.08571428571429
@@ -18840,7 +21960,7 @@ Stockholm;2021;Sysselsättningsgrad;79.5
 Stockholm;2022;Sysselsättningsgrad;81.1
 Stockholm;2023;Sysselsättningsgrad;80.9
 Stockholm;2024;Sysselsättningsgrad;80.2
-Stockholm;2025;Sysselsättningsgrad;80.2
+Stockholm;2025;Sysselsättningsgrad;80.6611902656229
 Tolv största;2000;Sysselsättningsgrad;71.77499999999999
 Tolv största;2001;Sysselsättningsgrad;72.33333333333333
 Tolv största;2002;Sysselsättningsgrad;72.33333333333333
@@ -18892,7 +22012,7 @@ Tolv största minus fem;2021;Sysselsättningsgrad;76.46363636363635
 Tolv största minus fem;2022;Sysselsättningsgrad;78.43636363636364
 Tolv största minus fem;2023;Sysselsättningsgrad;78.47272727272727
 Tolv största minus fem;2024;Sysselsättningsgrad;77.7090909090909
-Tolv största minus fem;2025;Sysselsättningsgrad;77.7090909090909
+Tolv största minus fem;2025;Sysselsättningsgrad;77.66091742310701
 Tre största;2000;Sysselsättningsgrad;69.39999999999999
 Tre största;2001;Sysselsättningsgrad;69.96666666666665
 Tre största;2002;Sysselsättningsgrad;69.56666666666666
@@ -18944,7 +22064,7 @@ Umeå;2021;Sysselsättningsgrad;78.0
 Umeå;2022;Sysselsättningsgrad;79.8
 Umeå;2023;Sysselsättningsgrad;80.4
 Umeå;2024;Sysselsättningsgrad;79.80000000000001
-Umeå;2025;Sysselsättningsgrad;79.80000000000001
+Umeå;2025;Sysselsättningsgrad;79.18859744792236
 Uppsala;2000;Sysselsättningsgrad;73.6
 Uppsala;2001;Sysselsättningsgrad;74.5
 Uppsala;2002;Sysselsättningsgrad;73.9
@@ -18970,7 +22090,7 @@ Uppsala;2021;Sysselsättningsgrad;76.1
 Uppsala;2022;Sysselsättningsgrad;77.2
 Uppsala;2023;Sysselsättningsgrad;77.3
 Uppsala;2024;Sysselsättningsgrad;76.5
-Uppsala;2025;Sysselsättningsgrad;76.5
+Uppsala;2025;Sysselsättningsgrad;76.33367890000672
 Västerås;2000;Sysselsättningsgrad;73.5
 Västerås;2001;Sysselsättningsgrad;74.1
 Västerås;2002;Sysselsättningsgrad;74.3
@@ -18996,7 +22116,7 @@ Västerås;2021;Sysselsättningsgrad;78.8
 Västerås;2022;Sysselsättningsgrad;80.7
 Västerås;2023;Sysselsättningsgrad;81.1
 Västerås;2024;Sysselsättningsgrad;80.3
-Västerås;2025;Sysselsättningsgrad;80.3
+Västerås;2025;Sysselsättningsgrad;79.42653457368883
 Örebro;2000;Sysselsättningsgrad;73.2
 Örebro;2001;Sysselsättningsgrad;73.9
 Örebro;2002;Sysselsättningsgrad;74.5
@@ -19022,7 +22142,7 @@ Västerås;2025;Sysselsättningsgrad;80.3
 Örebro;2022;Sysselsättningsgrad;80.0
 Örebro;2023;Sysselsättningsgrad;79.8
 Örebro;2024;Sysselsättningsgrad;79.1
-Örebro;2025;Sysselsättningsgrad;79.1
+Örebro;2025;Sysselsättningsgrad;78.69950724998021
 Östergötlands län;2000;Sysselsättningsgrad;73.9
 Östergötlands län;2001;Sysselsättningsgrad;74.3
 Östergötlands län;2002;Sysselsättningsgrad;74.7
@@ -19048,7 +22168,7 @@ Västerås;2025;Sysselsättningsgrad;80.3
 Östergötlands län;2022;Sysselsättningsgrad;80.2
 Östergötlands län;2023;Sysselsättningsgrad;80.6
 Östergötlands län;2024;Sysselsättningsgrad;80.1
-Östergötlands län;2025;Sysselsättningsgrad;80.1
+Östergötlands län;2025;Sysselsättningsgrad;80.17788533232174
 Fem till tolv;2000;Syssgrad_kvinnor-män;5.274999999999997
 Fem till tolv;2001;Syssgrad_kvinnor-män;4.012500000000001
 Fem till tolv;2002;Syssgrad_kvinnor-män;3.899999999999999
@@ -25616,7 +28736,7 @@ Västerås;2025;Inpendling (beräkning Sysselsatta);21.75115093617704
 Östergötlands län;2022;Inpendling (beräkning Sysselsatta);5.193089875355347
 Östergötlands län;2023;Inpendling (beräkning Sysselsatta);5.073401667824879
 Östergötlands län;2024;Inpendling (beräkning Sysselsatta);5.197500664948701
-Östergötlands län;2025;Inpendling (beräkning Sysselsatta);5.088341377567911
+Östergötlands län;2025;Inpendling (beräkning Sysselsatta);5.192451778153369
 Fem till tolv;2000;Nettopendling (Beräknad Inpendling-Utpendling);35503.0
 Fem till tolv;2001;Nettopendling (Beräknad Inpendling-Utpendling);35446.0
 Fem till tolv;2002;Nettopendling (Beräknad Inpendling-Utpendling);38707.0
@@ -26214,7 +29334,7 @@ Västerås;2025;Nettopendling (Beräknad Inpendling-Utpendling);2658.0
 Östergötlands län;2022;Nettopendling (Beräknad Inpendling-Utpendling);-2941.0
 Östergötlands län;2023;Nettopendling (Beräknad Inpendling-Utpendling);-2850.0
 Östergötlands län;2024;Nettopendling (Beräknad Inpendling-Utpendling);-2778.0
-Östergötlands län;2025;Nettopendling (Beräknad Inpendling-Utpendling);-3017.0
+Östergötlands län;2025;Nettopendling (Beräknad Inpendling-Utpendling);-2778.0
 Fem till tolv;2001;Sysselsatta (beräknad förändring);1.3272704394874824
 Fem till tolv;2002;Sysselsatta (beräknad förändring);2.282128359282676
 Fem till tolv;2003;Sysselsatta (beräknad förändring);-1.0949860065351702
