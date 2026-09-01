@@ -67,11 +67,53 @@ geojson_path = os.path.join(parent_folder, "Kartor", "kart_filer", "NYKO4v23.geo
 nyko_gdf = gpd.read_file(geojson_path)
 nyko_gdf['match_namn'] = nyko_gdf['NAMN'].astype(str).str.strip().str.lower()
 
-# 3. KARTBYGGE
-m = folium.Map(location=[58.4108, 15.6214], zoom_start=11, tiles=None)
+# ==========================================
+# GEOMETRISK BANTNING (Snabbare webbkarta)
+# ==========================================
+# (Kontrollera att din variabel heter 'gdf'. Om den heter något annat, t.ex. 'geo_data', byt ut 'gdf' mot det!)
 
-folium.TileLayer('CartoDB positron', name='Blek (För tydlig analys)', control=True, show=True).add_to(m)
-folium.TileLayer('OpenStreetMap', name='Färgstark (Detaljerad)', control=True, show=False).add_to(m)
+print("⏳ Bantar kartans geometri för blixtsnabb laddning...")
+
+# 1. Byt till SWEREF 99 TM (EPSG:3006) enligt Master Config (så vi kan mäta i meter)
+nyko_gdf = nyko_gdf.to_crs(epsg=3006)
+
+# 2. Förenkla! 1.5 meters tolerans raderar tiotusentals onödiga punkter på raka sträckor
+nyko_gdf.geometry = nyko_gdf.geometry.simplify(1.5)
+
+# 3. Byt tillbaka till WGS84 (EPSG:4326) som webbläsaren och Folium kräver
+nyko_gdf = nyko_gdf.to_crs(epsg=4326)
+
+print("✅ Geometri bantad!")
+
+# ==========================================
+# Därefter följer ditt vanliga KARTBYGGE
+# ==========================================
+# m = folium.Map(...) 
+# folium.TileLayer(...).add_to(m)
+# folium.GeoJson(gdf, smooth_factor=2.0 ...).add_to(m)
+
+# 3. KARTBYGGE (Sätt global max_zoom till 19 för att tillåta djupdykning)
+
+m = folium.Map(location=[58.4108, 15.6214], zoom_start=11, max_zoom=19, tiles=None)
+
+# CartoDB Positron (Direkt-URL som är supersnabb och blockerar API-krav)
+folium.TileLayer(
+    tiles='https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+    attr='&copy; OpenStreetMap contributors &copy; CARTO',
+    name='Blek (CartoDB Positron)',
+    control=True,
+    show=True,
+    max_zoom=19
+).add_to(m)
+
+# Färgstark OpenStreetMap som valbart alternativ (stöder naturligt zoom 19)
+folium.TileLayer(
+    'OpenStreetMap', 
+    name='Färgstark (Detaljerad)', 
+    control=True, 
+    show=False,
+    max_zoom=19
+).add_to(m)
 
 # --- KONFIGURATION (Uppdaterad till Brun -> Vit -> Blå) ---
 faktor_configs = [

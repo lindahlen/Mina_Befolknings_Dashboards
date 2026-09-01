@@ -218,38 +218,50 @@ iframe {
                 </div>
                 
                 <div class="row controls-row align-items-end">
-                    <div class="col-md-2">
-                        <label class="form-label font-weight-bold" style="color: #2196f3; font-size: 0.9rem;">X-axel</label>
-                        <select class="form-select" id="matrix-x-axis" onchange="triggerUpdateMatrix()"></select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label font-weight-bold" style="color: #ff9800; font-size: 0.9rem;">Y-axel</label>
-                        <select class="form-select" id="matrix-y-axis" onchange="triggerUpdateMatrix()"></select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label font-weight-bold" style="font-size: 0.9rem;">Bubbelstorlek</label>
-                        <select class="form-select" id="matrix-r-axis" onchange="triggerUpdateMatrix()"></select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label font-weight-bold" style="font-size: 0.9rem;">År</label>
-                        <select class="form-select" id="matrix-year" onchange="triggerUpdateMatrix()"></select>
-                    </div>
-                    <div class="col-md-2">
-                        <label class="form-label font-weight-bold" style="font-size: 0.9rem;">Analysnivå</label>
-                        <select class="form-select" id="matrix-geo-level" onchange="triggerUpdateMatrix()">
-                            <option value="kommuner">12 Kommuner</option>
-                            <option value="grupper">Geografiska grupper</option>
-                        </select>
-                    </div>
+    <div class="col-md-2">
+        <label class="form-label font-weight-bold" style="color: #2196f3; font-size: 0.9rem;">X-axel</label>
+        <select class="form-select" id="matrix-x-axis" onchange="triggerUpdateMatrix()"></select>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label font-weight-bold" style="color: #ff9800; font-size: 0.9rem;">Y-axel</label>
+        <select class="form-select" id="matrix-y-axis" onchange="triggerUpdateMatrix()"></select>
+    </div>
+    <div class="col-md-2">
+        <label class="form-label font-weight-bold" style="font-size: 0.9rem;">Bubbelstorlek</label>
+        <select class="form-select" id="matrix-r-axis" onchange="triggerUpdateMatrix()"></select>
+    </div>
+    
+    <!-- År & Animering -->
+    <div class="col-md-2">
+        <label class="form-label font-weight-bold" style="font-size: 0.9rem;">År & Animering</label>
+        <div class="input-group">
+            <button class="btn btn-success" type="button" id="playBtn-matrix" onclick="togglePlayMatrix()" style="padding: 0.375rem 0.5rem; font-size: 0.85rem;" title="Spela upp över tid">
+                ▶️ Spela
+            </button>
+            <select class="form-select" id="matrix-year" onchange="handleManualYearChange()" style="padding-left: 5px;"></select>
+        </div>
+    </div>
+    
+    <div class="col-md-2">
+        <label class="form-label font-weight-bold" style="font-size: 0.9rem;">Analysnivå</label>
+        <select class="form-select" id="matrix-geo-level" onchange="triggerUpdateMatrix()">
+            <option value="kommuner">12 Kommuner</option>
+            <option value="grupper">Geografiska grupper</option>
+        </select>
+    </div>
                     <!-- NYHET: Omplacerad Checkbox ovanför Återställ vy -->
                     <div class="col-md-2">
-                        <div class="form-check mb-2" style="font-size: 0.8rem; line-height: 1.2;">
-                            <input class="form-check-input" type="checkbox" id="matrix-center-100" onchange="triggerUpdateMatrix()">
-                            <label class="form-check-label text-muted" for="matrix-center-100">Lås kors vid Riket (100)</label>
-                        </div>
-                        <button class="btn btn-primary w-100" style="background-color: var(--primary-orange); border: none;" onclick="resetAnalysis()">🔄 Återställ vy</button>
-                    </div>
-                </div>
+        <div class="form-check mb-1" style="font-size: 0.8rem; line-height: 1.2;">
+            <input class="form-check-input" type="checkbox" id="matrix-center-100" onchange="triggerUpdateMatrix()">
+            <label class="form-check-label text-muted" for="matrix-center-100">Lås kors vid Riket</label>
+        </div>
+        <div class="form-check mb-2" style="font-size: 0.8rem; line-height: 1.2;">
+            <input class="form-check-input" type="checkbox" id="matrix-lock-scales" onchange="triggerUpdateMatrix()">
+            <label class="form-check-label text-muted" for="matrix-lock-scales">Lås axlarnas skalor</label>
+        </div>
+        <button class="btn btn-primary w-100" style="background-color: var(--primary-orange, #fd7e14); border: none; padding: 0.25rem;" onclick="resetAnalysis()">🔄 Återställ</button>
+    </div>
+</div>
 
                 <div class="row" style="flex-grow: 1;">
                     <div class="col-md-9" style="display: flex; flex-direction: column;">
@@ -283,38 +295,44 @@ iframe {
                         </div>
 
                         <!-- 2. TOLKNINGSGUIDE (Kompakt) -->
-                        <div class="matrix-summary-box shadow-sm" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; flex: 0 0 auto;">
-                            <h5 style="color: #a04000; font-size: 1.05rem; margin-bottom: 10px;">Tolkningsguide</h5>
-                            
-                            <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px;">
-                                <strong>📐 Dina Val (X och Y):</strong><br>
-                                Du styr själv vad axlarna representerar via rullistorna ovan. Diagrammet placerar automatiskt kommunerna baserat på dina valda variabler. X-axeln visas under diagrammet och Y-axeln till vänster om diagrammet.
-                            </div>
+<div class="matrix-summary-box shadow-sm" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 15px; flex: 0 0 auto;">
+    <h5 style="color: #a04000; font-size: 1.05rem; margin-bottom: 10px;">Tolkningsguide</h5>
+    
+    <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px;">
+        <strong>📐 Dina Val (X och Y):</strong><br>
+        Du styr själv vad axlarna representerar via rullistorna ovan. Diagrammet placerar automatiskt kommunerna baserat på dina valda variabler. X-axeln visas under diagrammet och Y-axeln till vänster om diagrammet.
+    </div>
 
-                            <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px; border-top: 1px solid #dee2e6; padding-top: 8px;">
-                                <strong>🧭 Kvadranterna:</strong><br>
-                                <span style="color: #28a745; font-weight: bold;">⭐ Stjärnor:</span> Starka på både X och Y.<br>
-                                <span style="color: #0d6efd; font-weight: bold;">💰 Kassakor:</span> Starka på X, men svagare på Y.<br>
-                                <span style="color: #fd7e14; font-weight: bold;">❓ Frågetecken:</span> Starka på Y, men svagare på X.<br>
-                                <span style="color: #6c757d; font-weight: bold;">⚠️ Utmanare:</span> Presterar under snittet.
-                            </div>
-                            
-                            <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px; border-top: 1px solid #dee2e6; padding-top: 8px;">
-                                <strong>🌍 Analysnivå:</strong><br>
-                                Växla till "Geografiska grupper" för att jämföra Linköping med Riket, länet och ett antal i förväg fastställda relevanta geografiska grupper.
-                            </div>
+    <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px; border-top: 1px solid #dee2e6; padding-top: 8px;">
+        <strong>🧭 Kvadranterna:</strong><br>
+        <span style="color: #28a745; font-weight: bold;">⭐ Stjärnor:</span> Starka på både X och Y.<br>
+        <span style="color: #0d6efd; font-weight: bold;">💰 Kassakor:</span> Starka på X, men svagare på Y.<br>
+        <span style="color: #fd7e14; font-weight: bold;">❓ Frågetecken:</span> Starka på Y, men svagare på X.<br>
+        <span style="color: #6c757d; font-weight: bold;">⚠️ Utmanare:</span> Presterar under snittet.
+    </div>
+    
+    <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px; border-top: 1px solid #dee2e6; padding-top: 8px;">
+        <strong>🌍 Analysnivå:</strong><br>
+        Växla till "Geografiska grupper" för att jämföra Linköping med Riket, länet och ett antal i förväg fastställda relevanta geografiska grupper.
+    </div>
 
-                            <div style="font-size: 0.8rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 8px;">
-                                <strong>🎯 Lås kors vid Riket (100):</strong><br>
-                                Aktivera funktionen för att fixera origo vid Sverigesnittet. Visar direkt hur Linköping presterar mot den fasta nationella baslinjen. (Ger störst insikt vid analys av Geografiska grupper).
-                            </div>
+    <div style="font-size: 0.8rem; color: #475569; margin-bottom: 10px; border-top: 1px solid #dee2e6; padding-top: 8px;">
+        <strong>⏱️ Tidsanimering & Spårhistorik:</strong><br>
+        Klicka på knappen <span class="badge bg-success">▶️ Spela</span> för att se hur kommunernas positioner utvecklats över tid. Klicka på en specifik bubbla i diagrammet för att markera den och rita ut dess spårhistorik genom åren.
+    </div>
 
-                            <!-- TIPSRUTAN -->
-                            <div style="font-size: 0.8rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 8px; background-color: #fffbeb; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 3px solid #f59e0b;">
-                                <strong>💡 Tips!</strong><br>
-                                När du tittar på Geografiska grupper: Klicka på "Riket" i grafens teckenförklaring för att dölja den bubblan. Då autoskalas grafen och avstånden mellan grupperna blir mycket tydligare!
-                            </div>
-                        </div>
+    <div style="font-size: 0.8rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 8px;">
+        <strong>🎯 Låsningar för djupanalys:</strong><br>
+        • <em>Lås kors vid Riket (100):</em> Fixerar origo vid Sverigesnittet. Visar direkt hur gruppen presterar mot den nationella baslinjen. (Ger störst insikt vid analys av Geografiska grupper).<br>
+        • <em>Lås axlarnas skalor:</em> Fryser diagrammets inzoomning. Används med fördel under tidsanimering för att se den faktiska rörelsen utan att bakgrunden anpassar sig.
+    </div>
+
+    <!-- TIPSRUTAN -->
+    <div style="font-size: 0.8rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 8px; background-color: #fffbeb; padding: 10px; border-radius: 6px; margin-top: 10px; border-left: 3px solid #f59e0b;">
+        <strong>💡 Tips!</strong><br>
+        När du tittar på Geografiska grupper: Klicka på "Riket" i grafens teckenförklaring för att dölja den bubblan. Då autoskalas grafen och avstånden mellan grupperna blir mycket tydligare!
+    </div>
+</div>
 
                     </div>
                 </div>
@@ -906,6 +924,8 @@ iframe {
             { name: 'Umeå, Lund', color: '#4ed4b0', shape: 'triangle', cities: ['Umeå', 'Lund'] }
         ];
 
+        let trackedKommunMatrix = null; // Håller koll på vilken kommun som ska få ett "spår"
+        
         // ==========================================
         // DYNAMISK FORMATERING FÖR SIMULATOR-SPAKAR
         // ==========================================
@@ -971,11 +991,49 @@ iframe {
         };
 
         function resetAnalysis() {
-            hiddenMatrixDatasets.clear();
-            hiddenRegressionDatasets.clear();
-            triggerUpdateMatrix();
-            triggerUpdateRegression();
+    // ==========================================
+    // 1. STÄDA FYRFÄLTAREN (Spår, Animering & Låsningar)
+    // ==========================================
+    
+    // A. Stanna animeringen om den körs
+    if (typeof playIntervalMatrix !== 'undefined' && playIntervalMatrix) {
+        clearInterval(playIntervalMatrix);
+        playIntervalMatrix = null;
+        if (typeof isMatrixPlaying !== 'undefined') isMatrixPlaying = false;
+        
+        const btn = document.getElementById('playBtn-matrix');
+        if(btn) {
+            btn.innerHTML = '▶️ Spela';
+            btn.className = 'btn btn-success';
         }
+    }
+    
+    // B. Ta bort spårhistoriken
+    if (typeof trackedKommunMatrix !== 'undefined') {
+        trackedKommunMatrix = null;
+    }
+    
+    // C. Ta bort axel- och origolåsningar
+    const lockScalesCheckbox = document.getElementById('matrix-lock-scales');
+    if (lockScalesCheckbox) lockScalesCheckbox.checked = false;
+    if (typeof lockedScalesMatrix !== 'undefined') lockedScalesMatrix = null;
+    
+    const lockCenterCheckbox = document.getElementById('matrix-center-100');
+    if (lockCenterCheckbox) lockCenterCheckbox.checked = false;
+
+    // ==========================================
+    // 2. DIN BEFINTLIGA LOGIK FÖR BÅDA FLIKARNA
+    // ==========================================
+    hiddenMatrixDatasets.clear();
+    if (typeof hiddenRegressionDatasets !== 'undefined') {
+        hiddenRegressionDatasets.clear();
+    }
+    
+    triggerUpdateMatrix();
+    if (typeof triggerUpdateRegression === 'function') {
+        triggerUpdateRegression();
+    }
+}
 
         document.addEventListener("DOMContentLoaded", function() {
             Promise.all([
@@ -1397,6 +1455,34 @@ iframe {
         // ==========================================
         // FYRFÄLTAREN
         // ==========================================
+        // ==========================================
+// VATTENSTÄMPEL-PLUGIN (Aktiveras bara vid Play)
+// ==========================================
+const watermarkPlugin = {
+    id: 'watermark',
+    beforeDraw(chart) {
+        if (!isMatrixPlaying) return; // Rita bara om knappen är tryckt!
+        
+        const yearBox = document.getElementById('matrix-year');
+        if (!yearBox) return;
+        const yearText = yearBox.options[yearBox.selectedIndex].text;
+
+        const { ctx, chartArea: { left, top, width, height } } = chart;
+        
+        ctx.save();
+        // Stålgrå färg, stor transparent text
+        ctx.fillStyle = 'rgba(108, 117, 125, 0.15)'; 
+        ctx.font = 'bold 160px "Segoe UI", Arial, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        // Placera exakt i mitten av ritytan
+        ctx.fillText(yearText, left + width / 2, top + height / 2);
+        ctx.restore();
+    }
+};
+Chart.register(watermarkPlugin); // Registrera globalt!
+
         const quadrantPlugin = {
             id: 'quadrants',
             beforeDraw(chart, args, options) {
@@ -1435,189 +1521,389 @@ iframe {
         Chart.register(quadrantPlugin); 
 
         function triggerUpdateMatrix() {
-            setTimeout(updateMatrix, 50);
+    setTimeout(updateMatrix, 50);
+}
+
+function updateMatrix() {
+    const indX = document.getElementById('matrix-x-axis').value;
+    const indY = document.getElementById('matrix-y-axis').value;
+    const indR = document.getElementById('matrix-r-axis').value;
+    const year = parseInt(document.getElementById('matrix-year').value);
+    const geoLevel = document.getElementById('matrix-geo-level').value; 
+    
+    const lockAt100 = document.getElementById('matrix-center-100').checked;
+
+    if (!indX || !indY || !indR || isNaN(year)) return;
+
+    // 1. SKAPA FAST ENTITETSLISTA (Hörnstenen i anti-ghosting)
+    let activeEntities = (geoLevel === 'kommuner') ? targetMunicipalities : [...aggregateGroups, 'Linköping'];
+    activeEntities = [...new Set(activeEntities)].sort(); 
+
+    let visibleRValues = [];
+    let visibleXValues = [];
+    let visibleYValues = [];
+    
+    // 2. SKAPA FASTA DATASETS BASERAT PÅ GRUPPER
+    let categories = [];
+    if (geoLevel === 'kommuner') {
+        categories = municipalityGroups.map(g => ({ name: g.name, color: g.color, shape: 'circle', entities: g.cities }));
+    } else {
+        categories = activeEntities.map(ent => {
+            let color = '#fd7e14'; let shape = 'circle';
+            if (ent === 'Linköping') { color = '#007bff'; shape = 'star'; } 
+            else if (ent === 'Riket') { color = '#212529'; shape = 'rectRounded'; } 
+            else if (ent.includes('län') || ent.includes('Länet') || ent.includes('Östergötland')) { color = '#198754'; shape = 'triangle'; } 
+            else if (['Fem till tolv', 'Sex till tolv minus tio', 'Sex till tolv'].includes(ent)) { color = '#6f42c1'; } 
+            else if (ent === 'Lkpg-Nkpg') { color = '#4ed4b0'; } 
+            else if (ent === 'Tolv största minus fem') { color = '#dc3545'; } 
+            return { name: geoNameMap[ent] || ent, color: color, shape: shape, entities: [ent] };
+        });
+    }
+
+    let groupedData = {};
+    let stars = [], cows = [], questions = [], dogs = [];
+
+    // Fyll på riktig data, spara undan för min/max
+    categories.forEach(cat => {
+        groupedData[cat.name] = [];
+        cat.entities.forEach(ent => {
+            let valX = getVariableValue(ent, year, indX, false); 
+            let valY = getVariableValue(ent, year, indY, false);
+            let valR = getVariableValue(ent, year, indR, false);
+            
+            let isHidden = hiddenMatrixDatasets.has(cat.name);
+
+            if (valX !== null && valY !== null && valR !== null) {
+                if (!isHidden) {
+                    visibleXValues.push(valX);
+                    visibleYValues.push(valY);
+                    visibleRValues.push(valR);
+                }
+                groupedData[cat.name].push({ x: valX, y: valY, r_raw: valR, kommun: ent, displayName: geoNameMap[ent] || ent });
+            } else {
+                // SPÖKBUBBLAN: Låser indexet så inget flyger kors och tvärs
+                groupedData[cat.name].push({ x: 0, y: 0, r_raw: 0, kommun: ent, displayName: geoNameMap[ent] || ent });
+            }
+        });
+    });
+
+    // 3. BERÄKNA HÅRKORS (midX, midY)
+    let midX, midY;
+    if (lockAt100) {
+        let riketX = getVariableValue('Riket', year, indX, false);
+        let riketY = getVariableValue('Riket', year, indY, false);
+        midX = (riketX !== null && !isNaN(riketX)) ? riketX : (visibleXValues.length ? visibleXValues.reduce((a,b)=>a+b,0)/visibleXValues.length : 0);
+        midY = (riketY !== null && !isNaN(riketY)) ? riketY : (visibleYValues.length ? visibleYValues.reduce((a,b)=>a+b,0)/visibleYValues.length : 0);
+    } else {
+        midX = visibleXValues.length ? visibleXValues.reduce((a,b)=>a+b,0)/visibleXValues.length : 0;
+        midY = visibleYValues.length ? visibleYValues.reduce((a,b)=>a+b,0)/visibleYValues.length : 0;
+    }
+
+    // 4. NORMALISERA RADIEN & FÖRDELA I KVADRANTER
+    let minR = visibleRValues.length ? Math.min(...visibleRValues) : 0; 
+    let maxR = visibleRValues.length ? Math.max(...visibleRValues) : 0;
+
+    categories.forEach(cat => {
+        groupedData[cat.name].forEach(d => {
+            if (d.r_raw === 0 || maxR === 0) { 
+                d.r = 0; // Spöken förblir osynliga
+            } else { 
+                let clampedR = Math.max(minR, Math.min(maxR, d.r_raw));
+                d.r = 8 + 27 * ((clampedR - minR) / (maxR - minR)); 
+            }
+            
+            if (!hiddenMatrixDatasets.has(cat.name) && d.r > 0) {
+                if(d.x >= midX && d.y >= midY) stars.push(d.displayName);
+                else if(d.x >= midX && d.y < midY) cows.push(d.displayName);
+                else if(d.x < midX && d.y >= midY) questions.push(d.displayName);
+                else dogs.push(d.displayName);
+            }
+        });
+    });
+
+    // Uppdatera UI-texter
+    let crossLabel = lockAt100 ? "Rikssnittet" : "snittet";
+    document.getElementById('quad-stars-title').innerText = `⭐ Stjärnor (Över ${crossLabel})`;
+    document.getElementById('quad-dogs-title').innerText = `⚠️ Utmanare (Under ${crossLabel})`;
+    document.getElementById('quad-stars').innerHTML = stars.length > 0 ? stars.join(', ') : '<i>Inga träffar</i>';
+    document.getElementById('quad-cows').innerHTML = cows.length > 0 ? cows.join(', ') : '<i>Inga träffar</i>';
+    document.getElementById('quad-questions').innerHTML = questions.length > 0 ? questions.join(', ') : '<i>Inga träffar</i>';
+    document.getElementById('quad-dogs').innerHTML = dogs.length > 0 ? dogs.join(', ') : '<i>Inga träffar</i>';
+
+    // 5. BYGG DATASETS FÖR CHART.JS
+    let datasets = [];
+    categories.forEach(cat => {
+        datasets.push({
+            label: cat.name, 
+            data: groupedData[cat.name], 
+            backgroundColor: hexToRgba(cat.color, 0.8),
+            borderColor: cat.color, 
+            borderWidth: 1.5, 
+            pointStyle: cat.shape,
+            hidden: hiddenMatrixDatasets.has(cat.name),
+            order: 2
+        });
+    });
+
+    // ==========================================
+    // 6. SPÅRHISTORIK OCH GLÖDBUBBLA
+    // Hämtar historik dynamiskt via getVariableValue
+    // ==========================================
+    let trailPoints = [];
+    let focusPoint = [];
+    
+    if (trackedKommunMatrix) {
+        // Hitta den aktuella bubblan
+        let currentX = getVariableValue(trackedKommunMatrix, year, indX, false);
+        let currentY = getVariableValue(trackedKommunMatrix, year, indY, false);
+        
+        if (currentX !== null && currentY !== null) {
+            focusPoint = [{ x: currentX, y: currentY, r: 12, kommun: trackedKommunMatrix, displayName: geoNameMap[trackedKommunMatrix] || trackedKommunMatrix }];
         }
 
-       function updateMatrix() {
-            const indX = document.getElementById('matrix-x-axis').value;
-            const indY = document.getElementById('matrix-y-axis').value;
-            const indR = document.getElementById('matrix-r-axis').value;
-            const year = parseInt(document.getElementById('matrix-year').value);
-            const geoLevel = document.getElementById('matrix-geo-level').value; 
+        // Hämta alla år som finns i din select-box
+        let yearSelectBox = document.getElementById('matrix-year');
+        if (yearSelectBox) {
+            let availableYears = Array.from(yearSelectBox.options).map(o => parseInt(o.value)).filter(y => !isNaN(y) && y <= year).sort((a,b)=>a-b);
             
-            const lockAt100 = document.getElementById('matrix-center-100').checked;
-
-            if (!indX || !indY || !indR || isNaN(year)) return;
-
-            let matrixData = [];
-            let activeEntities = (geoLevel === 'kommuner') ? targetMunicipalities : [...aggregateGroups, 'Linköping'];
-            activeEntities = [...new Set(activeEntities)];
-
-            activeEntities.forEach(kommun => {
-                let valX = getVariableValue(kommun, year, indX, false); 
-                let valY = getVariableValue(kommun, year, indY, false);
-                let valR = getVariableValue(kommun, year, indR, false);
-                if (valX !== null && valY !== null && valR !== null) {
-                    matrixData.push({ x: valX, y: valY, r_raw: valR, kommun: kommun });
+            availableYears.forEach(y => {
+                let tx = getVariableValue(trackedKommunMatrix, y, indX, false);
+                let ty = getVariableValue(trackedKommunMatrix, y, indY, false);
+                if (tx !== null && ty !== null) {
+                    trailPoints.push({ x: tx, y: ty, year: y });
                 }
             });
+        }
+    }
 
-            if (matrixData.length === 0) { return; }
+    datasets.push({
+        type: 'line', label: trackedKommunMatrix ? `Spårhistorik: ${geoNameMap[trackedKommunMatrix] || trackedKommunMatrix}` : 'Spårhistorik', data: trailPoints,
+        borderColor: 'rgba(211, 84, 0, 0.85)', borderWidth: 3, pointBackgroundColor: 'rgba(211, 84, 0, 0.85)', pointRadius: 4, fill: false, showLine: true, order: 3,
+        animation: false
+    });
 
-            matrixData.forEach(d => {
-                if (geoLevel === 'kommuner') {
-                    let group = municipalityGroups.find(g => g.cities.includes(d.kommun));
-                    d.datasetLabel = group ? group.name : d.kommun;
-                } else {
-                    d.datasetLabel = geoNameMap[d.kommun] || d.kommun;
-                }
-            });
+    datasets.push({
+        type: 'bubble', label: trackedKommunMatrix ? `Nuvarande Position: ${geoNameMap[trackedKommunMatrix] || trackedKommunMatrix}` : 'Nuvarande Position', data: focusPoint,
+        backgroundColor: 'rgba(255, 234, 0, 0.95)', borderColor: 'rgba(211, 84, 0, 1)', borderWidth: 3, order: -2, animation: false
+    });
 
-            let visibleRValues = [];
-            let visibleXValues = [];
-            let visibleYValues = [];
-            
-            matrixData.forEach(d => {
-                if (!hiddenMatrixDatasets.has(d.datasetLabel)) {
-                    visibleRValues.push(d.r_raw);
-                    visibleXValues.push(d.x);
-                    visibleYValues.push(d.y);
-                }
-            });
+    // ==========================================
+    // 7. RITA ELLER UPPDATERA DIAGRAMMET
+    // ==========================================
+    let cleanXLabel = formatAxisLabel(indX);
+    let cleanYLabel = formatAxisLabel(indY);
 
-            // ==========================================
-            // FIX: DYNAMISKT KORS FÖR BÅDE INDEX OCH RÅDATA
-            // ==========================================
-            let midX, midY;
-            if (lockAt100) {
-                // Hämta Rikets äkta värden oavsett om det är Index eller Procent
-                let riketX = getVariableValue('Riket', year, indX, false);
-                let riketY = getVariableValue('Riket', year, indY, false);
-                
-                // Om Rikets värde finns, använd det. Annars fallback till det synliga snittet.
-                midX = (riketX !== null && !isNaN(riketX)) ? riketX : (visibleXValues.length ? visibleXValues.reduce((a,b)=>a+b,0)/visibleXValues.length : 0);
-                midY = (riketY !== null && !isNaN(riketY)) ? riketY : (visibleYValues.length ? visibleYValues.reduce((a,b)=>a+b,0)/visibleYValues.length : 0);
-            } else {
-                // Visuell inzoomning (Snittet av städerna på skärmen)
-                midX = visibleXValues.length ? visibleXValues.reduce((a,b)=>a+b,0)/visibleXValues.length : 0;
-                midY = visibleYValues.length ? visibleYValues.reduce((a,b)=>a+b,0)/visibleYValues.length : 0;
+    // SKOTTSÄKER LÅSNING AV AXLARNA
+    const lockScalesCheckbox = document.getElementById('matrix-lock-scales');
+    const lockScales = lockScalesCheckbox ? lockScalesCheckbox.checked : false;
+
+    if (lockScales) {
+        // Om låsning är ikryssad och vi inte redan sparat minnet: Sug ut ramarna!
+        if (!lockedScalesMatrix && window.matrixChartInstance && window.matrixChartInstance.scales.x) {
+            lockedScalesMatrix = {
+                xMin: window.matrixChartInstance.scales.x.min,
+                xMax: window.matrixChartInstance.scales.x.max,
+                yMin: window.matrixChartInstance.scales.y.min,
+                yMax: window.matrixChartInstance.scales.y.max
+            };
+        }
+    } else {
+        lockedScalesMatrix = null; // Töm minnet om rutan kryssas ur
+    }
+
+    if (typeof window.matrixChartInstance !== 'undefined' && window.matrixChartInstance !== null) {
+        
+        let newLabels = datasets.map(d => d.label);
+        for (let i = window.matrixChartInstance.data.datasets.length - 1; i >= 0; i--) {
+            if (!newLabels.includes(window.matrixChartInstance.data.datasets[i].label)) {
+                window.matrixChartInstance.data.datasets.splice(i, 1);
             }
-
-            let minR = visibleRValues.length ? Math.min(...visibleRValues) : 0; 
-            let maxR = visibleRValues.length ? Math.max(...visibleRValues) : 0;
-            
-            let stars = [], cows = [], questions = [], dogs = [];
-            
-            matrixData.forEach(d => {
-                if (maxR === minR || maxR === 0) { 
-                    d.r = 15; 
-                } else { 
-                    let clampedR = Math.max(minR, Math.min(maxR, d.r_raw));
-                    d.r = 8 + 27 * ((clampedR - minR) / (maxR - minR)); 
-                }
-                
-                d.displayName = geoNameMap[d.kommun] || d.kommun;
-                
-                if (!hiddenMatrixDatasets.has(d.datasetLabel)) {
-                    if(d.x >= midX && d.y >= midY) stars.push(d.displayName);
-                    else if(d.x >= midX && d.y < midY) cows.push(d.displayName);
-                    else if(d.x < midX && d.y >= midY) questions.push(d.displayName);
-                    else dogs.push(d.displayName);
-                }
-            });
-
-            // Dynamisk titel som speglar om det är Riket eller Städernas snitt
-            let crossLabel = lockAt100 ? "Rikssnittet" : "snittet";
-            document.getElementById('quad-stars-title').innerText = `⭐ Stjärnor (Över ${crossLabel})`;
-            document.getElementById('quad-dogs-title').innerText = `⚠️ Utmanare (Under ${crossLabel})`;
-
-            document.getElementById('quad-stars').innerHTML = stars.length > 0 ? stars.join(', ') : '<i>Inga träffar</i>';
-            document.getElementById('quad-cows').innerHTML = cows.length > 0 ? cows.join(', ') : '<i>Inga träffar</i>';
-            document.getElementById('quad-questions').innerHTML = questions.length > 0 ? questions.join(', ') : '<i>Inga träffar</i>';
-            document.getElementById('quad-dogs').innerHTML = dogs.length > 0 ? dogs.join(', ') : '<i>Inga träffar</i>';
-
-            let datasets = [];
-            
-            if (geoLevel === 'kommuner') {
-                municipalityGroups.forEach(group => {
-                    let groupData = matrixData.filter(d => group.cities.includes(d.kommun));
-                    if (groupData.length > 0) {
-                        datasets.push({
-                            label: group.name, data: groupData, backgroundColor: hexToRgba(group.color, 0.8),
-                            borderColor: group.color, borderWidth: 1.5, pointStyle: 'circle',
-                            hidden: hiddenMatrixDatasets.has(group.name)
-                        });
-                    }
-                });
-            } else {
-                let activeEntities = [...new Set((geoLevel === 'kommuner') ? targetMunicipalities : [...aggregateGroups, 'Linköping'])];
-                activeEntities.forEach(ent => {
-                    let groupData = matrixData.filter(d => d.kommun === ent);
-                    if(groupData.length > 0) {
-                        let color = '#fd7e14'; let shape = 'circle';
-                        let mappedName = geoNameMap[ent] || ent;
-                        
-                        if (ent === 'Linköping') { color = '#007bff'; shape = 'star'; } 
-                        else if (ent === 'Riket') { color = '#212529'; shape = 'rectRounded'; } 
-                        else if (ent.includes('län') || ent.includes('Länet') || ent.includes('Östergötland')) { color = '#198754'; shape = 'triangle'; } 
-                        else if (['Fem till tolv', 'Sex till tolv minus tio', 'Sex till tolv'].includes(ent)) { color = '#6f42c1'; } 
-                        else if (ent === 'Lkpg-Nkpg') { color = '#4ed4b0'; } 
-                        else if (ent === 'Tolv största minus fem') { color = '#dc3545'; } 
-                        
-                        datasets.push({
-                            label: mappedName, data: groupData, backgroundColor: hexToRgba(color, 0.8),
-                            borderColor: color, borderWidth: 1.5, pointStyle: shape,
-                            hidden: hiddenMatrixDatasets.has(mappedName)
-                        });
-                    }
-                });
-            }
-
-            let cleanXLabel = formatAxisLabel(indX);
-            let cleanYLabel = formatAxisLabel(indY);
-
-            drawMatrixChart(datasets, cleanXLabel, cleanYLabel, midX, midY);
         }
 
-        function drawMatrixChart(datasets, labelX, labelY, midX, midY) {
-            const ctx = document.getElementById('matrixChart').getContext('2d');
-            if (matrixChartInstance) matrixChartInstance.destroy();
+        datasets.forEach(newDs => {
+            let existingDs = window.matrixChartInstance.data.datasets.find(ds => ds.label === newDs.label);
+            if (existingDs) {
+                existingDs.data = newDs.data; 
+                existingDs.backgroundColor = newDs.backgroundColor; 
+                existingDs.borderColor = newDs.borderColor;
+                existingDs.hidden = newDs.hidden;
+                if (newDs.pointBackgroundColor) existingDs.pointBackgroundColor = newDs.pointBackgroundColor;
+                if (newDs.animation !== undefined) existingDs.animation = newDs.animation; else delete existingDs.animation;
+            } else {
+                window.matrixChartInstance.data.datasets.push(newDs);
+            }
+        });
 
-            matrixChartInstance = new Chart(ctx, {
-                type: 'bubble',
-                data: { datasets: datasets },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    plugins: {
-                        tooltip: {
-                            callbacks: {
-                                label: function(ctx) {
-                                    let kom = ctx.raw.displayName || ctx.raw.kommun;
-                                    let x = ctx.parsed.x.toLocaleString('sv-SE', {maximumFractionDigits: 1});
-                                    let y = ctx.parsed.y.toLocaleString('sv-SE', {maximumFractionDigits: 1});
-                                    let r = ctx.raw.r_raw.toLocaleString('sv-SE', {maximumFractionDigits: 0});
-                                    return `${kom} | X: ${x} | Y: ${y} | Storlek: ${r}`; 
-                                }
+        // Hårkors-uppdatering
+        if (window.matrixChartInstance.options.plugins.quadrants) {
+            window.matrixChartInstance.options.plugins.quadrants.midX = midX;
+            window.matrixChartInstance.options.plugins.quadrants.midY = midY;
+        }
+
+        window.matrixChartInstance.options.scales.x.title.text = cleanXLabel;
+        window.matrixChartInstance.options.scales.y.title.text = cleanYLabel;
+        
+        // APPLICERA DEN FASTGJUTNA LÅSNINGEN!
+        if (lockScales && lockedScalesMatrix) {
+            window.matrixChartInstance.options.scales.x.min = lockedScalesMatrix.xMin;
+            window.matrixChartInstance.options.scales.x.max = lockedScalesMatrix.xMax;
+            window.matrixChartInstance.options.scales.y.min = lockedScalesMatrix.yMin;
+            window.matrixChartInstance.options.scales.y.max = lockedScalesMatrix.yMax;
+        } else {
+            delete window.matrixChartInstance.options.scales.x.min;
+            delete window.matrixChartInstance.options.scales.x.max;
+            delete window.matrixChartInstance.options.scales.y.min;
+            delete window.matrixChartInstance.options.scales.y.max;
+        }
+        
+        // Kolla om knappen faktiskt visar "Paus" (vilket betyder att vi spelar)
+        const playBtn = document.getElementById('playBtn-matrix');
+        const isPlaying = playBtn && (playBtn.innerText.includes('Paus') || playBtn.innerText.includes('⏸'));
+        window.matrixChartInstance.options.animation.duration = isPlaying ? 1500 : 400;
+        
+        window.matrixChartInstance.update();
+        
+    } else {
+        // SKAPA FÖR FÖRSTA GÅNGEN
+        const ctx = document.getElementById('matrixChart').getContext('2d');
+        window.matrixChartInstance = new Chart(ctx, {
+            type: 'bubble',
+            data: { datasets: datasets },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                animation: { duration: 400, easing: 'easeInOutQuad' },
+                onClick: (event, elements, chart) => {
+                    if (elements.length > 0) {
+                        const el = elements[0]; 
+                        const ds = chart.data.datasets[el.datasetIndex];
+                        
+                        // Kolla att vi inte klickade på en linje, och att det är en giltig kommun
+                        if (ds.type !== 'line' && ds.data[el.index] && ds.data[el.index].kommun) {
+                            const clickedKommun = ds.data[el.index].kommun;
+                            
+                            // MAGIN: Är den klickade kommunen redan markerad? Då avmarkerar vi den!
+                            if (trackedKommunMatrix === clickedKommun) {
+                                trackedKommunMatrix = null; 
+                            } else {
+                                trackedKommunMatrix = clickedKommun; // Annars markerar vi den nya
                             }
-                        },
-                        legend: { 
-                            position: 'bottom',
-                            onClick: function(e, legendItem, legend) {
-                                const label = legendItem.text;
-                                if (hiddenMatrixDatasets.has(label)) { hiddenMatrixDatasets.delete(label); } 
-                                else { hiddenMatrixDatasets.add(label); }
-                                updateMatrix(); 
+                            updateMatrix();
+                        }
+                    } else { 
+                        // Klick på tom yta avmarkerar också
+                        trackedKommunMatrix = null; 
+                        updateMatrix(); 
+                    }
+                },
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(c) {
+                                if (c.raw.r === 0) return false; // Inga tooltips på spöken
+                                if (c.dataset.label.startsWith('Spårhistorik')) return `${c.raw.year}: X=${c.raw.x.toLocaleString('sv-SE')} | Y=${c.raw.y.toLocaleString('sv-SE')}`;
+                                if (c.dataset.type === 'line') return false;
+                                
+                                let kom = c.raw.displayName || c.raw.kommun;
+                                let x = c.parsed.x.toLocaleString('sv-SE', {maximumFractionDigits: 1});
+                                let y = c.parsed.y.toLocaleString('sv-SE', {maximumFractionDigits: 1});
+                                let r = c.raw.r_raw.toLocaleString('sv-SE', {maximumFractionDigits: 0});
+                                return `${kom} | X: ${x} | Y: ${y} | Storlek: ${r}`; 
                             }
-                        },
-                        quadrants: { midX: midX, midY: midY } 
+                        }
                     },
-                    scales: {
-                        x: { title: { display: true, text: labelX, font: { weight: 'bold' } }, offset: true },
-                        y: { title: { display: true, text: labelY, font: { weight: 'bold' } }, offset: true }
-                    }
+                    legend: { 
+                        position: 'bottom',
+                        labels: {
+                            filter: (item) => {
+                                if (item.text.startsWith('Spårhistorik') || item.text.startsWith('Nuvarande Position')) return false;
+                                return true;
+                            }
+                        },
+                        onClick: function(e, legendItem, legend) {
+                            const label = legendItem.text;
+                            if (hiddenMatrixDatasets.has(label)) { hiddenMatrixDatasets.delete(label); } 
+                            else { hiddenMatrixDatasets.add(label); }
+                            updateMatrix(); 
+                        }
+                    },
+                    quadrants: { midX: midX, midY: midY } 
+                },
+                scales: {
+                    x: { title: { display: true, text: cleanXLabel, font: { weight: 'bold' } }, offset: true },
+                    y: { title: { display: true, text: cleanYLabel, font: { weight: 'bold' } }, offset: true }
                 }
-            });
+            }
+        });
+    }
+}
+
+// ==========================================
+// TIDSANIMERING FÖR FYRFÄLTAREN (KONKURRENSKRAFT)
+// ==========================================
+let playIntervalMatrix = null;
+let isMatrixPlaying = false; 
+let lockedScalesMatrix = null; 
+
+// När du klickar i rullistan manuellt: Döda spöket och animeringen
+function handleManualYearChange() {
+    if (playIntervalMatrix) {
+        clearInterval(playIntervalMatrix);
+        playIntervalMatrix = null;
+        const btn = document.getElementById('playBtn-matrix');
+        btn.innerHTML = '▶️ Spela';
+        btn.className = 'btn btn-success'; // Tillbaka till grön
+    }
+    isMatrixPlaying = false; // Dölj vattenmärke
+    triggerUpdateMatrix();
+}
+
+function togglePlayMatrix() {
+    const btn = document.getElementById('playBtn-matrix');
+    const yearSelect = document.getElementById('matrix-year');
+    
+    if (playIntervalMatrix) {
+        // PAUSA
+        clearInterval(playIntervalMatrix);
+        playIntervalMatrix = null;
+        isMatrixPlaying = false; // Döljer vattenstämpeln
+        
+        btn.innerHTML = '▶️ Spela';
+        btn.className = 'btn btn-success'; // Grönt igen!
+        triggerUpdateMatrix();
+    } else {
+        // SPELA UPP
+        isMatrixPlaying = true; // Visar vattenstämpeln
+        
+        btn.innerHTML = '⏸ Paus';
+        btn.className = 'btn btn-danger'; // Rött vid paus
+        
+        // Om vi är på det SISTA året i listan (t.ex. 2024), hoppa upp till index 0 (t.ex. 2015)
+        if (yearSelect.selectedIndex === yearSelect.options.length - 1) {
+            yearSelect.selectedIndex = 0;
+            triggerUpdateMatrix();
         }
+        
+        playIntervalMatrix = setInterval(() => {
+            let currentIndex = yearSelect.selectedIndex;
+            
+            // Stega NEDÅT i listan (+1) för att gå framåt i tiden!
+            if (currentIndex < yearSelect.options.length - 1) {
+                yearSelect.selectedIndex = currentIndex + 1;
+                triggerUpdateMatrix();
+            } else {
+                // Vi har nått nutid, stanna!
+                clearInterval(playIntervalMatrix);
+                playIntervalMatrix = null;
+                isMatrixPlaying = false; 
+                
+                btn.innerHTML = '▶️ Spela';
+                btn.className = 'btn btn-success';
+                triggerUpdateMatrix();
+            }
+        }, 1500); // 1.5 sekunder ger Chart.js exakt den tid den behöver för att glida mjukt
+    }
+}
+
         // ==========================================
         // KLUSTER KARTA (AI) - FRISTÅENDE MODUL
         // ==========================================

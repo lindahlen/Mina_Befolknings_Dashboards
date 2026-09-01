@@ -1849,296 +1849,295 @@ function toggleAnimation(selectId, updateFunction) {
         // ==========================================
 
         function updateTab1() {
-            if (rawData.length === 0) return;
-            const xVar = document.getElementById('xVar1').value; 
-            const yVar = document.getElementById('yVar1').value;
-            const bubbleSizeVar = document.getElementById('bubbleSizeVar1').value; 
-            const colorVar = document.getElementById('colorVar1').value;
-            const selectedYear = document.getElementById('yearSelect1').value;
-            const exTot = document.getElementById('exTot1').checked; 
-            const exSma = document.getElementById('exSma1').checked; 
-            const exSpe = document.getElementById('exSpe1').checked;
-            const selectedStadsdel = document.getElementById('stadsdelSelect1') ? document.getElementById('stadsdelSelect1').value : 'none';
+    if (rawData.length === 0) return;
+    const xVar = document.getElementById('xVar1').value; 
+    const yVar = document.getElementById('yVar1').value;
+    const bubbleSizeVar = document.getElementById('bubbleSizeVar1').value; 
+    const colorVar = document.getElementById('colorVar1').value;
+    const selectedYear = document.getElementById('yearSelect1').value;
+    const exTot = document.getElementById('exTot1').checked; 
+    const exSma = document.getElementById('exSma1').checked; 
+    const exSpe = document.getElementById('exSpe1').checked;
+    const selectedStadsdel = document.getElementById('stadsdelSelect1') ? document.getElementById('stadsdelSelect1').value : 'none';
 
-            let allPlotData = []; 
-            let groupedData = {}; 
-            let minX = Infinity, maxX = -Infinity;
+    // 0. GLOBALA MIN/MAX FÖR RAMEN
+    let allXVals = rawData.map(d => parseFloat(d[xVar])).filter(n => !isNaN(n));
+    let allYVals = rawData.map(d => parseFloat(d[yVar])).filter(n => !isNaN(n));
+    let globalMinX = Math.min(...allXVals); let globalMaxX = Math.max(...allXVals); let padX = (globalMaxX - globalMinX) * 0.05;
+    let globalMinY = Math.min(...allYVals); let globalMaxY = Math.max(...allYVals); let padY = (globalMaxY - globalMinY) * 0.05;
 
-            // 1. DATAINLÄSNING OCH GRUPPERING
-            let allPossibleCategories = new Set();
-            rawData.forEach(r => {
-                if (r.basområde !== 'Hela kommunen') {
-                    let c = (colorVar !== 'none') ? (r[colorVar] || 'Okänd karaktär') : 'Basområden';
-                    if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(c)) c = 'SEI ' + c;
-                    allPossibleCategories.add(c);
-                }
-            });
-            if (exTot === false) allPossibleCategories.add('Hela kommunen');
-            allPossibleCategories.forEach(c => groupedData[c] = []);
+    // 1. FAST INDEX-LISTA (Den slutgiltiga lösningen på identitetskrisen)
+    // Extraherar alla områden en gång för alla och sorterar dem. 
+    let allAreas = Array.from(new Set(rawData.filter(r => r.basområde !== 'Hela kommunen').map(r => r.basområde))).sort();
 
-            rawData.forEach(row => {
-                if (isYearMatch(row.tid, selectedYear)) {
-                    if (exTot && row.basområde === 'Hela kommunen') return;
-                    
-                    let pop = parseFloat(row[bubbleSizeVar]) || 10; 
-                    if (exSma && row.basområde !== 'Hela kommunen') {
-                        if (row.Inkluderad != "1" || parseFloat(row['Folkmängd']) < 25) return;
-                    }
-                    if (exSpe && (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) return;
+    // 2. HITTA EN SISTA BACKUP-KOORDINAT FÖR ALLA OMRÅDEN
+    let areaFallback = {};
+    allAreas.forEach(a => areaFallback[a] = { x: globalMinX, y: globalMinY });
+    rawData.forEach(r => {
+        let a = r.basområde;
+        if (a === 'Hela kommunen') return;
+        let px = parseFloat(r[xVar]); let py = parseFloat(r[yVar]);
+        if (!isNaN(px) && !isNaN(py)) { areaFallback[a] = { x: px, y: py }; }
+    });
 
-                    let xVal = parseFloat(row[xVar]); 
-                    let yVal = parseFloat(row[yVar]);
-                    
+    let allPossibleCategories = new Set();
+    rawData.forEach(r => {
+        if (r.basområde === 'Hela kommunen') return;
+        let c = (colorVar !== 'none') ? (r[colorVar] || 'Okänd karaktär') : 'Basområden';
+        if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(c)) c = 'SEI ' + c;
+        allPossibleCategories.add(c);
+    });
+    if (!exTot) allPossibleCategories.add('Hela kommunen');
+
+    let groupedData = {};
+    let allPlotData = [];
+    let minX = Infinity, maxX = -Infinity;
+
+    // 3. SKAPA SPÖK-LISTOR MED EXAKT LÄNGD
+    allPossibleCategories.forEach(cat => {
+        groupedData[cat] = allAreas.map(area => ({
+            x: areaFallback[area].x, y: areaFallback[area].y, r: 0, label: area, pop: 0, rawRow: null
+        }));
+    });
+    if (!exTot) {
+        groupedData['Hela kommunen'] = [{ x: globalMinX, y: globalMinY, r: 0, label: 'Hela kommunen', pop: 0, rawRow: null }];
+    }
+
+    // 4. FYLL PÅ MED ÅRETS RIKTIGA DATA
+    rawData.forEach(row => {
+        if (isYearMatch(row.tid, selectedYear)) {
+            let isHela = (row.basområde === 'Hela kommunen');
+            if (exTot && isHela) return;
+
+            let xVal = parseFloat(row[xVar]);
+            let yVal = parseFloat(row[yVar]);
+            let pop = parseFloat(row[bubbleSizeVar]) || 0;
+
+            let isVisible = true;
+            if (!isHela) {
+                if (exSma && (row.Inkluderad != "1" || pop < 25)) isVisible = false;
+                if (exSpe && (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) isVisible = false;
+            }
+            if (isNaN(xVal) || isNaN(yVal)) isVisible = false;
+
+            let cat = (colorVar !== 'none' && !isHela) ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
+            if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) cat = 'SEI ' + cat;
+            if (isHela) cat = 'Hela kommunen';
+
+            let index = isHela ? 0 : allAreas.indexOf(row.basområde);
+            if (index !== -1 && groupedData[cat]) {
+                if (isVisible) {
+                    // Området får visas!
+                    groupedData[cat][index] = {
+                        x: xVal, y: yVal, r: Math.max(3, Math.sqrt(pop)/5), label: row.basområde, pop: pop, rawRow: row
+                    };
+                    allPlotData.push(groupedData[cat][index]);
+                    if(xVal < minX) minX = xVal; if(xVal > maxX) maxX = xVal;
+                } else {
+                    // OMRÅDET ÄR DOLT (r=0), MEN FÅR SINA RIKTIGA KOORDINATER FÖR ÅRET
+                    // Detta förhindrar ALL flygning när det plötsligt blir synligt nästa år!
                     if (!isNaN(xVal) && !isNaN(yVal)) {
-                        let pt = { x: xVal, y: yVal, r: Math.max(3, Math.sqrt(pop)/5), label: row.basområde, pop: pop, rawRow: row };
-                        allPlotData.push(pt);
-                        
-                        let cat = (colorVar !== 'none' && row.basområde !== 'Hela kommunen') ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
-                        if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) cat = 'SEI ' + cat;
-                        if (row.basområde === 'Hela kommunen') cat = 'Hela kommunen';
-                        
-                        groupedData[cat].push(pt);
-                        
-                        if(xVal < minX) minX = xVal; 
-                        if(xVal > maxX) maxX = xVal;
+                        groupedData[cat][index].x = xVal;
+                        groupedData[cat][index].y = yVal;
                     }
                 }
-            });
-
-            let newDatasets = [];
-            let sortedKeys = sortCategories(Object.keys(groupedData), colorVar);
-
-            // 2. BYGG STANDARD-LAGREN (BUBBLORNA)
-            sortedKeys.forEach(cat => {
-                let colors;
-                if (colorVar === 'none') { colors = defaultColor; } 
-                else {
-                    colors = colorPalette[cat];
-                    if (!colors && cat !== 'Hela kommunen' && cat !== 'Okänd karaktär') {
-                        if (!dynamicCategoryColors[cat]) {
-                            dynamicCategoryColors[cat] = fallbackColors[dynamicColorIndex % fallbackColors.length];
-                            dynamicColorIndex++;
-                        }
-                        colors = dynamicCategoryColors[cat];
-                    }
-                    if (!colors) colors = defaultColor; 
-                }
-                
-                let stableData = groupedData[cat].sort((a, b) => a.label.localeCompare(b.label));
-                newDatasets.push({ label: cat, data: stableData, backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1, order: 2 });
-            });
-
-            // 3. BYGG SPÅR OCH FOKUSBUBBLA
-            let trailPoints = [];
-            let focusPoint = [];
-            let focusBg = 'rgba(255, 234, 0, 0)'; 
-            let focusBorder = 'rgba(211, 84, 0, 0)';
-            let trailColor = 'rgba(211, 84, 0, 0)'; 
-
-            if (trackedAreaFlik1 && selectedYear !== 'all') {
-                let activePoint = allPlotData.find(p => p.label === trackedAreaFlik1);
-                
-                if (activePoint) {
-                    focusPoint = [activePoint];
-                    trailPoints = [{ x: activePoint.x, y: activePoint.y, year: selectedYear }];
-                }
-
-                if (typeof watermarkYear !== 'undefined' && watermarkYear !== "") {
-                    let trailData = rawData.filter(d => 
-                        d.basområde === trackedAreaFlik1 && parseInt(d.tid) <= parseInt(selectedYear)
-                    ).sort((a, b) => parseInt(a.tid) - parseInt(b.tid));
-
-                    trailPoints = trailData.map(d => ({ x: parseFloat(d[xVar]), y: parseFloat(d[yVar]), year: d.tid })).filter(p => !isNaN(p.x) && !isNaN(p.y));
-                    
-                    focusBg = 'rgba(255, 234, 0, 0.95)';
-                    focusBorder = 'rgba(211, 84, 0, 1)';
-                    trailColor = 'rgba(211, 84, 0, 0.85)';
-                }
-            }
-
-            // A) Spåret (Här ligger killswitchen för animationen)
-            newDatasets.push({
-                type: 'line', label: trackedAreaFlik1 ? `Spårhistorik: ${trackedAreaFlik1}` : 'Spårhistorik', data: trailPoints,
-                borderColor: trailColor, borderWidth: 3, pointBackgroundColor: trailColor, pointRadius: 4, fill: false, showLine: true, order: 3,
-                animation: false 
-            });
-
-            // B) Glödbubblan
-            newDatasets.push({
-                type: 'bubble', label: trackedAreaFlik1 ? `Nuvarande Position: ${trackedAreaFlik1}` : 'Nuvarande Position', data: focusPoint,
-                backgroundColor: focusBg, borderColor: focusBorder, borderWidth: 3, order: -2
-            });
-
-            // 3.5 BYGG STADSDELSMARKERING (Mörkgrå gloria. Nu med stöd för multi-val!)
-            let stadsdelPoints = [];
-            if (selectedStadsdel !== 'none') {
-                // Klyv strängen till en array (t.ex. ["Ekholmen", "Johannelund"])
-                let valdaStadsdelar = selectedStadsdel.split('/');
-                
-                stadsdelPoints = allPlotData.filter(p => {
-                    let s = p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL'];
-                    // Byt ut === mot .includes()
-                    return valdaStadsdelar.includes(s);
-                });
-            }
-
-            if (stadsdelPoints.length > 0) {
-                newDatasets.push({
-                    type: 'bubble',
-                    label: (selectedStadsdel && selectedStadsdel !== 'Alla') ? `📌 Markerad: ${selectedStadsdel.replace('/', ' & ')}` : 'Alla basområden',
-                    data: stadsdelPoints,
-                    backgroundColor: 'rgba(40, 40, 40, 0.25)', // Lätt transparent mörkgrå fyllning
-                    borderColor: 'rgba(10, 10, 10, 0.95)',     // Skarp, nästan svart kantlinje för maximal kontrast
-                    borderWidth: 3,
-                    order: -1, 
-                    animation: false 
-                });
-            }
-
-            // 4. BYGG TRENDLINJE OCH UPPDATERA KPI:ER
-            let trendData = [];
-            const reg = calculateLinearRegression(allPlotData);
-            
-            if (reg && isFinite(reg.k)) {
-                let xMargin = (maxX - minX) * 0.05;
-                trendData = [ { x: minX - xMargin, y: reg.k * (minX - xMargin) + reg.m }, { x: maxX + xMargin, y: reg.k * (maxX + xMargin) + reg.m } ];
-                
-                // 🚀 DYNAMISK FÄRGKODNING 
-                // Om r är över eller lika med 0 -> Grönt. Om r är under 0 -> Rött.
-                let signalColor = reg.r >= 0 ? '#27ae60' : '#e74c3c';
-                
-                let boxR2 = document.getElementById('r2Value1');
-                let boxR = document.getElementById('rValue1');
-                let boxEq = document.getElementById('eqValue1');
-
-                if (boxR2) {
-                    boxR2.innerText = reg.r2.toFixed(3);
-                    boxR2.style.color = signalColor;
-                    boxR2.style.fontWeight = 'bold';
-                }
-                if (boxR) {
-                    boxR.innerText = reg.r.toFixed(3);
-                    boxR.style.color = signalColor;
-                    boxR.style.fontWeight = 'bold';
-                }
-                if (boxEq) {
-                    boxEq.innerText = `y = ${reg.k.toFixed(3)}x ${reg.m >= 0 ? "+" : "-"} ${Math.abs(reg.m).toFixed(2)}`;
-                }
-            }
-            
-            newDatasets.push({ 
-                type: 'line', label: 'Trendlinje (Normen)', data: trendData,
-                borderColor: '#34495e', borderWidth: 2, borderDash: [5, 5], fill: false, pointRadius: 0, order: 0
-            });
-
-            // 5. DEN SKOTTSÄKRA UPPDATERINGEN
-            if (typeof chartInstance1 !== 'undefined' && chartInstance1) {
-                
-                // Rensa bort gamla lager som inte finns mer
-                let newLabels = newDatasets.map(d => d.label);
-                for (let i = chartInstance1.data.datasets.length - 1; i >= 0; i--) {
-                    if (!newLabels.includes(chartInstance1.data.datasets[i].label)) {
-                        chartInstance1.data.datasets.splice(i, 1);
-                    }
-                }
-
-                // Uppdatera eller lägg till lager
-                newDatasets.forEach(newDs => {
-                    let existingDs = chartInstance1.data.datasets.find(ds => ds.label === newDs.label);
-                    if (existingDs) {
-                        existingDs.data = newDs.data; // Direkt överföring är säkrast
-                        existingDs.backgroundColor = newDs.backgroundColor;
-                        existingDs.borderColor = newDs.borderColor;
-                        existingDs.borderWidth = newDs.borderWidth;
-                        existingDs.order = newDs.order;
-                        existingDs.pointBackgroundColor = newDs.pointBackgroundColor;
-                        
-                        if (newDs.animation !== undefined) {
-                            existingDs.animation = newDs.animation;
-                        } else {
-                            delete existingDs.animation;
-                        }
-                    } else {
-                        chartInstance1.data.datasets.push(newDs);
-                    }
-                });
-
-                chartInstance1.options.scales.x.title.text = xVar;
-                chartInstance1.options.scales.y.title.text = yVar;
-                chartInstance1.options.plugins.legend.display = (colorVar !== 'none');
-                
-                // Sätt hastighet baserat på isPlaying
-                let animSpeed = (typeof isPlaying !== 'undefined' && isPlaying) ? 1500 : 400;
-                chartInstance1.options.animation.duration = animSpeed;
-                
-                chartInstance1.update(); 
-            } else {
-                // SKAPA DIAGRAMMET FÖRSTA GÅNGEN
-                const ctx = document.getElementById('regChart1').getContext('2d');
-                chartInstance1 = new Chart(ctx, {
-                    type: 'bubble', 
-                    data: { datasets: newDatasets },
-                    options: {
-                        responsive: true, maintainAspectRatio: false,
-                        animation: { duration: 400, easing: 'easeInOutQuad' },
-                        onClick: (event, elements, chart) => {
-                            if (elements.length > 0) {
-                                const el = elements[0];
-                                const ds = chart.data.datasets[el.datasetIndex];
-                                if (ds.type !== 'line' && ds.data[el.index] && ds.data[el.index].label) {
-                                    trackedAreaFlik1 = ds.data[el.index].label;
-                                    updateTab1();
-                                }
-                            } else {
-                                trackedAreaFlik1 = null;
-                                updateTab1();
-                            }
-                        },
-                        plugins: { 
-                            datalabels: { display: false },
-                            legend: { 
-                                display: colorVar !== 'none', 
-                                position: 'top', 
-                                labels: { 
-                                    filter: (item, chartData) => {
-                                        // 1. Dölj våra system-linjer
-                                        if (item.text === 'Trendlinje (Normen)' || 
-                                            item.text.startsWith('Spårhistorik') || 
-                                            item.text.startsWith('Nuvarande Position')) {
-                                            return false;
-                                        }
-                                        
-                                        // 2. Dölj oönskade text-värden
-                                        if (item.text === 'Okänd karaktär' || item.text === '..') {
-                                            return false;
-                                        }
-                                        
-                                        // 3. MAGIN: Dölj kategorier som är helt tomma på bubblor!
-                                        const ds = chartData.datasets[item.datasetIndex];
-                                        if (ds && ds.data.length === 0) {
-                                            return false;
-                                        }
-                                        
-                                        return true;
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: { 
-                                    label: (c) => {
-                                        if (c.dataset.label.startsWith('Spårhistorik')) return `${c.raw.year}: X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
-                                        if (c.dataset.label.startsWith('Nuvarande Position')) return `${c.raw.label} (Vald): X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
-                                        if (c.dataset.type === 'line') return false;
-                                        return `${c.raw.label}: X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
-                                    } 
-                                } 
-                            } 
-                        },
-                        scales: { x: { title: { display: true, text: xVar } }, y: { title: { display: true, text: yVar } } }
-                    }
-                });
             }
         }
+    });
+
+    let newDatasets = [];
+    let sortedKeys = sortCategories(Object.keys(groupedData), colorVar);
+
+    // 5. BYGG STANDARD-LAGREN
+    sortedKeys.forEach(cat => {
+        let colors;
+        if (colorVar === 'none') { colors = defaultColor; } 
+        else {
+            colors = colorPalette[cat];
+            if (!colors && cat !== 'Hela kommunen' && cat !== 'Okänd karaktär') {
+                if (!dynamicCategoryColors[cat]) {
+                    dynamicCategoryColors[cat] = fallbackColors[dynamicColorIndex % fallbackColors.length];
+                    dynamicColorIndex++;
+                }
+                colors = dynamicCategoryColors[cat];
+            }
+            if (!colors) colors = defaultColor; 
+        }
+        newDatasets.push({ label: cat, data: groupedData[cat], backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1, order: 2 });
+    });
+
+    // 6. BYGG SPÅR, FOKUS OCH MARKERINGAR
+    let trailPoints = []; let focusPoint = []; let focusBg = 'rgba(255, 234, 0, 0)'; let focusBorder = 'rgba(211, 84, 0, 0)'; let trailColor = 'rgba(211, 84, 0, 0)'; 
+
+    if (trackedAreaFlik1 && selectedYear !== 'all') {
+        let activePoint = allPlotData.find(p => p.label === trackedAreaFlik1);
+        if (activePoint) {
+            focusPoint = [activePoint]; trailPoints = [{ x: activePoint.x, y: activePoint.y, year: selectedYear }];
+        }
+        if (typeof watermarkYear !== 'undefined' && watermarkYear !== "") {
+            let trailData = rawData.filter(d => d.basområde === trackedAreaFlik1 && parseInt(d.tid) <= parseInt(selectedYear)).sort((a, b) => parseInt(a.tid) - parseInt(b.tid));
+            trailPoints = trailData.map(d => ({ x: parseFloat(d[xVar]), y: parseFloat(d[yVar]), year: d.tid })).filter(p => !isNaN(p.x) && !isNaN(p.y));
+            focusBg = 'rgba(255, 234, 0, 0.95)'; focusBorder = 'rgba(211, 84, 0, 1)'; trailColor = 'rgba(211, 84, 0, 0.85)';
+        }
+    }
+    newDatasets.push({ type: 'line', label: trackedAreaFlik1 ? `Spårhistorik: ${trackedAreaFlik1}` : 'Spårhistorik', data: trailPoints, borderColor: trailColor, borderWidth: 3, pointBackgroundColor: trailColor, pointRadius: 4, fill: false, showLine: true, order: 3, animation: false });
+    newDatasets.push({ type: 'bubble', label: trackedAreaFlik1 ? `Nuvarande Position: ${trackedAreaFlik1}` : 'Nuvarande Position', data: focusPoint, backgroundColor: focusBg, borderColor: focusBorder, borderWidth: 3, order: -2 });
+
+    let stadsdelPoints = [];
+    if (selectedStadsdel !== 'none') {
+        let valdaStadsdelar = selectedStadsdel.split('/');
+        stadsdelPoints = allPlotData.filter(p => valdaStadsdelar.includes(p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL']));
+    }
+    if (stadsdelPoints.length > 0) newDatasets.push({ type: 'bubble', label: (selectedStadsdel && selectedStadsdel !== 'Alla') ? `📌 Markerad: ${selectedStadsdel.replace('/', ' & ')}` : 'Alla basområden', data: stadsdelPoints, backgroundColor: 'rgba(40, 40, 40, 0.25)', borderColor: 'rgba(10, 10, 10, 0.95)', borderWidth: 3, order: -1, animation: false });
+
+    // 7. TRENDLINJE
+    let trendData = [];
+    const reg = calculateLinearRegression(allPlotData);
+    if (reg && isFinite(reg.k)) {
+        let xMargin = (maxX - minX) * 0.05; trendData = [ { x: minX - xMargin, y: reg.k * (minX - xMargin) + reg.m }, { x: maxX + xMargin, y: reg.k * (maxX + xMargin) + reg.m } ];
+        let signalColor = reg.r >= 0 ? '#27ae60' : '#e74c3c';
+        let boxR2 = document.getElementById('r2Value1'); let boxR = document.getElementById('rValue1'); let boxEq = document.getElementById('eqValue1');
+        if (boxR2) { boxR2.innerText = reg.r2.toFixed(3); boxR2.style.color = signalColor; boxR2.style.fontWeight = 'bold'; }
+        if (boxR) { boxR.innerText = reg.r.toFixed(3); boxR.style.color = signalColor; boxR.style.fontWeight = 'bold'; }
+        if (boxEq) { boxEq.innerText = `y = ${reg.k.toFixed(3)}x ${reg.m >= 0 ? "+" : "-"} ${Math.abs(reg.m).toFixed(2)}`; }
+    }
+    newDatasets.push({ type: 'line', label: 'Trendlinje (Normen)', data: trendData, borderColor: '#34495e', borderWidth: 2, borderDash: [5, 5], fill: false, pointRadius: 0, order: 0 });
+
+    // 8. UPPDATERA CHART.JS
+    if (typeof chartInstance1 !== 'undefined' && chartInstance1) {
+        let newLabels = newDatasets.map(d => d.label);
+        for (let i = chartInstance1.data.datasets.length - 1; i >= 0; i--) if (!newLabels.includes(chartInstance1.data.datasets[i].label)) chartInstance1.data.datasets.splice(i, 1);
+
+        newDatasets.forEach(newDs => {
+            let existingDs = chartInstance1.data.datasets.find(ds => ds.label === newDs.label);
+            if (existingDs) {
+                existingDs.data = newDs.data; existingDs.backgroundColor = newDs.backgroundColor; existingDs.borderColor = newDs.borderColor; existingDs.borderWidth = newDs.borderWidth; existingDs.order = newDs.order; existingDs.pointBackgroundColor = newDs.pointBackgroundColor;
+                if (newDs.animation !== undefined) existingDs.animation = newDs.animation; else delete existingDs.animation;
+            } else { chartInstance1.data.datasets.push(newDs); }
+        });
+
+        chartInstance1.options.scales.x.title.text = xVar; chartInstance1.options.scales.x.min = globalMinX - padX; chartInstance1.options.scales.x.max = globalMaxX + padX;
+        chartInstance1.options.scales.y.title.text = yVar; chartInstance1.options.scales.y.min = globalMinY - padY; chartInstance1.options.scales.y.max = globalMaxY + padY;
+        chartInstance1.options.plugins.legend.display = (colorVar !== 'none');
+        chartInstance1.options.animation.duration = (typeof isPlaying !== 'undefined' && isPlaying) ? 1500 : 400;
+        chartInstance1.update(); 
+    } else {
+        const ctx = document.getElementById('regChart1').getContext('2d');
+        chartInstance1 = new Chart(ctx, {
+            type: 'bubble', data: { datasets: newDatasets },
+            options: {
+                responsive: true, maintainAspectRatio: false, animation: { duration: 400, easing: 'easeInOutQuad' },
+                scales: { x: { title: { display: true, text: xVar }, min: globalMinX - padX, max: globalMaxX + padX }, y: { title: { display: true, text: yVar }, min: globalMinY - padY, max: globalMaxY + padY } },
+                onClick: (event, elements, chart) => {
+                    if (elements.length > 0) {
+                        const el = elements[0]; const ds = chart.data.datasets[el.datasetIndex];
+                        if (ds.type !== 'line' && ds.data[el.index] && ds.data[el.index].label) { trackedAreaFlik1 = ds.data[el.index].label; updateTab1(); }
+                    } else { trackedAreaFlik1 = null; updateTab1(); }
+                },
+                plugins: { 
+                    datalabels: { display: false },
+                    legend: { 
+                        display: colorVar !== 'none', position: 'top', 
+                        labels: { 
+                            filter: (item, chartData) => {
+                                if (['Trendlinje (Normen)', 'Okänd karaktär', '..'].includes(item.text) || item.text.startsWith('Spårhistorik') || item.text.startsWith('Nuvarande Position')) return false;
+                                const ds = chartData.datasets[item.datasetIndex];
+                                if (ds && ds.data.every(d => d.r === 0)) return false;
+                                return true;
+                            }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)', // Vit och fräsch bakgrund
+                        titleColor: '#2c3e50', // Mörkgrå rubrik
+                        bodyColor: '#34495e',  // Mörkgrå text
+                        borderColor: 'rgba(0,0,0,0.15)',
+                        borderWidth: 1,
+                        padding: 12,
+                        boxPadding: 6,
+                        displayColors: false, // Tar bort den lilla färgfyrkanten för renare look
+                        callbacks: { 
+                            // 1. RUBRIKEN (Områdets namn eller spårets år)
+                            label: (c) => {
+                                if (c.raw.r === 0) return false; // Inga tooltips på osynliga spöken
+                                if (c.dataset.label.startsWith('Spårhistorik')) return `📅 Spår: ${c.raw.year}`;
+                                if (c.dataset.type === 'line') return false;
+                                return `📍 ${c.raw.label}`;
+                            },
+                            // 2. INNEHÅLLET (Mini-rapporten under rubriken)
+                            afterBody: (context) => {
+                                const c = context[0];
+                                
+                                // Visa inte extra info för spårlinjer, markeringar eller om data saknas
+                                if (c.raw.r === 0 || !c.raw.rawRow || c.dataset.label.startsWith('Spårhistorik') || c.dataset.label.startsWith('Nuvarande Position')) return null;
+                                
+                                let lines = [];
+                                
+                                // Hämta aktuella variabelnamn från rullistorna för att göra texten dynamisk
+                                let xVarName = document.getElementById('xVar1').value;
+                                let yVarName = document.getElementById('yVar1').value;
+                                
+                                let xVal = c.raw.x.toLocaleString('sv-SE', {maximumFractionDigits: 1});
+                                let yVal = c.raw.y.toLocaleString('sv-SE', {maximumFractionDigits: 1});
+                                let pop = c.raw.pop ? Math.round(c.raw.pop).toLocaleString('sv-SE') : 'Okänt';
+                                
+                                lines.push(`--------------------------------`);
+                                lines.push(`${xVarName}: ${xVal}`);
+                                lines.push(`${yVarName}: ${yVal}`);
+                                lines.push(`Volym: ${pop}`);
+                                
+                                // ==========================================
+                                // TREND-BERÄKNAREN
+                                // ==========================================
+                                // Leta upp all historik för just detta basområde i den globala rådatan
+                                let areaData = rawData.filter(d => d.basområde === c.raw.label).sort((a,b) => parseInt(a.tid) - parseInt(b.tid));
+                                
+                                if (areaData.length > 1) {
+                                    let firstYearData = areaData[0]; // Äldsta kända datan (t.ex. 2015)
+                                    let currentYearData = c.raw.rawRow; // Datan för året vi tittar på
+                                    
+                                    let firstX = parseFloat(firstYearData[xVarName]);
+                                    let firstY = parseFloat(firstYearData[yVarName]);
+                                    let currX = parseFloat(currentYearData[xVarName]);
+                                    let currY = parseFloat(currentYearData[yVarName]);
+                                    
+                                    // Beräkna trenden bara om siffrorna är giltiga
+                                    if (!isNaN(firstX) && !isNaN(firstY) && !isNaN(currX) && !isNaN(currY)) {
+                                        let diffX = currX - firstX;
+                                        let diffY = currY - firstY;
+                                        
+                                        let trendStr = `Trend (sedan ${firstYearData.tid}): `;
+                                        const threshold = 0.1; // Tröskelvärde för att ses som "stabil"
+                                        
+                                        if (Math.abs(diffX) <= threshold && Math.abs(diffY) <= threshold) {
+                                            trendStr += "➡️ Relativt stabil";
+                                        } else if (diffX > threshold && diffY > threshold) {
+                                            trendStr += "↗️ Ökar på båda axlar";
+                                        } else if (diffX < -threshold && diffY < -threshold) {
+                                            trendStr += "↙️ Minskar på båda axlar";
+                                        } else if (diffX > threshold && diffY < -threshold) {
+                                            trendStr += "↘️ Ökar (X), Minskar (Y)";
+                                        } else if (diffX < -threshold && diffY > threshold) {
+                                            trendStr += "↖️ Minskar (X), Ökar (Y)";
+                                        } else if (Math.abs(diffX) > threshold) {
+                                            trendStr += diffX > 0 ? "➡️ Ökar på X-axeln" : "⬅️ Minskar på X-axeln";
+                                        } else if (Math.abs(diffY) > threshold) {
+                                            trendStr += diffY > 0 ? "⬆️ Ökar på Y-axeln" : "⬇️ Minskar på Y-axeln";
+                                        }
+                                        
+                                        lines.push(`--------------------------------`);
+                                        lines.push(trendStr);
+                                    }
+                                }
+                                return lines;
+                            }
+                        } 
+                    } 
+                }
+            }
+        });
+    }
+}
 
         function updateTab2() {
     if (rawData.length === 0) return;
@@ -2158,42 +2157,90 @@ function toggleAnimation(selectId, updateFunction) {
     else if (selectedYear === 'last10') yearLabel = `Senaste 10 åren`;
     document.getElementById('dynYear').innerText = yearLabel;
 
-    let allPlotData = []; 
-    let groupedData = {}; 
-    let sumY = 0; let countY = 0;
-    
-    // === ANTI-BLINK-MAGIN: Hitta alla möjliga kategorier och skapa tomma fack ===
-    let allPossibleCategories = [...new Set(rawData.map(row => {
-        let cat = (colorVar !== 'none' && row.basområde !== 'Hela kommunen') ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
-        if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) cat = 'SEI ' + cat;
-        if (row.basområde === 'Hela kommunen') cat = 'Hela kommunen';
-        return cat;
-    }))];
-    allPossibleCategories.forEach(cat => groupedData[cat] = []);
+    // ==========================================
+    // 0. GLOBALA MIN/MAX FÖR FALLBACKS OCH RAMAR
+    // ==========================================
+    let allXVals = rawData.map(d => parseFloat(d[xVar])).filter(n => !isNaN(n));
+    let allYVals = rawData.map(d => parseFloat(d[yVar])).filter(n => !isNaN(n));
+    let globalMinX = Math.min(...allXVals); let globalMaxX = Math.max(...allXVals); let padX = (globalMaxX - globalMinX) * 0.05;
+    let globalMinY = Math.min(...allYVals); let globalMaxY = Math.max(...allYVals); let padY = (globalMaxY - globalMinY) * 0.05;
 
-    // Fyll på med faktiska data
+    // ==========================================
+    // 1. FAST INDEX-LISTA OCH BACKUP-KOORDINATER
+    // Detta förhindrar alla Chart.js-spöken!
+    // ==========================================
+    let allAreas = Array.from(new Set(rawData.filter(r => r.basområde !== 'Hela kommunen').map(r => r.basområde))).sort();
+    let areaFallback = {};
+    allAreas.forEach(a => areaFallback[a] = { x: globalMinX, y: globalMinY });
+    
+    rawData.forEach(r => {
+        if (r.basområde === 'Hela kommunen') return;
+        let px = parseFloat(r[xVar]); let py = parseFloat(r[yVar]);
+        if (!isNaN(px) && !isNaN(py)) { areaFallback[r.basområde] = { x: px, y: py }; }
+    });
+
+    let allPossibleCategories = new Set();
+    rawData.forEach(r => {
+        if (r.basområde === 'Hela kommunen') return;
+        let c = (colorVar !== 'none') ? (r[colorVar] || 'Okänd karaktär') : 'Basområden';
+        if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(c)) c = 'SEI ' + c;
+        allPossibleCategories.add(c);
+    });
+    if (!exTot) allPossibleCategories.add('Hela kommunen');
+
+    let groupedData = {};
+    let allPlotData = [];
+    let sumY = 0; let countY = 0;
+
+    // Skapa fasta fack (med osynliga bubblor, r=0)
+    allPossibleCategories.forEach(cat => {
+        groupedData[cat] = allAreas.map(area => ({
+            x: areaFallback[area].x, y: areaFallback[area].y, r: 0, label: area, pop: 0, rawRow: null
+        }));
+    });
+    if (!exTot) {
+        groupedData['Hela kommunen'] = [{ x: globalMinX, y: globalMinY, r: 0, label: 'Hela kommunen', pop: 0, rawRow: null }];
+    }
+
+    // ==========================================
+    // 2. FYLL PÅ MED ÅRETS RIKTIGA DATA
+    // ==========================================
     rawData.forEach(row => {
         if (isYearMatch(row.tid, selectedYear)) {
-            if (exTot && row.basområde === 'Hela kommunen') return;
-            if (exSma && row.basområde !== 'Hela kommunen') {
-                if (row.Inkluderad != "1" || parseFloat(row['Folkmängd']) < 25) return;
-            }
-            if (exSpe && (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) return;
+            let isHela = (row.basområde === 'Hela kommunen');
+            if (exTot && isHela) return;
 
-            let xVal = parseFloat(row[xVar]); 
-            let yVal = parseFloat(row[yVar]); 
-            let pop = parseFloat(row[bubbleSizeVar]) || 10; 
+            let xVal = parseFloat(row[xVar]);
+            let yVal = parseFloat(row[yVar]);
+            let pop = parseFloat(row[bubbleSizeVar]) || 0;
+
+            let isVisible = true;
+            if (!isHela) {
+                if (exSma && (row.Inkluderad != "1" || pop < 25)) isVisible = false;
+                if (exSpe && (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) isVisible = false;
+            }
+            if (isNaN(xVal) || isNaN(yVal)) isVisible = false;
+
+            let cat = (colorVar !== 'none' && !isHela) ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
+            if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) cat = 'SEI ' + cat;
+            if (isHela) cat = 'Hela kommunen';
+
+            let index = isHela ? 0 : allAreas.indexOf(row.basområde);
             
-            if (!isNaN(xVal) && !isNaN(yVal)) {
-                sumY += yVal; countY++; 
-                let pt = { x: xVal, y: yVal, r: Math.max(4, Math.sqrt(pop)/5), label: row.basområde, pop: pop, rawRow: row };
-                allPlotData.push(pt);
-                
-                let cat = (colorVar !== 'none' && row.basområde !== 'Hela kommunen') ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
-                if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) cat = 'SEI ' + cat;
-                if (row.basområde === 'Hela kommunen') cat = 'Hela kommunen';
-                
-                groupedData[cat].push(pt);
+            if (index !== -1 && groupedData[cat]) {
+                if (isVisible) {
+                    sumY += yVal; countY++; 
+                    groupedData[cat][index] = {
+                        x: xVal, y: yVal, r: Math.max(4, Math.sqrt(pop)/5), label: row.basområde, pop: pop, rawRow: row
+                    };
+                    allPlotData.push(groupedData[cat][index]);
+                } else {
+                    // Dolt område - låt det följa sin sanna bana fast osynligt (förhindrar flygning!)
+                    if (!isNaN(xVal) && !isNaN(yVal)) {
+                        groupedData[cat][index].x = xVal;
+                        groupedData[cat][index].y = yVal;
+                    }
+                }
             }
         }
     });
@@ -2207,28 +2254,19 @@ function toggleAnimation(selectId, updateFunction) {
 
     if (isCrosshairLocked) {
         if (lockedMeanY2 === null) {
-            // LÅSNING PRECIS AKTIVERAD! Spara värdena.
             lockedMeanX2 = currentMeanX;
             lockedMeanY2 = currentMeanY;
-            
-            // Fånga axlarnas exakta utsträckning just det här året (om diagrammet finns)
             if (typeof window.chartInstance2 !== 'undefined' && window.chartInstance2 !== null) {
                 lockedScales2 = {
-                    xMin: window.chartInstance2.scales.x.min,
-                    xMax: window.chartInstance2.scales.x.max,
-                    yMin: window.chartInstance2.scales.y.min,
-                    yMax: window.chartInstance2.scales.y.max
+                    xMin: window.chartInstance2.scales.x.min, xMax: window.chartInstance2.scales.x.max,
+                    yMin: window.chartInstance2.scales.y.min, yMax: window.chartInstance2.scales.y.max
                 };
             }
         }
-        finalMeanX = lockedMeanX2;
-        finalMeanY = lockedMeanY2;
+        finalMeanX = lockedMeanX2; finalMeanY = lockedMeanY2;
     } else {
-        // FRITT LÄGE - Nollställ allt i minnet!
-        lockedMeanY2 = null;
-        lockedScales2 = null;
-        finalMeanX = currentMeanX;
-        finalMeanY = currentMeanY;
+        lockedMeanY2 = null; lockedScales2 = null;
+        finalMeanX = currentMeanX; finalMeanY = currentMeanY;
     }
 
     const updateCounts = (data) => {
@@ -2245,14 +2283,12 @@ function toggleAnimation(selectId, updateFunction) {
     updateCounts(allPlotData);
 
     let chartDatasets = []; 
-    // Sortera nycklarna så de hamnar i samma ordning varje gång
     let sortedKeys = sortCategories(Object.keys(groupedData), colorVar);
 
     sortedKeys.forEach(cat => { 
         let colors;
-        if (colorVar === 'none') {
-            colors = defaultColor;
-        } else {
+        if (colorVar === 'none') { colors = defaultColor; } 
+        else {
             colors = colorPalette[cat];
             if (!colors && cat !== 'Hela kommunen' && cat !== 'Okänd karaktär') {
                 if (!dynamicCategoryColors[cat]) {
@@ -2263,204 +2299,120 @@ function toggleAnimation(selectId, updateFunction) {
             }
             if (!colors) colors = defaultColor;
         }
-        chartDatasets.push({ label: cat, data: groupedData[cat], backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1 }); 
+        chartDatasets.push({ label: cat, data: groupedData[cat], backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1, order: 2 }); 
     });
 
-    // === 1. ANIMATION & SPÅRHISTORIK ===
-    let focusPoint = [];
-    let trailPoints = [];
-    let focusBg = 'transparent';
-    let focusBorder = 'transparent';
-    let trailColor = 'transparent';
+    // === 3. ANIMATION, SPÅRHISTORIK OCH MARKERINGAR ===
+    let focusPoint = []; let trailPoints = []; let focusBg = 'transparent'; let focusBorder = 'transparent'; let trailColor = 'transparent';
 
     if (trackedAreaFlik2 && selectedYear !== 'all') {
         let activePoint = allPlotData.find(p => p.label === trackedAreaFlik2);
         if (activePoint) {
-            focusPoint = [activePoint];
-            trailPoints = [{ x: activePoint.x, y: activePoint.y, year: selectedYear }];
+            focusPoint = [activePoint]; trailPoints = [{ x: activePoint.x, y: activePoint.y, year: selectedYear }];
         }
-        
-        let trailData = rawData.filter(d => 
-            d.basområde === trackedAreaFlik2 && parseInt(d.tid) <= parseInt(selectedYear)
-        ).sort((a, b) => parseInt(a.tid) - parseInt(b.tid));
-
+        let trailData = rawData.filter(d => d.basområde === trackedAreaFlik2 && parseInt(d.tid) <= parseInt(selectedYear)).sort((a, b) => parseInt(a.tid) - parseInt(b.tid));
         trailPoints = trailData.map(d => ({ x: parseFloat(d[xVar]), y: parseFloat(d[yVar]), year: d.tid })).filter(p => !isNaN(p.x) && !isNaN(p.y));
-        
-        focusBg = 'rgba(255, 234, 0, 0.95)';
-        focusBorder = 'rgba(211, 84, 0, 1)';
-        trailColor = 'rgba(211, 84, 0, 0.85)';
+        focusBg = 'rgba(255, 234, 0, 0.95)'; focusBorder = 'rgba(211, 84, 0, 1)'; trailColor = 'rgba(211, 84, 0, 0.85)';
     }
 
-    // SPÅRET (Alltid med)
-    chartDatasets.push({
-        type: 'line', label: trackedAreaFlik2 ? `Spårhistorik: ${trackedAreaFlik2}` : 'Spårhistorik', data: trailPoints,
-        borderColor: trailColor, borderWidth: 3, pointBackgroundColor: trailColor, pointRadius: 4, fill: false, showLine: true, order: 3,
-        animation: false // HINDAR SPÅRET FRÅN ATT GLIDA
-    });
+    chartDatasets.push({ type: 'line', label: trackedAreaFlik2 ? `Spårhistorik: ${trackedAreaFlik2}` : 'Spårhistorik', data: trailPoints, borderColor: trailColor, borderWidth: 3, pointBackgroundColor: trailColor, pointRadius: 4, fill: false, showLine: true, order: 3, animation: false });
+    chartDatasets.push({ type: 'bubble', label: trackedAreaFlik2 ? `Nuvarande Position: ${trackedAreaFlik2}` : 'Nuvarande Position', data: focusPoint, backgroundColor: focusBg, borderColor: focusBorder, borderWidth: 3, order: -2, animation: false });
 
-    // GLÖDBUBBLAN (Alltid med)
-    chartDatasets.push({
-        type: 'bubble', label: trackedAreaFlik2 ? `Nuvarande Position: ${trackedAreaFlik2}` : 'Nuvarande Position', data: focusPoint,
-        backgroundColor: focusBg, borderColor: focusBorder, borderWidth: 3, order: -2,
-        // HÄR ÄR LÖSNINGEN PÅ NOLLÄGES-FLYGET!
-        animation: false 
-    });
-
-    // === 2. STADSDELSMARKERING ===
     let stadsdelPoints2 = [];
     if (selectedStadsdel2 !== 'none') {
         let valdaStadsdelar = selectedStadsdel2.split('/');
-        stadsdelPoints2 = allPlotData.filter(p => {
-            let s = p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL'];
-            return valdaStadsdelar.includes(s);
-        });
+        stadsdelPoints2 = allPlotData.filter(p => valdaStadsdelar.includes(p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL']));
     }
+    chartDatasets.push({ type: 'bubble', label: (selectedStadsdel2 && selectedStadsdel2 !== 'none') ? `📌 Markerad: ${selectedStadsdel2.replace('/', ' & ')}` : 'Alla basområden', data: stadsdelPoints2, backgroundColor: 'rgba(40, 40, 40, 0.25)', borderColor: 'rgba(10, 10, 10, 0.95)', borderWidth: 3, order: -1, animation: false });
 
-    // HÄR ÄR DEN ÅTERSTÄLLDA MAGIN FÖR ETIKETTEN:
-    chartDatasets.push({
-        type: 'bubble',
-        label: (selectedStadsdel2 && selectedStadsdel2 !== 'none') ? `📌 Markerad: ${selectedStadsdel2.replace('/', ' & ')}` : 'Alla basområden',
-        data: stadsdelPoints2, // Tom array om inget är valt, så animationen inte går sönder
-        backgroundColor: 'rgba(40, 40, 40, 0.25)', 
-        borderColor: 'rgba(10, 10, 10, 0.95)', 
-        borderWidth: 3,
-        order: -1,
-        // HINDAR MARKERINGEN FRÅN ATT FLYGA FRÅN ORIGO:
-        animation: false 
-    });
-
-    // === 3. RITA DIAGRAMMET ELLER UPPDATERA MJUKT ===
+    // === 4. RITA DIAGRAMMET ELLER UPPDATERA MJUKT ===
     const playBtn2 = document.getElementById('playBtn-yearSelect2');
     const isPlaying2 = playBtn2 && (playBtn2.innerText.includes('Paus') || playBtn2.innerText.includes('⏸'));
 
     if (typeof window.chartInstance2 !== 'undefined' && window.chartInstance2 !== null) {
         
-        // ====================================================================
-        // 🚀 LÖSNINGEN: UTVECKLAD IN-PLACE UPDATE (Nu med färguppdatering!)
-        // ====================================================================
-        if (window.chartInstance2.data.datasets.length === chartDatasets.length) {
-            
-            // Kirurgisk uppdatering! Chart.js minns positionerna.
-            window.chartInstance2.data.datasets.forEach((dataset, index) => {
-                
-                // 1. Uppdatera data (koordinaterna) och tooltip-etiketten
-                dataset.data = chartDatasets[index].data;
-                dataset.label = chartDatasets[index].label; 
-                
-                // 2. MAGIN FÖR SPÅRET: Uppdatera färgerna! (Annars förblir det osynligt)
-                dataset.backgroundColor = chartDatasets[index].backgroundColor;
-                dataset.borderColor = chartDatasets[index].borderColor;
-                
-                // 3. Om det är en linje (spårhistoriken), uppdatera punkterna på linjen
-                if (chartDatasets[index].pointBackgroundColor) {
-                    dataset.pointBackgroundColor = chartDatasets[index].pointBackgroundColor;
-                }
-            });
-            
-        } else {
-            // Om antalet lager ändrats (Fallback)
-            window.chartInstance2.data.datasets = chartDatasets; 
-        }
-        // Tvinga teckenförklaringen (legenden) att visas om vi har valt en färgkodning!
-        window.chartInstance2.options.plugins.legend.display = (colorVar !== 'none');
-        
-        // ==========================================
-        // 🚀 LÖSNINGEN FÖR ATT FRYSA AXLARNA
-        // ==========================================
-        if (isCrosshairLocked && lockedScales2) {
-            window.chartInstance2.options.scales.x.min = lockedScales2.xMin;
-            window.chartInstance2.options.scales.x.max = lockedScales2.xMax;
-            window.chartInstance2.options.scales.y.min = lockedScales2.yMin;
-            window.chartInstance2.options.scales.y.max = lockedScales2.yMax;
-        } else {
-            // Ta bort låsningen om man har kryssat ur rutan, så auto-zoom fungerar igen!
-            delete window.chartInstance2.options.scales.x.min;
-            delete window.chartInstance2.options.scales.x.max;
-            delete window.chartInstance2.options.scales.y.min;
-            delete window.chartInstance2.options.scales.y.max;
+        let newLabels = chartDatasets.map(d => d.label);
+        for (let i = window.chartInstance2.data.datasets.length - 1; i >= 0; i--) {
+            if (!newLabels.includes(window.chartInstance2.data.datasets[i].label)) window.chartInstance2.data.datasets.splice(i, 1);
         }
 
-        // Sätt hastigheten baserat på om vi spelar upp eller byter manuellt
-        let animSpeed = isPlaying2 ? 1500 : 400;
-        window.chartInstance2.options.animation.duration = animSpeed;
-               
-        // Magin: Nu glider de mjukt från sin nuvarande position!
+        chartDatasets.forEach(newDs => {
+            let existingDs = window.chartInstance2.data.datasets.find(ds => ds.label === newDs.label);
+            if (existingDs) {
+                existingDs.data = newDs.data; existingDs.backgroundColor = newDs.backgroundColor; existingDs.borderColor = newDs.borderColor;
+                if (newDs.pointBackgroundColor) existingDs.pointBackgroundColor = newDs.pointBackgroundColor;
+                if (newDs.animation !== undefined) existingDs.animation = newDs.animation; else delete existingDs.animation;
+            } else {
+                window.chartInstance2.data.datasets.push(newDs);
+            }
+        });
+
+        window.chartInstance2.options.plugins.legend.display = (colorVar !== 'none');
+        
+        // UPPDATERA HÅRKORSET (Kvadrant-plugin) SÅ DET GLIDER MED!
+        if (window.chartInstance2.options.plugins.quadrantPlugin) {
+            window.chartInstance2.options.plugins.quadrantPlugin.meanX = finalMeanX;
+            window.chartInstance2.options.plugins.quadrantPlugin.meanY = finalMeanY;
+        }
+
+        if (isCrosshairLocked && lockedScales2) {
+            window.chartInstance2.options.scales.x.min = lockedScales2.xMin; window.chartInstance2.options.scales.x.max = lockedScales2.xMax;
+            window.chartInstance2.options.scales.y.min = lockedScales2.yMin; window.chartInstance2.options.scales.y.max = lockedScales2.yMax;
+        } else {
+            delete window.chartInstance2.options.scales.x.min; delete window.chartInstance2.options.scales.x.max;
+            delete window.chartInstance2.options.scales.y.min; delete window.chartInstance2.options.scales.y.max;
+        }
+
+        window.chartInstance2.options.animation.duration = isPlaying2 ? 1500 : 400;
         window.chartInstance2.update(); 
         
     } else {
-        // SKAPA DIAGRAMMET FÖRSTA GÅNGEN
         const ctx = document.getElementById('quadrantChart2').getContext('2d');
         window.chartInstance2 = new Chart(ctx, {
             type: 'bubble', 
             data: { datasets: chartDatasets }, 
             options: {
-                responsive: true, 
-                maintainAspectRatio: false,
-                animation: { duration: 400, easing: 'easeInOutQuad' },
-                
+                responsive: true, maintainAspectRatio: false, animation: { duration: 400, easing: 'easeInOutQuad' },
                 onClick: (event, elements, chart) => {
                     if (elements.length > 0) {
-                        const el = elements[0];
-                        const ds = chart.data.datasets[el.datasetIndex];
+                        const el = elements[0]; const ds = chart.data.datasets[el.datasetIndex];
                         if (ds.type !== 'line' && ds.data[el.index] && ds.data[el.index].label) {
-                            trackedAreaFlik2 = ds.data[el.index].label;
-                            updateTab2();
+                            trackedAreaFlik2 = ds.data[el.index].label; updateTab2();
                         }
-                    } else {
-                        trackedAreaFlik2 = null; 
-                        updateTab2();
-                    }
+                    } else { trackedAreaFlik2 = null; updateTab2(); }
                 },
                 plugins: {
                     datalabels: { display: false },
-                   legend: { 
-                        display: colorVar !== 'none', 
-                        position: 'top',
+                    legend: { 
+                        display: colorVar !== 'none', position: 'top',
                         labels: {
                             filter: (item, chartData) => {
-                                // 1. Göm de faktiska system-lagren (glödbubbla och spår)
-                                if (item.text.startsWith('Spårhistorik') || item.text.startsWith('Nuvarande Position')) return false;
-                                if (item.text === 'Okänd karaktär' || item.text === '..') return false;
-                                
-                                // 2. NYTT: Göm den tomma gråa ytan när ingen stadsdel är vald!
+                                if (item.text.startsWith('Spårhistorik') || item.text.startsWith('Nuvarande Position') || item.text === 'Okänd karaktär' || item.text === '..') return false;
                                 if (item.text === 'Alla basområden') return false;
-
-                                // 3. LÅT STADSDELSMARKERINGEN SYNAS (Bara när den faktiskt används)
-                                if (item.text.startsWith('📌 Markerad:')) {
-                                    return true;
-                                }
-
-                                // 4. Göm vanliga kategorier (t.ex. SEI-grupper) bara om de är helt tomma
+                                if (item.text.startsWith('📌 Markerad:')) return true;
                                 const ds = chartData.datasets[item.datasetIndex];
-                                if (ds && ds.data.length === 0) return false;
-                                
+                                // GÖM KATEGORIN OM ALLA DESS BUBBLOR ÄR OSYNLIGA SPÖKEN (r=0)
+                                if (ds && ds.data.every(d => d.r === 0)) return false;
                                 return true;
                             }
                         },
                         onClick: function(e, legendItem, legend) {
-                            const index = legendItem.datasetIndex; 
-                            const ci = legend.chart;
+                            const index = legendItem.datasetIndex; const ci = legend.chart;
                             ci.setDatasetVisibility(index, !ci.isDatasetVisible(index));
-                            
                             let visData = []; 
                             ci.data.datasets.forEach((ds, i) => { 
-                                // Säkerställ att vi inte dubbelräknar markeringar eller spår
-                                if (ci.isDatasetVisible(i) && 
-                                    !ds.label.startsWith('Spårhistorik') && 
-                                    !ds.label.startsWith('Nuvarande Position') && 
-                                    !ds.label.startsWith('📌 Markerad:') && 
-                                    ds.label !== 'Alla basområden') {
-                                    visData.push(...ds.data); 
+                                if (ci.isDatasetVisible(i) && !ds.label.startsWith('Spårhistorik') && !ds.label.startsWith('Nuvarande Position') && !ds.label.startsWith('📌 Markerad:') && ds.label !== 'Alla basområden') {
+                                    visData.push(...ds.data.filter(d => d.r > 0)); // Räkna ej spöken!
                                 }
                             });
-                            updateCounts(visData); 
-                            ci.update();
+                            updateCounts(visData); ci.update();
                         }
                     },
                     quadrantPlugin: { active: true, meanX: finalMeanX, meanY: finalMeanY },
                     tooltip: { 
                         callbacks: { 
                             label: (c) => {
+                                if (c.raw.r === 0) return false; // Inga tooltips på osynliga spöken!
                                 if (c.dataset.label.startsWith('Spårhistorik')) return `${c.raw.year}: X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
                                 if (c.dataset.label.startsWith('Nuvarande Position') || c.dataset.label.startsWith('📌 Markerad:')) return `${c.raw.label} (Vald): X=${c.raw.x.toFixed(1)}, Y=${c.raw.y.toFixed(1)}`;
                                 if (c.dataset.type === 'line') return false;
