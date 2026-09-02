@@ -462,11 +462,19 @@ folium.GeoJson(
 folium.GeoJson(nyko4, name='Områdesgränser', style_function=lambda feature: {'fill': False, 'color': '#2c3e50', 'weight': 2, 'className': 'polygon-layer border-polygon'}).add_to(m)
 
 # --- LAGER 8: MiniMap (Karta i kartan) ---
+# Vi använder standard OpenStreetMap (OSM) med en explicit URL och attribution.
+# Detta rundgår helt både Foliums sträng-valideringsfel och CartoDB:s API-krav.
+minimap_lager = folium.TileLayer(
+    tiles='https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    attr='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    name='Referenskarta'
+)
+
 minimap = MiniMap(
     toggleDisplay=True, 
     position="topleft", 
     zoomLevelOffset=-4, 
-    tile_layer="cartodbpositron"
+    tile_layer=minimap_lager
 )
 m.add_child(minimap)
 
@@ -766,7 +774,7 @@ ui_html = f"""
             document.getElementById('infoPanel').style.display = 'block';
         }}
 
-        var tileBlek = L.tileLayer('https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}{{r}}.png', {{ attribution: '&copy; OpenStreetMap contributors &copy; CARTO', crossOrigin: true }}).addTo(map);
+        var tileBlek = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ attribution: '&copy; Esri', crossOrigin: true }}).addTo(map);
         var tileFarg = L.tileLayer('https://{{s}}.tile.openstreetmap.org/{{z}}/{{x}}/{{y}}.png', {{ attribution: '&copy; OpenStreetMap contributors', crossOrigin: true }});
         var tileFlyg = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{{z}}/{{y}}/{{x}}', {{ attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EAP, and the GIS User Community', crossOrigin: true }});
 

@@ -346,7 +346,7 @@ def skapa_dashboard(huvudmapp):
         'Umeå': [63.8258, 20.2630], 'Lund': [55.7047, 13.1910]
     }
     
-    m = folium.Map(location=[59.0, 15.0], zoom_start=6, tiles='CartoDB positron')
+    m = folium.Map(location=[59.0, 15.0], zoom_start=6, tiles='OpenStreetMap')
     
     # Z-index pane
     m.get_root().html.add_child(folium.Element("""

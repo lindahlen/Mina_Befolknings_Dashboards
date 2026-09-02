@@ -47,7 +47,7 @@ Födda barn;Födda_barn;..;..;X;..;Hög;Volym och kapacitet;Antal födda barn
 Födda barn per 100 000 vuxna invånare;Födda_1000_vuxna;..;..;X;X;Hög;Ekonomi och välfärd;Antal födda barn per 100 000 vuxna invånare (åldern 20-64 år)
 Medelålder;Medelålder;..;..;X;X;Låg;Struktur och kvalitet;Genomsnittlig ålder för kommunens invånare.
 Befolkningsförändring per år (%);Folkmängd (beräknad förändring);..;..;X;..;Hög;Tillväxt och dynamik;Visar den procentuella förändringen av folkmängden per år
-Skatteunderlag;Skatteunderlag;X;X;X;X;Hög;Ekonomi och välfärd;Totalt skatteunderlag (mnkr), tillbakaskrivet två år.
-Skattekraft;Skattekraft;X;X;..;X;Hög;Ekonomi och välfärd;Skattekraft, skattekronor per invånare
+Skatteunderlag;Skatteunderlag;X;X;X;X;Hög;Ekonomi och välfärd;Totalt skatteunderlag, miljoner kronor, (tillbakaskrivet två år).
+Skattekraft;Skattekraft;X;X;..;X;Hög;Ekonomi och välfärd;Skattekraft, skattekronor per invånare, (tillbakaskrivet två år).
 Skattesats;Skattesats;X;X;..;X;Låg;Ekonomi och välfärd;Utdebitering, kronor per skattekrona
 Totalt;Totalt;1;1;1;1.0000000000000002;Hög;;
