@@ -269,12 +269,30 @@
                 </div>
             </div>
 
+            <div class="tab-card ai">
+                <div class="badge" style="background:#f4ecf7; color:#8e44ad;">Struktur</div>
+                <div class="tab-title"><span class="tab-icon">🔟</span> AI-Kompassen (Strukturell Rymd)</div>
+                <p><strong>Funktion:</strong> Använder <i>Unsupervised Random Forest</i> för att koka ner de tyngsta socioekonomiska "magneterna" till två övergripande koordinater (X och Y). Alla basområden placeras sedan ut i en matematisk 360-graders kompass, snarare än på en fysisk karta.</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Visar det <i>verkliga</i> socioekonomiska avståndet mellan stadsdelar. Två områden som är geografiska grannar (t.ex. Ryd och Vallastaden) kan befinna sig på helt motsatta sidor av AI-kompassen, vilket obarmhärtigt blottlägger stadens osynliga barriärer och mentala avstånd.
+                </div>
+            </div>
+
             <div class="tab-card geo">
                 <div class="badge" style="background:#e8f8f5; color:#16a085;">Geografisk AI</div>
-                <div class="tab-title"><span class="tab-icon">🔟</span> Geografisk Analys (PCA)</div>
+                <div class="tab-title"><span class="tab-icon">1️⃣1️⃣</span> Geografisk Analys (PCA)</div>
                 <p><strong>Funktion:</strong> En interaktiv karta baserad på Principalkomponentanalys (Faktoranalys). Den komprimerar de 22 tyngsta socioekonomiska och demografiska variablerna till tre övergripande "faktorer" och visar deras utbredning på kartan över tid.</p>
                 <div class="nytta-box">
                     <strong>Nytta för Linköping:</strong> Synliggör de "osynliga gränserna" i staden. Perfekt för stadsplanering och för att visuellt följa upp om kommunala satsningar eller nybyggnationer faktiskt förändrar ett specifikt områdes strukturella profil över en 10-årsperiod.
+                </div>
+            </div>
+            
+            <div class="tab-card geo">
+                <div class="badge" style="background:#e8f8f5; color:#16a085;">Geografisk Statistik</div>
+                <div class="tab-title"><span class="tab-icon">1️⃣2️⃣</span> Hotspots & Spillover-effekter</div>
+                <p><strong>Funktion:</strong> Analyserar "Spatial Autokorrelation" (via Moran's I) för att matematiskt mäta hur starkt ett basområde påverkar – eller påverkas av – sina fysiska grannområden. Hittar statistiskt säkerställda kluster och geografiska avvikelser.</p>
+                <div class="nytta-box">
+                    <strong>Nytta för Linköping:</strong> Identifierar var segregation "smittar" över administrativa gränser. Varnar planerare när en negativ trend i ett riskområde börjar läcka över till intilliggande kvarter, eller bekräftar när nya stråk lyckas svetsa samman två tidigare isolerade områden.
                 </div>
             </div>
 
@@ -306,7 +324,7 @@
             </ul>
         </div>
 
-        <p>Här visas först en översikt och beskrivning hur den här typen av index ofta tas fram, och längre ned visas mer i detalj vilka variabler som Linköpings kommun har valt att inkludera i respektive index.</p>
+        <p>Här visas först en översikt och beskrivning hur den här typen av index ofta tas fram, och längre ned visas mer i detalj vilka variabler som Linköpings kommun har valt att inkludera i respektive index. Samtliga fem är ortogonala (oberoende) i förhållande till varandra</p>
 
         <ol style="color: #444; line-height: 1.8; margin-bottom: 30px;">
             <li><strong>Index: Ekonomisk Utsatthet</strong> – Mäter graden av ekonomisk skörhet. Höga värden (röda) indikerar hög utsatthet. <br><em>Består i regel av</em>: Andel hushåll med låg ekonomisk standard, Långvarigt ekonomiskt bistånd, Trångboddhet, m.fl.</li>

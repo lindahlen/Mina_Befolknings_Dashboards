@@ -306,7 +306,9 @@
         <button class="tab-btn" id="btn-flik7" onclick="openTab('flik7', this)">7. Tidsserie & Makro</button>
         <button class="tab-btn" id="btn-flik8" onclick="openTab('flik8', this)">8. Scenario-Simulator</button>
         <button class="tab-btn" id="btn-flik9" onclick="openTab('flik9', this)">9. Lyckoparadoxen</button>
-        <button class="tab-btn" id="btn-flik10" onclick="openTab('flik10', this)">10. Faktoranalys (PCA)</button>
+        <button class="tab-btn" id="btn-flik11" onclick="openTab('flik11', this); setTimeout(updateFlik11, 150);">10. AI-Kompassen</button>
+        <button class="tab-btn" id="btn-flik10" onclick="openTab('flik10', this)">11. Faktoranalys (PCA)</button>
+        <button class="tab-btn" id="btn-flik12" onclick="openTab('flik12', this)">12. Hotspots & Spillover</button>
     </div>
 
     <!-- ========================================== -->
@@ -360,6 +362,7 @@
                 <option value="Vasastaden">Vasastaden</option>
                 <option value="Östra Valla">Östra Valla</option>
                 <option value="Ekholmen/Johannelund">Ekholmen & Johannelund</option>
+                <option value="Ekängen/Tallboda">Ekängen & Tallboda</option>
                 <option value="Ramshäll/Vimanshäll">Ramshäll & Vimanshäll</option>
             </select>
 
@@ -484,6 +487,7 @@
                 <option value="Vasastaden">Vasastaden</option>
                 <option value="Östra Valla">Östra Valla</option>
                 <option value="Ekholmen/Johannelund">Ekholmen & Johannelund</option>
+                <option value="Ekängen/Tallboda">Ekängen & Tallboda</option>
                 <option value="Ramshäll/Vimanshäll">Ramshäll & Vimanshäll</option>
             </select>
                     
@@ -1219,6 +1223,7 @@
                 <option value="Östra Valla">Östra Valla</option>
                 <!-- DINA NYA KOMBO-OMRÅDEN -->
                 <option value="Ekholmen/Johannelund">Ekholmen & Johannelund</option>
+                <option value="Ekängen/Tallboda">Ekängen & Tallboda</option>
                 <option value="Ramshäll/Vimanshäll">Ramshäll & Vimanshäll</option>
             </select>
 
@@ -1355,6 +1360,115 @@
         </iframe>
     </div>
     </div>
+    <!-- ========================================== -->
+<!-- FLIK 12: HOTSPOTS & SPILLOVER (KARTA via IFrame) -->
+<!-- ========================================== -->
+<div id="flik12" class="tab-content">
+    <div style="margin-bottom: 15px;">
+        <h3 style="color: #2c3e50; margin: 0 0 5px 0;">Hotspots & Spillover (Spatial Autokorrelation)</h3>
+        <p style="font-size: 13px; color: #555; margin: 0;">En interaktiv karta som mäter hur områden påverkar varandra och identifierar statistiskt säkerställda kluster över staden.</p>
+    </div>
+    
+    <!-- Container för Iframe som fyller skärmen snyggt -->
+    <div style="position: relative; width: 100%; height: 80vh; min-height: 700px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <iframe 
+            src="flik12_hotspots.html" 
+            title="Hotspots och Spillover" 
+            style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;">
+        </iframe>
+    </div>
+</div>
+    <!-- ========================================== -->
+<!-- FLIK 11: AI-KOMPASSEN (LÅST 2-SPALT)       -->
+<!-- ========================================== -->
+<div id="flik11" class="tab-content" style="display: none; width: 100%;">
+    <div class="row g-4 mt-2" style="margin: 0; width: 100%;">
+        
+        <!-- VÄNSTER SPALT: KOMPASS (7 av 12 kolumner) -->
+        <!-- 💡 FIX: min-width: 0 tvingar Chart.js att respektera spaltens bredd! -->
+        <div class="col-lg-7 col-md-12 p-0 pe-lg-3" style="min-width: 0;">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body p-2" style="position: relative; height: 65vh; min-height: 550px; width: 100%;">
+                    <canvas id="aiCompassChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- HÖGER SPALT: KONTROLLER & GUIDE (5 av 12 kolumner) -->
+        <div class="col-lg-5 col-md-12 p-0 ps-lg-2" style="min-width: 0;">
+            
+            <!-- Kontrollpanel -->
+            <div class="card shadow-sm border-0 mb-3">
+    <div class="card-body p-3">
+        <h5 class="fw-bold mb-3 text-dark">⚙️ Kontroller</h5>
+        
+        <div class="row g-2 mb-3">
+            <div class="col-6">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggleCompassLabels" onchange="if(aiCompassChartInstance) aiCompassChartInstance.update();">
+                    <label class="form-check-label small fw-bold" for="toggleCompassLabels">Visa områdesnamn</label>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="toggleCompassZoom" onchange="updateCompassZoom()">
+                    <label class="form-check-label small fw-bold" for="toggleCompassZoom">Zooma ut (Hela rymden)</label>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="row g-2"> -->
+            <!-- 💡 NYHET: Välj År -->
+            <!-- <div class="col-md-6">
+                <label for="yearVar11" class="form-label small fw-bold mb-1">Analysår:</label>
+                <select class="form-select form-select-sm" id="yearVar11" onchange="updateFlik11()"> -->
+                    <!-- Fylls i dynamiskt av JavaScript -->
+                <!--</select>
+            </div> -->
+            <div class="col-md-6">
+                <label for="colorVar11" class="form-label small fw-bold mb-1">Färgkoda punkter efter:</label>
+                <select class="form-select form-select-sm" id="colorVar11" onchange="updateFlik11()">
+                    <option value="none">Standard (Enfärgad)</option>
+                    <option value="SEI_indikatorer16" selected>SEI-Klass (1-6)</option>
+                    <option value="Karaktär_bas">Områdeskaraktär</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+            <!-- Utökad Tolkningsguide -->
+            <div class="card shadow-sm border-0 bg-light">
+                <div class="card-body p-3" style="height: calc(65vh - 165px); min-height: 350px; overflow-y: auto;">
+                    <!-- 💡 FIX: Större rubrik (h5) -->
+                    <h5 class="fw-bold mb-3 text-primary">📖 Tolkningsguide: AI-Kompassen</h5>
+                    
+                    <p class="small text-muted mb-3">
+                        <strong>Metod:</strong> Kompassen bygger på en maskininlärningsmodell (Unsupervised Random Forest) som analyserat olika variabler kring ekonomi, demografi och boendeform. Genom Principal Component Analysis (PCA) har Linköpings drygt 200 basområden pressats samman till en 2D-karta där områden med liknande "DNA" dras mot varandra.
+                    </p>
+
+                    <p class="small mb-1"><strong>↔️ Så läser du axlarna (Grundkrafterna)</strong></p>
+                    <ul class="small text-muted ps-3 mb-3">
+                        <li><strong>Öst/Väst (Socioekonomi):</strong> Detta är den starkaste polariserande kraften i Linköping. Punkter långt ut till vänster (väst) präglas av hög arbetslöshet, ekonomiskt bistånd och trångboddhet. Punkter långt ut till höger (öst) har mycket hög sysselsättning, bilinnehav och nettoinkomst.</li>
+                        <li><strong>Nord/Syd (Struktur & Demografi):</strong> Denna axel mäter fysisk form och livsfas. Den drar områden med äganderätt och barnfamiljer söderut, medan områden med hyresrätter, ensamstående och äldre befolkning dras norrut.</li>
+                    </ul>
+
+                    <p class="small mb-1"><strong>🧭 De 6 Magnetfälten (Klustren)</strong></p>
+                    <p class="small text-muted mb-2">Genom att kombinera axlarna uppstår specifika sociogeografiska zoner (magneter):</p>
+                    <ul class="small text-muted ps-3 mb-0">
+                        <li><strong>Hög Inkomst (Öst):</strong> Den absoluta toppen av inkomst- och resursstyrka.</li>
+                        <li><strong>Social Sårbarhet (Väst):</strong> Kommunens mest utmanande socioekonomiska ytor.</li>
+                        <li><strong>Etablerad Arbetskraft (Nordost):</strong> Välmående områden med mycket pendlingskraft och stabil demografi.</li>
+                        <li><strong>Trångboddhet & Bistånd (Sydväst):</strong> Specifika områden där trångboddhet kombineras med resursbrist.</li>
+                        <li><strong>Äldre & Täta Kvarter (Nord):</strong> Innerstadsmiljöer och äldreomsorgstäta områden.</li>
+                        <li><strong>Villabebyggelse (Syd):</strong> Traditionella villamattor, låg rörlighet och mycket barn.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
     <!-- ========================================== -->
     <!-- JAVASCRIPT: DATA OCH LOGIK                 -->
@@ -4330,7 +4444,7 @@ if (flik2Canvas) {
                 }
             });
         }
-
+        
         // ==========================================
         // SYSTEM INITIERING & INLÄSNING AV DATA
         // ==========================================
@@ -4706,6 +4820,297 @@ Chart.register(yearWatermarkPlugin); // Aktivera pluginen
                 }
             });
         });
+        // ==========================================
+// FLIK 11: AI-KOMPASS (TIDSRESA & HKT58-FILTER)
+// ==========================================
+let aiCompassChartInstance = null;
+let globalCompassCsvLines = null; 
+let availableYears = [];
+
+function updateFlik11() {
+    console.log("🧭 Förbereder AI-Kompassen...");
+
+    const tabPane = document.getElementById('flik11');
+    if (tabPane) {
+        tabPane.style.display = 'block';
+        tabPane.style.visibility = 'visible';
+    }
+
+    if (globalCompassCsvLines) {
+        processFlik11Data(globalCompassCsvLines);
+    } else {
+        fetch('segregation_base.csv?v=' + new Date().getTime())
+            .then(response => {
+                if (!response.ok) throw new Error("Kunde inte hitta csv-filen.");
+                return response.text();
+            })
+            .then(csvText => {
+                globalCompassCsvLines = csvText.trim().split('\n');
+                processFlik11Data(globalCompassCsvLines);
+            })
+            .catch(err => console.error("❌ Fetch-fel:", err));
+    }
+}
+
+function processFlik11Data(lines) {
+    const firstLine = lines[0];
+    const separator = firstLine.includes(';') ? ';' : ',';
+    const headers = lines[0].split(separator).map(h => h.trim().replace(/['"\r]+/g, ''));
+    
+    const idxBasomrade = headers.indexOf('basområde');
+    const idxTid = headers.indexOf('tid');
+    const idxX = headers.indexOf('AI_Kompass_X');
+    const idxY = headers.indexOf('AI_Kompass_Y');
+    
+    // 💡 NYHET: Hitta kolumnen Ingår i HKT58.px (Klarar eventuella små bokstäver)
+    const idxHKT = headers.findIndex(h => h.toLowerCase().includes('ingår i hkt58'));
+    
+    const colorVarEl = document.getElementById('colorVar11');
+    const colorMode = colorVarEl ? colorVarEl.value : 'none';
+    const idxColor = headers.indexOf(colorMode);
+
+    // 1. Skanna efter alla tillgängliga år
+    let maxTid = 0;
+    let tempYears = new Set();
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i]) continue;
+        let row = lines[i].split(separator);
+        let tid = parseInt(row[idxTid]);
+        if (!isNaN(tid)) {
+            tempYears.add(tid);
+            if (tid > maxTid) maxTid = tid;
+        }
+    }
+
+    // 2. Befolka dropdown för År
+    const yearSelect = document.getElementById('yearVar11');
+    if (yearSelect && yearSelect.options.length === 0) {
+        availableYears = Array.from(tempYears).sort((a, b) => b - a);
+        availableYears.forEach(year => {
+            let option = document.createElement('option');
+            option.value = year;
+            option.text = year;
+            yearSelect.appendChild(option);
+        });
+        yearSelect.value = maxTid; 
+    }
+
+    const selectedYear = (yearSelect && yearSelect.value) ? parseInt(yearSelect.value) : maxTid;
+    console.log(`📅 Valt år för kompassen: ${selectedYear}`);
+
+    let compassData = [];
+    const blacklisted = ['_', '..', 'ej geografiskt', 'null', 'undefined', '', 'hela kommunen', 'okänd'];
+
+    for (let i = 1; i < lines.length; i++) {
+        if (!lines[i]) continue;
+        let row = lines[i].split(separator);
+        
+        let tid = parseInt(row[idxTid]);
+        let basomrade = row[idxBasomrade] ? row[idxBasomrade].replace(/['"\r]+/g, '').trim() : '';
+        
+        // 💡 HKT-FILTER: Läser av värdet, sätter '1' som standard om kolumnen saknas
+        let hktVal = (idxHKT !== -1 && row[idxHKT]) ? row[idxHKT].replace(/['"\r]+/g, '').trim() : '1';
+
+        // Stenhårt filter: Rätt år, HKT måste vara 1, får inte vara svartlistad
+        if (tid === selectedYear && hktVal === '1' && !blacklisted.includes(basomrade.toLowerCase())) {
+            let rawX = row[idxX] ? row[idxX].replace(',', '.').toLowerCase() : '';
+            let rawY = row[idxY] ? row[idxY].replace(',', '.').toLowerCase() : '';
+
+            if (rawX && rawY && rawX !== 'nan' && rawY !== 'nan') {
+                let x = parseFloat(rawX);
+                let y = parseFloat(rawY);
+
+                if (!isNaN(x) && !isNaN(y)) {
+                    let cat = null;
+
+                    if (colorMode === 'SEI_indikatorer16') {
+                        let seiVal = row[idxColor] ? row[idxColor].replace(/['"\r]+/g, '').trim() : '';
+                        if (['1','2','3','4','5','6'].includes(seiVal)) cat = 'SEI ' + seiVal;
+                    } 
+                    else if (colorMode === 'Karaktär_bas') {
+                        let karVal = row[idxColor] ? row[idxColor].replace(/['"\r]+/g, '').trim() : '';
+                        if (karVal && !blacklisted.includes(karVal.toLowerCase())) cat = karVal;
+                    } 
+                    else {
+                        cat = 'Alla Basområden';
+                    }
+
+                    if (cat !== null) {
+                        compassData.push({ x: x, y: y, basområde: basomrade, kategori: cat });
+                    }
+                }
+            }
+        }
+    }
+
+    console.log(`📊 Laddade upp ${compassData.length} områden i grafen.`);
+    drawAICompassChart(compassData, selectedYear);
+}
+
+function updateCompassZoom() {
+    if (!aiCompassChartInstance) return;
+    
+    const isZoomedOut = document.getElementById('toggleCompassZoom').checked;
+    const limit = isZoomedOut ? 12 : 9.5; 
+    
+    aiCompassChartInstance.options.scales.x.min = -limit;
+    aiCompassChartInstance.options.scales.x.max = limit;
+    aiCompassChartInstance.options.scales.y.min = -limit;
+    aiCompassChartInstance.options.scales.y.max = limit;
+    
+    aiCompassChartInstance.update();
+}
+
+function drawAICompassChart(compassData, selectedYear) {
+    const canvasEl = document.getElementById('aiCompassChart');
+    if (!canvasEl) return;
+    
+    if (compassData.length === 0) {
+        console.warn("⚠️ Ingen data hittades för detta år/filter!");
+        return;
+    }
+
+    let grouped = {};
+    compassData.forEach(d => {
+        if (!grouped[d.kategori]) grouped[d.kategori] = [];
+        grouped[d.kategori].push(d);
+    });
+
+    const charOrder = ['Stadsdel', 'Tätort', 'Landsbygd'];
+    
+    let sortedKeys = Object.keys(grouped).sort((a, b) => {
+        if (a.startsWith('SEI ') && b.startsWith('SEI ')) {
+            return parseInt(a.replace('SEI ', '')) - parseInt(b.replace('SEI ', ''));
+        }
+        let idxA = charOrder.indexOf(a); let idxB = charOrder.indexOf(b);
+        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+        if (idxA !== -1) return -1; 
+        if (idxB !== -1) return 1;  
+        return a.localeCompare(b);
+    });
+
+    const specificColors = {
+        'SEI 1': '#d73027', 
+        'SEI 2': '#f46d43', 
+        'SEI 3': '#fdae61', 
+        'SEI 4': '#66bd63', 
+        'SEI 5': '#38bdf8', 
+        'SEI 6': '#5e4fa2', 
+        'Stadsdel': 'rgba(52, 152, 219, 0.9)', 
+        'Tätort': 'rgba(230, 126, 34, 0.9)', 
+        'Landsbygd': 'rgba(46, 204, 113, 0.9)',
+        'Alla Basområden': 'rgba(52, 152, 219, 0.9)'
+    };
+
+    let datasets = [];
+    const fallbackColors = ['#94a3b8', '#475569'];
+    let colorIndex = 0;
+
+    sortedKeys.forEach(cat => {
+        let bgColor = specificColors[cat] || fallbackColors[colorIndex % fallbackColors.length];
+        datasets.push({
+            label: cat,
+            data: grouped[cat],
+            backgroundColor: bgColor,
+            borderColor: '#ffffff',
+            borderWidth: 1.2,
+            pointRadius: 6,
+            pointHoverRadius: 9
+        });
+        colorIndex++;
+    });
+
+    // 💡 NYHET: Om grafen redan finns, skjut bara in den nya datan och animera!
+    if (aiCompassChartInstance) {
+        aiCompassChartInstance.data.datasets = datasets;
+        aiCompassChartInstance.update();
+        return;
+    }
+
+    // Om grafen inte finns, bygg den från grunden
+    const ctx = canvasEl.getContext('2d');
+    
+    const compassRingPlugin = {
+        id: 'compassRingPlugin',
+        beforeDraw: (chart) => {
+            const { ctx, chartArea, scales: { x, y } } = chart;
+            if (!chartArea || !x || !y) return;
+            const centerX = x.getPixelForValue(0); const centerY = y.getPixelForValue(0);
+            const radius = Math.abs(x.getPixelForValue(8.5) - centerX);
+
+            if (isNaN(radius) || radius <= 0) return;
+
+            ctx.save();
+            ctx.beginPath(); ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#94a3b8'; ctx.setLineDash([6, 6]); ctx.lineWidth = 2.5; ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(centerX, chartArea.top); ctx.lineTo(centerX, chartArea.bottom);
+            ctx.moveTo(chartArea.left, centerY); ctx.lineTo(chartArea.right, centerY);
+            ctx.strokeStyle = '#e2e8f0'; ctx.setLineDash([]); ctx.stroke();
+
+            const labels = [
+                { text: 'Äldre & Täta Kvarter', x_val: 0, y_val: 8.5 }, 
+                { text: 'Villabebyggelse', x_val: 0, y_val: -8.5 },     
+                { text: 'Hög Inkomst', x_val: 8.5, y_val: 0 },          
+                { text: 'Social Sårbarhet', x_val: -8.5, y_val: 0 },    
+                { text: 'Etablerad Arbetskraft', x_val: 6, y_val: 6 },  
+                { text: 'Trångboddhet & Bistånd', x_val: -6, y_val: -6 }
+            ];
+
+            ctx.font = 'bold 11px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            labels.forEach(l => {
+                const px = x.getPixelForValue(l.x_val); const py = y.getPixelForValue(l.y_val);
+                if (isNaN(px) || isNaN(py)) return;
+                ctx.beginPath(); ctx.moveTo(centerX, centerY); ctx.lineTo(px, py);
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)'; ctx.setLineDash([2, 4]); ctx.stroke();
+                const textWidth = ctx.measureText(l.text).width;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'; ctx.fillRect(px - textWidth / 2 - 5, py - 9, textWidth + 10, 18);
+                ctx.fillStyle = '#334155'; ctx.fillText(l.text, px, py);
+            });
+            ctx.restore();
+        }
+    };
+
+    const areaLabelsPlugin = {
+        id: 'areaLabelsPlugin',
+        afterDatasetsDraw: (chart) => {
+            const toggleEl = document.getElementById('toggleCompassLabels');
+            if (!toggleEl || !toggleEl.checked) return;
+            const { ctx } = chart;
+            ctx.save(); ctx.textAlign = 'center'; ctx.font = '11px sans-serif'; ctx.fillStyle = '#1e293b';
+            chart.data.datasets.forEach((dataset, i) => {
+                const meta = chart.getDatasetMeta(i);
+                meta.data.forEach((element, index) => {
+                    const dp = dataset.data[index];
+                    if (element && element.x && element.y && dp) {
+                        ctx.fillText(dp.basområde, element.x, element.y - 8);
+                    }
+                });
+            });
+            ctx.restore();
+        }
+    };
+
+    const isZoomedOut = document.getElementById('toggleCompassZoom') ? document.getElementById('toggleCompassZoom').checked : false;
+    const initialLimit = isZoomedOut ? 12 : 9.5;
+
+    aiCompassChartInstance = new Chart(ctx, {
+        type: 'scatter',
+        plugins: [compassRingPlugin, areaLabelsPlugin],
+        data: { datasets: datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false, layout: { padding: 30 },
+            scales: { x: { min: -initialLimit, max: initialLimit, display: false }, y: { min: -initialLimit, max: initialLimit, display: false } },
+            plugins: {
+                legend: { display: true, position: 'top', labels: { usePointStyle: true, boxWidth: 10, padding: 20 } },
+                tooltip: { callbacks: { label: c => `📍 ${c.raw.basområde} (${c.dataset.label})` }, bodyFont: { size: 14 } }
+            },
+            // 💡 MAGIN: Detta ger dig en mjuk, 800 millisekunder lång glidande övergång när du byter år
+            animation: { duration: 800, easing: 'easeOutQuart' } 
+        }
+    });
+}
         // ==========================================
 // NINJA-ÖVERVAKNING: Döljer envisa dynamiska filter utan att dra datorkraft
 // ==========================================
