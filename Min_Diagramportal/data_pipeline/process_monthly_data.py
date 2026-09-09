@@ -5,6 +5,10 @@ import time
 import pandas as pd
 import numpy as np
 from pyaxis import pyaxis
+import warnings
+
+# Tystar FutureWarnings tillfälligt om de är oväsentliga
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # ---------------------------------------------------------
 # 1. ARBETSMILJÖ OCH SMART FIL-SÖKMOTOR
@@ -157,7 +161,7 @@ try:
                     df_arb[f"{prefix}{ind_name}_Faktisk"] = faktisk_pct
                     df_arb[f"{prefix}{ind_name}_Struktur"] = struktur_pct
 
-        # Slå ihop med df_main (Viktigt: how='right' med df_main säkerställer att vi BARA får ut de årtal som webbsidan vill ha, även om Excel-filen går tillbaka till 2008)
+        # Slå ihop med df_main
         cols_to_keep = ['År', 'Månad'] + [c for c in df_arb.columns if '_Faktisk' in c or '_Struktur' in c]
         df_main = pd.merge(df_main, df_arb[cols_to_keep], on=['År', 'Månad'], how='left')
 
@@ -166,51 +170,64 @@ except Exception as e:
 
 
 # ---------------------------------------------------------
+# DEFRAGMENTERA DataFrame INFÖR LOOP
+# ---------------------------------------------------------
+# Detta dämpar pandas PerformanceWarning angående defragmentation
+df_main = df_main.copy()
+
+# ---------------------------------------------------------
 # 6. BERÄKNINGAR OCH VATTENFALLSMODELL
 # ---------------------------------------------------------
 print("4. Kör R12-beräkningar och vattenfallsmodell för mål...")
+
+# Samla nya kolumner i en dict eller lista av DataFrames och konkatenera i slutet
+nya_kolumner = {}
 
 for index, row in df_styrning.iterrows():
     scb_namn = row['SCB_Namn_i_filen']
     dash_namn = row['Dashboard_Namn']
     
-    # Hoppa över de dynamiska strukturkolumnerna i detta steg eftersom de redan är klara
     if "Struktur" in dash_namn:
         continue
         
     if scb_namn not in df_main.columns: continue
         
     col_utfall = f"{dash_namn}_Manad"
-    df_main[col_utfall] = df_main[scb_namn]
+    nya_kolumner[col_utfall] = df_main[scb_namn].copy()
+    
     col_riket = f"Riket_{dash_namn}_Manad"
-    df_main[col_riket] = df_main[f"Riket_{scb_namn}"] if f"Riket_{scb_namn}" in df_main.columns else np.nan
+    if f"Riket_{scb_namn}" in df_main.columns:
+        nya_kolumner[col_riket] = df_main[f"Riket_{scb_namn}"].copy()
+    else:
+        nya_kolumner[col_riket] = pd.Series(np.nan, index=df_main.index)
 
-    df_main[f"{dash_namn}_Manad_Pct_1M"] = df_main[col_utfall].pct_change(periods=1) * 100
-    df_main[f"Riket_{dash_namn}_Manad_Pct_1M"] = df_main[col_riket].pct_change(periods=1) * 100
-    df_main[f"{dash_namn}_Manad_Pct_12M"] = df_main[col_utfall].pct_change(periods=12) * 100
-    df_main[f"Riket_{dash_namn}_Manad_Pct_12M"] = df_main[col_riket].pct_change(periods=12) * 100
+    nya_kolumner[f"{dash_namn}_Manad_Pct_1M"] = nya_kolumner[col_utfall].pct_change(periods=1) * 100
+    nya_kolumner[f"Riket_{dash_namn}_Manad_Pct_1M"] = nya_kolumner[col_riket].pct_change(periods=1) * 100
+    nya_kolumner[f"{dash_namn}_Manad_Pct_12M"] = nya_kolumner[col_utfall].pct_change(periods=12) * 100
+    nya_kolumner[f"Riket_{dash_namn}_Manad_Pct_12M"] = nya_kolumner[col_riket].pct_change(periods=12) * 100
 
     col_r12 = f"{dash_namn}_R12"
     regel = row['R12_Regel']
     
     if regel == 'SUM':
-        df_main[col_r12] = df_main[col_utfall].rolling(12, min_periods=12).sum()
-        df_main[f"Riket_{col_r12}"] = df_main[col_riket].rolling(12, min_periods=12).sum()
+        nya_kolumner[col_r12] = nya_kolumner[col_utfall].rolling(12, min_periods=12).sum()
+        nya_kolumner[f"Riket_{col_r12}"] = nya_kolumner[col_riket].rolling(12, min_periods=12).sum()
     elif regel == 'SNITT':
-        df_main[col_r12] = df_main[col_utfall].rolling(12, min_periods=12).mean()
-        df_main[f"Riket_{col_r12}"] = df_main[col_riket].rolling(12, min_periods=12).mean()
+        nya_kolumner[col_r12] = nya_kolumner[col_utfall].rolling(12, min_periods=12).mean()
+        nya_kolumner[f"Riket_{col_r12}"] = nya_kolumner[col_riket].rolling(12, min_periods=12).mean()
     else: 
-        df_main[col_r12] = df_main[col_utfall]
-        df_main[f"Riket_{col_r12}"] = df_main[col_riket]
+        nya_kolumner[col_r12] = nya_kolumner[col_utfall].copy()
+        nya_kolumner[f"Riket_{col_r12}"] = nya_kolumner[col_riket].copy()
 
-    historik_utfall = df_main[col_r12].shift(12) 
-    riket_utfall_historik = df_main[f"Riket_{col_r12}"].shift(12)
-    riket_utveckling_pct = (df_main[f"Riket_{col_r12}"] - riket_utfall_historik) / riket_utfall_historik
+    historik_utfall = nya_kolumner[col_r12].shift(12) 
+    riket_utfall_historik = nya_kolumner[f"Riket_{col_r12}"].shift(12)
+    riket_utveckling_pct = (nya_kolumner[f"Riket_{col_r12}"] - riket_utfall_historik) / riket_utfall_historik
 
     prog_prio1_col = f"{dash_namn}_Prognos"
     prog_prio2_col = f"{dash_namn}_Egen_Utveckling"
-    if prog_prio1_col not in df_main.columns: df_main[prog_prio1_col] = np.nan
-    if prog_prio2_col not in df_main.columns: df_main[prog_prio2_col] = np.nan
+    
+    prog1 = df_main[prog_prio1_col] if prog_prio1_col in df_main.columns else pd.Series(np.nan, index=df_main.index)
+    prog2 = df_main[prog_prio2_col] if prog_prio2_col in df_main.columns else pd.Series(np.nan, index=df_main.index)
 
     hist_years_raw = row.get('Mal_Historiskt_Snitt_Ar', np.nan)
     hist_years = np.nan
@@ -220,34 +237,37 @@ for index, row in df_styrning.iterrows():
             hist_years = int(float(hist_years_raw))
             for i in range(len(df_main)):
                 if i >= 12 * hist_years:
-                    prio4_series.iloc[i] = df_main[col_r12].iloc[i-(12*hist_years) : i : 12].mean()
+                    prio4_series.iloc[i] = nya_kolumner[col_r12].iloc[i-(12*hist_years) : i : 12].mean()
         except (ValueError, TypeError):
             pass
 
     conditions = [
-        df_main[prog_prio1_col].notna(),
-        df_main[prog_prio2_col].notna(),
+        prog1.notna(),
+        prog2.notna(),
         pd.notna(row.get('Standard_Utveckling_Procent', np.nan)),
         pd.notna(hist_years),
         pd.notna(row.get('Procentenheter_Over_Riket', np.nan))
     ]
 
     choices = [
-        df_main[prog_prio1_col],
-        historik_utfall * (1 + df_main[prog_prio2_col]),
+        prog1,
+        historik_utfall * (1 + prog2),
         historik_utfall * (1 + (row.get('Standard_Utveckling_Procent', 0) if pd.notna(row.get('Standard_Utveckling_Procent', np.nan)) else 0)),
         prio4_series,
         historik_utfall * (1 + (riket_utveckling_pct + (row.get('Procentenheter_Over_Riket', 0) if pd.notna(row.get('Procentenheter_Over_Riket', np.nan)) else 0)))
     ]
 
-    df_main[f"{dash_namn}_Prognos_Slutgiltig"] = np.select(conditions, choices, default=np.nan)
-    df_main[f"{dash_namn}_Polaritet"] = row.get('Polaritet', np.nan)
-    df_main[f"{dash_namn}_Troskel"] = row.get('Tröskel', row.get('Troskel', np.nan))
-    df_main[f"{dash_namn}_Absolut_R12"] = row.get('Absolut_R12', np.nan)
-    df_main[f"{dash_namn}_Minitabell"] = row.get('Minitabell_Kolumn', np.nan)
-    df_main[f"{dash_namn}_Minitabell_Sort"] = row.get('Minitabell_Sortering', np.nan)
-    df_main[f"{dash_namn}_Alternativ_rubrik"] = row.get('Alternativ_tabellrubrik', np.nan)
+    nya_kolumner[f"{dash_namn}_Prognos_Slutgiltig"] = np.select(conditions, choices, default=np.nan)
+    nya_kolumner[f"{dash_namn}_Polaritet"] = row.get('Polaritet', np.nan)
+    nya_kolumner[f"{dash_namn}_Troskel"] = row.get('Tröskel', row.get('Troskel', np.nan))
+    nya_kolumner[f"{dash_namn}_Absolut_R12"] = row.get('Absolut_R12', np.nan)
+    nya_kolumner[f"{dash_namn}_Minitabell"] = row.get('Minitabell_Kolumn', np.nan)
+    nya_kolumner[f"{dash_namn}_Minitabell_Sort"] = row.get('Minitabell_Sortering', np.nan)
+    nya_kolumner[f"{dash_namn}_Alternativ_rubrik"] = row.get('Alternativ_tabellrubrik', np.nan)
 
+# Konkatenera de nya kolumnerna
+df_nya = pd.DataFrame(nya_kolumner)
+df_main = pd.concat([df_main, df_nya], axis=1)
 
 # ---------------------------------------------------------
 # 7. GENERERA RAPPORTTEXT (MÅNADSMOTORN)

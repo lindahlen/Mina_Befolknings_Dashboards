@@ -1,16 +1,21 @@
 ﻿Target_Index;Indikator;Vikt_Procent
-PCI (Platsattraktivitet);Skattekraft;8.223673802056922
-PCI (Platsattraktivitet);Födda_barn;7.222728067888362
-PCI (Platsattraktivitet);Nettoflytt_eget_län;5.489123669702341
-PCI (Platsattraktivitet);KIBS (beräkning Sysselsatta);5.362088712232502
-PCI (Platsattraktivitet);Försörjningskvot;5.060275606788016
-ECI (Ekonomisk Motor);Nattbefolkning;7.757449636057068
-ECI (Ekonomisk Motor);KIBS (beräkning Sysselsatta);6.303571224986397
-ECI (Ekonomisk Motor);Bostäder;5.740855674242906
-ECI (Ekonomisk Motor);Inpendling;5.319915797621975
-ECI (Ekonomisk Motor);Andel_Privat;4.766806803383728
-HCI (Humankapital);Nattbefolkning;8.933601078317473
-HCI (Humankapital);Nyföretagande;6.567313456426904
-HCI (Humankapital);Andel_Privat;6.501764512463347
-HCI (Humankapital);Förvärvsinkomst_median;5.362845943887284
-HCI (Humankapital);Total BRP (Miljarder SEK);4.6387745051928535
+PCI (Platsattraktivitet);Nettopendling (Beräknad Inpendling-Utpendling);19.155455702399824
+PCI (Platsattraktivitet);Vuxen_bef (Beräkning Folkmängd);16.677120379494614
+PCI (Platsattraktivitet);Andel_Privat;15.370499935973141
+PCI (Platsattraktivitet);Nettoinkomst_median;10.122342933562784
+PCI (Platsattraktivitet);Inflytt_annat_län_30-59;7.984959011275318
+ECI (Ekonomisk Motor);KIBS (beräkning Sysselsatta);53.7874255498247
+ECI (Ekonomisk Motor);Nattbefolkning;9.606090592261463
+ECI (Ekonomisk Motor);Skattesats;6.174383047238565
+ECI (Ekonomisk Motor);Sysselsättningsgrad;5.896939930715921
+ECI (Ekonomisk Motor);Inflytt_eget_län;5.770374797465919
+HCI (Humankapital);Nattbefolkning;21.457488101274752
+HCI (Humankapital);Skattekraft;20.17781480045624
+HCI (Humankapital);Ung_bef;15.337003640893268
+HCI (Humankapital);Bostadsbyggande;11.6752849457471
+HCI (Humankapital);Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59);7.3387766689241545
+TMI (Tillväxt & Momentum);Lång_eftergymnasial_ant25;52.408474098042305
+TMI (Tillväxt & Momentum);Inpendling (beräkning Sysselsatta);11.362575101905902
+TMI (Tillväxt & Momentum);Nettoflyttning (Beräknad Inflyttning_annat_län-Utflyttning_annat_län);8.60773455509336
+TMI (Tillväxt & Momentum);Bostadspriser;7.415040073052934
+TMI (Tillväxt & Momentum);Sysselsättningsgrad;4.637003255478721

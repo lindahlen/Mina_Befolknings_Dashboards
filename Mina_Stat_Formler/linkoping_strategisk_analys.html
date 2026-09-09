@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strategisk Analys - Storstadsligan</title>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        /* Grundläggande Dashboard Design (Modern Slate Theme) */
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --text-muted: #64748b;
+            --primary-blue: #2563eb;
+            --accent-blue: #eff6ff;
+            --border-color: #e2e8f0;
+            --eci-color: #f59e0b; /* Amber */
+            --pci-color: #ec4899; /* Pink */
+            --hci-color: #8b5cf6; /* Violet */
+            --tmi-color: #10b981; /* Emerald */
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .header {
+            max-width: 1200px;
+            margin: 0 auto 2rem auto;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 2rem;
+            color: var(--text-main);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Grid System för Index-kort */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .index-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease;
+        }
+
+        .index-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .score-badge {
+            font-size: 1.5rem;
+            font-weight: 800;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            color: white;
+        }
+
+        .score-eci { background-color: var(--eci-color); }
+        .score-pci { background-color: var(--pci-color); }
+        .score-hci { background-color: var(--hci-color); }
+        .score-tmi { background-color: var(--tmi-color); }
+
+        .analysis-text {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .strategy-box {
+            background-color: var(--accent-blue);
+            border-left: 4px solid var(--primary-blue);
+            padding: 1rem 1.5rem;
+            border-radius: 0 8px 8px 0;
+            margin-top: auto;
+        }
+
+        .strategy-box h4 {
+            color: var(--primary-blue);
+            margin: 0 0 0.5rem 0;
+            font-size: 1rem;
+        }
+
+        .strategy-box p {
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        .disclaimer {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+            font-style: italic;
+        }
+
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: 1fr; }
+            body { padding: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>🛡️ Linköpings Position i Storstadsligan</h1>
+        <p>Strategisk analys av regional konkurrenskraft bland Sveriges 12 största städer (Referens: Median & Riket = 100)</p>
+    </div>
+
+    <div class="grid-container">
+
+        <!-- ECI (Ekonomisk Motor) -->
+        <div class="index-card">
+            <div class="card-header">
+                <h2 class="card-title">🏭 ECI (Ekonomisk Motor)</h2>
+                <div class="score-badge score-eci">102</div>
+            </div>
+            <div class="analysis-text">
+                <strong>Avvikelse från storstadsmedian: +2 %</strong><br>
+                Linköpings ekonomiska motor går på högvarv och presterar över medianen (100) för Sveriges tolv största städer. Att staden kan tävla med jättar utan att ha deras totala volym (BRP) beror på en exceptionell "ekonomisk densitet". Variabler som stark inrikes nettopendling och stabil skattekraft bevisar att Linköping är ett extremt effektivt nav på en regional arbetsmarknad. Vi importerar kompetens på dagtid för att driva ett högteknologiskt och kunskapsintensivt näringsliv.
+            </div>
+            <div class="strategy-box">
+                <h4>💡 Strategiska tips för "Ligan 5-12"</h4>
+                <p>Målbilden är inte att jaga ikapp Stockholm i absolut bruttovolym. För att stärka vår position inbördes mot städer som Uppsala, Lund och Jönköping måste Linköping fortsätta maximera <em>förädlingsvärdet per invånare</em>. Det handlar om att attrahera fler huvudkontor och spetsföretag inom KIBS (Kunskapsintensiva företagstjänster) samt att säkra infrastruktur som gör inpendlingen helt friktionsfri.</p>
+            </div>
+        </div>
+
+        <!-- PCI (Platsattraktivitet) -->
+        <div class="index-card">
+            <div class="card-header">
+                <h2 class="card-title">🧲 PCI (Platsattraktivitet)</h2>
+                <div class="score-badge score-pci">93</div>
+            </div>
+            <div class="analysis-text">
+                <strong>Avvikelse från storstadsmedian: -7 %</strong><br>
+                Detta index belyser Linköpings största strategiska utmaning. Medan ECI-motorn skapar jobb, visar PCI att platsattraktiviteten inte fullt ut lyckas konvertera arbetskraften till permanentboende skattebetalare. Staden uppvisar negativt flyttnetto gentemot andra län i den kritiska åldersgruppen 30-59 år. Att PCI ligger under 100 visar att pendlare stannar vid att vara pendlare; de lockas av karriären men väljer ofta att bygga sina liv i kranskommuner.
+            </div>
+            <div class="strategy-box">
+                <h4>💡 Strategiska tips för "Ligan 5-12"</h4>
+                <p>För att kliva över 100 i Platsattraktivitet måste stadsplaneringen fokusera stenhårt på livsmiljöer, skolor och boende för personer "mitt i livet". Städer i ligan 5-12 som framgångsrikt kombinerar storstadens puls med trygga, naturnära boendealternativ kommer att vinna racet om kompetensen. Vi måste bygga för att behålla dem som etablerar familj.</p>
+            </div>
+        </div>
+
+        <!-- HCI (Humankapital) -->
+        <div class="index-card">
+            <div class="card-header">
+                <h2 class="card-title">🧠 HCI (Humankapital)</h2>
+                <div class="score-badge score-hci">114</div>
+            </div>
+            <div class="analysis-text">
+                <strong>Jämfört med Riket (100)</strong><br>
+                Linköping spelar i Sveriges absoluta elitserie när det gäller Humankapital. Med ett universitet i världsklass och en andel sysselsatta inom kunskapsintensiva tjänster (KIBS) på över 14 % (långt över riksgenomsnittet på knappa 10 %), utgör HCI stadens strukturella ryggrad. Detta höga värde är skölden som skyddar kommunen vid nationella lågkonjunkturer och skapar en stark grundläggande motståndskraft.
+            </div>
+            <div class="strategy-box">
+                <h4>💡 Strategiska tips för "Ligan 5-12"</h4>
+                <p>Linköping och Lund har en liknande utmaning: Det är lätt att locka studenter, men svårt att behålla dem efter examen (Retention). Den storstad i Ligan 5-12 som bäst lyckas bygga broar mellan universitetens masterprogram och det lokala små/medelstora näringslivet kommer att dominera indexet framöver.</p>
+            </div>
+        </div>
+
+        <!-- TMI (Tillväxt & Momentum) -->
+        <div class="index-card">
+            <div class="card-header">
+                <h2 class="card-title">🚀 TMI (Tillväxt & Momentum)</h2>
+                <div class="score-badge score-tmi">150+</div>
+            </div>
+            <div class="analysis-text">
+                <strong>Jämfört med Riket (100)</strong><br>
+                Momentum-mätaren exploderar för Linköping i den senaste mätningen. Den enskilt starkaste drivkraften är att staden uppvisar en positiv sysselsättningstillväxt (nära +1 %) under en period då Riket som helhet upplever ett sysselsättningstapp. Kombinerat med starka volymer i bostadsbyggande flyger Linköping ifrån riksgenomsnittet just i år.
+                <div class="disclaimer">
+                    * Observera: TMI är en ögonblicksbild (hastighetsmätare). Det mäter årlig förändring och är till sin natur mycket volatilt. Det ska tolkas som "medvind just nu", inte som strukturell stabilitet.
+                </div>
+            </div>
+            <div class="strategy-box">
+                <h4>💡 Strategiska tips för "Ligan 5-12"</h4>
+                <p>Ett starkt kortsiktigt momentum (högt TMI) är ett fönster av möjligheter. Politiken och näringslivet bör använda denna "medvind" för att ta tuffa strukturella investeringsbeslut, expandera infrastruktur och stärka PCI, innan nästa konjunktursvängning inträffar. Var offensiv när andra bromsar.</p>
+            </div>
+        </div>
+        <!-- SEKTION: SAMLAD ROADMAP OCH KORSKOPPLINGAR -->
+        <div style="grid-column: 1 / -1; margin-top: 2rem;">
+            <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 2rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                <h2 style="margin-top:0; color: #1e293b; font-size: 1.6rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem;">
+                    🔀 Samlad Roadmap: Matrisanalys & Tvärsnittsinsikter
+                </h2>
+                <p style="color: #475569; font-size: 1.05rem;">
+                    När vi kombinerar de fyra indexen framträder den fullständiga bilden av Linköpings strukturella position i "Ligan 5–12".
+                </p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                    
+                    <!-- Koppling 1 -->
+                    <div style="background: #f8fafc; padding: 1.25rem; border-radius: 8px; border-left: 4px solid #f59e0b;">
+                        <h3 style="margin-top:0; font-size: 1.1rem; color: #0f172a;">ECI ↔ PCI: Pendlar-Paradoxen</h3>
+                        <p style="font-size: 0.95rem; color: #334155; margin-bottom: 0;">
+                            <strong>Stark motor (102), svagare bostadsmagnet (93).</strong> Linköping genererar högt ekonomiskt värde och har stark inpendling, men tappar köpkraftiga familjer (30–59 år) till kranskommuner. Tillväxttaktiken måste fokusera på bostadsmiljöer framför rena industrietableringar.
+                        </p>
+                    </div>
+
+                    <!-- Koppling 2 -->
+                    <div style="background: #f8fafc; padding: 1.25rem; border-radius: 8px; border-left: 4px solid #8b5cf6;">
+                        <h3 style="margin-top:0; font-size: 1.1rem; color: #0f172a;">HCI ➔ ECI ➔ TMI: Utväxlingen</h3>
+                        <p style="font-size: 0.95rem; color: #334155; margin-bottom: 0;">
+                            <strong>Spetskompetens ger motståndskraft.</strong> Det höga Humankapitalet (114) skyddar Linköping vid konjunkturfall. När Riket tappar i sysselsättning (+0,98 % i Linköping vs -0,12 % i Riket), skuter TMI i höjden. Kunskapsbasen är motorns viktigaste bränsle.
+                        </p>
+                    </div>
+
+                    <!-- Koppling 3 -->
+                    <div style="background: #f8fafc; padding: 1.25rem; border-radius: 8px; border-left: 4px solid #2563eb;">
+                        <h3 style="margin-top:0; font-size: 1.1rem; color: #0f172a;">Klusterprofilen i Ligan 5–12</h3>
+                        <p style="font-size: 0.95rem; color: #334155; margin-bottom: 0;">
+                            <strong>"Den Kunskapsdrivna Industristaden".</strong> Tillsammans med Lund bildar Linköping ett spetskluster med mycket hög teknisk profil. Utmaningen för båda städerna är inte att skapa fler jobb, utan att öka attraktiviteten så att kompetensen stannar kvar permanent.
+                        </p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

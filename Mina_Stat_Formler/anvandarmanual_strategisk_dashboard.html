@@ -6,6 +6,7 @@
     <title>Användarguide: Strategisk Dashboard</title>
     <!-- Bootstrap för snygg och responsiv design -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary-orange: #d35400;
@@ -120,49 +121,6 @@
             Detta verktyg är designat för att ge beslutsfattare, analytiker och strateger en djupgående och visuell förståelse för hur Sveriges största kommuner och regioner presterar, positionerar sig och utvecklas. Genom att kombinera tunga statistiska indikatorer kan vi snabbt identifiera mönster, styrkor och sårbarheter som annars döljs i stora datamängder.
         </p>
 
-        <h2>📊 Plattformens åtta huvudflikar</h2>
-        <p>Dashboarden är uppdelad i åtta analytiska vyer som var och en fyller en specifik funktion:</p>
-
-        <h3>1. ⊞ Strategisk Fyrfältare (BCG-matris)</h3>
-        <p>Fyrfältaren hjälper dig att positionera och kategorisera geografiska områden baserat på två valfria dimensioner (X- och Y-axel). Bubblans storlek visar en tredje dimension (t.ex. Folkmängd eller BRP). Genom att studera matrisen kan du placera aktörer i fyra strategiska fack:</p>
-        <ul>
-            <li><strong>⭐ Stjärnor (Övre högra):</strong> Presterar över snittet i båda dimensionerna. De nationella eller regionala ledarna.</li>
-            <li><strong>💰 Kassakor (Nedre högra):</strong> Starka på X-axeln men utmaningar på Y. Trygga baser.</li>
-            <li><strong>❓ Frågetecken (Övre vänstra):</strong> Starka på Y men svaga på X. Potential finns men något håller tillbaka.</li>
-            <li><strong>⚠️ Utmanare (Nedre vänstra):</strong> Presterar under snittet i båda avseenden. Kräver strategiska insatser.</li>
-        </ul>
-        <div class="highlight-box">
-            <strong>Dynamiskt vs. Låst Kors:</strong><br>
-            Som standard anpassar sig centrumkorset efter <em>genomsnittet av de bubblor du ser på skärmen</em>. Det är perfekt för att kora vinnaren bland exempelvis bara storstäder. Men om du kryssar i <strong>"Lås kors vid Riket (100)"</strong> fixeras mitten exakt på Sverigesnittet. Då synliggörs "storstadseffekten" tydligt – storstäderna flyger ofta upp i Stjärn-kvadraten eftersom de överpresterar rejält jämfört med landets genomsnitt.
-        </div>
-        
-        <div class="pro-tip-box">
-            <strong>💡 Pro-tip för analys:</strong><br>
-            Du kan klicka på valfritt namn nere i teckenförklaringen för att dölja en specifik kommun eller grupp. Gör du detta i det dynamiska läget räknas både bubbelstorlekar och centrumkorset om omedelbart baserat enbart på de områden som är kvar på skärmen!
-        </div>
-
-        <h3>2. 📉 Regressionsanalys</h3>
-        <p>Denna flik används för att hitta och bevisa statistiska samband mellan olika indikatorer bland de 12 största kommunerna. Korrelerar högt nyföretagande med stark befolkningstillväxt? Här får du fram R²-värden (förklaringsgrad), korrelationskoefficienter och ekvationer. Systemet letar dessutom automatiskt fram vilka underliggande indikatorer som bäst driver resultatet på Y-axeln genom multipel regression.</p>
-
-        <h3>3. 🗺️ Geografisk Analys</h3>
-        <p>Här flyttas analysen ut på kartan. Verktyget låter dig spatialt visualisera index och indikatorer för att hitta kluster, regionala spridningseffekter eller geografiska klyftor. Kartan är ett utmärkt komplement när man vill förklara <em>var</em> tillväxten och attraktiviteten faktiskt sker rent fysiskt.</p>
-        
-        <div class="alert alert-light border-0 shadow-sm mt-3 mb-4 p-3" role="alert">
-            <p class="text-muted small fst-italic mb-0">
-                <i class="fas fa-info-circle me-1" style="color: #64748b;"></i> 
-                <strong>Observera:</strong> De övriga fem analysverktygen (AI Klusteranalys, AI-Drivkrafter, samt Scenario-simulatorn, Historisk trend och analysen för Regional Integration) presenteras i detalj längre ned i denna guide.
-            </p>
-        </div>
-
-        <hr>
-
-        <h2>🔍 Analysnivåer: Mikro och Makro</h2>
-        <p>I Fyrfältaren kan du växla mellan två helt olika perspektiv beroende på vad du vill bevisa:</p>
-        <ul>
-            <li><strong>12 Kommuner (Mikroperspektiv):</strong> Här jämförs Sveriges tolv största kommuner mot varandra. Det visar hur Linköping står sig i den absoluta nationella toppen rent kommunalt.</li>
-            <li><strong>Geografiska grupper (Makroperspektiv):</strong> Här lyfter vi blicken och jämför Linköping mot strukturella block (t.ex. <em>Storstäder (De tre största kommunerna i landet)</em>, <em>Stora städer (De fyra största kommunerna i landet)</em>, <em>Större kommuner (Kommuner på plats 5 till 12 i landet)</em> eller <em>Östergötlands län</em>). Perfekt för att se om Linköping beter sig som en typisk regionhuvudstad eller drar mer åt en renodlad storstadsprofil.</li>
-        </ul>
-
         <hr>
 
         <h2>⚖️ Relativa Index – Att tvätta bort "Stockholmseffekten"</h2>
@@ -172,16 +130,14 @@
             <li><strong>Relativ indexering (Riket = 100):</strong> Det framräknade, tvättade värdet divideras därefter med Sverigesnittet samma år. Ett värde på <strong>105</strong> innebär att platsen är 5 % starkare än riksgenomsnittet <em>i förhållande till sin egen storlek</em>.</li>
         </ol>
 
-        <hr>
-
         <h2>📈 Beskrivning av Sammansatta Index</h2>
-        <p>Plattformen innehåller sju förkalkylerade index som slår ihop enskilda indikatorer till breda strategiska mått.</p>
+        <p>Plattformen innehåller förkalkylerade index som slår ihop enskilda indikatorer till breda strategiska mått.</p>
 
-        <h3>Teoretiska profil-index (PCI, ECI, HCI)</h3>
-        <p>Dessa tre index är skarpt avgränsade för att mäta en specifik egenskap hos kommunen.</p>
+        <h3>Teoretiska profil-index (PCI, ECI, HCI, TMI)</h3>
+        <p>Dessa fyra index är skarpt avgränsade för att mäta specifika och oberoende egenskaper hos kommunen.</p>
 
-        <h4>💎 PCI (Place Competitiveness Index) – Platsattraktivitet</h4>
-        <p>Hur bra är platsen på att locka till sig och behålla människor, oavsett arbetsmarknad?</p>
+        <h4>🧲 PCI (Place Competitiveness Index) – Platsattraktivitet</h4>
+        <p>Hur bra är platsen på att locka till sig och behålla människor, kapital och familjer?</p>
         <table class="table table-striped table-custom table-bordered">
             <thead>
                 <tr>
@@ -192,15 +148,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>Bostadspriser</td><td>0.35</td><td>Hög</td><td>Marknadens yttersta kvitto på betalningsvilja för att få bo på platsen.</td></tr>
-                <tr><td>Nettoflyttning annat län (30-59 år)</td><td>0.25</td><td>Hög</td><td>Visar hur många i åldern 30-59 år som aktivt väljer kommunen framför alternativ utanför det egna länet.</td></tr>
-                <tr><td>Bostadsbyggande per 1000 inv.</td><td>0.25</td><td>Hög</td><td>Visar på lokal framtidstro och kapacitet att möta efterfrågan.</td></tr>
-                <tr><td>Födda barn per 100 000 vuxna</td><td>0.15</td><td>Hög</td><td>En indikator på social vitalitet och trygghet för familjebildning.</td></tr>
+                <tr><td>Nettoflyttning annat län (30-59 år)</td><td>0.40</td><td>Hög</td><td>Visar hur många i den mest skattekraftiga åldern som aktivt väljer kommunen framför alternativ nationellt.</td></tr>
+                <tr><td>Bostadspriser</td><td>0.30</td><td>Hög</td><td>Marknadens yttersta kvitto på betalningsvilja för att få bo på platsen.</td></tr>
+                <tr><td>Födda barn per 100 000 vuxna</td><td>0.20</td><td>Hög</td><td>En indikator på social vitalitet, framtidstro och trygghet för familjebildning.</td></tr>
+                <tr><td>Inflyttningsandel eget län av inrikes inflyttning</td><td>0.10</td><td>Låg</td><td>Mäter stadens nationella dragningskraft. Ett lägre värde indikerar att staden framgångsrikt attraherar kompetens från övriga Sverige och internationellt, snarare än att enbart tömma det egna närområdet på invånare.</td></tr>
             </tbody>
         </table>
 
-        <h4>💎 ECI (Economic Competitiveness Index) – Ekonomisk Motor</h4>
-        <p>Hur stark, dynamisk och produktiv är den lokala ekonomin?</p>
+        <h4>🏭 ECI (Economic Competitiveness Index) – Ekonomisk Motor</h4>
+        <p>Hur stark, dynamisk och produktiv är den lokala ekonomin idag?</p>
         <table class="table table-striped table-custom table-bordered">
             <thead>
                 <tr>
@@ -211,15 +167,15 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>BRP per capita</td><td>0.40</td><td>Hög</td><td>Den absolut tyngsta indikatorn för lokal ekonomisk styrka och produktivitet.</td></tr>
+                <tr><td>Skattekraft</td><td>0.35</td><td>Hög</td><td>Det mest precisa måttet på vad den ekonomiska motorn faktiskt genererar för kommunens välfärd.</td></tr>
                 <tr><td>Nettopendling</td><td>0.25</td><td>Hög</td><td>Visar att det lokala näringslivet är starkare än vad den lokala arbetskraften räcker till.</td></tr>
-                <tr><td>Nettoinkomst median</td><td>0.15</td><td>Hög</td><td>Disponibel köpkraft och välfärd för individen.</td></tr>
-                <tr><td>Förvärvsinkomst median</td><td>0.05</td><td>Hög</td><td>Värdeskapande direkt härrörande från lönearbete.</td></tr>
-                <tr><td>Nyföretagande per 1000 inv.</td><td>0.15</td><td>Hög</td><td>Det lokala entreprenörskapet och näringslivets förnyelsetakt.</td></tr>
+                <tr><td>Total BRP</td><td>0.20</td><td>Hög</td><td>Den totala lokala produktionen och värdeskapandet.</td></tr>
+                <tr><td>Nettoinkomst 20-64 år, median</td><td>0.15</td><td>Hög</td><td>Disponibel köpkraft och faktisk rikedom som stannar i invånarnas plånböcker.</td></tr>
+                <tr><td>Förvärvsinkomst 20-64 år, median</td><td>0.05</td><td>Hög</td><td>Värdeskapande direkt härrörande från lönearbete.</td></tr>
             </tbody>
         </table>
 
-        <h4>💎 HCI (Human Capital Index) – Humankapital</h4>
+        <h4>🧠 HCI (Human Capital Index) – Humankapital</h4>
         <p>Vilken kunskapsnivå finns, och hur väl omsätts den på arbetsmarknaden?</p>
         <table class="table table-striped table-custom table-bordered">
             <thead>
@@ -231,161 +187,302 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>Lång eftergymn. utb 25-64 år (andel)</td><td>0.40</td><td>Hög</td><td>Grundmåttet på avancerad kompetens. 25-64 år filtrerar bort tillfälliga studentpopulationer.</td></tr>
+                <tr><td>Lång eftergymn. utb 25-64 år (%)</td><td>0.40</td><td>Hög</td><td>Grundmåttet på avancerad kompetens. Åldersspannet (25-64 år) filtrerar bort oetablerade studentpopulationer.</td></tr>
                 <tr><td>KIBS (andel av sysselsatta)</td><td>0.30</td><td>Hög</td><td>Visar hur stor andel av den lokala arbetsmarknaden som utgörs av kunskapsintensiva tjänster.</td></tr>
                 <tr><td>Sysselsättningsgrad 20-64 år (%)</td><td>0.20</td><td>Hög</td><td>Visar att humankapitalet faktiskt aktiveras och befinner sig i arbete.</td></tr>
-                <tr><td>Långtidsarbetslöshet (% av ak)</td><td>0.10</td><td>Låg</td><td>Bestraffar strukturellt utanförskap (skalan inverteras vid indexberäkningen).</td></tr>
+                <tr><td>Långtidsarbetslöshet</td><td>0.10</td><td>Låg</td><td>Bestraffar strukturellt utanförskap (skalan inverteras vid indexberäkningen).</td></tr>
             </tbody>
         </table>
 
+        <h4>🚀 TMI (Tillväxt & Momentum Index)</h4>
+        <p>Mäter hastigheten i stadens utveckling. Hur mycket framtid skapas idag, oberoende av historisk storlek?</p>
+        <table class="table table-striped table-custom table-bordered">
+            <thead>
+                <tr>
+                    <th>Indikator</th>
+                    <th>Vikt</th>
+                    <th>Riktning</th>
+                    <th>Motiv</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Befolkningsförändring per år (%)</td><td>0.35</td><td>Hög</td><td>Den demografiska tillväxttakten – grundmåttet på att kommunen växer.</td></tr>
+                <tr><td>Sysselsättning 15-74 år (förändring per år, %)</td><td>0.35</td><td>Hög</td><td>Den ekonomiska tillväxttakten – garanterar att jobben växer i takt med befolkningen (kvalitativ expansion).</td></tr>
+                <tr><td>Bostadsbyggande per 1000 inv.</td><td>0.20</td><td>Hög</td><td>Visar på lokal framtidstro och fysisk kapacitet att möta efterfrågan.</td></tr>
+                <tr><td>Nyföretagande per 1000 inv.</td><td>0.10</td><td>Hög</td><td>Det lokala entreprenörskapet och näringslivets förnyelsetakt (morgondagens ekonomi).</td></tr>
+            </tbody>
+        </table>
+
+        <div style="background-color: #f8d7da; color: #721c24; border-left: 5px solid #dc3545; padding: 15px; border-radius: 4px; margin-top: 30px;">
+            <strong>🛡️ Analytisk renhet (Krav på ortogonalitet)</strong><br>
+            I de fyra ovanstående indexen undviks överlappning och dubbelräkning strikt. När man bygger sammansatta index – särskilt när vi dessutom kör Machine Learning och Multipel Regression ovanpå dem – krävs <i>ortogonala (oberoende) index</i>. <br><br>
+            Om till exempel "Nyföretagande" ligger i både ECI och TMI, och vi sedan jämför dessa, skapas en matematisk rundgång där variablerna korrelerar med sig själva. Genom att flytta och separera indikatorerna renodlar vi indexens DNA: <b>ECI</b> blir ett 100 % rent mått på dagens storlek och muskelmassa, medan <b>TMI</b> blir ett 100 % rent mått på morgondagens momentum och fart.
+        </div>
+
         <h3>Standardindex (Konkurrenskraftsindexets grundpelare)</h3>
         <ul>
-            <li><strong>📈 Index: Kombination:</strong> Ett övergripande mått som väger in både arbetsmarknad och demografi för att ge en bred bild av den totala dragningskraften.</li>
-            <li><strong>📈 Index: Sysselsättning:</strong> Ett snävare mått med exklusivt fokus på den regionala arbetsmarknadens funktion, arbetstillfällen och inkomstnivåer.</li>
-            <li><strong>📈 Index: Befolkning:</strong> Ett mått som fokuserar på den rent demografiska motorn; befolkningstillväxt, inflyttning och åldersstrukturer.</li>
-            <li><strong>📈 Index: Relativ styrka:</strong> Ett renodlat strukturellt tillväxtmått som uteslutande bygger på andelar, kvoter och procentuella förändringar per år. Detta index svarar bäst på frågan: <em>Vem har starkast momentum just nu?</em></li>
+            <li><strong>📈 Index: Kombination:</strong> Ett övergripande tillväxtmått som väger in både arbetsmarknad och demografi för att ge en bred bild av den totala dragningskraften. Det bygger på procentuella förändringar per år.</li>
+            <li><strong>📈 Index: Sysselsättning:</strong> Ett snävare mått med exklusivt fokus på den regionala arbetsmarknadens funktion, arbetstillfällen och inkomstnivåer. Detta index svarar bäst på frågan: <em>Vem har starkast momentum som expansiv motor just nu?</em></li>
+            <li><strong>📈 Index: Befolkning:</strong> Ett tillväxtmått som fokuserar på den rent demografiska motorn; befolkningstillväxt, inflyttning och åldersstrukturer.</li>
+            <li><strong>📈 Index: Relativ styrka:</strong> Ett renodlat strukturellt mått som uteslutande bygger på andelar, kvoter m.m. relativt riket. Svarar bäst på frågan: <em>Vem är strukturellt starkast just nu?</em></li>
         </ul>
-        <p style="margin-top: -10px; color: var(--primary-dark);">
-            <em>📌 Det är dessa fyra förinställda standardindex som redovisas i Indexkalkylatorn: Konkurrenskraft.</em>
+        <p style="margin-top: -5px; margin-left: 10px; color: var(--primary-dark); padding-left: 24px; text-indent: -24px; line-height: 1.5;">
+            <em>📌 Det är dessa fyra förinställda standardindex som redovisas i Indexkalkylatorn: Konkurrenskraft. De har en annan logik än de fyra som nämns ovan och begränsas inte fullt ut av ortogonalitet.</em>
         </p>
-<!-- ==========================================
-         AI-TILLÄGG TILL MANUALEN
-         ========================================== -->
-    <div class="card mt-5 mb-5 shadow-sm border-0" id="manual-ai-sektion">
-        <div class="card-header text-white" style="background: linear-gradient(135deg, #4338ca, #3730a3);">
-            <h3 class="h5 mb-0"><i class="fa-solid fa-robot me-2"></i> Avancerad Analys: AI och Maskininlärning</h3>
+
+        <hr style="border-top: 2px dashed #cbd5e1; margin: 50px 0;">
+
+        <!-- ==========================================
+             GENOMGÅNG AV DASHBOARDENS 10 FLIKAR
+             ========================================== -->
+        <h2>📊 Plattformens 10 huvudflikar</h2>
+        <p>Dashboarden är uppdelad i tio analytiska vyer som var och en fyller en specifik funktion. Här följer en genomgång av hur du tolkar dem.</p>
+
+        <!-- FLIK 1 -->
+        <h3 style="color: #1e293b;"><i class="fas fa-th-large me-2" style="color: var(--primary-orange);"></i> 1. Strategisk Fyrfältare (BCG-matris)</h3>
+        <p>Fyrfältaren hjälper dig att positionera och kategorisera geografiska områden baserat på två valfria dimensioner (X- och Y-axel). Bubblans storlek visar en tredje dimension (t.ex. Folkmängd eller BRP). Genom att studera matrisen kan du placera aktörer i fyra strategiska fack:</p>
+        <ul>
+            <li><strong>⭐ Stjärnor (Övre högra):</strong> Presterar över snittet i båda dimensionerna. De nationella eller regionala ledarna.</li>
+            <li><strong>💰 Kassakor (Nedre högra):</strong> Starka på X-axeln men utmaningar på Y. Trygga baser.</li>
+            <li><strong>❓ Frågetecken (Övre vänstra):</strong> Starka på Y men svaga på X. Potential finns men något håller tillbaka.</li>
+            <li><strong>⚠️ Utmanare (Nedre vänstra):</strong> Presterar under snittet i båda avseenden. Kräver strategiska insatser.</li>
+        </ul>
+        
+        <div class="highlight-box">
+            <strong>Dynamiskt vs. Låst Kors (Baslinje 100):</strong><br>
+            Som standard anpassar sig centrumkorset efter <em>genomsnittet av de bubblor du ser på skärmen</em>. Det är perfekt för att kora vinnaren bland de städer du aktivt filtrerat fram. Men om du kryssar i <strong>"Lås kors vid 100"</strong> fixeras mitten på en fast referenspunkt för att ge en sann strukturell bild:
+            <ul style="margin-top: 8px; margin-bottom: 0; padding-left: 20px;">
+                <li><strong>För Formel 1-index (ECI & PCI):</strong> Korset fixeras vid <em>medianen för Sveriges 12 största städer</em>. Detta filtrerar bort riksbruset och låter städer som Linköping jämföras helt rättvist mot sina sanna jämlikar (storstäderna).</li>
+                <li><strong>För övriga index & rådata (HCI, TMI m.fl.):</strong> Korset fixeras exakt på <em>Sverigesnittet (Riket = 100)</em>.</li>
+            </ul>
         </div>
-        <div class="card-body" style="background-color: #f8fafc; padding: 30px;">
-            <p class="lead" style="color: #475569;">
-                Utöver den traditionella statistiken innehåller plattformen två flikar som drivs av maskininlärning. Dessa modeller letar efter dolda mönster och orsakssamband i datan som är svåra att upptäcka med blotta ögat.
-            </p>
 
-            <hr style="border-top: 2px dashed #cbd5e1; margin: 30px 0;">
-
-            <!-- KLUSTERANALYS -->
-            <h4 style="color: #1e293b;"><i class="fa-solid fa-network-wired text-primary me-2"></i> AI Klusteranalys</h4>
-            <p>
-                Den här fliken svarar på frågan: <em>Vilka kommuner är egentligen våra sanna strukturella tvillingar?</em>
-            </p>
-            
-            <div class="row">
-                <div class="col-md-7">
-                    <h6 class="font-weight-bold">Hur du tolkar diagrammet:</h6>
-                    <ul style="color: #475569;">
-                        <li><strong>Avstånd = Likhet:</strong> Ju närmare två städer ligger varandra i diagrammet, desto mer lika är de rent statistiskt (när man tittar på över 40 variabler samtidigt). Geografiskt avstånd spelar ingen roll här.</li>
-                        <li><strong>X-axeln (Komponent 1):</strong> Visar oftast <em>Volym & Storlek</em>. Långt ut till höger hittar vi städer med extremt hög BRP i miljarder och stor befolkning (som Stockholm och Göteborg).</li>
-                        <li><strong>Y-axeln (Komponent 2):</strong> Visar oftast <em>Kunskap & Struktur</em>. Högt upp på axeln hittar vi städer med extrema andelar högutbildade och hög andel KIBS (kunskapsintensiva företag).</li>
-                    </ul>
-                    <h6 class="font-weight-bold mt-3">Strategisk insikt (Exempel Linköping):</h6>
-                    <p style="color: #475569;">
-                        Modellen placerar ofta <strong>Linköping</strong> i klustret <em>"Kunskapsmotorerna"</em> tillsammans med Uppsala och Lund, snarare än med grannarna Norrköping och Jönköping. Detta innebär att Linköping bör blicka mot andra stora universitetsstäder när man letar efter "best practice" för att lösa strukturella utmaningar.
-                    </p>
-                </div>
-                <div class="col-md-5">
-                    <div class="alert alert-info" style="font-size: 0.9rem;">
-                        <strong>Tekniken bakom (K-Means & PCA):</strong><br>
-                        Vi använder en algoritm som heter <em>K-Means</em>. Den mäter det flerdimensionella avståndet mellan alla städer i alla 40+ indikatorer samtidigt, och grupperar ihop de som minimerar avvikelsen. Eftersom vi inte kan titta på ett diagram i 40 dimensioner, använder vi tekniken <em>PCA (Principal Component Analysis)</em> för att platta ut datan till en 2D-karta där den mesta av informationen bevaras.
-                    </div>
-                </div>
-            </div>
-
-            <hr style="border-top: 2px dashed #cbd5e1; margin: 30px 0;">
-
-            <!-- DRIVKRAFTER (RANDOM FOREST) -->
-            <h4 style="color: #1e293b;"><i class="fa-solid fa-tree text-success me-2"></i> AI-Drivkrafter (Machine Learning)</h4>
-            <p>
-                Den här fliken går från att beskriva <em>vad</em> som händer, till att förklara <em>varför</em> det händer. Vilka specifika faktorer bygger konkurrenskraft?
-            </p>
-            
-            <div class="row">
-                <div class="col-md-7">
-                    <h6 class="font-weight-bold">Hur du tolkar diagrammet:</h6>
-                    <ul style="color: #475569;">
-                        <li><strong>Feature Importance (Procenten):</strong> Längden på stapeln visar hur stor förklaringskraft just den indikatorn har. Om "Bostadsbyggande" har 35% i PCI-indexet, betyder det att variabeln ensam förklarar 35% av varför vissa storstäder är mer attraktiva än andra.</li>
-                        <li><strong>Välj Index:</strong> Använd rullistan för att byta mellan Platsattraktivitet (PCI), Ekonomisk Motor (ECI) och Humankapital (HCI).</li>
-                    </ul>
-                    <h6 class="font-weight-bold mt-3">Strategisk insikt (Exempel Linköping):</h6>
-                    <p style="color: #475569;">
-                        I stället för att försöka förbättra alla mätetal samtidigt, ger denna analys en prioriteringslista. De översta staplarna är de sanna "hävstängerna". Om Linköping vill höja sin poäng i t.ex. ECI, pekar modellen ut exakt vilka 2-3 variabler man bör rikta politiska och strategiska insatser mot.
-                    </p>
-                </div>
-                <div class="col-md-5">
-                    <div class="alert alert-success" style="font-size: 0.9rem;">
-                        <strong>Tekniken bakom (Random Forest):</strong><br>
-                        Här används <em>Random Forest Regressor</em>. Algoritmen bygger upp hundratals digitala "beslutsträd" som tävlar mot varandra för att försöka förutse poängen i ett index (t.ex. HCI) utifrån städernas alla andra data. När träden är klara summerar algoritmen vilka indikatorer som oftast fällde det avgörande beslutet (detta kallas Gini-viktighet/Feature Importance).
-                    </div>
-                </div>
-            </div>
+        <div class="pro-tip-box" style="font-size: 0.9rem;">
+            <strong>💡 Pro-tip för analys:</strong><br>
+            Du kan klicka på valfritt namn nere i teckenförklaringen för att dölja en specifik kommun eller grupp. Gör du detta i det dynamiska läget räknas både bubbelstorlekar och centrumkorset om omedelbart baserat enbart på de områden som är kvar på skärmen!
         </div>
-            <!-- START: NYA AVSNITT TILL ANVÄNDARGUIDEN (KORRIGERAD TEXTSTORLEK) -->
 
-<!-- AVSNITT: SCENARIO-SIMULATOR -->
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-        <h5 class="fw-bold text-primary"><i class="fas fa-sliders-h me-2"></i> Scenario-simulator</h5>
-    </div>
-    <div class="card-body">
-        <p class="text-muted mb-3"><strong>Vad visar fliken?</strong><br>
-        Simulatorn använder dynamisk multipel regression (maskininlärning) för att förutspå hur Linköpings platsattraktivitet (Index) skulle förändras om vi justerade olika strategiska nyckeltal. Modellen tränas i realtid på data från Sveriges största städer och räknar om matematiken baserat på hur många "spakar" du väljer att aktivera.</p>
-        
-        <p class="text-muted mb-3"><strong>Hur använder jag den?</strong><br>
-        Välj ett målområde (t.ex. Ekonomisk Motor) och hur många drivkrafter du vill simulera samtidigt. Använd plus- och minusknapparna för att justera Linköpings värden. Simulatorn hanterar automatiskt enhetskonverteringar (t.ex. "per 100 tusen invånare") i bakgrunden för att garantera rättvisa jämförelser med städer som Stockholm och Göteborg.</p>
-        
-        <p class="mb-0" style="color: #ea580c; font-weight: 600;">Analytiskt värde för Linköping:</p>
-        <p class="text-muted mb-0">Ger er möjlighet att kvantifiera strategiska beslut. Visar svart på vitt vilken specifik insats (exempelvis bostadsbyggande vs. utbildningsnivå) som ger störst matematisk utväxling för stadens långsiktiga konkurrenskraft.</p>
-    </div>
-</div>
-
-<!-- AVSNITT: HISTORISK TREND -->
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-        <h5 class="fw-bold text-primary"><i class="fas fa-chart-line me-2"></i> Historisk trend</h5>
-    </div>
-    <div class="card-body">
-        <p class="text-muted mb-3"><strong>Vad visar fliken?</strong><br>
-        En tidslinje som visualiserar Linköpings utveckling över tid jämfört med övriga 11 storstäder, Östergötlands län och riksgenomsnittet för utvalda nyckelindikatorer.</p>
-        
-        <p class="text-muted mb-3"><strong>Hur använder jag den?</strong><br>
-        Använd rullistorna för att växla mellan olika indikatorer (t.ex. Sysselsättningsgrad eller Bostadsbyggande). Diagrammet uppdateras direkt och ger en tydlig bild av trendbrott och konjunkturcykler.</p>
-        
-        <p class="mb-0" style="color: #ea580c; font-weight: 600;">Analytiskt värde för Linköping:</p>
-        <p class="text-muted mb-0">Sätter dagens nyckeltal i ett historiskt perspektiv. Visar om Linköping drar ifrån, tappar mark, eller följer den generella nationella trenden i jämförelse med andra jämnstora tillväxtmotorer.</p>
-    </div>
-</div>
-
-<!-- AVSNITT: REGIONAL INTEGRATION (MED FÖRDJUPNING) -->
-<div class="card shadow-sm border-0 mb-4">
-    <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
-        <h5 class="fw-bold text-primary"><i class="fas fa-project-diagram me-2"></i> Regional integration</h5>
-    </div>
-    <div class="card-body">
-        <p class="text-muted mb-3"><strong>Vad visar fliken?</strong><br>
-        Analysen bygger på Spatial Ekonometri och den regionala <em>Tyngdkraftsmodellen</em>. Den mäter den ekonomiska dragningskraften mellan Linköping och andra orter genom att ställa den totala ekonomiska massan (Total BRP) i relation till restiden i kvadrat. Eftersom tiden kvadreras synliggörs hur extremt viktigt avståndet är för lokal arbetsmarknadsförstoring.</p>
-        
-        <p class="text-muted mb-3"><strong>Hur använder jag den?</strong><br>
-        Diagrammet visar dragningskraften från Linköpings perspektiv. Benchmark-mätaren ställer den östgötska integrationen (Linköping-Norrköping) mot Sveriges tätaste Twin City-system (Malmö-Lund) för att illustrera den potentiella nyttan av infrastruktursatsningar.</p>
-        
-        <p class="mb-3" style="color: #ea580c; font-weight: 600;">Analytiskt värde för Linköping:</p>
-        <p class="text-muted mb-3">Bevisar matematiskt varför korta restider till kranskommunerna och Norrköping är avgörande. Linköping är det dominanta navet i regionen, vilket innebär att staden suger åt sig kompetens från omlandet men också strålar ut tillväxt tillbaka.</p>
-        
-        <!-- EXPANDERBAR FÖRDJUPNING OM STOCKHOLM -->
+        <!-- 💡 NYTT: EXPANDERBAR FÖRDJUPNING FÖR MIKRO OCH MAKRO -->
         <details class="p-3 mt-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; cursor: pointer;">
             <summary class="fw-bold text-secondary">
-                <i class="fas fa-search-plus me-1"></i> Fördjupning: Stockholms "svarta hål" och Linköpings roll
+                <i class="fas fa-search me-1"></i> Fördjupning: Analysnivåer (Mikro och Makro)
             </summary>
             <div class="mt-3 text-muted" style="line-height: 1.6;">
-                <p>Att Stockholm toppar tyngdkraftsindexet framför den lokala integrationen visar kraften i extrem ekonomisk bruttovolym (agglomerationsekonomi). Huvudstaden fungerar som en magnet som trumfar det geografiska avståndet. För Linköping skapar detta tre specifika strategiska effekter:</p>
+                <p>I Fyrfältaren kan du växla mellan tre helt olika perspektiv beroende på vad du vill bevisa:</p>
                 <ul class="mb-0">
-                    <li class="mb-2"><strong>Inkubator-effekten (Brain Drain vs. Brain Circulation):</strong> Linköping utbildar spetskompetens (HCI) av yppersta världsklass, men många talanger dras snabbt upp till Stockholm för högre löner, djupare arbetsmarknad med fler nischade roller och huvudkontor. Linköping fungerar alltså delvis som en inkubator åt huvudstaden.</li>
-                    <li class="mb-2"><strong>Filial- och Satellit-ekonomin:</strong> Värdeskapandet och innovationen sker ofta i Linköping (t.ex. Science Park), men tyngdkraften gör att de strategiska huvudkontoren, med makten, finansieringen och riskkapitalet ofta centraliseras till Stockholm. Värdeskapandet sker i Linköping, men vinsterna och makten tenderar att sugas uppåt.</li>
-                    <li><strong>Hemvändar-spaken (Möjligheten):</strong> Stockholms extrema överhettning gällande bostadspriser skapar en enorm möjlighet för Linköping bland 30+ demografin. När talangerna vill bilda familj med hög livskvalitet (PCI) är Linköping den perfekta "avlastningsorten" – man kan bo i en innovativ, prisvärd miljö (hög platsattraktivitet) och fortfarande ha funktionell närhet till Stockholms arbetsmarknad.</li>
+                    <li class="mb-2"><strong>12 Kommuner (Mikroperspektiv):</strong> Här jämförs Sveriges tolv största kommuner mot varandra. Linköping har en egen färg, medan övriga kommuner utifrån färg är placerade i tre olika grupper. Det visar hur Linköping står sig i den absoluta nationella toppen rent kommunalt.</li>
+                    <li class="mb-2"><strong>Geografiska grupper (Makroperspektiv):</strong> Här lyfter vi blicken och jämför Linköping mot strukturella block (t.ex. <em>Storstäder</em> (de tre största kommunerna), <em>Stora städer</em> (de fyra största), <em>Större kommuner</em> (plats 5 till 12) eller <em>Östergötlands län</em>). Perfekt för att se om Linköping beter sig som en typisk regionhuvudstad eller drar mer åt en renodlad storstadsprofil.</li>
+                    <li><strong>Enskilda kommuner (Mikroperspektiv):</strong> Här jämförs Sveriges tolv största kommuner, samt Östergötlands län, mot varandra. Det visar hur Linköping står sig i den absoluta nationella toppen rent kommunalt. Varje kommun har i denna analys en egen färg.</li>
                 </ul>
             </div>
         </details>
-    </div>
-</div>
 
-<!-- SLUT: NYA AVSNITT TILL ANVÄNDARGUIDEN -->
-    
+        <!-- FLIK 2 -->
+        <h3 style="color: #1e293b;"><i class="fas fa-chart-line me-2" style="color: var(--primary-orange);"></i> 2. Regressionsanalys</h3>
+        <p>Denna flik används för att hitta och bevisa statistiska samband mellan olika indikatorer bland de 12 största kommunerna. Korrelerar högt nyföretagande med stark befolkningstillväxt? Här får du fram R²-värden (förklaringsgrad), korrelationskoefficienter och ekvationer. Systemet letar dessutom automatiskt fram vilka underliggande indikatorer som bäst driver resultatet på Y-axeln genom multipel regression.</p>
+
+        <div class="alert alert-success mt-3" style="font-size: 0.9rem; border-left: 5px solid #28a745; background-color: #f0fdf4; color: #155724;">
+            <strong>💡 Smarta tips för analysen:</strong>
+            <ul class="mb-0 mt-2" style="padding-left: 20px;">
+                <li class="mb-2"><strong>Tidslinje-analys:</strong> Bocka ur markeringen för <em>"Samma år"</em> och välj olika årtal i rullistorna för "Från år" och "Till år" om du vill analysera en variabels regression över en längre tidsperiod.</li>
+                <li><strong>Jämför äpplen med äpplen:</strong> När du har valt en absolut antalsvariabel (t.ex. antal sysselsatta) är det ofta strategiskt avgörande att aktivera rutan <em>"Antal per 100k/inv"</em>. Detta utjämnar den effekt som kommunens storlek i sig innebär, vilket gör att Linköping kan jämföras helt rättvist och proportionerligt mot jättar som Stockholm eller mindre städer som Lund.</li>
+            </ul>
+        </div>
+
+        <!-- FLIK 3 -->
+        <div class="card shadow-sm border-0 mb-4 mt-5">
+            <div class="card-header text-white" style="background: linear-gradient(135deg, #4338ca, #3730a3);">
+                <h3 class="h5 mb-0" style="color: white; margin-top: 0;"><i class="fa-solid fa-network-wired me-2"></i> 3. AI Klusteranalys</h3>
+            </div>
+            <div class="card-body" style="background-color: #f8fafc; padding: 30px;">
+                <p class="lead" style="color: #475569; font-size: 1.1rem;">
+                    Den här fliken drivs av maskininlärning och svarar på frågan: <em>Vilka kommuner är egentligen våra sanna strukturella tvillingar?</em>
+                </p>
+                
+                <div class="row">
+                    <div class="col-md-7">
+                        <h6 class="font-weight-bold">Hur du tolkar diagrammet:</h6>
+                        <ul style="color: #475569;">
+                            <li><strong>Avstånd = Likhet:</strong> Ju närmare två städer ligger varandra i diagrammet, desto mer lika är de rent statistiskt (när man tittar på över 40 variabler samtidigt). Geografiskt avstånd spelar ingen roll här.</li>
+                            <li><strong>X-axeln (Komponent 1):</strong> Visar oftast <em>Volym & Storlek</em>. Långt ut till höger hittar vi städer med extremt hög BRP i miljarder och stor befolkning (som Stockholm och Göteborg).</li>
+                            <li><strong>Y-axeln (Komponent 2):</strong> Visar oftast <em>Kunskap & Struktur</em>. Högt upp på axeln hittar vi städer med extrema andelar högutbildade och hög andel KIBS.</li>
+                        </ul>
+                        <h6 class="font-weight-bold mt-3">Strategisk insikt (Exempel Linköping):</h6>
+                        <p style="color: #475569;">
+                            Modellen placerar ofta <strong>Linköping</strong> i klustret <em>"Kunskapsmotorerna"</em> tillsammans med Uppsala och Lund, snarare än med grannarna Norrköping och Jönköping. Detta innebär att Linköping bör blicka mot andra stora universitetsstäder när man letar efter "best practice" för att lösa strukturella utmaningar.
+                        </p>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="alert alert-info" style="font-size: 0.9rem; height: 100%;">
+                            <strong>Tekniken bakom (K-Means & PCA):</strong><br><br>
+                            Vi använder en algoritm som heter <em>K-Means</em>. Den mäter det flerdimensionella avståndet mellan alla städer i alla 40+ indikatorer samtidigt, och grupperar ihop de som minimerar avvikelsen. Eftersom vi inte kan titta på ett diagram i 40 dimensioner, använder vi tekniken <em>PCA (Principal Component Analysis)</em> för att platta ut datan till en 2D-karta där den mesta av informationen bevaras.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLIK 4 (NY AI KOMPASS) -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header text-white" style="background: linear-gradient(135deg, #4338ca, #3730a3);">
+                <h3 class="h5 mb-0" style="color: white; margin-top: 0;"><i class="fa-solid fa-compass me-2"></i> 4. AI-Kompassen</h3>
+            </div>
+            <div class="card-body" style="background-color: #f8fafc; padding: 30px;">
+                <p class="lead" style="color: #475569; font-size: 1.1rem;">
+                    I denna nya 360-gradersvy får vi äntligen se <em>vilka specifika krafter</em> som drar städerna åt olika håll. Unsupervised Random Forest och PCA placerar städerna utifrån hur lika deras ekonomiska "DNA" är.
+                </p>
+
+                <h6 class="font-weight-bold mt-4">🧲 Kompassens 6 Magnetfält (Dragningskrafter)</h6>
+                <ul style="color: #475569;">
+                    <li style="margin-bottom: 8px;"><strong>Magnet 1 & 2 (Öst/Sydöst) - Volym & Pendling:</strong> Här ser vi hur Stockholm och Malmö sugs ut mot högerkanten. Detta är "muskel-magneterna" som bygger på extrem absolut BRP och massiv bruttopendling.</li>
+                    <li style="margin-bottom: 8px;"><strong>Magnet 3 (Syd) - Extrem Skattekraft:</strong> Örebro, Norrköping och Helsingborg dras nedåt. Deras maskininlärningsprofil präglas mer av lokal skattebas än av nationell bruttovolym.</li>
+                    <li style="margin-bottom: 8px;"><strong>Magnet 4 (Nord/Nordväst) - Den Alternativa Strukturen:</strong> Göteborg sticker ut uppåt, balanserad av en annan typ av industriell effektivitet per capita i modellen.</li>
+                    <li style="margin-bottom: 8px;"><strong>Magnet 5 & 6 (Väst/Sydväst) - Medelklassens Inkomstbas & Regionala Nav:</strong> Här dras Linköping, Jönköping och Västerås, där styrkan bygger på en stabil lokal ekonomi kombinerat med regional integration.</li>
+                </ul>
+
+                <div class="highlight-box mt-4" style="background-color: #fff; border-left: 5px solid #ef4444; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <h6 class="font-weight-bold" style="color: #ef4444; margin-bottom: 5px;">📍 Linköpings Sanna Position:</h6>
+                    <p style="color: #334155; margin-bottom: 0;">
+                        I den runda kompassen ser vi tydligt att Linköping (den stora röda bubblan) dras hårdast av de magneter som representerar en <strong>"Stark Inkomstbas (Medelklass)"</strong> och positionen som ett <strong>"Regionalt Nav"</strong>. Detta bevisar maskinens förståelse för att Linköpings strukturella "DNA" i ECI inte bygger på extrem befolkningsvolym, utan på en högteknologisk och välbetald medelklass som fungerar som magnet för hela regionens inpendling. Linköping sitter i en otroligt stabil strategisk "ficka" i väst!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLIK 5 -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header text-white" style="background: linear-gradient(135deg, #4338ca, #3730a3);">
+                <h3 class="h5 mb-0" style="color: white; margin-top: 0;"><i class="fa-solid fa-tree me-2"></i> 5. AI-Drivkrafter (Machine Learning)</h3>
+            </div>
+            <div class="card-body" style="background-color: #f8fafc; padding: 30px;">
+                <p class="lead" style="color: #475569; font-size: 1.1rem;">
+                    Den här fliken går från att beskriva <em>vad</em> som händer, till att förklara <em>varför</em> det händer. Vilka specifika, underliggande faktorer bygger egentligen konkurrenskraft?
+                </p>
+
+                <div class="row">
+                    <div class="col-md-7">
+                        <h6 class="font-weight-bold">Hur du tolkar diagrammet:</h6>
+                        <ul style="color: #475569;">
+                            <li><strong>Feature Importance (Procenten):</strong> Längden på stapeln visar hur stor förklaringskraft just den indikatorn har. Om "Lång eftergymnasial utbildning" har 52 % i TMI, betyder det att variabeln ensam förklarar 52 % av varför vissa större städer har ett högre tillväxtmomentum.</li>
+                            <li><strong>Välj Index:</strong> Använd rullistan för att byta mellan Platsattraktivitet (PCI), Ekonomisk Motor (ECI), Humankapital (HCI) och Tillväxt & Momentum (TMI).</li>
+                        </ul>
+
+                        <div style="margin: 25px 0; text-align: center;">
+                            <img src="Img/rf_diagram.png" alt="Exempel på Random Forest Stapeldiagram för TMI" class="img-fluid rounded shadow-sm" style="border: 1px solid #e2e8f0; width: 100%; max-width: 550px;">
+                        </div>
+
+                        <h6 class="font-weight-bold mt-3">Strategisk insikt (Exempel Linköping):</h6>
+                        <p style="color: #475569;">
+                            I stället för att försöka förbättra alla 40+ mätetal samtidigt, ger denna analys en knivskarp prioriteringslista. Om Linköping exempelvis vill höja sin poäng i ECI, och modellen pekar ut KIBS och nattbefolkningens storlek som de tyngsta orsakerna, är det exakt där framtida politiska satsningar ger högst "Return on Investment".
+                        </p>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="alert alert-success" style="font-size: 0.9rem; border-left: 5px solid #28a745; background-color: #f0fdf4; color: #155724; height: 100%;">
+                            <h5 style="color: #155724; font-size: 1.05rem; margin-bottom: 15px; font-weight: bold;">🧠 Tekniken bakom & Analytisk Kvalitetsgaranti</h5>
+                            <p style="margin-bottom: 12px;">
+                                <strong>Algoritmen (Random Forest):</strong><br>
+                                Här används en <em>Random Forest Regressor</em> som bygger hundratals digitala "beslutsträd". Träden tävlar om att förutse indexpoängen och algoritmen summerar sedan vilka indikatorer som fällde de avgörande besluten (Feature Importance).
+                            </p>
+                            <p style="margin-bottom: 12px;">
+                                Två matematiska skyddsvallar är inbyggda mot dataläckage (Target Leakage):
+                            </p>
+                            <ul style="margin-bottom: 0; padding-left: 20px;">
+                                <li style="margin-bottom: 10px;"><strong>1. Ortogonala index:</strong> PCI, ECI, HCI och TMI är matematiskt skarpt avgränsade. Indikatorer som rent matematiskt bygger upp ett specifikt index (t.ex. jobbtillväxt i TMI) spärras och används aldrig av AI:n för att förklara samma index.</li>
+                                <li><strong>2. Dynamiskt korrelationsfilter:</strong> Systemet skannar automatiskt efter "tvillingvariabler". Om AI:n upptäcker att en indikator korrelerar till över 85 % med det valda målet (t.ex. Skatteunderlag vs Skattekraft), kastas variabeln ut innan analysen börjar. Detta förhindrar algoritmen från att presentera matematiska självklarheter och tvingar den att istället hitta de sanna samhällsstrukturerna som driver konkurrenskraften.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FLIK 6 -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h3 class="h5 fw-bold text-primary" style="margin-top: 0;"><i class="fas fa-sliders-h me-2"></i> 6. Scenario-simulator</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3"><strong>Vad visar fliken?</strong><br>
+                Simulatorn använder dynamisk multipel regression (maskininlärning) för att förutspå hur Linköpings attraktivitet skulle förändras om vi justerade strategiska nyckeltal. Modellen tränas i realtid på data från Sveriges största städer och räknar om matematiken baserat på hur många "spakar" du väljer att aktivera.</p>
+                
+                <p class="text-muted mb-3"><strong>Hur använder jag den?</strong><br>
+                Välj ett målområde (t.ex. Ekonomisk Motor) och hur många drivkrafter du vill simulera. Använd plus/minus-knapparna för att justera Linköpings värden. Simulatorn hanterar automatiskt enhetskonverteringar i bakgrunden för att garantera rättvisa jämförelser med jättar som Stockholm.</p>
+                
+                <p class="mb-0" style="color: #ea580c; font-weight: 600;">Analytiskt värde för Linköping:</p>
+                <p class="text-muted mb-0">Kvantifierar strategiska beslut. Visar svart på vitt vilken specifik insats (t.ex. bostadsbyggande vs. utbildningsnivå) som ger störst matematisk utväxling för stadens långsiktiga konkurrenskraft.</p>
+            </div>
+        </div>
+
+        <!-- FLIK 7 -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h3 class="h5 fw-bold text-primary" style="margin-top: 0;"><i class="fas fa-chart-line me-2"></i> 7. Historisk trend</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3"><strong>Vad visar fliken?</strong><br>
+                En tidslinje som visualiserar Linköpings utveckling över tid jämfört med övriga 11 storstäder, Östergötlands län och riksgenomsnittet för utvalda nyckelindikatorer.</p>
+                
+                <p class="text-muted mb-3"><strong>Hur använder jag den?</strong><br>
+                Använd rullistorna för att växla mellan indikatorer. Diagrammet uppdateras direkt och ger en tydlig bild av trendbrott och konjunkturcykler.</p>
+                
+                <p class="mb-0" style="color: #ea580c; font-weight: 600;">Analytiskt värde för Linköping:</p>
+                <p class="text-muted mb-0">Sätter dagens nyckeltal i ett historiskt perspektiv. Visar om Linköping drar ifrån, tappar mark, eller följer den generella nationella trenden i jämförelse med andra jämnstora tillväxtmotorer.</p>
+            </div>
+        </div>
+
+        <!-- FLIK 8 -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h3 class="h5 fw-bold text-primary" style="margin-top: 0;"><i class="fas fa-project-diagram me-2"></i> 8. Regional integration</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-3"><strong>Vad visar fliken?</strong><br>
+                Analysen bygger på Spatial Ekonometri och <em>Tyngdkraftsmodellen</em>. Den mäter den ekonomiska dragningskraften mellan Linköping och andra orter genom att ställa den ekonomiska massan (Total BRP) i relation till restiden i kvadrat. Eftersom tiden kvadreras synliggörs hur extremt viktigt avståndet är för lokal arbetsmarknadsförstoring.</p>
+                
+                <p class="mb-3" style="color: #ea580c; font-weight: 600;">Analytiskt värde för Linköping:</p>
+                <p class="text-muted mb-3">Bevisar matematiskt varför korta restider till kranskommunerna och Norrköping är avgörande. Linköping är det dominanta navet i regionen, vilket innebär att staden suger åt sig kompetens från omlandet men också strålar ut tillväxt tillbaka.</p>
+                
+                <details class="p-3 mt-3 rounded" style="background-color: #f8fafc; border: 1px solid #e2e8f0; cursor: pointer;">
+                    <summary class="fw-bold text-secondary">
+                        <i class="fas fa-search-plus me-1"></i> Fördjupning: Stockholms "svarta hål" och Linköpings roll
+                    </summary>
+                    <div class="mt-3 text-muted" style="line-height: 1.6;">
+                        <p>Att Stockholm toppar tyngdkraftsindexet framför den lokala integrationen visar kraften i extrem ekonomisk bruttovolym (agglomerationsekonomi). För Linköping skapar detta specifika effekter:</p>
+                        <ul class="mb-0">
+                            <li class="mb-2"><strong>Inkubator-effekten:</strong> Linköping utbildar spetskompetens, men många dras upp till Stockholm. Vi fungerar delvis som en inkubator åt huvudstaden.</li>
+                            <li class="mb-2"><strong>Filialekonomin:</strong> Värdeskapandet sker ofta i Linköping (t.ex. Science Park), men makten och riskkapitalet tenderar att sugas upp till huvudkontoren i Stockholm.</li>
+                            <li><strong>Hemvändar-spaken:</strong> Stockholms extrema överhettning skapar en enorm möjlighet för Linköping bland 30+ demografin som söker livskvalitet men vill behålla närhet till Stockholms arbetsmarknad.</li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </div>
+
+        <!-- FLIK 9 -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h3 class="h5 fw-bold text-primary" style="margin-top: 0;"><i class="fas fa-file-alt me-2"></i> 9. Strategisk Analys</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-0"><strong>Vad visar fliken?</strong><br>
+                Denna vy innehåller en kortfattad, auto-genererad strategisk textanalys (Executive Summary) av Linköpings konkurrenskraft. Den binder samman insikterna från ECI, PCI, HCI och TMI till läsbar text, och ger direkta rekommendationer för strategisk positionering utifrån det nuvarande dataläget i Ligan 5–12.</p>
+            </div>
+        </div>
+
+        <!-- FLIK 10 -->
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+                <h3 class="h5 fw-bold text-primary" style="margin-top: 0;"><i class="fas fa-map-marked-alt me-2"></i> 10. Geografisk Analys</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-0"><strong>Vad visar fliken?</strong><br>
+                Här flyttas hela analysen ut på kartan. Verktyget låter dig spatialt visualisera index och indikatorer för att hitta kluster, regionala spridningseffekter eller geografiska klyftor. Kartan är det ultimata komplementet när man vill förklara <em>var</em> tillväxten och attraktiviteten faktiskt sker rent fysiskt i landskapet.</p>
+            </div>
+        </div>
+        <!-- SIDFOT (FOOTER) -->
+        <div style="text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px dashed #cbd5e1; color: #64748b; font-size: 0.9rem;">
+            © Utvecklad av Analys & Utredning, Linköpings kommun 2026
+        </div>
+    </div>
 </body>
 </html>

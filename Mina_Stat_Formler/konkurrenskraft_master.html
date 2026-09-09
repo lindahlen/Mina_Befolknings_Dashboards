@@ -181,6 +181,9 @@ iframe {
             <button class="nav-link" id="cluster-tab" data-bs-toggle="tab" data-bs-target="#cluster" type="button" role="tab" onclick="setTimeout(drawClusterChart, 100)">🤖 AI Klusteranalys</button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="kompass-tab" data-bs-toggle="tab" data-bs-target="#kompass" type="button" role="tab">🧭 AI-Kompassen</button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" id="drivers-tab" data-bs-toggle="tab" data-bs-target="#drivers" type="button" role="tab" onclick="setTimeout(drawDriversChart, 100)">🌳 AI-Drivkrafter</button>
         </li>
         <li class="nav-item" role="presentation">
@@ -194,6 +197,9 @@ iframe {
                         🌍 Regional Integration
                     </a>
                 </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="strategisk-tab" data-bs-toggle="tab" data-bs-target="#strategisk" type="button" role="tab">🛡️ Strategisk Analys</button>
+        </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="karta-tab" data-bs-toggle="tab" data-bs-target="#karta" type="button" role="tab">🗺️ Geografisk Analys</button>
         </li>
@@ -247,6 +253,7 @@ iframe {
         <select class="form-select" id="matrix-geo-level" onchange="triggerUpdateMatrix()">
             <option value="kommuner">12 Kommuner</option>
             <option value="grupper">Geografiska grupper</option>
+            <option value="enskilda_kommuner">Enskilda kommuner</option>
         </select>
     </div>
                     <!-- NYHET: Omplacerad Checkbox ovanför Återställ vy -->
@@ -560,16 +567,17 @@ iframe {
             <div class="analysis-panel">
                 <h4>Strategiska Drivkrafter (Machine Learning)</h4>
                 <p class="text-muted mb-3">
-                    Här har en Random Forest-algoritm analyserat vilka enskilda indikatorer som väger matematiskt tyngst för att bygga stark platsattraktivitet, ekonomisk motor och humankapital bland de 12 storstäderna.
+                    Här har en Random Forest-algoritm analyserat vilka bakomliggande indikatorer som väger matematiskt tyngst för att driva tillväxt, platsattraktivitet, ekonomisk motor och humankapital bland de 12 storstäderna.
                 </p>
                 <div class="row h-100">
                     <div class="col-md-9">
                         <div class="controls-row mb-3">
                             <label class="form-label font-weight-bold" style="color: #4338ca; font-size: 0.9rem;">Välj Strategiskt Index att analysera</label>
                             <select class="form-select" id="ml-target-select" onchange="drawDriversChart()">
-                                <option value="PCI (Platsattraktivitet)">💎 PCI (Platsattraktivitet)</option>
-                                <option value="ECI (Ekonomisk Motor)">💎 ECI (Ekonomisk Motor)</option>
-                                <option value="HCI (Humankapital)">💎 HCI (Humankapital)</option>
+                                <option value="PCI (Platsattraktivitet)">🧲 PCI (Platsattraktivitet)</option>
+                                <option value="ECI (Ekonomisk Motor)">🏭 ECI (Ekonomisk Motor)</option>
+                                <option value="HCI (Humankapital)">🧠 HCI (Humankapital)</option>
+                                <option value="TMI (Tillväxt & Momentum)">🚀 TMI (Tillväxt & Momentum)</option>
                             </select>
                         </div>
                         <div class="chart-container" style="background: #fff; border: 1px solid #eee; border-radius: 8px; padding: 15px; min-height: 450px;">
@@ -583,6 +591,11 @@ iframe {
                             <div style="background-color: #e9ecef; border-left: 5px solid #6c757d; padding: 10px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 15px;">
                                 <strong>📊 Vad visar procenten?</strong><br>
                                 Diagrammet visar <i>Feature Importance</i>. Om en indikator har t.ex. 40%, betyder det att den variabeln ensam står för 40% av förklaringen till varför vissa kommuner lyckas bättre än andra i det valda indexet.
+                            </div>
+    
+                            <div style="background-color: #fff3cd; border-left: 5px solid #ffc107; padding: 10px; border-radius: 4px; font-size: 0.85rem; margin-bottom: 15px;">
+                                <strong>🛡️ Analytisk renhet (Skydd mot dataläckage):</strong><br>
+                                Modellen är matematiskt spärrad. De indikatorer som används för att beräkna ett specifikt index döljs automatiskt för AI:n. Det betyder att systemet aldrig presenterar självuppfyllande svar (t.ex. att en "sysselsättningsökning driver tillväxt"), utan letar uteslutande efter de oberoende, <i>underliggande orsakerna</i> i all övrig data.
                             </div>
                             
                             <div style="background-color: #f0fdf4; border-left: 5px solid #28a745; padding: 10px; border-radius: 4px;">
@@ -640,6 +653,7 @@ iframe {
                                 <option value="PCI (Platsattraktivitet)">💎 PCI (Platsattraktivitet)</option>
                                 <option value="ECI (Ekonomisk Motor)">💎 ECI (Ekonomisk Motor)</option>
                                 <option value="HCI (Humankapital)">💎 HCI (Humankapital)</option>
+                                <option value="TMI (Tillväxt & Momentum)">💎 TMI (Tillväxt & Momentum)</option>
                             </select>
 
                             <!-- NY KONTROLL: VÄLJ ANTAL SPAKAR -->
@@ -662,7 +676,7 @@ iframe {
                     </div>
                     
                     <!-- SPALT 2: RESULTATMÄTARE -->
-                    <div class="col-md-5 d-flex align-items-stretch">
+                    <div class="col-md-4 d-flex align-items-stretch">
                         <div class="text-center p-4 rounded w-100 d-flex flex-column justify-content-center" style="background: linear-gradient(135deg, #f8f9fa, #e9ecef); border: 2px dashed #cbd5e1;">
                             <h3 class="mb-3" style="color: #475569;">Estimerad Indexpoäng</h3>
                             
@@ -685,42 +699,70 @@ iframe {
                     </div>
 
                     <!-- SPALT 3: TOLKNINGSGUIDE -->
-                    <div class="col-md-3">
-                        <div class="matrix-summary-box shadow-sm">
-                            <h5 style="color: #a04000; font-size: 1.1rem; margin-bottom: 15px;">Tolkningsguide</h5>
-                            
-                            <div style="font-size: 0.85rem; color: #475569; margin-bottom: 15px;">
-                                <strong>🎯 Estimerad Indexpoäng:</strong><br>
-                                <span id="guide-est-score-text">Laddar...</span>
-                            </div>
-                            
-                            <div style="font-size: 0.85rem; color: #475569; margin-bottom: 15px;">
-                                <strong>📍 Baslinje (Nu):</strong><br>
-                                <span id="guide-baseline-text">Laddar...</span>
-                                <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1;">
-                                    <em>💡 Tips: Välj i rullistan "Antal spakar att visa" (1 till 5) för att bestämma hur många av de starkaste drivkrafterna du vill simulera samtidigt.</em>
-                                </div>
-                            </div>
-                            
-                            <div style="font-size: 0.85rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 10px; margin-bottom: 15px;">
-                                <strong>🎛️ Justera spakarna:</strong><br>
-                                När du ändrar värdena i inmatningsfälten räknar modellen omedelbart om Linköpings poäng. Detta låter dig simulera effekten av politiska mål (t.ex. "Vad händer om vi ökar andelen KIBS med 5 procentenheter?"). Differensen (+/-) visar hur mycket Linköping knappar in på, eller drar ifrån, övriga storstäder.<br>Tänk på effekten av partiell korrelation  (eller ceteris paribus – "allt annat lika"). Eftersom indikatorerna påverkas av varandra är det inte säkert att indexpoängen förändras på förväntat sätt om du endast ändrar på spaken för en indikator.<br><br>
-                                <em style="color: #6c757d; font-size: 0.8rem; display: block; background: #f8f9fa; padding: 6px; border-radius: 4px; border-left: 3px solid #6c757d;">
-                                    <i class="fa-solid fa-circle-info"></i> <strong>Obs!</strong> För att göra simulatorn enklare att använda visas spakarnas värden som avrundade heltal. Detta gör att startvärdet kan avvika med någon tiondel från den exakta baslinjen.
-                                </em>
-                            </div>
-                            
-                            <div style="font-size: 0.85rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 10px;">
-                                <strong>🛡️ Säkerhet (R²):</strong><br>
-                                Ett mått mellan 0 och 1. Ett R² på t.ex. 0.85 betyder att dessa fem spakar ensamma förklarar 85% av alla skillnader mellan storstäderna.
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<div class="col-md-4">
+    <div class="matrix-summary-box shadow-sm" style="padding: 20px; border-radius: 8px; background: #fff;">
+        <h5 style="color: #a04000; font-size: 1.1rem; margin-bottom: 15px;">Tolkningsguide</h5>
+        
+        <div style="font-size: 0.85rem; color: #475569; margin-bottom: 15px;">
+            <strong>🎯 Estimerad Indexpoäng:</strong><br>
+            <span>Visar Linköpings framtida matematiska styrka i det valda området gentemot de andra storstäderna. (Sverigesnittet = 100).<br>
+            💡 Tänk på att exempelvis Stockholm har ett extremt stort genomslag vid dessa jämförelser.</span>
+        </div>
+        
+        <div style="font-size: 0.85rem; color: #475569; margin-bottom: 15px;">
+            <strong>📍 Baslinje (Nu):</strong><br>
+            <span>Din startpunkt. Detta är Linköpings sanna, nationella konkurrenskraft idag, hämtad direkt från Fyrfältaren. Ett värde på t.ex. 138 betyder att Linköping presterar 38 % över riksnormen.</span>
+            <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #cbd5e1;">
+                <em>💡 Tips: Välj i rullistan "Antal spakar att visa" (1 till 5) för att bestämma hur många av de starkaste drivkrafterna du vill simulera samtidigt.</em>
             </div>
         </div>
+        
+        <!-- FAST TEXT: METODIK & HUR MAN JUSTERAR (Utan toggle) -->
+        <div style="font-size: 0.85rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 15px; margin-bottom: 15px; line-height: 1.5;">
+            <strong>🎛️ Justera spakarna:</strong><br>
+            När du ändrar värdena i inmatningsfälten räknar modellen omedelbart om Linköpings poäng. Detta låter dig simulera effekten av politiska mål (t.ex. "Vad händer om vi ökar andelen KIBS med 5 procentenheter?"). Differensen (+/-) visar hur mycket Linköping knappar in på, eller drar ifrån, övriga storstäder.<br><br>
+            Tänk på effekten av partiell korrelation (ceteris paribus – "allt annat lika"). Eftersom indikatorerna påverkas av varandra är det inte säkert att indexpoängen förändras exakt linjärt om du endast ändrar på spaken för en indikator.<br><br>
+            
+            <em style="color: #6c757d; font-size: 0.8rem; display: block; background: #f8f9fa; padding: 10px; border-radius: 4px; border-left: 3px solid #adb5bd;">
+                <i class="fa-solid fa-circle-info"></i> <strong>Obs!</strong> För att göra simulatorn enklare att använda visas spakarnas värden för vissa variabler som avrundade tal. Detta gör att startvärdet kan avvika med någon decimal från den exakta baslinjen.
+            </em>
+        </div>
 
-        <!-- Flik 7: Historisk Trend (Tidsserie) -->
+        <div style="font-size: 0.85rem; color: #475569; border-top: 1px solid #dee2e6; padding-top: 15px; margin-bottom: 15px;">
+            <strong>🛡️ Säkerhet (R²):</strong><br>
+            Ett mått mellan 0 och 1. Ett R² på t.ex. 0.85 betyder att dessa spakar ensamma förklarar 85 % av alla skillnader mellan storstäderna.
+        </div>
+
+        <!-- BEFINTLIG PARADOX-TOGGLE -->
+        <details class="mt-2 mb-2 shadow-sm" style="background: #f8f9fa; border-radius: 8px; border-left: 4px solid var(--bs-primary, #0d6efd); padding: 12px; transition: all 0.3s ease;">
+            <summary style="cursor: pointer; font-weight: 600; color: var(--bs-primary, #0d6efd); outline: none; display: flex; align-items: center; list-style: none;">
+                <span style="margin-right: 8px; font-size: 1.2rem;">💡</span> 
+                Visa AI:ns demografiska insikter (Paradoxer)
+            </summary>
+            <div style="font-size: 0.9rem; margin-top: 15px; color: #334155; line-height: 1.6;">
+                <p><strong>Paradox 1: Åldersgruppen 30-59 år (Sänker ECI och PCI, höjer HCI)</strong><br>
+                HCI (Humankapital) belönar denna grupp eftersom de står för senior spetskompetens och etablerat ledarskap (kritiskt för miljöer som Mjärdevi). ECI (Ekonomisk tillväxt) drivs dock ofta starkast av en hög koncentration unga vuxna (20-35 år) i tech- och startupsektorn. En överrepresentation av äldre åldersgrupper kan därför dra ner tillväxtindexet (ECI) marginellt till förmån för yngre städer. Liknande logik gäller för PCI (Platsattraktion) att den demografiska universitets-effekten påverkar. <em>Om en stad domineras för mycket av medelålders, saknas den unga, dynamiska inflyttningsvåg av studenter och talanger som definierar Sveriges allra mest attraktiva storstäder.</em></p>
+                
+                <p style="margin-bottom: 0;"><strong>Paradox 2: Födda barn (Sänker TMI och HCI)</strong><br>
+                Detta är den så kallade <em>Studentstads-paradoxen</em>. Nationella talangmagneter (som Linköping, Lund och Uppsala) attraherar extremt många unga vuxna vars huvudfokus är universitet och tidig karriär, vilket drar ner de relativa födelsetalen just i den staden. Modellen har lärt sig att exceptionellt höga födelsetal historiskt ofta korrelerar med en stads position som <em>mindre</em> utpräglad spets-talangmagnet på nationell nivå.</p><br>
+            
+                <p style="margin-bottom: 0;"><strong>Paradox 3: Folkmängd 0-19 år (Sänker HCI)</strong><br>
+                HCI mäter stadens <em>nuvarande</em> aktiva kunskapsbas och kompetensstyrka. Även om en stor andel barn och unga är en livsviktig investering för framtiden, utgör de i nutid en "demografisk försörjningsbörda". De är ännu inte en del av den högutbildade arbetskraften. Rent matematiskt innebär en stor andel 0-19-åringar att staden för stunden har en motsvarande lägre andel vuxna i arbetsför ålder att beskatta och kompetensförsörja marknaden med, vilket drar ned indexvärdet kortsiktigt.</p>
+            </div>
+            </div>
+        </details>
+
+<style>
+    /* Tar bort standard-pilen i Chrome/Safari för ett renare utseende */
+    details > summary::-webkit-details-marker { display: none; }
+    details[open] summary { border-bottom: 1px solid #dee2e6; padding-bottom: 10px; margin-bottom: 10px; }
+</style>
+        </div> <!-- Stänger matrix-summary-box -->
+    </div> <!-- Stänger col-md-4 (Tolkningsguiden) -->
+</div> <!-- 🚑 FIX 1: Stänger <div class="row"> för hela Scenario-layouten -->
+</div> <!-- 🚑 FIX 2: Stänger hela <div class="tab-pane" id="scenario"> -->
+</div>
+<!-- Flik 7: Historisk Trend (Tidsserie) -->
         <div class="tab-pane fade" id="trend" role="tabpanel">
             <div class="analysis-panel">
                 <h4>Historisk Utveckling (År 2000 - Framåt)</h4>
@@ -866,6 +908,85 @@ iframe {
                     </div>
                 </div>
             </div>
+            <!-- Flik 9: AI-Kompassen -->
+        <div class="tab-pane fade" id="kompass" role="tabpanel" aria-labelledby="kompass-tab">
+            <div class="row mt-3">
+                
+                <!-- VÄNSTER: KOMPASSEN -->
+                <div class="col-lg-8">
+                    <div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 style="color: #1e293b; font-weight: bold; margin: 0;">🧭 ECI-Kompassen</h3>
+                            
+                            <!-- Toggle-knapp för kommunnamn -->
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="toggleCompassLabels" checked>
+                                <label class="form-check-label" for="toggleCompassLabels" style="font-weight: bold; color: #475569;">Visa namn</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Låst proportion (1:1) garanterar att kompassen blir rund -->
+                        <div style="position: relative; width: 100%; max-width: 650px; margin: 0 auto; aspect-ratio: 1 / 1;">
+                            <canvas id="aiCompassChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HÖGER: TOLKNINGSGUIDE -->
+                <div class="col-lg-4">
+                    <div style="background: white; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); height: 100%; border-left: 4px solid #3b82f6; overflow-y: auto; max-height: 80vh;">
+                        
+                        <h4 style="color: #1e293b; font-weight: bold; margin-bottom: 15px;">📖 Läsguide: AI-Kompassen</h4>
+                        <p style="font-size: 0.95rem; color: #475569;">
+                            Maskininlärningsalgoritmen (Random Forest) har placerat städerna i denna 360-gradersrymd baserat på hur lika deras ekonomiska strukturer är. Vi kan nu se exakt vilka krafter som drar städerna åt olika håll.
+                        </p>
+                        
+                        <!-- Grundaxlarna -->
+                        <h5 style="font-size: 1rem; color: #0f172a; margin-top: 15px;">↔️ Grundaxlarna (Öst/Väst & Nord/Syd)</h5>
+                        <p style="font-size: 0.9rem; color: #475569; margin-bottom: 8px;">
+                            <strong>Volym-axeln (Horisontell):</strong> Städer till höger bygger sin kraft på <strong>massiv volym</strong> (Miljard-BRP och enorm pendlingsattraktion). Städer till vänster fungerar som regionala nav men med en mer balanserad bruttovolym.
+                        </p>
+                        <p style="font-size: 0.9rem; color: #475569;">
+                            <strong>Kvalitets-axeln (Vertikal):</strong> Denna axel visar effektivitet och struktur. Längre ner dras städerna av extrem lokal <strong>skattekraft och en stark medelklass-inkomst</strong>.
+                        </p>
+
+                        <hr style="border-top: 1px dashed #cbd5e1; margin: 15px 0;">
+
+                        <!-- De magnetiska fälten -->
+                        <h5 style="font-size: 1rem; color: #0f172a; margin-top: 15px;">🧲 Kompassens 6 Magnetfält</h5>
+                        <ul style="font-size: 0.85rem; color: #475569; padding-left: 20px; margin-bottom: 0;">
+                            <li style="margin-bottom: 8px;">
+                                <strong>Öst/Sydöst (Volym & Pendling):</strong> Här sugs <em>Stockholm och Malmö</em> ut mot kanten. Detta är "muskel-magneterna" som bygger på extrem absolut BRP och massiv bruttopendling. <em>Magnet 1 & 2</em>.
+                            </li>
+                            <li style="margin-bottom: 8px;">
+                                <strong>Syd (Extrem Skattekraft):</strong> <em>Örebro, Norrköping och Helsingborg</em> dras nedåt. Deras maskininlärningsprofil präglas mer av lokal skattebas än av nationell bruttovolym. <em>Magnet 3</em>.
+                            </li>
+                            <li style="margin-bottom: 8px;">
+                                <strong>Nord/Nordväst (Alternativ Struktur):</strong> <em>Göteborg</em> sticker ut uppåt, balanserad av en annan typ av industriell effektivitet per capita i modellen. <em>Magnet 4</em>.
+                            </li>
+                            <li>
+                                <strong>Väst/Sydväst (Medelklass & Regionalt Nav):</strong> Här dras <em>Linköping, Jönköping och Västerås</em> mot en extremt stark lokal inkomstbas kombinerad med regional pendlingsintegration. <em>Magnet 5 & 6</em>
+                            </li>
+                        </ul>
+                        
+                        <!-- Linköpings slutsats -->
+                        <div style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-top: 20px; border: 1px solid #e2e8f0;">
+                            <h5 style="font-size: 1rem; color: #ef4444; margin: 0 0 5px 0;">📍 Linköpings Sanna Position</h5>
+                            <p style="font-size: 0.9rem; color: #334155; margin: 0;">
+                                I den runda kompassen ser vi tydligt att Linköping (den stora röda bubblan) dras hårdast av de magneter som representerar en <strong>"Stark Inkomstbas (Medelklass)"</strong> och positionen som ett <strong>"Regionalt Nav"</strong>.<br><br>
+                                Detta bevisar maskinens förståelse för att Linköpings strukturella "DNA" i ECI (Ekonomisk Motor) inte bygger på extrem befolkningsvolym, utan på en högteknologisk och välbetald medelklass som fungerar som magnet för hela regionens inpendling. Linköping sitter i en otroligt stabil strategisk "ficka" i väst!
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+            <!-- Flik 10: Strategisk Analys (Inbäddad HTML-rapport) -->
+<div class="tab-pane fade" id="strategisk" role="tabpanel" aria-labelledby="strategisk-tab">
+    <iframe src="linkoping_strategisk_analys.html" title="Strategisk Analys" style="width: 100%; height: 85vh; border: none; border-radius: 8px;"></iframe>
+</div>
 
     </div>
 
@@ -1050,22 +1171,50 @@ iframe {
                         vikterConfig = res.data.filter(row => row.Indikator !== 'Summa' && row.Indikator !== 'Totalt'); 
                         
                         const nya_index = {
-                            'Bostadspriser': {'PCI_Proxy': 0.35, 'Polaritet': 'hög'},
-                            'Nettoflyttning (Beräknad Inflytt_annat_län_30-59-Utflytt_annat_län_30-59)': {'PCI_Proxy': 0.25, 'Polaritet': 'hög'},
-                            'Bostadsbyggande': {'PCI_Proxy': 0.25, 'Polaritet': 'hög'},
-                            'Födda_1000_vuxna': {'PCI_Proxy': 0.15, 'Polaritet': 'hög'},
+                            'Bostadspriser': {'PCI_Proxy': 0.30, 'Polaritet': 'hög'},
+                            'Nettoflyttning annat län 30-59 år, antal': {'PCI_Proxy': 0.40, 'Polaritet': 'hög'},
+                            'Inflyttningsandel eget län av inrikes inflyttning (%)': {'PCI_Proxy': 0.10, 'Polaritet': 'låg'},
+                            'Födda_1000_vuxna': {'PCI_Proxy': 0.20, 'Polaritet': 'hög'},
                             
-                            'BRP': {'ECI_Proxy': 0.40, 'Polaritet': 'hög'},
-                            'Nettopendling (Beräknad Inpendling-Utpendling)': {'ECI_Proxy': 0.25, 'Polaritet': 'hög'},
+                            'Total BRP (Miljarder SEK)': {'ECI_Proxy': 0.20, 'Polaritet': 'hög'},
+                            'Skattekraft': {'ECI_Proxy': 0.35, 'Polaritet': 'hög'},
+                            'Nettopendling, antal': {'ECI_Proxy': 0.25, 'Polaritet': 'hög'},
                             'Nettoinkomst_median': {'ECI_Proxy': 0.15, 'Polaritet': 'hög'},
-                            'Förvärvsinkomst_median': {'ECI_Proxy': 0.05, 'Polaritet': 'hög'},
-                            'Nyföretagande': {'ECI_Proxy': 0.15, 'Polaritet': 'hög'},
+                            'Förvärvsinkomst_median': {'ECI_Proxy': 0.05, 'Polaritet': 'hög'},            
                             
                             'Lång_eftergymnasial_proc25': {'HCI_Proxy': 0.40, 'Polaritet': 'hög'},
-                            'KIBS (beräkning Sysselsatta)': {'HCI_Proxy': 0.30, 'Polaritet': 'hög'},
+                            'KIBS 15-74 år, andel av sysselsatta (%)': {'HCI_Proxy': 0.30, 'Polaritet': 'hög'},
                             'Sysselsättningsgrad': {'HCI_Proxy': 0.20, 'Polaritet': 'hög'},
-                            'Långtidsarbetslöshet': {'HCI_Proxy': 0.10, 'Polaritet': 'låg'}
+                            'Långtidsarbetslöshet': {'HCI_Proxy': 0.10, 'Polaritet': 'låg'},
+                            
+                            'Befolkningsförändring per år (%)': {'TMI_Proxy': 0.35, 'Polaritet': 'hög'},
+                            'Sysselsättning 15-74 år, förändring per år (%)': {'TMI_Proxy': 0.35, 'Polaritet': 'hög'},
+                            'Bostadsbyggande': {'TMI_Proxy': 0.20, 'Polaritet': 'hög'},
+                            'Nyföretagande': {'TMI_Proxy': 0.10, 'Polaritet': 'hög'}
                         };
+
+                        // 🔄 GLOBAL POLARITETS-HANTERARE
+// Variabler där ett LÄGRE värde ger en HÖGRE poäng (inverterad logik).
+const lagPolaritetVariabler = [
+    'Utflyttning_annat_län',
+    'Utflytt_annat_län_30-59',
+    'Utpendling',
+    'Syssgrad_kvinnor-män',
+    'Arbetslöshet',
+    'Långtidsarbetslöshet',
+    'Försörjningskvot',
+    'Medelålder',
+    'Skattesats',
+    'Inflyttningsandel eget län av inrikes inflyttning (%)' 
+];
+
+function getPolarity(indName) {
+    if (!indName) return 'hög';
+    if (lagPolaritetVariabler.includes(indName) || indName.toLowerCase().includes('arbetslöshet')) {
+        return 'låg';
+    }
+    return 'hög';
+}
 
                         // Tvinga in de nya i vikterConfig
                         for (let indName in nya_index) {
@@ -1119,7 +1268,8 @@ iframe {
                 {val: "INDEX: Standardvikt_relativ_styrka", text: "📈 Index: Relativ styrka"},
                 {val: "INDEX: PCI_Proxy", text: "💎 Index: PCI (Platsattraktivitet)"},
                 {val: "INDEX: ECI_Proxy", text: "💎 Index: ECI (Ekonomisk Motor)"},
-                {val: "INDEX: HCI_Proxy", text: "💎 Index: HCI (Humankapital)"}
+                {val: "INDEX: HCI_Proxy", text: "💎 Index: HCI (Humankapital)"},
+                {val: "INDEX: TMI_Proxy", text: "💎 Index: TMI (Tillväxt & Momentum)"}
             ];
 
             let htmlIndex = `<optgroup label="Framräknade Index">`;
@@ -1184,15 +1334,35 @@ iframe {
             }
         }
 
-        function requiresScaling(indName) {
-            let nameLower = indName.toLowerCase();
-            if (nameLower.includes("%") || nameLower.includes("andel") || nameLower.includes("kvot") || 
-                nameLower.includes("per capita") || nameLower.includes("per 1000") || 
-                nameLower.includes("median") || nameLower.includes("grad") || nameLower.includes("priser")) {
-                return false;
-            }
-            return true; 
-        }
+        // Logik för att avgöra om volym behöver göras relativ per capita i gränssnittet
+function requiresScaling(indName) {
+    if (!indName) return false;
+
+    // 🛡️ SPÄRR 1: Exakta fliknamn som redan är normerade i grunddatan (Blacklist)
+    // Säkerställer att Linköping jämförs rättvist utan att straffas för volym.
+    const redanNormerade = [
+        'Skattekraft', 
+        'Skattesats', 
+        'Medelålder', 
+        'Nyföretagande', 
+        'Bostadsbyggande', 
+        'Födda_1000_vuxna', 
+        'BRP'
+    ];
+    if (redanNormerade.includes(indName)) {
+        return false;
+    }
+
+    // 🛡️ SPÄRR 2: Dynamisk namnkoll (Din befintliga skanner)
+    let nameLower = indName.toLowerCase();
+    if (nameLower.includes("%") || nameLower.includes("andel") || nameLower.includes("kvot") || 
+        nameLower.includes("per capita") || nameLower.includes("per 1000") || 
+        nameLower.includes("median") || nameLower.includes("grad") || nameLower.includes("priser")) {
+        return false;
+    }
+    
+    return true; 
+}
 
         function getVariableValue(kommun, year, indName, usePer100k = false) {
             if (indName.startsWith("INDEX: ")) { return calculateIndexValue(kommun, year, indName); } 
@@ -1246,42 +1416,65 @@ iframe {
             let presetCol = presetName.replace("INDEX: ", "");
             let sumWeights = 0; let totalScore = 0;
 
+            // 💡 DETEKTOR: Är detta "Formel 1" (ECI eller PCI)?
+            let usePeerGroup = presetCol.includes('ECI_Proxy') || presetCol.includes('PCI_Proxy');
+
             vikterConfig.forEach(ind => {
                 let weightRaw = ind[presetCol];
                 if (weightRaw === undefined || weightRaw === null || weightRaw === '' || weightRaw === '..') return;
                 
                 let w = parseFloat(weightRaw.toString().trim().replace(',', '.').toUpperCase());
                 if (!isNaN(w) && w > 0) {
-                    let kom_val = getVariableValue(kommun, year, ind.Indikator, false);
-                    let riket_val = getVariableValue('Riket', year, ind.Indikator, false);
+                    
+                    // 💡 Sätter usePer100k = true så den skalar volymer exakt som i Python!
+                    let kom_val = getVariableValue(kommun, year, ind.Indikator, true); 
                     let indNameLower = ind.Indikator.toLowerCase();
 
-                    // ==========================================
-                    // SÄKERHETSNÄTET BEHÅLLS: Om Riket är NaN/saknas 
-                    // räknar motorn internt ut 12-stadssnittet som reserv-baslinje!
-                    // ==========================================
-                    if (kom_val !== null && (riket_val === null || isNaN(riket_val) || riket_val === 0)) {
-                        let sum = 0, count = 0;
-                        targetMunicipalities.forEach(k => {
-                            let v = getVariableValue(k, year, ind.Indikator, false);
-                            if (v !== null && !isNaN(v)) { sum += v; count++; }
+                    if (kom_val === null) return;
+
+                    let baslinje_val = null;
+
+                    if (usePeerGroup) {
+                        // VÄG B (LÖSNING 1): Använd Medianen av de 12 storstäderna
+                        let vals = [];
+                        targetMunicipalities.forEach(c => {
+                            let v = getVariableValue(c, year, ind.Indikator, true);
+                            if (v !== null && !isNaN(v)) vals.push(v);
                         });
-                        riket_val = count > 0 ? (sum / count) : 1;
+                        
+                        if (vals.length > 0) {
+                            vals.sort((a, b) => a - b);
+                            let half = Math.floor(vals.length / 2);
+                            baslinje_val = (vals.length % 2 === 0) ? ((vals[half - 1] + vals[half]) / 2.0) : vals[half];
+                        }
+                    } else {
+                        // VÄG A: Använd Riket
+                        baslinje_val = getVariableValue('Riket', year, ind.Indikator, true);
                     }
 
-                    if (kom_val !== null && riket_val !== null && riket_val !== 0) {
+                    // Säkerhetsnät om baslinje saknas (för att undvika division med noll)
+                    if (baslinje_val === null || isNaN(baslinje_val) || baslinje_val === 0) {
+                        baslinje_val = 1; 
+                    }
+
+                    if (kom_val !== null && baslinje_val !== null) {
                         sumWeights += w;
                         
                         let indScore = 100; 
                         let polaritet = ind.Polaritet ? ind.Polaritet.toString().trim().toLowerCase() : 'hög';
 
-                        let kvot = kom_val / riket_val;
-
-                        // Om det är långtidsarbetslöshet (låg är bra)
+                        // 💡 NY MATEMATISK HARMONISERING (Klarar negativa snitt/extremer)
+                        let avvikelse_procent = ((kom_val - baslinje_val) / Math.abs(baslinje_val)) * 100;
+                        
                         if (polaritet === 'låg' || indNameLower.includes('arbetslöshet')) {
-                            indScore = (2.0 - kvot) * 100;
+                            indScore = 100 - avvikelse_procent;
                         } else {
-                            indScore = kvot * 100;
+                            indScore = 100 + avvikelse_procent;
+                        }
+
+                        // 💡 BYPASS: Riket agerar proxy och får alltid 100 i Formel 1-logik
+                        if (kommun === 'Riket' && usePeerGroup) {
+                            indScore = 100;
                         }
 
                         indScore = Math.max(0, Math.min(250, indScore));
@@ -1536,18 +1729,59 @@ function updateMatrix() {
     if (!indX || !indY || !indR || isNaN(year)) return;
 
     // 1. SKAPA FAST ENTITETSLISTA (Hörnstenen i anti-ghosting)
-    let activeEntities = (geoLevel === 'kommuner') ? targetMunicipalities : [...aggregateGroups, 'Linköping'];
+    let activeEntities = [];
+    if (geoLevel === 'kommuner') {
+        activeEntities = targetMunicipalities;
+    } else if (geoLevel === 'enskilda_kommuner') {
+        // Lägger till Östergötlands län utöver de 12 städerna!
+        activeEntities = [...targetMunicipalities, 'Östergötlands län'];
+    } else {
+        activeEntities = [...aggregateGroups, 'Linköping'];
+    }
     activeEntities = [...new Set(activeEntities)].sort(); 
 
     let visibleRValues = [];
     let visibleXValues = [];
     let visibleYValues = [];
     
-    // 2. SKAPA FASTA DATASETS BASERAT PÅ GRUPPER
+    // 2. SKAPA FASTA DATASETS BASERAT PÅ GRUPPER ELLER ENSKILDA
     let categories = [];
     if (geoLevel === 'kommuner') {
         categories = municipalityGroups.map(g => ({ name: g.name, color: g.color, shape: 'circle', entities: g.cities }));
+    } else if (geoLevel === 'enskilda_kommuner') {
+        // NY LOGIK: Enskilda färger för varje stad (Linköping i fokus!)
+        const enskildaFarger = {
+            'Linköping': '#005b9f',
+            'Stockholm': '#ff9999',
+            'Göteborg': '#99ccff',
+            'Malmö': '#ffcc99',
+            'Uppsala': '#99ff99',
+            'Västerås': '#c2c2f0',
+            'Örebro': '#ffb3e6',
+            'Helsingborg': '#ff6666',
+            'Jönköping': '#c2f0c2',
+            'Norrköping': '#e6b3ff',
+            'Umeå': '#ffc107',         // <-- NY FIX: Mycket starkare Guldgul färg för Umeå!
+            'Lund': '#b3e6cc',
+            'Östergötlands län': '#6c757d'
+        };
+        
+        // 💡 NY SMART LOGIK FÖR ÖSTERGÖTLAND: 
+        // Vi lägger till den i "hiddenMatrixDatasets" BARA första gången vi byter till denna vy.
+        if (window.lastGeoLevel !== 'enskilda_kommuner') {
+            hiddenMatrixDatasets.add('Östergötlands län');
+            window.lastGeoLevel = 'enskilda_kommuner';
+        }
+        
+        categories = activeEntities.map(ent => ({
+            name: ent,
+            color: enskildaFarger[ent] || '#888888',
+            shape: ent === 'Linköping' ? 'star' : (ent === 'Östergötlands län' ? 'triangle' : 'circle'),
+            entities: [ent]
+            // Vi har nu tagit bort hiddenByDefault helt.
+        }));
     } else {
+        // Din befintliga logik för Geografiska grupper...
         categories = activeEntities.map(ent => {
             let color = '#fd7e14'; let shape = 'circle';
             if (ent === 'Linköping') { color = '#007bff'; shape = 'star'; } 
@@ -1589,11 +1823,54 @@ function updateMatrix() {
 
     // 3. BERÄKNA HÅRKORS (midX, midY)
     let midX, midY;
+
+    // 💡 NY FUNKTION: Beräkna "Formel 1"-MEDIANEN (De 12 storstäderna) dynamiskt
+    const targetCities12 = ['Stockholm', 'Göteborg', 'Malmö', 'Uppsala', 'Linköping', 'Västerås', 'Örebro', 'Helsingborg', 'Jönköping', 'Norrköping', 'Umeå', 'Lund'];
+    
+    function getPeerMedian(indicator, yr) {
+        let vals = [];
+        targetCities12.forEach(c => {
+            let v = getVariableValue(c, yr, indicator, false);
+            if (v !== null && !isNaN(v)) {
+                vals.push(v);
+            }
+        });
+        
+        if (vals.length === 0) return null;
+        
+        // Sortera arrayen för att hitta medianen
+        vals.sort((a, b) => a - b);
+        let half = Math.floor(vals.length / 2);
+        
+        if (vals.length % 2 === 0) {
+            return (vals[half - 1] + vals[half]) / 2.0;
+        }
+        return vals[half];
+    }
+
+    // 💡 DETEKTOR: Vilka indikatorer kräver storstadssnitt?
+    function usePeerGroup(ind) {
+        if (!ind) return false;
+        let lower = ind.toLowerCase();
+        return lower.includes('eci') || lower.includes('pci') || lower.includes('brp') || lower.includes('pendl') || lower.includes('flytt');
+    }
+
     if (lockAt100) {
         let riketX = getVariableValue('Riket', year, indX, false);
         let riketY = getVariableValue('Riket', year, indY, false);
-        midX = (riketX !== null && !isNaN(riketX)) ? riketX : (visibleXValues.length ? visibleXValues.reduce((a,b)=>a+b,0)/visibleXValues.length : 0);
-        midY = (riketY !== null && !isNaN(riketY)) ? riketY : (visibleYValues.length ? visibleYValues.reduce((a,b)=>a+b,0)/visibleYValues.length : 0);
+        
+        // Hämta Storstadsmedianen istället för snittet
+        let peerMedianX = getPeerMedian(indX, year);
+        let peerMedianY = getPeerMedian(indY, year);
+        
+        // Nödlösning om data saknas
+        let fallbackX = visibleXValues.length ? visibleXValues.reduce((a,b)=>a+b,0)/visibleXValues.length : 0;
+        let fallbackY = visibleYValues.length ? visibleYValues.reduce((a,b)=>a+b,0)/visibleYValues.length : 0;
+
+        // VÄLJ BASLINJE: Formel 1-variabler får Medianen. Annars Riket.
+        midX = usePeerGroup(indX) ? (peerMedianX !== null ? peerMedianX : fallbackX) : ((riketX !== null && !isNaN(riketX)) ? riketX : fallbackX);
+        midY = usePeerGroup(indY) ? (peerMedianY !== null ? peerMedianY : fallbackY) : ((riketY !== null && !isNaN(riketY)) ? riketY : fallbackY);
+        
     } else {
         midX = visibleXValues.length ? visibleXValues.reduce((a,b)=>a+b,0)/visibleXValues.length : 0;
         midY = visibleYValues.length ? visibleYValues.reduce((a,b)=>a+b,0)/visibleYValues.length : 0;
@@ -1640,6 +1917,7 @@ function updateMatrix() {
             borderColor: cat.color, 
             borderWidth: 1.5, 
             pointStyle: cat.shape,
+            // Chart.js tittar nu enbart på om den ligger i den dolda listan
             hidden: hiddenMatrixDatasets.has(cat.name),
             order: 2
         });
@@ -2067,247 +2345,308 @@ function togglePlayMatrix() {
             });
         }
         // ==========================================
-        // SCENARIO-KALKYLATOR (FRISTÅENDE MODUL)
-        // ==========================================
-        let scenarioData = [];
+// 🚨 DIAGNOSTIK-MODUL OCH SCENARIO-KALKYLATOR (KOMPLETT!)
+// ==========================================
+console.log("[DIAGNOSTIK] 1. Scenario-skriptet laddas in i webbläsaren...");
 
-        fetch('konkurrens_scenario_coefs.csv')
-            .then(res => { if(res.ok) return res.text(); throw new Error('Ingen scenario-fil'); })
-            .then(csv => { Papa.parse(csv.trim(), { header: true, delimiter: ";", complete: function(r) { scenarioData = r.data; } }); })
-            .catch(err => console.log("Scenario-modulen väntar på Python."));
+// Global fel-fångare
+window.onerror = function(msg, url, line, col, error) {
+    console.error(`[DIAGNOSTIK FATALT FEL] Linje ${line}: ${msg}`);
+    return false; 
+};
 
-       function loadScenarioUI() {
-            if(scenarioData.length === 0) return;
-            const target = document.getElementById('scenario-target-select').value;
-            const numSpakar = parseInt(document.getElementById('scenario-count-select').value) || 5;
+var scenarioData = []; 
+// ==========================================
+// 🛠️ HJÄLPFUNKTION: ROBUST SIFFER-TOLK
+// ==========================================
+// Denna funktion MÅSTE finnas för att spakarna ska kunna räkna på 
+// svenska siffror med mellanslag (10 000) och kommatecken (0,5).
+function parseRobustFloat(str) {
+    if (str === null || str === undefined) return 0;
+    
+    // 1. Tvätta bort alla typer av mellanslag (även "hårda" från toLocaleString)
+    let cleanStr = String(str).replace(/[\s\u00A0\u202F]/g, '');
+    
+    // 2. Ersätt typografiska minus med vanliga bindestreck
+    cleanStr = cleanStr.replace('\u2212', '-');
+    
+    // 3. Konvertera svenskt decimal-komma till internationell punkt
+    cleanStr = cleanStr.replace(',', '.');
+    
+    let parsed = parseFloat(cleanStr);
+    return isNaN(parsed) ? 0 : parsed;
+}
+
+fetch('konkurrens_scenario_coefs.csv')
+    .then(res => { if(res.ok) return res.text(); throw new Error('Ingen scenario-fil'); })
+    .then(csv => { 
+        if (typeof Papa !== 'undefined') {
+            Papa.parse(csv.trim(), { 
+                header: true, 
+                delimiter: ";", 
+                complete: function(r) { 
+                    scenarioData = r.data; 
+                    console.log("[DIAGNOSTIK] 4. CSV inläst! Startar UI...");
+                    loadScenarioUI(); // <-- NYTT: Auto-startar spakarna direkt!
+                } 
+            }); 
+        }
+    })
+    .catch(err => console.error("[DIAGNOSTIK FEL] Något gick fel vid hämtning:", err));
+
+// ==========================================
+// 1. SMART ENHETS-TOLK
+// ==========================================
+function getSmartUnitLabel(driverName, displayName) {
+    try {
+        let nameLower = (String(driverName) + " " + String(displayName)).toLowerCase();
+        if (nameLower.includes('brp (miljarder')) return "(Miljarder kr)";
+        if (nameLower.includes('tkr') || nameLower.includes('tusenkronor')) return "(Tkr)";
+        if (nameLower.includes('%') || nameLower.includes('andel') || nameLower.includes('grad') || nameLower.includes('kvot')) return "(Andel / Procent)";
+        if (nameLower.includes('ålder')) return "(År)";
+        if (typeof requiresScaling === 'function' && requiresScaling(driverName)) return "(per 100 tusen inv)";
+        if (nameLower.includes('antal') || nameLower.includes('folkmängd') || nameLower.includes('nettoflytt')) return "(Absoluta tal)";
+        return "(Index / Värde)"; 
+    } catch (e) {
+        return "(Enhet)";
+    }
+}
+
+// ==========================================
+// 2. BYGG GRÄNSSNITTET (Denna saknades!)
+// ==========================================
+function loadScenarioUI() {
+    try {
+        if(scenarioData.length === 0) return;
+        
+        let targetEl = document.getElementById('scenario-target-select');
+        let countEl = document.getElementById('scenario-count-select');
+        if (!targetEl || !countEl) return;
+        
+        const target = targetEl.value;
+        const numSpakar = parseInt(countEl.value) || 5;
+        
+        const row = scenarioData.find(d => d.Target_Index === target && parseInt(d.Model_Size) === numSpakar);
+        if(!row) return;
+
+        let r2El = document.getElementById('scenario-r2');
+        if (r2El) r2El.innerText = parseFloat(row.R2).toFixed(2);
+        
+        let baseScoreEl = document.getElementById('scenario-base-score');
+        if (baseScoreEl) baseScoreEl.innerText = parseFloat(row.Lkpg_Baseline_Score).toFixed(1);
+        
+        const container = document.getElementById('scenario-sliders-container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        for(let i=1; i<=numSpakar; i++) {
+            let driverName = row[`Driver${i}`];
+            if (!driverName || driverName === '') continue; 
             
-            const row = scenarioData.find(d => d.Target_Index === target && parseInt(d.Model_Size) === numSpakar);
-            if(!row) return;
+            let displayName = (typeof klartextMap !== 'undefined' && klartextMap[driverName]) ? klartextMap[driverName] : driverName;
+            let unitLabel = getSmartUnitLabel(driverName, displayName);
+            let formattedName = `${displayName} <span style="font-size: 0.75rem; color: #6c757d; font-weight: normal; margin-left: 8px;">${unitLabel}</span>`;
 
-            document.getElementById('scenario-r2').innerText = parseFloat(row.R2).toFixed(2);
-            document.getElementById('scenario-base-score').innerText = parseFloat(row.Lkpg_Baseline_Score).toFixed(1);
+            let val = parseFloat(row[`Lkpg_Val${i}`]);
+            let valAbs = Math.abs(val);
+            let coef = parseFloat(row[`Coef${i}`]);
+            let coefAbs = Math.abs(coef);
             
-            const container = document.getElementById('scenario-sliders-container');
-            container.innerHTML = '';
+            let step;
+            let displayValStr;
+            let nameLower = (String(driverName) + " " + String(displayName)).toLowerCase();
+            let requiredStepForImpact = coefAbs > 0 ? (0.2 / coefAbs) : 1; 
 
-            for(let i=1; i<=numSpakar; i++) {
-                let driverName = row[`Driver${i}`];
-                if (!driverName || driverName === '') continue; 
+            // Logik inuti loadScenarioUI() för att sätta step och decimals:
+            if (nameLower.includes('försörjningskvot')) {
+                step = 0.01; displayValStr = val.toFixed(2); 
+            } else if (nameLower.includes('skattesats')) {
+                // NYTT: Skattesatsen får finlir med 10-öringar!
+                step = 0.1; displayValStr = val.toFixed(2);
+            } else if (nameLower.includes('andel') || nameLower.includes('grad') || nameLower.includes('%') || nameLower.includes('ålder')) {
+                step = 0.1; displayValStr = val.toFixed(1);
+            } else {
+                if (requiredStepForImpact > 1000) step = Math.ceil(requiredStepForImpact / 1000) * 1000;
+                else if (requiredStepForImpact > 100) step = Math.ceil(requiredStepForImpact / 100) * 100;
+                else if (requiredStepForImpact > 10) step = Math.ceil(requiredStepForImpact / 10) * 10;
+                else step = 1;
                 
-                let displayName = klartextMap[driverName] || driverName;
-                
-                // 1. STÖDTEXT TILL HÖGER
-                let unitLabel = "";
-                if (driverName === 'Total BRP (Miljarder SEK)') {
-                    unitLabel = "(Miljarder kr)";
-                } else if (driverName === 'Folkmängd') {
-                    unitLabel = "(Totalt antal)";
-                } else if (requiresScaling(driverName)) {
-                    unitLabel = "(per 100 tusen inv)";
-                } else {
-                    unitLabel = "(Andel / Index)";
-                }
-                
-                let formattedName = `${displayName} <span style="font-size: 0.75rem; color: #6c757d; font-weight: normal; margin-left: 8px;">${unitLabel}</span>`;
+                if (valAbs > 10000 && step < 100) step = 100; 
+                displayValStr = Math.round(val).toLocaleString('sv-SE'); 
+            }
+            
+            let html = `
+            <div class="mb-4">
+                <label class="form-label text-center d-block fw-bold" style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;">${formattedName}</label>
+                <div class="input-group input-group-lg shadow-sm">
+                    <button class="btn btn-outline-secondary fw-bold" type="button" onclick="adjustSpak(${i}, -${step})" style="width: 50px; font-size: 1.2rem;">-</button>
+                    <input type="text" inputmode="text" class="form-control scenario-input fw-bold text-primary text-center" id="spak-${i}" data-driver="${i}" data-drivername="${driverName}" value="${displayValStr}" step="${step}" oninput="calculateScenario()" onchange="formatSpak(this, ${step})">
+                    <button class="btn btn-outline-secondary fw-bold" type="button" onclick="adjustSpak(${i}, ${step})" style="width: 50px; font-size: 1.2rem;">+</button>
+                </div>
+            </div>`;
+            container.innerHTML += html;
+        }
+        calculateScenario();
+    } catch (error) {
+        console.error("[DIAGNOSTIK KRASCH] i loadScenarioUI:", error);
+    }
+}
 
-                let val = parseFloat(row[`Lkpg_Val${i}`]);
-                let coef = parseFloat(row[`Coef${i}`]);
-                
-                // ==========================================
-                // DYNAMISK FORMATERING FÖR SIMULATOR-SPAKAR
-                // ==========================================
-                // 💡 FIX 1: Använder 'driverName' istället för 'd'
-                let driverNameLower = (driverName || "").toLowerCase(); 
-                let step;
-                let displayValStr;
+// ==========================================
+// 3. BERÄKNA SCENARIOT & UPPDATERA UI
+// ==========================================
+function calculateScenario() {
+    try {
+        let targetEl = document.getElementById('scenario-target-select');
+        let countEl = document.getElementById('scenario-count-select');
+        if (!targetEl || !countEl) return;
+        
+        const target = targetEl.value;
+        const numSpakar = parseInt(countEl.value) || 5;
+        
+        const row = scenarioData.find(d => d.Target_Index === target && parseInt(d.Model_Size) === numSpakar);
+        if(!row) return;
 
-                if (driverNameLower.includes('försörjningskvot')) {
-                    step = 0.01; // Hundradelar
-                    displayValStr = val.toFixed(2); 
-                } else if (driverNameLower.includes('sysselsättningsgrad')) {
-                    step = 0.1;  // Tiondelar
-                    displayValStr = val.toFixed(1);
-                } else {
-                    // Adaptiv skala för volymer
-                    step = val > 1000 ? 50 : (val > 100 ? 5 : (val > 10 ? 1 : 1));
-                    // 💡 FIX 2: Formaterar tusentals direkt här
-                    displayValStr = Math.round(val).toLocaleString('sv-SE'); 
-                }
+        let diff = 0; 
+        
+        for (let i = 1; i <= numSpakar; i++) {
+            let coef = parseFloat(row[`Coef${i}`]);
+            let driverName = row[`Driver${i}`];
+            if (isNaN(coef) || coef === 0 || !driverName) continue;
+            
+            let origVal = parseFloat(row[`Lkpg_Val${i}`]) || 0;
+            let newVal = origVal;
+            
+            let inp = document.querySelector(`.scenario-input[data-driver="${i}"]`);
+            if (inp && typeof parseRobustFloat === 'function') {
+                let cleanStr = String(inp.value).replace(/[\s\u00A0\u202F]/g, '').replace('\u2212', '-').replace(',', '.');
+                let parsed = parseFloat(cleanStr);
+                if (!isNaN(parsed)) { newVal = parsed; }
+            }
+
+            let internalNameLower = String(driverName).toLowerCase().trim();
+            let aliasNameLower = (typeof klartextMap !== 'undefined' && klartextMap[driverName]) ? klartextMap[driverName].toLowerCase().trim() : "";
+            let fullName = internalNameLower + " " + aliasNameLower;
+
+            // 💡 FORCERAD RIKTNING (Överstyr AI:ns råa koefficienter för UI-logik)
+            const forcePositive = [
+                'nettoflytt', 'brp', 'nyföretag', 'inflytt', 'bygg', 'syssel', 
+                'skattekraft', 'befolkningsförändring', 'dagbefolkning', 'privat sektor',
+                'bostadspris', 'nattbefolkning' // <-- NYA: Tvingar dessa att ge PLUS-poäng. Nu borttaget --> 'nettopendl' 
+            ];
+            const forceNegative = [
+                'arbetslös', 'försörj', 'medelålder', 'skattesats', 'utflytt', 
+                'utpendling', 'kvinnor-män', 'inflyttningsandel eget', 'folkmängd 0-19'
+            ];
+
+            let coefAbs = Math.abs(coef);
+            let activeCoef = coef; 
+
+            if (forcePositive.some(keyword => fullName.includes(keyword))) {
+                activeCoef = coefAbs;  
+            } else if (forceNegative.some(keyword => fullName.includes(keyword))) {
+                activeCoef = -coefAbs; 
+            }
+
+            let rawDiff = newVal - origVal;
+            diff += (rawDiff * activeCoef);
+        }
+
+        const csvBaseScore = parseFloat(row.Lkpg_Baseline_Score);
+        let displayBaseScore = 100.0;
+        let displayNewScore = 100.0;
+        
+        let toggle = document.getElementById('scenario-baseline-toggle');
+        let useNational = toggle ? toggle.checked : true;
+
+        if (useNational) {
+            let targetStr = "";
+            let targetUpper = String(target).toUpperCase();
+            if (targetUpper.includes("PCI")) targetStr = "INDEX: PCI_Proxy";
+            else if (targetUpper.includes("ECI")) targetStr = "INDEX: ECI_Proxy";
+            else if (targetUpper.includes("HCI")) targetStr = "INDEX: HCI_Proxy";
+            else if (targetUpper.includes("TMI")) targetStr = "INDEX: TMI_Proxy";
+            else targetStr = target; 
+            
+            let yearSelect = document.getElementById('matrix-year');
+            let simYear = (yearSelect && yearSelect.value) ? parseInt(yearSelect.value) : 2025;
+            if (isNaN(simYear)) simYear = 2025;
+
+            let realNationalScore = (typeof calculateIndexValue === 'function') ? calculateIndexValue('Linköping', simYear, targetStr) : null;
+            displayBaseScore = (realNationalScore !== null && !isNaN(realNationalScore)) ? realNationalScore : csvBaseScore;
+            displayNewScore = displayBaseScore + diff; 
+        } else {
+            displayBaseScore = 100.0;
+            displayNewScore = 100.0 + diff;
+        }
+
+        const finalDiff = displayNewScore - displayBaseScore;
+        
+        let elBase = document.getElementById('scenario-base-score');
+        if (elBase) elBase.innerText = displayBaseScore.toFixed(1);
+        
+        let elNew = document.getElementById('scenario-new-score');
+        if (elNew) elNew.innerText = displayNewScore.toFixed(1);
+
+        // 👇 LÄGG TILL DETTA NYA BLOCK PRECIS HÄR 👇
                 
-                // 3. UI UPPDATERING: Bygger din snygga knapp-design!
-                let html = `
-                <div class="mb-4">
-                    <label class="form-label text-center d-block fw-bold" style="font-size: 0.9rem; color: #334155; margin-bottom: 8px;">${formattedName}</label>
-                    <div class="input-group input-group-lg shadow-sm">
-                        <button class="btn btn-outline-secondary fw-bold" type="button" onclick="adjustSpak(${i}, -${step})" style="width: 50px; font-size: 1.2rem;">-</button>
-                        <input type="text" inputmode="numeric" class="form-control scenario-input fw-bold text-primary text-center" id="spak-${i}" data-driver="${i}" data-coef="${coef}" value="${displayValStr}" step="${step}" oninput="calculateScenario()" onchange="formatSpak(this, ${step})">
-                        <button class="btn btn-outline-secondary fw-bold" type="button" onclick="adjustSpak(${i}, ${step})" style="width: 50px; font-size: 1.2rem;">+</button>
-                    </div>
-                </div>`;
-                container.innerHTML += html;
+        let badge = document.getElementById('scenario-diff-badge');
+        if (badge) {
+            badge.innerText = (finalDiff >= 0 ? "+" : "") + finalDiff.toFixed(1);
+            if (Math.abs(finalDiff) < 0.05) badge.className = "badge bg-secondary";
+            else if (finalDiff > 0) badge.className = "badge bg-success";
+            else badge.className = "badge bg-danger";
+        }
+    } catch (error) {
+        console.error("[DIAGNOSTIK KRASCH] i calculateScenario:", error);
+    }
+}
+
+// ==========================================
+// 4. HANTERA PLUS/MINUS-KNAPPARNA
+// ==========================================
+function adjustSpak(driverIndex, amount) {
+    try {
+        let inp = document.getElementById(`spak-${driverIndex}`);
+        if (inp && typeof parseRobustFloat === 'function') { 
+            let currentVal = parseRobustFloat(inp.value); 
+            let newVal = Math.round((currentVal + amount) * 10000) / 10000;
+            
+            let decimals = 0;
+            let amountStr = String(Math.abs(amount)).replace(',', '.');
+            if (amountStr.includes('.')) { decimals = amountStr.split('.')[1].length; }
+            
+            if (decimals > 0) {
+                inp.value = newVal.toLocaleString('sv-SE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+            } else {
+                inp.value = Math.round(newVal).toLocaleString('sv-SE');
             }
             calculateScenario();
         }
-     
-        function calculateScenario() {
-            const target = document.getElementById('scenario-target-select').value;
-            const numSpakar = parseInt(document.getElementById('scenario-count-select').value) || 5;
-            
-            const row = scenarioData.find(d => d.Target_Index === target && parseInt(d.Model_Size) === numSpakar);
-            if(!row) return;
+    } catch (error) {
+        console.error("[DIAGNOSTIK KRASCH] i adjustSpak:", error);
+    }
+}
 
-            // 1. Räkna ut den råa poängen från Python-modellen
-            let rawScore = parseFloat(row.Intercept);
-            
-            for (let i = 1; i <= numSpakar; i++) {
-                let coef = parseFloat(row[`Coef${i}`]);
-                if (isNaN(coef) || coef === 0) continue;
-                
-                let val = 0;
-                let inp = document.querySelector(`.scenario-input[data-driver="${i}"]`);
-                
-                if (inp) {
-                    let cleanStr = String(inp.value).replace(/\s/g, '').replace(',', '.');
-                    val = parseFloat(cleanStr) || 0;
-                } else {
-                    val = parseFloat(row[`Lkpg_Val${i}`]) || 0;
-                }
-                
-                rawScore += (val * coef);
-            }
-
-            // 2. Diffen (Hur många poäng reglagen genererar)
-            const csvBaseScore = parseFloat(row.Lkpg_Baseline_Score);
-            const diff = rawScore - csvBaseScore;
-
-            // ==========================================
-            // FIX 2.0: BOMB-SÄKER HÄMTNING AV SANNA VÄRDEN
-            // ==========================================
-            let displayBaseScore = 100.0;
-            let displayNewScore = 100.0;
-            
-            let toggle = document.getElementById('scenario-baseline-toggle');
-            let useNational = toggle ? toggle.checked : true;
-
-            if (useNational) {
-                // TVINGA FRAM EXAKT RÄTT STRÄNG OAVSETT VAD CSV-FILEN SÄGER
-                let targetStr = "";
-                let targetUpper = String(target).toUpperCase();
-                if (targetUpper.includes("PCI")) targetStr = "INDEX: PCI_Proxy";
-                else if (targetUpper.includes("ECI")) targetStr = "INDEX: ECI_Proxy";
-                else if (targetUpper.includes("HCI")) targetStr = "INDEX: HCI_Proxy";
-                else targetStr = target; // Fallback om det är något helt annat
-                
-                // Säkra året (tvinga 2025 som fallback om dropdownen är dold)
-                let yearSelect = document.getElementById('matrix-year');
-                let simYear = (yearSelect && yearSelect.value) ? parseInt(yearSelect.value) : 2025;
-                if (isNaN(simYear)) simYear = 2025;
-
-                // Anropa Master-motorn!
-                let realNationalScore = calculateIndexValue('Linköping', simYear, targetStr);
-                
-                // SKVALLER-LOGG: Tryck F12 i webbläsaren för att se varför matematiken gör som den gör
-                console.log(`Simulator Debug -> Letar efter: ${targetStr} (År: ${simYear}). Master-motorn returnerade: ${realNationalScore}. CSV-reserven var: ${csvBaseScore}`);
-                
-                if (realNationalScore !== null && !isNaN(realNationalScore)) {
-                    displayBaseScore = realNationalScore;
-                    displayNewScore = realNationalScore + diff; 
-                } else {
-                    displayBaseScore = csvBaseScore; // Fallback (Bör ej ske nu!)
-                    displayNewScore = rawScore;
-                }
-            } else {
-                // Tävla mot sig själv
-                displayBaseScore = 100.0;
-                displayNewScore = 100.0 + diff;
-            }
-
-            const finalDiff = displayNewScore - displayBaseScore;
-            
-            // 3. Skriv ut de sanna värdena
-            document.getElementById('scenario-base-score').innerText = displayBaseScore.toFixed(1);
-            document.getElementById('scenario-new-score').innerText = displayNewScore.toFixed(1);
-            
-            let badge = document.getElementById('scenario-diff-badge');
-            badge.innerText = (finalDiff >= 0 ? "+" : "") + finalDiff.toFixed(1);
-            
-            if (Math.abs(finalDiff) < 0.05) {
-                badge.className = "badge bg-secondary";
-            } else if (finalDiff > 0) {
-                badge.className = "badge bg-success";
-            } else {
-                badge.className = "badge bg-danger";
-            }
-
-            // 4. Uppdatera Tolkningsguiden dynamiskt!
-            let introText = document.getElementById('scenario-intro-text');
-            let guideEst = document.getElementById('guide-est-score-text');
-            let guideBase = document.getElementById('guide-baseline-text');
-
-            if (useNational) {
-                // TEXTER NÄR KNAPPEN ÄR PÅ (Nationell Konkurrens)
-                if (introText) introText.innerHTML = "Justera värdena för Linköpings starkaste drivkrafter (isolerade av AI:n) för att simulera hur framtida strategiska segrar slår igenom i form av högre indexpoäng gentemot de övriga storstäderna. <strong style='color: var(--primary-dark);'>Baslinjen är dynamiskt kopplad till Fyrfältaren (Riket=100).</strong>";
-                if (guideEst) guideEst.innerHTML = "Visar Linköpings framtida matematiska styrka i det valda området gentemot de andra storstäderna. (Sverigesnittet = 100).<br><span style='font-size: 0.85rem; display: inline-block; margin-top: 6px;'><em>💡 Tänk på att exempelvis Stockholm har ett extremt stort genomslag vid dessa jämförelser.</em></span>";
-                if (guideBase) guideBase.innerHTML = "Din startpunkt. Detta är Linköpings sanna, nationella konkurrenskraft idag, hämtad direkt från Fyrfältaren. Ett värde på t.ex. 138 betyder att Linköping presterar 38 % över riksnormen.";
-            } else {
-                // TEXTER NÄR KNAPPEN ÄR AV (Egen Utveckling)
-                if (introText) introText.innerHTML = "Justera värdena för Linköpings starkaste drivkrafter för att simulera er egen lokala utveckling. Här är Linköpings nuvarande position nollställd till <strong style='color: var(--primary-dark);'>Index 100</strong> för att isolerat mäta hur mycket era egna strategiska insatser lyfter resultatet.";
-                if (guideEst) guideEst.innerHTML = "Visar den isolerade effekten av era lokala insatser. Indexet mäter nu enbart hur mycket ni förbättrar er jämfört med er nuvarande nivå.";
-                if (guideBase) guideBase.innerHTML = "Din startpunkt. För att tydligt visa effekten av era strategier är Linköpings nuvarande nivå nollställd till exakt <strong>Index 100</strong>. Varje poäng över 100 är ren förbättring!";
-            }
-        }
-
-        // ==========================================
-        // HANTERA PLUS/MINUS-KNAPPARNA
-        // ==========================================
-        function adjustSpak(driverIndex, amount) {
-            let inp = document.getElementById(`spak-${driverIndex}`);
-            if (inp) {
-                let cleanStr = String(inp.value).replace(/\s/g, '').replace(',', '.');
-                let currentVal = parseFloat(cleanStr) || 0;
-                let newVal = Math.round((currentVal + amount) * 10000) / 10000;
-                
-                let decimals = 0;
-                let amountStr = String(Math.abs(amount)).replace(',', '.');
-                if (amountStr.includes('.')) { decimals = amountStr.split('.')[1].length; }
-                
-                if (decimals > 0) {
-                    inp.value = newVal.toLocaleString('sv-SE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
-                } else {
-                    inp.value = Math.round(newVal).toLocaleString('sv-SE');
-                }
-                calculateScenario();
-            }
-        }
-
-        // ==========================================
-        // HANTERA MANUELL INMATNING (Rensade bort dubbletten)
-        // ==========================================
-        function formatSpak(element, step) {
-            let cleanStr = String(element.value).replace(/\s/g, '').replace(',', '.');
-            let val = parseFloat(cleanStr) || 0;
-            
+function formatSpak(inp, step) {
+    try {
+        if (typeof parseRobustFloat === 'function') { 
+            let val = parseRobustFloat(inp.value);
             let decimals = 0;
             let stepStr = String(Math.abs(step)).replace(',', '.');
             if (stepStr.includes('.')) { decimals = stepStr.split('.')[1].length; }
             
             if (decimals > 0) {
-                element.value = val.toLocaleString('sv-SE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+                inp.value = val.toLocaleString('sv-SE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
             } else {
-                element.value = Math.round(val).toLocaleString('sv-SE');
+                inp.value = Math.round(val).toLocaleString('sv-SE');
             }
             calculateScenario();
         }
-
-        // Formaterar siffran snyggt om användaren klickar och skriver manuellt i fältet
-        function formatSpak(inp, step) {
-            let cleanStr = String(inp.value).replace(/\s/g, '').replace(',', '.');
-            let val = parseFloat(cleanStr) || 0;
-            let dec = step % 1 !== 0 ? 1 : 0;
-            inp.value = val.toLocaleString('sv-SE', {minimumFractionDigits: dec, maximumFractionDigits: dec});
-            calculateScenario();
-        }
-
+    } catch (error) {
+        console.error("[DIAGNOSTIK KRASCH] i formatSpak:", error);
+    }
+}
         // ==========================================
         // 7. HISTORISK TREND (TIDSSERIEANALYS)
         // ==========================================
@@ -2595,6 +2934,242 @@ function togglePlayMatrix() {
             }
             // ==========================================
         }
+        // ==========================================
+// AI-KOMPASS: LÄS DATA OCH RITA (Chart.js)
+// ==========================================
+let aiCompassChartInstance = null;
+
+function loadAndDrawAICompass() {
+    fetch('ai_kompass_koordinater.csv?v=' + new Date().getTime())
+        .then(response => response.text())
+        .then(csvText => {
+            const lines = csvText.trim().split('\n');
+            let otherCitiesData = [];
+            let linkopingData = [];
+
+            for (let i = 1; i < lines.length; i++) {
+                if (!lines[i]) continue;
+                let row = lines[i].split(';');
+                let kommun = row[0].replace(/['"]+/g, '');
+                let x = parseFloat(row[1].replace(',', '.'));
+                
+                // 💡 FIX 1: Tvinga Y-axeln att spegelvändas så den exakt matchar originalbilden!
+                let y = -parseFloat(row[2].replace(',', '.'));
+
+                if (kommun === 'Linköping') {
+                    linkopingData.push({ x: x, y: y, kommun: kommun });
+                } else {
+                    otherCitiesData.push({ x: x, y: y, kommun: kommun });
+                }
+            }
+            drawAICompassChart(otherCitiesData, linkopingData);
+        })
+        .catch(err => console.error("Kunde inte ladda AI-kompassen:", err));
+}
+
+function drawAICompassChart(otherCitiesData, linkopingData) {
+    const ctx = document.getElementById('aiCompassChart').getContext('2d');
+
+    if (aiCompassChartInstance) {
+        aiCompassChartInstance.destroy();
+    }
+
+    // PLUGIN 1: Kompassringen och magneterna
+    const compassRingPlugin = {
+        id: 'compassRingPlugin',
+        beforeDraw: (chart) => {
+            const { ctx, chartArea, scales: { x, y } } = chart;
+            const centerX = x.getPixelForValue(0);
+            const centerY = y.getPixelForValue(0);
+            
+            // Tvinga radien att bygga på avståndet till 10 (vilket nu är garanterat jämnt pga aspect-ratio)
+            const radius = Math.abs(x.getPixelForValue(10) - centerX); 
+
+            ctx.save();
+            // Cirkel
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.strokeStyle = '#94a3b8';
+            ctx.setLineDash([5, 5]);
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Hårkors
+            ctx.beginPath();
+            ctx.moveTo(centerX, chartArea.top);
+            ctx.lineTo(centerX, chartArea.bottom);
+            ctx.moveTo(chartArea.left, centerY);
+            ctx.lineTo(chartArea.right, centerY);
+            ctx.strokeStyle = '#e2e8f0';
+            ctx.setLineDash([]);
+            ctx.stroke();
+
+            const labels = [
+                { text: 'Volym & Bruttokraft', x_val: 9.5, y_val: -2 },
+                { text: 'Hög Pendlings-attraktion', x_val: 8, y_val: 6 },
+                { text: 'Extrem Skattekraft', x_val: 2, y_val: -9.5 },
+                { text: 'Stark Inkomstbas (Medelklass)', x_val: -8, y_val: -6 },
+                { text: 'Regionalt Nav', x_val: -9.5, y_val: 2 },
+                { text: 'Alternativ Struktur', x_val: 0, y_val: 9.5 }
+            ];
+
+            ctx.font = 'bold 11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            labels.forEach(l => {
+                const px = x.getPixelForValue(l.x_val);
+                const py = y.getPixelForValue(l.y_val);
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.lineTo(px, py);
+                ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+                ctx.setLineDash([2, 4]);
+                ctx.stroke();
+
+                const textWidth = ctx.measureText(l.text).width;
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.fillRect(px - textWidth/2 - 6, py - 10, textWidth + 12, 20);
+
+                ctx.fillStyle = '#334155';
+                ctx.fillText(l.text, px, py);
+            });
+            ctx.restore();
+        }
+    };
+
+    // 💡 PLUGIN 2: Rita ut namnen på kommunerna (Kopplad till toggle-knappen!)
+    const cityLabelsPlugin = {
+        id: 'cityLabelsPlugin',
+        afterDatasetsDraw: (chart) => {
+            const showLabels = document.getElementById('toggleCompassLabels').checked;
+            if (!showLabels) return; // Avbryt om knappen är avstängd
+
+            const { ctx } = chart;
+            ctx.save();
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'bottom';
+
+            chart.data.datasets.forEach((dataset, i) => {
+                const meta = chart.getDatasetMeta(i);
+                meta.data.forEach((element, index) => {
+                    const dataPoint = dataset.data[index];
+                    const isLkpg = dataPoint.kommun === 'Linköping';
+                    
+                    if (isLkpg) {
+                        ctx.font = 'bold 13px sans-serif';
+                        ctx.fillStyle = '#0f172a';
+                        ctx.fillText(dataPoint.kommun, element.x, element.y - 15); // Lite högre upp för stora bubblan
+                    } else {
+                        ctx.font = '11px sans-serif';
+                        ctx.fillStyle = '#334155';
+                        ctx.fillText(dataPoint.kommun, element.x, element.y - 10);
+                    }
+                });
+            });
+            ctx.restore();
+        }
+    };
+
+    aiCompassChartInstance = new Chart(ctx, {
+        type: 'scatter',
+        plugins: [compassRingPlugin, cityLabelsPlugin], // Ladda båda special-korten
+        data: {
+            datasets: [
+                {
+                    label: 'Övriga Storstäder',
+                    data: otherCitiesData,
+                    backgroundColor: '#64748b',
+                    borderColor: '#ffffff',
+                    borderWidth: 1.5,
+                    pointRadius: 7,
+                    pointHoverRadius: 9
+                },
+                {
+                    label: 'Linköping',
+                    data: linkopingData,
+                    backgroundColor: '#ef4444',
+                    borderColor: '#000000',
+                    borderWidth: 2,
+                    pointRadius: 13,
+                    pointHoverRadius: 15
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true, 
+            aspectRatio: 1, // 💡 FIX 2: Tvingar fram en perfekt kvadrat (1:1) oavsett skärm!
+            layout: { padding: { left: 40, right: 40, top: 40, bottom: 40 } }, 
+            scales: {
+                x: { min: -12, max: 12, display: false },
+                y: { min: -12, max: 12, display: false }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: { label: context => "📍 " + context.raw.kommun },
+                    displayColors: false,
+                    bodyFont: { size: 14, weight: 'bold' }
+                }
+            }
+        }
+    });
+}
+
+// 💡 TRIGGERS
+// När man klickar på fliken:
+document.getElementById('kompass-tab').addEventListener('click', function() {
+    setTimeout(loadAndDrawAICompass, 100);
+});
+
+// 💡 När man klickar på Toggle-knappen för namn: Uppdatera grafen live!
+document.getElementById('toggleCompassLabels').addEventListener('change', function() {
+    if (aiCompassChartInstance) {
+        aiCompassChartInstance.update();
+    }
+});
     </script>
+    <!-- ========================================== -->
+<!-- 🧨 DEN DEFINITIVA FIXEN FÖR CHART.JS I FLIKAR -->
+<!-- ========================================== -->
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    console.log("🛠️ Laddar den definitiva flik-fixen för grafer...");
+
+    // Metod 1: Fånga klick på precis allt som agerar flik i din layout
+    let tabElements = document.querySelectorAll('.nav-link, [data-bs-toggle="tab"], [data-toggle="tab"]');
+    
+    tabElements.forEach(function(el) {
+        el.addEventListener('click', function() {
+            // Vi skjuter iväg 3 "chockvågor" (efter 100ms, 300ms och 600ms)
+            // Detta garanterar att vi träffar rätt ögonblick OAVSETT hur lång tid 
+            // flik-animationen i Bootstrap tar innan fönstret är fullt utfällt.
+            [100, 300, 600].forEach(function(delay) {
+                setTimeout(function() {
+                    window.dispatchEvent(new Event('resize'));
+                }, delay);
+            });
+        });
+    });
+
+    // Metod 2: Bootstraps inbyggda "flik-färdig-laddad"-event (Bootstrap 5)
+    document.addEventListener('shown.bs.tab', function () {
+        window.dispatchEvent(new Event('resize'));
+    });
+    
+    // Metod 3: Fallback om din HTML kör Bootstrap 4 med jQuery
+    if (typeof $ !== 'undefined') {
+        $('a[data-toggle="tab"], button[data-bs-toggle="tab"]').on('shown.bs.tab', function () {
+            window.dispatchEvent(new Event('resize'));
+        });
+    }
+});
+</script>
+<!-- SIDFOT (FOOTER) -->
+    <div style="text-align: center; padding: 30px 20px; margin-top: 40px; color: #64748b; font-size: 0.9rem; border-top: 1px solid #e2e8f0; width: 100%;">
+        © Utvecklad av Analys & Utredning, Linköpings kommun 2026
+    </div>
 </body>
 </html>
