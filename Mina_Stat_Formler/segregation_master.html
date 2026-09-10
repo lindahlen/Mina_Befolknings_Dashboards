@@ -82,9 +82,27 @@
             border-bottom-color: #e65c00; 
             background-color: rgba(0,0,0,0.1); 
         }
-        .tab-content { display: none; padding: 20px; }
-        .tab-content.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* --- FLIK-INNEHÅLL (Anti-blödning) --- */
+        .tab-content {
+            display: none;             /* Helt gömd som standard */
+            position: relative;
+            z-index: -1;               /* Kastas bakåt */
+            width: 100%;
+            background-color: var(--primary-bg); /* Förhindrar att underliggande flikar lyser igenom */
+            min-height: 80vh;
+            padding: 20px;
+        }
+        
+        .tab-content.active {
+            display: block;            /* Visas när den är aktiv */
+            z-index: 10;               /* Flyttas längst fram */
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
 
         /* --- KONTROLLER & LAYOUT --- */
         .controls { 
@@ -1943,16 +1961,32 @@ function toggleAnimation(selectId, updateFunction) {
         Chart.register(quadrantPlugin);
 
         // ==========================================
-        // FLIK-NAVIGATION MED START-GARANTI
+        // FLIK-NAVIGATION MED START-GARANTI OCH ANTI-BLÖDNING
         // ==========================================
         function openTab(tabId, btnElement) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            
+            // 1. Tvinga bort ALLA flikar från skärmen brutalt
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+                tab.style.display = 'none';  // Tvingar bort iframes
+                tab.style.zIndex = '-1';     // Skickar dem längst bak
+            });
+            
+            // 2. Hantera knapp-markeringar
             if(btnElement) {
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                 btnElement.classList.add('active');
             }
-            document.getElementById(tabId).classList.add('active');
             
+            // 3. Väck den aktuella fliken och lyft fram den
+            let activeTab = document.getElementById(tabId);
+            if(activeTab) {
+                activeTab.classList.add('active');
+                activeTab.style.display = 'block';
+                activeTab.style.zIndex = '10'; // Drar den längst fram
+            }
+            
+            // 4. Ladda datan precis som förut
             setTimeout(() => {
                 if (rawData.length > 0) {
                     if (tabId === 'flik1') updateTab1();
