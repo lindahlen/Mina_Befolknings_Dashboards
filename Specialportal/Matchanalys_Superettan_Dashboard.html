@@ -49,6 +49,8 @@
             <button onclick="switchTab('strength')" id="btn-strength" class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-orange-600">Säsongsstyrka</button>
             <button onclick="switchTab('goldrace')" id="btn-goldrace" class="tab-btn whitespace-nowrap py-4 px-6 text-amber-600 font-bold hover:text-amber-700 bg-amber-50">Toppstriden</button>
             <button onclick="switchTab('analysis')" id="btn-analysis" class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-orange-600">Förutsägbarhet</button>
+            <button onclick="switchTab('results')" id="btn-results" class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-blue-700">Matchresultat</button>
+            <button onclick="switchTab('referees')" id="btn-referees" class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-blue-700">Domare</button>
         </div>
     </nav>
 
@@ -572,6 +574,49 @@
             </div>
         </section>
 
+        <!-- FLIK 10: Matchresultat (Superettan) -->
+        <section id="tab-results" class="tab-content">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200 mb-8 overflow-hidden">
+                    <table class="w-full text-sm text-left">
+                        <thead id="results-head"></thead>
+                        <tbody id="results-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- FLIK 11: Domaranalys (Superettan) -->
+        <section id="tab-referees" class="tab-content">
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <!-- Kontrollpanel -->
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-4 mb-6 flex justify-between items-center">
+                    <div class="font-bold text-slate-700 text-lg flex items-center gap-2">
+                        <span>⚖️</span> Domarstatistik
+                    </div>
+                    <!-- DENNA MÅSTE FINNAS FÖR ATT ÅRTALEN SKA SYNAS -->
+                        <select id="ref-season" onchange="window.ref_season=this.value; renderDomarAnalys()" class="w-full sm:w-48 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm font-medium text-slate-700 bg-slate-50">
+                            <option value="ALL">Alla säsonger (Totalt)</option>
+                        </select>
+                    <!-- Dynamiskt Sökfält -->
+                    <div class="relative w-full sm:w-72">
+                        <input type="text" id="ref-search" onkeyup="renderDomarAnalys()" placeholder="Sök domarnamn..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm">
+                        <span class="absolute left-3 top-2.5 text-slate-400">🔍</span>
+                    </div>
+                </div>
+
+                <!-- Tabell -->
+                <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="max-h-[70vh] overflow-y-auto custom-scroll">
+                        <table class="w-full text-sm text-left">
+                            <thead id="ref-head" class="bg-slate-800 text-slate-200 sticky top-0 z-10"></thead>
+                            <tbody id="ref-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- MODAL FÖR SVIT-MATCHER -->
         <div id="streak-modal" class="hidden fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col">
@@ -746,6 +791,21 @@
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + tabId).classList.add('active');
             document.getElementById('btn-' + tabId).classList.add('active');
+
+            if (tabId === 'results') {
+                if (typeof renderResultatAnalys === 'function') renderResultatAnalys();
+            }
+            if (tabId === 'referees') {
+                if (typeof renderDomarAnalys === 'function') renderDomarAnalys();
+            }
+            if (tabId === 'tables') { // Byt ut 'tables' mot det ID din tabell-flik har
+                            // Byt ut namnet nedan till vad din bygg-knapp faktiskt anropar!
+                            if (typeof buildTable === 'function') buildTable(); 
+                        }
+                        if (tabId === 'profiles') { // Byt ut 'profiles' mot rätt ID för din profil-flik
+                            // Kolla vad din bygg-knapp för profiler anropar (t.ex. renderProfiles() eller buildProfiles())
+                            if (typeof renderProfiles === 'function') renderProfiles(); 
+                        }
         }
 
         function populateAllDropdowns() {
@@ -762,7 +822,38 @@
             document.getElementById('table-season').innerHTML = seasonOpts.replace('<option value="">-- Alla säsonger --</option>', '<option value="">-- Välj säsong --</option>');
             document.getElementById('profiles-season').innerHTML = seasonOpts.replace('<option value="">-- Alla säsonger --</option>', '<option value="">-- Välj säsong --</option>');
             
-            if (SEASONS.length > 0) document.getElementById('search-season').value = [...SEASONS].reverse()[0];
+            if (SEASONS.length > 0) {
+                let latestSeason = [...SEASONS].reverse()[0]; // Plockar automatiskt senaste året
+                
+                // 1. Sätt default för H2H/Sök
+                document.getElementById('search-season').value = latestSeason;
+                
+                // 2. Sätt default för Serietabellen
+                let tableSeasonEl = document.getElementById('table-season');
+                if (tableSeasonEl) {
+                    tableSeasonEl.value = latestSeason;
+                    // KRITISKT MAGISKT TRICK: Vi säger åt webbläsaren att låtsas som att användaren 
+                    // precis klickade på rullistan. Då uppdateras poäng (2 eller 3) och Fas-menyn korrekt!
+                    tableSeasonEl.dispatchEvent(new Event('change')); 
+                }
+                // 3. NYTT: Sätt default för Säsongens Profiler
+                let profilesSeasonEl = document.getElementById('profiles-season');
+                if (profilesSeasonEl) {
+                    profilesSeasonEl.value = latestSeason;
+                    // Samma magiska trick här: simulerar ett klick så att profillistan laddas direkt!
+                    profilesSeasonEl.dispatchEvent(new Event('change')); 
+                }
+                // --- 4. NYTT: Fyll på och sätt default för Domaranalys (Superettan) ---
+                let refSeasonEl = document.getElementById('ref-season');
+                if (refSeasonEl) {
+                    let refSeasonOpts = '<option value="ALL">Alla säsonger (Totalt)</option>';
+                    [...SEASONS].reverse().forEach(s => { 
+                        if(s) refSeasonOpts += `<option value="${s}">${typeof getSeasonName === 'function' ? getSeasonName(s) : s}</option>`; 
+                    });
+                    refSeasonEl.innerHTML = refSeasonOpts;
+                    refSeasonEl.value = latestSeason; // Väljer senaste året direkt!
+                }
+            }
             updateSearchTeamDropdown();
             
             let epokOpts = '<option value="ALL">Totalt (Alla säsonger)</option>';
@@ -2062,6 +2153,318 @@
                     if (typeof performSearch === 'function') performSearch();
                 }
             }
+        }
+        // ==========================================
+        // MATCHRESULTAT (Superettan - Endast slutresultat)
+        // ==========================================
+        if (typeof window.res_epoch === 'undefined') window.res_epoch = 'ALL';
+
+        function renderResultatAnalys() {
+            let headEl = document.getElementById('results-head');
+            let bodyEl = document.getElementById('results-body');
+            if (!headEl || !bodyEl) return;
+            if (typeof MATCH_DATA === 'undefined') {
+                bodyEl.innerHTML = `<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500">Databasen laddades inte.</td></tr>`;
+                return;
+            }
+
+            let autoDecades = {};
+            MATCH_DATA.forEach(bm => {
+                let yr = parseInt(bm.År);
+                if (!isNaN(yr)) {
+                    let dec = Math.floor(yr / 10) * 10 + "-talet";
+                    if (!autoDecades[dec]) autoDecades[dec] = [];
+                    if (!autoDecades[dec].includes(String(yr))) autoDecades[dec].push(String(yr));
+                }
+            });
+
+            let epochOptions = `<option value="ALL">Totalt (Alla säsonger)</option>`;
+            
+            if (typeof CUSTOM_EPOCHS !== 'undefined' && Object.keys(CUSTOM_EPOCHS).length > 0) {
+                epochOptions += `<optgroup label="Egna Epoker (Från Excel)">`;
+                Object.keys(CUSTOM_EPOCHS).forEach(d => {
+                    let sel = window.res_epoch === `EPOCH_CUSTOM_${d}` ? 'selected' : '';
+                    epochOptions += `<option value="EPOCH_CUSTOM_${d}" ${sel}>${d}</option>`;
+                });
+                epochOptions += `</optgroup>`;
+            }
+
+            if (Object.keys(autoDecades).length > 0) {
+                epochOptions += `<optgroup label="Årtionden">`;
+                Object.keys(autoDecades).sort((a,b) => b.localeCompare(a)).forEach(d => {
+                    let sel = window.res_epoch === `EPOCH_AUTO_${d}` ? 'selected' : '';
+                    epochOptions += `<option value="EPOCH_AUTO_${d}" ${sel}>${d}</option>`;
+                });
+                epochOptions += `</optgroup>`;
+            }
+
+            headEl.innerHTML = `
+                <tr>
+                    <th colspan="4" class="px-4 py-3 bg-slate-800 border-b border-slate-700 text-white rounded-tl-lg rounded-tr-lg">
+                        <div class="flex flex-col lg:flex-row items-start lg:items-center gap-4 justify-between">
+                            <span class="font-bold text-slate-200">Frekvens av matchresultat</span>
+                            <select onchange="window.res_epoch = this.value; renderResultatAnalys()" class="bg-slate-700 text-white text-xs font-bold p-1.5 rounded border border-slate-600 focus:ring-blue-500 focus:border-blue-500 cursor-pointer outline-none">
+                                ${epochOptions}
+                            </select>
+                        </div>
+                    </th>
+                </tr>
+                <tr>
+                    <th class="px-4 py-3 border-b border-slate-200 bg-slate-100 w-24">Resultat</th>
+                    <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-100">Antal Matcher</th>
+                    <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-100">Andel (%)</th>
+                    <th class="px-4 py-3 border-l border-b border-slate-200 bg-slate-50 text-slate-600">Historik (Första - Senaste)</th>
+                </tr>
+            `;
+
+            let resultsMap = {};
+            let totalMatches = 0;
+            let totalGoalsMap = {};
+            let cleanSheets = 0;
+            let doubleDigits = 0;
+            let absoluteTotalGoals = 0;
+
+            MATCH_DATA.forEach(bm => {
+                if (!bm) return;
+
+                let checkYear = String(bm.År || '').trim();
+                let checkSas = String(bm.Säs || '').trim();
+                let checkHybrid = checkYear ? checkYear + "/" + (parseInt(checkYear)+1).toString().slice(2) : ""; 
+
+                if (window.res_epoch !== 'ALL') {
+                    let validSeasons = [];
+                    if (window.res_epoch.startsWith('EPOCH_CUSTOM_')) {
+                        validSeasons = CUSTOM_EPOCHS[window.res_epoch.replace('EPOCH_CUSTOM_', '')] || [];
+                    } else if (window.res_epoch.startsWith('EPOCH_AUTO_')) {
+                        validSeasons = autoDecades[window.res_epoch.replace('EPOCH_AUTO_', '')] || [];
+                    }
+                    if (!validSeasons.includes(checkYear) && !validSeasons.includes(checkSas) && !validSeasons.includes(checkHybrid)) return;
+                }
+
+                let hm = parseInt(bm.HM);
+                let b_m = parseInt(bm.BM);
+                if (isNaN(hm) || isNaN(b_m)) return;
+
+                let sumGoals = hm + b_m;
+                absoluteTotalGoals += sumGoals;
+
+                if (!totalGoalsMap[sumGoals]) totalGoalsMap[sumGoals] = 0;
+                totalGoalsMap[sumGoals]++;
+
+                if (hm === 0) cleanSheets++;
+                if (b_m === 0) cleanSheets++;
+                if (hm >= 10) doubleDigits++;
+                if (b_m >= 10) doubleDigits++;
+
+                let high = Math.max(hm, b_m);
+                let low = Math.min(hm, b_m);
+                let resKey = `${high}-${low}`;
+                
+                if (!resultsMap[resKey]) resultsMap[resKey] = { key: resKey, count: 0, seasons: [] };
+                resultsMap[resKey].count++;
+                totalMatches++;
+
+                let matchYear = parseInt(checkYear);
+                if (!isNaN(matchYear)) resultsMap[resKey].seasons.push(matchYear);
+            });
+
+            let resArr = Object.values(resultsMap).sort((a, b) => b.count - a.count);
+
+            let mainTableHtml = resArr.map((r) => {
+                let pct = ((r.count / totalMatches) * 100).toFixed(1);
+                let minS = Math.min(...r.seasons);
+                let maxS = Math.max(...r.seasons);
+                let seasonText = (isFinite(minS) && isFinite(maxS)) ? (minS === maxS ? `${minS}` : `${minS}-${maxS}`) : "-";
+
+                return `
+                <tr class="hover:bg-slate-50 border-b border-slate-50">
+                    <td class="px-4 py-3 font-black text-indigo-700 text-lg">${r.key}</td>
+                    <td class="px-4 py-3 text-center border-l border-slate-100 font-bold text-slate-800">${r.count}</td>
+                    <td class="px-4 py-3 text-center border-l border-slate-100 font-bold text-slate-500">
+                        <div class="flex items-center justify-between gap-2"><span>${pct}%</span><div class="w-20 h-2 bg-slate-200 rounded overflow-hidden flex-shrink-0"><div class="h-full bg-indigo-500" style="width: ${pct}%"></div></div></div>
+                    </td>
+                    <td class="px-4 py-3 border-l border-slate-100 font-bold text-slate-600">${seasonText}</td>
+                </tr>`;
+            }).join('');
+            
+            if (resArr.length === 0) mainTableHtml = `<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500 italic">Inga resultat hittades.</td></tr>`;
+
+            let tgArr = Object.keys(totalGoalsMap).map(Number).sort((a, b) => a - b);
+            let tgHtml = tgArr.map(g => {
+                let pct = ((totalGoalsMap[g] / totalMatches) * 100).toFixed(1);
+                return `<tr class="border-b border-slate-50 hover:bg-slate-50"><td class="px-3 py-2 font-bold text-slate-700">${g} mål</td><td class="px-3 py-2 text-right font-bold text-indigo-600">${totalGoalsMap[g]} <span class="text-xs text-slate-400 font-normal ml-1">(${pct}%)</span></td></tr>`;
+            }).join('');
+            if (tgArr.length === 0) tgHtml = `<tr><td colspan="2" class="px-3 py-4 text-center text-slate-400 italic">Ingen data</td></tr>`;
+
+            let avgGoals = totalMatches > 0 ? (absoluteTotalGoals / totalMatches).toFixed(2) : "0.00";
+            
+            let statsGrid = `
+            <div class="p-6 bg-slate-50 border-t border-slate-200">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="bg-slate-700 text-white px-4 py-2 font-bold text-sm">Fördelning: Antal mål i matchen</div>
+                        <div class="max-h-64 overflow-y-auto">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-slate-100 text-slate-500 sticky top-0"><tr><th class="px-3 py-2">Mål totalt</th><th class="px-3 py-2 text-right">Antal matcher</th></tr></thead>
+                                <tbody>${tgHtml}</tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="flex flex-col gap-4">
+                        <div class="bg-sky-50 rounded-lg border border-sky-100 p-4 shadow-sm flex items-center justify-between">
+                            <div><div class="text-sky-500 text-xs font-bold uppercase tracking-wider">Målproduktion</div><div class="text-sky-900 font-black text-lg">Totalt antal mål</div><div class="text-xs text-sky-600 mt-1">Snitt per match: <span class="font-bold">${avgGoals} mål</span></div></div>
+                            <div class="text-3xl font-black text-sky-600">${absoluteTotalGoals} <span class="text-sm font-normal text-sky-500">st</span></div>
+                        </div>
+                        <div class="bg-indigo-50 rounded-lg border border-indigo-100 p-4 shadow-sm flex items-center justify-between">
+                            <div><div class="text-indigo-400 text-xs font-bold uppercase tracking-wider">Defensiv styrka</div><div class="text-indigo-900 font-black text-lg">Hållna nollor</div></div>
+                            <div class="text-3xl font-black text-indigo-600">${cleanSheets} <span class="text-sm font-normal text-indigo-400">ggr</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>`;
+
+            bodyEl.innerHTML = mainTableHtml;
+            if (totalMatches > 0) bodyEl.insertAdjacentHTML('beforeend', `<tr><td colspan="4" class="p-0">${statsGrid}</td></tr>`);
+        }
+
+        // ==========================================
+        // DOMARANALYS (Superettan - Endast Domare)
+        // ==========================================
+        if (typeof window.ref_sortCol === 'undefined') window.ref_sortCol = 'matches';
+        if (typeof window.ref_sortAsc === 'undefined') window.ref_sortAsc = false;
+        if (typeof window.ref_fas === 'undefined') window.ref_fas = 'ALL'; // Redo för framtiden
+
+        window.doSortRef = function(col) {
+            if (window.ref_sortCol === col) window.ref_sortAsc = !window.ref_sortAsc;
+            else { window.ref_sortCol = col; window.ref_sortAsc = false; }
+            renderDomarAnalys();
+        };
+
+        if (typeof window.ref_season === 'undefined') window.ref_season = 'ALL'; // Fallback
+
+        function renderDomarAnalys() {
+            let headEl = document.getElementById('ref-head');
+            let bodyEl = document.getElementById('ref-body');
+            let searchQ = document.getElementById('ref-search') ? document.getElementById('ref-search').value.toLowerCase().trim() : "";
+            
+            if (!headEl || !bodyEl || typeof MATCH_DATA === 'undefined') return;
+
+            let refStats = {};
+            const cleanNameUI = (nameStr) => nameStr.replace(/\s\d+$/, '').trim();
+
+            MATCH_DATA.forEach(bm => {
+                if (!bm) return;
+
+                // --- 1. SÄSONGS-FILTER ---
+                let currentFlikSeason = document.getElementById('ref-season') ? document.getElementById('ref-season').value : window.ref_season;
+                let checkYear = String(bm.År || bm.Säsong || '').replace(/\.0$/, '').trim();
+                let checkSas = String(bm.Säs || '').trim();
+                let checkHybrid = checkYear ? checkYear + "/" + (parseInt(checkYear)+1).toString().slice(2) : ""; 
+                
+                if (currentFlikSeason !== 'ALL') {
+                    if (checkYear !== currentFlikSeason && checkSas !== currentFlikSeason && checkHybrid !== currentFlikSeason) return; 
+                }
+                // -------------------------
+
+                // (Här fortsätter din kod med Fas-filter, HM, BM, och domarstatistik...)
+                
+                if (window.ref_fas !== 'ALL') {
+                    let note = String(bm.NOT || '').toLowerCase();
+                    if (window.ref_fas === 'GRUND' && note.includes("mästerskap")) return; 
+                    if (window.ref_fas === 'MASTER' && !note.includes("mästerskap")) return;
+                }
+
+                let hm = parseInt(bm.HM);
+                let b_m = parseInt(bm.BM); 
+                if (isNaN(hm) || isNaN(b_m)) return;
+
+                let yr = parseInt(String(bm.År || bm.Säsong || '').substring(0, 4));
+                let domare = bm.Domare ? String(bm.Domare).trim() : "";
+                
+                if (domare && domare.toLowerCase() !== "okänd") {
+                    let cleanSearchRef = cleanNameUI(domare).toLowerCase();
+                    if (searchQ === "" || cleanSearchRef.includes(searchQ)) {
+                        let key = domare; 
+                        if (!refStats[key]) refStats[key] = { matches: 0, hWin: 0, draw: 0, aWin: 0, seasons: [] };
+                        
+                        refStats[key].matches++;
+                        if (hm > b_m) refStats[key].hWin++;
+                        else if (hm < b_m) refStats[key].aWin++;
+                        else refStats[key].draw++;
+                        
+                        if (!isNaN(yr) && !refStats[key].seasons.includes(yr)) refStats[key].seasons.push(yr);
+                    }
+                }
+            });
+
+            const thClass = "px-4 py-3 cursor-pointer hover:bg-slate-700 select-none transition-colors border-l border-slate-700";
+            const getIcon = (col, defaultCol) => {
+                if (window.ref_sortCol === col) return window.ref_sortAsc ? ' <span class="text-blue-400">🔼</span>' : ' <span class="text-blue-400">🔽</span>';
+                if (window.ref_sortCol === 'default' && col === defaultCol) return ' <span class="text-slate-400">🔽</span>';
+                return ' <span class="text-slate-600 opacity-50">↕</span>';
+            };
+
+            headEl.innerHTML = `<tr>
+                <th class="px-4 py-3 w-12 text-center">#</th>
+                <th class="${thClass}" onclick="doSortRef('name')">Domare${getIcon('name', '')}</th>
+                <th class="px-4 py-3 text-center border-l border-slate-700">Säsonger</th>
+                <th class="${thClass} text-center" onclick="doSortRef('matches')">Matcher${getIcon('matches', 'matches')}</th>
+                <th class="${thClass} text-center" title="Hemmaseger" onclick="doSortRef('1')">1${getIcon('1', '')}</th>
+                <th class="${thClass} text-center" title="Oavgjort" onclick="doSortRef('X')">X${getIcon('X', '')}</th>
+                <th class="${thClass} text-center" title="Bortaseger" onclick="doSortRef('2')">2${getIcon('2', '')}</th>
+            </tr>`;
+            
+            let arr = Object.keys(refStats).map(k => {
+                return { rawName: k, displayName: cleanNameUI(k), ...refStats[k] };
+            });
+            
+            // --- HÄR ÄR DEN FIXADE SORTERINGEN MED RÄTT KLAMRAR ---
+            arr.sort((a, b) => {
+                let valA, valB;
+                if (window.ref_sortCol === 'name') {
+                    valA = a.displayName; 
+                    valB = b.displayName;
+                    return window.ref_sortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                } else if (window.ref_sortCol === '1') {
+                    valA = a.hWin; 
+                    valB = b.hWin;
+                } else if (window.ref_sortCol === 'X') {
+                    valA = a.draw; 
+                    valB = b.draw;
+                } else if (window.ref_sortCol === '2') {
+                    valA = a.aWin; 
+                    valB = b.aWin;
+                } else {
+                    valA = a.matches; 
+                    valB = b.matches;
+                    if (valA === valB) return a.displayName.localeCompare(b.displayName);
+                }
+                return window.ref_sortAsc ? valA - valB : valB - valA;
+            });
+
+            bodyEl.innerHTML = arr.map((r, i) => {
+                let pct1 = ((r.hWin / r.matches) * 100).toFixed(0);
+                let pctx = ((r.draw / r.matches) * 100).toFixed(0);
+                let pct2 = ((r.aWin / r.matches) * 100).toFixed(0);
+                
+                let minS = Math.min(...r.seasons);
+                let maxS = Math.max(...r.seasons);
+                let sText = (isFinite(minS) && isFinite(maxS)) ? (minS === maxS ? `${minS}` : `${minS}-${maxS}`) : "-";
+                let finalName = typeof formatName === 'function' ? formatName(r.displayName) : r.displayName;
+
+                return `
+                <tr class="hover:bg-slate-50 border-b border-slate-100">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400">${i+1}</td>
+                    <td class="px-4 py-3 font-bold text-slate-800" title="Databas-ID: ${r.rawName}">${finalName}</td>
+                    <td class="px-4 py-3 text-center text-xs text-slate-500">${sText}</td>
+                    <td class="px-4 py-3 text-center font-black text-slate-700 bg-slate-100">${r.matches}</td>
+                    <td class="px-4 py-3 text-center text-emerald-600 font-medium">${r.hWin} <span class="text-[10px] text-slate-400 ml-1">(${pct1}%)</span></td>
+                    <td class="px-4 py-3 text-center text-amber-500 font-medium">${r.draw} <span class="text-[10px] text-slate-400 ml-1">(${pctx}%)</span></td>
+                    <td class="px-4 py-3 text-center text-sky-600 font-medium">${r.aWin} <span class="text-[10px] text-slate-400 ml-1">(${pct2}%)</span></td>
+                </tr>`;
+            }).join('');
+
+            if (arr.length === 0) bodyEl.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Inga domare hittades.</td></tr>`;
         }
     </script>
 </body>
