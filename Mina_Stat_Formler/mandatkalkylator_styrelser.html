@@ -110,7 +110,7 @@
             
             <div class="mb-5">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Välj basdata (Kommunfullmäktige)</label>
-                <select id="scenarioSelect" class="w-full border-gray-300 rounded shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500" onchange="loadScenario()">
+                <select id="scenarioSelect" autocomplete="off" class="w-full border-gray-300 rounded shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500" onchange="loadScenario()">
                     <option value="egen">Egen inmatning / Överförd från KF-flik</option>
                     <option value="2030" hidden>Framtidsprognos (Val 2030)</option> 
                     <option value="2026" selected>Nuvaranade (Val 2026)</option>
@@ -253,7 +253,7 @@
             
             <div class="mb-5">
                 <label class="block text-sm font-medium text-gray-700 mb-1">Välj valresultat för inmatning</label>
-                <select id="kfScenarioSelect" class="w-full border-gray-300 rounded shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500" onchange="loadKFScenario()">
+                <select id="kfScenarioSelect" autocomplete="off" class="w-full border-gray-300 rounded shadow-sm p-2 border focus:ring-blue-500 focus:border-blue-500" onchange="loadKFScenario()">
                     <option value="egen">Egen inmatning</option>
                     <option value="2030" hidden>Framtidsprognos (Val 2030)</option> 
                     <option value="2026" selected>Resultat (Val 2026)</option>
