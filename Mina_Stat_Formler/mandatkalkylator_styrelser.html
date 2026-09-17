@@ -421,7 +421,7 @@
             '2022': { 'S': 29856, 'M': 21368, 'SD': 12707, 'LL': 9512, 'C': 7368, 'V': 7109, 'MP': 6166, 'KD': 5416, 'L': 5405, 'ÖVR': 753 }
         };
 
-        let kfVotesData = {...kfVotesDatabase['2022']};
+        let kfVotesData = {...kfVotesDatabase['2026']};
 
         const cartels = ['Ingen', 'Kartell A', 'Kartell B', 'Kartell C', 'Kartell D'];
 
@@ -440,7 +440,9 @@
             "Tidösamarbete vs Rödgröna (2 block) + LL": { 'M': 'Kartell A', 'KD': 'Kartell A', 'L': 'Kartell A', 'SD': 'Kartell A', 'S': 'Kartell B', 'V': 'Kartell B', 'MP': 'Kartell B', 'C': 'Kartell B' },
             "Tidösamarbete + LL vs Rödgröna (2 block)": { 'M': 'Kartell A', 'KD': 'Kartell A', 'L': 'Kartell A', 'LL': 'Kartell A', 'SD': 'Kartell A', 'S': 'Kartell B', 'V': 'Kartell B', 'MP': 'Kartell B', 'C': 'Kartell B' },
             "Mittenstyre vs Vänster/Höger-ytterkanter": { 'S': 'Kartell A', 'C': 'Kartell A', 'MP': 'Kartell A', 'M': 'Kartell B', 'KD': 'Kartell B', 'L': 'Kartell B' },
-            "Borgerlig + SD majoritet vs Minoritet S+V+MP": { 'M': 'Kartell A', 'SD': 'Kartell A', 'KD': 'Kartell A', 'L': 'Kartell A', 'C': 'Kartell A', 'S': 'Kartell B', 'V': 'Kartell B', 'MP': 'Kartell B' }
+            "Borgerlig + SD majoritet vs Minoritet S+V+MP": { 'M': 'Kartell A', 'SD': 'Kartell A', 'KD': 'Kartell A', 'L': 'Kartell A', 'C': 'Kartell A', 'S': 'Kartell B', 'V': 'Kartell B', 'MP': 'Kartell B' },
+            "S+C+LL+V vs enad opp.": { 'S': 'Kartell A', 'C': 'Kartell A', 'LL': 'Kartell A', 'V': 'Kartell A', 'MP': 'Kartell B', 'M': 'Kartell B', 'KD': 'Kartell B', 'L': 'Kartell B', 'SD': 'Kartell B' },
+            "S+C+LL+V vs MP+L+KD vs M vs SD": { 'S': 'Kartell A', 'C': 'Kartell A', 'LL': 'Kartell A', 'V': 'Kartell A', 'MP': 'Kartell B', 'L': 'Kartell B', 'KD': 'Kartell B' }
         };
 
         let currentCalculationResult = null;
@@ -785,6 +787,7 @@
             const isShared = parseUrlParams();
             if(!isShared) {
                 loadScenario();
+                loadKFScenario(); // <--- LÄGG TILL DENNA RAD!
             } else {
                 setTimeout(performCalculation, 200);
             }
