@@ -33530,6 +33530,24 @@
           "kalla_flik": "Slutomgångar"
         },
         {
+          "skytt": "Nord, Kenneth",
+          "minut": "",
+          "innebord": "0-1",
+          "info": "straffläggning",
+          "avgorande": "",
+          "lag": "IF Saab",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Kindstrand, Björn",
+          "minut": "",
+          "innebord": "0-2",
+          "info": "straffläggning",
+          "avgorande": "",
+          "lag": "IF Saab",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
           "skytt": "Olsberg, Curt",
           "minut": "",
           "innebord": "1-2",
@@ -33541,10 +33559,19 @@
         {
           "skytt": "Svensson, Harry",
           "minut": "",
-          "innebord": "2-3",
+          "innebord": "2-2",
           "info": "straffläggning",
           "avgorande": "",
           "lag": "Djurgårdens IF",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Persson, Gunnar",
+          "minut": "",
+          "innebord": "2-3",
+          "info": "straffläggning",
+          "avgorande": "",
+          "lag": "IF Saab",
           "kalla_flik": "Slutomgångar"
         },
         {
@@ -34747,12 +34774,47 @@
         {
           "skytt": "Magnusson, Benno",
           "minut": "",
+          "innebord": "1-0",
+          "info": "",
+          "avgorande": "",
+          "lag": "Kalmar FF",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Ohlsson, Billy",
+          "minut": "",
+          "innebord": "1-1",
+          "info": "",
+          "avgorande": "",
+          "lag": "Hammarby IF",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Erlandsson, Johny",
+          "minut": "",
+          "innebord": "2-1",
+          "info": "",
+          "avgorande": "GWG",
+          "lag": "Kalmar FF",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Persson, Tony",
+          "minut": "",
+          "innebord": "3-1",
+          "info": "",
+          "avgorande": "",
+          "lag": "Kalmar FF",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Magnusson, Benno",
+          "minut": "",
           "innebord": "",
           "info": "",
           "avgorande": "",
           "lag": "Kalmar FF",
-          "kalla_flik": "Slutomgångar",
-          "merged": true
+          "kalla_flik": "Mästarna"
         },
         {
           "skytt": "Erlandsson, Johny",
@@ -34761,8 +34823,7 @@
           "info": "",
           "avgorande": "",
           "lag": "Kalmar FF",
-          "kalla_flik": "Slutomgångar",
-          "merged": true
+          "kalla_flik": "Mästarna"
         },
         {
           "skytt": "Persson, Tony",
@@ -34771,17 +34832,7 @@
           "info": "",
           "avgorande": "",
           "lag": "Kalmar FF",
-          "kalla_flik": "Slutomgångar",
-          "merged": true
-        },
-        {
-          "skytt": "Ohlsson, Billy",
-          "minut": "",
-          "innebord": "",
-          "info": "",
-          "avgorande": "",
-          "lag": "Hammarby IF",
-          "kalla_flik": "Slutomgångar"
+          "kalla_flik": "Mästarna"
         }
       ],
       "utvisningar": []
@@ -40054,6 +40105,51 @@
           "info": "",
           "avgorande": "",
           "lag": "GAIS",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Johansson, Daniel",
+          "minut": "",
+          "innebord": "1-1",
+          "info": "straffläggning",
+          "avgorande": "",
+          "lag": "Åtvidabergs FF",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Bergström, Kristian",
+          "minut": "",
+          "innebord": "2-2",
+          "info": "straffläggning",
+          "avgorande": "",
+          "lag": "Åtvidabergs FF",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Jönsson, Martin",
+          "minut": "",
+          "innebord": "3-2",
+          "info": "straffläggning",
+          "avgorande": "",
+          "lag": "Åtvidabergs FF",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Shhadeh, Imad",
+          "minut": "",
+          "innebord": "4-3",
+          "info": "straffläggning",
+          "avgorande": "",
+          "lag": "Åtvidabergs FF",
+          "kalla_flik": "Slutomgångar"
+        },
+        {
+          "skytt": "Ekunde, Richard",
+          "minut": "",
+          "innebord": "5-4",
+          "info": "straffläggning",
+          "avgorande": "GWG",
+          "lag": "Åtvidabergs FF",
           "kalla_flik": "Slutomgångar"
         }
       ],
