@@ -441,8 +441,8 @@
             "Tidösamarbete + LL vs Rödgröna (2 block)": { 'M': 'Kartell A', 'KD': 'Kartell A', 'L': 'Kartell A', 'LL': 'Kartell A', 'SD': 'Kartell A', 'S': 'Kartell B', 'V': 'Kartell B', 'MP': 'Kartell B', 'C': 'Kartell B' },
             "Mittenstyre vs Vänster/Höger-ytterkanter": { 'S': 'Kartell A', 'C': 'Kartell A', 'MP': 'Kartell A', 'M': 'Kartell B', 'KD': 'Kartell B', 'L': 'Kartell B' },
             "Borgerlig + SD majoritet vs Minoritet S+V+MP": { 'M': 'Kartell A', 'SD': 'Kartell A', 'KD': 'Kartell A', 'L': 'Kartell A', 'C': 'Kartell A', 'S': 'Kartell B', 'V': 'Kartell B', 'MP': 'Kartell B' },
-            "S+C+LL+V vs enad opp.": { 'S': 'Kartell A', 'C': 'Kartell A', 'LL': 'Kartell A', 'V': 'Kartell A', 'MP': 'Kartell B', 'M': 'Kartell B', 'KD': 'Kartell B', 'L': 'Kartell B', 'SD': 'Kartell B' },
-            "S+C+LL+V vs MP+L+KD vs M vs SD": { 'S': 'Kartell A', 'C': 'Kartell A', 'LL': 'Kartell A', 'V': 'Kartell A', 'MP': 'Kartell B', 'L': 'Kartell B', 'KD': 'Kartell B' }
+            "Samling Linköping vs enad opp.": { 'S': 'Kartell A', 'C': 'Kartell A', 'LL': 'Kartell A', 'V': 'Kartell A', 'MP': 'Kartell B', 'M': 'Kartell B', 'KD': 'Kartell B', 'L': 'Kartell B', 'SD': 'Kartell B' },
+            "Samling Linköping vs MP+L+KD vs M vs SD": { 'S': 'Kartell A', 'C': 'Kartell A', 'LL': 'Kartell A', 'V': 'Kartell A', 'MP': 'Kartell B', 'L': 'Kartell B', 'KD': 'Kartell B' }
         };
 
         let currentCalculationResult = null;
@@ -858,8 +858,13 @@
                 }
             });
             
-            if (year === '2022') document.getElementById('quickCartelSelect').value = "Tillsammans för Linköping vs splittrad opp.";
-            else document.getElementById('quickCartelSelect').value = "Återställ (Inga karteller)";
+            if (year === '2022') {
+                document.getElementById('quickCartelSelect').value = "Tillsammans för Linköping vs splittrad opp.";
+            } else if (year === '2026') {
+                document.getElementById('quickCartelSelect').value = "Samling Linköping vs MP+L+KD vs M vs SD";
+            } else {
+                document.getElementById('quickCartelSelect').value = "Återställ (Inga karteller)";
+            }
             
             applyQuickCartel();
             updateTotal();
