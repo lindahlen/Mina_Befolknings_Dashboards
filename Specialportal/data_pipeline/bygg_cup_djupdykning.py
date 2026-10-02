@@ -81,6 +81,7 @@ def bygg_json():
                         "kapten": clean_data(row.get('Lagkapten_Mästare', '')),
                         "tranare_vinnare": clean_data(row.get('Tränare_Mästare', '')),
                         "tranare_tvaa": clean_data(row.get('Tränare_Tvåa', '')),
+                        "tvaa_kapten": clean_data(row.get('Lagkapten_Tvåa', '')),
                         "pokal": clean_data(row.get('Pokal', '')),
                         "finalar": clean_data(row.get('Finalår', '')),
                         "sm_vinnare": clean_data(row.get('SM-vinnare', '')),

@@ -139,6 +139,7 @@ html_template = """
             <button onclick="switchTab('topplistor')" id="btn-topplistor" class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-blue-600">Topplistor & Historik</button>
             <button onclick="switchTab('matrix')" id="btn-matrix" class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-blue-600">Matris & Grafer</button>
             <button onclick="switchTab('players')" id="btn-players" class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-blue-600">Spelarregister</button>
+            <button onclick="switchTab('analys')" id="btn-tab-analys" class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-blue-600">Analys</button>
             <button onclick="switchTab('admin')" id="btn-admin" class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-blue-600">Admin (Varningar)</button>
         </div>
     </nav>
@@ -289,18 +290,44 @@ html_template = """
                             <option value="oldest_scorer">Äldsta finalmålskytten (Exkl. straffläggning)</option>
                             <option value="youngest_scorer">Yngsta finalmålskytten (Exkl. straffläggning)</option>
                             <option value="longest_span">Längst period mellan första och sista finalen</option>
+                        <option disabled>────────── Visste du att... ──────────</option>
+                            <option value="multi_club_winners">Klubb-hopparna (Cupguld med olika klubbar)</option>
+                            <option value="fastest_goals">Snabbaste finalmålen genom tiderna</option>
+                            <option value="super_subs">Superinhopparna (Mål som inbytt i en final)</option>
+                            <option value="silver_no_gold">Final-förlorarna (Flest silver utan guld)</option>
+                            <option value="captain_winners">Kaptensligan (Lyft pokalen flest gånger)</option>
+                            <option value="gwg_knockout">Clutch-spelarna: Avgörande mål (Kvart till Final)</option>
+                            <option value="penalty_shootout">Straffspecialisterna (Mål i straffavgöranden)</option>
+                            <option value="referee_knockout">Domarligan (Flest dömda slutspelsmatcher)</option>
+                        <option disabled>────────── Demografi & Ålder ──────────</option>
+                            <option value="birth_months">Födelsemånad (Relativ Ålderseffekt)</option>
+                            <option value="birth_decades">Födelsedecennium (När är spelarna födda?)</option>
+                            <option value="rae_over_time">RAE över tid (Har ålderseffekten ökat?)</option>
                         </select>
                     </div>
                     <div class="w-full md:w-2/3 pb-2 transition-opacity duration-300 flex flex-col sm:flex-row gap-2" id="toplist-filters-container">
-                        <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium text-sm bg-yellow-50 border border-yellow-200 p-2 rounded-md">
-                            <input type="checkbox" id="toplist-only-champ" onchange="renderToplist()" class="w-4 h-4 text-yellow-600">
-                            Visa ENDAST spelare när de vann Cupen (Cupmästare)
-                        </label>
-                        <label id="toplist-played-container" class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium text-sm bg-emerald-50 border border-emerald-200 p-2 rounded-md">
-                            <input type="checkbox" id="toplist-only-played" onchange="renderToplist()" class="w-4 h-4 text-emerald-600">
-                            Visa enbart de som deltog på planen
-                        </label>
-                    </div>
+    <label class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium text-sm bg-yellow-50 border border-yellow-200 p-2 rounded-md">
+        <input type="checkbox" id="toplist-only-champ" onchange="renderToplist()" class="w-4 h-4 text-yellow-600">
+        Visa ENDAST spelare när de vann Cupen (Cupmästare)
+    </label>
+    
+    <!-- Uppdaterad label med relativ positionering för tooltip -->
+    <label id="toplist-played-container" class="flex items-center gap-2 cursor-pointer text-slate-700 font-medium text-sm bg-emerald-50 border border-emerald-200 p-2 rounded-md relative">
+        <input type="checkbox" id="toplist-only-played" onchange="renderToplist()" class="w-4 h-4 text-emerald-600">
+        <span>Visa enbart de som deltog på planen</span>
+        
+        <!-- NY I-KNAPP FÖR RAE (Dold som standard) -->
+        <span id="rae-info-btn" class="hidden ml-1 group cursor-help text-emerald-600 hover:text-emerald-800 flex items-center">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path></svg>
+            
+            <!-- Själva Tooltippen (Visas vid hover) -->
+            <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-72 p-3 bg-slate-800 text-white text-xs rounded shadow-lg z-[100] pointer-events-none normal-case font-normal leading-relaxed text-left">
+                <strong class="text-emerald-300 text-sm mb-1 block">Relativa Ålderseffekten (RAE)</strong>
+                Ett välkänt fenomen inom idrott där barn födda tidigt på året (kvartal 1) överrepresenteras på elitnivå. Eftersom de var fysiskt mognare än sina jämnåriga under ungdomsåren, valdes de oftare ut till akademier, vilket gav dem bättre förutsättningar hela vägen upp i vuxen ålder.
+            </div>
+        </span>
+    </label>
+</div>
                 </div>
             </div>
 
@@ -506,6 +533,37 @@ html_template = """
             </div>
         </section>
 
+        <!-- FLIK: TAKTIK & ANALYS -->
+        <section id="tab-analys" class="tab-content hidden">
+            <div class="bg-white p-6 rounded-b-lg rounded-tr-lg shadow-md border border-slate-200">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-800">Djupanalys & Taktik</h2>
+                        <p class="text-sm text-slate-500 mt-1">Avancerade beräkningar av spelmönster, ålder och dubbla roller, samt finalarenor och matchresultat.</p>
+                    </div>
+                    <select id="analys-category" onchange="renderAnalys()" class="p-2 border border-slate-300 rounded-md bg-slate-50 font-bold text-slate-700 focus:ring-blue-500 focus:border-blue-500 shadow-sm">
+                        <option value="" disabled selected>-- Välj analys --</option>
+                        <option value="player_coach">I dubbla roller (Spelare & Tränare)</option>
+                        <option value="comeback_kings">Vändningarnas Mästare (Vänt underläge till guld)</option>
+                        <option value="age_gap">Åldersgapets Betydelse (Rutin vs Ungdom)</option>
+                        <option value="iron_men">Järnmännen (Flest spelade finalminuter & förlängningar)</option>
+                        <!-- Här fyller vi på med Vändningar, Åldersgap etc. -->
+                        <option disabled>────────── Övrigt & Sammanställningar ──────────</option>
+                        <option value="final_arenas">Finalarenor (Var har pokalen lyfts?)</option>
+                        <option value="all_results">Matchresultat (Alla cupmatcher genom tiderna)</option>
+                    </select>
+                    </select>
+                </div>
+                
+                <div class="overflow-x-auto rounded-lg border border-slate-200 shadow-inner">
+                    <table class="w-full text-left border-collapse whitespace-nowrap min-w-max">
+                        <thead id="analys-head"></thead>
+                        <tbody id="analys-body" class="text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
         <!-- FLIK 7: ADMIN (VARNINGAR) -->
         <section id="tab-admin" class="tab-content">
             <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-6">
@@ -687,6 +745,45 @@ html_template = """
             }
             return cleanedName;
         }
+        
+        // GLOBAL HJÄLPFUNKTION: Kollar om en spelare var lagkapten i en viss match
+    function isPlayerCaptain(pName, pKaptenKolumn, pTeam, matchSeasonStr) {
+    if (!pName) return false;
+    
+    // 1. Snabbkoll: Finns flaggan direkt i matchloggen?
+    if (pKaptenKolumn && (String(pKaptenKolumn).toLowerCase() === 'ja' || String(pKaptenKolumn) === '1' || String(pKaptenKolumn).toLowerCase() === 'true')) return true;
+    if (String(pName).toLowerCase().includes('(c)')) return true;
+
+    // 2. Djupkoll mot Excel-fliken Lagkapten_Tränare
+    if (typeof DJUP === 'undefined' || !DJUP.sasonger || !matchSeasonStr) return false;
+    
+    let startYear = String(matchSeasonStr).substring(0, 4);
+    let champion = (typeof SEASON_CHAMPIONS !== 'undefined') ? SEASON_CHAMPIONS[matchSeasonStr.replace(/\.0$/, '')] : "Okänd";
+    
+    // NYHET: Söker på NYCKELN istället för en kolumn i datan!
+    let sKeyMatch = Object.keys(DJUP.sasonger).find(k => String(k).startsWith(startYear));
+    if (!sKeyMatch) return false;
+    
+    let sRow = DJUP.sasonger[sKeyMatch];
+
+    let capMastRaw = "", capTvaaRaw = "";
+    Object.keys(sRow).forEach(k => {
+        let kLow = String(k).toLowerCase().trim();
+        if (kLow === 'kapten' || kLow.includes('lagkapten_mast') || kLow === 'lagkapten') capMastRaw = String(sRow[k]).trim();
+        if (kLow === 'tvaa_kapten' || kLow.includes('lagkapten_tva') || kLow.includes('lagkapten_två')) capTvaaRaw = String(sRow[k]).trim();
+    });
+
+    const washName = (str) => str.toLowerCase().replace(/,/g, ' ').split(/\s+/).filter(x=>x).sort().join('');
+    
+    let pKey = washName(pName);
+    let teamSafe = String(pTeam || "").toLowerCase().trim();
+    let champSafe = String(champion || "").toLowerCase().trim();
+
+    if (capMastRaw && washName(capMastRaw) === pKey && teamSafe === champSafe) return true;
+    if (capTvaaRaw && washName(capTvaaRaw) === pKey && teamSafe !== champSafe) return true;
+
+    return false;
+}
 
         function cleanNumber(val) {
             if (val === null || val === undefined || val === "") return "";
@@ -933,20 +1030,26 @@ html_template = """
             let sKey = Object.keys(DJUP.sasonger).find(k => isSameSeason(k, CURRENT_SEASON));
             
             if(!sKey) {
-                document.getElementById('h-kapten').innerText = "Data saknas";
-                document.getElementById('h-kapten').classList.add('text-rose-600');
-                document.getElementById('h-tranare1').innerText = "Kolla F12 konsolen";
-                document.getElementById('h-tranare1').classList.add('text-rose-600');
-                document.getElementById('h-pokal').innerText = "Fel säsongs-ID";
-                document.getElementById('h-pokal').classList.add('text-rose-600');
+                // Snygg fallback för pågående säsonger (eller när djupdata ännu inte fyllts i)
+                document.getElementById('h-kapten').innerText = "Avgörs i vår";
+                document.getElementById('h-kapten').classList.remove('text-rose-600');
+                document.getElementById('h-kapten').classList.add('text-slate-500');
+                
+                document.getElementById('h-tranare1').innerText = "Avgörs i vår";
+                document.getElementById('h-tranare1').classList.remove('text-rose-600');
+                document.getElementById('h-tranare1').classList.add('text-slate-500');
+                
+                document.getElementById('h-pokal').innerText = "Avgörs i vår";
+                document.getElementById('h-pokal').classList.remove('text-rose-600');
+                document.getElementById('h-pokal').classList.add('text-slate-500');
             } else {
                 const sInfo = DJUP.sasonger[sKey];
                 document.getElementById('h-kapten').innerText = sInfo.kapten ? formatName(sInfo.kapten) : "Okänd";
-                document.getElementById('h-kapten').classList.remove('text-rose-600');
+                document.getElementById('h-kapten').classList.remove('text-rose-600', 'text-slate-500');
                 document.getElementById('h-tranare1').innerText = sInfo.tranare_vinnare ? formatName(sInfo.tranare_vinnare) : "Okänd";
-                document.getElementById('h-tranare1').classList.remove('text-rose-600');
+                document.getElementById('h-tranare1').classList.remove('text-rose-600', 'text-slate-500');
                 document.getElementById('h-pokal').innerText = sInfo.pokal || "-";
-                document.getElementById('h-pokal').classList.remove('text-rose-600');
+                document.getElementById('h-pokal').classList.remove('text-rose-600', 'text-slate-500');
             }
             document.getElementById('season-header-info').classList.remove('hidden');
             
@@ -1298,7 +1401,16 @@ html_template = """
                     
                     let pMin = p.minuter ? cleanNumber(p.minuter)+"'" : "";
                     let pName = formatName(p.namn);
-                    let rowHtml = `<div class="flex justify-between py-1.5 border-b border-slate-100 text-sm"><span>${p.pos}. ${pName} ${icons}</span><span class="text-slate-400 text-xs">${pMin}</span></div>`;
+                    
+                    // --- NYHET: Kaptens-detektorn ---
+                    // Hämtar spelarens lag för att jämföra med mästarlaget/silverlaget
+                    let pTeam = getPlayerTeam(p.lag, m); 
+                    // Anropar vår globala hjälpfunktion vi skapade tidigare
+                    let capBadge = isPlayerCaptain(p.namn, p.kapten, pTeam, m.sasong) ? ' <span class="font-bold text-amber-500" title="Lagkapten">(c)</span>' : '';
+                    // ---------------------------------
+                    
+                    // Lade in ${capBadge} direkt efter ${pName}
+                    let rowHtml = `<div class="flex justify-between py-1.5 border-b border-slate-100 text-sm"><span>${p.pos}. ${pName}${capBadge} ${icons}</span><span class="text-slate-400 text-xs">${pMin}</span></div>`;
                     
                     if (index === 11) {
                         let header = `<div class="w-full border-t border-dashed border-slate-300 my-1 pt-2 text-[10px] text-slate-400 font-bold tracking-widest text-center">AVBYTARE</div>`;
@@ -2024,6 +2136,15 @@ html_template = """
             let onlyChamp = document.getElementById('toplist-only-champ').checked;
             let onlyPlayedEl = document.getElementById('toplist-only-played');
             let onlyPlayed = onlyPlayedEl ? onlyPlayedEl.checked : false;
+            // Visa RAE-info-knappen endast på demografi-flikarna
+            let raeBtn = document.getElementById('rae-info-btn');
+            if (raeBtn) {
+                if (cat === 'birth_months' || cat === 'birth_decades' || cat === 'rae_over_time') {
+                    raeBtn.classList.remove('hidden');
+                } else {
+                    raeBtn.classList.add('hidden');
+                }
+            }
 
             let titleEl = document.getElementById('toplist-title');
             let headEl = document.getElementById('toplist-head');
@@ -2323,6 +2444,738 @@ html_template = """
                     return `<tr class="hover:bg-slate-50 border-b border-slate-50"><td class="px-4 py-3 font-bold text-slate-400">${i+1}</td><td class="px-4 py-3 font-bold text-slate-800 cursor-pointer hover:text-blue-600" onclick="openPlayerModal('${safeName}')">${formatName(r.name)} ${r.isChamp ? '👑' : ''}</td><td class="px-4 py-3 text-center font-bold text-indigo-600 text-lg">${r.span}</td><td class="px-4 py-3 text-center text-sm font-bold text-yellow-600">${r.golds}</td><td class="px-4 py-3 text-sm text-slate-500">${r.minYear} — ${r.maxYear}</td></tr>`;
                 }).join('');
             }
+            else if (cat === 'multi_club_winners') {
+                titleEl.innerText = "Visste du att: Spelare som vunnit Cupguld med FLERA olika klubbar";
+                headEl.innerHTML = `<tr><th class="px-4 py-3 w-10">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3 text-center">Antal Klubbar</th><th class="px-4 py-3 text-center">Totalt Guld</th><th class="px-4 py-3">Klubbar (Och guldåren)</th></tr>`;
+                
+                window.PLAYER_STATS.forEach(p => {
+                    let validGolds = p.goldMedals;
+                    if (onlyPlayed) validGolds = validGolds.filter(m => m.played);
+
+                    let clubGolds = {};
+                    validGolds.forEach(g => {
+                        if (!clubGolds[g.club]) clubGolds[g.club] = [];
+                        clubGolds[g.club].push(g.year);
+                    });
+
+                    let uniqueClubs = Object.keys(clubGolds);
+
+                    if (uniqueClubs.length > 1) {
+                        let clubDetails = uniqueClubs.map(c => {
+                            return `<b>${c}</b> (${clubGolds[c].sort((a,b)=>parseInt(a)-parseInt(b)).join(', ')})`;
+                        }).join(' <span class="text-slate-300 mx-1">|</span> ');
+
+                        results.push({
+                            name: p.namn,
+                            clubCount: uniqueClubs.length,
+                            goldCount: validGolds.length,
+                            details: clubDetails
+                        });
+                    }
+                });
+                
+                results.sort((a,b) => b.clubCount - a.clubCount || b.goldCount - a.goldCount || a.name.localeCompare(b.name));
+                
+                bodyEl.innerHTML = results.map((r, i) => {
+                    let safeName = escapeHtml(r.name);
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50"><td class="px-4 py-3 font-bold text-slate-400">${i+1}</td><td class="px-4 py-3 font-bold text-slate-800 cursor-pointer hover:text-blue-600" onclick="openPlayerModal('${safeName}')">${formatName(r.name)} 👑</td><td class="px-4 py-3 text-center font-bold text-indigo-600 text-lg">${r.clubCount}</td><td class="px-4 py-3 text-center font-bold text-yellow-600">${r.goldCount}</td><td class="px-4 py-3 text-sm text-slate-600">${r.details}</td></tr>`;
+                }).join('');
+            }
+            else if (cat === 'fastest_goals') {
+                titleEl.innerText = "Visste du att: Snabbaste målen i en Cupfinal";
+                headEl.innerHTML = `<tr><th class="px-4 py-3 w-10">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3 text-center">Minut</th><th class="px-4 py-3">Klubb</th><th class="px-4 py-3">Match (Säsong)</th></tr>`;
+                
+                Object.keys(DJUP.matcher).forEach(mid => {
+                    let dm = DJUP.matcher[mid];
+                    let bm = BASE_MATCHES[mid];
+                    if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi') || bm.fas.toLowerCase().includes('åtton') || bm.fas.toLowerCase().includes('1/8')) return;
+                    
+                    let season = bm.sasong.replace(/\.0$/, '');
+                    let champion = SEASON_CHAMPIONS[season];
+                    
+                    dm.mal.forEach(g => {
+                        let infoLower = g.info ? g.info.toLowerCase() : "";
+                        let innebordLower = g.innebord ? g.innebord.toLowerCase() : "";
+                        if (infoLower.includes('straffläggning') || innebordLower.includes('straffläggning')) return;
+                        
+                        let minStr = cleanNumber(g.minut);
+                        if (!minStr) return; 
+                        
+                        let baseMin = parseInt(minStr.split('+')[0]);
+                        if (isNaN(baseMin)) return;
+
+                        let playerTeam = getPlayerTeamInSeason(g.skytt, season);
+                        if (!playerTeam) {
+                            let pLineup = dm.uppstallning.find(p => p.namn === g.skytt);
+                            if (pLineup) playerTeam = getPlayerTeam(pLineup.lag, bm);
+                        }
+                        if (!playerTeam && g.kalla_flik === 'Mästarna') playerTeam = champion;
+                        
+                        if (onlyChamp && playerTeam !== champion) return;
+                        
+                        let isOwnGoal = g.skytt.toLowerCase().includes('självmål');
+                        let skyttName = isOwnGoal ? `Självmål (${g.info || 'okänd'})` : g.skytt;
+
+                        results.push({
+                            name: skyttName,
+                            minute: baseMin,
+                            minuteRaw: minStr,
+                            team: playerTeam || "-",
+                            matchStr: `${bm.hemma} - ${bm.borta}`,
+                            season: season,
+                            isChamp: (playerTeam === champion)
+                        });
+                    });
+                });
+                
+                results.sort((a,b) => a.minute - b.minute || a.name.localeCompare(b.name));
+                
+                bodyEl.innerHTML = results.slice(0, 50).map((r, i) => {
+                    let isSjalvmal = r.name.includes('Självmål');
+                    let rawName = isSjalvmal ? r.name.split('(')[1].replace(')','') : r.name;
+                    let safeName = escapeHtml(rawName);
+                    let crown = r.isChamp ? '👑' : '';
+                    let onClick = isSjalvmal ? '' : `cursor-pointer hover:text-blue-600" onclick="openPlayerModal('${safeName}')"`;
+                    
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50"><td class="px-4 py-3 font-bold text-slate-400">${i+1}</td><td class="px-4 py-3 font-bold text-slate-800 ${onClick}>${formatName(r.name)} ${crown}</td><td class="px-4 py-3 text-center font-bold text-emerald-600 text-lg">${r.minuteRaw}'</td><td class="px-4 py-3 text-sm text-slate-600">${r.team}</td><td class="px-4 py-3 text-xs text-slate-500">${r.matchStr} <span class="bg-slate-200 px-1 rounded ml-1">${r.season}</span></td></tr>`;
+                }).join('');
+            }
+            else if (cat === 'super_subs') {
+                titleEl.innerText = "Visste du att: Superinhopparna (Mål efter inbyte i finalen)";
+                headEl.innerHTML = `<tr><th class="px-4 py-3 w-10">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3 text-center">Mål som inhoppare</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3">Match (Minut & Säsong)</th></tr>`;
+                
+                let subGoals = {};
+                Object.keys(DJUP.matcher).forEach(mid => {
+                    let dm = DJUP.matcher[mid];
+                    let bm = BASE_MATCHES[mid];
+                    if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi') || bm.fas.toLowerCase().includes('åtton') || bm.fas.toLowerCase().includes('1/8')) return;
+                    
+                    let season = bm.sasong.replace(/\.0$/, '');
+                    let champion = SEASON_CHAMPIONS[season];
+                    
+                    dm.mal.forEach(g => {
+                        let infoLower = g.info ? g.info.toLowerCase() : "";
+                        let innebordLower = g.innebord ? g.innebord.toLowerCase() : "";
+                        if (infoLower.includes('straffläggning') || innebordLower.includes('straffläggning') || g.skytt.toLowerCase().includes('självmål')) return;
+                        
+                        let pLineup = dm.uppstallning.find(p => p.namn === g.skytt);
+                        if (!pLineup) return;
+
+                        let bText = String(pLineup.byte || '').toLowerCase();
+                        let startedOnBench = (parseInt(pLineup.pos) > 11);
+                        let subbedIn = /\bin\b/.test(bText) || bText === 'in';
+
+                        if (startedOnBench || subbedIn) {
+                            let playerTeam = getPlayerTeam(pLineup.lag, bm);
+                            if (onlyChamp && playerTeam !== champion) return;
+
+                            if (!subGoals[g.skytt]) subGoals[g.skytt] = { count: 0, details: [], isChamp: false };
+                            subGoals[g.skytt].count++;
+                            if (playerTeam === champion) subGoals[g.skytt].isChamp = true;
+                            
+                            let minStr = cleanNumber(g.minut) ? `${cleanNumber(g.minut)}'` : '?';
+                            subGoals[g.skytt].details.push(`<b>${playerTeam}</b>: ${minStr} (${season})`);
+                        }
+                    });
+                });
+                
+                Object.keys(subGoals).forEach(player => {
+                    results.push({
+                        name: player,
+                        count: subGoals[player].count,
+                        details: subGoals[player].details.join('<br>'),
+                        isChamp: subGoals[player].isChamp
+                    });
+                });
+                
+                results.sort((a,b) => b.count - a.count || a.name.localeCompare(b.name));
+                
+                bodyEl.innerHTML = results.slice(0, 50).map((r, i) => {
+                    let safeName = escapeHtml(r.name);
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50"><td class="px-4 py-3 font-bold text-slate-400">${i+1}</td><td class="px-4 py-3 font-bold text-slate-800 cursor-pointer hover:text-blue-600" onclick="openPlayerModal('${safeName}')">${formatName(r.name)} ${r.isChamp ? '👑' : ''}</td><td class="px-4 py-3 text-center font-bold text-rose-600 text-lg">${r.count}</td><td class="px-4 py-3 text-sm text-slate-600" colspan="2">${r.details}</td></tr>`;
+                }).join('');
+            }
+            else if (cat === 'gwg_knockout') {
+                titleEl.innerText = "Matchavgörande mål (GWG) i de sista slutspelsfaserna";
+                headEl.innerHTML = `<tr><th class="px-4 py-3 w-10">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3 text-center">Totalt GWG</th><th class="px-4 py-3 text-center">I Final</th><th class="px-4 py-3 text-center">I Semi</th><th class="px-4 py-3 text-center">I Kvart</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3">Säsonger</th></tr>`;
+                
+                let gwgStats = {};
+                
+                Object.keys(DJUP.matcher).forEach(mid => {
+                    let dm = DJUP.matcher[mid];
+                    let bm = BASE_MATCHES[mid];
+                    if(!bm) return;
+                    
+                    let fLow = bm.fas.toLowerCase();
+                    let phase = "";
+                    if (fLow.includes('final') && !fLow.includes('kvart') && !fLow.includes('semi') && !fLow.includes('åtton') && !fLow.includes('1/8')) phase = "final";
+                    else if (fLow.includes('semi')) phase = "semi";
+                    else if (fLow.includes('kvart')) phase = "kvart";
+                    else return; 
+                    
+                    let season = bm.sasong.replace(/\.0$/, '');
+                    let champion = SEASON_CHAMPIONS[season];
+                    
+                    dm.mal.forEach(g => {
+                        if (g.avgorande !== 'GWG') return;
+                        
+                        let infoLower = g.info ? g.info.toLowerCase() : "";
+                        let innebordLower = g.innebord ? g.innebord.toLowerCase() : "";
+                        if (infoLower.includes('straffläggning') || innebordLower.includes('straffläggning')) return;
+                        
+                        let playerTeam = getPlayerTeamInSeason(g.skytt, season);
+                        if (!playerTeam) {
+                            let pLineup = dm.uppstallning.find(p => p.namn === g.skytt);
+                            if (pLineup) playerTeam = getPlayerTeam(pLineup.lag, bm);
+                        }
+                        if (!playerTeam && g.kalla_flik === 'Mästarna') playerTeam = champion;
+                        
+                        if (onlyChamp && playerTeam !== champion) return;
+                        
+                        let isOwnGoal = g.skytt.toLowerCase().includes('självmål');
+                        let pName = isOwnGoal ? `Självmål (${g.info || 'okänd'})` : g.skytt;
+                        
+                        if (!gwgStats[pName]) {
+                            gwgStats[pName] = { total: 0, final: 0, semi: 0, kvart: 0, clubs: new Set(), seasons: new Set(), isChamp: false, originalName: g.skytt };
+                        }
+                        
+                        gwgStats[pName].total++;
+                        if (phase === 'final') gwgStats[pName].final++;
+                        else if (phase === 'semi') gwgStats[pName].semi++;
+                        else if (phase === 'kvart') gwgStats[pName].kvart++;
+                        
+                        if (playerTeam) gwgStats[pName].clubs.add(playerTeam);
+                        gwgStats[pName].seasons.add(season);
+                        if (playerTeam === champion) gwgStats[pName].isChamp = true;
+                    });
+                });
+                
+                Object.keys(gwgStats).forEach(player => {
+                    results.push({
+                        name: gwgStats[player].originalName, 
+                        displayName: player,
+                        total: gwgStats[player].total,
+                        final: gwgStats[player].final,
+                        semi: gwgStats[player].semi,
+                        kvart: gwgStats[player].kvart,
+                        clubs: Array.from(gwgStats[player].clubs).join(', '),
+                        seasons: Array.from(gwgStats[player].seasons).sort((a,b)=>parseInt(a)-parseInt(b)).join(', '),
+                        isChamp: gwgStats[player].isChamp
+                    });
+                });
+                
+                results.sort((a,b) => b.total - a.total || b.final - a.final || b.semi - a.semi || a.displayName.localeCompare(b.displayName));
+                
+                bodyEl.innerHTML = results.slice(0, 50).map((r, i) => {
+                    let isSjalvmal = r.displayName.includes('Självmål');
+                    let rawName = isSjalvmal ? r.displayName.split('(')[1].replace(')','') : r.name;
+                    let safeName = escapeHtml(rawName);
+                    let crown = r.isChamp ? '👑' : '';
+                    
+                    // Buggfix för förskjutna rader! Säkrar upp klass-attributet
+                    let interactClasses = isSjalvmal ? "" : "cursor-pointer hover:text-blue-600";
+                    let onClickAttr = isSjalvmal ? "" : `onclick="openPlayerModal('${safeName}')"`;
+                    
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50"><td class="px-4 py-3 font-bold text-slate-400">${i+1}</td><td class="px-4 py-3 font-bold text-slate-800 ${interactClasses}" ${onClickAttr}>${formatName(r.displayName)} ${crown}</td><td class="px-4 py-3 text-center font-black text-rose-600 text-lg">${r.total}</td><td class="px-4 py-3 text-center font-bold text-yellow-600 bg-yellow-50/30">${r.final}</td><td class="px-4 py-3 text-center font-bold text-slate-600">${r.semi}</td><td class="px-4 py-3 text-center font-bold text-slate-500">${r.kvart}</td><td class="px-4 py-3 text-sm text-slate-600">${r.clubs}</td><td class="px-4 py-3 text-xs text-slate-500 truncate max-w-xs" title="${r.seasons}">${r.seasons}</td></tr>`;
+                }).join('');
+            }
+            else if (cat === 'silver_no_gold') {
+                titleEl.innerText = "Final-förlorarna (Spelare med flest silver, utan att ha vunnit guld)";
+                headEl.innerHTML = `<tr><th class="px-4 py-3 w-10">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3 text-center">Antal Silver</th><th class="px-4 py-3">Klubb(ar) i final</th><th class="px-4 py-3">Finalsäsonger</th></tr>`;
+                
+                window.PLAYER_STATS.forEach(p => {
+                    let validGolds = p.goldMedals;
+                    let validSilvers = p.silverMedals;
+                    if (onlyPlayed) {
+                        validGolds = validGolds.filter(m => m.played);
+                        validSilvers = validSilvers.filter(m => m.played);
+                    }
+
+                    if (validGolds.length === 0 && validSilvers.length > 0) {
+                        results.push({
+                            name: p.namn,
+                            silverCount: validSilvers.length,
+                            clubs: Array.from(new Set(validSilvers.map(s => s.club))).join(', '),
+                            years: validSilvers.sort((a,b)=>parseInt(a.year)-parseInt(b.year)).map(s => s.played ? s.year : `${s.year} (ej spel)`).join(', ')
+                        });
+                    }
+                });
+                
+                results.sort((a,b) => b.silverCount - a.silverCount || a.name.localeCompare(b.name));
+                
+                bodyEl.innerHTML = results.slice(0, 50).map((r, i) => {
+                    let safeName = escapeHtml(r.name);
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50"><td class="px-4 py-3 font-bold text-slate-400">${i+1}</td><td class="px-4 py-3 font-bold text-slate-800 cursor-pointer hover:text-blue-600" onclick="openPlayerModal('${safeName}')">${formatName(r.name)}</td><td class="px-4 py-3 text-center font-bold text-slate-400 text-lg">${r.silverCount}</td><td class="px-4 py-3 text-sm text-slate-600">${r.clubs}</td><td class="px-4 py-3 text-xs text-slate-500">${r.years}</td></tr>`;
+                }).join('');
+            }
+            else if (cat === 'captain_winners') {
+                titleEl.innerText = "Kaptensligan (Lyft pokalen flest gånger som lagkapten)";
+                headEl.innerHTML = `<tr><th class="px-4 py-3 w-10">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3 text-center">Guld som Kapten</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3">Säsonger</th></tr>`;
+                
+                let captains = {};
+                ALL_SEASONS.forEach(s => {
+                    let sKey = Object.keys(DJUP.sasonger).find(k => isSameSeason(k, s));
+                    if (sKey && DJUP.sasonger[sKey].kapten) {
+                        // 1. Skapa den 100% unika (oformaterade) nyckeln
+                        let rawName = String(DJUP.sasonger[sKey].kapten).trim();
+                        
+                        if (rawName.toLowerCase() !== "okänd") {
+                            let champ = SEASON_CHAMPIONS[s] || "Okänd klubb";
+                            if (!captains[rawName]) captains[rawName] = { count: 0, seasons: [], clubs: new Set() };
+                            captains[rawName].count++;
+                            captains[rawName].seasons.push(s);
+                            captains[rawName].clubs.add(champ);
+                        }
+                    }
+                });
+
+                Object.keys(captains).forEach(rawName => {
+                    results.push({
+                        rawName: rawName,
+                        // 2. Skapa det vackra formaterade namnet (för tabellen)
+                        prettyName: typeof formatName === 'function' ? formatName(rawName) : rawName,
+                        count: captains[rawName].count,
+                        clubs: Array.from(captains[rawName].clubs).join(', '),
+                        seasons: captains[rawName].seasons.sort((a,b)=>parseInt(a)-parseInt(b)).join(', ')
+                    });
+                });
+
+                // Sortera på det formaterade namnet
+                results.sort((a,b) => b.count - a.count || a.prettyName.localeCompare(b.prettyName));
+
+                bodyEl.innerHTML = results.slice(0, 50).map((r, i) => {
+                    // 3. SKICKA IN RAWNAME TILL MODALEN (SÅ DEN HITTAR RÄTT SPELARE), MEN VISA PRETTYNAME I UI
+                    let safeName = escapeHtml(r.rawName);
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50"><td class="px-4 py-3 font-bold text-slate-400">${i+1}</td><td class="px-4 py-3 font-bold text-slate-800 cursor-pointer hover:text-blue-600" onclick="openPlayerModal('${safeName}')">${r.prettyName} ©️</td><td class="px-4 py-3 text-center font-bold text-yellow-600 text-lg">${r.count}</td><td class="px-4 py-3 text-sm text-slate-600">${r.clubs}</td><td class="px-4 py-3 text-xs text-slate-500">${r.seasons}</td></tr>`;
+                }).join('');
+            }
+            else if (cat === 'penalty_shootout') {
+                titleEl.innerHTML = "Straffspecialisterna i Slutspelet <span class='text-xs font-normal text-slate-400 ml-2'>(OBS: Historiken över straffläggningar är ännu inte helt komplett)</span>";
+                headEl.innerHTML = `<tr><th class="px-4 py-3 w-10">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3 text-center">Satta Straffar</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3">Match (Säsong)</th></tr>`;
+                
+                let penStats = {};
+                
+                Object.keys(DJUP.matcher).forEach(mid => {
+                    let dm = DJUP.matcher[mid];
+                    let bm = BASE_MATCHES[mid];
+                    if(!bm || (!bm.fas.toLowerCase().includes('final') && !bm.fas.toLowerCase().includes('semi') && !bm.fas.toLowerCase().includes('kvart'))) return;
+                    
+                    let season = bm.sasong.replace(/\.0$/, '');
+                    
+                    // Läs av matchfasen för K, S eller F
+                    let fLow = bm.fas.toLowerCase();
+                    let phaseAbbr = "";
+                    if (fLow.includes('final') && !fLow.includes('kvart') && !fLow.includes('semi') && !fLow.includes('åtton') && !fLow.includes('1/8')) phaseAbbr = "F";
+                    else if (fLow.includes('semi')) phaseAbbr = "S";
+                    else if (fLow.includes('kvart')) phaseAbbr = "K";
+                    
+                    // Skapa en snygg badge för fasen
+                    let phaseBadge = phaseAbbr ? `<span class="bg-indigo-100 text-indigo-800 text-[10px] px-1.5 py-0.5 rounded ml-1 font-bold" title="${bm.fas}">${phaseAbbr}</span>` : "";
+
+                    dm.mal.forEach(g => {
+                        let infoLower = g.info ? g.info.toLowerCase() : "";
+                        let innebordLower = g.innebord ? g.innebord.toLowerCase() : "";
+                        
+                        // Fångar upp alla mål där info eller innebörd varnar om att det är en avgörande straffsparksläggning
+                        if (infoLower.includes('straffläggning') || innebordLower.includes('straffläggning')) {
+                            
+                            // 1. PRIMÄR SÖKNING: Hämta klubben direkt från den explicita kolumnen i Excel-fliken
+                            // Vi kollar både stor och liten bokstav ifall Python ändrat namnet vid JSON-exporten
+                            let playerTeam = g.klubben || g.Klubben || g.klubb; 
+                            
+                            // 2. FALLBACK 1: Sök i uppställningarna för den specifika säsongen
+                            if (!playerTeam) {
+                                playerTeam = getPlayerTeamInSeason(g.skytt, season);
+                            }
+                            
+                            // 3. FALLBACK 2: Sök i matchens egen laguppställning
+                            if (!playerTeam) {
+                                let pLineup = dm.uppstallning.find(p => p.namn === g.skytt);
+                                if (pLineup) playerTeam = getPlayerTeam(pLineup.lag, bm);
+                            }
+                            
+                            // 4. FALLBACK 3: Finns 'lag' (1 eller 2) ifyllt direkt på mål-raden?
+                            if (!playerTeam && g.lag) {
+                                if (g.lag == 1 || g.lag == "1" || g.lag == 2 || g.lag == "2") {
+                                    playerTeam = getPlayerTeam(g.lag, bm);
+                                } else {
+                                    playerTeam = g.lag;
+                                }
+                            }
+                            
+                            if (!playerTeam) playerTeam = "Klubb saknas";
+                            
+                            // Filtrering om användaren valt "Visa ENDAST Cupmästare"
+                            if (onlyChamp && playerTeam !== SEASON_CHAMPIONS[season]) return;
+                            
+                            if (!penStats[g.skytt]) penStats[g.skytt] = { count: 0, clubs: new Set(), details: [] };
+                            penStats[g.skytt].count++;
+                            
+                            // Undvik att lägga in texten "Klubb saknas" i klubb-sammanställningen
+                            if (playerTeam !== "Klubb saknas") {
+                                penStats[g.skytt].clubs.add(playerTeam);
+                            }
+                            
+                            let gwgBadge = (g.avgorande === 'GWG') ? `<span class="bg-yellow-100 text-yellow-800 text-[10px] px-1 py-0.5 rounded ml-1 font-bold">Avgörande</span>` : "";
+                            
+                            // Lägg till fas-badgen (K, S, F) och eventuell GWG-badge i resultatsträngen
+                            penStats[g.skytt].details.push(`${bm.hemma}-${bm.borta} (${season})${phaseBadge}${gwgBadge}`);
+                        }
+                    });
+                });
+                
+                Object.keys(penStats).forEach(player => {
+                    results.push({
+                        name: player,
+                        count: penStats[player].count,
+                        clubs: Array.from(penStats[player].clubs).join(', '),
+                        details: penStats[player].details.join('<br>')
+                    });
+                });
+                
+                results.sort((a,b) => b.count - a.count || a.name.localeCompare(b.name));
+                
+                bodyEl.innerHTML = results.slice(0, 50).map((r, i) => {
+                    let safeName = escapeHtml(r.name);
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50"><td class="px-4 py-3 font-bold text-slate-400">${i+1}</td><td class="px-4 py-3 font-bold text-slate-800 cursor-pointer hover:text-blue-600" onclick="openPlayerModal('${safeName}')">${formatName(r.name)}</td><td class="px-4 py-3 text-center font-bold text-emerald-600 text-lg">${r.count}</td><td class="px-4 py-3 text-sm text-slate-600">${r.clubs}</td><td class="px-4 py-3 text-xs text-slate-500 leading-relaxed">${r.details}</td></tr>`;
+                }).join('');
+            }
+            else if (cat === 'referee_knockout') {
+                titleEl.innerText = "Domarligan i Slutspelet (Kvart till Final)";
+                headEl.innerHTML = `<tr><th class="px-4 py-3 w-10">#</th><th class="px-4 py-3">Domare</th><th class="px-4 py-3 text-center">Totalt Dömda</th><th class="px-4 py-3 text-center">Finaler</th><th class="px-4 py-3 text-center">Semifinaler</th><th class="px-4 py-3 text-center">Kvartsfinaler</th><th class="px-4 py-3">Säsonger</th></tr>`;
+                
+                let refStats = {};
+                let results = []; // Garanterar att arrayen finns tillgänglig i detta block
+                
+                Object.keys(BASE_MATCHES).forEach(mid => {
+                    let bm = BASE_MATCHES[mid];
+                    if(!bm || !bm.domare) return;
+                    
+                    let refName = formatName(bm.domare);
+                    if (refName.toLowerCase() === 'okänd' || refName.trim() === '') return;
+                    
+                    let fLow = bm.fas.toLowerCase();
+                    let phase = "";
+                    if (fLow.includes('final') && !fLow.includes('kvart') && !fLow.includes('semi') && !fLow.includes('åtton') && !fLow.includes('1/8')) phase = "final";
+                    else if (fLow.includes('semi')) phase = "semi";
+                    else if (fLow.includes('kvart')) phase = "kvart";
+                    else return; // Räkna bara slutspel
+                    
+                    if (!refStats[refName]) {
+                        refStats[refName] = { total: 0, final: 0, semi: 0, kvart: 0, seasons: new Set() };
+                    }
+                    
+                    refStats[refName].total++;
+                    if (phase === 'final') refStats[refName].final++;
+                    else if (phase === 'semi') refStats[refName].semi++;
+                    else if (phase === 'kvart') refStats[refName].kvart++;
+                    
+                    refStats[refName].seasons.add(bm.sasong.replace(/\.0$/, ''));
+                });
+                
+                Object.keys(refStats).forEach(ref => {
+                    results.push({
+                        name: ref,
+                        total: refStats[ref].total,
+                        final: refStats[ref].final,
+                        semi: refStats[ref].semi,
+                        kvart: refStats[ref].kvart,
+                        seasons: Array.from(refStats[ref].seasons).sort((a,b)=>parseInt(a)-parseInt(b)).join(', ')
+                    });
+                });
+                
+                // Sortera på Totalt, därefter Finaler, sedan alfabetiskt
+                results.sort((a,b) => b.total - a.total || b.final - a.final || b.semi - a.semi || a.name.localeCompare(b.name));
+                
+                bodyEl.innerHTML = results.slice(0, 50).map((r, i) => {
+                    // NYHET: Säkrar namnet så att HTML-klicket inte går sönder om domaren har specialtecken i namnet
+                    let safeName = escapeHtml(r.name);
+                    
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50">
+                        <td class="px-4 py-3 font-bold text-slate-400">${i+1}</td>
+                        <td class="px-4 py-3 font-black text-slate-800 cursor-pointer hover:text-blue-600" onclick="openPlayerModal('${safeName}')">${r.name} ⚖️</td>
+                        <td class="px-4 py-3 text-center font-black text-indigo-600 text-lg">${r.total}</td>
+                        <td class="px-4 py-3 text-center font-bold text-yellow-600 bg-yellow-50/30">${r.final}</td>
+                        <td class="px-4 py-3 text-center font-bold text-slate-600">${r.semi}</td>
+                        <td class="px-4 py-3 text-center font-bold text-slate-500">${r.kvart}</td>
+                        <td class="px-4 py-3 text-xs text-slate-500 truncate max-w-xs" title="${r.seasons}">${r.seasons}</td>
+                    </tr>`;
+                }).join('');
+            }
+            else if (cat === 'birth_months' || cat === 'birth_decades') {
+                let isMonth = (cat === 'birth_months');
+                titleEl.innerHTML = isMonth ? "Den relativa ålderseffekten (När på året är finalisterna födda?)" : "Födelsedecennier (Vilka generationer har spelat final?)";
+
+                // Dynamiska headers baserat på om "Endast Mästare" är ibockad
+                let lbl = isMonth ? "Månad" : "Decennium";
+                let silverHeader = onlyChamp ? "" : `<th class="px-4 py-2 text-center border-l border-b border-slate-200 bg-slate-50" colspan="2">Endast Tvåor</th>`;
+                let silverSub = onlyChamp ? "" : `<th class="px-2 py-1 text-center text-[11px] uppercase tracking-wide border-l border-b border-slate-200 bg-slate-50 font-bold text-slate-700">Spelare</th><th class="px-2 py-1 text-center text-[11px] uppercase tracking-wide border-b border-slate-200 bg-slate-50 text-slate-400">Matcher</th>`;
+
+                headEl.innerHTML = `
+                    <tr>
+                        <th class="px-4 py-2 border-b border-slate-200 bg-slate-100" rowspan="2">${lbl}</th>
+                        <th class="px-4 py-2 text-center border-l border-b border-slate-200 bg-slate-100" colspan="2">Totalt ${onlyChamp ? "(Endast Mästare)" : "(Båda Lagen)"}</th>
+                        <th class="px-4 py-2 text-center border-l border-b border-slate-200 bg-yellow-50/50" colspan="2">Guld / Mästare</th>
+                        ${silverHeader}
+                    </tr>
+                    <tr>
+                        <th class="px-2 py-1 text-center text-[11px] uppercase tracking-wide border-l border-b border-slate-200 bg-slate-100 font-bold text-indigo-700">Spelare</th>
+                        <th class="px-2 py-1 text-center text-[11px] uppercase tracking-wide border-b border-slate-200 bg-slate-100 text-slate-500">Matcher</th>
+                        <th class="px-2 py-1 text-center text-[11px] uppercase tracking-wide border-l border-b border-slate-200 bg-yellow-50/50 font-bold text-yellow-700">Spelare</th>
+                        <th class="px-2 py-1 text-center text-[11px] uppercase tracking-wide border-b border-slate-200 bg-yellow-50/50 text-yellow-600/70">Matcher</th>
+                        ${silverSub}
+                    </tr>
+                `;
+
+                let stats = {};
+
+                window.PLAYER_STATS.forEach(p => {
+                    let gMedals = p.goldMedals;
+                    let sMedals = p.silverMedals;
+                    
+                    // 1. Filtrera på "Endast de som deltog på planen"
+                    if (onlyPlayed) {
+                        gMedals = gMedals.filter(m => m.played);
+                        sMedals = sMedals.filter(m => m.played);
+                    }
+                    
+                    // 2. Filtrera på "Endast Cupmästare"
+                    if (onlyChamp) {
+                        sMedals = []; // Nollställ silvret helt
+                    }
+
+                    let goldCount = gMedals.length;
+                    let silverCount = sMedals.length;
+                    let totalCount = goldCount + silverCount;
+
+                    // Hoppa över spelaren om den inte har några relevanta matcher efter filtreringen
+                    if (totalCount === 0) return; 
+
+                    let birthStr = "";
+                    if (DJUP.spelare && DJUP.spelare[p.namn]) {
+                        let sp = DJUP.spelare[p.namn];
+                        birthStr = sp.fodd || sp.Född || sp.fodelsedatum || sp.Födelsedatum || sp.fodelsear || sp.Födelseår || "";
+                    }
+                    birthStr = String(birthStr).trim();
+                    if (birthStr.length < 4) return;
+
+                    let yyyy = null, mm = null;
+                    let m1 = birthStr.match(/^(\d{4})-(\d{2})/);
+                    if (m1) { yyyy = m1[1]; mm = m1[2]; }
+                    else {
+                        let m2 = birthStr.match(/^(\d{4})(\d{2})\d{2}$/);
+                        if (m2) { yyyy = m2[1]; mm = m2[2]; }
+                        else {
+                            let m3 = birthStr.match(/^(\d{4})/);
+                            if (m3) yyyy = m3[1];
+                        }
+                    }
+
+                    let key = null;
+                    let sortVal = 0;
+                    if (isMonth) {
+                        if (!mm) return;
+                        let mInt = parseInt(mm);
+                        if (mInt < 1 || mInt > 12) return;
+                        let monthNames = ["", "Januari", "Februari", "Mars", "April", "Maj", "Juni", "Juli", "Augusti", "September", "Oktober", "November", "December"];
+                        key = monthNames[mInt];
+                        sortVal = mInt;
+                    } else {
+                        if (!yyyy) return;
+                        let dec = Math.floor(parseInt(yyyy) / 10) * 10;
+                        key = dec + "-talet";
+                        sortVal = dec;
+                    }
+
+                    if (!stats[key]) {
+                        stats[key] = {
+                            key: key, sortVal: sortVal,
+                            pTotal: 0, mTotal: 0,
+                            pGold: 0, mGold: 0,
+                            pSilver: 0, mSilver: 0
+                        };
+                    }
+
+                    stats[key].pTotal++;
+                    stats[key].mTotal += totalCount;
+
+                    if (goldCount > 0) {
+                        stats[key].pGold++;
+                        stats[key].mGold += goldCount;
+                    }
+                    if (silverCount > 0) {
+                        stats[key].pSilver++;
+                        stats[key].mSilver += silverCount;
+                    }
+                });
+
+                let resultsArr = Object.values(stats);
+                resultsArr.sort((a,b) => a.sortVal - b.sortVal);
+
+                let sumTotalP=0, sumTotalM=0, sumGoldP=0, sumGoldM=0, sumSilverP=0, sumSilverM=0;
+                resultsArr.forEach(r => {
+                    sumTotalP += r.pTotal; sumTotalM += r.mTotal;
+                    sumGoldP += r.pGold; sumGoldM += r.mGold;
+                    sumSilverP += r.pSilver; sumSilverM += r.mSilver;
+                });
+
+                let rowsHtml = resultsArr.map(r => {
+                    // Dölj silvercellerna dynamiskt
+                    let silverCells = onlyChamp ? "" : `<td class="px-2 py-2 text-center border-l border-slate-100 font-bold text-slate-600">${r.pSilver}</td><td class="px-2 py-2 text-center text-slate-400 bg-slate-50/50">${r.mSilver}</td>`;
+                    
+                    return `<tr class="hover:bg-blue-50 border-b border-slate-100">
+                        <td class="px-4 py-2 font-bold text-slate-800">${r.key}</td>
+                        <td class="px-2 py-2 text-center border-l border-slate-100 font-bold text-indigo-600">${r.pTotal}</td>
+                        <td class="px-2 py-2 text-center text-slate-500 bg-slate-50/50">${r.mTotal}</td>
+                        <td class="px-2 py-2 text-center border-l border-yellow-100 font-bold text-yellow-600 bg-yellow-50/30">${r.pGold}</td>
+                        <td class="px-2 py-2 text-center text-yellow-600/70 bg-yellow-50/30">${r.mGold}</td>
+                        ${silverCells}
+                    </tr>`;
+                }).join('');
+
+                let silverSum = onlyChamp ? "" : `<td class="px-2 py-3 text-center border-l border-slate-200 font-black text-slate-700">${sumSilverP}</td><td class="px-2 py-3 text-center text-slate-600 font-bold">${sumSilverM}</td>`;
+
+                rowsHtml += `<tr class="border-t-2 border-slate-300 bg-slate-100">
+                    <td class="px-4 py-3 font-black text-slate-800">TOTALT</td>
+                    <td class="px-2 py-3 text-center border-l border-slate-200 font-black text-indigo-700">${sumTotalP}</td>
+                    <td class="px-2 py-3 text-center text-slate-600 font-bold">${sumTotalM}</td>
+                    <td class="px-2 py-3 text-center border-l border-yellow-200 font-black text-yellow-700 bg-yellow-100/50">${sumGoldP}</td>
+                    <td class="px-2 py-3 text-center text-yellow-700 font-bold bg-yellow-100/50">${sumGoldM}</td>
+                    ${silverSum}
+                </tr>`;
+
+                bodyEl.innerHTML = rowsHtml;
+            }
+            else if (cat === 'rae_over_time') {
+                titleEl.innerHTML = "Utveckling av RAE: Vilket årtionde (finalens år) var ålderseffekten starkast?";
+                
+                headEl.innerHTML = `
+                    <tr>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100">Finalens Decennium</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-100">Unika Finalister</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-blue-200 bg-blue-50 text-blue-800">Q1 (Jan-Mar)</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-50 text-slate-700">Q2 (Apr-Jun)</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-50 text-slate-700">Q3 (Jul-Sep)</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-50 text-slate-700">Q4 (Okt-Dec)</th>
+                    </tr>
+                `;
+
+                let decadeStats = {};
+
+                Object.keys(DJUP.matcher).forEach(mid => {
+                    let bm = BASE_MATCHES[mid];
+                    if(!bm) return;
+                    let fLow = bm.fas.toLowerCase();
+                    if (!fLow.includes('final') || fLow.includes('kvart') || fLow.includes('semi') || fLow.includes('åtton') || fLow.includes('1/8')) return;
+
+                    let season = bm.sasong.replace(/\.0$/, '');
+                    let matchYear = parseInt(season.substring(0, 4));
+                    if (isNaN(matchYear)) return;
+                    
+                    let dec = Math.floor(matchYear / 10) * 10;
+                    let decKey = dec + "-talet";
+
+                    let dm = DJUP.matcher[mid];
+                    let champion = SEASON_CHAMPIONS[season];
+
+                    dm.uppstallning.forEach(p => {
+                        let pTeam = getPlayerTeam(p.lag, bm);
+                        if (onlyChamp && pTeam !== champion) return;
+
+                        let isStarter = (parseInt(p.pos) <= 11);
+                        let pMinVal = parseInt(cleanNumber(p.minuter)) || 0;
+                        let bText = String(p.byte || '').toLowerCase();
+                        let isPlayed = isStarter || (pMinVal > 0) || /\bin\b/.test(bText) || /\but\b/.test(bText) || bText === 'in' || bText === 'ut';
+
+                        if (onlyPlayed && !isPlayed) return;
+
+                        let birthStr = "";
+                        if (DJUP.spelare && DJUP.spelare[p.namn]) {
+                            let sp = DJUP.spelare[p.namn];
+                            birthStr = sp.fodd || sp.Född || sp.fodelsedatum || sp.Födelsedatum || sp.fodelsear || sp.Födelseår || "";
+                        }
+                        birthStr = String(birthStr).trim();
+                        if (birthStr.length < 4) return;
+
+                        let mm = null;
+                        let m1 = birthStr.match(/^(\d{4})-(\d{2})/);
+                        if (m1) mm = m1[2];
+                        else {
+                            let m2 = birthStr.match(/^(\d{4})(\d{2})\d{2}$/);
+                            if (m2) mm = m2[2];
+                        }
+
+                        if (!mm) return;
+                        let mInt = parseInt(mm);
+                        if (mInt < 1 || mInt > 12) return;
+
+                        if (!decadeStats[decKey]) {
+                            // BUGGFIX: key: decKey tillagt här så att raderna får rätt namn!
+                            decadeStats[decKey] = { key: decKey, sortVal: dec, total: 0, q1: 0, q2: 0, q3: 0, q4: 0, uniquePlayers: new Set() };
+                        }
+
+                        if (!decadeStats[decKey].uniquePlayers.has(p.namn)) {
+                            decadeStats[decKey].uniquePlayers.add(p.namn);
+                            decadeStats[decKey].total++;
+                            if (mInt <= 3) decadeStats[decKey].q1++;
+                            else if (mInt <= 6) decadeStats[decKey].q2++;
+                            else if (mInt <= 9) decadeStats[decKey].q3++;
+                            else decadeStats[decKey].q4++;
+                        }
+                    });
+                });
+
+                let resultsArr = Object.values(decadeStats);
+                resultsArr.sort((a,b) => a.sortVal - b.sortVal);
+
+                // Variabler för att summera den totala raden
+                let sumTotal = 0, sumQ1 = 0, sumQ2 = 0, sumQ3 = 0, sumQ4 = 0;
+
+                let rowsHtml = resultsArr.map(r => {
+                    // Addera till totalen
+                    sumTotal += r.total;
+                    sumQ1 += r.q1;
+                    sumQ2 += r.q2;
+                    sumQ3 += r.q3;
+                    sumQ4 += r.q4;
+
+                    let pctQ1 = r.total > 0 ? Math.round((r.q1 / r.total) * 100) : 0;
+                    let pctQ2 = r.total > 0 ? Math.round((r.q2 / r.total) * 100) : 0;
+                    let pctQ3 = r.total > 0 ? Math.round((r.q3 / r.total) * 100) : 0;
+                    let pctQ4 = r.total > 0 ? Math.round((r.q4 / r.total) * 100) : 0;
+
+                    let q1Class = pctQ1 > 30 ? "font-black text-blue-700 bg-blue-100/50" : "font-bold text-blue-600 bg-blue-50/50";
+
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-100">
+                        <td class="px-4 py-3 font-bold text-slate-800">${r.key}</td>
+                        <td class="px-4 py-3 text-center border-l border-slate-200 font-bold text-slate-600">${r.total}</td>
+                        <td class="px-4 py-3 text-center border-l border-blue-200 ${q1Class}">${r.q1} <span class="text-xs text-blue-400 ml-1">(${pctQ1}%)</span></td>
+                        <td class="px-4 py-3 text-center border-l border-slate-100 font-bold text-slate-600">${r.q2} <span class="text-xs text-slate-400 ml-1">(${pctQ2}%)</span></td>
+                        <td class="px-4 py-3 text-center border-l border-slate-100 font-bold text-slate-600">${r.q3} <span class="text-xs text-slate-400 ml-1">(${pctQ3}%)</span></td>
+                        <td class="px-4 py-3 text-center border-l border-slate-100 font-bold text-slate-600">${r.q4} <span class="text-xs text-slate-400 ml-1">(${pctQ4}%)</span></td>
+                    </tr>`;
+                }).join('');
+
+                // Räkna ut procenten för summeringsraden
+                let pctTotQ1 = sumTotal > 0 ? Math.round((sumQ1 / sumTotal) * 100) : 0;
+                let pctTotQ2 = sumTotal > 0 ? Math.round((sumQ2 / sumTotal) * 100) : 0;
+                let pctTotQ3 = sumTotal > 0 ? Math.round((sumQ3 / sumTotal) * 100) : 0;
+                let pctTotQ4 = sumTotal > 0 ? Math.round((sumQ4 / sumTotal) * 100) : 0;
+                
+                let q1TotClass = pctTotQ1 > 30 ? "font-black text-blue-800 bg-blue-200/50" : "font-black text-blue-700 bg-blue-100/50";
+
+                // Lägg till Summeringsraden
+                rowsHtml += `<tr class="border-t-2 border-slate-300 bg-slate-100">
+                    <td class="px-4 py-3 font-black text-slate-800">TOTALT</td>
+                    <td class="px-4 py-3 text-center border-l border-slate-200 font-black text-indigo-700">${sumTotal}</td>
+                    <td class="px-4 py-3 text-center border-l border-blue-300 ${q1TotClass}">${sumQ1} <span class="text-xs text-blue-600 ml-1">(${pctTotQ1}%)</span></td>
+                    <td class="px-4 py-3 text-center border-l border-slate-200 font-black text-slate-700">${sumQ2} <span class="text-xs text-slate-500 ml-1">(${pctTotQ2}%)</span></td>
+                    <td class="px-4 py-3 text-center border-l border-slate-200 font-black text-slate-700">${sumQ3} <span class="text-xs text-slate-500 ml-1">(${pctTotQ3}%)</span></td>
+                    <td class="px-4 py-3 text-center border-l border-slate-200 font-black text-slate-700">${sumQ4} <span class="text-xs text-slate-500 ml-1">(${pctTotQ4}%)</span></td>
+                </tr>`;
+
+                bodyEl.innerHTML = rowsHtml;
+            }
         }
 
         function searchPlayers() {
@@ -2521,117 +3374,163 @@ html_template = """
         }
 
         function openPlayerModal(namn) {
-            try {
-                if (!namn) throw new Error("Inget spelarnamn angavs till funktionen.");
-                
-                // Namnet är redan avkodat inuti onclick-anropet om escapeHtml använts
-                const info = DJUP.spelare[namn] || {};
-                document.getElementById('pm-name').innerText = formatName(namn);
-                
-                let ar = info.ar ? cleanNumber(info.ar) : '';
-                
-                let pData = window.PLAYER_STATS.find(p => p.namn === namn);
-                if(!pData) {
-                    pData = { allClubs: new Set(), goldClubs: new Set(), silverClubs: new Set(), infoKlubbar: info.klubbar || '-' };
-                }
-
-                let qClubModal = document.getElementById('club-search') ? document.getElementById('club-search').value.toLowerCase() : "";
-                let onlyChampModal = document.getElementById('check-champ') ? document.getElementById('check-champ').checked : false;
-                let onlyRunModal = document.getElementById('check-runner') ? document.getElementById('check-runner').checked : false;
-                
-                let displayClubsSet = new Set();
-                if (onlyChampModal && pData.goldClubs) pData.goldClubs.forEach(c => displayClubsSet.add(c));
-                if (onlyRunModal && pData.silverClubs) pData.silverClubs.forEach(c => displayClubsSet.add(c));
-                if (!onlyChampModal && !onlyRunModal && pData.allClubs) pData.allClubs.forEach(c => displayClubsSet.add(c));
-
-                if (qClubModal) {
-                    let filteredSet = new Set();
-                    displayClubsSet.forEach(c => {
-                        if (c.toLowerCase().includes(qClubModal)) filteredSet.add(c);
-                    });
-                    displayClubsSet = filteredSet;
-                }
-                
-                let displayClubsStrModal = displayClubsSet.size > 0 ? Array.from(displayClubsSet).join(', ') : (pData.infoKlubbar || '-');
-                
-                document.getElementById('pm-clubs').innerText = (ar ? "Född " + ar + " | " : "") + displayClubsStrModal;
-                
-                let contentHtml = '';
-                let spMatches = []; let spGoals = []; let spCards = [];
-                
-                Object.keys(DJUP.matcher).forEach(mid => {
-                    const dm = DJUP.matcher[mid];
-                    const bm = BASE_MATCHES[mid];
-                    if(!bm || !dm) return;
-                    
-                    if (dm.uppstallning) dm.uppstallning.forEach(p => { if(p.namn === namn) spMatches.push({m: bm, p: p}); });
-                    if (dm.mal) dm.mal.forEach(g => { if(g.skytt === namn) spGoals.push({m: bm, g: g}); });
-                    if (dm.utvisningar) dm.utvisningar.forEach(u => { if(u.namn === namn) spCards.push({m: bm, u: u}); });
-                });
-
-                if(spGoals.length > 0) {
-                    contentHtml += `<div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm"><h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2"><span class="text-emerald-500 text-xl">⚽</span> Mål (${spGoals.length} st)</h4><ul class="space-y-2 text-sm">`;
-                    spGoals.sort((a,b)=>String(a.m.sasong).localeCompare(String(b.m.sasong))).forEach(item => {
-                        let isPenShootout = (item.g.info && item.g.info.toLowerCase().includes('straffläggning')) || (item.g.innebord && item.g.innebord.toLowerCase().includes('straffläggning'));
-                        let gMin = item.g.minut ? cleanNumber(item.g.minut) + "'" : '?';
-                        let minText = isPenShootout ? `<span class="bg-slate-100 text-slate-500 px-1 rounded text-xs ml-auto">Straffläggning</span>` : `Minut ${gMin}`;
-                        
-                        contentHtml += `<li class="flex justify-between border-b border-slate-50 pb-1"><span class="text-slate-600">${cleanNumber(item.m.sasong)} (${item.m.fas})</span><span class="font-medium">${item.m.hemma} - ${item.m.borta}</span><span>${minText} ${item.g.avgorande==='GWG'?'<span class="bg-yellow-100 text-yellow-700 text-[10px] px-1 rounded ml-1">GWG</span>':''}</span></li>`;
-                    });
-                    contentHtml += `</ul></div>`;
-                }
-
-                if(spMatches.length > 0) {
-                    contentHtml += `<div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm"><h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2"><span class="text-amber-500 text-xl">🏆</span> Finalmatcher i databasen (${spMatches.length} st)</h4><ul class="space-y-2 text-sm">`;
-                    spMatches.sort((a,b)=>String(a.m.sasong).localeCompare(String(b.m.sasong))).forEach(item => {
-                        
-                        let pMinVal = parseInt(cleanNumber(item.p.minuter)) || 0;
-                        let bText = String(item.p.byte || '').toLowerCase();
-                        let playedInMatch = (parseInt(item.p.pos) <= 11) || (pMinVal > 0) || /\bin\b/.test(bText) || /\but\b/.test(bText) || bText === 'in' || bText === 'ut';
-
-                        let pMin = pMinVal > 0 ? `${pMinVal}'` : (playedInMatch ? '?' : 'Spelade ej');
-                        let posText = `Position ${item.p.pos||'?'}`;
-                        if (pMin === 'Spelade ej') posText = `Bänken (Spelade ej)`;
-
-                        let mSeason = item.m.sasong.replace(/\.0$/, '');
-                        let tCrown = (SEASON_CHAMPIONS[mSeason] === getPlayerTeam(item.p.lag, item.m)) ? " <span title='Cupmästare' class='text-yellow-500'>👑</span>" : "";
-
-                        let icons = "";
-                        if (item.p.byte) {
-                            let hasIn = /\bin\b/.test(bText) || bText === 'in';
-                            let hasUt = /\but\b/.test(bText) || bText === 'ut';
-                            let hasUtv = /\butv\b/.test(bText) || bText.includes('utv');
-                            if (hasIn) icons += `<span style="color: #10b981; font-size: 11px; margin-left: 4px;" title="Inbytt">▲</span>`;
-                            if (hasUt) icons += `<span style="color: #f43f5e; font-size: 11px; margin-left: 4px;" title="Utbytt">▼</span>`;
-                            if (hasUtv) icons += `<span style="font-size: 11px; margin-left: 4px;" title="Utvisad">🟥</span>`;
-                        }
-                        let isSentOff = spCards.some(c => c.m === item.m);
-                        if (isSentOff && !icons.includes("🟥")) icons += `<span style="font-size: 11px; margin-left: 4px;" title="Utvisad">🟥</span>`;
-
-                        contentHtml += `<li class="flex justify-between border-b border-slate-50 pb-1"><span class="text-slate-600">${cleanNumber(item.m.sasong)} (${item.m.fas})</span><span class="font-medium">${item.m.hemma} - ${item.m.borta}${tCrown}</span><span class="text-slate-400">${posText} ${pMin !== 'Spelade ej' && pMin !== '?' ? `(${pMin})` : ''}${icons}</span></li>`;
-                    });
-                    contentHtml += `</ul></div>`;
-                }
-                
-                if(spCards.length > 0) {
-                     contentHtml += `<div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm"><h4 class="font-bold text-rose-800 mb-3 flex items-center gap-2"><span class="text-rose-500 text-xl">🟥</span> Utvisningar i finaler</h4><ul class="space-y-2 text-sm text-rose-700">`;
-                     spCards.forEach(item => {
-                         let uMin = item.u.minut ? cleanNumber(item.u.minut) + "'" : '?';
-                         contentHtml += `<li class="flex justify-between border-b border-rose-50 pb-1"><span>${cleanNumber(item.m.sasong)}</span><span class="font-medium">${item.m.hemma} - ${item.m.borta}</span><span>Minut ${uMin}</span></li>`;
-                     });
-                     contentHtml += `</ul></div>`;
-                }
-
-                if(contentHtml === '') contentHtml = '<div class="text-center text-slate-500 italic py-6">Inga specifika matchhändelser registrerade i djupdykningsdatabasen för denna spelare.</div>';
-
-                safeSetHTML('pm-content', contentHtml);
-                
-                document.querySelectorAll('#player-modal').forEach(el => el.classList.remove('hidden'));
-            } catch(e) {
-                console.error("Fel i openPlayerModal:", e);
-                alert("Ett fel uppstod när profilen skulle öppnas för " + (namn || "okänd") + ": " + e.message);
-            }
+    try {
+        if (!namn) throw new Error("Inget spelarnamn angavs till funktionen.");
+        
+        const info = DJUP.spelare[namn] || {};
+        
+        // FIX: Se till att rubriken i modalen blir snygg (formatName), 
+        // även om vi skickat in ett oformaterat namn!
+        document.getElementById('pm-name').innerText = typeof formatName === 'function' ? formatName(namn) : namn;
+        
+        let ar = info.ar ? cleanNumber(info.ar) : '';
+        
+        let pData = window.PLAYER_STATS ? window.PLAYER_STATS.find(p => p.namn === namn) : null;
+        if(!pData) {
+            pData = { allClubs: new Set(), goldClubs: new Set(), silverClubs: new Set(), infoKlubbar: info.klubbar || '-' };
         }
+
+        let qClubModal = document.getElementById('club-search') ? document.getElementById('club-search').value.toLowerCase() : "";
+        let onlyChampModal = document.getElementById('check-champ') ? document.getElementById('check-champ').checked : false;
+        let onlyRunModal = document.getElementById('check-runner') ? document.getElementById('check-runner').checked : false;
+        
+        let displayClubsSet = new Set();
+        if (onlyChampModal && pData.goldClubs) pData.goldClubs.forEach(c => displayClubsSet.add(c));
+        if (onlyRunModal && pData.silverClubs) pData.silverClubs.forEach(c => displayClubsSet.add(c));
+        if (!onlyChampModal && !onlyRunModal && pData.allClubs) pData.allClubs.forEach(c => displayClubsSet.add(c));
+
+        if (qClubModal) {
+            let filteredSet = new Set();
+            displayClubsSet.forEach(c => {
+                if (c.toLowerCase().includes(qClubModal)) filteredSet.add(c);
+            });
+            displayClubsSet = filteredSet;
+        }
+        
+        let displayClubsStrModal = displayClubsSet.size > 0 ? Array.from(displayClubsSet).join(', ') : (pData.infoKlubbar || '-');
+        
+        document.getElementById('pm-clubs').innerText = (ar ? "Född " + ar + " | " : "") + displayClubsStrModal;
+        
+        let contentHtml = '';
+        let spMatches = []; let spGoals = []; let spCards = []; let spRef = [];
+        
+        // --- DEN NYA, SÄKRA MATCHNINGSLOGIKEN ---
+        const searchName = namn.trim().toLowerCase();
+        
+        const getNum = (str) => {
+            let m = String(str).trim().match(/\d+$/);
+            return m ? m[0] : "";
+        };
+        const searchNum = getNum(namn);
+
+        const isMatch = (dbName) => {
+            if (!dbName) return false;
+            
+            // 1. Spärr för siffror
+            if (getNum(dbName) !== searchNum) return false;
+            
+            // 2. Använd formatName säkert för den sista jämförelsen
+            let fDb = typeof formatName === 'function' ? formatName(dbName).trim().toLowerCase() : dbName.trim().toLowerCase();
+            let fSearch = typeof formatName === 'function' ? formatName(namn).trim().toLowerCase() : searchName;
+            
+            return fDb === fSearch || dbName.trim().toLowerCase() === searchName;
+        };
+        // ----------------------------------------
+        
+        Object.keys(DJUP.matcher).forEach(mid => {
+            const dm = DJUP.matcher[mid];
+            const bm = BASE_MATCHES[mid];
+            if(!bm || !dm) return;
+            
+            if (dm.uppstallning) dm.uppstallning.forEach(p => { if(isMatch(p.namn)) spMatches.push({m: bm, p: p}); });
+            if (dm.mal) dm.mal.forEach(g => { if(isMatch(g.skytt)) spGoals.push({m: bm, g: g}); });
+            if (dm.utvisningar) dm.utvisningar.forEach(u => { if(isMatch(u.namn)) spCards.push({m: bm, u: u}); });
+            
+            if (bm.domare && isMatch(bm.domare)) {
+                let fLow = String(bm.fas || "").toLowerCase();
+                if (fLow.includes('final') || fLow.includes('semi') || fLow.includes('kvart')) {
+                    spRef.push(bm);
+                }
+            }
+        });
+
+        // ---------------------------------------------------------
+        // RITA UT MATCHER (Samma logik som förut, rör ej HTML:en)
+        // ---------------------------------------------------------
+        if(spGoals.length > 0) {
+            contentHtml += `<div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm"><h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2"><span class="text-emerald-500 text-xl">⚽</span> Mål (${spGoals.length} st)</h4><ul class="space-y-2 text-sm">`;
+            spGoals.sort((a,b)=>String(a.m.sasong).localeCompare(String(b.m.sasong))).forEach(item => {
+                let isPenShootout = (item.g.info && item.g.info.toLowerCase().includes('straffläggning')) || (item.g.innebord && item.g.innebord.toLowerCase().includes('straffläggning'));
+                let gMin = item.g.minut ? cleanNumber(item.g.minut) + "'" : '?';
+                let minText = isPenShootout ? `<span class="bg-slate-100 text-slate-500 px-1 rounded text-xs ml-auto">Straffläggning</span>` : `Minut ${gMin}`;
+                contentHtml += `<li class="flex justify-between border-b border-slate-50 pb-1"><span class="text-slate-600">${cleanNumber(item.m.sasong)} (${item.m.fas})</span><span class="font-medium">${item.m.hemma} - ${item.m.borta}</span><span>${minText} ${item.g.avgorande==='GWG'?'<span class="bg-yellow-100 text-yellow-700 text-[10px] px-1 rounded ml-1">GWG</span>':''}</span></li>`;
+            });
+            contentHtml += `</ul></div>`;
+        }
+
+        if(spMatches.length > 0) {
+            contentHtml += `<div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm"><h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2"><span class="text-amber-500 text-xl">🏆</span> Matcher i databasen (${spMatches.length} st)</h4><ul class="space-y-2 text-sm">`;
+            spMatches.sort((a,b)=>String(a.m.sasong).localeCompare(String(b.m.sasong))).forEach(item => {
+                let pMinVal = parseInt(cleanNumber(item.p.minuter)) || 0;
+                let bText = String(item.p.byte || '').toLowerCase();
+                let playedInMatch = (parseInt(item.p.pos) <= 11) || (pMinVal > 0) || /\bin\b/.test(bText) || /\but\b/.test(bText) || bText === 'in' || bText === 'ut';
+
+                let pTeam = getPlayerTeam(item.p.lag, item.m);
+                let isCap = isPlayerCaptain(item.p.namn, item.p.kapten, pTeam, item.m.sasong);
+                let capBadge = isCap ? ` <span class="font-bold text-amber-500" title="Lagkapten">(c)</span>` : "";
+
+                let pMin = pMinVal > 0 ? `${pMinVal}'` : (playedInMatch ? '?' : 'Spelade ej');
+                let posText = `Position ${item.p.pos||'?'}`;
+                if (pMin === 'Spelade ej') posText = `Bänken (Spelade ej)`;
+                posText += capBadge;
+
+                let mSeason = item.m.sasong.replace(/\.0$/, '');
+                let tCrown = (typeof SEASON_CHAMPIONS !== 'undefined' && SEASON_CHAMPIONS[mSeason] === getPlayerTeam(item.p.lag, item.m)) ? " <span title='Cupmästare' class='text-yellow-500'>👑</span>" : "";
+
+                let icons = "";
+                if (item.p.byte) {
+                    let hasIn = /\bin\b/.test(bText) || bText === 'in';
+                    let hasUt = /\but\b/.test(bText) || bText === 'ut';
+                    let hasUtv = /\butv\b/.test(bText) || bText.includes('utv');
+                    if (hasIn) icons += `<span style="color: #10b981; font-size: 11px; margin-left: 4px;" title="Inbytt">▲</span>`;
+                    if (hasUt) icons += `<span style="color: #f43f5e; font-size: 11px; margin-left: 4px;" title="Utbytt">▼</span>`;
+                    if (hasUtv) icons += `<span style="font-size: 11px; margin-left: 4px;" title="Utvisad">🟥</span>`;
+                }
+                let isSentOff = spCards.some(c => c.m === item.m);
+                if (isSentOff && !icons.includes("🟥")) icons += `<span style="font-size: 11px; margin-left: 4px;" title="Utvisad">🟥</span>`;
+
+                contentHtml += `<li class="flex justify-between border-b border-slate-50 pb-1"><span class="text-slate-600">${cleanNumber(item.m.sasong)} (${item.m.fas})</span><span class="font-medium">${item.m.hemma} - ${item.m.borta}${tCrown}</span><span class="text-slate-400">${posText} ${pMin !== 'Spelade ej' && pMin !== '?' ? `(${pMin})` : ''}${icons}</span></li>`;
+            });
+            contentHtml += `</ul></div>`;
+        }
+        
+        if(spCards.length > 0) {
+             contentHtml += `<div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm"><h4 class="font-bold text-rose-800 mb-3 flex items-center gap-2"><span class="text-rose-500 text-xl">🟥</span> Utvisningar i finaler</h4><ul class="space-y-2 text-sm text-rose-700">`;
+             spCards.forEach(item => {
+                 let uMin = item.u.minut ? cleanNumber(item.u.minut) + "'" : '?';
+                 contentHtml += `<li class="flex justify-between border-b border-rose-50 pb-1"><span>${cleanNumber(item.m.sasong)}</span><span class="font-medium">${item.m.hemma} - ${item.m.borta}</span><span>Minut ${uMin}</span></li>`;
+             });
+             contentHtml += `</ul></div>`;
+        }
+        
+        if(spRef.length > 0) {
+             contentHtml += `<div class="bg-white rounded-lg p-4 border border-slate-200 shadow-sm"><h4 class="font-bold text-slate-800 mb-3 flex items-center gap-2"><span class="text-slate-500 text-xl">⚖️</span> Dömda matcher i slutomgångar (${spRef.length} st)</h4><ul class="space-y-2 text-sm">`;
+             spRef.sort((a,b)=>String(a.sasong).localeCompare(String(b.sasong))).forEach(m => {
+                 contentHtml += `<li class="flex justify-between border-b border-slate-50 pb-1"><span class="text-slate-600">${cleanNumber(m.sasong)} <span class="text-xs text-slate-400 ml-1">(${m.fas})</span></span><span class="font-medium">${m.hemma} - ${m.borta}</span></li>`;
+             });
+             contentHtml += `</ul></div>`;
+        }
+
+        if(contentHtml === '') contentHtml = '<div class="text-center text-slate-500 italic py-6">Inga specifika matchhändelser registrerade i djupdykningsdatabasen för denna spelare.</div>';
+
+        safeSetHTML('pm-content', contentHtml);
+        
+        document.querySelectorAll('#player-modal').forEach(el => el.classList.remove('hidden'));
+    } catch(e) {
+        console.error("Fel i openPlayerModal:", e);
+        alert("Ett fel uppstod när profilen skulle öppnas för " + (namn || "okänd") + ": " + e.message);
+    }
+}
 
         // --- ADMIN WARNINGS ---
         function runAdminCheck() {
@@ -2664,10 +3563,23 @@ html_template = """
                     let mast_unmerged = [];
                     let slut_goals = [];
 
+                    let missingGWG = []; // NYHET: Håller koll på matcher utan GWG
+
                     dm.mal.forEach(g => {
                         let inn = (g.innebord || "").trim().toLowerCase();
                         let nfo = (g.info || "").trim().toLowerCase();
-                        if (inn && !inn.includes('straff') && !nfo.includes('straff')) {
+                        let avg = (g.avgorande || "").trim().toUpperCase();
+                        
+                        // NYHET: Analysera om det saknas GWG i matcher som inte slutade oavgjort
+                        if (avg !== 'GWG' && avg !== 'JA') {
+                            // Vi kollar detta senare när vi vet slutresultatet
+                            g.saknarGWG_potentiellt = true; 
+                        }
+                        
+                        // NYHET: Exakt filtrering. Utesluter BARA straffläggning (inte straffspark under spelets gång)
+                        let isShootout = inn.includes('straffläggning') || nfo.includes('straffläggning') || inn === 'str' || nfo === 'str';
+                        
+                        if (inn && !isShootout) {
                             if(!innebordMap[inn]) innebordMap[inn] = [];
                             innebordMap[inn].push(g);
 
@@ -2699,6 +3611,21 @@ html_template = """
                     } else if (regularGoalsCount < totalScore && totalScore > 0) {
                         if (f.includes('kvart') || f.includes('semi') || f.includes('final')) {
                             goalWarnings.push({ type: 'För få mål inlagda', match: m, desc: `Endast ${regularGoalsCount} mål inlagda, men matchen slutade med ${totalScore} mål i spelet.`, mid: mid });
+                        }
+                    }
+                    // --- NYHET: GWG (Game Winning Goal) Koll ---
+                    // 1. Identifiera om det är en slutspelsmatch
+                    let fasLower = String(m.fas).toLowerCase();
+                    let isKnockoutStage = fasLower.includes('kvart') || fasLower.includes('semi') || fasLower.includes('final');
+                    
+                    // 2. Kolla om matchen hade en vinnare (Hemma totalt vs Borta totalt)
+                    let didMatchHaveWinner = (parseInt(cleanNumber(m.hm) || 0) + parseInt(cleanNumber(m.fh) || 0)) !== (parseInt(cleanNumber(m.bm) || 0) + parseInt(cleanNumber(m.fb) || 0));
+                    
+                    // 3. Larma ENDAST om det är slutspel, matchen är avgjord och GWG saknas
+                    if (isKnockoutStage && didMatchHaveWinner && dm.mal.length > 0) {
+                        let hasGWG = dm.mal.some(g => (g.avgorande || "").trim().toUpperCase() === 'GWG' || (g.avgorande || "").trim().toUpperCase() === 'JA');
+                        if (!hasGWG) {
+                            goalWarnings.push({ type: 'Saknar GWG', match: m, desc: `Slutspelsmatch avgjord, men inget mål är markerat som GWG.`, mid: mid });
                         }
                     }
                     
@@ -2775,14 +3702,1011 @@ html_template = """
                 safeSetHTML('admin-python-warnings', '<li class="text-emerald-600 font-bold list-none">Inga strukturfel hittades i Excel-filen!</li>');
             }
         }
+        function renderAnalys() {
+            let cat = document.getElementById('analys-category').value;
+            let headEl = document.getElementById('analys-head');
+            let bodyEl = document.getElementById('analys-body');
+            
+            if (!cat) return; // Avbryt om användaren inte valt något
+
+            headEl.innerHTML = "";
+            bodyEl.innerHTML = "";
+
+            if (cat === 'player_coach') {
+                headEl.innerHTML = `
+                    <tr>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100 w-10">#</th>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100">Namn</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-yellow-200 bg-yellow-50 text-yellow-800" colspan="2">Som Spelare</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-indigo-200 bg-indigo-50 text-indigo-800" colspan="2">Som Tränare</th>
+                        <th class="px-4 py-3 border-l border-b border-slate-200 bg-slate-100">Meriter (Klubbar & År)</th>
+                    </tr>
+                    <tr>
+                        <th class="px-4 py-1 border-b border-slate-200 bg-slate-100"></th>
+                        <th class="px-4 py-1 border-b border-slate-200 bg-slate-100"></th>
+                        <th class="px-2 py-1 text-center text-[10px] uppercase border-l border-b border-yellow-200 bg-yellow-50 font-bold text-yellow-700">Guld</th>
+                        <th class="px-2 py-1 text-center text-[10px] uppercase border-b border-yellow-200 bg-yellow-50 font-bold text-slate-500">Silver</th>
+                        <th class="px-2 py-1 text-center text-[10px] uppercase border-l border-b border-indigo-200 bg-indigo-50 font-bold text-indigo-700">Guld</th>
+                        <th class="px-2 py-1 text-center text-[10px] uppercase border-b border-indigo-200 bg-indigo-50 font-bold text-slate-500">Silver</th>
+                        <th class="px-4 py-1 border-l border-b border-slate-200 bg-slate-100"></th>
+                    </tr>
+                `;
+
+                // --- NYHET 1: SVARTLISTAN FÖR NAMN ---
+                // Fyll på med namn som INTE får matchas. Skriv dem med små bokstäver.
+                const BLACKLIST = [
+                    "nilsson, bo",
+                    "karlsson, johan",
+                    "svensson, rolf",
+                    "johansson, bo",
+                    "andersson, lars" // Exempel: Lägg till fler om du upptäcker namnkrockar
+                ];
+
+                function createNameKey(str) {
+                    if (!str || str.toLowerCase() === 'okänd' || str === 'undefined') return "";
+                    let lower = str.toLowerCase().trim();
+                    if (BLACKLIST.some(badName => lower.includes(badName))) {
+                        return "blocked_" + Math.random();
+                    }
+                    return lower.replace(/,/g, ' ').split(/\s+/).filter(x=>x).sort().join('');
+                }
+
+                function getSmartChampion(seasonStr) {
+                    let startYear = String(seasonStr).substring(0, 4);
+                    for (let key of Object.keys(SEASON_CHAMPIONS)) {
+                        if (key.startsWith(startYear)) return SEASON_CHAMPIONS[key];
+                    }
+                    return "Okänd";
+                }
+
+                // 1. KARTLÄGG TRÄNARE
+                let coachStats = {};
+                if (DJUP.sasonger) {
+                    Object.keys(DJUP.sasonger).forEach(sKey => {
+                        let sInfo = DJUP.sasonger[sKey];
+                        let season = String(sKey).replace(/\.0$/, '').trim(); 
+                        let startYear = season.substring(0, 4); 
+                        
+                        let winnerRaw = "";
+                        let runnerUpRaw = "";
+                        let winnerClub = "";
+                        
+                        Object.keys(sInfo).forEach(k => {
+                            let kLow = String(k).toLowerCase().trim();
+                            if (kLow.includes('tranare_mast') || kLow.includes('tränare_mäst') || kLow.includes('tranare_vinn')) winnerRaw = String(sInfo[k] || "").trim();
+                            if (kLow.includes('tranare_tva') || kLow.includes('tränare_två') || kLow.includes('tranare_forl')) runnerUpRaw = String(sInfo[k] || "").trim();
+                            if (kLow === 'cupvinnare' || kLow.includes('vinnande_lag') || kLow === 'lag') winnerClub = String(sInfo[k] || "").trim();
+                        });
+
+                        if (!winnerClub || winnerClub.toLowerCase() === "okänd" || winnerClub === "undefined") {
+                            winnerClub = getSmartChampion(startYear);
+                        }
+
+                        let wKey = createNameKey(winnerRaw);
+                        if (wKey && !wKey.startsWith('blocked_')) {
+                            if (!coachStats[wKey]) coachStats[wKey] = { name: formatName(winnerRaw), cGold: [], cSilver: [] };
+                            coachStats[wKey].cGold.push({ year: season, club: winnerClub });
+                        }
+                        
+                        let rKey = createNameKey(runnerUpRaw);
+                        if (rKey && !rKey.startsWith('blocked_')) {
+                            if (!coachStats[rKey]) coachStats[rKey] = { name: formatName(runnerUpRaw), cGold: [], cSilver: [] };
+                            let runnerUpClub = "Okänd";
+                            let finalMatch = null;
+                            
+                            if (typeof BASE_MATCHES !== 'undefined') {
+                                finalMatch = Object.values(BASE_MATCHES).find(m => {
+                                    if(!m || !m.sasong || !m.fas) return false;
+                                    let mStartYear = String(m.sasong).substring(0, 4);
+                                    let mFas = String(m.fas).toLowerCase().trim();
+                                    return mStartYear === startYear && mFas.includes('final') && !mFas.includes('kvart') && !mFas.includes('semi');
+                                });
+                            }
+                            
+                            if (finalMatch) {
+                                let h = String(finalMatch.hemma).trim();
+                                let b = String(finalMatch.borta).trim();
+                                let actualChamp = (winnerClub !== "Okänd") ? winnerClub : getSmartChampion(startYear);
+                                
+                                if (actualChamp) {
+                                    if (h.toLowerCase() === actualChamp.toLowerCase()) runnerUpClub = b;
+                                    else if (b.toLowerCase() === actualChamp.toLowerCase()) runnerUpClub = h;
+                                    else runnerUpClub = `${h} eller ${b}`; 
+                                } else {
+                                    runnerUpClub = `${h} eller ${b}`;
+                                }
+                            }
+                            coachStats[rKey].cSilver.push({ year: season, club: runnerUpClub });
+                        }
+                    });
+                }
+
+                // 2. KARTLÄGG SPELARE (MED KAPTENS-KOLL!)
+                let playerMedals = {};
+                Object.keys(DJUP.matcher).forEach(mid => {
+                    let bm = BASE_MATCHES[mid];
+                    if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi')) return;
+
+                    let season = String(bm.sasong).replace(/\.0$/, '').trim();
+                    let startYear = season.substring(0, 4);
+                    let champion = getSmartChampion(startYear); 
+                    let dm = DJUP.matcher[mid];
+
+                    if(!dm || !dm.uppstallning) return;
+
+                    // NYHET: Säker sökning i listan av säsonger från Excel
+                    let capMastRaw = "";
+                    let capTvaaRaw = "";
+                    if (DJUP.sasonger) {
+                        let sKeyMatch = Object.keys(DJUP.sasonger).find(k => String(k).startsWith(startYear));
+                        
+                        if (sKeyMatch) {
+                            let sRow = DJUP.sasonger[sKeyMatch];
+                            Object.keys(sRow).forEach(k => {
+                                let kLow = String(k).toLowerCase().trim();
+                                if (kLow === 'kapten' || kLow.includes('lagkapten_mast') || kLow === 'lagkapten') capMastRaw = String(sRow[k]).trim();
+                                if (kLow === 'tvaa_kapten' || kLow.includes('lagkapten_tva') || kLow.includes('lagkapten_två')) capTvaaRaw = String(sRow[k]).trim();
+                            });
+                        }
+                    }
+
+                    dm.uppstallning.forEach(p => {
+                        let pKey = createNameKey(p.namn);
+                        if (!pKey || pKey.startsWith('blocked_')) return;
+
+                        if (!playerMedals[pKey]) playerMedals[pKey] = { name: formatName(p.namn), gold: [], silver: [] };
+
+                        let pTeam = getPlayerTeam(p.lag, bm);
+                        let isCap = false;
+                        
+                        let teamSafe = String(pTeam || "").toLowerCase().trim();
+                        let champSafe = String(champion || "").toLowerCase().trim();
+                        
+                        // 1. Kolla mot Säsongs-fliken
+                        if (capMastRaw && createNameKey(capMastRaw) === pKey && teamSafe === champSafe) isCap = true;
+                        if (capTvaaRaw && createNameKey(capTvaaRaw) === pKey && teamSafe !== champSafe) isCap = true;
+                        
+                        // 2. Fallback: Kolla om kapten-flagga finns direkt i laguppställningen
+                        if (p.kapten && (String(p.kapten).toLowerCase() === 'ja' || String(p.kapten) === '1' || String(p.kapten).toLowerCase() === 'true')) isCap = true;
+                        if (String(p.namn).toLowerCase().includes('(c)')) isCap = true;
+
+                        if (pTeam === champion) {
+                            playerMedals[pKey].gold.push({year: season, club: pTeam, kapten: isCap});
+                        } else {
+                            playerMedals[pKey].silver.push({year: season, club: pTeam || "Okänd", kapten: isCap});
+                        }
+                    });
+                });
+
+                // 3. SLÅ IHOP OCH HITTA DUBBLA ROLLER
+                let dualRoles = [];
+                Object.keys(coachStats).forEach(cKey => {
+                    let cStats = coachStats[cKey];
+                    let pStats = playerMedals[cKey]; 
+
+                    if (pStats) {
+                        let pGoldCount = pStats.gold.length;
+                        let pSilverCount = pStats.silver.length;
+                        let cGoldCount = cStats.cGold.length;
+                        let cSilverCount = cStats.cSilver.length;
+
+                        if ((pGoldCount > 0 || pSilverCount > 0) && (cGoldCount > 0 || cSilverCount > 0)) {
+                            
+                            let history = [];
+                            
+                            // NYHET: Formaterar texten så att kapten får ett snyggt, gyllene (c)
+                            const formatMedal = (m) => {
+                                let capBadge = m.kapten ? ` <span class="font-bold text-amber-500" title="Lagkapten">(c)</span>` : "";
+                                return `${m.club} '${m.year.slice(-2)}${capBadge}`;
+                            };
+
+                            if (pGoldCount > 0) history.push(`<b>Spelare (Guld):</b> ${pStats.gold.map(formatMedal).join(', ')}`);
+                            if (pSilverCount > 0) history.push(`<b>Spelare (Silver):</b> ${pStats.silver.map(formatMedal).join(', ')}`);
+                            if (cGoldCount > 0) history.push(`<span class='text-indigo-600'><b>Tränare (Guld):</b> ${cStats.cGold.map(m=>m.club + " '" + m.year.slice(-2)).join(', ')}</span>`);
+                            if (cSilverCount > 0) history.push(`<span class='text-indigo-400'><b>Tränare (Silver):</b> ${cStats.cSilver.map(m=>m.club + " '" + m.year.slice(-2)).join(', ')}</span>`);
+
+                            dualRoles.push({
+                                name: cStats.name,
+                                pGold: pGoldCount, pSilver: pSilverCount,
+                                cGold: cGoldCount, cSilver: cSilverCount,
+                                totalScore: (pGoldCount*3) + (pSilverCount*1) + (cGoldCount*4) + (cSilverCount*2),
+                                historyStr: history.join(' <span class="text-slate-300 mx-1">|</span> ')
+                            });
+                        }
+                    }
+                });
+
+                dualRoles.sort((a,b) => b.totalScore - a.totalScore || a.name.localeCompare(b.name));
+
+                bodyEl.innerHTML = dualRoles.map((r, i) => {
+                    let safeName = escapeHtml(r.name);
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50">
+                        <td class="px-4 py-3 font-bold text-slate-400">${i+1}</td>
+                        <td class="px-4 py-3 font-black text-slate-800 cursor-pointer hover:text-blue-600" onclick="openPlayerModal('${safeName}')">${r.name} 👔</td>
+                        <td class="px-2 py-3 text-center border-l border-yellow-100 font-bold text-yellow-600 bg-yellow-50/50 text-lg">${r.pGold}</td>
+                        <td class="px-2 py-3 text-center border-yellow-100 text-slate-400 font-bold bg-yellow-50/50">${r.pSilver}</td>
+                        <td class="px-2 py-3 text-center border-l border-indigo-100 font-bold text-indigo-700 bg-indigo-50/50 text-lg">${r.cGold}</td>
+                        <td class="px-2 py-3 text-center border-indigo-100 text-slate-400 font-bold bg-indigo-50/50">${r.cSilver}</td>
+                        <td class="px-4 py-3 text-[11px] leading-relaxed text-slate-600">${r.historyStr}</td>
+                    </tr>`;
+                }).join('');
+                
+                if (dualRoles.length === 0) {
+                    bodyEl.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-slate-500 italic">Inga matchningar hittades.</td></tr>`;
+                }
+            }
+            else if (cat === 'comeback_kings') {
+                headEl.innerHTML = `
+                    <tr>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100 w-10">#</th>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100">Säsong (Mästare)</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-rose-200 bg-rose-50 text-rose-800">Största Underläge</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-emerald-200 bg-emerald-50 text-emerald-800">Slutresultat</th>
+                        <th class="px-4 py-3 border-l border-b border-slate-200 bg-slate-100">Matchutveckling (Minut för minut)</th>
+                    </tr>
+                `;
+
+                let comebacks = [];
+
+                // Hjälpfunktion för att hämta mästaren säkert
+                function getSmartChampion(seasonStr) {
+                    let startYear = String(seasonStr).substring(0, 4);
+                    for (let key of Object.keys(SEASON_CHAMPIONS)) {
+                        if (key.startsWith(startYear)) return SEASON_CHAMPIONS[key];
+                    }
+                    return "Okänd";
+                }
+
+                Object.keys(DJUP.matcher).forEach(mid => {
+                    let bm = BASE_MATCHES[mid];
+                    // Filtrera: Bara finaler
+                    if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi')) return;
+
+                    let season = String(bm.sasong).replace(/\.0$/, '').trim();
+                    let startYear = season.substring(0, 4);
+                    let champion = getSmartChampion(startYear);
+                    if (champion === "Okänd") return;
+
+                    let dm = DJUP.matcher[mid];
+                    if (!dm.mal || dm.mal.length === 0) return;
+
+                    let isHomeChamp = (String(bm.hemma).trim().toLowerCase() === champion.toLowerCase());
+                    let oppClub = isHomeChamp ? bm.borta : bm.hemma;
+                    
+                    let homeScore = 0;
+                    let awayScore = 0;
+                    let maxDeficit = 0;
+                    let goalSeq = [];
+
+                    dm.mal.forEach(g => {
+                        let info = (g.info || "").toLowerCase();
+                        let innebord = (g.innebord || "").toLowerCase();
+                        
+                        // Straffsparksläggningar räknas inte in i den löpande matchutvecklingen här
+                        if (info.includes('straffläggning') || innebord.includes('straffläggning')) return;
+
+                        let isOwnGoal = g.skytt.toLowerCase().includes('självmål');
+                        
+                        // Lista ut vilket lag som fick målet
+                        let scoredForHome = false;
+                        let teamLag = parseInt(g.lag);
+                        
+                        if (teamLag === 1) {
+                            scoredForHome = true;
+                        } else if (teamLag === 2) {
+                            scoredForHome = false;
+                        } else {
+                            // Fallback: Sök på spelaren
+                            let pTeam = "";
+                            let pLineup = dm.uppstallning.find(p => p.namn === g.skytt);
+                            if (pLineup) pTeam = getPlayerTeam(pLineup.lag, bm);
+                            
+                            if (pTeam && String(bm.hemma).trim().toLowerCase() === pTeam.toLowerCase()) {
+                                scoredForHome = true;
+                            }
+                        }
+
+                        // Justera om det är ett självmål (då får motståndaren poängen)
+                        if (isOwnGoal) scoredForHome = !scoredForHome;
+
+                        if (scoredForHome) homeScore++;
+                        else awayScore++;
+
+                        // Beräkna mästarens underläge vid detta specifika mål
+                        let curDeficit = isHomeChamp ? (awayScore - homeScore) : (homeScore - awayScore);
+                        if (curDeficit > maxDeficit) maxDeficit = curDeficit;
+
+                        let displayMin = g.minut ? g.minut + "'" : "?'";
+                        
+                        // Färgkoda minut-loggen baserat på ställningen för mästaren
+                        let badgeColor = "bg-slate-100 text-slate-600";
+                        if (curDeficit > 0) badgeColor = "bg-rose-100 text-rose-700 font-bold";
+                        else if (curDeficit < 0) badgeColor = "bg-emerald-100 text-emerald-700";
+
+                        goalSeq.push(`<span class="px-2 py-1 rounded text-xs ${badgeColor}" title="Mål av ${escapeHtml(g.skytt)}">${displayMin} (${homeScore}-${awayScore})</span>`);
+                    });
+
+                    // Spara endast de matcher där mästaren vid något tillfälle legat under (maxDeficit > 0)
+                    if (maxDeficit > 0) {
+                        comebacks.push({
+                            season: season,
+                            champion: champion,
+                            opponent: oppClub,
+                            deficit: maxDeficit,
+                            finalScore: `${homeScore}-${awayScore}`,
+                            sequence: goalSeq.join(' <span class="text-slate-300">➔</span> ')
+                        });
+                    }
+                });
+
+                // Sortera: Först de som vänt störst underläge, sedan de nyaste säsongerna
+                comebacks.sort((a, b) => b.deficit - a.deficit || parseInt(b.season.substring(0,4)) - parseInt(a.season.substring(0,4)));
+
+                bodyEl.innerHTML = comebacks.map((r, i) => {
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50">
+                        <td class="px-4 py-3 font-bold text-slate-400">${i+1}</td>
+                        <td class="px-4 py-3 font-bold text-slate-800">
+                            ${r.champion} <span class="text-xs text-slate-500 font-normal block">Besegrade ${r.opponent} (${r.season})</span>
+                        </td>
+                        <td class="px-4 py-3 text-center border-l border-rose-100 font-black text-rose-600 text-lg bg-rose-50/30">-${r.deficit} mål</td>
+                        <td class="px-4 py-3 text-center border-l border-emerald-100 font-bold text-emerald-700 bg-emerald-50/30">${r.finalScore}</td>
+                        <td class="px-4 py-3 border-l border-slate-100 leading-relaxed">${r.sequence}</td>
+                    </tr>`;
+                }).join('');
+                
+                if (comebacks.length === 0) {
+                    bodyEl.innerHTML = `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500 italic">Inga vändningar hittades. (Mästarna tog antingen ledningen och höll den, eller vann på straffar efter 0-0).</td></tr>`;
+                }
+            }
+            else if (cat === 'age_gap') {
+                headEl.innerHTML = `
+                    <tr>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100 w-10">#</th>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100">Säsong (Final)</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-yellow-200 bg-yellow-50 text-yellow-800">Mästarnas Snittålder</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-50 text-slate-600">Tvåornas Snittålder</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-indigo-200 bg-indigo-50 text-indigo-800">Åldersgap</th>
+                        <th class="px-4 py-3 border-l border-b border-slate-200 bg-slate-100">Slutsats (Startelvor)</th>
+                    </tr>
+                `;
+
+                let ageGaps = [];
+
+                function getSmartChampion(seasonStr) {
+                    let startYear = String(seasonStr).substring(0, 4);
+                    for (let key of Object.keys(SEASON_CHAMPIONS)) {
+                        if (key.startsWith(startYear)) return SEASON_CHAMPIONS[key];
+                    }
+                    return "Okänd";
+                }
+
+                Object.keys(DJUP.matcher).forEach(mid => {
+                    let bm = BASE_MATCHES[mid];
+                    if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi')) return;
+
+                    let season = String(bm.sasong).replace(/\.0$/, '').trim();
+                    let startYear = season.substring(0, 4);
+                    let matchYear = parseInt(startYear);
+                    if (isNaN(matchYear)) return;
+
+                    let champion = getSmartChampion(startYear);
+                    if (champion === "Okänd") return;
+
+                    let dm = DJUP.matcher[mid];
+                    if (!dm.uppstallning || dm.uppstallning.length === 0) return;
+
+                    let champAges = [];
+                    let runnerAges = [];
+                    let runnerClub = "Okänd";
+
+                    dm.uppstallning.forEach(p => {
+                        let isStarter = (parseInt(p.pos) <= 11);
+                        if (!isStarter) return; // Analysera endast startelvan (Rutin från start)
+
+                        let pTeam = getPlayerTeam(p.lag, bm);
+                        if (pTeam !== champion && runnerClub === "Okänd") {
+                            runnerClub = pTeam || (bm.hemma === champion ? bm.borta : bm.hemma);
+                        }
+
+                        // Leta upp födelseår
+                        let birthYear = null;
+                        if (DJUP.spelare && DJUP.spelare[p.namn]) {
+                            let sp = DJUP.spelare[p.namn];
+                            let birthStr = String(sp.fodd || sp.Född || sp.fodelsedatum || sp.Födelsedatum || sp.fodelsear || sp.Födelseår || "").trim();
+                            let m = birthStr.match(/^(\d{4})/);
+                            if (m) birthYear = parseInt(m[1]);
+                        }
+
+                        // Beräkna ålder på matchåret (Rimlighetskoll 15-50 år)
+                        if (birthYear) {
+                            let age = matchYear - birthYear;
+                            if (age >= 15 && age <= 50) { 
+                                if (pTeam === champion) champAges.push(age);
+                                else runnerAges.push(age);
+                            }
+                        }
+                    });
+
+                    // Vi kräver att vi har födelsedata på minst 7 spelare i varje lag för att snittet ska bli statistiskt tillförlitligt
+                    if (champAges.length >= 7 && runnerAges.length >= 7) { 
+                        let champAvg = champAges.reduce((a, b) => a + b, 0) / champAges.length;
+                        let runnerAvg = runnerAges.reduce((a, b) => a + b, 0) / runnerAges.length;
+                        let diff = champAvg - runnerAvg; // Plusvärde = Mästaren var äldst
+
+                        ageGaps.push({
+                            season: season,
+                            champion: champion,
+                            runnerUp: runnerClub,
+                            champAvg: champAvg,
+                            runnerAvg: runnerAvg,
+                            diff: diff
+                        });
+                    }
+                });
+
+                // Sortera: Matcherna med STÖRST åldersgap (oavsett vem som var äldst) hamnar överst
+                ageGaps.sort((a, b) => Math.abs(b.diff) - Math.abs(a.diff)); 
+
+                bodyEl.innerHTML = ageGaps.map((r, i) => {
+                    let diffAbs = Math.abs(r.diff).toFixed(1);
+                    
+                    let conclusion = "";
+                    let badgeClass = "";
+                    
+                    // Färgkoda slutsatsen
+                    if (r.diff > 1.5) {
+                        conclusion = "Rutin segrade (Mästarna >1.5 år äldre)";
+                        badgeClass = "bg-blue-100 text-blue-800 border border-blue-200";
+                    } else if (r.diff < -1.5) {
+                        conclusion = "Ungdom segrade (Mästarna >1.5 år yngre)";
+                        badgeClass = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+                    } else if (r.diff > 0) {
+                        conclusion = "Jämnt (Mästarna marginellt äldre)";
+                        badgeClass = "bg-slate-100 text-slate-600 border border-slate-200";
+                    } else {
+                        conclusion = "Jämnt (Mästarna marginellt yngre)";
+                        badgeClass = "bg-slate-100 text-slate-600 border border-slate-200";
+                    }
+
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50">
+                        <td class="px-4 py-3 font-bold text-slate-400">${i+1}</td>
+                        <td class="px-4 py-3 font-bold text-slate-800">${r.season}</td>
+                        <td class="px-4 py-3 text-center border-l border-yellow-100 font-bold text-yellow-700 bg-yellow-50/50">${r.champAvg.toFixed(1)} år <span class="block text-[10px] text-yellow-600/70 font-normal uppercase tracking-wider mt-0.5">${r.champion}</span></td>
+                        <td class="px-4 py-3 text-center border-l border-slate-100 font-bold text-slate-600">${r.runnerAvg.toFixed(1)} år <span class="block text-[10px] text-slate-400 font-normal uppercase tracking-wider mt-0.5">${r.runnerUp}</span></td>
+                        <td class="px-4 py-3 text-center border-l border-indigo-100 font-black text-indigo-600 bg-indigo-50/30 text-lg">${diffAbs} år</td>
+                        <td class="px-4 py-3 border-l border-slate-100"><span class="px-2 py-1 rounded text-xs font-bold ${badgeClass}">${conclusion}</span></td>
+                    </tr>`;
+                }).join('');
+                
+                if (ageGaps.length === 0) {
+                    bodyEl.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500 italic">Kunde inte beräkna åldersgap. Saknas födelsedata för startelvorna.</td></tr>`;
+                }
+            }
+            else if (cat === 'iron_men') {
+                headEl.innerHTML = `
+                    <tr>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100 w-10">#</th>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100">Namn</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-50">Finaler Spelade</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-blue-200 bg-blue-50 text-blue-800">Totala Minuter</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-orange-200 bg-orange-50 text-orange-800">Förlängningar</th>
+                        <th class="px-4 py-3 border-l border-b border-slate-200 bg-slate-100">
+                            <div class="flex items-center gap-2">
+                                Detaljer (Säsonger & Minuter)
+                                <button onclick="document.getElementById('iron-legend').classList.toggle('hidden')" class="text-blue-500 hover:text-blue-700 font-bold text-xs bg-blue-100 px-2 py-0.5 rounded cursor-pointer">Förklaring ℹ️</button>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr id="iron-legend" class="hidden bg-slate-800 text-white">
+                        <td colspan="6" class="px-4 py-3 text-xs leading-relaxed">
+                            <strong class="text-white block mb-2 border-b border-slate-600 pb-1">Förklaring av etiketter:</strong>
+                            <div class="flex flex-wrap gap-4">
+                                <div class="flex items-center gap-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold text-white bg-blue-500 border border-blue-600 w-12 text-center">90' ✓</span> <span class="text-slate-300">Spelade hela matchen</span></div>
+                                <div class="flex items-center gap-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold text-white bg-orange-500 border border-orange-600 w-12 text-center">120' 🔥</span> <span class="text-slate-300">Hela matchen inkl. förlängning/Golden Goal</span></div>
+                                <div class="flex items-center gap-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold text-orange-700 bg-orange-100 border border-orange-300 w-12 text-center">105'</span> <span class="text-slate-300">Byttes in/ut under förlängning</span></div>
+                                <div class="flex items-center gap-2"><span class="px-1.5 py-0.5 rounded text-[10px] font-bold text-slate-600 bg-slate-100 border border-slate-300 w-12 text-center">75'</span> <span class="text-slate-300">Byttes in/ut under ordinarie tid</span></div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                let ironStats = {};
+
+                Object.keys(DJUP.matcher).forEach(mid => {
+                    let bm = BASE_MATCHES[mid];
+                    if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi')) return;
+
+                    let dm = DJUP.matcher[mid];
+                    if (!dm || !dm.uppstallning) return;
+                    
+                    let season = String(bm.sasong).replace(/\.0$/, '').trim();
+
+                    // 1. SMART CHECK: Hitta matchens faktiska längd! (Löser Golden Goal automatiskt)
+                    let maxMatchMin = 0;
+                    dm.uppstallning.forEach(p => {
+                        let m = parseInt(String(p.minuter || "").replace(/[^0-9]/g, '')) || 0;
+                        if (m > maxMatchMin) maxMatchMin = m;
+                    });
+                    
+                    // Fallback: En hel fotbollsmatch är minst 90 min. (Skyddar mot ofullständig data)
+                    if (maxMatchMin > 0 && maxMatchMin < 90) maxMatchMin = 90; 
+
+                    dm.uppstallning.forEach(p => {
+                        let pMinStr = String(p.minuter || "").replace(/[^0-9]/g, '');
+                        let pMinVal = parseInt(pMinStr) || 0;
+                        
+                        if (pMinVal === 0) return; 
+
+                        let pName = formatName(p.namn);
+                        if (!pName || pName.toLowerCase() === 'okänd') return;
+
+                        if (!ironStats[pName]) {
+                            ironStats[pName] = { name: pName, totalMins: 0, finalsPlayed: 0, extraTimeFinals: 0, fullMatches: 0, details: [] };
+                        }
+
+                        ironStats[pName].totalMins += pMinVal;
+                        ironStats[pName].finalsPlayed += 1;
+                        
+                        // Kolla om spelaren körde hela matchen!
+                        let playedFullMatch = (pMinVal === maxMatchMin);
+                        if (playedFullMatch) ironStats[pName].fullMatches += 1;
+
+                        // Har spelaren spelat över 90 min (Förlängning/Golden Goal)
+                        let isExtraTime = (pMinVal > 90);
+                        if (isExtraTime) ironStats[pName].extraTimeFinals += 1;
+
+                        // 2. DESIGN AV BADGES
+                        let badgeStyle = "";
+                        let icon = "";
+                        let tooltip = "";
+                        
+                        if (playedFullMatch && isExtraTime) {
+                            badgeStyle = "text-white bg-orange-500 border-orange-600 shadow-sm"; // Solid orange
+                            icon = "🔥"; 
+                            tooltip = "Spelade hela matchen (inkl. Förlängning/Golden Goal)";
+                        } else if (playedFullMatch) {
+                            badgeStyle = "text-white bg-blue-500 border-blue-600 shadow-sm"; // Solid blå
+                            icon = "✓";
+                            tooltip = "Spelade hela matchen";
+                        } else if (isExtraTime) {
+                            badgeStyle = "text-orange-700 bg-orange-100 border-orange-300"; // Ljus orange
+                            tooltip = "Byttes in/ut under förlängningen";
+                        } else {
+                            badgeStyle = "text-slate-600 bg-slate-100 border-slate-300"; // Ljus grå
+                            tooltip = "Byttes in/ut under ordinarie tid";
+                        }
+
+                        ironStats[pName].details.push(`<span title="${tooltip}" class="inline-block px-1.5 py-0.5 rounded text-[10px] font-bold border ${badgeStyle} mr-1 mb-1 cursor-help">${season}: ${pMinVal}' ${icon}</span>`);
+                    });
+                });
+
+                let ironArr = Object.values(ironStats);
+                
+                // Sortera: 1. Minuter, 2. Flest förlängningar, 3. Flest HELA matcher
+                ironArr.sort((a,b) => b.totalMins - a.totalMins || b.extraTimeFinals - a.extraTimeFinals || b.fullMatches - a.fullMatches || a.name.localeCompare(b.name));
+
+                bodyEl.innerHTML = ironArr.slice(0, 50).map((r, i) => { 
+                    let safeName = escapeHtml(r.name);
+                    
+                    let extraHtml = r.extraTimeFinals > 0 
+                        ? `<span class="font-black text-orange-600 text-lg">${r.extraTimeFinals}</span>` 
+                        : `<span class="text-slate-300">-</span>`;
+
+                    return `<tr class="hover:bg-slate-50 border-b border-slate-50">
+                        <td class="px-4 py-3 font-bold text-slate-400">${i+1}</td>
+                        <td class="px-4 py-3 font-black text-slate-800 cursor-pointer hover:text-blue-600" onclick="openPlayerModal('${safeName}')">${r.name}</td>
+                        <td class="px-4 py-3 text-center border-l border-slate-100 font-bold text-slate-600">${r.finalsPlayed} <span class="block text-[10px] text-slate-400 font-normal">(${r.fullMatches} hela)</span></td>
+                        <td class="px-4 py-3 text-center border-l border-blue-100 font-black text-blue-700 bg-blue-50/50 text-lg">${r.totalMins}'</td>
+                        <td class="px-4 py-3 text-center border-l border-orange-50 bg-orange-50/30">${extraHtml}</td>
+                        <td class="px-4 py-2 border-l border-slate-100 max-w-md flex flex-wrap gap-1 items-center">${r.details.join('')}</td>
+                    </tr>`;
+                }).join('');
+                
+                if (ironArr.length === 0) {
+                    bodyEl.innerHTML = `<tr><td colspan="6" class="px-4 py-6 text-center text-slate-500 italic">Ingen minut-data hittades för finalerna.</td></tr>`;
+                }
+            }
+            else if (cat === 'final_arenas') {
+                headEl.innerHTML = `
+                    <tr>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100 w-10">#</th>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100">Arena & Ort</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-100 font-bold text-slate-800">Antal Finaler</th>
+                        <th class="px-4 py-3 border-l border-b border-slate-200 bg-slate-50 text-slate-600">Säsonger (År)</th>
+                    </tr>
+                `;
+
+                const ARENA_MERGE = {
+                    "friends": "Strawberry Arena",
+                    "swedbank": "Eleda Stadion"
+                    // "tele2": "3Arena",
+                    // "bravida": "Nordic Wellness Arena"
+                    // Fyll på med fler vid behov
+                };
+
+                let arenas = {};
+                let hasAnyMerged = false;
+
+                Object.keys(BASE_MATCHES).forEach(mid => {
+                    let bm = BASE_MATCHES[mid];
+                    if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi')) return;
+
+                    let arenaRaw = String(bm.arena || "Okänd arena").trim();
+                    let ortRaw = String(bm.ort || "Okänd ort").trim();
+                    let isMerged = false;
+                    
+                    // Applicera namnbytet
+                    let matchedAlias = Object.keys(ARENA_MERGE).find(oldName => arenaRaw.toLowerCase().includes(oldName.toLowerCase()));
+                    if (matchedAlias) {
+                        arenaRaw = ARENA_MERGE[matchedAlias];
+                        isMerged = true;
+                        hasAnyMerged = true;
+                    }
+                    
+                    // Bygg den unika ID-nyckeln UTAN stjärnan
+                    let key = arenaRaw;
+                    if (arenaRaw.toLowerCase() !== ortRaw.toLowerCase() && arenaRaw !== "Okänd arena") {
+                        key += " i " + ortRaw;
+                    } else if (arenaRaw === "Okänd arena" && ortRaw !== "Okänd ort") {
+                        key = ortRaw;
+                    }
+
+                    // Registrera arenan i databasen om den är ny
+                    if (!arenas[key]) arenas[key] = { name: key, count: 0, seasons: [], mergedFlag: false };
+                    
+                    // Om denna specifika match krävde en namnändring, flagga arenan för en stjärna
+                    if (isMerged) arenas[key].mergedFlag = true;
+                    
+                    arenas[key].count++;
+                    arenas[key].seasons.push(String(bm.sasong).replace(/\.0$/, ''));
+                });
+
+                let arenaArr = Object.values(arenas).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
+                let rowsHtml = arenaArr.map((r, i) => `
+                    <tr class="hover:bg-slate-50 border-b border-slate-50">
+                        <td class="px-4 py-3 font-bold text-slate-400">${i+1}</td>
+                        <td class="px-4 py-3 font-black text-slate-800">
+                            ${r.name}
+                            ${r.mergedFlag ? ' <span class="text-rose-500 font-black ml-1" title="Sammanslagen / Namnbytt">*</span>' : ''}
+                        </td>
+                        <td class="px-4 py-3 text-center border-l border-slate-100 font-black text-indigo-600 bg-indigo-50/30 text-lg">${r.count}</td>
+                        <td class="px-4 py-2 border-l border-slate-100 text-xs text-slate-500 max-w-md flex flex-wrap gap-1">
+                            ${r.seasons.map(s => `<span class="bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded shadow-sm">${s}</span>`).join('')}
+                        </td>
+                    </tr>
+                `).join('');
+                
+                if (hasAnyMerged) {
+                    rowsHtml += `<tr><td colspan="4" class="px-4 py-3 text-xs text-slate-500 bg-slate-50 italic"><span class="text-rose-500 font-black">*</span> Arenans namn har uppdaterats eller slagits samman med ett historiskt namn.</td></tr>`;
+                }
+                
+                bodyEl.innerHTML = rowsHtml;
+            }
+            
+            else if (cat === 'all_results') {
+                if (typeof window.res_mode === 'undefined') window.res_mode = 'full';
+                if (typeof window.res_epoch === 'undefined') window.res_epoch = 'all';
+                
+                // BYGG DYNAMISK RULLISTA MED OPTGROUP (GRUPPERING)
+                let epochOptions = `<option value="all">Totalt (Alla säsonger)</option>`;
+                
+                if (typeof window.EPOKER !== 'undefined') {
+                    let allKeys = Object.keys(window.EPOKER);
+                    
+                    // Separera årtionden och egna epoker
+                    let decades = allKeys.filter(k => k.includes('-talet'));
+                    let customEpochs = allKeys.filter(k => !k.includes('-talet'));
+                    
+                    // Sortera årtionden (nyast överst) och epoker (kronologiskt/alfabetiskt)
+                    decades.sort((a, b) => b.localeCompare(a));
+                    customEpochs.sort();
+
+                    if (customEpochs.length > 0) {
+                        epochOptions += `<optgroup label="Egna Epoker">`;
+                        customEpochs.forEach(ep => {
+                            let isSelected = window.res_epoch === ep ? 'selected' : '';
+                            epochOptions += `<option value="${ep}" ${isSelected}>${ep}</option>`;
+                        });
+                        epochOptions += `</optgroup>`;
+                    }
+
+                    if (decades.length > 0) {
+                        epochOptions += `<optgroup label="Årtionden">`;
+                        decades.forEach(ep => {
+                            let isSelected = window.res_epoch === ep ? 'selected' : '';
+                            epochOptions += `<option value="${ep}" ${isSelected}>${ep}</option>`;
+                        });
+                        epochOptions += `</optgroup>`;
+                    }
+                }
+
+                headEl.innerHTML = `
+                    <tr>
+                        <th colspan="4" class="px-4 py-3 bg-slate-800 border-b border-slate-700 text-white rounded-tl-lg rounded-tr-lg">
+                            <div class="flex flex-col lg:flex-row items-start lg:items-center gap-4 justify-between">
+                                <span class="font-bold text-slate-200">Frekvens av matchresultat</span>
+                                
+                                <div class="flex flex-wrap gap-3 items-center">
+                                    <!-- Rullista för Tidsperiod/Epok -->
+                                    <select onchange="window.res_epoch = this.value; renderAnalys()" class="bg-slate-700 text-white text-xs font-bold p-1.5 rounded border border-slate-600 focus:ring-blue-500 focus:border-blue-500 cursor-pointer outline-none">
+                                        ${epochOptions}
+                                    </select>
+                                    
+                                    <div class="flex flex-wrap gap-3 text-xs font-normal bg-slate-700 p-1.5 rounded border border-slate-600">
+                                        <label class="flex items-center gap-1 cursor-pointer hover:text-white">
+                                            <input type="radio" name="res_time" value="full" ${window.res_mode === 'full' ? 'checked' : ''} onclick="window.res_mode = 'full'; renderAnalys()" class="text-blue-500 focus:ring-blue-500 cursor-pointer"> 
+                                            Slutresultat
+                                        </label>
+                                        <label class="flex items-center gap-1 cursor-pointer hover:text-white">
+                                            <input type="radio" name="res_time" value="90" ${window.res_mode === '90' ? 'checked' : ''} onclick="window.res_mode = '90'; renderAnalys()" class="text-blue-500 focus:ring-blue-500 cursor-pointer"> 
+                                            90 min
+                                        </label>
+                                        <label class="flex items-center gap-1 cursor-pointer hover:text-white text-rose-300">
+                                            <input type="radio" name="res_time" value="penalties" ${window.res_mode === 'penalties' ? 'checked' : ''} onclick="window.res_mode = 'penalties'; renderAnalys()" class="text-rose-500 focus:ring-rose-500 cursor-pointer"> 
+                                            Straffläggning
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </th>
+                    </tr>
+                    <tr>
+                        <th class="px-4 py-3 border-b border-slate-200 bg-slate-100 w-24">Resultat</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-100">Antal Matcher</th>
+                        <th class="px-4 py-3 text-center border-l border-b border-slate-200 bg-slate-100">Andel (%)</th>
+                        <th class="px-4 py-3 border-l border-b border-slate-200 bg-slate-50 text-slate-600">Historik (Första - Senaste)</th>
+                    </tr>
+                `;
+
+                let resultsMap = {};
+                let totalMatches = 0;
+
+            // NYA ANALYVARIABLER
+                let totalGoalsMap = {};
+                let cleanSheets = 0;
+                let doubleDigits = 0;
+                let absoluteTotalGoals = 0; // <-- LÄGG TILL DENNA
+
+                Object.keys(BASE_MATCHES).forEach(mid => {
+                    let bm = BASE_MATCHES[mid];
+                    if (!bm) return;
+
+                    // --- EPOK-FILTRET ---
+                    if (window.res_epoch !== 'all' && typeof window.EPOKER !== 'undefined' && window.EPOKER[window.res_epoch]) {
+                        let validSeasons = window.EPOKER[window.res_epoch];
+                        let seasonKey1 = String(bm.sasong).replace(/\.0$/, '').trim();
+                        let seasonKey2 = String(bm.sasong).trim();
+                        
+                        // Kolla om matchens säsong ingår i vald epok
+                        if (!validSeasons.includes(seasonKey1) && !validSeasons.includes(seasonKey2)) {
+                            return; // Hoppa över matchen!
+                        }
+                    }
+
+                    let hm = NaN, bm_score = NaN, forlh = 0, forlb = 0, sh = NaN, sb = NaN;
+
+                    Object.keys(bm).forEach(k => {
+                        let kLow = String(k).toLowerCase().trim();
+                        if (kLow === 'hm' || kLow === 'h_mal') hm = parseInt(bm[k]);
+                        else if (kLow === 'bm' || kLow === 'b_mal') bm_score = parseInt(bm[k]);
+                        else if (kLow === 'fh' || kLow.includes('förl_h') || kLow.includes('forl_h')) forlh = parseInt(bm[k]) || 0;
+                        else if (kLow === 'fb' || kLow.includes('förl_b') || kLow.includes('forl_b')) forlb = parseInt(bm[k]) || 0;
+                        else if (kLow === 'sh' || kLow.includes('straff_h')) sh = parseInt(bm[k]);
+                        else if (kLow === 'sb' || kLow.includes('straff_b')) sb = parseInt(bm[k]);
+                    });
+
+                    let finalH, finalB;
+
+                    if (window.res_mode === 'penalties') {
+                        if (isNaN(sh) || isNaN(sb)) return;
+                        if (sh === 0 && sb === 0) return;
+                        finalH = sh;
+                        finalB = sb;
+                    } else {
+                        if (isNaN(hm) || isNaN(bm_score)) return;
+                        if (window.res_mode === '90') {
+                            finalH = hm;
+                            finalB = bm_score;
+                        } else {
+                            finalH = hm + forlh;
+                            finalB = bm_score + forlb;
+                        }
+                    }
+
+                    let sumGoals = finalH + finalB;
+                    absoluteTotalGoals += sumGoals; // <-- LÄGG TILL DENNA
+                    if (!totalGoalsMap[sumGoals]) totalGoalsMap[sumGoals] = 0;
+                    totalGoalsMap[sumGoals]++;
+
+                    if (finalH === 0) cleanSheets++;
+                    if (finalB === 0) cleanSheets++;
+                    
+                    if (finalH >= 10) doubleDigits++;
+                    if (finalB >= 10) doubleDigits++;
+
+                    let high = Math.max(finalH, finalB);
+                    let low = Math.min(finalH, finalB);
+                    let resKey = `${high}-${low}`;
+                    
+                    if (!resultsMap[resKey]) resultsMap[resKey] = { key: resKey, count: 0, seasons: [] };
+                    
+                    resultsMap[resKey].count++;
+                    totalMatches++;
+
+                    let matchYear = parseInt(String(bm.sasong).substring(0, 4));
+                    if (!isNaN(matchYear)) {
+                        resultsMap[resKey].seasons.push(matchYear);
+                    }
+                });
+
+                let resArr = Object.values(resultsMap).sort((a, b) => b.count - a.count);
+
+                let mainTableHtml = resArr.map((r) => {
+                    let pct = ((r.count / totalMatches) * 100).toFixed(1);
+                    let minS = Math.min(...r.seasons);
+                    let maxS = Math.max(...r.seasons);
+                    let seasonText = (isFinite(minS) && isFinite(maxS)) ? (minS === maxS ? `${minS}` : `${minS} - ${maxS}`) : "Okänt";
+                    let barColor = window.res_mode === 'penalties' ? 'bg-rose-500' : 'bg-indigo-500';
+                    let textColor = window.res_mode === 'penalties' ? 'text-rose-700' : 'text-indigo-700';
+
+                    return `
+                    <tr class="hover:bg-slate-50 border-b border-slate-50">
+                        <td class="px-4 py-3 font-black ${textColor} text-lg">${r.key}</td>
+                        <td class="px-4 py-3 text-center border-l border-slate-100 font-bold text-slate-800">${r.count}</td>
+                        <td class="px-4 py-3 text-center border-l border-slate-100 font-bold text-slate-500">
+                            <div class="flex items-center justify-between gap-2"><span>${pct}%</span><div class="w-20 h-2 bg-slate-200 rounded overflow-hidden flex-shrink-0"><div class="h-full ${barColor}" style="width: ${pct}%"></div></div></div>
+                        </td>
+                        <td class="px-4 py-3 border-l border-slate-100 font-bold text-slate-600">${seasonText}</td>
+                    </tr>`;
+                }).join('');
+                
+                if (resArr.length === 0) mainTableHtml = `<tr><td colspan="4" class="px-4 py-6 text-center text-slate-500 italic">Inga resultat hittades för den valda perioden.</td></tr>`;
+
+            // --- BYGG UPP TILLÄGGSDATAN LÄNGST NER ---
+                let tgArr = Object.keys(totalGoalsMap).map(Number).sort((a, b) => a - b);
+                let tgHtml = tgArr.map(g => {
+                    let pct = ((totalGoalsMap[g] / totalMatches) * 100).toFixed(1);
+                    return `<tr class="border-b border-slate-50 hover:bg-slate-50"><td class="px-3 py-2 font-bold text-slate-700">${g} mål</td><td class="px-3 py-2 text-right font-bold text-indigo-600">${totalGoalsMap[g]} <span class="text-xs text-slate-400 font-normal ml-1">(${pct}%)</span></td></tr>`;
+                }).join('');
+                
+                if (tgArr.length === 0) tgHtml = `<tr><td colspan="2" class="px-3 py-4 text-center text-slate-400 italic">Ingen data</td></tr>`;
+
+                let extColor = window.res_mode === 'penalties' ? 'rose' : 'indigo';
+
+                // Lägg denna rad precis INNAN let statsGrid = `...`
+                // Beräkna målsnittet innan HTML-strängen byggs
+                let avgGoals = totalMatches > 0 ? (absoluteTotalGoals / totalMatches).toFixed(2) : "0.00";
+                
+                let statsGrid = `
+                <div class="p-6 bg-slate-50 border-t border-slate-200">
+                    <h4 class="font-bold text-slate-700 mb-4 text-lg">Sammanfattande Matchstatistik <span class="text-sm font-normal text-slate-500 ml-2">(${totalMatches} matcher)</span></h4>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        
+                        <!-- VÄNSTER SPALT: Tabellen -->
+                        <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+                            <div class="bg-slate-700 text-white px-4 py-2 font-bold text-sm">Fördelning: Totalt antal mål i matchen</div>
+                            <div class="max-h-56 overflow-y-auto">
+                                <table class="w-full text-sm text-left">
+                                    <thead class="bg-slate-100 text-slate-500 sticky top-0"><tr><th class="px-3 py-2">Mål totalt</th><th class="px-3 py-2 text-right">Antal matcher</th></tr></thead>
+                                    <tbody>${tgHtml}</tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- HÖGER SPALT: KPI-Boxarna -->
+                        <div class="flex flex-col gap-4">
+                            
+                            <!-- NY BOX: Målproduktion -->
+                            <div class="bg-sky-50 rounded-lg border border-sky-100 p-4 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <div class="text-sky-500 text-xs font-bold uppercase tracking-wider">Målproduktion</div>
+                                    <div class="text-sky-900 font-black text-lg">Totalt antal mål</div>
+                                    <div class="text-xs text-sky-600 mt-1">Snitt per vald period: <span class="font-bold">${avgGoals} mål</span></div>
+                                </div>
+                                <div class="text-3xl font-black text-sky-600">${absoluteTotalGoals} <span class="text-sm font-normal text-sky-500">st</span></div>
+                            </div>
+
+                            <!-- BEFINTLIG BOX: Defensiv styrka -->
+                            <div class="bg-${typeof extColor !== 'undefined' ? extColor : 'indigo'}-50 rounded-lg border border-${typeof extColor !== 'undefined' ? extColor : 'indigo'}-100 p-4 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <div class="text-${typeof extColor !== 'undefined' ? extColor : 'indigo'}-400 text-xs font-bold uppercase tracking-wider">Defensiv styrka</div>
+                                    <div class="text-${typeof extColor !== 'undefined' ? extColor : 'indigo'}-900 font-black text-lg">Hållna nollor</div>
+                                </div>
+                                <div class="text-3xl font-black text-${typeof extColor !== 'undefined' ? extColor : 'indigo'}-600">${cleanSheets} <span class="text-sm font-normal text-${typeof extColor !== 'undefined' ? extColor : 'indigo'}-400">ggr</span></div>
+                            </div>
+                            
+                            <!-- BEFINTLIG BOX: Offensiv kross -->
+                            <div class="bg-amber-50 rounded-lg border border-amber-100 p-4 shadow-sm flex items-center justify-between">
+                                <div>
+                                    <div class="text-amber-500 text-xs font-bold uppercase tracking-wider">Offensiv kross</div>
+                                    <div class="text-amber-900 font-black text-lg">Tvåsiffrigt antal mål</div>
+                                    <div class="text-xs text-amber-600 mt-1">Ett lag gör ≥ 10 mål</div>
+                                </div>
+                                <div class="text-3xl font-black text-amber-600">${doubleDigits} <span class="text-sm font-normal text-amber-500">ggr</span></div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                `;
+
+                bodyEl.innerHTML = mainTableHtml;
+                if (totalMatches > 0) {
+                    bodyEl.insertAdjacentHTML('beforeend', `<tr><td colspan="4" class="p-0">${statsGrid}</td></tr>`);
+                }
+            }
+        }
     </script>
 </body>
 </html>
 """
 
-final_html = html_template.replace("%%DJUP_DATA_JSON%%", djup_data_str).replace("%%BASE_MATCHES_JSON%%", base_matches_json)
+# ==========================================
+# NYTT: BYGG EPOKER / ÅRTIONDEN FRÅN EXCEL
+# ==========================================
+print("Skapar tidsperioder (Epoker)...")
+epoker_data = {}
+try:
+    all_seasons = [str(s).replace('.0', '').strip() for s in df_cup['Säsong'].dropna().unique() if str(s).strip() != '']
+    sas_nr_to_name = {}
+    if 'Säs_nr' in df_cup.columns and 'Säsong' in df_cup.columns:
+        for _, row in df_cup.iterrows():
+            s_nr = row.get('Säs_nr')
+            s_name = row.get('Säsong')
+            if pd.notna(s_nr) and pd.notna(s_name) and str(s_nr).strip() != '':
+                try: sas_nr_to_name[int(float(str(s_nr).replace(',', '.')))] = str(s_name).replace('.0', '').strip()
+                except: pass
+
+    for s in all_seasons:
+        year_str = "".join(filter(str.isdigit, s))[:4]
+        if len(year_str) == 4:
+            decade = year_str[:3] + "0-talet"
+            if decade not in epoker_data: epoker_data[decade] = []
+            epoker_data[decade].append(s)
+            
+    df_epochs = pd.read_excel(filnamn_excel, sheet_name="Epoker")
+    df_epochs.columns = df_epochs.columns.str.strip() 
+    c_period = next((c for c in df_epochs.columns if 'period' in c.lower() or 'epok' in c.lower()), df_epochs.columns[0])
+    c_start = next((c for c in df_epochs.columns if 'första' in c.lower() or 'start' in c.lower()), df_epochs.columns[1])
+    c_end = next((c for c in df_epochs.columns if 'sista' in c.lower() or 'slut' in c.lower()), df_epochs.columns[2])
+    
+    for _, row in df_epochs.iterrows():
+        period_name = str(row.get(c_period, '')).strip()
+        if not period_name or period_name == "nan": continue
+        epoch_seasons = []
+        
+        s_val = str(row.get(c_start, '')).strip()
+        e_val = str(row.get(c_end, '')).strip()
+        if s_val == '' or s_val == 'nan': continue
+        
+        start_val = float(s_val.replace(',', '.'))
+        end_val = float(e_val.replace(',', '.')) if e_val and e_val.lower() != 'senaste' and e_val != 'nan' else 9999
+        
+        if start_val < 200:
+            for nr, name in sas_nr_to_name.items():
+                if start_val <= nr <= end_val: epoch_seasons.append(name)
+        else:
+            for s in all_seasons:
+                s_dig = "".join(filter(str.isdigit, str(s)))
+                if s_dig:
+                    s_yr = float(s_dig[:4])
+                    if start_val <= s_yr <= end_val: epoch_seasons.append(s)
+        
+        if epoch_seasons: epoker_data[period_name] = list(set(epoch_seasons))
+except Exception as e: 
+    print(f"Hittade ingen flik 'Epoker' eller fick fel, hoppar över. ({e})")
+
+epoker_json = json.dumps(epoker_data, ensure_ascii=False)
+
+# ==========================================
+# TRICKET: Smyger in 'EPOKER' bredvid 'BASE_MATCHES'
+# Använder window.EPOKER för 100% matematisk stabilitet i JS!
+# ==========================================
+combined_json_str = f"{base_matches_json};\n        window.EPOKER = {epoker_json};"
+final_html = html_template.replace("%%DJUP_DATA_JSON%%", djup_data_str).replace("%%BASE_MATCHES_JSON%%", combined_json_str)
 
 with open(output_file, "w", encoding="utf-8") as f:
     f.write(final_html)
 
-print(f"SUCCÉ! Filen '{output_file}' har skapats. Allt är nu inlagt!")
+print(f"SUCCÉ! Filen '{output_file}' har skapats. Epoker och Allt annat är nu inlagt!")
