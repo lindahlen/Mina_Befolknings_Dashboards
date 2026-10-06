@@ -333,6 +333,15 @@
             <li><strong>Index: Demografisk Koncentration</strong> – Mäter åldersstruktur och migration. <br><em>Består i regel av</em>: Andel utrikes födda, Andel ensamstående hushåll, Barn i förskole-/skolålder, m.fl.</li>
             <li><strong>Index: Strukturell Ojämlikhet</strong> – Mäter jämställdhet och klyftan mellan män och kvinnor lokalt. Höga värden indikerar en traditionell obalans där kvinnor halkar efter ekonomiskt. <br><em>Består i regel av</em>: Klyftor i ohälsotal, utbildning, sysselsättningsgrad och inkomstfördelning.</li>
         </ol>
+        <!-- 🚀 NYTT: Kompletterande specialindex -->
+        <h4 style="margin-top: 25px; color: #2c3e50;">Kompletterande Tematiska Index</h4>
+        <p style="margin-bottom: 30px;">Vid sidan av de generella socioekonomiska indexen ovan innehåller dashboarden även tre specialutvecklade index för specifika planeringsbehov. Alla tre bygger på Z-score och tolkas enligt "Lägre är Bättre"-regeln ovan.</p>
+        
+        <ul style="color: #444; line-height: 1.8; margin-bottom: 30px;">
+            <li><strong>Index: Care Need (CNI)</strong> – Ett folkhälso- och vårdtyngdsindex inspirerat av SKR. Mäter socioekonomiska och demografiska strukturer kopplade till ohälsa och behov av samhällsstöd. Höga värden innebär en stor strukturell vårdtyngd i området.</li>
+            <li><strong>Index: Kris- & Sårbarhet (KKSI)</strong> – Mäter stadsdelarnas motståndskraft mot till exempel värmeböljor eller civila kriser. Tar hänsyn till fysisk sårbarhet (t.ex. äldre invånare och äldre fastigheter) och bristande anpassningsförmåga (t.ex. ekonomi och hyresrätter). Höga värden innebär hög sårbarhet.</li>
+            <li><strong>Index: Äldres Omsorgsbehov</strong> – Mäter det strukturella trycket på kommunens äldreomsorg. Indexet fångar upp var hög ålder (särskilt 85+) sammanfaller med social isolering (ensamboende) och fysiska hinder i boendemiljön (äldre fastigheter). Höga värden indikerar skörhet och stor förväntad belastning på hemtjänst och ett ökat behov av bostadsanpassning.</li>
+        </ul>
 
         <h3>Detaljerad sammansättning för Linköping</h3>
         <p>I indexen nedan <strong>viktas samtliga inkluderade variabler lika (1:1)</strong> efter att de Z-transformerats. Riktningen på variablerna är justerad så att höga positiva indexvärden alltid indikerar hög koncentration av det indexet beskriver (alltså en försämring/ökad utsatthet). Variabler som markerats som <i>(Inverterad)</i> spegelvänds matematiskt innan de slås ihop (t.ex. räknas hög gymnasiebehörighet som ett skyddande/negativt värde för social utsatthet, och hög kvinnlig sysselsättning som ett skyddande/negativt värde för ojämlikhetsindexet).</p>
@@ -393,6 +402,41 @@
                         • Diff: Sysselsättningsgrad <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span><br>
                         • Diff: Lång eftergymn utb <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span>
                     </td>
+                </tr> <br>
+                <!-- 🚀 NYTT: CNI-L och KKSI i tabellen -->
+                <tr style="background-color: #fcfdfe;">
+                    <td style="border-left: 3px solid #16a085;"><strong>Index: Care Need (CNI)</strong><br><span style="font-size: 12px; color:#777;">Mäter strukturellt folkhälso-/vårdbehov.</span></td>
+                    <td>
+                        • Andel barn 0-4 år <span class="weight-tag">Lika vikt</span><br>
+                        • Andel ensamma 70+ (av hushåll) <span class="weight-tag">Lika vikt</span><br>
+                        • Andel ensamstående föräldrar <span class="weight-tag">Lika vikt</span><br>
+                        • Förgymnasial utbildning <span class="weight-tag">Lika vikt</span><br>
+                        • Inskrivna arbetslösa <span class="weight-tag">Lika vikt</span><br>
+                        • Utrikes födda <span class="weight-tag">Lika vikt</span><br>
+                        • Hög omflyttning <i>(Inverterad kvarboende)</i> <span class="weight-tag">Lika vikt</span>
+                    </td>
+                </tr>
+                <tr style="background-color: #fcfdfe;">
+                    <td style="border-left: 3px solid #16a085; border-bottom: 1px solid #ddd;"><strong>Index: Kris- & Sårbarhet (KKSI)</strong><br><span style="font-size: 12px; color:#777;">Mäter fysisk/social motståndskraft.</span></td>
+                    <td style="border-bottom: 1px solid #ddd;">
+                        • Andel barn 0-4 år <span class="weight-tag">Lika vikt</span><br>
+                        • Andel 70+ år <span class="weight-tag">Lika vikt</span><br>
+                        • Andel ensamma 70+ (av hushåll) <span class="weight-tag">Lika vikt</span><br>
+                        • Bostäder byggda före 1980 <span class="weight-tag">Lika vikt</span><br>
+                        • Utländsk bakgrund <span class="weight-tag">Lika vikt</span><br>
+                        • Andel hyresrätter <span class="weight-tag">Lika vikt</span><br>
+                        • Inskrivna arbetslösa <span class="weight-tag">Lika vikt</span><br>
+                        • Nettoinkomst <i>(Inverterad)</i> <span class="weight-tag">Lika vikt</span>
+                    </td>
+                </tr>
+                <tr style="background-color: #fcfdfe;">
+                    <td style="border-left: 3px solid #16a085; border-bottom: 1px solid #ddd;"><strong>Index: Äldres Omsorgsbehov</strong><br><span style="font-size: 12px; color:#777;">Mäter demografiskt tryck på äldreomsorg.</span></td>
+                    <td style="border-bottom: 1px solid #ddd;">
+                        • Andel 85+ år <span class="weight-tag">Lika vikt</span><br>
+                        • Andel 70+ år <span class="weight-tag">Lika vikt</span><br>
+                        • Andel ensamma 70+ (av hushåll) <span class="weight-tag">Lika vikt</span><br>
+                        • Bostäder byggda före 1980 <span class="weight-tag">Lika vikt</span>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -434,8 +478,41 @@ Vid sidan om det SEI-index som redovisas för respektive år finns det i dashboa
             </ul>
         </div>
 
+        <!-- ÖVERGÅNG FRÅN DEL 2 -->
+        <p style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+            <i>När du nu har en förståelse för hur indexen ovan är konstruerade och vilka lokala variabler de bygger på, är nästa steg att tillämpa dem analytiskt i plattformens interaktiva verktyg.</i>
+        </p>
 
-        <h2 id="pca-section">Del 3: Matematiken bakom Kartans Faktoranalys (PCA)</h2>
+        <!-- 🚀 NY DEL 3: ANALYSSTRATEGI -->
+        <h2 id="drivkraft-utfall-section">Del 3: Analysstrategi – Drivkraft (X) och Utfall (Y)</h2>
+        <p>I flikar som <em>Klusteranalys</em>, <em>Drivkraftsprofil (Tornado)</em> och <em>Multivariat Regression</em> är det avgörande hur du placerar variablerna för att kartlägga orsakssamband i stadens segregation. När du analyserar Linköpings stadsbyggnad och socioekonomiska geografi bör de fem grundläggande segregationsindexen delas in i en logisk orsakskedja – från det trögrörliga (strukturer) till det snabbrörliga (symptom).</p>
+        
+        <p>För att bygga den mest insiktsfulla modellen rekommenderas följande uppdelning:</p>
+
+        <ul style="line-height: 1.8; color: #444; margin-bottom: 25px;">
+            <li><strong style="color: #2c3e50;">1. De fundamentala Drivkrafterna (Spelplanen):</strong><br>
+                Dessa index styrs av långsiktig stadsplanering, historiskt bostadsbyggande och övergripande flyttmönster. De tar lång tid att förändra och passar därför bäst på <strong>X-axeln (Drivkraft)</strong>.
+                <br><em>Använd primärt:</em> <strong>Index: Fysisk Bostadssegregation</strong> och <strong>Index: Demografisk Koncentration</strong>.
+            </li>
+            
+            <li style="margin-top: 15px;"><strong style="color: #2c3e50;">2. Den Socioekonomiska Motorn (Mellansteget):</strong><br>
+                Dessa index fungerar som den analytiska bryggan. De kan med fördel användas både som <strong>Drivkraft (X)</strong> och <strong>Utfall (Y)</strong>. Låg utbildningsnivå (X) driver exempelvis ofta fram en svag ekonomi (Y), men en svag lokal ekonomi (X) kan i sin tur driva fram andra sociala problem.
+                <br><em>Använd flexibelt:</em> <strong>Index: Socialt & Humankapital</strong> och <strong>Index: Ekonomisk Utsatthet</strong>.
+            </li>
+                
+            <li style="margin-top: 15px;"><strong style="color: #2c3e50;">3. Välfärdens Utfall (Symptomen):</strong><br>
+                Dessa index speglar konsekvenserna av stadens strukturer. De placeras oftast på <strong>Y-axeln (Utfall)</strong> och visar hur den fysiska och ekonomiska utformningen resulterar i klyftor som kommunens förvaltningar måste hantera.
+                <br><em>Använd primärt:</em> <strong>Index: Strukturell Ojämlikhet</strong> <i>(Detta gäller även de specialiserade tilläggsindexen <strong>CNI, KKSI och Äldres Omsorgsbehov</strong> som i regel alltid fungerar som rena utfallsmått).</i>
+            </li>
+        </ul>
+
+        <div class="nytta-box" style="border-left-color: #d35400; background-color: #fdfaf5; margin-bottom: 40px; padding: 15px; border-radius: 4px; border: 1px solid #fae5d3;">
+            <strong style="color: #d35400; font-size: 15px;">💡 Master-variabelns dubbla natur: Samlat SEI (1-6)</strong><br>
+            Det samlade SEI-indexet – som fungerar som plattformens 1-6 betygssystem för resurser – är exceptionellt flexibelt i sin analytiska användning. Det kan användas som <strong>Drivkraft (X)</strong> för att analysera hur områdets generella resursstyrka påverkar specifika utfall (t.ex. ohälsa eller valdeltagande), men fungerar lika bra som <strong>Utfall (Y)</strong> när du vill studera hur stadsplaneringsbeslut och fysisk infrastruktur slår mot områdets samlade socioekonomiska status.
+        </div>
+
+
+        <h2 id="pca-section">Del 4: Matematiken bakom Kartans Faktoranalys (PCA)</h2>
         <p>I plattformens tionde flik, <strong>Geografisk Analys</strong>, visualiseras staden utifrån en Principalkomponentanalys (PCA). Till skillnad från de förutbestämda indexen i Del 2, där vi (forskare/analytiker) i förväg bestämt vilka variabler som hör ihop, låter PCA-algoritmen datan "tala för sig själv".</p>
         
         <div class="lead-text" style="font-size: 15px; padding: 15px; border-left-color: #16a085; background: #e8f8f5;">
