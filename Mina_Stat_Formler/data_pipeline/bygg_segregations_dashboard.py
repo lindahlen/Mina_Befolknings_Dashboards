@@ -102,8 +102,93 @@ calc_if_exists(px_merged, 'Migrationsnetto', lambda d: d['Invandring'] - d['Utva
 calc_if_exists(px_merged, 'Födelseöverskott', lambda d: d['Födda'] - d['Döda'], ['Födda', 'Döda'])
 calc_if_exists(px_merged, 'Nettoflyttning förvärvsarbetande', lambda d: d['Inflyttning av förvärvsarbetande från annat basområde'] - d['Utflyttning av förvärvsarbetande till annat basområde'], ['Inflyttning av förvärvsarbetande från annat basområde', 'Utflyttning av förvärvsarbetande till annat basområde'])
 
+# ==============================================================================
+# 4B. SKAPANDE AV INDEX: CNI-L OCH KRIS- & KLIMATSÅRBARHET (KKSI)
+# ==============================================================================
+
+print(" -> Beräknar CNI, KKSI och Äldreomsorgs-index...", flush=True)
+
+# --- 0. RÄDDNINGSAKTION FÖR 2015 OCH 2016 (BACKFILL PÅ RÅDATA) ---
+# Eftersom vissa HKT59special-variabler saknar data 2015-2016, fyller vi dem bakåt från 2017.
+kolumner_att_radda = [
+    '70+ år', '85+ år', 'Bostäder byggda före 1980', 'Bostäder', 
+    'Hyresrätter', 'Nettoinkomst (tkr)', 'Utländsk bakgrund'
+]
+px_merged = px_merged.sort_values(by=['basområde', 'tid'])
+for col in kolumner_att_radda:
+    if col in px_merged.columns:
+        # Fyller saknade värden för varje basområde (backfill och sedan forwardfill som säkerhet)
+        px_merged[col] = px_merged.groupby('basområde')[col].transform(lambda x: x.bfill().ffill())
+
+# 1. Vi beräknar de nya andelarna från HKT59special och multiplicerar med 100
+# för att de ska få exakt samma procentskala (0-100) som variablerna från HKT58!
+calc_if_exists(px_merged, 'Andel 0-4 år', lambda d: (d['0-4 år'] / d['Invånarantal'].replace(0, np.nan)) * 100, ['0-4 år', 'Invånarantal'])
+calc_if_exists(px_merged, 'Andel 70+ år', lambda d: (d['70+ år'] / d['Invånarantal'].replace(0, np.nan)) * 100, ['70+ år', 'Invånarantal'])
+calc_if_exists(px_merged, 'Andel 85+ år', lambda d: (d['85+ år'] / d['Invånarantal'].replace(0, np.nan)) * 100, ['85+ år', 'Invånarantal'])
+calc_if_exists(px_merged, 'Andel ensamma 70+', lambda d: (d['70+ år ensamboende'] / d['Hushåll'].replace(0, np.nan)) * 100, ['70+ år ensamboende', 'Hushåll'])
+calc_if_exists(px_merged, 'Andel ensamstående föräldrar', lambda d: (d['Ensamstående föräldrar'] / d['Hushåll'].replace(0, np.nan)) * 100, ['Ensamstående föräldrar', 'Hushåll'])
+calc_if_exists(px_merged, 'Andel gamla hus', lambda d: (d['Bostäder byggda före 1980'] / d['Hushåll'].replace(0, np.nan)) * 100, ['Bostäder byggda före 1980', 'Hushåll'])
+calc_if_exists(px_merged, 'Andel hyresrätt', lambda d: (d['Hyresrätter'] / d['Bostäder'].replace(0, np.nan)) * 100, ['Hyresrätter', 'Bostäder'])
+
+# Kvarboende inverteras (100% minus nuvarande procentvärde)
+calc_if_exists(px_merged, 'Hög omflyttning', lambda d: 100.0 - pd.to_numeric(d['Kvarboende minst ett år'].astype(str).str.replace(',', '.'), errors='coerce'), ['Kvarboende minst ett år'])
+
+# (De färdiga variablerna Utländsk bakgrund, Utrikes födda, Förgymnasial utbildning och Inskrivna arbetslösa lämnas ifred och används direkt i listorna nedan)
+
+# 2. Hjälpfunktion för att räkna ut Z-score för en kolumn (per år!)
+def z_score(df, col):
+    # 🚀 BOMBSÄKERT: Tvingar bort kommatecken och konverterar strängar till float innan matematiken körs
+    saker_kolumn = pd.to_numeric(df[col].astype(str).str.replace(',', '.'), errors='coerce')
+    return saker_kolumn.groupby(df['tid']).transform(lambda x: (x - x.mean()) / (x.std() if x.std() != 0 else 1))
+
+# 3. Bygg CNI-L (Care Need Index)
+# Inkluderar nu Ensamstående föräldrar!
+req_cni = ['Andel 0-4 år', 'Andel ensamma 70+', 'Andel ensamstående föräldrar', 'Förgymnasial utbildning', 'Inskrivna arbetslösa', 'Utrikes födda', 'Hög omflyttning']
+if all(col in px_merged.columns for col in req_cni):
+    px_merged['Index: Care Need (CNI)'] = (
+        z_score(px_merged, 'Andel 0-4 år') +
+        z_score(px_merged, 'Andel ensamma 70+') +
+        z_score(px_merged, 'Andel ensamstående föräldrar') +
+        z_score(px_merged, 'Förgymnasial utbildning') +
+        z_score(px_merged, 'Inskrivna arbetslösa') +
+        z_score(px_merged, 'Utrikes födda') +
+        z_score(px_merged, 'Hög omflyttning')
+    ).round(2)
+    print(" ✅ Index: Care Need (CNI) skapat!")
+else:
+    print(" ⚠️️ Saknar variabler för CNI, hoppar över.")
+
+# 4. Bygg KKSI (Kris- och Klimatsårbarhetsindex)
+req_kksi = ['Andel 0-4 år', 'Andel 70+ år', 'Andel ensamma 70+', 'Andel gamla hus', 'Utländsk bakgrund', 'Andel hyresrätt', 'Inskrivna arbetslösa', 'Nettoinkomst (tkr)']
+if all(col in px_merged.columns for col in req_kksi):
+    px_merged['Index: Kris- & Sårbarhet (KKSI)'] = (
+        z_score(px_merged, 'Andel 0-4 år') +
+        z_score(px_merged, 'Andel 70+ år') +
+        z_score(px_merged, 'Andel ensamma 70+') +
+        z_score(px_merged, 'Andel gamla hus') +
+        z_score(px_merged, 'Utländsk bakgrund') +
+        z_score(px_merged, 'Andel hyresrätt') +
+        z_score(px_merged, 'Inskrivna arbetslösa') - 
+        z_score(px_merged, 'Nettoinkomst (tkr)') # Minus: låg inkomst = HÖG sårbarhet
+    ).round(2)
+    print(" ✅ Kris- & Sårbarhetsindex (KKSI) skapat!")
+else:
+    print(" ⚠️ Saknar variabler för KKSI, hoppar över.")
+
+# 5. Bygg Äldreomsorgsbehov
+# Kräver: 85+, 70+, Ensamma 70+, Gamla hus
+req_aldre = ['Andel 85+ år', 'Andel 70+ år', 'Andel ensamma 70+', 'Andel gamla hus']
+if all(col in px_merged.columns for col in req_aldre):
+    px_merged['Index: Äldres Omsorgsbehov'] = (
+        z_score(px_merged, 'Andel 85+ år') +
+        z_score(px_merged, 'Andel 70+ år') +
+        z_score(px_merged, 'Andel ensamma 70+') +
+        z_score(px_merged, 'Andel gamla hus')
+    ).round(2)
+    print(" ✅ Index: Äldres Omsorgsbehov skapat!")
+
 # ==========================================
-# --- 4B. JÄMSTÄLLDHETSBERÄKNINGAR ---
+# --- 4c. JÄMSTÄLLDHETSBERÄKNINGAR ---
 # ==========================================
 
 # 1. Skapa nämnare (Total befolkning 20-64 per kön) genom att summera utbildningskategorierna
@@ -223,8 +308,13 @@ ra_kolumner_att_dolja = [
     'Lång eftergymn utb kvinnor (%)', 'Lång eftergymn utb män (%)',
 # 🚀 NYA TILLÄGG: Bara fyll på listan med exakta namn (måste matcha stavningen i datan)
     'Utländsk bakgrund kvinnor', 'Utländsk bakgrund män',
-    'Uppgift saknas utb', 'Diff: Ohälsotal 20-64 år', 'Diff: Sysselsättningsgrad', 'Diff: Lång eftergymn utb', 'Diff: Förgymnasial utb'
-
+    'Uppgift saknas utb', 'Diff: Ohälsotal 20-64 år', 'Diff: Sysselsättningsgrad', 'Diff: Lång eftergymn utb', 'Diff: Förgymnasial utb',
+# 🚀 NYA TILLÄGG: Bara fyll på listan med exakta namn (måste matcha stavningen i datan)
+    'AI_Kompass_X', 'AI_Kompass_Y',
+# 🚀 NYA TILLÄGG: Rådata och Andelar för CNI & KKSI
+    '0-4 år', '70+ år', '85+ år', '70+ år ensamboende', 'Ensamstående föräldrar', 'Bostäder byggda före 1980', # Absoluta tal
+    'Andel 0-4 år', 'Andel 70+ år', 'Andel gamla hus', # Rå-andelar
+    'Hög omflyttning', 'Andel hyresrätt', 'Andel 85+ år', # Andelar som beräknats explicit för Z-scores
 ]
 
 # Drop-funktionen ignorerar kolumner som eventuellt inte existerar (felsäkert)
@@ -235,12 +325,108 @@ final_df = final_df.drop(columns=[col for col in ra_kolumner_att_dolja if col in
 
 alias_ordlista = {
     'Ohälsotal totalt 20-64 år': 'Ohälsotal 20-64 år',
-    'Nettoinkomst, andel': 'Nettoinkomstens andel av kommunens nivå'
+    'Nettoinkomst, andel': 'Nettoinkomstens andel av kommunens nivå',
+    'Andel ensamstående föräldrar': 'Ensamstående föräldrar',
+    'Andel ensamma 70+': 'Ensamstående 70 år eller äldre'
     # Lägg till hur många du vill här...
 }
 
 # Applicera namnbytet på din dataframe (byt ut 'df' mot vad din dataframe heter)
 final_df = final_df.rename(columns=alias_ordlista)
+
+# ==========================================
+# 8B. AI-KOMPASS (FRIKOPPLAD INLÄSNING - SÖKVÄGS-SMART)
+# ==========================================
+print("\n🧭 Startar AI-Kompassen (Söker efter filen)...", flush=True)
+
+try:
+    import pandas as pd
+    import os
+    
+    # --- MASTER CONFIG: Regel 2B (Encoding Fix) ---
+    encoding_fix = {
+        'Ã¥': 'å', 'Ã¤': 'ä', 'Ã¶': 'ö', 'Ã…': 'Å', 'Ã„': 'Ä', 'Ã–': 'Ö',
+        'Ã©': 'é', 'Ã¨': 'è', 'Ã‰': 'É', "Ã\x85": "Å", "Ã\x90": "Ä", "Ã\x96": "Ö"
+    }
+
+    def fix_text(text):
+        if not isinstance(text, str): return text
+        for bad, good in encoding_fix.items():
+            text = text.replace(bad, good)
+        return text
+    # ----------------------------------------------
+
+    old_cols = [c for c in final_df.columns if 'AI_Kompass' in c]
+    if old_cols:
+        final_df = final_df.drop(columns=old_cols)
+
+    # 💡 LÖSNINGEN: Leta i aktuell mapp OCH en mapp upp!
+    filename = "ai_segregation_koordinater.csv"
+    path_current = filename
+    path_parent = os.path.join("..", filename)
+    
+    compass_file = None
+    if os.path.exists(path_current):
+        compass_file = path_current
+    elif os.path.exists(path_parent):
+        compass_file = path_parent
+        
+    if compass_file:
+        print(f" -> [1/3] Hittade filen i sökvägen: {compass_file}", flush=True)
+        
+        try:
+            df_coords = pd.read_csv(compass_file, sep=';', encoding='utf-8')
+        except UnicodeDecodeError:
+            df_coords = pd.read_csv(compass_file, sep=';', encoding='latin1')
+        
+        rename_dict = {}
+        for col in df_coords.columns:
+            fixed_col = fix_text(col)
+            if 'basomr' in fixed_col.lower() or fixed_col.lower() == 'namn':
+                rename_dict[col] = 'basområde'
+            elif 'år' in fixed_col.lower() or 'tid' in fixed_col.lower():
+                rename_dict[col] = 'tid'
+            elif fixed_col != col:
+                rename_dict[col] = fixed_col
+                
+        if rename_dict:
+            df_coords = df_coords.rename(columns=rename_dict)
+            
+        print(" -> [2/3] Matchar datatyper och bakar ihop...", flush=True)
+        
+        if 'basområde' in df_coords.columns and 'AI_Kompass_X' in df_coords.columns:
+            # Tvätta områdesnamnen i fall Excel förstört å/ä/ö
+            df_coords['basområde'] = df_coords['basområde'].apply(fix_text)
+            
+            final_df['basområde'] = final_df['basområde'].astype(str)
+            df_coords['basområde'] = df_coords['basområde'].astype(str)
+            
+            if 'tid' in df_coords.columns:
+                final_df['tid'] = final_df['tid'].astype(str)
+                df_coords['tid'] = df_coords['tid'].astype(str)
+                final_df = pd.merge(final_df, df_coords[['basområde', 'tid', 'AI_Kompass_X', 'AI_Kompass_Y']], on=['basområde', 'tid'], how='left')
+            else:
+                final_df = pd.merge(final_df, df_coords[['basområde', 'AI_Kompass_X', 'AI_Kompass_Y']], on='basområde', how='left')
+            
+            # Eftersom vi vet att filen har punkter, konverterar vi direkt till nummer
+            final_df['AI_Kompass_X'] = pd.to_numeric(final_df['AI_Kompass_X'], errors='coerce')
+            final_df['AI_Kompass_Y'] = pd.to_numeric(final_df['AI_Kompass_Y'], errors='coerce')
+            
+            # Fyll NaN med 0.0 för att skydda den känsliga JavaScript-kartan
+            final_df['AI_Kompass_X'] = final_df['AI_Kompass_X'].fillna(0.0)
+            final_df['AI_Kompass_Y'] = final_df['AI_Kompass_Y'].fillna(0.0)
+            
+            # Kontrollutskrift!
+            success_count = (final_df['AI_Kompass_X'] != 0.0).sum()
+            print(f"✅ [3/3] Inbakat! {success_count} matchningar gjordes med master-filen.", flush=True)
+            
+        else:
+            print("⚠️ Fel: Filen saknar nödvändiga kolumner (basområde och/eller AI_Kompass_X).", flush=True)
+    else:
+        print(f"⚠️ Filen '{filename}' hittades varken i mappen eller en mapp upp. Kompassen hoppas över.", flush=True)
+
+except Exception as e:
+    print(f"\n❌ ETT FEL UPPSTOD VID INLÄSNING AV KOMPASS: {e}")
 
 # ==========================================
 # 9. AVSLUT OCH SPARA

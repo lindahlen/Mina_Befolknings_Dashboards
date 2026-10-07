@@ -477,6 +477,11 @@ def main():
     # 4. BYGG DASHBOARD-KOLUMNER (R12 etc)
     # ---------------------------------------------------------
     print("3. Bygger Månads- och R12-värden för dashboarden...")
+    
+    # --- DEFRAGMENTERING OCH OPTIMERING ---
+    df_main = df_main.copy() # Städar minnet innan vi börjar
+    nya_kolumner = {}        # "Väntrum" för alla nya kolumner
+
     for index, row in df_troskel.iterrows():
         indikator = str(row['Ålder_Indikator']).strip()
         kategori = str(row.get('Kategori_i_Data', '')).strip().lower()
@@ -488,27 +493,31 @@ def main():
             continue
         
         col_utfall = f"{indikator}_Manad"
-        df_main[col_utfall] = df_main[indikator]
+        nya_kolumner[col_utfall] = df_main[indikator].copy()
         
         col_riket = f"Riket_{indikator}_Manad"
-        df_main[col_riket] = df_main[f"Riket_{indikator}"] if f"Riket_{indikator}" in df_main.columns else np.nan
+        if f"Riket_{indikator}" in df_main.columns:
+            nya_kolumner[col_riket] = df_main[f"Riket_{indikator}"].copy()
+        else:
+            nya_kolumner[col_riket] = pd.Series(np.nan, index=df_main.index)
 
-        df_main[f"{indikator}_Manad_Pct_1M"] = df_main[col_utfall].pct_change(periods=1) * 100
-        df_main[f"Riket_{indikator}_Manad_Pct_1M"] = df_main[col_riket].pct_change(periods=1) * 100
-        df_main[f"{indikator}_Manad_Pct_12M"] = df_main[col_utfall].pct_change(periods=12) * 100
-        df_main[f"Riket_{indikator}_Manad_Pct_12M"] = df_main[col_riket].pct_change(periods=12) * 100
+        nya_kolumner[f"{indikator}_Manad_Pct_1M"] = nya_kolumner[col_utfall].pct_change(periods=1, fill_method=None) * 100
+        nya_kolumner[f"Riket_{indikator}_Manad_Pct_1M"] = nya_kolumner[col_riket].pct_change(periods=1, fill_method=None) * 100
+        nya_kolumner[f"{indikator}_Manad_Pct_12M"] = nya_kolumner[col_utfall].pct_change(periods=12, fill_method=None) * 100
+        nya_kolumner[f"Riket_{indikator}_Manad_Pct_12M"] = nya_kolumner[col_riket].pct_change(periods=12, fill_method=None) * 100
 
         col_r12 = f"{indikator}_R12"
         
         if "förändring" in kategori or "flytt" in kategori.lower() or indikator in ['Födda', 'Döda', 'Inflyttning', 'Utflyttning', 'Befolkningsförändring', 'Födelseöverskott', 'Flyttningsnetto', 'Flyttningsnetto_inrikes', 'Flyttningsnetto_utrikes', 'Flyttningsnetto_eget_län', 'Flyttningsnetto_annat_län']:
-            df_main[col_r12] = df_main[col_utfall].rolling(12, min_periods=12).sum()
-            df_main[f"Riket_{indikator}_R12"] = df_main[col_riket].rolling(12, min_periods=12).sum() if col_riket in df_main.columns else np.nan
+            nya_kolumner[col_r12] = nya_kolumner[col_utfall].rolling(12, min_periods=12).sum()
+            nya_kolumner[f"Riket_{indikator}_R12"] = nya_kolumner[col_riket].rolling(12, min_periods=12).sum()
             regel = 'SUM'
         else:
-            df_main[col_r12] = df_main[col_utfall]
-            df_main[f"Riket_{indikator}_R12"] = df_main[col_riket]
+            nya_kolumner[col_r12] = nya_kolumner[col_utfall].copy()
+            nya_kolumner[f"Riket_{indikator}_R12"] = nya_kolumner[col_riket].copy()
             regel = 'LATEST'
 
+        # Drilldown-komponenter
         if pd.notna(row.get('Drilldown_Komponenter')):
             komps = [k.strip() for k in str(row['Drilldown_Komponenter']).split(',') if k.strip()]
             for k in komps:
@@ -517,19 +526,28 @@ def main():
                     if k_col in df_main.columns:
                         col_utf = f"{k_col}_Manad"
                         col_r12_komp = f"{k_col}_R12"
-                        if col_utf not in df_main.columns:
-                            df_main[col_utf] = df_main[k_col]
+                        
+                        # Kolla om vi redan bearbetat denna i "väntrummet"
+                        if col_utf not in nya_kolumner and col_utf not in df_main.columns:
+                            nya_kolumner[col_utf] = df_main[k_col].copy()
+                            
                             if regel == 'SUM':
-                                df_main[col_r12_komp] = df_main[col_utf].rolling(12, min_periods=12).sum()
+                                nya_kolumner[col_r12_komp] = nya_kolumner[col_utf].rolling(12, min_periods=12).sum()
                             else:
-                                df_main[col_r12_komp] = df_main[col_utf]
+                                nya_kolumner[col_r12_komp] = nya_kolumner[col_utf].copy()
 
-        df_main[f"{indikator}_Polaritet"] = row.get('Polaritet', np.nan)
-        df_main[f"{indikator}_Troskel"] = row.get('Tröskel', np.nan)
-        df_main[f"{indikator}_Absolut_R12"] = row.get('Absolut_R12', np.nan)
-        df_main[f"{indikator}_Minitabell"] = row.get('Minitabell_Kolumn', np.nan)
-        df_main[f"{indikator}_Minitabell_Sort"] = row.get('Minitabell_Sortering', np.nan)
-        df_main[f"{indikator}_Alternativ_rubrik"] = row.get('Alternativ_tabellrubrik', np.nan)
+        # Metadata-kolumner
+        nya_kolumner[f"{indikator}_Polaritet"] = row.get('Polaritet', np.nan)
+        nya_kolumner[f"{indikator}_Troskel"] = row.get('Tröskel', np.nan)
+        nya_kolumner[f"{indikator}_Absolut_R12"] = row.get('Absolut_R12', np.nan)
+        nya_kolumner[f"{indikator}_Minitabell"] = row.get('Minitabell_Kolumn', np.nan)
+        nya_kolumner[f"{indikator}_Minitabell_Sort"] = row.get('Minitabell_Sortering', np.nan)
+        nya_kolumner[f"{indikator}_Alternativ_rubrik"] = row.get('Alternativ_tabellrubrik', np.nan)
+
+    # --- KLISTRA IHOP ALLT (Löser PerformanceWarning) ---
+    if nya_kolumner:
+        df_nya = pd.DataFrame(nya_kolumner)
+        df_main = pd.concat([df_main, df_nya], axis=1)
 
     # ---------------------------------------------------------
     # 5. GENERERA RAPPORTTEXT
