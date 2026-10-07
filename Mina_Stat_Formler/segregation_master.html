@@ -182,10 +182,37 @@
         .model-builder { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px; }
         .model-panel { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex: 1; min-width: 300px; }
         .var-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; max-height: 350px; overflow-y: auto; padding-right: 5px;}
-        .var-check-label { display: flex; align-items: center; gap: 8px; font-size: 11px; color: #444; background: #f8f9fa; padding: 6px; border-radius: 4px; border: 1px solid #e2e8f0; cursor: pointer; transition: all 0.2s;}
-        .var-check-label:hover { background: #eef2f5; }
-        .var-check-label.selected { background: #e8f5e9; border-color: #27ae60; font-weight: bold; color: #1e8449; }
         
+        /* 1. Grunddesign för etiketter - tjockare vänsterkant förblir standard */
+        .var-check-label { 
+            display: flex; align-items: center; gap: 8px; font-size: 11px; color: #444; 
+            background: #f8f9fa; padding: 6px; border-radius: 4px; border: 1px solid #e2e8f0; 
+            border-left-width: 4px; border-left-color: #ccc; cursor: pointer; transition: all 0.2s;
+        }
+        
+        /* 🚀 NYTT: Färgkodning baserat på variabeltyp (blått för rådata, lila för Index) ( (tvingad med !important) */
+        /* 2. Råvariabler (blå) - Gäller endast om rutan INTE är ikryssad */
+        .var-check-label.raw-var:not(.selected) { 
+            border-left-color: #3498db !important; 
+            background-color: #eaf4fb !important; 
+        }
+        
+        /* 3. Indexvariabler (lila) - Gäller endast om rutan INTE är ikryssad */
+        .var-check-label.index-var:not(.selected) { 
+            border-left-color: #9b59b6 !important; 
+            background-color: #f5eef8 !important; 
+        }
+        
+        /* 4. Den gröna markeringen när användaren bockar i rutan (Trumfar allt annat) */
+        .var-check-label.selected { 
+            background-color: #e8f5e9 !important; 
+            border-color: #27ae60 !important; 
+            border-left-color: #27ae60 !important; 
+            font-weight: bold; 
+            color: #1e8449 !important; 
+        }
+        
+        /* Knappar */
         .magic-btn { background: #27ae60; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; width: 100%; margin-top: 15px; box-shadow: 0 4px 6px rgba(39, 174, 96, 0.2); transition: all 0.2s;}
         .magic-btn:hover { background: #219653; transform: translateY(-2px); box-shadow: 0 6px 8px rgba(39, 174, 96, 0.3); }
         .cluster-btn { background: #1abc9c; } 
@@ -310,6 +337,9 @@
             <a href="index.html" class="nav-button">🏠 Startmeny</a>
             <a href="Kartor/index.html" class="nav-button">🗺️ Kartportal</a>
             <a href="guide_segregation.html" class="nav-button" target="_blank">📖 Användarguide</a>
+            <button onclick="exportZScoresToCSV()" style="background-color: #34495e; color: white; border: 1px solid #455a64; padding: 8px 15px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; display: flex; align-items: center; gap: 5px; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor='#2c3e50'" onmouseout="this.style.backgroundColor='#34495e'">
+                📥 Exportera Index (CSV)
+            </button>
         </div>
     </div>
 
@@ -826,7 +856,7 @@
                     ⚠️ Varning: Du blandar nu variabler med helt olika skalor (t.ex. Index och Procent). I K-means kommer variablerna med de största siffrorna att helt dominera algoritmen, vilket kan göra klustringen mycket missvisande!
                 </div>
 
-                <div class="var-grid" id="clusterCheckboxes" style="max-height: 250px; margin-bottom: 15px;"></div>
+                <div class="var-grid" id="clusterCheckboxes" style="max-height: 50vh; margin-bottom: 15px;"></div>
                 
                 <button class="magic-btn cluster-btn" style="width: 100%;" onclick="runKMeans()">🧠 Generera Kluster</button>
             </div>
@@ -889,6 +919,8 @@
                 <div class="info-box" style="border-left-color:#1abc9c; background-color:#e8f8f5; margin-top: 15px;">
                     <strong>💡 Tolkningsguide: Metod och Val av Variabler för Klusteranalys</strong><br><br>
                     • <b>Gör bra val av variabler:</b> För att klustringen ska bli stabil rekommenderas variabler i samma skala (t.ex. endast <i>Z-score Index</i>).<br>
+                    <!-- 🚀 NY PUNKT: DRIVKRAFT OCH UTFALL -->
+                    • <b>Drivkraft (X) vs. Utfall (Y):</b> För att hitta orsakssamband bör <b>X-axeln</b> (Drivkraft) visa underliggande strukturer som är svåra att förändra (t.ex. <i>Socialt & Humankapital</i> eller <i>Hyresrätter</i>). <b>Y-axeln</b> (Utfall) bör visa konsekvenser eller symptom som kommunen måste hantera (t.ex. <i>Inskrivna arbetslösa</i> eller <i>Låg ekonomisk standrad</i>). Då synliggörs vilka kluster som avviker från normen.<br>
                     • <b>Flyttande Klustergränser:</b> Algoritmen startar med slumpmässiga ankarpunkter varje gång du klickar. Om gränserna flyttar sig indikerar det att basområdena i gränslandet balanserar mellan två kluster – ett tecken på inre strukturell osäkerhet!<br>
                     • <b>Tolkning av klyftor:</b> Rutan ovan visar om en övergripande stadsdel (t.ex. Ryd eller Skäggetorp) innehåller basområden som placeras i helt olika kluster. Om en stadsdel spänner över t.ex. 2 eller 3 klustersteg bevisar det att <i>stadsdelsnivån är för grov</i> för att fånga lokala behov.<br>
                     • <b>Filter & Volatilitet:</b> Filtervalet "Exkludera Studentomr." rensar bort både Student- och Verksamhetsområden. Vid analys av tidiga historiska årtal är det extremt viktigt att behålla "Exkl. Små omr." ibockat, då områden med låg befolkning genererar kraftiga matematiska extremvärden som skapar egna "brus-kluster".<br><br>
@@ -1523,7 +1555,9 @@
             "förgymnasial", "kvarboende minst tre"
         ];
         const extra4_keywords = ["lång eftergymnasial", "utrikes födda", "ensamstående", "nettoinkomst"];
-        const multiRegKeywords = [...core16_keywords, ...extra4_keywords];
+        // 🚀 TILLÄGG: Skapa en lista för våra nya tunga index
+        const index_keywords = ["care need", "sårbarhetsindex", "cni", "kksi", "äldreomsorg", "omsorgsbehov"];
+        const multiRegKeywords = [...core16_keywords, ...extra4_keywords, ...index_keywords];
         const heatmapKeywords = [...multiRegKeywords, "folkmängd"];
 
         /**
@@ -1672,6 +1706,11 @@ function toggleAnimation(selectId, updateFunction) {
             if (n === 'befolkningsförändring') return "🔄 Demografiska netton (Antal)";
             if (n === 'medelålder') return "📊 Demografi & Befolkning (Antal)";
             if (n === 'sei medel (2015-2024)') return "🌟 Sammansatta Index (Z-score)";
+
+            // 🚀 NYTT: Tvinga in CNI och KKSI i den finaste kategorin!
+            if (n.includes('care need') || n.includes('sårbarhetsindex') || n.includes('cni') || n.includes('kksi')) {
+            return "🌟 Sammansatta Index (Z-score)";
+            }
             
               // ... här under fortsätter din vanliga logik ...
             if (n.includes('index:')) return "🌟 Sammansatta Index (Z-score)";
@@ -1694,7 +1733,7 @@ function toggleAnimation(selectId, updateFunction) {
             
             if (n === 'bostadsrätt' || n === 'hyresrätt' || n === 'äganderätt' || n.includes('trång') || n.includes('små bostäder') || n === 'ensamstående hushåll' || n.includes('bil') || n.includes('kvarboende')) return "🏘️ Bostadsmarknad & Bilinnehav (%)";
             if (n.includes('hushåll') || n.includes('bostäder') || n.includes('rätter') || n.includes('nya')) return "🏠 Bostäder & Hushåll (Antal)";
-            if (n.includes('utrikes') || n.includes('utländsk') || n.includes('skolungdom') || n.includes('äldre') || n.includes('kön') || n.includes('valdeltagande')) return "🌍 Demografi och Val (%)";
+            if (n.includes('utrikes') || n.includes('utländsk') || n.includes('skolungdom') || n.includes('äldre') || n.includes('kön') || n.includes('valdeltagande') || n.includes('föräldrar')) return "🌍 Demografi och Val (%)";
             if (n === 'folkmängd' || n.includes('befolkning')) return "📊 Demografi & Befolkning (Antal)";
             return "📌 Övriga variabler";
         }
@@ -1717,6 +1756,10 @@ function toggleAnimation(selectId, updateFunction) {
         function findVariable(keyword, skipRelativeIncome = true) {
             return validVariables.find(v => {
                 let lower = v.toLowerCase();
+                
+                // 🚀 SÄKERHETSNÄT: Blockera AI-Kompassen så den aldrig väljs av plattformen
+                if (lower.includes('ai_kompass') || lower.includes('ai-kompass')) return false;
+                
                 if (!lower.includes(keyword.toLowerCase())) return false;
                 if (lower.includes('kvinnor') || lower.includes(' män')) return false;
                 if (skipRelativeIncome && keyword === 'nettoinkomst' && (lower.includes('andel') || lower.includes('%'))) return false;
@@ -3212,7 +3255,7 @@ if (flik2Canvas) {
             const grid = document.getElementById('clusterCheckboxes'); 
             grid.innerHTML = '';
             
-            let clusterTargets = ["Index: Socialt & Humankapital", "Index: Ekonomisk Utsatthet", "Index: Fysisk Bostadssegregation", "Index: Demografisk Koncentration", "Index: Strukturell Ojämlikhet"];
+            let clusterTargets = ["Index: Socialt & Humankapital", "Index: Ekonomisk Utsatthet", "Index: Fysisk Bostadssegregation", "Index: Demografisk Koncentration", "Index: Strukturell Ojämlikhet", "Index: Care Need (CNI)", "Index: Kris- & Sårbarhet (KKSI)", "Index: Äldres Omsorgsbehov"];
             
             multiRegKeywords.forEach(keyword => {
                 const foundVar = findVariable(keyword, true);
@@ -3229,8 +3272,11 @@ if (flik2Canvas) {
                     let isChecked = defaultCheckedList.includes(target) ? "checked" : "";
                     let isSelectedClass = isChecked ? "selected" : "";
                     
+                    // 🚀 ÄNDRING HÄR: Vi kollar 'foundVar' istället för 'target'
+                    let typeClass = foundVar.includes("Index:") ? "index-var" : "raw-var";
+                    
                     const label = document.createElement('label'); 
-                    label.className = `var-check-label ${isSelectedClass}`;
+                    label.className = `var-check-label ${typeClass} ${isSelectedClass}`;
                     label.innerHTML = `<input type="checkbox" value="${foundVar}" ${isChecked} onchange="toggleClusterCheckbox(this)"> <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${foundVar}">${foundVar.replace(' (20-64 år)','')}</span>`;
                     grid.appendChild(label);
                 }
@@ -3258,22 +3304,40 @@ if (flik2Canvas) {
             // Välj det andra alternativet för Y som standard (så att X och Y inte visar samma sak direkt)
             if(ySel.options.length > 1) ySel.selectedIndex = 1;
         }
+        
+        // Hjälpfunktion för att synka gröna färgen när man klickar på knapparna
+        function syncVisualSelection(cb) {
+            if(cb.checked) cb.parentElement.classList.add('selected'); 
+            else cb.parentElement.classList.remove('selected');
+        }
 
         function checkCore16_cluster() {
             document.querySelectorAll('#clusterCheckboxes input').forEach(cb => {
                 let vLower = cb.value.toLowerCase();
                 cb.checked = core16_keywords.some(k => vLower.includes(k.toLowerCase()));
+                syncVisualSelection(cb); // Fixar färgen!
             });
             checkClusterScaleWarning();
         }
 
         function checkAll20_cluster() {
-            document.querySelectorAll('#clusterCheckboxes input').forEach(cb => cb.checked = true);
+            document.querySelectorAll('#clusterCheckboxes input').forEach(cb => {
+                // 🚀 BARA BOCKA I OM DET INTE ÄR ETT INDEX
+                if (!cb.value.includes('Index:')) {
+                    cb.checked = true;
+                } else {
+                    cb.checked = false; // Avbockar eventuella index så blandning undviks
+                }
+                syncVisualSelection(cb); // Fixar färgen!
+            });
             checkClusterScaleWarning();
         }
 
         function clearAllChecks_cluster() {
-            document.querySelectorAll('#clusterCheckboxes input').forEach(cb => cb.checked = false);
+            document.querySelectorAll('#clusterCheckboxes input').forEach(cb => {
+                cb.checked = false; // Rensa rensar allt, även index
+                syncVisualSelection(cb); // Fixar färgen!
+            });
             checkClusterScaleWarning();
         }
 
@@ -3544,7 +3608,7 @@ if (flik2Canvas) {
             let isIndex = targetVar.includes('Index:');
             let isPercentage = getUnit(targetVar) === ' %'; 
             let targetLower = targetVar.toLowerCase();
-            let isNettoVar = targetLower.includes('netto') || targetLower.includes('överskott') || targetLower.includes('befolkningsförändring');
+            let isNettoVar = targetLower.includes('netto') || targetLower.includes('överskott') || targetLower.includes('befolkningsförändring') || targetLower.includes('cni');
 
             // LÄGG TILL DENNA RAD:
             let isFolkmangd = targetLower.includes('folkmängd');
@@ -3780,21 +3844,38 @@ if (flik2Canvas) {
             });
             
             outcomeSelect.innerHTML = '';
+            
+            // 🚀 SÄKERHETSNÄT 1: Hitta alla index, oavsett om de ligger i validVariables eller rawData
+            let availableOutcomes = new Set();
             validVariables.forEach(v => {
-                if (v.includes('Index:')) {
+                if (v.includes('Index:')) availableOutcomes.add(v);
+            });
+            if (rawData && rawData.length > 0) {
+                Object.keys(rawData[0]).forEach(k => {
+                    if (k.includes('Index:')) availableOutcomes.add(k);
+                });
+            }
+
+            // Lägg till dem i rullistan (men EXKLUDERA AI-Kompass och de tre nya specialindexen)
+            availableOutcomes.forEach(v => {
+                let vLow = v.toLowerCase();
+                if (!vLow.includes('ai_kompass') && 
+                    !vLow.includes('ai-kompass') &&
+                    !vLow.includes('cni') && 
+                    !vLow.includes('kksi') && 
+                    !vLow.includes('omsorgsbehov')) {
                     outcomeSelect.add(new Option(v, v));
                 }
             });
             
             // NYTT: Hantera aliaset korrekt. Texten är parameter 1, Värdet som skickas är parameter 2.
-            if (validVariables.includes('SEI medel (2015-2024)')) {
+            if (validVariables.includes('SEI medel (2015-2024)') || Object.keys(rawData[0] || {}).includes('SEI medel (2015-2024)')) {
                 outcomeSelect.add(new Option('SEI medel (2015-2024)', 'SEI medel (2015-2024)'));
             } else if (validVariables.includes('SEIsnitt medel')) {
-                // Fallback om den heter originalnamnet i datan
                 outcomeSelect.add(new Option('SEI medel (2015-2024)', 'SEIsnitt medel'));
             }
 
-            if(validVariables.includes('Index: Samlat SEI (16 indikatorer)')) {
+            if(availableOutcomes.has('Index: Samlat SEI (16 indikatorer)')) {
                 outcomeSelect.value = 'Index: Samlat SEI (16 indikatorer)';
             }
         }
@@ -3832,16 +3913,28 @@ if (flik2Canvas) {
             
             // Kolla om vi simulerar det nya Jämställdhetsindexet
             let isGenderIndex = outcomeVar.toLowerCase().includes('ojämlikhet') || outcomeVar.toLowerCase().includes('jämställdhet');
+            let isCNI = outcomeVar.includes('CNI');
+
+            // 🚀 VIP-LISTA: Kärnvariabler som absolut inte får blockeras av varandra
+            let coreVars = [];
+            if (outcomeVar.includes('Äldres Omsorgsbehov')) coreVars = ['85+ år', '70+ år', 'ensamma 70+', 'gamla hus'];
+            else if (outcomeVar.includes('KKSI')) coreVars = ['0-4 år', '70+ år', 'ensamma 70+', 'gamla hus', 'Utländsk bakgrund', 'hyresrätt', 'Inskrivna arbetslösa', 'Nettoinkomst'];
+            else if (isCNI) coreVars = ['0-4 år', 'ensamma 70+', 'ensamstående föräldrar', 'Förgymnasial', 'Inskrivna arbetslösa', 'Utrikes födda', 'Hög omflyttning'];
 
             validVariables.forEach(v => {
+                let vLow = v.toLowerCase();
                 if (v === outcomeVar) return;
                 if (getUnit(v) === ' antal') return; 
-                if (v.toLowerCase().includes('ensamstående')) return; 
-                if (v.toLowerCase() === 'sei medel (2015-2024)') return; 
-                if (v.includes('Index:')) return; 
+                if (vLow === 'sei medel (2015-2024)') return; 
+                if (v.includes('Index:')) return;
+                                
+                // 🚀 BLOCKERA AI-KOMPASSEN
+                if (v.includes('AI_Kompass') || v.includes('AI-Kompass')) return;
+
+                // Spärra "ensamstående" – MEN släpp igenom om vi simulerar CNI (där den är en VIP-variabel)
+                if (vLow.includes('ensamstående') && !isCNI) return; 
                 
                 // KÖNS-FILTRET: Dölj könsuppdelade variabler för standard-indexen
-                let vLow = v.toLowerCase();
                 if (!isGenderIndex && (vLow.includes('kvinnor') || vLow.includes(' män'))) return;
 
                 let xVals = cityRows.map(r => parseFloat(r[v])); 
@@ -3852,7 +3945,7 @@ if (flik2Canvas) {
             // Sortera från starkast korrelation till svagast
             correlations.sort((a, b) => b.r - a.r);
             
-            // 2. MÅNGFALDS-FILTRET: Välj 5 variabler som INTE är för lika varandra
+            // 2. MÅNGFALDS-FILTRET: Välj 5 variabler som INTE är för lika varandra / (Med undantag för VIP-variabler!)
             let sortedVars = correlations.map(c => c.name);
             let selectedVars = [];
             
@@ -3864,16 +3957,22 @@ if (flik2Canvas) {
                 for (let sel of selectedVars) {
                     let selVals = cityRows.map(r => parseFloat(r[sel]));
                     let crossCorr = Math.abs(calculatePearson(candidateVals, selVals));
-                    // Om variabeln är mer än 85% identisk med en redan vald -> hoppa över!
+                    
                     if (crossCorr > 0.85) { 
-                        tooSimilar = true;
-                        break;
+                        // 🚀 VIP-CHECK: Är både kandidaten och den redan valda en del av mål-indexet?
+                        let isCandVIP = coreVars.some(cv => candidate.toLowerCase().includes(cv.toLowerCase()));
+                        let isSelVIP = coreVars.some(cv => sel.toLowerCase().includes(cv.toLowerCase()));
+                        
+                        if (isCandVIP && isSelVIP) {
+                            tooSimilar = false; // Låt dem passera, de tillhör samma index-recept!
+                        } else {
+                            tooSimilar = true;
+                            break;
+                        }
                     }
                 }
                 
-                if (!tooSimilar) {
-                    selectedVars.push(candidate);
-                }
+                if (!tooSimilar) selectedVars.push(candidate);
                 if (selectedVars.length === 5) break;
             }
 
@@ -4703,6 +4802,12 @@ Chart.register(yearWatermarkPlugin); // Aktivera pluginen
                     const ignoreCols = ['basområde', 'tid', 'Karaktär_bas', 'Karaktär_detalj', 'Inkluderad', 'Ingår', 'SEI_indikatorer16', 'Stadsdelskod_(Nyko3)', 'Stadsdel', 'KodNyko4', 'Områdestyp'];
                     validVariables = headers.filter(h => !ignoreCols.includes(h) && h !== "");
 
+                    // 🚀 GLOBAL STÄDNING: Blockera AI-Kompassens koordinater från ALLA analytiska rullistor
+                    validVariables = validVariables.filter(v => 
+                        !v.toLowerCase().includes('ai_kompass') && 
+                        !v.toLowerCase().includes('ai-kompass')
+                    );
+
                     // Bygg alla rullistor med standardvariabler (Flik 1, 3, 7, 8, 9)
                     populateDropdownWithGroups('xVar1', validVariables);
                     populateDropdownWithGroups('yVar1', validVariables);
@@ -4719,8 +4824,15 @@ Chart.register(yearWatermarkPlugin); // Aktivera pluginen
                         v !== 'Index: Strukturell Ojämlikhet'
                     );
 
-                    // Special-rullistor (Flik 2 och 4 som BARA ska visa Index)
-                    populateDropdownWithGroups('outcomeVar4', validVariables, v => v.startsWith('Index:'));
+                    // Special-rullistor (Flik 4 BARA ska visa Index, men EXKLUDERA CNI, KKSI och Omsorgsbehov)
+                    populateDropdownWithGroups('outcomeVar4', validVariables, v => {
+                        let vLow = v.toLowerCase();
+                        return v.startsWith('Index:') && 
+                               !vLow.includes('cni') && 
+                               !vLow.includes('kksi') && 
+                               !vLow.includes('omsorgsbehov');
+                    });
+                    
                     // 2. Fånga upp rullistan
                     const ySelect4 = document.getElementById('outcomeVar4');
                     
@@ -4846,6 +4958,17 @@ Chart.register(yearWatermarkPlugin); // Aktivera pluginen
                     populateClusterCheckboxes();
                     populateSimDropdowns();
                     
+                    // 🚀 STÄDPATRULL: Rensa bort CNI, KKSI och Omsorgsbehov från Modellbyggarens X-box (Flik 4)
+document.querySelectorAll('#checkboxGrid4 input').forEach(cb => {
+    let vLow = cb.value.toLowerCase();
+    if (vLow.includes('cni') || vLow.includes('kksi') || vLow.includes('omsorgsbehov')) {
+        // Raderar hela <label>-elementet så att rutan och texten försvinner helt
+        if (cb.parentElement) {
+            cb.parentElement.style.display = 'none'; 
+            cb.parentElement.remove();
+        }
+    }
+});
                     // STARTMETOD
                     setTimeout(() => {
                         const firstBtn = document.getElementById('btn-flik1');
@@ -5145,6 +5268,61 @@ function drawAICompassChart(compassData, selectedYear) {
         }
     });
 }
+// ==========================================
+        // 📥 EXPORT-FUNKTION FÖR Z-SCORE INDEX
+        // ==========================================
+        function exportZScoresToCSV() {
+            if (!rawData || rawData.length === 0) {
+                alert("Ingen data finns inladdad att exportera!");
+                return;
+            }
+
+            // 1. Definiera vilka kolumner vi vill exportera
+            // Letar dynamiskt upp alla kolumner som innehåller ordet "Index:"
+            let allKeys = Object.keys(rawData[0]);
+            let indexKeys = allKeys.filter(k => k.includes('Index:'));
+            
+            // Vi vill ha basområde, tid och (om den finns) NYKO-kod först
+            let baseKeys = ['basområde', 'tid'];
+            if (allKeys.includes('NYKO')) baseKeys.push('NYKO');
+            
+            let exportKeys = baseKeys.concat(indexKeys);
+
+            // 2. Bygg CSV-innehållet (Semikolon-separerat för svensk Excel)
+            let csvContent = exportKeys.join(';') + '\n';
+
+            rawData.forEach(row => {
+                let rowData = exportKeys.map(key => {
+                    let val = row[key];
+                    
+                    if (val === null || val === undefined || val === '') return "";
+                    
+                    // Om det är ett numeriskt värde (våra Z-scores), byt punkt mot komma!
+                    if (!isNaN(val) && val !== "") {
+                        return val.toString().replace('.', ',');
+                    }
+                    
+                    // Om det är text, kapsla in i citattecken om det skulle finnas inbyggda semikolon
+                    return `"${val}"`;
+                });
+                csvContent += rowData.join(';') + '\n';
+            });
+
+            // 3. Skapa och ladda ner filen
+            // "\uFEFF" är en BOM (Byte Order Mark) som tvingar Excel att förstå ÅÄÖ!
+            let blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+            let link = document.createElement("a");
+            
+            // Tidsstämpel för filnamnet
+            let date = new Date().toISOString().split('T')[0];
+            
+            let url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", `Linkoping_Socioekonomiska_Index_${date}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
         // ==========================================
 // NINJA-ÖVERVAKNING: Döljer envisa dynamiska filter utan att dra datorkraft
 // ==========================================
