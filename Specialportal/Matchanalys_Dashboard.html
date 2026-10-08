@@ -214,9 +214,11 @@
                 <h2 class="text-xl font-bold">Historiska Topplistor & Rekord</h2>
                 <p class="text-sm text-slate-500">Utforska lagens matchrekord och spelarnas individuella utmärkelser.</p>
             </div>
-            <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
-                <button id="btn-view-match" onclick="toggleRecordsView('match')" class="px-4 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all">🛡️ Matchrekord (Lag)</button>
-                <button id="btn-view-players" onclick="toggleRecordsView('players')" class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all">⚽ Skyttar & Priser</button>
+            <div class="flex flex-wrap bg-slate-100 p-1 rounded-lg border border-slate-200 gap-1">
+                <button id="btn-view-match" onclick="toggleRecordsView('match')" class="px-4 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all whitespace-nowrap">🛡️ Matchrekord (Lag)</button>
+                <button id="btn-view-players" onclick="toggleRecordsView('players')" class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">⚽ Skyttar & Priser</button>
+                <button id="btn-view-gk" onclick="toggleRecordsView('gk')" class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">🧤 Målvaktsrekord</button>
+                <button id="btn-view-ref" onclick="toggleRecordsView('ref')" class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">⚖️ Domarrekord</button>
             </div>
         </div>
 
@@ -290,7 +292,7 @@
                     <div class="p-0 overflow-y-auto max-h-64 flex-1"><table class="w-full text-left text-sm whitespace-nowrap"><tbody id="rec-top-players-premiere"></tbody></table></div>
                 </div>
             </div>
-
+                
             <hr class="border-slate-200 mb-8">
 
             <!-- KRONOLOGISKA LISTOR -->
@@ -314,6 +316,63 @@
                             <tbody id="rec-chrono-dn" class="divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+        </div>
+            <!-- CONTAINER 3: MÅLVAKTSSTATISTIK (Ny) -->
+                <div id="records-gk-container" class="hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-slate-200 pb-2 mt-6 mb-4 gap-3">
+                <h2 class="text-xl font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">🧤 Målvaktsrekord</h2>
+                <select onchange="window.current_gk_view=this.value; window.renderGkRecords();" class="bg-slate-100 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-slate-500 focus:border-slate-500 block p-2 font-bold outline-none cursor-pointer w-full sm:w-auto shadow-sm transition-colors">
+                    <option value="matches">Flest Matcher</option>
+                    <option value="conceded">Flest Insläppta Mål</option>
+                    <option value="cleansheets">Flest Hållna Nollor</option>
+                    <option value="cs_percent">Högst Andel Nollor (minst 10 matcher)</option>
+                    <option value="youngest">Yngsta Debutanter</option>
+                    <option value="oldest_debut">Äldsta Debutanter</option>
+                    <option value="oldest">Äldsta Målvakt</option>
+                    <option value="longest_life">Högst Levnadsålder</option>
+                    <option value="shortest_life">Lägst Levnadsålder (Avliden)</option>
+                </select>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+                <div class="overflow-y-auto max-h-[600px] lg:max-h-[800px] xl:max-h-[80vh]">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead id="gk-record-thead" class="bg-slate-800 text-xs text-white uppercase sticky top-0 shadow-sm z-10">
+                            <!-- Fylls i av JavaScript -->
+                        </thead>
+                        <tbody id="gk-record-tbody" class="divide-y divide-slate-100">
+                            <!-- Fylls i av JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTAINER 4: DOMARSTATISTIK -->
+        <div id="records-ref-container" class="hidden">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-slate-200 pb-2 mt-6 mb-4 gap-3">
+                <h2 class="text-xl font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">⚖️ Domarrekord</h2>
+                <select onchange="window.current_ref_view=this.value; window.renderRefRecords();" class="bg-slate-100 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-slate-500 focus:border-slate-500 block p-2 font-bold outline-none cursor-pointer w-full sm:w-auto shadow-sm transition-colors">
+                    <option value="matches">Flest Dömda Matcher</option>
+                    <option value="goals">Mest Målrika Matcher (Totalt & Snitt)</option>
+                    <option value="youngest">Yngsta Domare (Debut)</option>
+                    <option value="oldest_debut">Äldsta Domare (Debut)</option>
+                    <option value="oldest">Äldsta Domare</option>
+                    <option value="longest_life">Högst Levnadsålder</option>
+                    <option value="shortest_life">Lägst Levnadsålder (Avliden)</option>
+                </select>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+                <div class="overflow-y-auto max-h-[600px] lg:max-h-[800px] xl:max-h-[80vh]">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead id="ref-record-thead" class="bg-slate-800 text-xs text-white uppercase sticky top-0 shadow-sm z-10">
+                            <!-- Fylls i av JavaScript -->
+                        </thead>
+                        <tbody id="ref-record-tbody" class="divide-y divide-slate-100">
+                            <!-- Fylls i av JavaScript -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -1475,29 +1534,67 @@
         // ==========================================
 // VÄXLING MELLAN LAG- OCH SPELARREKORD
 // ==========================================
-function toggleRecordsView(view) {
-    let matchCont = document.getElementById('records-match-container');
-    let playCont = document.getElementById('records-players-container');
-    let btnMatch = document.getElementById('btn-view-match');
-    let btnPlay = document.getElementById('btn-view-players');
+// Funktion för att växla mellan vyerna på Topplistor-sidan
+window.toggleRecordsView = function(view) {
+    const views = ['match', 'players', 'gk', 'ref'];
+    
+    // CSS-klasser (inklusive whitespace-nowrap för snyggare mobilvy)
+    let activeCls = "px-4 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all whitespace-nowrap";
+    let inactiveCls = "px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap";
 
-    let activeCls = "px-4 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all";
-    let inactiveCls = "px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all";
+    views.forEach(v => {
+        // 1. Hantera containerns synlighet
+        let container = document.getElementById(`records-${v}-container`);
+        if (container) {
+            if (v === view) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+        
+        // 2. Hantera knapparnas utseende
+        let btn = document.getElementById(`btn-view-${v}`);
+        if (btn) {
+            btn.className = v === view ? activeCls : inactiveCls;
+        }
+    });
 
+    // 3. Trigga beräkningar/rendering i realtid BARA när fliken öppnas
     if (view === 'players') {
-        matchCont.classList.add('hidden');
-        playCont.classList.remove('hidden');
-        btnPlay.className = activeCls;
-        btnMatch.className = inactiveCls;
-        // Rendera bara om vi vill se datan (realtidsberäkning)
-        renderPlayerToplists(); 
-    } else {
-        playCont.classList.add('hidden');
-        matchCont.classList.remove('hidden');
-        btnMatch.className = activeCls;
-        btnPlay.className = inactiveCls;
+        if (typeof renderPlayerToplists === 'function') renderPlayerToplists(); 
+    } else if (view === 'gk') {
+        // Kommer att anropa funktionen vi bygger härnäst
+        if (typeof renderGkRecords === 'function') renderGkRecords();
+    } else if (view === 'ref') {
+        // Kommer att anropa funktionen vi bygger härnäst
+        if (typeof renderRefRecords === 'function') renderRefRecords();
     }
-}
+};
+window.getYearsAndDays = function(foddDate, matchDate) {
+    if (!foddDate || !matchDate) return null;
+    let d1 = new Date(foddDate);
+    let d2 = new Date(matchDate);
+    if (isNaN(d1) || isNaN(d2)) return null;
+    
+    let years = d2.getFullYear() - d1.getFullYear();
+    let m = d2.getMonth() - d1.getMonth();
+    if (m < 0 || (m === 0 && d2.getDate() < d1.getDate())) {
+        years--;
+    }
+    
+    // Beräkna dagarna sedan senaste födelsedagen
+    let lastBirthday = new Date(d1);
+    lastBirthday.setFullYear(d1.getFullYear() + years);
+    let diffTime = Math.abs(d2 - lastBirthday);
+    let days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    
+    // Returnera både snygg text och decimalvärde (för att kunna sortera listan)
+    return {
+        text: `${years} år, ${days} dagar`,
+        value: years + (days / 365.25)
+    };
+};
 
 // ==========================================
 // DATA-GRUVAN: BYGG SPELARSTATISTIKEN
@@ -1665,7 +1762,7 @@ function renderPlayerToplists() {
             chronoDNHtml += `
             <tr class="bg-slate-200 border-y border-slate-300">
                 <td colspan="3" class="px-4 py-2 text-center text-xs font-bold text-slate-600 uppercase tracking-widest">
-                    Innan 1959 (Snabbaste premiärmålet kröns med guld)
+                    Innan 1959 (Snabbaste premiärmålet)
                 </td>
             </tr>`;
         }
@@ -1687,6 +1784,284 @@ function renderPlayerToplists() {
     });
     document.getElementById('rec-chrono-dn').innerHTML = chronoDNHtml || `<tr><td colspan="3" class="px-4 py-2 text-slate-400 italic">Saknar data</td></tr>`;
 }
+window.current_gk_view = 'matches'; // Standardvy när fliken öppnas
+window.current_ref_view = 'matches';
+
+window.renderGkRecords = function() {
+    if (typeof MATCH_DATA === 'undefined') return;
+    let view = window.current_gk_view;
+    let list = [];
+
+    // 1. Samla in utökad Målvaktsdata (Med blockering av annullerade matcher)
+    let gkData = {};
+    MATCH_DATA.forEach(bm => {
+        if (!bm) return;
+        
+        // --- Spärr för annullerade matcher (Malmö FF 1933) ---
+        let notering = String(bm.Notering || bm.Not || "").toLowerCase();
+        if (notering.includes("annuller")) return;
+        // -----------------------------------------------------
+
+        let mDate = bm.Datum ? String(bm.Datum).trim() : (String(bm.År || bm.Säsong || '').substring(0,4) + "-06-15");
+        let hm = parseInt(bm.HM); let b_m = parseInt(bm.BM);
+        if (isNaN(hm) || isNaN(b_m)) return;
+        let matchStr = `${bm.Hemmalag} - ${bm.Bortalag} ${hm}-${b_m}`;
+
+        const process = (rawName, conceded, team) => {
+            let name = rawName ? String(rawName).trim() : "";
+            if (typeof NAME_ALIASES !== 'undefined' && NAME_ALIASES[name]) name = NAME_ALIASES[name];
+            if (!name || name.toLowerCase() === "okänd") return;
+
+            if (!gkData[name]) gkData[name] = { matches: 0, cs: 0, conceded: 0, teams: new Set(), firstD: mDate, lastD: mDate, firstM: "", lastM: "" };
+            let st = gkData[name];
+            
+            if (mDate < st.firstD || st.firstM === "") { st.firstD = mDate; st.firstM = matchStr; }
+            if (mDate > st.lastD || st.lastM === "") { st.lastD = mDate; st.lastM = matchStr; }
+            
+            st.matches++;
+            st.conceded += conceded;
+            if (conceded === 0) st.cs++;
+            if (team) st.teams.add(String(team).trim());
+        };
+        process(bm.Hemmamålvakt, b_m, bm.Hemmalag);
+        process(bm.Bortamålvakt, hm, bm.Bortalag);
+    });
+
+    // 2. Beräkna År/Dagar och Livslängd
+    for (let gk in gkData) {
+        let st = gkData[gk];
+        let info = (typeof GK_INFO !== 'undefined' && GK_INFO[gk]) ? GK_INFO[gk] : {};
+        let fodd = info.Född || null;
+        let dod = info.Död || info.Avliden || null;
+        let dAge = null, lAge = null, lifeAge = null;
+
+        if (fodd && typeof window.getYearsAndDays === 'function') {
+            dAge = window.getYearsAndDays(fodd, st.firstD);
+            lAge = window.getYearsAndDays(fodd, st.lastD);
+            if (dod) lifeAge = window.getYearsAndDays(fodd, dod);
+        }
+
+        let y1 = st.firstD.substring(0,4); let y2 = st.lastD.substring(0,4);
+        let activeStr = (y1 === y2) ? y1 : `${y1}-${y2}`;
+
+        list.push({
+            name: typeof window.formatPersonName === 'function' ? window.formatPersonName(gk) : gk,
+            matches: st.matches, cs: st.cs, conceded: st.conceded,
+            teams: Array.from(st.teams).join(', '),
+            firstD: st.firstD, lastD: st.lastD, firstM: st.firstM, lastM: st.lastM,
+            fodd: fodd, dod: dod,
+            debutAge: dAge, lastAge: lAge, lifeAge: lifeAge, activeStr: activeStr
+        });
+    }
+
+    // 3. Rita ut tabellen
+    let th = "", tb = "";
+    if (view === 'matches' || view === 'cleansheets' || view === 'conceded' || view === 'cs_percent') {
+        let valKey = view === 'matches' ? 'matches' : (view === 'cleansheets' ? 'cs' : (view === 'conceded' ? 'conceded' : 'cs'));
+        let valColor = view === 'matches' ? 'text-slate-700' : (view === 'cleansheets' ? 'text-emerald-600' : (view === 'conceded' ? 'text-red-600' : 'text-emerald-600'));
+        
+        if (view === 'cs_percent') {
+            list = list.filter(x => x.matches >= 10).sort((a, b) => (b.cs/b.matches) - (a.cs/a.matches));
+            th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Målvakt & Klubb</th><th class="px-4 py-2 text-center">Nollor / Matcher</th><th class="px-4 py-2 text-right">Andel Nollor</th></tr>`;
+        } else if (view === 'conceded') {
+            list.sort((a, b) => b[valKey] - a[valKey]);
+            // NYTT HÄR: Noteringen läggs in i thead (som är sticky) och får en svag informations-färg
+            th = `
+            <tr><th colspan="5" class="px-4 py-3 text-xs text-slate-700 font-medium bg-amber-50 border-b border-amber-200 whitespace-normal leading-relaxed">
+            <span class="font-bold text-amber-700">Not:</span> Avser samtliga mål i de matcher som målvakten har startat. I ett fåtal matcher har målvakten bytts ut. Antalet insläppta mål har inte reducerats med de mål som eventuellt har gjorts efter det att han byttes ut.
+            </th></tr>
+            <tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Målvakt & Klubb</th><th class="px-4 py-2 text-center">Aktiv</th><th class="px-4 py-2 text-right">Totalt Insläppta</th><th class="px-4 py-2 text-right">Snitt / Match</th></tr>`;
+        } else {
+            list.sort((a, b) => b[valKey] - a[valKey]);
+            let rightCol = view === 'matches' ? 'Matcher' : 'Nollor';
+            th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Målvakt & Klubb</th><th class="px-4 py-2 text-center">Aktiv</th><th class="px-4 py-2 text-right">${rightCol}</th></tr>`;
+        }
+
+        list.slice(0, 50).forEach((item, i) => { 
+            let centerText = item.activeStr;
+            
+            if (view === 'cs_percent') {
+                let rightVal = (item.cs / item.matches * 100).toFixed(1).replace('.', ',') + '%';
+                tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+                <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5 whitespace-normal w-48">${item.teams}</div></td>
+                <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.cs} / ${item.matches}</td>
+                <td class="px-4 py-3 text-right font-black text-emerald-600 align-top">${rightVal}</td></tr>`; 
+            } else if (view === 'conceded') {
+                let snitt = (item.conceded / item.matches).toFixed(2).replace('.', ',');
+                tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+                <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5 whitespace-normal w-48">${item.teams}</div></td>
+                <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${centerText}</td>
+                <td class="px-4 py-3 text-right font-black text-red-600 align-top">${item.conceded}</td>
+                <td class="px-4 py-3 text-right font-bold text-slate-500 align-top">${snitt}</td></tr>`;
+            } else {
+                tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+                <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5 whitespace-normal w-48">${item.teams}</div></td>
+                <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${centerText}</td>
+                <td class="px-4 py-3 text-right font-black ${valColor} align-top">${item[valKey]}</td></tr>`;
+            }
+        });
+
+    } else if (view === 'youngest' || view === 'oldest' || view === 'oldest_debut') {
+        let isYoung = view === 'youngest';
+        let isOldestDebut = view === 'oldest_debut';
+        
+        list = list.filter(x => (isYoung || isOldestDebut) ? x.debutAge : x.lastAge).sort((a, b) => {
+            if (isYoung) return a.debutAge.value - b.debutAge.value;
+            if (isOldestDebut) return b.debutAge.value - a.debutAge.value;
+            return b.lastAge.value - a.lastAge.value;
+        });
+
+        th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Målvakt</th><th class="px-4 py-2">Matchfakta</th><th class="px-4 py-2 text-right">Ålder</th></tr>`;
+        list.slice(0, 50).forEach((item, i) => { 
+            let ageObj = (isYoung || isOldestDebut) ? item.debutAge : item.lastAge;
+            let mStr = (isYoung || isOldestDebut) ? item.firstM : item.lastM;
+            let mDate = (isYoung || isOldestDebut) ? item.firstD : item.lastD;
+            tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+            <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.activeStr}</div></td>
+            <td class="px-4 py-3 align-top"><div class="text-xs font-semibold text-slate-700 whitespace-normal min-w-[200px]">${mStr}</div><div class="text-[10px] text-slate-500">${mDate}</div></td>
+            <td class="px-4 py-3 text-right font-black ${isYoung ? 'text-amber-600' : 'text-purple-600'} align-top">${ageObj.text}</td></tr>`; 
+        });
+
+    } else if (view === 'longest_life' || view === 'shortest_life') {
+        let isLong = view === 'longest_life';
+        list = list.filter(x => x.lifeAge !== null).sort((a, b) => isLong ? b.lifeAge.value - a.lifeAge.value : a.lifeAge.value - b.lifeAge.value);
+        th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Målvakt</th><th class="px-4 py-2 text-center">Född - Död</th><th class="px-4 py-2 text-right">Livslängd</th></tr>`;
+        list.slice(0, 50).forEach((item, i) => {
+            tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+            <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.activeStr}</div></td>
+            <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.fodd}<br><span class="text-xs">till</span> ${item.dod}</td>
+            <td class="px-4 py-3 text-right font-black ${isLong ? 'text-slate-800' : 'text-slate-500'} align-top">${item.lifeAge.text}</td></tr>`;
+        });
+    }
+
+    document.getElementById('gk-record-thead').innerHTML = th;
+    document.getElementById('gk-record-tbody').innerHTML = tb;
+};
+
+window.renderRefRecords = function() {
+    if (typeof MATCH_DATA === 'undefined') return;
+    let view = window.current_ref_view;
+    let list = [];
+
+    let refData = {};
+    MATCH_DATA.forEach(bm => {
+        if (!bm) return;
+        
+        // --- Spärr för annullerade matcher (Malmö FF 1933) ---
+        let notering = String(bm.Notering || bm.Not || "").toLowerCase();
+        if (notering.includes("annuller")) return;
+        // -----------------------------------------------------
+
+        let mDate = bm.Datum ? String(bm.Datum).trim() : (String(bm.År || bm.Säsong || '').substring(0,4) + "-06-15");
+        let hm = parseInt(bm.HM); let b_m = parseInt(bm.BM);
+        if (isNaN(hm) || isNaN(b_m)) return;
+        let matchStr = `${bm.Hemmalag} - ${bm.Bortalag} ${hm}-${b_m}`;
+
+        let name = bm.Domare ? String(bm.Domare).trim() : "";
+        if (typeof NAME_ALIASES !== 'undefined' && NAME_ALIASES[name]) name = NAME_ALIASES[name];
+        if (!name || name.toLowerCase() === "okänd") return;
+
+        if (!refData[name]) refData[name] = { matches: 0, goals: 0, orter: new Set(), firstD: mDate, lastD: mDate, firstM: "", lastM: "" };
+        let st = refData[name];
+
+        if (mDate < st.firstD || st.firstM === "") { st.firstD = mDate; st.firstM = matchStr; }
+        if (mDate > st.lastD || st.lastM === "") { st.lastD = mDate; st.lastM = matchStr; }
+        
+        st.matches++;
+        st.goals += (hm + b_m);
+        if (bm.Domarort) st.orter.add(String(bm.Domarort).trim());
+    });
+
+    for (let ref in refData) {
+        let st = refData[ref];
+        let info = (typeof REF_INFO !== 'undefined' && REF_INFO[ref]) ? REF_INFO[ref] : {};
+        let fodd = info.Född || null;
+        let dod = info.Död || info.Avliden || null;
+        let dAge = null, lAge = null, lifeAge = null;
+
+        if (fodd && typeof window.getYearsAndDays === 'function') {
+            dAge = window.getYearsAndDays(fodd, st.firstD);
+            lAge = window.getYearsAndDays(fodd, st.lastD);
+            if (dod) lifeAge = window.getYearsAndDays(fodd, dod);
+        }
+
+        let y1 = st.firstD.substring(0,4); let y2 = st.lastD.substring(0,4);
+        let activeStr = (y1 === y2) ? y1 : `${y1}-${y2}`;
+
+        list.push({
+            name: typeof window.formatPersonName === 'function' ? window.formatPersonName(ref) : ref,
+            matches: st.matches, goals: st.goals,
+            orter: Array.from(st.orter).join(', '),
+            firstD: st.firstD, lastD: st.lastD, firstM: st.firstM, lastM: st.lastM,
+            fodd: fodd, dod: dod,
+            debutAge: dAge, lastAge: lAge, lifeAge: lifeAge, activeStr: activeStr
+        });
+    }
+
+    // 3. Rita ut tabellen
+    let th = "", tb = "";
+    if (view === 'matches' || view === 'goals') {
+        let isG = view === 'goals';
+        list.sort((a, b) => isG ? b.goals - a.goals : b.matches - a.matches);
+        
+        if (isG) {
+            th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare & Ort</th><th class="px-4 py-2 text-center">Aktiv</th><th class="px-4 py-2 text-right">Totalt antal mål</th><th class="px-4 py-2 text-right">Snitt / Match</th></tr>`;
+        } else {
+            th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare & Ort</th><th class="px-4 py-2 text-center">Aktiv</th><th class="px-4 py-2 text-right">Matcher</th></tr>`;
+        }
+        
+        list.slice(0, 50).forEach((item, i) => { 
+            if (isG) {
+                let snitt = (item.goals / item.matches).toFixed(2).replace('.', ',');
+                tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+                <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.orter}</div></td>
+                <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.activeStr}</td>
+                <td class="px-4 py-3 text-right font-black text-slate-700 align-top">${item.goals}</td>
+                <td class="px-4 py-3 text-right font-bold text-slate-500 align-top">${snitt}</td></tr>`; 
+            } else {
+                tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+                <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.orter}</div></td>
+                <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.activeStr}</td>
+                <td class="px-4 py-3 text-right font-black text-slate-700 align-top">${item.matches}</td></tr>`; 
+            }
+        });
+
+    } else if (view === 'youngest' || view === 'oldest' || view === 'oldest_debut') {
+        let isYoung = view === 'youngest';
+        let isOldestDebut = view === 'oldest_debut';
+        
+        list = list.filter(x => (isYoung || isOldestDebut) ? x.debutAge : x.lastAge).sort((a, b) => {
+            if (isYoung) return a.debutAge.value - b.debutAge.value;
+            if (isOldestDebut) return b.debutAge.value - a.debutAge.value;
+            return b.lastAge.value - a.lastAge.value;
+        });
+
+        th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare</th><th class="px-4 py-2">Matchfakta</th><th class="px-4 py-2 text-right">Ålder</th></tr>`;
+        list.slice(0, 50).forEach((item, i) => { 
+            let ageObj = (isYoung || isOldestDebut) ? item.debutAge : item.lastAge;
+            let mStr = (isYoung || isOldestDebut) ? item.firstM : item.lastM;
+            let mDate = (isYoung || isOldestDebut) ? item.firstD : item.lastD;
+            tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+            <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.activeStr}</div></td>
+            <td class="px-4 py-3 align-top"><div class="text-xs font-semibold text-slate-700 whitespace-normal min-w-[200px]">${mStr}</div><div class="text-[10px] text-slate-500">${mDate}</div></td>
+            <td class="px-4 py-3 text-right font-black ${isYoung ? 'text-amber-600' : 'text-purple-600'} align-top">${ageObj.text}</td></tr>`; 
+        });
+
+    } else if (view === 'longest_life' || view === 'shortest_life') {
+        let isLong = view === 'longest_life';
+        list = list.filter(x => x.lifeAge !== null).sort((a, b) => isLong ? b.lifeAge.value - a.lifeAge.value : a.lifeAge.value - b.lifeAge.value);
+        th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare</th><th class="px-4 py-2 text-center">Född - Död</th><th class="px-4 py-2 text-right">Livslängd</th></tr>`;
+        list.slice(0, 50).forEach((item, i) => {
+            tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+            <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.activeStr}</div></td>
+            <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.fodd}<br><span class="text-xs">till</span> ${item.dod}</td>
+            <td class="px-4 py-3 text-right font-black ${isLong ? 'text-slate-800' : 'text-slate-500'} align-top">${item.lifeAge.text}</td></tr>`;
+        });
+    }
+
+    document.getElementById('ref-record-thead').innerHTML = th;
+    document.getElementById('ref-record-tbody').innerHTML = tb;
+};
 
         // --- Sviter Logik ---
         function calculateStreaks() {
@@ -3550,17 +3925,28 @@ window.renderTopScorers = function(seasonStr) {
 
                 let yr = parseInt(String(bm.År || bm.Säsong || '').substring(0, 4));
 
+                // --- SKAPA DATUM FÖR ÅLDERSBERÄKNING ---
+                // (Fångar exakt datum, eller sätter ett standarddatum i mitten av juni om det bara finns årtal)
+                let matchDate = bm.Datum ? String(bm.Datum).trim() : (String(bm.År || bm.Säsong || '').substring(0,4) + "-06-15");
+
                 // --- MÅLVAKTER ---
                 if (window.gkref_mode === 'gk') {
                     let hGk = bm.Hemmamålvakt ? String(bm.Hemmamålvakt).trim() : "";
-                    if (NAME_ALIASES[hGk]) hGk = NAME_ALIASES[hGk]; // <-- NY RAD: Byt till nytt namn om det finns i listan
+                    if (NAME_ALIASES[hGk]) hGk = NAME_ALIASES[hGk]; 
                     let hTeam = bm.Hemmalag ? String(bm.Hemmalag).trim() : "";
                     
                     if (hGk && hGk.toLowerCase() !== "okänd") {
                         let cleanSearchGk = cleanNameUI(hGk).toLowerCase();
                         let matchQ = searchQ === "" || cleanSearchGk.includes(searchQ) || hTeam.toLowerCase().includes(searchQ);
                         if (matchQ) {
-                            if (!gkStats[hGk]) gkStats[hGk] = { matches: 0, cleanSheets: 0, conceded: 0, teams: new Set(), seasons: [] };
+                            // INITIALISERA ELLER UPPDATERA DATUM
+                            if (!gkStats[hGk]) {
+                                gkStats[hGk] = { matches: 0, cleanSheets: 0, conceded: 0, teams: new Set(), seasons: [], firstDate: matchDate, lastDate: matchDate };
+                            } else {
+                                if (matchDate < gkStats[hGk].firstDate) gkStats[hGk].firstDate = matchDate;
+                                if (matchDate > gkStats[hGk].lastDate) gkStats[hGk].lastDate = matchDate;
+                            }
+                            
                             gkStats[hGk].matches++;
                             gkStats[hGk].conceded += b_m; 
                             if (b_m === 0) gkStats[hGk].cleanSheets++;
@@ -3570,14 +3956,21 @@ window.renderTopScorers = function(seasonStr) {
                     }
                     
                     let bGk = bm.Bortamålvakt ? String(bm.Bortamålvakt).trim() : "";
-                    if (NAME_ALIASES[bGk]) bGk = NAME_ALIASES[bGk]; // <-- NY RAD HÄR OCKSÅ
+                    if (NAME_ALIASES[bGk]) bGk = NAME_ALIASES[bGk]; 
                     let bTeam = bm.Bortalag ? String(bm.Bortalag).trim() : "";
                     
                     if (bGk && bGk.toLowerCase() !== "okänd") {
                         let cleanSearchGk = cleanNameUI(bGk).toLowerCase();
                         let matchQ = searchQ === "" || cleanSearchGk.includes(searchQ) || bTeam.toLowerCase().includes(searchQ);
                         if (matchQ) {
-                            if (!gkStats[bGk]) gkStats[bGk] = { matches: 0, cleanSheets: 0, conceded: 0, teams: new Set(), seasons: [] };
+                            // INITIALISERA ELLER UPPDATERA DATUM
+                            if (!gkStats[bGk]) {
+                                gkStats[bGk] = { matches: 0, cleanSheets: 0, conceded: 0, teams: new Set(), seasons: [], firstDate: matchDate, lastDate: matchDate };
+                            } else {
+                                if (matchDate < gkStats[bGk].firstDate) gkStats[bGk].firstDate = matchDate;
+                                if (matchDate > gkStats[bGk].lastDate) gkStats[bGk].lastDate = matchDate;
+                            }
+                            
                             gkStats[bGk].matches++;
                             gkStats[bGk].conceded += hm; 
                             if (hm === 0) gkStats[bGk].cleanSheets++;
@@ -3590,7 +3983,7 @@ window.renderTopScorers = function(seasonStr) {
                 // --- DOMARE ---
                 if (window.gkref_mode === 'ref') {
                     let domare = bm.Domare ? String(bm.Domare).trim() : "";
-                    if (NAME_ALIASES[domare]) domare = NAME_ALIASES[domare]; // <-- NY RAD FÖR DOMARE
+                    if (NAME_ALIASES[domare]) domare = NAME_ALIASES[domare]; 
                     let ort = bm.Domarort ? String(bm.Domarort).trim() : "";
                     
                     if (domare && domare.toLowerCase() !== "okänd") {
@@ -3598,7 +3991,14 @@ window.renderTopScorers = function(seasonStr) {
                         let matchQ = searchQ === "" || cleanSearchRef.includes(searchQ) || ort.toLowerCase().includes(searchQ);
                         if (matchQ) {
                             let key = domare; 
-                            if (!refStats[key]) refStats[key] = { matches: 0, hWin: 0, draw: 0, aWin: 0, orter: new Set(), seasons: [] };
+                            
+                            // INITIALISERA ELLER UPPDATERA DATUM
+                            if (!refStats[key]) {
+                                refStats[key] = { matches: 0, hWin: 0, draw: 0, aWin: 0, orter: new Set(), seasons: [], firstDate: matchDate, lastDate: matchDate };
+                            } else {
+                                if (matchDate < refStats[key].firstDate) refStats[key].firstDate = matchDate;
+                                if (matchDate > refStats[key].lastDate) refStats[key].lastDate = matchDate;
+                            }
                             
                             refStats[key].matches++;
                             if (hm > b_m) refStats[key].hWin++;
