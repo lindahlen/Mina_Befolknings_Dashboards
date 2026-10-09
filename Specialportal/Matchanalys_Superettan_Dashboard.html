@@ -195,6 +195,7 @@
             <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
                 <button id="btn-view-match" onclick="toggleRecordsView('match')" class="px-4 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all">🛡️ Matchrekord (Lag)</button>
                 <button id="btn-view-players" onclick="toggleRecordsView('players')" class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all">⚽ Skyttar & Priser</button>
+                <button id="btn-view-ref" onclick="toggleRecordsView('ref')" class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">⚖️ Domarrekord</button>
             </div>
         </div>
 
@@ -250,7 +251,7 @@
                 <!-- Topplista: Snabbaste -->
                 <div class="border border-slate-200 rounded-lg overflow-hidden flex flex-col">
                     <div class="bg-slate-50 px-4 py-3 border-b border-slate-200 flex justify-between items-center">
-                        <h3 class="font-bold text-slate-700 text-xs uppercase tracking-wider">Snabbaste</h3>
+                        <h3 class="font-bold text-slate-700 text-xs uppercase tracking-wider">Flest snabbast premiärmål</h3>
                         <span class="text-xs cursor-help" title="Visar de spelare som flest gånger har gjort det absolut snabbaste målet i den första omgången för säsongen.">⏱️</span>
                     </div>
                     <div class="p-0 overflow-y-auto max-h-64 flex-1"><table class="w-full text-left text-sm whitespace-nowrap"><tbody id="rec-top-players-dn"></tbody></table></div>
@@ -291,6 +292,33 @@
                 </div>
             </div>
         </div>
+        <!-- CONTAINER 4: DOMARSTATISTIK -->
+                <div id="records-ref-container" class="hidden">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-slate-200 pb-2 mt-6 mb-4 gap-3">
+                        <h2 class="text-xl font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">⚖️ Domarrekord</h2>
+                        <select onchange="window.current_ref_view=this.value; window.renderRefRecords();" class="bg-slate-100 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-slate-500 focus:border-slate-500 block p-2 font-bold outline-none cursor-pointer w-full sm:w-auto shadow-sm transition-colors">
+                            <option value="matches">Flest Dömda Matcher</option>
+                            <option value="goals">Flest Mål (Totalt & Snitt)</option>
+                            <option value="youngest">Yngsta Domare (Debut)</option>
+                            <option value="oldest_debut">Äldsta Domare (Debut)</option>
+                            <option value="oldest">Äldsta Domare</option>
+                            <option value="longest_life">Högst Levnadsålder</option>
+                            <option value="shortest_life">Lägst Levnadsålder (Avliden)</option>
+                        </select>
+                    </div>
+                    <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+                        <div class="overflow-y-auto max-h-[600px] lg:max-h-[800px] xl:max-h-[80vh]">
+                            <table class="w-full text-left text-sm whitespace-nowrap">
+                                <thead id="ref-record-thead" class="bg-slate-800 text-xs text-white uppercase sticky top-0 shadow-sm z-10">
+                                    <!-- Fylls i av JavaScript -->
+                                </thead>
+                                <tbody id="ref-record-tbody" class="divide-y divide-slate-100">
+                                    <!-- Fylls i av JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
     </div>
 </section>
 
@@ -721,7 +749,7 @@
         const GK_INFO = {};
         const REF_INFO = {"Andersson, Per-Anders": {"Född": "1966-05-15", "År": "1966", "Avliden": null, "NyttNamn": null}, "Andreasson, Åke": {"Född": "1964-10-18", "År": "1964", "Avliden": null, "NyttNamn": null}, "Enegren, Tomas": {"Född": "1960-03-23", "År": "1960", "Avliden": null, "NyttNamn": null}, "Eriksson, Jonas": {"Född": "1974-03-28", "År": "1974", "Avliden": null, "NyttNamn": null}, "Frisk, Anders": {"Född": "1963-02-18", "År": "1963", "Avliden": null, "NyttNamn": null}, "Fröjdfeldt, Peter": {"Född": "1963-11-14", "År": "1963", "Avliden": null, "NyttNamn": null}, "Hagberg, Jonas": {"Född": "1968-01-22", "År": "1968", "Avliden": null, "NyttNamn": null}, "Hansson, Martin": {"Född": "1971-04-06", "År": "1971", "Avliden": null, "NyttNamn": null}, "Holgersson, Sven": {"Född": "1957-01-11", "År": "1957", "Avliden": null, "NyttNamn": null}, "Hyvärinen, Keijo": {"Född": "1964-03-29", "År": "1964", "Avliden": null, "NyttNamn": null}, "Ingvarsson, Martin": {"Född": "1965-12-09", "År": "1965", "Avliden": null, "NyttNamn": null}, "Johannesson, Stefan": {"Född": "1971-11-22", "År": "1971", "Avliden": null, "NyttNamn": null}, "Johanzon, Sten": {"Född": "1955-04-12", "År": "1955", "Avliden": null, "NyttNamn": null}, "Jonasson, Håkan": {"Född": "1969-03-02", "År": "1969", "Avliden": null, "NyttNamn": null}, "Kovács, Andreas": {"Född": "1959-02-14", "År": "1959", "Avliden": null, "NyttNamn": null}, "Kratz, Lars": {"Född": "1963-07-03", "År": "1963", "Avliden": null, "NyttNamn": null}, "Lundbäck, Johnny": {"Född": "1963-11-27", "År": "1963", "Avliden": null, "NyttNamn": null}, "Nilsson, Karl-Erik": {"Född": "1957-05-06", "År": "1957", "Avliden": null, "NyttNamn": null}, "Norman, Morgan": {"Född": "1955-04-22", "År": "1955", "Avliden": null, "NyttNamn": null}, "Ragnarsson, Stefan": {"Född": "1962-03-21", "År": "1962", "Avliden": null, "NyttNamn": null}, "Strömberg, Åke": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Ståhl, Per-Olof": {"Född": "1958-02-24", "År": "1958", "Avliden": null, "NyttNamn": null}, "Stålhammar, Daniel": {"Född": "1974-10-20", "År": "1974", "Avliden": null, "NyttNamn": null}, "Sundell, Leif": {"Född": "1958-02-15", "År": "1958", "Avliden": null, "NyttNamn": null}, "Ukalovic, Miro": {"Född": "1960-09-09", "År": "1960", "Avliden": null, "NyttNamn": null}, "Åkesson, Sven-Martin": {"Född": "1971-08-01", "År": "1971", "Avliden": null, "NyttNamn": null}, "Andersson, Jan": {"Född": "1966-06-11", "År": "1966", "Avliden": null, "NyttNamn": null}, "Fällström, Mattias": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Karlsson, Jonas": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Lerjéus, Michael": {"Född": "1973-06-18", "År": "1973", "Avliden": null, "NyttNamn": null}, "Strömbergsson, Markus": {"Född": "1975-04-26", "År": "1975", "Avliden": null, "NyttNamn": null}, "Bengtsson, Nicklas": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Kovacevic, Zarko": {"Född": "1969-09-07", "År": "1969", "Avliden": null, "NyttNamn": null}, "Mattsson, Tobias": {"Född": "1974-04-26", "År": "1974", "Avliden": null, "NyttNamn": null}, "Berglund, Patrik": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Fager, Roland": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Johnsen, Ken Henry": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Kanerva, Antti": {"Född": "1972-08-25", "År": "1972", "Avliden": null, "NyttNamn": null}, "Kragh, Henrik N.": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Pajunen, Heikki": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Persson, Daniel": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Thóridsson, Magnus": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Eiriksson, Erlendur": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Hamlin, Johan": {"Född": "1974-08-19", "År": "1974", "Avliden": null, "NyttNamn": null}, "Högberg, Morten": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Karlsson, Klas": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Kristensen, Henrik": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Nieminen, Tero": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Olsson, Lars": {"Född": "1964-03-11", "År": "1964", "Avliden": null, "NyttNamn": null}, "Ahlsén, Magnus": {"Född": "1974-12-16", "År": "1974", "Avliden": null, "NyttNamn": null}, "Ekberg, Andreas": {"Född": "1985-01-02", "År": "1985", "Avliden": null, "NyttNamn": null}, "Gestranius, Mattias": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Hagen, Tom Harald": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Hansen, Kenn": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Kehlet, Jakob": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Nyman, Mattias": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Olsson, Martin": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Kjensli, Tryggve": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Kristoffersen, Mads-Kristoffer": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Lundberg, Fredrik": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Olsen, Dagfinn": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Pandzic, Bojan": {"Född": "1982-03-13", "År": "1982", "Avliden": null, "NyttNamn": null}, "Petersson, Jim": {"Född": "1978-03-05", "År": "1978", "Avliden": null, "NyttNamn": null}, "Strömbergsson, Martin": {"Född": "1977-04-01", "År": "1977", "Avliden": null, "NyttNamn": null}, "Ahlsen, Mads": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Magnetorp, Patrik": {"Född": "1984-03-21", "År": "1984", "Avliden": null, "NyttNamn": null}, "Melin, Per": {"Född": "1988-01-07", "År": "1988", "Avliden": null, "NyttNamn": null}, "Munukka, Antti": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Tykgaard, Michael": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Valgeirsson, Valgeir": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Abrahamsson, Niklas": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Antamo, Dennis": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Banjac, Dragan": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Karlsson, Kristoffer": {"Född": "1984-05-04", "År": "1984", "Avliden": null, "NyttNamn": null}, "Kjaersgaard-Andersen, Peter": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Rasmusen, Eiler": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Toppe, Petter": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Al-Hakim, Mohammed": {"Född": "1985-04-15", "År": "1985", "Avliden": null, "NyttNamn": null}, "Cisic, Nermin": {"Född": "1983-02-16", "År": "1983", "Avliden": null, "NyttNamn": null}, "Daugbjerg Nielsen, Jörgen": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Jonsson, Gunnar Jarl": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Lehtola, Mikko": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Rafiq, Omar": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Djuurhus, Ransin": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Lundby, Martin": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Madsen, Kasper": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Thorarinsson, Vilhjalmur Alvar": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Daradic, Robert": {"Född": "1974-10-15", "År": "1974", "Avliden": null, "NyttNamn": null}, "Eriksson, Patrik": {"Född": "1985-03-31", "År": "1985", "Avliden": null, "NyttNamn": null}, "Gjermshus, Anders": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Johansen, Chris": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Krantz, Johan": {"Född": "1978-08-17", "År": "1978", "Avliden": null, "NyttNamn": null}, "Nevalainen, Ville": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Nyberg, Glenn": {"Född": "1988-10-12", "År": "1988", "Avliden": null, "NyttNamn": null}, "Pálsson, Valdimar": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Sjöberg, Kaspar": {"Född": "1987-05-16", "År": "1987", "Avliden": null, "NyttNamn": null}, "Djurhuus, Ransin": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Lindgren, Magnus": {"Född": "1985-07-16", "År": "1985", "Avliden": null, "NyttNamn": null}, "Moen, Christian": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "W-Jantzen, Benjamin": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Behnam, Diako": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Grönholm, Marko": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Gudmundsson, Petúr": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Jukic, Adnan": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Müller, Lars": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Steen, Kai Erik": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Hagenes, Kristoffer": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Hövdanum, Kári J. A.": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Klitte, Fredrik": {"Född": "1984-04-16", "År": "1984", "Avliden": null, "NyttNamn": null}, "Maqedonci, Granit": {"Född": "1989-03-25", "År": "1989", "Avliden": null, "NyttNamn": null}, "Nehdi, Farouk": {"Född": "1989-10-26", "År": "1989", "Avliden": null, "NyttNamn": null}, "Sundberg, Jakob": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Viljanen, Petri": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Wolf, Victor": {"Född": "1983-12-11", "År": "1983", "Avliden": null, "NyttNamn": null}, "Al-Emara, Mohammad": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Forná, Dagfinn": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Hansson, Fredrik": {"Född": "1989-04-11", "År": "1989", "Avliden": null, "NyttNamn": null}, "Kazic, Mirza": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Ladebäck, Adam": {"Född": "1992-02-19", "År": "1992", "Avliden": null, "NyttNamn": null}, "Redder, Mikkel": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Traedal, Torkjell": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Aslam, Usman": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Johansson, Andreas": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Jonasson, Helgi Mikael": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Reitala, Oliver": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Uslu, Aydin": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Sars, Joakim": {"Född": "1991-11-08", "År": "1991", "Avliden": null, "NyttNamn": "f.d. Östling"}, "Andersén, Patrick": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Gerxhaliu, Kastriot": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Higraff, Daniel": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Jussila, Atte": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Rasmussen, Eiler": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Sundell, Richard": {"Född": "1990-04-21", "År": "1990", "Avliden": null, "NyttNamn": null}, "Aganovic, Adi": {"Född": "1989-12-12", "År": "1989", "Avliden": null, "NyttNamn": null}, "Dufva-Johansson, Andreas": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Olofsson, Tess": {"Född": "1988-01-24", "År": "1988", "Avliden": null, "NyttNamn": null}, "Oppong, Fredrik": {"Född": null, "År": "1991", "Avliden": null, "NyttNamn": null}, "Vesprini, Enzo": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Johnson, Oscar": {"Född": "1993-06-20", "År": "1993", "Avliden": null, "NyttNamn": null}, "Ellefsen, John": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Hasani, Rinon": {"Född": null, "År": "1990", "Avliden": null, "NyttNamn": null}, "Kolöy, Magnus Nicolai": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Mattsson, Erik": {"Född": "1995-02-19", "År": "1995", "Avliden": null, "NyttNamn": null}, "Rasmussen, Simon": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Simani, Peiman": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Bogelund, Jonas": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Buqa, Fikret": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Kellerhals, Mischa": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Krsmanovic, Jovan": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Svraka, Jasmin": {"Född": null, "År": "1991", "Avliden": null, "NyttNamn": null}, "Vuorinen, Juuso": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Ziskason, Heini": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Alknäs, Fredrik": {"Född": null, "År": "1998", "Avliden": null, "NyttNamn": null}, "Arnason, Elias Ingi": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Beigi, Rambod": {"Född": null, "År": "1991", "Avliden": null, "NyttNamn": null}, "de Albuquerque Troleis, Alex": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Haapakoski, Miika": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Olofsson, Pontus": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Sletner, Stian": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Demo, Dino": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Karlsson, Niclas": {"Född": null, "År": "1996", "Avliden": null, "NyttNamn": null}, "Lindh, Philip": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Löf Andersen, Nanna": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Manninen, Joona": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Persson, Max": {"Född": null, "År": "1998", "Avliden": null, "NyttNamn": null}, "Valen, Ole": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Al-Fahad, Abdulhadi": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Bashir, Abdinaser": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Kobberröd, Jacob": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Leitisstein Hansen, Aki": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Nieminen, Juho": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}, "Karlsson, Henric": {"Född": null, "År": null, "Avliden": null, "NyttNamn": null}};
         const TOP_SCORERS = {"1": [{"SäsongText": "2000", "Namn": "Marcus Ringberg", "Klubb": "Mjällby AIF", "Mål": 18, "Född": "1976-05-05", "Slutdatum": "2000-11-30"}], "2000": [{"SäsongText": "2000", "Namn": "Marcus Ringberg", "Klubb": "Mjällby AIF", "Mål": 18, "Född": "1976-05-05", "Slutdatum": "2000-11-30"}], "2": [{"SäsongText": "2001", "Namn": "Daniel Nannskog", "Klubb": "Landskrona BoIS", "Mål": 21, "Född": "1974-05-22", "Slutdatum": "2001-11-30"}], "2001": [{"SäsongText": "2001", "Namn": "Daniel Nannskog", "Klubb": "Landskrona BoIS", "Mål": 21, "Född": "1974-05-22", "Slutdatum": "2001-11-30"}], "3": [{"SäsongText": "2002", "Namn": "Ludwig Ernstsson", "Klubb": "Östers IF", "Mål": 18, "Född": "1972-04-29", "Slutdatum": "2002-11-30"}], "2002": [{"SäsongText": "2002", "Namn": "Ludwig Ernstsson", "Klubb": "Östers IF", "Mål": 18, "Född": "1972-04-29", "Slutdatum": "2002-11-30"}], "4": [{"SäsongText": "2003", "Namn": "Göran Marklund", "Klubb": "FC Café Opera Djursholm", "Mål": 23, "Född": "1975-10-02", "Slutdatum": "2003-11-30"}], "2003": [{"SäsongText": "2003", "Namn": "Göran Marklund", "Klubb": "FC Café Opera Djursholm", "Mål": 23, "Född": "1975-10-02", "Slutdatum": "2003-11-30"}], "5": [{"SäsongText": "2004", "Namn": "Stefan Bärlin", "Klubb": "Västerås SK", "Mål": 23, "Född": "1976-05-31", "Slutdatum": "2004-11-30"}], "2004": [{"SäsongText": "2004", "Namn": "Stefan Bärlin", "Klubb": "Västerås SK", "Mål": 23, "Född": "1976-05-31", "Slutdatum": "2004-11-30"}], "6": [{"SäsongText": "2005", "Namn": "Bruno Santos", "Klubb": "IFK Norrköping", "Mål": 16, "Född": "1983-08-31", "Slutdatum": "2005-11-30"}], "2005": [{"SäsongText": "2005", "Namn": "Bruno Santos", "Klubb": "IFK Norrköping", "Mål": 16, "Född": "1983-08-31", "Slutdatum": "2005-11-30"}], "7": [{"SäsongText": "2006", "Namn": "Olof Guterstam", "Klubb": "IF Brommapojkarna", "Mål": 17, "Född": "1983-01-04", "Slutdatum": "2006-11-30"}, {"SäsongText": "2006", "Namn": "Stefan Rodevåg", "Klubb": "Falkenbergs FF", "Mål": 17, "Född": "1980-06-11", "Slutdatum": "2006-11-30"}], "2006": [{"SäsongText": "2006", "Namn": "Olof Guterstam", "Klubb": "IF Brommapojkarna", "Mål": 17, "Född": "1983-01-04", "Slutdatum": "2006-11-30"}, {"SäsongText": "2006", "Namn": "Stefan Rodevåg", "Klubb": "Falkenbergs FF", "Mål": 17, "Född": "1980-06-11", "Slutdatum": "2006-11-30"}], "8": [{"SäsongText": "2007", "Namn": "Gardar Gunnlaugsson", "Klubb": "IFK Norrköping", "Mål": 18, "Född": "1983-04-25", "Slutdatum": "2007-11-30"}], "2007": [{"SäsongText": "2007", "Namn": "Gardar Gunnlaugsson", "Klubb": "IFK Norrköping", "Mål": 18, "Född": "1983-04-25", "Slutdatum": "2007-11-30"}], "9": [{"SäsongText": "2008", "Namn": "Jonas Henriksson", "Klubb": "BK Häcken", "Mål": 19, "Född": "1976-12-29", "Slutdatum": "2008-11-30"}], "2008": [{"SäsongText": "2008", "Namn": "Jonas Henriksson", "Klubb": "BK Häcken", "Mål": 19, "Född": "1976-12-29", "Slutdatum": "2008-11-30"}], "10": [{"SäsongText": "2009", "Namn": "Mattias Adelstam", "Klubb": "Ängelholms FF", "Mål": 19, "Född": "1982-03-07", "Slutdatum": "2009-11-30"}, {"SäsongText": "2009", "Namn": "Marcus Ekenberg", "Klubb": "Mjällby AIF", "Mål": 19, "Född": "1980-06-16", "Slutdatum": "2009-11-30"}], "2009": [{"SäsongText": "2009", "Namn": "Mattias Adelstam", "Klubb": "Ängelholms FF", "Mål": 19, "Född": "1982-03-07", "Slutdatum": "2009-11-30"}, {"SäsongText": "2009", "Namn": "Marcus Ekenberg", "Klubb": "Mjällby AIF", "Mål": 19, "Född": "1980-06-16", "Slutdatum": "2009-11-30"}], "11": [{"SäsongText": "2010", "Namn": "Linus Hallenius", "Klubb": "Hammarby IF", "Mål": 18, "Född": "1989-04-01", "Slutdatum": "2010-11-30"}], "2010": [{"SäsongText": "2010", "Namn": "Linus Hallenius", "Klubb": "Hammarby IF", "Mål": 18, "Född": "1989-04-01", "Slutdatum": "2010-11-30"}], "12": [{"SäsongText": "2011", "Namn": "Branimir Hrgota", "Klubb": "Jönköpings Södra IF", "Mål": 18, "Född": "1993-01-12", "Slutdatum": "2011-11-30"}], "2011": [{"SäsongText": "2011", "Namn": "Branimir Hrgota", "Klubb": "Jönköpings Södra IF", "Mål": 18, "Född": "1993-01-12", "Slutdatum": "2011-11-30"}], "13": [{"SäsongText": "2012", "Namn": "Pablo Piñones Arce", "Klubb": "IF Brommapojkarna", "Mål": 18, "Född": "1981-08-27", "Slutdatum": "2012-11-30"}], "2012": [{"SäsongText": "2012", "Namn": "Pablo Piñones Arce", "Klubb": "IF Brommapojkarna", "Mål": 18, "Född": "1981-08-27", "Slutdatum": "2012-11-30"}], "14": [{"SäsongText": "2013", "Namn": "Victor Sköld", "Klubb": "Falkenbergs FF", "Mål": 20, "Född": "", "Slutdatum": "2013-11-30"}], "2013": [{"SäsongText": "2013", "Namn": "Victor Sköld", "Klubb": "Falkenbergs FF", "Mål": 20, "Född": "", "Slutdatum": "2013-11-30"}], "15": [{"SäsongText": "2014", "Namn": "Kennedy Bakircioglu", "Klubb": "Hammarby IF", "Mål": 17, "Född": "", "Slutdatum": "2014-11-30"}], "2014": [{"SäsongText": "2014", "Namn": "Kennedy Bakircioglu", "Klubb": "Hammarby IF", "Mål": 17, "Född": "", "Slutdatum": "2014-11-30"}], "16": [{"SäsongText": "2015", "Namn": "Fredrik Olsson", "Klubb": "Jönköpings Södra IF", "Mål": 17, "Född": "", "Slutdatum": "2015-11-30"}], "2015": [{"SäsongText": "2015", "Namn": "Fredrik Olsson", "Klubb": "Jönköpings Södra IF", "Mål": 17, "Född": "", "Slutdatum": "2015-11-30"}], "17": [{"SäsongText": "2016", "Namn": "Shkodran Maholli", "Klubb": "Åtvidabergs FF", "Mål": 15, "Född": "", "Slutdatum": "2016-11-30"}], "2016": [{"SäsongText": "2016", "Namn": "Shkodran Maholli", "Klubb": "Åtvidabergs FF", "Mål": 15, "Född": "", "Slutdatum": "2016-11-30"}], "18": [{"SäsongText": "2017", "Namn": "Richard Yarsuvat", "Klubb": "Dalkurd FF", "Mål": 14, "Född": "", "Slutdatum": "2017-11-30"}], "2017": [{"SäsongText": "2017", "Namn": "Richard Yarsuvat", "Klubb": "Dalkurd FF", "Mål": 14, "Född": "", "Slutdatum": "2017-11-30"}], "19": [{"SäsongText": "2018", "Namn": "Andri Rúnar Bjarnason", "Klubb": "Helsingborgs IF", "Mål": 16, "Född": "", "Slutdatum": "2018-11-30"}], "2018": [{"SäsongText": "2018", "Namn": "Andri Rúnar Bjarnason", "Klubb": "Helsingborgs IF", "Mål": 16, "Född": "", "Slutdatum": "2018-11-30"}], "20": [{"SäsongText": "2019", "Namn": "Erik Björndahl", "Klubb": "Degerfors IF", "Mål": 20, "Född": "", "Slutdatum": "2019-11-30"}], "2019": [{"SäsongText": "2019", "Namn": "Erik Björndahl", "Klubb": "Degerfors IF", "Mål": 20, "Född": "", "Slutdatum": "2019-11-30"}], "21": [{"SäsongText": "2020", "Namn": "Pontus Engblom", "Klubb": "GIF Sundsvall", "Mål": 20, "Född": "", "Slutdatum": "2020-11-30"}], "2020": [{"SäsongText": "2020", "Namn": "Pontus Engblom", "Klubb": "GIF Sundsvall", "Mål": 20, "Född": "", "Slutdatum": "2020-11-30"}], "22": [{"SäsongText": "2021", "Namn": "Ajdin Zeljkovic", "Klubb": "Örgryte IS", "Mål": 18, "Född": "", "Slutdatum": "2021-11-30"}], "2021": [{"SäsongText": "2021", "Namn": "Ajdin Zeljkovic", "Klubb": "Örgryte IS", "Mål": 18, "Född": "", "Slutdatum": "2021-11-30"}], "23": [{"SäsongText": "2022", "Namn": "Viktor Granath", "Klubb": "Västerås SK", "Mål": 24, "Född": "", "Slutdatum": "2022-11-30"}], "2022": [{"SäsongText": "2022", "Namn": "Viktor Granath", "Klubb": "Västerås SK", "Mål": 24, "Född": "", "Slutdatum": "2022-11-30"}], "24": [{"SäsongText": "2023", "Namn": "Jesper Jonasson Westermark", "Klubb": "Östers IF", "Mål": 17, "Född": "", "Slutdatum": "2023-11-30"}], "2023": [{"SäsongText": "2023", "Namn": "Jesper Jonasson Westermark", "Klubb": "Östers IF", "Mål": 17, "Född": "", "Slutdatum": "2023-11-30"}], "25": [{"SäsongText": "2024", "Namn": "Assad Al Hamlawi", "Klubb": "IK Oddevold", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}, {"SäsongText": "2024", "Namn": "Karl Holmberg", "Klubb": "Örebro SK", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}, {"SäsongText": "2024", "Namn": "Dijan Vukojevic", "Klubb": "Degerfors IF", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}], "2024": [{"SäsongText": "2024", "Namn": "Assad Al Hamlawi", "Klubb": "IK Oddevold", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}, {"SäsongText": "2024", "Namn": "Karl Holmberg", "Klubb": "Örebro SK", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}, {"SäsongText": "2024", "Namn": "Dijan Vukojevic", "Klubb": "Degerfors IF", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}], "26": [{"SäsongText": "2025", "Namn": "Amar Muhsin", "Klubb": "Örgryte IS", "Mål": 21, "Född": "", "Slutdatum": "2025-11-30"}], "2025": [{"SäsongText": "2025", "Namn": "Amar Muhsin", "Klubb": "Örgryte IS", "Mål": 21, "Född": "", "Slutdatum": "2025-11-30"}]};
-        const FIRST_SCORERS = {"2000": {"Djurgårdens IF": [{"skytt": "Andreas Johansson", "minut": "11", "motstandare": "Umeå FC", "not": "", "alder": 21, "datum": "2000-04-16", "hm": 5, "bm": 2, "hemmalag": "Djurgårdens IF"}], "Kalmar FF": [{"skytt": "Daniel Mobaeck", "minut": "24", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2000-04-16", "hm": 1, "bm": 0, "hemmalag": "Kalmar FF"}], "Västerås SK": [{"skytt": "Mathias Elison", "minut": "19", "motstandare": "Assyriska FF", "not": "straff", "alder": "", "datum": "2000-04-16", "hm": 2, "bm": 1, "hemmalag": "Västerås SK"}], "Mjällby AIF": [{"skytt": "Marcus Ringberg", "minut": "11", "motstandare": "Åtvidabergs FF", "not": "", "alder": 23, "datum": "2000-04-16", "hm": 1, "bm": 0, "hemmalag": "Mjällby AIF"}], "Östers IF": [{"skytt": "Patrik Isaksson", "minut": "57", "motstandare": "AFC Eskilstuna", "not": "", "alder": "", "datum": "2000-04-16", "hm": 1, "bm": 2, "hemmalag": "Östers IF"}], "Landskrona BoIS": [{"skytt": "Tonny Nilsson", "minut": "77", "motstandare": "Ljungskile SK", "not": "", "alder": "", "datum": "2000-04-16", "hm": 1, "bm": 1, "hemmalag": "Landskrona BoIS"}], "Umeå FC": [{"skytt": "Zoran Petrovic", "minut": "27", "motstandare": "Djurgårdens IF", "not": "", "alder": "", "datum": "2000-04-16", "hm": 5, "bm": 2, "hemmalag": "Djurgårdens IF"}], "Assyriska FF": [{"skytt": "Ghassan Heamed", "minut": "60", "motstandare": "Västerås SK", "not": "", "alder": "", "datum": "2000-04-16", "hm": 2, "bm": 1, "hemmalag": "Västerås SK"}], "AFC Eskilstuna": [{"skytt": "Mounir Tajiou", "minut": "37", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2000-04-16", "hm": 1, "bm": 2, "hemmalag": "Östers IF"}], "Ljungskile SK": [{"skytt": "Mattias Molin", "minut": "90", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2000-04-16", "hm": 1, "bm": 1, "hemmalag": "Landskrona BoIS"}], "Gunnilse IS": [{"skytt": "Eddy López", "minut": "44", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2000-04-29", "hm": 1, "bm": 2, "hemmalag": "Gunnilse IS"}], "IF Sylvia": [{"skytt": "Dennis Ericsson", "minut": "24", "motstandare": "Assyriska FF", "not": "", "alder": "", "datum": "2000-04-24", "hm": 0, "bm": 2, "hemmalag": "Assyriska FF"}], "Malmö FF": [{"skytt": "Niklas Gudmundsson", "minut": "12", "motstandare": "Mjällby AIF", "not": "", "alder": "", "datum": "2000-04-24", "hm": 2, "bm": 2, "hemmalag": "Malmö FF"}], "Åtvidabergs FF": [{"skytt": "Andreas Bäckmark", "minut": "24", "motstandare": "Västerås SK", "not": "", "alder": "", "datum": "2000-04-24", "hm": 1, "bm": 1, "hemmalag": "Åtvidabergs FF"}], "Enköpings SK": [{"skytt": "Tomas Andersson (1968)", "minut": "11", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2000-04-22", "hm": 2, "bm": 1, "hemmalag": "Enköpings SK"}], "IK Brage": [{"skytt": "Jimmy Rajala", "minut": "7", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2000-05-04", "hm": 1, "bm": 1, "hemmalag": "IK Brage"}]}, "2001": {"Östers IF": [{"skytt": "Mattias Johansson", "minut": "14", "motstandare": "Motala AIF", "not": "", "alder": "", "datum": "2001-04-16", "hm": 2, "bm": 0, "hemmalag": "Östers IF"}], "Kalmar FF": [{"skytt": "Lucas Nilsson", "minut": "01:15:00", "motstandare": "Västra Frölunda IF", "not": "", "alder": 27, "datum": "2001-04-16", "hm": 3, "bm": 1, "hemmalag": "Kalmar FF"}], "Landskrona BoIS": [{"skytt": "Daniel Nannskog", "minut": "85", "motstandare": "Gefle IF", "not": "", "alder": 26, "datum": "2001-04-16", "hm": 1, "bm": 2, "hemmalag": "Landskrona BoIS"}], "IF Sylvia": [{"skytt": "Lars Åkerberg", "minut": "74", "motstandare": "IFK Malmö", "not": "", "alder": "", "datum": "2001-04-16", "hm": 1, "bm": 1, "hemmalag": "IF Sylvia"}], "Västerås SK": [{"skytt": "Andreas Engblom", "minut": "50", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2001-04-17", "hm": 1, "bm": 0, "hemmalag": "Västerås SK"}], "Västra Frölunda IF": [{"skytt": "Arash Talebinejad", "minut": "17", "motstandare": "Kalmar FF", "not": "", "alder": "", "datum": "2001-04-16", "hm": 3, "bm": 1, "hemmalag": "Kalmar FF"}], "Gefle IF": [{"skytt": "Daniel Moffatt", "minut": "19", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2001-04-16", "hm": 1, "bm": 2, "hemmalag": "Landskrona BoIS"}], "IFK Malmö": [{"skytt": "Roger Nilsson", "minut": "8", "motstandare": "IF Sylvia", "not": "", "alder": "", "datum": "2001-04-16", "hm": 1, "bm": 1, "hemmalag": "IF Sylvia"}], "Assyriska FF": [{"skytt": "Bashkim Shaqiri", "minut": "34", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2001-04-17", "hm": 0, "bm": 1, "hemmalag": "GAIS"}], "Umeå FC": [{"skytt": "Anton Holmberg", "minut": "8", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2001-04-22", "hm": 4, "bm": 0, "hemmalag": "Umeå FC"}], "IK Brage": [{"skytt": "Patrik Bergström", "minut": "33", "motstandare": "Mjällby AIF", "not": "", "alder": "", "datum": "2001-04-22", "hm": 1, "bm": 2, "hemmalag": "IK Brage"}], "AFC Eskilstuna": [{"skytt": "Goran Nikolajev", "minut": "14", "motstandare": "IFK Malmö", "not": "", "alder": "", "datum": "2001-04-22", "hm": 2, "bm": 3, "hemmalag": "IFK Malmö"}], "GAIS": [{"skytt": "Jörgen Hellqvist", "minut": "90", "motstandare": "IFK Malmö", "not": "", "alder": "", "datum": "2001-04-29", "hm": 1, "bm": 1, "hemmalag": "GAIS"}], "Motala AIF": [{"skytt": "Simon Jakobsson", "minut": "43", "motstandare": "IF Sylvia", "not": "", "alder": "", "datum": "2001-05-06", "hm": 1, "bm": 1, "hemmalag": "Motala AIF"}], "Enköpings SK": [{"skytt": "Peter Berggren", "minut": "4", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2001-04-29", "hm": 1, "bm": 3, "hemmalag": "Östers IF"}], "Mjällby AIF": [{"skytt": "Torbjörn Nilsson", "minut": "43", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2001-04-22", "hm": 1, "bm": 2, "hemmalag": "IK Brage"}]}, "2012": {"Assyriska FF": [{"skytt": "Fuad Hyseni", "minut": "01:19:00", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2012-04-09", "hm": 3, "bm": 1, "hemmalag": "Assyriska FF"}]}, "2013": {"Varbergs BoIS": [{"skytt": "Gabriel Altemark Vanneryr", "minut": "05:27:00", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2013-04-06", "hm": 3, "bm": 1, "hemmalag": "Varbergs BoIS"}]}, "2014": {"Husqvarna FF": [{"skytt": "Tobias Nilsson", "minut": "04:50:00", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2014-04-05", "hm": 3, "bm": 1, "hemmalag": "Husqvarna FF"}]}, "2015": {"Utsiktens BK": [{"skytt": "Jesper Westermark", "minut": "08:14:00", "motstandare": "Degerfors IF", "not": "", "alder": "", "datum": "2015-04-03", "hm": 4, "bm": 1, "hemmalag": "Utsiktens BK"}]}, "2016": {"Halmstads BK": [{"skytt": "Sead Haksabanovic", "minut": "01:15:00", "motstandare": "IK Sirius", "not": "", "alder": "", "datum": "2016-04-04", "hm": 2, "bm": 1, "hemmalag": "IK Sirius"}]}, "2017": {"Örgryte IS": [{"skytt": "Johan Hammar", "minut": "02:03:00", "motstandare": "Varbergs BoIS", "not": "", "alder": "", "datum": "2017-04-03", "hm": 2, "bm": 1, "hemmalag": "Örgryte IS"}]}, "2026": {"Helsingborgs IF": [{"skytt": "Demba N'Diaye", "minut": "3", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2026-04-03", "hm": 4, "bm": 1, "hemmalag": "Helsingborgs IF"}], "Östers IF": [{"skytt": "Oscar Uddenäs", "minut": "8", "motstandare": "Helsingborgs IF", "not": "", "alder": "", "datum": "2026-04-03", "hm": 4, "bm": 1, "hemmalag": "Helsingborgs IF"}], "IFK Norrköping": [{"skytt": "Elias Jemal", "minut": "20", "motstandare": "IFK Värnamo", "not": "", "alder": "", "datum": "2026-04-04", "hm": 6, "bm": 0, "hemmalag": "IFK Norrköping"}], "IK Brage": [{"skytt": "Albin Sporrong", "minut": "79", "motstandare": "Norrby IF", "not": "", "alder": "", "datum": "2026-04-05", "hm": 0, "bm": 1, "hemmalag": "Norrby IF"}], "GIF Sundsvall": [{"skytt": "Yaqub Finey", "minut": "71", "motstandare": "Nordic United FC", "not": "", "alder": "", "datum": "2026-04-06", "hm": 3, "bm": 2, "hemmalag": "GIF Sundsvall"}], "Nordic United FC": [{"skytt": "Emmanuel Swedi", "minut": "16", "motstandare": "GIF Sundsvall", "not": "", "alder": "", "datum": "2026-04-06", "hm": 3, "bm": 2, "hemmalag": "GIF Sundsvall"}], "Falkenbergs FF": [{"skytt": "Hugo Komano", "minut": "43", "motstandare": "Ljungskile SK", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 1, "hemmalag": "Falkenbergs FF"}], "Ljungskile SK": [{"skytt": "Gideon Mensah", "minut": "87", "motstandare": "Falkenbergs FF", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 1, "hemmalag": "Falkenbergs FF"}], "Örebro SK": [{"skytt": "Karl Holmberg", "minut": "53", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 0, "hemmalag": "Örebro SK"}], "Varbergs BoIS": [{"skytt": "Severin Nioule", "minut": "25", "motstandare": "Östersunds FK", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 2, "hemmalag": "Varbergs BoIS"}], "Östersunds FK": [{"skytt": "Curtis Edwards", "minut": "17", "motstandare": "Varbergs BoIS", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 2, "hemmalag": "Varbergs BoIS"}], "IK Oddevold": [{"skytt": "Gustav Forssell", "minut": "11", "motstandare": "Sandvikens IF", "not": "", "alder": "", "datum": "2026-04-07", "hm": 2, "bm": 2, "hemmalag": "IK Oddevold"}], "Sandvikens IF": [{"skytt": "Christian Wagner", "minut": "54", "motstandare": "IK Oddevold", "not": "", "alder": "", "datum": "2026-04-07", "hm": 2, "bm": 2, "hemmalag": "IK Oddevold"}], "IFK Värnamo": [{"skytt": "Hugo Andersson", "minut": "12", "motstandare": "GIF Sundsvall", "not": "", "alder": "", "datum": "2026-04-14", "hm": 3, "bm": 0, "hemmalag": "IFK Värnamo"}], "Norrby IF": [{"skytt": "Jamie Bichis", "minut": "70", "motstandare": "Östersunds FK", "not": "straff", "alder": "", "datum": "2026-04-11", "hm": 1, "bm": 1, "hemmalag": "Östersunds FK"}], "Landskrona BoIS": [{"skytt": "Andreas Murbeck", "minut": "40", "motstandare": "Falkenbergs FF", "not": "", "alder": "", "datum": "2026-04-12", "hm": 1, "bm": 2, "hemmalag": "Landskrona BoIS"}]}}; // <-- NY: Fångar upp premiärmålskyttarna från Python!
+        const FIRST_SCORERS = {"2000": {"Djurgårdens IF": [{"skytt": "Andreas Johansson", "minut": "11", "motstandare": "Umeå FC", "not": "", "alder": 21, "datum": "2000-04-16", "hm": 5, "bm": 2, "hemmalag": "Djurgårdens IF"}], "Kalmar FF": [{"skytt": "Daniel Mobaeck", "minut": "24", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2000-04-16", "hm": 1, "bm": 0, "hemmalag": "Kalmar FF"}], "Västerås SK": [{"skytt": "Mathias Elison", "minut": "19", "motstandare": "Assyriska FF", "not": "straff", "alder": "", "datum": "2000-04-16", "hm": 2, "bm": 1, "hemmalag": "Västerås SK"}], "Mjällby AIF": [{"skytt": "Marcus Ringberg", "minut": "11", "motstandare": "Åtvidabergs FF", "not": "", "alder": 23, "datum": "2000-04-16", "hm": 1, "bm": 0, "hemmalag": "Mjällby AIF"}], "Östers IF": [{"skytt": "Patrik Isaksson", "minut": "57", "motstandare": "AFC Eskilstuna", "not": "", "alder": "", "datum": "2000-04-16", "hm": 1, "bm": 2, "hemmalag": "Östers IF"}], "Landskrona BoIS": [{"skytt": "Tonny Nilsson", "minut": "77", "motstandare": "Ljungskile SK", "not": "", "alder": "", "datum": "2000-04-16", "hm": 1, "bm": 1, "hemmalag": "Landskrona BoIS"}], "Umeå FC": [{"skytt": "Zoran Petrovic", "minut": "27", "motstandare": "Djurgårdens IF", "not": "", "alder": "", "datum": "2000-04-16", "hm": 5, "bm": 2, "hemmalag": "Djurgårdens IF"}], "Assyriska FF": [{"skytt": "Ghassan Heamed", "minut": "60", "motstandare": "Västerås SK", "not": "", "alder": "", "datum": "2000-04-16", "hm": 2, "bm": 1, "hemmalag": "Västerås SK"}], "AFC Eskilstuna": [{"skytt": "Mounir Tajiou", "minut": "37", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2000-04-16", "hm": 1, "bm": 2, "hemmalag": "Östers IF"}], "Ljungskile SK": [{"skytt": "Mattias Molin", "minut": "90", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2000-04-16", "hm": 1, "bm": 1, "hemmalag": "Landskrona BoIS"}], "Gunnilse IS": [{"skytt": "Eddy López", "minut": "44", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2000-04-29", "hm": 1, "bm": 2, "hemmalag": "Gunnilse IS"}], "IF Sylvia": [{"skytt": "Dennis Ericsson", "minut": "24", "motstandare": "Assyriska FF", "not": "", "alder": "", "datum": "2000-04-24", "hm": 0, "bm": 2, "hemmalag": "Assyriska FF"}], "Malmö FF": [{"skytt": "Niklas Gudmundsson", "minut": "12", "motstandare": "Mjällby AIF", "not": "", "alder": "", "datum": "2000-04-24", "hm": 2, "bm": 2, "hemmalag": "Malmö FF"}], "Åtvidabergs FF": [{"skytt": "Andreas Bäckmark", "minut": "24", "motstandare": "Västerås SK", "not": "", "alder": "", "datum": "2000-04-24", "hm": 1, "bm": 1, "hemmalag": "Åtvidabergs FF"}], "Enköpings SK": [{"skytt": "Tomas Andersson (1968)", "minut": "11", "motstandare": "Landskrona BoIS", "not": "", "alder": 32, "datum": "2000-04-22", "hm": 2, "bm": 1, "hemmalag": "Enköpings SK"}], "IK Brage": [{"skytt": "Jimmy Rajala", "minut": "7", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2000-05-04", "hm": 1, "bm": 1, "hemmalag": "IK Brage"}]}, "2001": {"Östers IF": [{"skytt": "Mattias Johansson", "minut": "14", "motstandare": "Motala AIF", "not": "", "alder": "", "datum": "2001-04-16", "hm": 2, "bm": 0, "hemmalag": "Östers IF"}], "Kalmar FF": [{"skytt": "Lucas Nilsson", "minut": "01:15:00", "motstandare": "Västra Frölunda IF", "not": "", "alder": 27, "datum": "2001-04-16", "hm": 3, "bm": 1, "hemmalag": "Kalmar FF"}], "Landskrona BoIS": [{"skytt": "Daniel Nannskog", "minut": "85", "motstandare": "Gefle IF", "not": "", "alder": 26, "datum": "2001-04-16", "hm": 1, "bm": 2, "hemmalag": "Landskrona BoIS"}], "IF Sylvia": [{"skytt": "Lars Åkerberg", "minut": "74", "motstandare": "IFK Malmö", "not": "", "alder": "", "datum": "2001-04-16", "hm": 1, "bm": 1, "hemmalag": "IF Sylvia"}], "Västerås SK": [{"skytt": "Andreas Engblom", "minut": "50", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2001-04-17", "hm": 1, "bm": 0, "hemmalag": "Västerås SK"}], "Västra Frölunda IF": [{"skytt": "Arash Talebinejad", "minut": "17", "motstandare": "Kalmar FF", "not": "", "alder": "", "datum": "2001-04-16", "hm": 3, "bm": 1, "hemmalag": "Kalmar FF"}], "Gefle IF": [{"skytt": "Daniel Moffatt", "minut": "19", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2001-04-16", "hm": 1, "bm": 2, "hemmalag": "Landskrona BoIS"}], "IFK Malmö": [{"skytt": "Roger Nilsson", "minut": "8", "motstandare": "IF Sylvia", "not": "", "alder": "", "datum": "2001-04-16", "hm": 1, "bm": 1, "hemmalag": "IF Sylvia"}], "Assyriska FF": [{"skytt": "Bashkim Shaqiri", "minut": "34", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2001-04-17", "hm": 0, "bm": 1, "hemmalag": "GAIS"}], "Umeå FC": [{"skytt": "Anton Holmberg", "minut": "8", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2001-04-22", "hm": 4, "bm": 0, "hemmalag": "Umeå FC"}], "IK Brage": [{"skytt": "Patrik Bergström", "minut": "33", "motstandare": "Mjällby AIF", "not": "", "alder": "", "datum": "2001-04-22", "hm": 1, "bm": 2, "hemmalag": "IK Brage"}], "AFC Eskilstuna": [{"skytt": "Goran Nikolajev", "minut": "14", "motstandare": "IFK Malmö", "not": "", "alder": "", "datum": "2001-04-22", "hm": 2, "bm": 3, "hemmalag": "IFK Malmö"}], "GAIS": [{"skytt": "Jörgen Hellqvist", "minut": "90", "motstandare": "IFK Malmö", "not": "", "alder": "", "datum": "2001-04-29", "hm": 1, "bm": 1, "hemmalag": "GAIS"}], "Motala AIF": [{"skytt": "Simon Jakobsson", "minut": "43", "motstandare": "IF Sylvia", "not": "", "alder": "", "datum": "2001-05-06", "hm": 1, "bm": 1, "hemmalag": "Motala AIF"}], "Enköpings SK": [{"skytt": "Peter Berggren", "minut": "4", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2001-04-29", "hm": 1, "bm": 3, "hemmalag": "Östers IF"}], "Mjällby AIF": [{"skytt": "Torbjörn Nilsson", "minut": "43", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2001-04-22", "hm": 1, "bm": 2, "hemmalag": "IK Brage"}]}, "2012": {"Assyriska FF": [{"skytt": "Fuad Hyseni", "minut": "01:19:00", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2012-04-09", "hm": 3, "bm": 1, "hemmalag": "Assyriska FF"}]}, "2013": {"Varbergs BoIS": [{"skytt": "Gabriel Altemark Vanneryr", "minut": "05:27:00", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2013-04-06", "hm": 3, "bm": 1, "hemmalag": "Varbergs BoIS"}]}, "2014": {"Husqvarna FF": [{"skytt": "Tobias Nilsson", "minut": "04:50:00", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2014-04-05", "hm": 3, "bm": 1, "hemmalag": "Husqvarna FF"}]}, "2015": {"Utsiktens BK": [{"skytt": "Jesper Westermark", "minut": "08:14:00", "motstandare": "Degerfors IF", "not": "", "alder": "", "datum": "2015-04-03", "hm": 4, "bm": 1, "hemmalag": "Utsiktens BK"}]}, "2016": {"Halmstads BK": [{"skytt": "Sead Haksabanovic", "minut": "01:15:00", "motstandare": "IK Sirius", "not": "", "alder": "", "datum": "2016-04-04", "hm": 2, "bm": 1, "hemmalag": "IK Sirius"}]}, "2017": {"Örgryte IS": [{"skytt": "Johan Hammar", "minut": "02:03:00", "motstandare": "Varbergs BoIS", "not": "", "alder": "", "datum": "2017-04-03", "hm": 2, "bm": 1, "hemmalag": "Örgryte IS"}]}, "2026": {"Helsingborgs IF": [{"skytt": "Demba N'Diaye", "minut": "3", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2026-04-03", "hm": 4, "bm": 1, "hemmalag": "Helsingborgs IF"}], "Östers IF": [{"skytt": "Oscar Uddenäs", "minut": "8", "motstandare": "Helsingborgs IF", "not": "", "alder": "", "datum": "2026-04-03", "hm": 4, "bm": 1, "hemmalag": "Helsingborgs IF"}], "IFK Norrköping": [{"skytt": "Elias Jemal", "minut": "20", "motstandare": "IFK Värnamo", "not": "", "alder": "", "datum": "2026-04-04", "hm": 6, "bm": 0, "hemmalag": "IFK Norrköping"}], "IK Brage": [{"skytt": "Albin Sporrong", "minut": "79", "motstandare": "Norrby IF", "not": "", "alder": "", "datum": "2026-04-05", "hm": 0, "bm": 1, "hemmalag": "Norrby IF"}], "GIF Sundsvall": [{"skytt": "Yaqub Finey", "minut": "71", "motstandare": "Nordic United FC", "not": "", "alder": "", "datum": "2026-04-06", "hm": 3, "bm": 2, "hemmalag": "GIF Sundsvall"}], "Nordic United FC": [{"skytt": "Emmanuel Swedi", "minut": "16", "motstandare": "GIF Sundsvall", "not": "", "alder": "", "datum": "2026-04-06", "hm": 3, "bm": 2, "hemmalag": "GIF Sundsvall"}], "Falkenbergs FF": [{"skytt": "Hugo Komano", "minut": "43", "motstandare": "Ljungskile SK", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 1, "hemmalag": "Falkenbergs FF"}], "Ljungskile SK": [{"skytt": "Gideon Mensah", "minut": "87", "motstandare": "Falkenbergs FF", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 1, "hemmalag": "Falkenbergs FF"}], "Örebro SK": [{"skytt": "Karl Holmberg", "minut": "53", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 0, "hemmalag": "Örebro SK"}], "Varbergs BoIS": [{"skytt": "Severin Nioule", "minut": "25", "motstandare": "Östersunds FK", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 2, "hemmalag": "Varbergs BoIS"}], "Östersunds FK": [{"skytt": "Curtis Edwards", "minut": "17", "motstandare": "Varbergs BoIS", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 2, "hemmalag": "Varbergs BoIS"}], "IK Oddevold": [{"skytt": "Gustav Forssell", "minut": "11", "motstandare": "Sandvikens IF", "not": "", "alder": "", "datum": "2026-04-07", "hm": 2, "bm": 2, "hemmalag": "IK Oddevold"}], "Sandvikens IF": [{"skytt": "Christian Wagner", "minut": "54", "motstandare": "IK Oddevold", "not": "", "alder": "", "datum": "2026-04-07", "hm": 2, "bm": 2, "hemmalag": "IK Oddevold"}], "IFK Värnamo": [{"skytt": "Hugo Andersson", "minut": "12", "motstandare": "GIF Sundsvall", "not": "", "alder": "", "datum": "2026-04-14", "hm": 3, "bm": 0, "hemmalag": "IFK Värnamo"}], "Norrby IF": [{"skytt": "Jamie Bichis", "minut": "70", "motstandare": "Östersunds FK", "not": "straff", "alder": "", "datum": "2026-04-11", "hm": 1, "bm": 1, "hemmalag": "Östersunds FK"}], "Landskrona BoIS": [{"skytt": "Andreas Murbeck", "minut": "40", "motstandare": "Falkenbergs FF", "not": "", "alder": "", "datum": "2026-04-12", "hm": 1, "bm": 2, "hemmalag": "Landskrona BoIS"}]}}; // <-- NY: Fångar upp premiärmålskyttarna från Python!
         
         let currentOverviewData = []; let currentOverviewSort = { col: 'played', asc: false }; let currentStreakMatches = {}; 
         let globalAllStreaks = []; 
@@ -1197,31 +1225,204 @@
         }
 
         // ==========================================
-// VÄXLING MELLAN LAG- OCH SPELARREKORD
-// ==========================================
-function toggleRecordsView(view) {
-    let matchCont = document.getElementById('records-match-container');
-    let playCont = document.getElementById('records-players-container');
-    let btnMatch = document.getElementById('btn-view-match');
-    let btnPlay = document.getElementById('btn-view-players');
+        // VÄXLING MELLAN LAG-, SPELAR- OCH DOMARREKORD
+        // ==========================================
+window.toggleRecordsView = function(view) {
+    const views = ['match', 'players', 'ref'];
+    
+    // CSS-klasser (inklusive whitespace-nowrap för snygg mobilvy)
+    let activeCls = "px-4 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all whitespace-nowrap";
+    let inactiveCls = "px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap";
 
-    let activeCls = "px-4 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all";
-    let inactiveCls = "px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all";
+    views.forEach(v => {
+        // 1. Hantera containerns synlighet
+        let container = document.getElementById(`records-${v}-container`);
+        if (container) {
+            if (v === view) {
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+        
+        // 2. Hantera knapparnas utseende
+        let btn = document.getElementById(`btn-view-${v}`);
+        if (btn) {
+            btn.className = v === view ? activeCls : inactiveCls;
+        }
+    });
 
+    // 3. Trigga beräkningar/rendering i realtid BARA när fliken öppnas
     if (view === 'players') {
-        matchCont.classList.add('hidden');
-        playCont.classList.remove('hidden');
-        btnPlay.className = activeCls;
-        btnMatch.className = inactiveCls;
-        // Rendera bara om vi vill se datan (realtidsberäkning)
-        renderPlayerToplists(); 
-    } else {
-        playCont.classList.add('hidden');
-        matchCont.classList.remove('hidden');
-        btnMatch.className = activeCls;
-        btnPlay.className = inactiveCls;
+        if (typeof renderPlayerToplists === 'function') renderPlayerToplists(); 
+    } else if (view === 'ref') {
+        if (typeof window.renderRefRecords === 'function') window.renderRefRecords();
     }
+};
+
+// --- HJÄLPFUNKTION: Beräkna År och Dagar ---
+if (typeof window.getYearsAndDays !== 'function') {
+    window.getYearsAndDays = function(foddDate, matchDate) {
+        if (!foddDate || !matchDate) return null;
+        let d1 = new Date(foddDate);
+        let d2 = new Date(matchDate);
+        if (isNaN(d1) || isNaN(d2)) return null;
+        
+        let years = d2.getFullYear() - d1.getFullYear();
+        let m = d2.getMonth() - d1.getMonth();
+        if (m < 0 || (m === 0 && d2.getDate() < d1.getDate())) {
+            years--;
+        }
+        
+        let lastBirthday = new Date(d1);
+        lastBirthday.setFullYear(d1.getFullYear() + years);
+        let diffTime = Math.abs(d2 - lastBirthday);
+        let days = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        
+        return {
+            text: `${years} år, ${days} dagar`,
+            value: years + (days / 365.25)
+        };
+    };
 }
+
+// --- HJÄLPFUNKTION: Städa namn (Döljer födelseår ex. "(1968)" för UI) ---
+if (typeof window.formatPersonName !== 'function') {
+    window.formatPersonName = function(name) {
+        if (!name) return "";
+        // Letar upp ett eventuellt mellanslag följt av 4 siffror i en parentes och tar bort det.
+        return String(name).replace(/\s*\(\d{4}\)/g, "").trim();
+    };
+}
+
+// --- RENDERA DOMARREKORD (SUPERETTAN) ---
+window.current_ref_view = 'matches';
+
+window.renderRefRecords = function() {
+    if (typeof MATCH_DATA === 'undefined') return;
+    let view = window.current_ref_view;
+    let list = [];
+
+    // 1. Samla in Domardata med "Dörrvakten"
+    let refData = {};
+    MATCH_DATA.forEach(bm => {
+        if (!bm) return;
+        
+        // --- DÖRRVAKT: Mjuk radering av annullerade matcher ---
+        if (bm.Annullerad || String(bm.NOT || bm.Not || bm.Notering || "").toLowerCase().includes("annuller")) return; 
+        // ------------------------------------------------------
+
+        let mDate = bm.Datum ? String(bm.Datum).trim() : (String(bm.År || bm.Säsong || '').substring(0,4) + "-06-15");
+        let hm = parseInt(bm.HM); let b_m = parseInt(bm.BM);
+        if (isNaN(hm) || isNaN(b_m)) return;
+        let matchStr = `${bm.Hemmalag} - ${bm.Bortalag} ${hm}-${b_m}`;
+
+        let name = bm.Domare ? String(bm.Domare).trim() : "";
+        if (typeof NAME_ALIASES !== 'undefined' && NAME_ALIASES[name]) name = NAME_ALIASES[name];
+        if (!name || name.toLowerCase() === "okänd") return;
+
+        if (!refData[name]) refData[name] = { matches: 0, goals: 0, orter: new Set(), firstD: mDate, lastD: mDate, firstM: "", lastM: "" };
+        let st = refData[name];
+
+        if (mDate < st.firstD || st.firstM === "") { st.firstD = mDate; st.firstM = matchStr; }
+        if (mDate > st.lastD || st.lastM === "") { st.lastD = mDate; st.lastM = matchStr; }
+        
+        st.matches++;
+        st.goals += (hm + b_m);
+        if (bm.Domarort) st.orter.add(String(bm.Domarort).trim());
+    });
+
+    // 2. Beräkna År/Dagar
+    for (let ref in refData) {
+        let st = refData[ref];
+        let info = (typeof REF_INFO !== 'undefined' && REF_INFO[ref]) ? REF_INFO[ref] : {};
+        let fodd = info.Född || null;
+        let dod = info.Död || info.Avliden || null;
+        let dAge = null, lAge = null, lifeAge = null;
+
+        if (fodd && typeof window.getYearsAndDays === 'function') {
+            dAge = window.getYearsAndDays(fodd, st.firstD);
+            lAge = window.getYearsAndDays(fodd, st.lastD);
+            if (dod) lifeAge = window.getYearsAndDays(fodd, dod);
+        }
+
+        let y1 = st.firstD.substring(0,4); let y2 = st.lastD.substring(0,4);
+        let activeStr = (y1 === y2) ? y1 : `${y1}-${y2}`;
+
+        list.push({
+            name: typeof window.formatPersonName === 'function' ? window.formatPersonName(ref) : ref,
+            matches: st.matches, goals: st.goals,
+            orter: Array.from(st.orter).join(', '),
+            firstD: st.firstD, lastD: st.lastD, firstM: st.firstM, lastM: st.lastM,
+            fodd: fodd, dod: dod,
+            debutAge: dAge, lastAge: lAge, lifeAge: lifeAge, activeStr: activeStr
+        });
+    }
+
+    // 3. Rita ut tabellen
+    let th = "", tb = "";
+    if (view === 'matches' || view === 'goals') {
+        let isG = view === 'goals';
+        list.sort((a, b) => isG ? b.goals - a.goals : b.matches - a.matches);
+        
+        if (isG) {
+            th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare & Ort</th><th class="px-4 py-2 text-center">Aktiv</th><th class="px-4 py-2 text-right">Totalt antal mål</th><th class="px-4 py-2 text-right">Snitt / Match</th></tr>`;
+        } else {
+            th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare & Ort</th><th class="px-4 py-2 text-center">Aktiv</th><th class="px-4 py-2 text-right">Matcher</th></tr>`;
+        }
+        
+        list.slice(0, 50).forEach((item, i) => { 
+            if (isG) {
+                let snitt = (item.goals / item.matches).toFixed(2).replace('.', ',');
+                tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+                <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.orter}</div></td>
+                <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.activeStr}</td>
+                <td class="px-4 py-3 text-right font-black text-slate-700 align-top">${item.goals}</td>
+                <td class="px-4 py-3 text-right font-bold text-slate-500 align-top">${snitt}</td></tr>`; 
+            } else {
+                tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+                <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.orter}</div></td>
+                <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.activeStr}</td>
+                <td class="px-4 py-3 text-right font-black text-slate-700 align-top">${item.matches}</td></tr>`; 
+            }
+        });
+
+    } else if (view === 'youngest' || view === 'oldest' || view === 'oldest_debut') {
+        let isYoung = view === 'youngest';
+        let isOldestDebut = view === 'oldest_debut';
+        
+        list = list.filter(x => (isYoung || isOldestDebut) ? x.debutAge : x.lastAge).sort((a, b) => {
+            if (isYoung) return a.debutAge.value - b.debutAge.value;
+            if (isOldestDebut) return b.debutAge.value - a.debutAge.value;
+            return b.lastAge.value - a.lastAge.value;
+        });
+
+        th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare</th><th class="px-4 py-2">Matchfakta</th><th class="px-4 py-2 text-right">Ålder</th></tr>`;
+        list.slice(0, 50).forEach((item, i) => { 
+            let ageObj = (isYoung || isOldestDebut) ? item.debutAge : item.lastAge;
+            let mStr = (isYoung || isOldestDebut) ? item.firstM : item.lastM;
+            let mDate = (isYoung || isOldestDebut) ? item.firstD : item.lastD;
+            tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+            <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.activeStr}</div></td>
+            <td class="px-4 py-3 align-top"><div class="text-xs font-semibold text-slate-700 whitespace-normal min-w-[200px]">${mStr}</div><div class="text-[10px] text-slate-500">${mDate}</div></td>
+            <td class="px-4 py-3 text-right font-black ${isYoung ? 'text-amber-600' : 'text-purple-600'} align-top">${ageObj.text}</td></tr>`; 
+        });
+
+    } else if (view === 'longest_life' || view === 'shortest_life') {
+        let isLong = view === 'longest_life';
+        list = list.filter(x => x.lifeAge !== null).sort((a, b) => isLong ? b.lifeAge.value - a.lifeAge.value : a.lifeAge.value - b.lifeAge.value);
+        th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare</th><th class="px-4 py-2 text-center">Född - Död</th><th class="px-4 py-2 text-right">Livslängd</th></tr>`;
+        list.slice(0, 50).forEach((item, i) => {
+            tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+            <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.activeStr}</div></td>
+            <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.fodd}<br><span class="text-xs">till</span> ${item.dod}</td>
+            <td class="px-4 py-3 text-right font-black ${isLong ? 'text-slate-800' : 'text-slate-500'} align-top">${item.lifeAge.text}</td></tr>`;
+        });
+    }
+
+    document.getElementById('ref-record-thead').innerHTML = th;
+    document.getElementById('ref-record-tbody').innerHTML = tb;
+};
 
 // ==========================================
 // DATA-GRUVAN: BYGG SPELARSTATISTIKEN
@@ -1249,11 +1450,14 @@ function renderPlayerToplists() {
             chronoTS.push({ season: displaySeason, rawSeason: season, winners: winners });
 
             winners.forEach(w => {
-                let pName = w.Namn;
+                // --- NAMN-STÄDNING AKTIVERAD HÄR ---
+                let pName = typeof window.formatPersonName === 'function' ? window.formatPersonName(w.Namn) : w.Namn;
+                w.Namn = pName; // Sparar tillbaka så att kronologiska listan också får rätt namn
+
                 if(!tsPlayers[pName]) tsPlayers[pName] = { count: 0, clubs: new Set() };
                 tsPlayers[pName].count++; tsPlayers[pName].clubs.add(w.Klubb);
 
-                // --- NYTT: Klyv på snedstreck (/), kommatecken (,) OCH och-tecken (&) ---
+                // Klyv på snedstreck (/), kommatecken (,) OCH och-tecken (&)
                 let clubs = String(w.Klubb).split(/[\/,&]/).map(c => c.trim());
                 clubs.forEach(cName => {
                     if (!cName) return;
@@ -1278,7 +1482,9 @@ function renderPlayerToplists() {
             let flatList = [];
             for (const [lag, skyttar] of Object.entries(FIRST_SCORERS[season])) {
                 skyttar.forEach(item => {
-                    let pName = item.skytt;
+                    // --- NAMN-STÄDNING AKTIVERAD HÄR ---
+                    let pName = typeof window.formatPersonName === 'function' ? window.formatPersonName(item.skytt) : item.skytt;
+                    item.skytt = pName; // Sparar tillbaka
                     
                     if (String(pName).toLowerCase().includes('självmål')) return;
 
@@ -1313,7 +1519,7 @@ function renderPlayerToplists() {
             if (seasonWinners.length > 0) {
                 chronoDN.push({ season: displaySeason, rawSeason: season, winners: seasonWinners });
                 seasonWinners.forEach(w => {
-                    let pName = w.skytt;
+                    let pName = w.skytt; // Är redan städad tack vare koden ovan!
                     if(!dnPlayers[pName]) dnPlayers[pName] = { count: 0, clubs: new Set() };
                     dnPlayers[pName].count++; dnPlayers[pName].clubs.add(w.lag);
                 });
