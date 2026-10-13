@@ -22,7 +22,7 @@ PAGAENDE_SASONG = 2026
 # Hur ska SM-guld (Grön färg) markeras i Serietabellerna?
 # False = Standard för herrar (Nivå 1, Plac 1 tar automatiskt guldet)
 # True  = Standard för damer (Guldet markeras ENBART via kolumnen 'SM_vinnare')
-ANVAND_SM_VINNARE_FOR_GULD = False
+ANVAND_SM_VINNARE_FOR_GULD = True
 
 # =====================================================================
 
@@ -240,12 +240,17 @@ def export_html_dashboard(df, df_snabbval):
     <div class="max-w-7xl mx-auto bg-white rounded-xl shadow-lg p-4 sm:p-6 relative">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">__DASHBOARD_TITLE__</h1>
+            <div class="flex flex-col sm:flex-row items-center w-full md:w-auto gap-3">
+                <a href="damfotboll_index.html" class="w-full sm:w-auto bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 font-semibold py-2 px-4 rounded shadow-sm flex items-center justify-center transition-colors text-sm">
+                    <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Tillbaka till översikten
+                </a>
             <button onclick="exportCSV()" class="w-full md:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded shadow flex items-center justify-center">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                 Ladda ner CSV
             </button>
         </div>
-
+    </div>
         <!-- TILLBAKA-KNAPP CONTAINER -->
         <div id="backButtonContainer" class="hidden mb-4 bg-indigo-50 border border-indigo-200 p-3 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center shadow-sm gap-3">
             <span class="text-sm text-indigo-800 font-medium" id="backButtonText">Du tittar på ett specifikt urval.</span>
@@ -263,6 +268,7 @@ def export_html_dashboard(df, df_snabbval):
             <button class="tab-btn px-3 sm:px-4 py-2 text-gray-600 hover:text-blue-600 focus:outline-none whitespace-nowrap text-xs sm:text-sm md:text-base" onclick="clickMainTab('tab-placering', this)">Placeringsanalys</button>
             <button class="tab-btn px-3 sm:px-4 py-2 text-gray-600 hover:text-blue-600 focus:outline-none whitespace-nowrap text-xs sm:text-sm md:text-base" onclick="clickMainTab('tab-bildad', this)">Klubbålder</button>
             <button class="tab-btn px-3 sm:px-4 py-2 text-gray-600 hover:text-blue-600 focus:outline-none whitespace-nowrap text-xs sm:text-sm md:text-base" onclick="clickMainTab('tab-topp', this)">Topplistor</button>
+            <button class="tab-btn px-3 sm:px-4 py-2 text-gray-600 hover:text-blue-600 focus:outline-none whitespace-nowrap text-xs sm:text-sm md:text-base" onclick="clickMainTab('tab-styrka', this)">Säsongsstyrka</button>
             <button class="tab-btn px-3 sm:px-4 py-2 text-gray-600 hover:text-blue-600 focus:outline-none whitespace-nowrap text-xs sm:text-sm md:text-base" onclick="clickMainTab('tab-admin', this)">Admin</button>
         </div>
 
@@ -483,6 +489,7 @@ def export_html_dashboard(df, df_snabbval):
                         <option value="kedja">Markov-kedja (Före ➔ Nu ➔ Efter)</option>
                         <option value="efter">Framåt (Vad hände året efter?)</option>
                         <option value="fore">Bakåt (Var kom de ifrån?)</option>
+                        <option value="arsmatris">Årlig Placeringshistorik (Lag vs År)</option>
                     </select>
                 </div>
                 <div id="placeringSpecificWrapper" class="hidden sm:col-span-2 lg:col-span-1">
@@ -504,9 +511,18 @@ def export_html_dashboard(df, df_snabbval):
                 </div>
             </div>
             
+            <div class="bg-blue-50 border border-blue-200 p-3 rounded text-sm text-blue-900 mb-4 shadow-sm flex justify-between items-start">
+                <div>
+                    <strong>Så läser du datan:</strong><br>
+                    Här granskar vi serierna utifrån <i>placeringar</i> snarare än specifika lag. Hur många poäng krävs i snitt för att vinna? Om man kommer sist, varifrån kom man året innan? Välj analysmetod i rullistan ovan.
+                </div>
+                <button onclick="document.getElementById('placeringModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold shadow shrink-0 ml-4 transition-colors" title="Läs mer om rullistorna">
+                    ?
+                </button>
+            </div>
+            
             <div class="text-sm text-gray-500 mb-2 flex justify-between">
                 <span id="placeringCounter">Beräknar placeringsmatriser...</span>
-                <span class="italic text-xs hidden sm:inline" id="placeringTip">Visar en aggregerad bild av olika placeringar i ligasystemet.</span>
             </div>
             <div class="table-container border border-gray-200 rounded-lg overflow-x-auto">
                 <table class="min-w-full text-sm text-left whitespace-nowrap" id="placeringTable">
@@ -555,6 +571,83 @@ def export_html_dashboard(df, df_snabbval):
                 <table class="min-w-full text-sm text-left whitespace-nowrap" id="bildadTable">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-100" id="bildadHead"></thead>
                     <tbody class="divide-y divide-gray-200" id="bildadBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- FLIK NY: SÄSONGSSTYRKA                         -->
+        <!-- ============================================== -->
+        <div id="tab-styrka" class="tab-content">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-4 bg-gray-50 p-4 rounded-lg border border-gray-200 items-end">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Serienivå</label>
+                    <select id="styrkaLevel" class="w-full border-gray-300 rounded-md p-2 border font-medium" onchange="syncDropdowns('styrkaLevel', 'styrkaDivision', 'levelToDiv'); renderStyrka()">
+                        <option value="Alla">-- Alla Nivåer --</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Seriebeteckning (Valfritt)</label>
+                    <select id="styrkaDivision" class="w-full border-gray-300 rounded-md p-2 border" onchange="syncDropdowns('styrkaDivision', 'styrkaLevel', 'divToLevel'); renderStyrka()">
+                        <option value="Alla">-- Alla Beteckningar --</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Jämför rankingen mot...</label>
+                    <select id="styrkaRankBase" class="w-full border-gray-300 rounded-md p-2 border" onchange="renderStyrka()">
+                        <option value="alla">Hela Seriesystemet (Nivå 1-5)</option>
+                        <option value="niva">Endast lagen på den valda Serienivån</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Rankingmetod</label>
+                    <select id="styrkaCalcMode" class="w-full border-gray-300 rounded-md p-2 border" onchange="renderStyrka()">
+                        <option value="pts">Totala Poäng (Maraton)</option>
+                        <option value="viktad_p">Viktade Poäng (Total historik, Pound-for-Pound)</option>
+                        <option value="ppg">Poängsnitt per match (Minst 10 matcher spelade)</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tidsperspektiv för historiken</label>
+                    <select id="styrkaTimeMode" class="w-full border-gray-300 rounded-md p-2 border" onchange="renderStyrka()">
+                        <option value="alltime">Hela historiken (All-time)</option>
+                        <option value="upto">Fram till den aktuella säsongen</option>
+                    </select>
+                </div>
+                <div>
+                    <button class="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded border border-gray-300 transition-colors" onclick="resetFilters('styrka')">
+                        Återställ
+                    </button>
+                </div>
+            </div>
+            
+            <div class="bg-blue-50 border border-blue-200 p-3 rounded text-sm text-blue-900 mb-4 shadow-sm flex justify-between items-start">
+                <div>
+                    <strong>Så läser du datan:</strong><br>
+                    <span class="font-semibold">Snitt Rank (Topp 3 / Hela serien):</span> Visar den genomsnittliga placeringen (i vald Maratontabell) för seriens deltagare. Ett <i>lägre</i> värde = Fler historiska giganter deltog.<br>
+                    <span class="font-semibold">Styrkeindex (0-100):</span> Baseras på deltagarnas historiska poängsnitt (omräknat till 3p). Löser problemet med att serier har haft olika antal lag. Ett <i>högre</i> värde = Starkare fält.
+                </div>
+                <button onclick="document.getElementById('styrkaModal').classList.remove('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold shadow shrink-0 ml-4 transition-colors" title="Läs mer om rullistorna">
+                    ?
+                </button>
+            </div>
+
+            <div class="text-sm text-gray-500 mb-2 flex justify-between">
+                <span id="styrkaCounter">Beräknar säsongsstyrkor...</span>
+                <span class="italic text-xs hidden sm:inline">Klicka på kolumnrubrikerna för att sortera!</span>
+            </div>
+            <div class="table-container border border-gray-200 rounded-lg overflow-x-auto">
+                <table class="min-w-full text-sm text-left whitespace-nowrap" id="styrkaTable">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-100 cursor-pointer select-none" id="styrkaHead">
+                        <tr>
+                            <th class="px-4 py-3 hover:bg-gray-200" onclick="sortStyrka('name')">Säsong</th>
+                            <th class="px-4 py-3 text-center hover:bg-gray-200" onclick="sortStyrka('nTeams')">Antal Lag</th>
+                            <th class="px-4 py-3 text-center hover:bg-gray-200" onclick="sortStyrka('avgTop3')">Snitt Rank (Topp 3)</th>
+                            <th class="px-4 py-3 text-center hover:bg-gray-200" onclick="sortStyrka('avgRank')">Snitt Rank (Hela serien)</th>
+                            <th class="px-4 py-3 text-center text-blue-800 font-bold hover:bg-blue-100" onclick="sortStyrka('index')">Styrkeindex (0-100)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200" id="styrkaBody"></tbody>
                 </table>
             </div>
         </div>
@@ -684,6 +777,100 @@ def export_html_dashboard(df, df_snabbval):
 
     </div>
 
+<!-- MODAL FÖR PLACERINGSANALYS -->
+    <div id="placeringModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 max-w-3xl mx-auto shadow-xl max-h-[90vh] overflow-y-auto">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Guide till Placeringsanalys</h2>
+            <p class="text-gray-600 mb-4 text-sm">
+                Till skillnad från en maratontabell (där vi följer ett <i>lag</i> över tid), följer vi här en <i>tabellposition</i> över tid. Här förklaras de olika analysmetoderna:
+            </p>
+            
+            <div class="space-y-4 text-sm text-gray-700 mb-6">
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">1. Summerad tabellrad per placering</strong><br>
+                    Slår ihop alla lag som någonsin har slutat på t.ex. plats 1 och bygger en gemensam "snitt-rad" för dem. <br>
+                    <i>Användning:</i> Här kan du utläsa exakt hur många poäng, segrar och mål som historiskt sett har krävts för att ta en viss placering i serien.
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">2. Markov-kedja (Före ➔ Nu ➔ Efter)</strong><br>
+                    Kräver att du väljer en <strong>Målplacering</strong>. Sätter denna placering i mitten av tidslinjen och ställer två frågor: Vilken placering hade laget året innan? Vart tog de vägen året efter?<br>
+                    <i>Användning:</i> Visar "livscykeln" för en viss placering. Om du tittar på 1:a-platsen (Guld) ser du direkt hur många lag som lyckats försvara sitt guld (diagonala blå celler), och hur många som var nykomlingar när de tog guldet.
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">3. Framåt (Vad hände året efter?)</strong><br>
+                    En komplett övergångsmatris (Transition Matrix). Raderna (lodrätt) visar placeringen År 1. Kolumnerna (vågrätt) visar vart de tog vägen År 2.<br>
+                    <i>Läs så här:</i> Hitta placering 3 i vänsterkanten. Följ raden åt höger. Siffrorna visar exakt vilka placeringar (eller upp/nedflyttningar) "treorna" landade på nästkommande säsong.
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">4. Bakåt (Var kom de ifrån?)</strong><br>
+                    Samma logik som ovan, men i omvänd ordning. Raderna visar placeringen År 2, och kolumnerna var de befann sig År 1.<br>
+                    <i>Läs så här:</i> Hitta placering 1 (Guld) till vänster. Följ raden åt höger för att se var alla mästarlag höll hus säsongen innan de vann.
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">5. Årlig Placeringshistorik (Lag vs År)</strong><br>
+                    Vänder på hela steken och visar en färgkodad heatmap. Lagnamnen ligger låsta till vänster, och årtalen rullar förbi åt höger. Cellerna visar exakt vilken placering laget tog det aktuella året.<br>
+                    <i>Användning:</i> Oslagbart för att visuellt identifiera dynastier, guldåldrar och långa svackor. 
+                </div>
+
+            </div>
+
+            <div class="flex justify-end">
+                <button onclick="document.getElementById('placeringModal').classList.add('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition-colors shadow">Stäng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FÖR SÄSONGSSTYRKA -->
+    <div id="styrkaModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg p-6 max-w-2xl mx-auto shadow-xl max-h-[90vh] overflow-y-auto">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Så fungerar rullistorna för Säsongsstyrka</h2>
+            <p class="text-gray-600 mb-4 text-sm">
+                Säsongsstyrkan mäts genom att datorn bygger en underliggande Maratontabell, och sedan tittar på vilken plats i den tabellen lag som deltog ett specifikt år har. Beroende på hur du ställer in rullistorna ändras reglerna för hur denna underliggande Maratontabell byggs.
+            </p>
+            
+            <div class="space-y-4 text-sm text-gray-700 mb-6">
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">Jämför rankingen mot...</strong><br>
+                    <i>Hela Seriesystemet:</i> Om ett Div 2-lag var med, rankas de utifrån hur de står sig mot <u>alla</u> lag som någonsin spelat nationell fotboll i Sverige.<br>
+                    <i>Endast vald Serienivå:</i> Laget rankas enbart mot de lag som spelat på den aktuella nivån. Deras placering i den isolerade maratontabellen avgör deras rank.
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">Rankingmetod</strong><br>
+                    <i>Totala Poäng:</i> Premierar "Långkörare". Lag som har spelat många säsonger får hög rank, vilket gör att säsonger med många anrika lag får bäst värden (Lågt snitt).<br>
+                    <i>Viktade Poäng:</i> Premierar storhet över tid. Tar hänsyn till seriernas storlek och historiska epoker för en rättvis "Pound-for-Pound"-ranking.<br>
+                    <i>Poängsnitt per match:</i> Premierar "Dominans". Mäter lagens skicklighet oavsett hur länge de existerat. Lag måste ha spelat minst 10 matcher totalt för att räknas. (Alla metoder räknar om historiken till 3 poäng för seger).
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">Tidsperspektiv för historiken</strong><br>
+                    <i>Hela historiken (All-time):</i> Retrospektiv analys. Hur ser vi på 1970 års säsong *idag*? Visar om en äldre säsong innehöll lag som *senare* skulle bli giganter.<br>
+                    <i>Fram till den aktuella säsongen:</i> Tidsmaskinen. Hur upplevdes säsongen 1970 *när den spelades*? Datorn bygger rankingen och indexet enbart på det som skett fram till dess.
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded border border-blue-200 mt-6 shadow-sm">
+                    <h3 class="text-blue-900 font-bold mb-2">Hur beräknas Styrkeindex (0-100)?</h3>
+                    <p class="mb-2">Styrkeindexet löser det klassiska statistiska problemet med att serier genom tiderna har bestått av olika många lag (t.ex. 12 lag förr jämfört med 16 lag idag). Att bara titta på genomsnittlig tabellplacering blir missvisande om antalet lag i serien varierar.</p>
+                    <p class="mb-2"><strong>Beräkningen görs i tre steg:</strong></p>
+                    <ul class="list-decimal pl-5 mb-2 space-y-1">
+                        <li>Datorn hämtar det <strong>historiska poängsnittet per match (PPG)</strong> för varje lag som deltog den specifika säsongen. All historik räknas om till 3 poäng för seger.</li>
+                        <li>Dessa lags historiska poängsnitt adderas och delas på antalet deltagande lag. Vi får då fram startfältets <i>genomsnittliga historiska poängsnitt</i>.</li>
+                        <li>Värdet multipliceras slutligen med 50 för att skapa ett mer intuitivt indexvärde på en skala.</li>
+                    </ul>
+                    <p class="italic text-xs text-blue-800">Ett högt indexvärde innebär alltså en extremt hög koncentration av lag som historiskt sett är vana vid att vinna fotbollsmatcher (högt PPG), oavsett hur många lag som deltog i serien det året.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end">
+                <button onclick="document.getElementById('styrkaModal').classList.add('hidden')" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded transition-colors shadow">Stäng</button>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL FÖR KÖR SKRIPT -->
     <div id="scriptModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-lg p-6 max-w-md mx-auto shadow-xl">
@@ -716,6 +903,9 @@ def export_html_dashboard(df, df_snabbval):
         
         // --- NAVIGATION STATE MEMORY ---
         let navHistory = { sourceTab: null, sasnrFilter: null, teamFilter: null };
+
+        let currentStyrkaData = [];
+        let currentStyrkaSort = { col: 'sasnr', asc: false };
         
         // 1. KARTLÄGG BEROENDEN OCH HÄMTA MAXNIVÅER
         const levelDivMap = { levels: {}, divs: {} };
@@ -1206,6 +1396,15 @@ def export_html_dashboard(df, df_snabbval):
                 document.getElementById('bildadDecennium').value = 'Alla';
                 document.getElementById('bildadYear').value = 'Alla';
                 renderBildad();
+                            
+            } else if (tab === 'styrka') {
+                document.getElementById('styrkaLevel').value = 'Alla';
+                document.getElementById('styrkaDivision').value = 'Alla';
+                document.getElementById('styrkaRankBase').value = 'alla';
+                document.getElementById('styrkaCalcMode').value = 'pts';
+                document.getElementById('styrkaTimeMode').value = 'alltime';
+                syncDropdowns('styrkaLevel', 'styrkaDivision', 'levelToDiv');
+                renderStyrka();
             }
         }
 
@@ -1321,7 +1520,8 @@ def export_html_dashboard(df, df_snabbval):
             if(tabId === 'tab-vandring') renderVandringar();
             if(tabId === 'tab-placering') renderPlacering();
             if(tabId === 'tab-bildad') renderBildad();
-            if(tabId === 'tab-topp') renderTopplistor(); 
+            if(tabId === 'tab-topp') renderTopplistor();
+            if(tabId === 'tab-styrka') renderStyrka(); 
         }
 
         function toggleVandringMode() {
@@ -1353,7 +1553,7 @@ def export_html_dashboard(df, df_snabbval):
             else if(mode === 'kombination') document.getElementById('placeringKombinationWrapper').classList.remove('hidden');
             
             let specWrap = document.getElementById('placeringSpecificWrapper');
-            if(pType === 'kedja' || pType === 'fore' || pType === 'efter' || pType === 'fore_och_efter') specWrap.classList.remove('hidden');
+            if(pType === 'kedja' || pType === 'fore' || pType === 'efter') specWrap.classList.remove('hidden');
             else specWrap.classList.add('hidden');
             
             // Fyll Målplacering dynamiskt om den är tom
@@ -2149,7 +2349,69 @@ def export_html_dashboard(df, df_snabbval):
                     }
                 }
 
+                // ==========================================
+                // NY MATRIS: ÅRLIG PLACERINGSHISTORIK (LAG VS ÅR)
+                // ==========================================
+                else if (pType === 'arsmatris') {
+                    // 1. Skapa en unik lista av alla lagnamn för det valda filtret
+                    let teams = [...new Set(filteredData.map(d => d.Analys_Lagnamn))].sort();
+                    
+                    // 2. Skapa en matris för att snabbt slå upp placeringar (lag -> säsnr -> placering)
+                    let placementMatrix = {};
+                    filteredData.forEach(d => {
+                        let t = d.Analys_Lagnamn;
+                        let s = parseInt(d.Säsnr);
+                        if(!placementMatrix[t]) placementMatrix[t] = {};
+                        
+                        let plac = String(d.Plac || '').replace(/\D/g, '');
+                        if(plac) placementMatrix[t][s] = parseInt(plac);
+                    });
+
+                    // 3. Bygg HTML-Head (Lås första kolumnen med sticky left-0)
+                    htmlHead = `<tr><th class="px-4 py-3 sticky left-0 z-20 bg-gray-200 border-r border-gray-300 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Lag</th>`;
+                    
+                    let yearsData = [];
+                    validSasnrs.forEach(sasnr => {
+                        let row = filteredData.find(d => parseInt(d.Säsnr) === sasnr);
+                        if(row) yearsData.push({ sasnr: sasnr, label: row.Säsong });
+                    });
+                    
+                    yearsData.forEach(yd => {
+                        htmlHead += `<th class="px-2 py-3 text-center text-xs text-gray-500 whitespace-nowrap"><div class="-rotate-45 transform origin-bottom-left ml-4">${yd.label}</div></th>`;
+                    });
+                    htmlHead += `</tr>`;
+
+                    // 4. Bygg raderna
+                    teams.forEach(t => {
+                        htmlBody += `<tr class="hover:bg-blue-50 transition-colors">
+                            <td class="px-4 py-2 font-semibold text-gray-800 sticky left-0 z-10 bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">${t}</td>`;
+                        
+                        yearsData.forEach(yd => {
+                            let plac = placementMatrix[t] && placementMatrix[t][yd.sasnr] ? placementMatrix[t][yd.sasnr] : '-';
+                            
+                            let cellClass = "px-2 py-2 text-center text-sm ";
+                            if (plac === 1) cellClass += "font-bold bg-yellow-100 text-yellow-800";
+                            else if (plac === 2) cellClass += "font-bold bg-gray-200 text-gray-800";
+                            else if (plac === 3) cellClass += "font-bold bg-orange-100 text-orange-800";
+                            else if (plac !== '-') cellClass += "font-medium text-gray-700";
+                            else cellClass += "text-gray-300";
+
+                            htmlBody += `<td class="${cellClass}">${plac}</td>`;
+                        });
+                        htmlBody += `</tr>`;
+                    });
+                }
+                // ==========================================
+
                 document.getElementById('placeringHead').innerHTML = htmlHead;
+                
+                // Justera höjden på tabellhuvudet om vi visar vinklade årtal
+                if (pType === 'arsmatris') {
+                    document.getElementById('placeringHead').classList.add('h-24', 'align-bottom');
+                } else {
+                    document.getElementById('placeringHead').classList.remove('h-24', 'align-bottom');
+                }
+                
                 document.getElementById('placeringBody').innerHTML = htmlBody;
                 document.getElementById('placeringCounter').innerText = `Hittade ${filteredData.length} placeringar för din valda avgränsning.`;
             } catch(e) {
@@ -2275,6 +2537,171 @@ def export_html_dashboard(df, df_snabbval):
             } catch(e) {
                 console.error("Error in renderBildad:", e);
             }
+        }
+
+        // ==============================================
+        // NY FLIK: SÄSONGSSTYRKA
+        // ==============================================
+        function renderStyrka() {
+            try {
+                const level = document.getElementById('styrkaLevel').value;
+                const division = document.getElementById('styrkaDivision').value;
+                const rankBase = document.getElementById('styrkaRankBase').value; 
+                const calcMode = document.getElementById('styrkaCalcMode').value; 
+                const timeMode = document.getElementById('styrkaTimeMode').value; 
+
+                let groupMap = {}; 
+                
+                completedMatchData.forEach(d => {
+                    if (level !== 'Alla' && String(d.Nivå).trim() !== level) return;
+                    if (division !== 'Alla' && String(d.Division||'').trim() !== division) return;
+                    
+                    let gKey = d.Säsong;
+                    if (division !== 'Alla') gKey += " - " + d.Division;
+                    else if (level !== 'Alla') gKey += " (Nivå " + d.Nivå + ")";
+                    else gKey += " (Alla nivåer)";
+
+                    if(!groupMap[gKey]) {
+                        // NYTT: Vi sparar nu hela radens data (seasonRows) för att kunna se slutplaceringen!
+                        groupMap[gKey] = { name: gKey, sasnr: parseInt(d.Säsnr)||0, teams: new Set(), seasonRows: [] };
+                    }
+                    groupMap[gKey].teams.add(d.Analys_Lagnamn);
+                    groupMap[gKey].seasonRows.push(d);
+                });
+
+                let results = [];
+                let groups = Object.values(groupMap);
+
+                groups.forEach(group => {
+                    let maxSasnr = timeMode === 'upto' ? group.sasnr : 999999;
+                    let stats = {};
+
+                    // Bygg den underliggande Maratontabellen
+                    completedMatchData.forEach(d => {
+                        if (parseInt(d.Säsnr) > maxSasnr) return;
+                        if (rankBase === 'niva' && level !== 'Alla' && String(d.Nivå).trim() !== level) return;
+
+                        let t = d.Analys_Lagnamn;
+                        if(!stats[t]) stats[t] = { sp: 0, p3: 0, viktadP: 0 };
+                        
+                        let sp = Number(d.Sp) || 0;
+                        let v = Number(d.V) || 0;
+                        let o = Number(d.O) || 0;
+                        
+                        stats[t].sp += sp;
+                        stats[t].p3 += (v * 3) + o; 
+                        
+                        // Kalkylera de Viktade Poängen (samma logik som Maratontabellen)
+                        let base2p = (v * 2) + o;
+                        let mult = (Number(d.Nivå_multiplikator) || 1.0) * (Number(d.Epok_multiplikator) || 1.0);
+                        let factor22 = sp > 0 ? (22 / sp) : 0;
+                        stats[t].viktadP += base2p * factor22 * mult;
+                    });
+
+                    let arr = Object.keys(stats).map(t => {
+                        let sp = stats[t].sp;
+                        let p3 = stats[t].p3;
+                        let viktadP = stats[t].viktadP;
+                        let ppg = sp > 0 ? p3 / sp : 0;
+                        
+                        let rVal = 0;
+                        if (calcMode === 'pts') rVal = p3;
+                        else if (calcMode === 'viktad_p') rVal = viktadP;
+                        else if (calcMode === 'ppg') rVal = ppg;
+                        
+                        return { lag: t, sp: sp, ppg: ppg, rankVal: rVal };
+                    });
+
+                    if(calcMode === 'ppg') arr = arr.filter(x => x.sp >= 10); 
+                    arr.sort((a,b) => b.rankVal - a.rankVal);
+
+                    let rankMap = {};
+                    arr.forEach((item, index) => { rankMap[item.lag] = { rank: index + 1, ppg: item.ppg }; });
+
+                    let sumRank = 0;
+                    let sumPPG = 0;
+                    let validTeamsCount = 0;
+
+                    // Räkna ut snittet för HELA serien
+                    Array.from(group.teams).forEach(t => {
+                        if (rankMap[t]) {
+                            sumRank += rankMap[t].rank;
+                            sumPPG += rankMap[t].ppg;
+                            validTeamsCount++;
+                        }
+                    });
+
+                    if (validTeamsCount === 0) return;
+
+                    let avgRank = sumRank / validTeamsCount;
+                    let avgPPG = sumPPG / validTeamsCount;
+
+                    // --- NY, KORREKT LOGIK FÖR TOPP 3 ---
+                    // 1. Sortera raderna för just denna säsong baserat på deras faktiska slutplacering
+                    let sRows = group.seasonRows;
+                    sRows.sort((a, b) => {
+                        let pA = parseInt(String(a.Plac).replace(/\D/g, '')) || 999;
+                        let pB = parseInt(String(b.Plac).replace(/\D/g, '')) || 999;
+                        return pA - pB;
+                    });
+                    
+                    // 2. Plocka ut de upp till 3 bästa lagen i ÅRETS tabell
+                    let actualTop3Teams = sRows.slice(0, 3).map(d => d.Analys_Lagnamn);
+                    
+                    // 3. Kolla vad DESSA tre lag har för historisk rank
+                    let sumTop3Rank = 0;
+                    let countTop3 = 0;
+                    actualTop3Teams.forEach(t => {
+                        if (rankMap[t]) {
+                            sumTop3Rank += rankMap[t].rank;
+                            countTop3++;
+                        }
+                    });
+                    
+                    let avgTop3 = countTop3 > 0 ? (sumTop3Rank / countTop3) : 0;
+                    // ------------------------------------
+
+                    results.push({
+                        name: group.name,
+                        sasnr: group.sasnr,
+                        nTeams: validTeamsCount,
+                        avgRank: avgRank,
+                        avgTop3: avgTop3,
+                        index: avgPPG * 50
+                    });
+                });
+
+                currentStyrkaData = results;
+                document.getElementById('styrkaCounter').innerText = `Analyserade säsongsstyrkan för ${results.length} specifika serier.`;
+                sortStyrka('sasnr', true); 
+                
+            } catch(e) {
+                console.error("Error in renderStyrka:", e);
+            }
+        }
+
+        function sortStyrka(col, forceDesc = false) {
+            if (forceDesc) { currentStyrkaSort.col = col; currentStyrkaSort.asc = false; }
+            else if (currentStyrkaSort.col === col) { currentStyrkaSort.asc = !currentStyrkaSort.asc; }
+            else { currentStyrkaSort.col = col; currentStyrkaSort.asc = false; }
+            
+            currentStyrkaData.sort((a, b) => {
+                let valA = a[col], valB = b[col];
+                if (typeof valA === 'string') return currentStyrkaSort.asc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                return currentStyrkaSort.asc ? valA - valB : valB - valA;
+            });
+            
+            let html = currentStyrkaData.map(r => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="px-4 py-2 font-medium text-gray-800">${r.name}</td>
+                    <td class="px-4 py-2 text-center text-gray-600">${r.nTeams}</td>
+                    <td class="px-4 py-2 text-center font-mono ${r.avgTop3 < 10 ? 'text-emerald-600 font-bold' : 'text-slate-500'}">${r.avgTop3.toFixed(1)}</td>
+                    <td class="px-4 py-2 text-center font-mono ${r.avgRank < 15 ? 'text-emerald-600 font-bold' : 'text-slate-500'}">${r.avgRank.toFixed(1)}</td>
+                    <td class="px-4 py-2 text-center font-mono font-bold text-blue-700 text-lg bg-blue-50">${r.index.toFixed(1)}</td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('styrkaBody').innerHTML = html;
         }
 
         // ==============================================
@@ -3237,6 +3664,9 @@ def export_html_dashboard(df, df_snabbval):
             let yrList = ['Alla'].concat(allBildadYears);
             populateDropdown('bildadDecennium', decList);
             populateDropdown('bildadYear', yrList);
+
+            populateDropdown('styrkaLevel', allLevels, false, false, true);
+            populateDropdown('styrkaDivision', allDivisions);
             
             let tCat = document.getElementById('toppCategory');
             let optM = document.createElement('option');
