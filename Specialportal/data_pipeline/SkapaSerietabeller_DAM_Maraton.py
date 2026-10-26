@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import json
 
+# pd.set_option('future.no_silent_downcasting', True)
 # =====================================================================
 # 1. ANVÄNDARINSTÄLLNINGAR FÖR VYER OCH FILER (ÄNDRA HÄR VID BEHOV)
 # =====================================================================
@@ -17,9 +18,9 @@ EXCEL_FILNAMN_SOKORD = "DAM_Serietabellerna_samlade"
 HTML_UTDATA_FILNAMN = "Fotbollsanalys_Damserier_Dashboard.html"
 
 # Vilket år är innevarande säsong?
-PAGAENDE_SASONG = 2026
+PAGAENDE_SASONG = 2027
 
-# Hur ska SM-guld (Grön färg) markeras i Serietabellerna?
+# Hur ska SM-guld (Grön färg) markeras i Serietabellerna? [Nu bytt till guldfärg]
 # False = Standard för herrar (Nivå 1, Plac 1 tar automatiskt guldet)
 # True  = Standard för damer (Guldet markeras ENBART via kolumnen 'SM_vinnare')
 ANVAND_SM_VINNARE_FOR_GULD = True
@@ -62,7 +63,7 @@ def fix_text(text):
 
 def clean_dataframe(df):
     if df is None: return None
-    str_cols = df.select_dtypes(include=['object']).columns
+    str_cols = df.select_dtypes(include=['object', 'str']).columns
     for col in str_cols:
         df[col] = df[col].apply(fix_text)
     return df
@@ -127,7 +128,7 @@ def get_master_data():
         print("💡 Applicerar historiska viktningar från fliken 'Viktningstabell'...")
         if 'Första_säsnr' in df_viktning.columns:
             df_viktning['Första_säsnr'] = pd.to_numeric(df_viktning['Första_säsnr'], errors='coerce').fillna(0)
-            df_viktning['Sista_säsnr'] = df_viktning['Sista_säsnr'].replace('Senaste', 999999)
+            df_viktning.loc[df_viktning['Sista_säsnr'] == 'Senaste', 'Sista_säsnr'] = 999999
             df_viktning['Sista_säsnr'] = pd.to_numeric(df_viktning['Sista_säsnr'], errors='coerce').fillna(999999)
             
             for _, rule in df_viktning.iterrows():
@@ -178,12 +179,12 @@ def export_html_dashboard(df, df_snabbval):
     df_export['Nivå'] = pd.to_numeric(df_export['Nivå'], errors='coerce').fillna(0) 
     df_export = df_export[(df_export['Nivå'] > 0) & (df_export['Nivå'] <= 5)]
     
-    json_data = df_export.to_json(orient='records').replace('</script>', '<\/script>')
+    json_data = df_export.to_json(orient='records').replace('</script>', '<\\/script>')
     
     if df_snabbval is not None and not df_snabbval.empty:
         if 'Fokus' not in df_snabbval.columns:
             df_snabbval['Fokus'] = ''
-        json_snabbval = df_snabbval.to_json(orient='records').replace('</script>', '<\/script>')
+        json_snabbval = df_snabbval.to_json(orient='records').replace('</script>', '<\\/script>')
     else:
         json_snabbval = "[]"
     
@@ -390,7 +391,9 @@ def export_html_dashboard(df, df_snabbval):
                     <span class="flex items-center"><span class="text-red-500 font-bold text-lg mr-1 leading-none">*</span> Nytt Alias</span>
                     <span class="flex items-center"><span class="text-blue-500 font-bold text-lg mr-1 leading-none">*</span> Återtaget Alias</span>
                     <span class="flex items-center"><span class="text-red-600 font-bold text-lg mr-1 leading-none">!</span> Oväntat Inträde</span>
-                    <span class="flex items-center"><span class="w-3 h-3 rounded bg-green-100 border border-green-200 inline-block mr-1 ml-2"></span> Guld/Upp nästa år</span>
+                    <span class="flex items-center"><span class="w-3 h-3 rounded bg-yellow-200 border border-yellow-400 inline-block mr-1 ml-2"></span> SM-Guld</span>
+                    <span class="flex items-center"><span class="w-3 h-3 rounded bg-purple-100 border border-purple-300 inline-block mr-1 ml-2"></span> Seriesegrare (Kvar)</span>
+                    <span class="flex items-center"><span class="w-3 h-3 rounded bg-green-100 border border-green-200 inline-block mr-1 ml-2"></span> Upp nästa år</span>
                     <span class="flex items-center"><span class="w-3 h-3 rounded bg-red-100 border border-red-200 inline-block mr-1"></span> Ned nästa år</span>
                     <span class="flex items-center"><span class="text-gray-500 font-bold mr-1">▼</span> Naturligt ur systemet</span>
                     <span class="flex items-center"><span class="text-red-600 font-bold mr-1">⚠️</span> Oväntat avhopp</span>
@@ -898,7 +901,7 @@ def export_html_dashboard(df, df_snabbval):
         const snabbvalData = __SNABBVAL_JSON__;
         const adminData = __ADMIN_JSON__;
         const ongoingSeason = __ONGOING_SEASON__;
-        const useSMVinnare = __USE_SM_VINNARE__ === 'true';
+        const useSMVinnare = __USE_SM_VINNARE__;
         let currentTabId = 'tab-maraton';
         
         // --- NAVIGATION STATE MEMORY ---
@@ -1058,7 +1061,7 @@ def export_html_dashboard(df, df_snabbval):
                         if (curr.Analys_Lagnamn === smV || curr.Standard_Lagnamn === smV || curr['Laget i tabell'] === smV) isGuld = true;
                     }
                 } else {
-                    let pNum = parseInt(String(curr.Plac).replace(/\D/g, '')) || 999;
+                    let pNum = parseInt(String(curr.Plac).replace(/\\D/g, '')) || 999;
                     if (c_niva === 1 && pNum === 1) isGuld = true;
                 }
 
@@ -1109,7 +1112,7 @@ def export_html_dashboard(df, df_snabbval):
         const allDecadesSet = new Set();
         completedMatchData.forEach(d => {
             let bildadRaw = d.Bildad || '';
-            let yMatch = String(bildadRaw).match(/(\d{4})/);
+            let yMatch = String(bildadRaw).match(/(\\d{4})/);
             if (yMatch) {
                 let yNum = parseInt(yMatch[1]);
                 if(yNum > 1800 && yNum <= new Date().getFullYear()) {
@@ -1769,8 +1772,8 @@ def export_html_dashboard(df, df_snabbval):
                     let aS = parseInt(a.Säsnr) || 0, bS = parseInt(b.Säsnr) || 0;
                     let aSd = parseInt(a.Säsongsdel) || 0, bSd = parseInt(b.Säsongsdel) || 0;
                     let aN = parseFloat(a.Nivå) || 0, bN = parseFloat(b.Nivå) || 0;
-                    let aP = parseInt(String(a.Plac || '').replace(/\D/g, '')) || 999;
-                    let bP = parseInt(String(b.Plac || '').replace(/\D/g, '')) || 999;
+                    let aP = parseInt(String(a.Plac || '').replace(/\\D/g, '')) || 999;
+                    let bP = parseInt(String(b.Plac || '').replace(/\\D/g, '')) || 999;
 
                     if(navHistory.sasnrFilter || teamFilter !== 'Alla' || seasonStr === 'Alla') {
                         // Kronologiskt via Säsnr, därefter Vår/Höst, sedan Nivå
@@ -1807,7 +1810,7 @@ def export_html_dashboard(df, df_snabbval):
                         
                         let currSasnr = parseInt(d.Säsnr) || 0;
                         let d_Niva = parseFloat(d.Nivå) || 0;
-                        let placNum = parseInt(String(d.Plac || '').replace(/\D/g, '')) || 999;
+                        let placNum = parseInt(String(d.Plac || '').replace(/\\D/g, '')) || 999;
                         
                         let isGuld = false;
                         if (useSMVinnare) {
@@ -1824,6 +1827,9 @@ def export_html_dashboard(df, df_snabbval):
                         if(d.AliasBadge === 'first_ever') lagDisplay += ` <span class="text-yellow-500 font-bold text-lg leading-none ml-1" title="Lagets absolut första säsong i systemet">&#9733;</span>`;
                         else if(d.AliasBadge === 'new_alias') lagDisplay += ` <span class="text-red-500 font-bold text-lg leading-none ml-1" title="Nytt alias/namn">*</span>`;
                         else if(d.AliasBadge === 'reverted') lagDisplay += ` <span class="text-blue-500 font-bold text-lg leading-none ml-1" title="Återtaget alias/namn">*</span>`;
+
+                        // --- NYTT: SM-GULD BRICKA ---
+                        if (isGuld) lagDisplay += ` <span class="ml-2 px-1.5 py-0.5 rounded bg-yellow-400 text-yellow-900 text-[10px] font-bold border border-yellow-500 shadow-sm" title="Svenska Mästare">SM-GULD 🏆</span>`;
                         
                         // -- INTRÄDE OCH NYKOMLING --
                         let isNykomlingExplicit = d.Nya ? String(d.Nya).toLowerCase().includes('nykomling') : false;
@@ -1841,16 +1847,28 @@ def export_html_dashboard(df, df_snabbval):
                         
                         if (d.ExitBadge === 'unexp_out') {
                             placDisplay = `<span>${d.Plac} <span class="warn-badge text-red-600 font-bold" title="Laget försvann oväntat ur systemet året efter">⚠️</span></span>`;
-                            rowClass += " hover:bg-red-50";
+                            rowClass += " hover:bg-red-50" + (placNum === 1 ? " font-bold" : "");
                         } else if (d.ExitBadge === 'normal_out') {
                             placDisplay = `<span>${d.Plac} <span class="rel-badge text-gray-500 font-bold" title="Nedflyttad ur det nationella systemet">▼</span></span>`;
-                            rowClass += " row-relegated";
+                            rowClass += " row-relegated" + (placNum === 1 ? " font-bold" : "");
                         } else {
-                            if (d.RowEvent_Out === 'UPP') rowClass += " row-promoted" + (isGuld ? " font-bold" : "");
-                            else if (d.RowEvent_Out === 'NED') rowClass += " row-relegated";
+                            // Guld övertrumfar allt och får gul bakgrund
+                            if (isGuld) {
+                                rowClass = "border-b border-yellow-200 transition-colors bg-yellow-100 hover:bg-yellow-200 font-bold";
+                            } 
+                            else if (d.RowEvent_Out === 'UPP') {
+                                // Grön för uppflyttning (fetstil om de vann serien)
+                                rowClass += " row-promoted" + (placNum === 1 ? " font-bold" : ""); 
+                            } 
+                            else if (d.RowEvent_Out === 'NED') {
+                                rowClass += " row-relegated" + (placNum === 1 ? " font-bold" : ""); 
+                            } 
+                            // NYTT: Seriesegrare som stannar kvar på samma nivå
+                            else if (placNum === 1) {
+                                rowClass = "border-b border-purple-200 transition-colors bg-purple-100 hover:bg-purple-200 font-bold";
+                            }
                             else {
-                                if (isGuld) rowClass += " row-promoted font-bold";
-                                else rowClass += " hover:bg-blue-50";
+                                rowClass += " hover:bg-blue-50"; // Standard Vit för kvar i serien
                             }
                         }
                         
@@ -2084,7 +2102,7 @@ def export_html_dashboard(df, df_snabbval):
                 
                 let maxP = 0;
                 filteredData.forEach(d => {
-                    let p = parseInt(String(d.Plac).replace(/\D/g, ''));
+                    let p = parseInt(String(d.Plac).replace(/\\D/g, ''));
                     if(!isNaN(p) && p > maxP) maxP = p;
                 });
                 if(maxP > 24) maxP = 24; 
@@ -2098,7 +2116,7 @@ def export_html_dashboard(df, df_snabbval):
                 if (pType === 'stats') {
                     let stats = {};
                     filteredData.forEach(d => {
-                        let p = parseInt(String(d.Plac).replace(/\D/g, ''));
+                        let p = parseInt(String(d.Plac).replace(/\\D/g, ''));
                         if(isNaN(p)) return;
                         if(!stats[p]) stats[p] = { Plac: p, Sasonger: 0, Sp:0, V:0, O:0, F:0, Gj:0, Insl:0, MatchP:0 };
                         stats[p].Sasonger++;
@@ -2147,7 +2165,7 @@ def export_html_dashboard(df, df_snabbval):
                     let totalMatches = 0;
 
                     filteredData.forEach(d => {
-                        let p = parseInt(String(d.Plac).replace(/\D/g, ''));
+                        let p = parseInt(String(d.Plac).replace(/\\D/g, ''));
                         if(p !== targetPlac) return;
 
                         totalMatches++;
@@ -2168,7 +2186,7 @@ def export_html_dashboard(df, df_snabbval):
                         if(prevRows && prevRows.length > 0) {
                             let sameLvlRow = prevRows.find(r => parseFloat(r.Nivå) === parseFloat(d.Nivå));
                             if(sameLvlRow) {
-                                let p0 = parseInt(String(sameLvlRow.Plac).replace(/\D/g, ''));
+                                let p0 = parseInt(String(sameLvlRow.Plac).replace(/\\D/g, ''));
                                 if(!isNaN(p0) && p0 <= maxP) rKey = p0;
                             } else {
                                 let minPrevLvl = Math.min(...prevRows.map(r => parseFloat(r.Nivå)));
@@ -2192,7 +2210,7 @@ def export_html_dashboard(df, df_snabbval):
                         if(nextRows && nextRows.length > 0) {
                             let sameLvlRow = nextRows.find(r => parseFloat(r.Nivå) === parseFloat(d.Nivå));
                             if(sameLvlRow) {
-                                let p1 = parseInt(String(sameLvlRow.Plac).replace(/\D/g, ''));
+                                let p1 = parseInt(String(sameLvlRow.Plac).replace(/\\D/g, ''));
                                 if(!isNaN(p1) && p1 <= maxP) cKey = p1;
                             } else {
                                 let minNextLvl = Math.min(...nextRows.map(r => parseFloat(r.Nivå)));
@@ -2256,7 +2274,7 @@ def export_html_dashboard(df, df_snabbval):
                 else if (pType === 'efter') {
                     let matrixAfter = {};
                     filteredData.forEach(d => {
-                        let pT = parseInt(String(d.Plac).replace(/\D/g, ''));
+                        let pT = parseInt(String(d.Plac).replace(/\\D/g, ''));
                         if(isNaN(pT)) return;
                         if(!matrixAfter[pT]) matrixAfter[pT] = { Plac: pT, nextPlac: {}, upp: 0, ned: 0, ut: 0 };
                         
@@ -2269,7 +2287,7 @@ def export_html_dashboard(df, df_snabbval):
                         if(nextRows && nextRows.length > 0) {
                             let sameLevelRow = nextRows.find(r => parseFloat(r.Nivå) === parseFloat(d.Nivå));
                             if(sameLevelRow) {
-                                let pT1 = parseInt(String(sameLevelRow.Plac).replace(/\D/g, ''));
+                                let pT1 = parseInt(String(sameLevelRow.Plac).replace(/\\D/g, ''));
                                 if(!isNaN(pT1)) matrixAfter[pT].nextPlac[pT1] = (matrixAfter[pT].nextPlac[pT1] || 0) + 1;
                             } else {
                                 let bestNextLvl = Math.min(...nextRows.map(r => parseFloat(r.Nivå)));
@@ -2304,7 +2322,7 @@ def export_html_dashboard(df, df_snabbval):
                 else if (pType === 'fore') {
                     let matrixBefore = {};
                     filteredData.forEach(d => {
-                        let pT = parseInt(String(d.Plac).replace(/\D/g, ''));
+                        let pT = parseInt(String(d.Plac).replace(/\\D/g, ''));
                         if(isNaN(pT)) return;
                         if(!matrixBefore[pT]) matrixBefore[pT] = { Plac: pT, prevPlac: {}, ned_hit: 0, upp_hit: 0, nykomling: 0 };
                         
@@ -2316,7 +2334,7 @@ def export_html_dashboard(df, df_snabbval):
                         if(prevRows && prevRows.length > 0) {
                             let sameLevelRow = prevRows.find(r => parseFloat(r.Nivå) === parseFloat(d.Nivå));
                             if(sameLevelRow) {
-                                let pT0 = parseInt(String(sameLevelRow.Plac).replace(/\D/g, ''));
+                                let pT0 = parseInt(String(sameLevelRow.Plac).replace(/\\D/g, ''));
                                 if(!isNaN(pT0)) matrixBefore[pT].prevPlac[pT0] = (matrixBefore[pT].prevPlac[pT0] || 0) + 1;
                             } else {
                                 let bestPrevLvl = Math.min(...prevRows.map(r => parseFloat(r.Nivå)));
@@ -2363,7 +2381,7 @@ def export_html_dashboard(df, df_snabbval):
                         let s = parseInt(d.Säsnr);
                         if(!placementMatrix[t]) placementMatrix[t] = {};
                         
-                        let plac = String(d.Plac || '').replace(/\D/g, '');
+                        let plac = String(d.Plac || '').replace(/\\D/g, '');
                         if(plac) placementMatrix[t][s] = parseInt(plac);
                     });
 
@@ -2433,7 +2451,7 @@ def export_html_dashboard(df, df_snabbval):
                     let t = d.Analys_Lagnamn;
                     if (!teamInfo[t]) {
                         let bildadRaw = d.Bildad || '';
-                        let yMatch = String(bildadRaw).match(/(\d{4})/);
+                        let yMatch = String(bildadRaw).match(/(\\d{4})/);
                         let yNum = yMatch ? parseInt(yMatch[1]) : 0;
                         let dec = yNum > 0 ? Math.floor(yNum / 10) * 10 : 0;
                         
@@ -2640,8 +2658,8 @@ def export_html_dashboard(df, df_snabbval):
                     // 1. Sortera raderna för just denna säsong baserat på deras faktiska slutplacering
                     let sRows = group.seasonRows;
                     sRows.sort((a, b) => {
-                        let pA = parseInt(String(a.Plac).replace(/\D/g, '')) || 999;
-                        let pB = parseInt(String(b.Plac).replace(/\D/g, '')) || 999;
+                        let pA = parseInt(String(a.Plac).replace(/\\D/g, '')) || 999;
+                        let pB = parseInt(String(b.Plac).replace(/\\D/g, '')) || 999;
                         return pA - pB;
                     });
                     
@@ -3363,7 +3381,7 @@ def export_html_dashboard(df, df_snabbval):
                             sasongWinners[sasnr] = { sasong: d.Säsong, serieSegrare: null, smVinnare: null, noSM: false };
                         }
                         
-                        let placNum = parseInt(String(d.Plac).replace(/\D/g, '')) || 999;
+                        let placNum = parseInt(String(d.Plac).replace(/\\D/g, '')) || 999;
                         let nivaNum = parseFloat(d.Nivå) || 0;
                         let anm = d.Anm ? String(d.Anm).toLowerCase() : '';
                         let smVinnareStr = d.SM_vinnare ? String(d.SM_vinnare).trim() : '';

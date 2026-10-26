@@ -607,17 +607,31 @@ Vid sidan om det SEI-index som redovisas för respektive år finns det i dashboa
         </div>
 
         <div class="guide-section" style="margin-bottom: 25px;">
-            <h3><i class="fas fa-map-marked-alt"></i> Geografisk indelning (Basområden)</h3>
+            <h3><i class="fas fa-map-marked-alt"></i> Geografisk indelning (Basområden samt Stadsdelar/Tätorter/Landsbygd)</h3>
             <p>
-                Den geografiska upplösningen för all statistik som presenteras i plattformen är <strong>Basområde</strong> (ibland benämnt Nyko 4). Ett basområde är en mindre geografisk enhet som utgör en del av en stadsdel, en tätort eller ett landsbygdsområde. Som riktmärke består en normalstor stadsdel i Linköping ofta av tre till fyra basområden.
+                Plattformens standardupplösning är <em>Basområden (NYKO 4)</em>, vilket används för detaljerade analyser i samtliga flikar. I specifika strategiska vyer (exempelvis i Sambands- och Trendanalysen) aktiveras en extra funktion där du kan växla upp till <em>Stadsdelar/Tätorter/Landsbygd (NYKO 3)</em> för en övergripande makroanalys.</p>
             </p>
-            <p>
-                För närvarande är Linköpings kommun indelad i cirka <strong>220 basområden</strong>. Av dessa har knappt 190 områden en befolkning på minst 25 invånare.
-            </p>
+            <ul>
+                <li><strong>Basområden (NYKO 4) – Plattformens grundbult:</strong> Detta är standardnivån som används i samtliga av dashboardens flikar. Ett basområde är en mindre geografisk enhet som utgör en del av en stadsdel, en tätort eller ett landsbygdsområde. Som riktmärke består en normalstor stadsdel i Linköping ofta av tre till fyra basområden. För närvarande är Linköpings kommun indelad i cirka <strong>220 basområden</strong> (varav knappt 190 har en befolkning över vår spärrgräns på 25 invånare).</li><br>
+                <li><strong>Stadsdelar / Tätorter / Landsbygdsområden (NYKO 3) – Strategisk översikt:</strong> Denna övergripande nivå (som omfattar ett 70-tal områden) görs tillgänglig i specifika analysflikar där ett aggregerat makroperspektiv är lämpligt för att identifiera stora strukturella trender innan fördjupning sker.</li>
+            </ul>
+
+            <div style="background-color: #eef7fc; border-left: 4px solid #2980b9; padding: 15px; margin-top: 15px; margin-bottom: 15px; border-radius: 0 4px 4px 0;">
+                <strong>📊 Viktigt om statistisk jämförbarhet (Z-score på olika nivåer)</strong><br>
+                När du analyserar indexerade eller standardiserade mått (som <em>Z-score / SEI-index</em>) är det avgörande att förstå att ett värde beräknas i förhållande till sin <strong>referenspopulation</strong>. 
+                <br><br>
+                <em>Exempel:</em> Tätorten <strong>Askeby</strong> på NYKO 3-nivå och basområdet <strong>Askeby</strong> på NYKO 4-nivå avser geografiskt i princip samma fysiska område. Ändå kan Askeby basområde framstå som mindre ekonomiskt utsatt än Askeby tätort. 
+                <br><br>
+                <strong>Detta beror inte på en felräkning</strong>, utan på att referensgrupperna skiljer sig åt: 
+                På NYKO 3-nivå jämförs Askeby med kommunens 70 stadsdelar och tätorter. På NYKO 4-nivå jämförs området med 220 mindre basområden, varav flera är extremt socioekonomiskt utmanade basområden i större stadsdelar. Den skiftade jämförelsen gör att Askebys relativa position i fördelningen förskjuts när du byter geografisk nivå.
+            </div>
             
             <div style="background-color: #f8f9fa; border-left: 4px solid #3498db; padding: 15px; margin-top: 15px; border-radius: 0 4px 4px 0;">
-                <strong>ℹ️ Tröskelvärden och statistisk säkerhet</strong><br>
-                I plattformens funktioner och inställningar (exempelvis via krysrutan <em>"Exkludera små områden"</em>) används 25 invånare som tröskelvärde. Detta filter döljer automatiskt de allra minsta basområdena från grafer och analyser. Syftet är dubbelt: dels att undvika extrema procentuella svängningar som kan uppstå vid för få datapoäng, och dels att skydda den personliga integriteten i de geografiska analyserna.
+                <strong>ℹ️ Tröskelvärden, filter och statistisk säkerhet</strong><br>
+                I plattformens funktioner och inställningar (exempelvis via kryssrutan <em>"Exkludera små områden"</em>) används 25 invånare som tröskelvärde. Detta filter döljer automatiskt de allra minsta basområdena från grafer och analyser. Syftet är dubbelt: dels att undvika extrema procentuella svängningar som kan uppstå vid för få datapoäng, och dels att skydda den personliga integriteten i de geografiska analyserna.
+                <br><br>
+                <strong>🎓 Exkludera Student- & Verksamhetsområden</strong><br>
+                Utöver storleksfiltret finns även möjligheten att klicka i rutan <em>"Exkludera studentområden"</em> (filtret inkluderar även verksamhetsområden). I en universitetsstad uppvisar renodlade studentområden ofta statistiska extremvärden (exempelvis mycket låg beskattningsbar inkomst). Detta beror dock på en specifik livsfas och speglar inte strukturell socioekonomisk utsatthet. Genom att filtrera bort dessa, samt rena verksamhetsområden, får du ofta fram en mer rättvisande bild av den generella befolkningens förutsättningar och trender.
             </div>
         </div>
 </body>

@@ -4,8 +4,14 @@ import traceback  # <--- LÄGG TILL DENNA RAD!
 import pandas as pd
 import numpy as np
 from pyaxis import pyaxis
-from sklearn.preprocessing import StandardScaler
-from sklearn.decomposition import PCA
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.decomposition import PCA
+import warnings
+from pandas.errors import PerformanceWarning
+warnings.filterwarnings('ignore', category=PerformanceWarning)
+
+# Tystar Pandas framtidsvarningar för ffill/bfill
+# pd.set_option('future.no_silent_downcasting', True)
 
 # --- 1. SÖKVÄGAR & MILJÖ ---
 try:
@@ -49,7 +55,11 @@ def process_px(file_path):
     df['DATA'] = pd.to_numeric(df['DATA'].replace(['..', '-'], np.nan), errors='coerce')
     df = df.dropna(subset=['DATA'])
     content_col = 'tabellinnehåll' if 'tabellinnehåll' in df.columns else 'tabelluppgift'
-    return df.pivot_table(index=['basområde', 'tid'], columns=content_col, values='DATA', aggfunc='first').reset_index()
+
+    # 🚀 LÖSNING: Dynamisk hantering av geografisk nivå (basområde vs stadsdel)
+    geo_col = 'basområde' if 'basområde' in df.columns else 'stadsdel'
+
+    return df.pivot_table(index=[geo_col, 'tid'], columns=content_col, values='DATA', aggfunc='first').reset_index()
 
 print("--- Startar Data Pipeline v2.2 (Inkl. AI/PCA) ---")
 
@@ -131,6 +141,8 @@ calc_if_exists(px_merged, 'Andel gamla hus', lambda d: (d['Bostäder byggda för
 calc_if_exists(px_merged, 'Andel hyresrätt', lambda d: (d['Hyresrätter'] / d['Bostäder'].replace(0, np.nan)) * 100, ['Hyresrätter', 'Bostäder'])
 
 # Kvarboende inverteras (100% minus nuvarande procentvärde)
+# Skapa de inverterade variablerna direkt från originalet!
+calc_if_exists(px_merged, 'Kvarboende', lambda d: 100.0 - pd.to_numeric(d['Kvarboende minst ett år'].astype(str).str.replace(',', '.'), errors='coerce'), ['Kvarboende minst ett år'])
 calc_if_exists(px_merged, 'Hög omflyttning', lambda d: 100.0 - pd.to_numeric(d['Kvarboende minst ett år'].astype(str).str.replace(',', '.'), errors='coerce'), ['Kvarboende minst ett år'])
 
 # (De färdiga variablerna Utländsk bakgrund, Utrikes födda, Förgymnasial utbildning och Inskrivna arbetslösa lämnas ifred och används direkt i listorna nedan)
@@ -227,7 +239,7 @@ index_config = {
         "pos": ["Långvarigt ekonomiskt bistånd", "Inskrivna arbetslösa", "Låg ekonomisk standard", "Ej självförsörjande", "UVAS"], "neg": []
     },
     "Index: Socialt & Humankapital": {
-        "pos": ["Förgymnasial utbildning", "Ohälsotal"], "neg": ["Gymnasiebehörighet", "Inskrivna barn i förskolan", "Valdeltagande"]
+        "pos": ["Förgymnasial utbildning", "Ohälsotal"], "neg": ["Gymnasiebehörighet", "Inskrivna förskolebarn", "Valdeltagande"]
     },
     "Index: Fysisk Bostadssegregation": {
         "pos": ["Trångbodda", "Små bostäder", "Hyresrätt"], "neg": ["Boyta per person", "Bilinnehav", "Kvarboende"]
@@ -286,10 +298,15 @@ if os.path.exists(file_excel):
     df_excel = pd.read_excel(file_excel)
     if 'Namn' in df_excel.columns:
         df_excel['Namn'] = df_excel['Namn'].astype(str).str.strip()
-        cols_to_use = ['Namn', 'KodNyko4', 'Stadsdelskod_(Nyko3)', 'Stadsdel', 'Karaktär_bas', 'Karaktär_detalj', 'SEI_indikatorer16', 'Inkluderad', 'Områdestyp']
+        cols_to_use = ['Namn', 'KodNyko4', 'Stadsdelskod_(Nyko3)', 'Stadsdel', 'Karaktär_bas', 'Karaktär_detalj', 'SEI_indikatorer16', 'Inkluderad', 'Områdestyp', 'Kommundelskluster']
         df_excel = df_excel[[c for c in cols_to_use if c in df_excel.columns]]
         final_df = pd.merge(px_merged, df_excel, left_on='basområde', right_on='Namn', how='left')
-        if 'Namn' in final_df.columns: final_df = final_df.drop(columns=['Namn'])
+        if 'Namn' in final_df.columns: 
+            final_df = final_df.drop(columns=['Namn'])
+            
+        # 🚀 FIX: Fyll tomma celler så JavaScript inte kraschar på "NaN"
+        if 'Kommundelskluster' in final_df.columns:
+            final_df['Kommundelskluster'] = final_df['Kommundelskluster'].fillna('Okänd')
     else:
         final_df = px_merged
 else:
@@ -310,7 +327,7 @@ ra_kolumner_att_dolja = [
     'Utländsk bakgrund kvinnor', 'Utländsk bakgrund män',
     'Uppgift saknas utb', 'Diff: Ohälsotal 20-64 år', 'Diff: Sysselsättningsgrad', 'Diff: Lång eftergymn utb', 'Diff: Förgymnasial utb',
 # 🚀 NYA TILLÄGG: Bara fyll på listan med exakta namn (måste matcha stavningen i datan)
-    'AI_Kompass_X', 'AI_Kompass_Y',
+    'AI_Kompass_X', 'AI_Kompass_Y', 'Kommundelskluster', 
 # 🚀 NYA TILLÄGG: Rådata och Andelar för CNI & KKSI
     '0-4 år', '70+ år', '85+ år', '70+ år ensamboende', 'Ensamstående föräldrar', 'Bostäder byggda före 1980', # Absoluta tal
     'Andel 0-4 år', 'Andel 70+ år', 'Andel gamla hus', # Rå-andelar
@@ -327,7 +344,15 @@ alias_ordlista = {
     'Ohälsotal totalt 20-64 år': 'Ohälsotal 20-64 år',
     'Nettoinkomst, andel': 'Nettoinkomstens andel av kommunens nivå',
     'Andel ensamstående föräldrar': 'Ensamstående föräldrar',
-    'Andel ensamma 70+': 'Ensamstående 70 år eller äldre'
+    'Andel ensamma 70+': 'Ensamstående 70 år eller äldre',
+    'Inskrivna förskolebarn': 'Inskrivna barn i förskolan', # 🚀 Döper om den i sista sekunden!
+    # 🚀 Nya tillägg för att synka Nyko 3 och Nyko 4 i UI-rullistorna:
+    'Behöriga gymnasiets yrkesprogram': 'Gymnasiebehörighet',
+    'Kvm per person': 'Boyta per person',
+    'Kvm per hushåll': 'Boyta per hushåll',
+    
+    # 🚀 Tydliggör den inverterade variabeln (ca 10%) enbart för rullistan
+    'Kvarboende': 'Omflyttning (Hög)'
     # Lägg till hur många du vill här...
 }
 
@@ -429,15 +454,489 @@ except Exception as e:
     print(f"\n❌ ETT FEL UPPSTOD VID INLÄSNING AV KOMPASS: {e}")
 
 # ==========================================
-# 9. AVSLUT OCH SPARA
+# 10. SKAPA NYKO 3 (STADSDEL) (HYBRID-METODEN)
 # ==========================================
-print("\n⏳ Sorterar och sparar master-filen...")
+print("\n🏙️  Börjar aggregera data till Nyko 3 (Stadsdel)...")
+
 try:
+    # --- 10A. HÄMTA FULLSTÄNDIG DATA OCH MÄRK UPP VIA KLARTEXT & KODNYCKEL ---
+    df_nyko4_full = px_merged.copy()
+
+    if os.path.exists(file_excel):
+        df_excel = pd.read_excel(file_excel)
+        
+        # 1. Säkra koderna och namnen i Excel
+        df_excel['Stadsdelskod_(Nyko3)'] = df_excel['Stadsdelskod_(Nyko3)'].astype(str).str.replace('.0', '', regex=False).str.strip()
+        df_excel['Stadsdel'] = df_excel['Stadsdel'].astype(str).apply(fix_text).str.strip()
+
+        # 2. 🚀 HYBRID-LÖSNINGEN: Tvätta namnen i båda filerna så de matchar 100 %
+        excel_namn_kolumn = 'Namn' # Kolumnen i Excel där ex "Malmskogen industriområde" står
+        df_excel['Namn_match'] = df_excel[excel_namn_kolumn].astype(str).apply(fix_text).str.strip().str.lower()
+        df_nyko4_full['basområde_match'] = df_nyko4_full['basområde'].astype(str).apply(fix_text).str.strip().str.lower()
+
+        # 3. Skapa lexikon! (Basområdesnamn -> Stadsdelskod) & (Stadsdelskod -> Stadsdelsnamn)
+        map_namn_till_n3_kod = df_excel.set_index('Namn_match')['Stadsdelskod_(Nyko3)'].to_dict()
+        map_kod_till_n3_namn = df_excel.drop_duplicates('Stadsdelskod_(Nyko3)').set_index('Stadsdelskod_(Nyko3)')['Stadsdel'].to_dict()
+        
+        # 4. Applicera mappningen (Nyko 4 Namn -> Nyko 3 Kod -> Nyko 3 Namn)
+        df_nyko4_full['Stadsdelskod_(Nyko3)'] = df_nyko4_full['basområde_match'].map(map_namn_till_n3_kod)
+        df_nyko4_full['Stadsdel'] = df_nyko4_full['Stadsdelskod_(Nyko3)'].map(map_kod_till_n3_namn)
+        
+        # Sätt kluster temporärt
+        df_nyko4_full['Kommundelskluster'] = 'Okänd' 
+            
+        lyckade = df_nyko4_full['Stadsdelskod_(Nyko3)'].notna().sum()
+        print(f"🔍 Hybrid-matchning klar! Hittade stadsdelskod för {lyckade} av {len(df_nyko4_full)} rader.")
+        
+        # 🚨 DIAGNOSTIK: Vilka rader i SCB-datan saknade en matchning i Excel-filen?
+        missade = df_nyko4_full[df_nyko4_full['Stadsdelskod_(Nyko3)'].isna()]['basområde'].unique()
+        if len(missade) > 0:
+            print(f"⚠️ VARNING: Följande områden matchade inte Excel-filen (Kolla stavningen!):")
+            for m in sorted(missade):
+                print(f" - {m}")
+
+    else:
+        raise FileNotFoundError(f"Saknar {file_excel}")
+
+    # --- 10B. LÄS IN NYKO 3 PX-FILEN ---
+    file_nyko3_px = os.path.join(px_dir, 'HKT59specNyko3.px')
+    if os.path.exists(file_nyko3_px):
+        df_px_n3 = process_px(file_nyko3_px)
+        if 'basområde' in df_px_n3.columns: df_px_n3.rename(columns={'basområde': 'Stadsdel'}, inplace=True)
+        elif 'stadsdel' in df_px_n3.columns: df_px_n3.rename(columns={'stadsdel': 'Stadsdel'}, inplace=True)
+            
+        # 🚀 FIX: Vi tvingar Nyko 3:s "Folkmängd" att heta "Invånarantal" så matematiken synkar!
+        n3_px_rename = {
+            'Behöriga gymnasiets yrkesprogram': 'Gymnasiebehörighet', 
+            'Kvm per person': 'Boyta per person', 
+            'Folkmängd': 'Invånarantal'
+            # Vi låter 'Kvarboende minst ett år' vara ifred!
+        }
+        df_px_n3 = df_px_n3.rename(columns=n3_px_rename)
+        
+        df_px_n3['tid'] = pd.to_numeric(df_px_n3['tid'], errors='coerce')
+        df_nyko4_full['tid'] = pd.to_numeric(df_nyko4_full['tid'], errors='coerce')
+
+    # --- 10C. AGGREGERA ABSOLUTA ANTAL PÅ NYKO3-KOD ---
+    df_nyko4_filtered = df_nyko4_full[df_nyko4_full['Stadsdelskod_(Nyko3)'].notna()].copy()
+    
+    # 🚀 Vi grupperar SÄKERT på koden och det officiella namnet från Excel!
+    gruppering = ['Stadsdelskod_(Nyko3)', 'Stadsdel', 'tid']
+    
+    # Rensa bort textkolumner från Nyko 4 som sabbar aggregeringen
+    cols_to_drop = [c for c in ['basområde', 'basområde_match', 'Karaktär_bas', 'Karaktär_detalj', 'Områdestyp'] if c in df_nyko4_filtered.columns]
+    df_nyko4_filtered = df_nyko4_filtered.drop(columns=cols_to_drop)
+
+    for col in df_nyko4_filtered.columns:
+        if col not in gruppering:
+            temp = df_nyko4_filtered[col].astype(str).str.replace(r'\s+', '', regex=True).str.replace(',', '.', regex=False)
+            temp = temp.replace(['..', '.', '-', '', 'nan', 'NaN', '<NA>'], np.nan)
+            df_nyko4_filtered[col] = pd.to_numeric(temp, errors='coerce')
+
+    # 🚀 MAGIN: Här slås de absoluta talen (t.ex. 3062 + 88) ihop automatiskt!
+    df_nyko3 = df_nyko4_filtered.groupby(gruppering).sum(numeric_only=True).reset_index()
+
+    # =======================================================
+    # 🚀 NY MAGI: Aggregera klustren snyggt och limma fast dem!
+    # =======================================================
+    if 'Kommundelskluster' in df_nyko4_filtered.columns:
+        # Baka ihop unika kluster till en textsträng per stadsdel (ex: "Väst 1, Väst 2")
+        kluster_agg = df_nyko4_filtered.groupby('Stadsdel')['Kommundelskluster'].apply(
+            lambda x: ', '.join(sorted(set(str(v) for v in x.dropna() if str(v) != 'Okänd' and str(v) != 'nan')))
+        ).reset_index()
+        
+        # Om strängen blev tom, döp den till Okänd
+        kluster_agg['Kommundelskluster'] = kluster_agg['Kommundelskluster'].replace('', 'Okänd')
+        
+        # 🚀 FIX: Radera eventuell gammal kluster-kolumn för att undvika _x och _y krockar!
+        if 'Kommundelskluster' in df_nyko3.columns:
+            df_nyko3.drop(columns=['Kommundelskluster'], inplace=True)
+            
+        # Limma fast denna nya kolumn på df_nyko3
+        df_nyko3 = pd.merge(df_nyko3, kluster_agg, on='Stadsdel', how='left')
+    # =======================================================
+
+    # 🚀 FIX: STÄDA BORT NONSENS-SUMMERINGAR
+    # Rensa omedelbart bort procent- och indexkolumner som summerats felaktigt, 
+    # så att de läses in från din Nyko 3 PX-fil istället, eller räknas om korrekt i 10F.
+    ord_att_rensa = ['andel', '%', 'diff', 'index', 'kvot']
+    kolumner_att_rensa = [c for c in df_nyko3.columns if any(o in c.lower() for o in ord_att_rensa)]
+    
+    # 🚀 NY FIX: Tvinga bort de kolumner som vi VET kommer som färdigt facit från Nyko3 PX-filen!
+    # Eftersom de bytte namn i 10B överlevde de bulldozern, men nu dödar vi originalen här:
+    ful_summeringar_att_radera = [
+        'Kvm per person', 
+        'Behöriga gymnasiets yrkesprogram', 
+        'Kvarboende',        # Kasta felaktig summa från Nyko 4
+        'Hög omflyttning'    # Kasta felaktig summa från Nyko 4
+    ]
+    kolumner_att_rensa.extend(ful_summeringar_att_radera)
+    
+    # Vi sparar undan de som vi vet ska viktas matematiskt korrekt i 10D
+    cols_to_weight_keys = [
+        'Kvot mellan in-och utflyttning totalt', 'Kvot mellan in- och utflyttning inom kommunen',
+        'Kvot mellan inrikes in- och utflyttning av förvärvsarbetande', 'Kvot mellan in- och utflyttning inom kommunen av förvärvsarbetande',
+        'SEIsnitt 16 indikatorer', 'SEIsnitt medel', 'Index: Samlat SEI (16 indikatorer)', 'SEI medel (2015-2024)',
+        'Gymnasieexamen inom 3-5 år', 'Meritvärde grundskolan',
+        'Försörjningskvot' # <-- LÄGG TILL HÄR!
+    ]
+    kolumner_att_rensa = [c for c in kolumner_att_rensa if c not in cols_to_weight_keys]
+    
+    df_nyko3.drop(columns=kolumner_att_rensa, inplace=True, errors='ignore')
+
+    # --- 10D. BEFOLKNINGSVIKTADE MEDELVÄRDEN ---
+    cols_to_weight = {
+        'Inskrivna förskolebarn' : '0-4 år', 
+        'Gymnasieexamen inom 3-5 år' : 'Befolkning 0-19 år',
+        'Meritvärde grundskolan' : 'Befolkning 0-19 år',
+        'Kvot mellan in-och utflyttning totalt' : 'Folkmängd',
+        'Kvot mellan in- och utflyttning inom kommunen' : 'Folkmängd',
+        'Kvot mellan inrikes in- och utflyttning av förvärvsarbetande' : 'Förvärvsarbetande nattbefolkning',
+        'Kvot mellan in- och utflyttning inom kommunen av förvärvsarbetande' : 'Förvärvsarbetande nattbefolkning',
+        'SEIsnitt 16 indikatorer' : 'Folkmängd',
+        'SEIsnitt medel' : 'Folkmängd',
+        'Index: Samlat SEI (16 indikatorer)' : 'Folkmängd',
+        'SEI medel (2015-2024)' : 'Folkmängd',
+        'Försörjningskvot': 'Befolkning 20-64 år' # Eller den nämnare som är mest relevant, ex '20-64 år'
+    }
+    
+    df_nyko4_filtered = df_nyko4_filtered.copy()
+    for val_col, wt_col in cols_to_weight.items():
+        if val_col in df_nyko4_filtered.columns and wt_col in df_nyko4_filtered.columns:
+            temp_col_name = f'TEMP_WT_{val_col}'
+            df_nyko4_filtered.loc[:, temp_col_name] = df_nyko4_filtered[val_col] * df_nyko4_filtered[wt_col]
+            grouped_sums = df_nyko4_filtered.groupby(gruppering)[[temp_col_name, wt_col]].sum(numeric_only=True).reset_index()
+            weighted_result = np.where(grouped_sums[wt_col] == 0, np.nan, grouped_sums[temp_col_name] / grouped_sums[wt_col])
+            
+            if val_col in df_nyko3.columns: df_nyko3.drop(columns=[val_col], inplace=True)
+                
+            df_nyko3 = pd.merge(df_nyko3, pd.DataFrame({
+                'Stadsdelskod_(Nyko3)': grouped_sums['Stadsdelskod_(Nyko3)'], 'Stadsdel': grouped_sums['Stadsdel'],
+                'tid': grouped_sums['tid'], val_col: weighted_result
+            }), on=gruppering, how='left')
+            df_nyko4_filtered = df_nyko4_filtered.drop(columns=[temp_col_name])
+
+    # --- 10E. 🚀 DEN HÄNSYNSLÖSA BULLDOZERN MED SCB NYKO 3 PX ---
+    if 'df_px_n3' in locals():
+        
+        # 1. Tvätta SCB:s data så alla kommatecken blir punkter och tolkas som rena siffror
+        for col in df_px_n3.columns:
+            if col not in ['Stadsdel', 'tid', 'Match_Namn']:
+                temp = df_px_n3[col].astype(str).str.replace(r'\s+', '', regex=True).str.replace(',', '.', regex=False)
+                temp = temp.replace(['..', '.', '-', '', 'nan', 'NaN', '<NA>'], np.nan)
+                df_px_n3[col] = pd.to_numeric(temp, errors='coerce')
+
+        # 2. Skapa tvättade, småbokstavs-nycklar för att garantera perfekt matchning
+        df_px_n3['Match_Namn'] = df_px_n3['Stadsdel'].astype(str).str.replace(r'^[\d\s]+', '', regex=True).str.split('(').str[0].str.strip().str.lower()
+        df_nyko3['Match_Namn'] = df_nyko3['Stadsdel'].astype(str).str.replace(r'^[\d\s]+', '', regex=True).str.split('(').str[0].str.strip().str.lower()
+
+        # 3. 🚀 KIRURGISK RADERING AV AGGREGERAT SKRÄP
+        # Hämta namnen på alla kolumner (t.ex. färdiga procentsatser) som vi vet är korrekta i PX-filen
+        px_facit_kolumner = [c for c in df_px_n3.columns if c not in ['Match_Namn', 'tid', 'Stadsdel']]
+        
+        # Hitta motsvarande kolumner i den aggregerade datan och kasta dem i papperskorgen!
+        kolumner_att_radera = [c for c in px_facit_kolumner if c in df_nyko3.columns]
+        df_nyko3.drop(columns=kolumner_att_radera, inplace=True, errors='ignore')
+
+        # 4. Slå ihop datan! Eftersom vi raderade kolumnerna ovan, kommer pandas nu att 
+        # importera de rena värdena direkt från PX-filen utan att försöka addera eller jämka dem.
+        df_nyko3 = pd.merge(df_nyko3, df_px_n3.drop(columns=['Stadsdel']), on=['Match_Namn', 'tid'], how='left')
+        
+        # 5. Städa upp namnen
+        df_nyko3['Stadsdel'] = df_nyko3['Match_Namn'].str.title()
+        
+        # Återställ specialnamn
+        mask_hela = df_nyko3['Stadsdel'] == 'Hela Kommunen'
+        df_nyko3.loc[mask_hela, 'Stadsdel'] = 'Hela kommunen'
+        
+        df_nyko3.drop(columns=['Match_Namn'], inplace=True, errors='ignore')
+
+    # --- 10F. BERÄKNA ANDELAR OCH Z-SCORES (DIN INTAKTA KOD) ---
+
+    # ==========================================
+    # 🚀 MASTER-FIX: KVARBOENDE OCH HÖG OMFLYTTNING
+    # ==========================================
+    # 1. Hitta det faktiska värdet oavsett om det råkat byta namn
+    if 'Kvarboende minst ett år' not in df_nyko3.columns and 'Kvarboende' in df_nyko3.columns:
+        df_nyko3.rename(columns={'Kvarboende': 'Kvarboende minst ett år'}, inplace=True)
+    
+    if 'Kvarboende minst ett år' in df_nyko3.columns:
+        # Säkerställ att det är rena siffror
+        df_nyko3['Kvarboende minst ett år'] = pd.to_numeric(df_nyko3['Kvarboende minst ett år'].astype(str).str.replace(',', '.'), errors='coerce')
+        
+        # 2. Skyddsnät: Om värdet är < 50 så har en dubbel-invertering skett. Vi vänder tillbaka det!
+        mask_felvand = df_nyko3['Kvarboende minst ett år'] < 50
+        df_nyko3.loc[mask_felvand, 'Kvarboende minst ett år'] = 100.0 - df_nyko3.loc[mask_felvand, 'Kvarboende minst ett år']
+        
+        # 3. Tvinga fram de inverterade proxy-kolumnerna explicit (ca 10%)
+        # Detta skriver över allt gammalt skräp som kan ha legat där från aggregeringen
+        df_nyko3['Kvarboende'] = 100.0 - df_nyko3['Kvarboende minst ett år']
+        df_nyko3['Hög omflyttning'] = 100.0 - df_nyko3['Kvarboende minst ett år']
+
+    calc_if_exists(df_nyko3, 'Andel 0-4 år', lambda d: (d['0-4 år'] / d['Invånarantal'].replace(0, np.nan)) * 100, ['0-4 år', 'Invånarantal'])
+    calc_if_exists(df_nyko3, 'Andel 70+ år', lambda d: (d['70+ år'] / d['Invånarantal'].replace(0, np.nan)) * 100, ['70+ år', 'Invånarantal'])
+    calc_if_exists(df_nyko3, 'Andel 85+ år', lambda d: (d['85+ år'] / d['Invånarantal'].replace(0, np.nan)) * 100, ['85+ år', 'Invånarantal'])
+    calc_if_exists(df_nyko3, 'Andel ensamma 70+', lambda d: (d['70+ år ensamboende'] / d['Hushåll'].replace(0, np.nan)) * 100, ['70+ år ensamboende', 'Hushåll'])
+    calc_if_exists(df_nyko3, 'Andel ensamstående föräldrar', lambda d: (d['Ensamstående föräldrar'] / d['Hushåll'].replace(0, np.nan)) * 100, ['Ensamstående föräldrar', 'Hushåll'])
+    calc_if_exists(df_nyko3, 'Andel gamla hus', lambda d: (d['Bostäder byggda före 1980'] / d['Hushåll'].replace(0, np.nan)) * 100, ['Bostäder byggda före 1980', 'Hushåll'])
+    calc_if_exists(df_nyko3, 'Andel hyresrätt', lambda d: (d['Hyresrätter'] / d['Bostäder'].replace(0, np.nan)) * 100, ['Hyresrätter', 'Bostäder'])
+    calc_if_exists(df_nyko3, 'Total utb 20-64 kvinnor', lambda d: d[utb_k_cols].sum(axis=1), utb_k_cols)
+    calc_if_exists(df_nyko3, 'Total utb 20-64 män', lambda d: d[utb_m_cols].sum(axis=1), utb_m_cols)
+    calc_if_exists(df_nyko3, 'Förgymnasial utb kvinnor (%)', lambda d: (d['Förgymnasial utb kvinnor'] / d['Total utb 20-64 kvinnor']) * 100, ['Förgymnasial utb kvinnor', 'Total utb 20-64 kvinnor'])
+    calc_if_exists(df_nyko3, 'Förgymnasial utb män (%)', lambda d: (d['Förgymnasial utb män'] / d['Total utb 20-64 män']) * 100, ['Förgymnasial utb män', 'Total utb 20-64 män'])
+    calc_if_exists(df_nyko3, 'Lång eftergymn utb kvinnor (%)', lambda d: (d['Lång eftergymnasial utb kvinnor'] / d['Total utb 20-64 kvinnor']) * 100, ['Lång eftergymnasial utb kvinnor', 'Total utb 20-64 kvinnor'])
+    calc_if_exists(df_nyko3, 'Lång eftergymn utb män (%)', lambda d: (d['Lång eftergymnasial utb män'] / d['Total utb 20-64 män']) * 100, ['Lång eftergymnasial utb män', 'Total utb 20-64 män'])
+    calc_if_exists(df_nyko3, 'Diff: Förgymnasial utb', lambda d: d['Förgymnasial utb kvinnor (%)'] - d['Förgymnasial utb män (%)'], ['Förgymnasial utb kvinnor (%)', 'Förgymnasial utb män (%)'])
+    calc_if_exists(df_nyko3, 'Diff: Lång eftergymn utb', lambda d: d['Lång eftergymn utb kvinnor (%)'] - d['Lång eftergymn utb män (%)'], ['Lång eftergymn utb kvinnor (%)', 'Lång eftergymn utb män (%)'])
+    calc_if_exists(df_nyko3, 'Diff: Ohälsotal 20-64 år', lambda d: d['Ohälsotal kvinnor 20-64 år'] - d['Ohälsotal män 20-64 år'], ['Ohälsotal kvinnor 20-64 år', 'Ohälsotal män 20-64 år'])
+    calc_if_exists(df_nyko3, 'Diff: Sysselsättningsgrad', lambda d: d['Sysselsättningsgrad kvinnor'] - d['Sysselsättningsgrad män'], ['Sysselsättningsgrad kvinnor', 'Sysselsättningsgrad män'])
+    
+    def z_score_n3(df, col):
+        if col not in df.columns: return 0
+        saker_kolumn = pd.to_numeric(df[col].astype(str).str.replace(',', '.'), errors='coerce')
+        return saker_kolumn.groupby(df['tid']).transform(lambda x: (x - x.mean()) / (x.std() if x.std() != 0 else 1))
+
+    if all(col in df_nyko3.columns for col in req_cni):
+        df_nyko3['Index: Care Need (CNI)'] = sum(z_score_n3(df_nyko3, c) for c in req_cni).round(2)
+    else: print(f"⚠️ VARNING: Kan inte beräkna CNI (Nyko 3). Saknar: {[c for c in req_cni if c not in df_nyko3.columns]}")
+        
+    if all(col in df_nyko3.columns for col in req_kksi):
+         df_nyko3['Index: Kris- & Sårbarhet (KKSI)'] = (sum(z_score_n3(df_nyko3, c) for c in req_kksi if c != 'Nettoinkomst (tkr)') - z_score_n3(df_nyko3, 'Nettoinkomst (tkr)')).round(2)
+    else: print(f"⚠️ VARNING: Kan inte beräkna KKSI (Nyko 3). Saknar: {[c for c in req_kksi if c not in df_nyko3.columns]}")
+
+    if all(col in df_nyko3.columns for col in req_aldre):
+        df_nyko3['Index: Äldres Omsorgsbehov'] = sum(z_score_n3(df_nyko3, c) for c in req_aldre).round(2)
+
+    for idx_name, config in index_config.items():
+        z_scores = pd.DataFrame(index=df_nyko3.index)
+        valid_vars = 0
+        saknade_motor = []
+        for var in config["pos"]:
+            col = get_col(df_nyko3, var)
+            if col:
+                z_scores[col] = df_nyko3.groupby('tid')[col].transform(lambda x: (x - x.mean()) / x.std(ddof=0))
+                valid_vars += 1
+            else: saknade_motor.append(var)
+        for var in config["neg"]:
+            col = get_col(df_nyko3, var)
+            if col:
+                z_scores[col] = df_nyko3.groupby('tid')[col].transform(lambda x: -1 * ((x - x.mean()) / x.std(ddof=0)))
+                valid_vars += 1
+            else: saknade_motor.append(var)
+        if valid_vars > 0:
+            df_nyko3[idx_name] = z_scores.sum(axis=1).round(3)
+            if saknade_motor: print(f"⚠️ VARNING: {idx_name} (N3) beräknades, men saknar: {saknade_motor}")
+
+    # --- 10G. STÄDA BORT RÅVARIABLER OCH DÖP OM TILL ALIAS ---
+    df_nyko3.columns = [fix_text(str(c)) for c in df_nyko3.columns]
+    df_nyko3.rename(columns={'Stadsdel': 'basområde'}, inplace=True) 
+    df_nyko3 = df_nyko3.drop(columns=[col for col in ra_kolumner_att_dolja if col in df_nyko3.columns])
+    df_nyko3 = df_nyko3.rename(columns=alias_ordlista)
+
+    # 🚀 FIX: Döp om det inverterade värdet för UI-rullistan, EFTER att indexen räknats
+    ui_rename = {'Kvarboende': 'Omflyttning (Hög)'}
+
+    if 'Kvarboende' in px_merged.columns:
+        px_merged.rename(columns=ui_rename, inplace=True)
+
+    if 'Kvarboende' in df_nyko3.columns:
+        df_nyko3.rename(columns=ui_rename, inplace=True)
+
+    # ==========================================
+    # 🚀 STEG 10H: PRE-EXPORT FILTRERING & RÄTT KARAKTÄR
+    # ==========================================
+    df_nyko3['Inkluderad'] = 1
+    area_col = None
+    for col in df_nyko3.columns:
+        if col.lower().strip() in ['stadsdel', 'område', 'basområde']:
+            area_col = col; break
+
+    if area_col is not None:
+        ogiltiga_ord = ['ej geografisk', 'restförda', 'utan känd', 'på kommunen skriven', 'å kommunen skrivna']
+        mask_ogiltiga = df_nyko3[area_col].str.lower().str.contains('|'.join(ogiltiga_ord), na=False)
+        df_nyko3.loc[mask_ogiltiga, 'Inkluderad'] = 0
+
+        mask_djurgarden = (df_nyko3[area_col] == 'Djurgården') & (df_nyko3['tid'].astype(int) < 2025)
+        df_nyko3.loc[mask_djurgarden, 'Inkluderad'] = 0
+
+        mask_harvestad = (df_nyko3[area_col] == 'Harvestad') & (df_nyko3['tid'].astype(int) < 2021)
+        df_nyko3.loc[mask_harvestad, 'Inkluderad'] = 0
+
+        mask_stangebro = (df_nyko3[area_col] == 'Stångebro') & (df_nyko3['tid'].astype(int) < 2016)
+        df_nyko3.loc[mask_stangebro, 'Inkluderad'] = 0
+
+        mask_omland = (df_nyko3[area_col] == 'Linköpings norra omland') & (df_nyko3['tid'].astype(int) < 2040)
+        df_nyko3.loc[mask_omland, 'Inkluderad'] = 0
+
+        mask_kallerstad = (df_nyko3[area_col] == 'Kallerstad') & (df_nyko3['tid'].astype(int) < 2040)
+        df_nyko3.loc[mask_kallerstad, 'Inkluderad'] = 0
+
+        mask_mjardevi = (df_nyko3[area_col] == 'Mjärdevi') & (df_nyko3['tid'].astype(int) < 2040)
+        df_nyko3.loc[mask_mjardevi, 'Inkluderad'] = 0
+    
+    # ==========================================
+    # 🚀 RÄTTNING: Återskapa färgkodningen (Stad/Tätort/Landsbygd)
+    # ==========================================
+    if 'df_excel' in locals():
+        # 1. Plocka fram de unika stadsdelarna först (73 rader)
+        df_excel_unique = df_excel.drop_duplicates('Stadsdel').copy()
+        
+        # 2. Skapa den säkra ordlistan från den unika dataramen
+        excel_karaktar_map = df_excel_unique.set_index(df_excel_unique['Stadsdel'].astype(str).str.lower().str.strip())['Karaktär_bas'].to_dict()
+        
+        # 3. Applicera karaktären på vår Nyko3 DataFrame!
+        df_nyko3['Karaktär_bas'] = df_nyko3[area_col].astype(str).str.lower().str.strip().map(excel_karaktar_map)
+        
+        # Om någon specifik rad saknar data i Excel, sätt ett snyggt standardvärde
+        df_nyko3['Karaktär_bas'] = df_nyko3['Karaktär_bas'].fillna('Okänd')
+    else:
+        df_nyko3['Karaktär_bas'] = 'Okänd'
+
+    # Detaljnivå och Områdestyp inaktiverade vi ju i JS-rullistan, 
+    # så dessa kan vi behålla som 'Stadsdel' för databasens skull
+    df_nyko3['Karaktär_detalj'] = 'Stadsdel'
+    df_nyko3['Områdestyp'] = 'Stadsdel/Omland'
+
+    # ==========================================
+    # 🚀 2. FLAGGNING FÖR STUDENT- OCH VERKSAMHETSOMRÅDEN (NYKO 3)
+    # ==========================================
+    df_nyko3['Is_Student_Verksamhet'] = 0
+
+    # Ange alla stadsdelar som ska sorteras bort med filtret
+    student_verksamhet_stadsdelar = [
+        'Mjärdevi', 
+        # 'Valla',           # Innehåller stora studentområden (Colonia/Flamman)
+        # 'Ryd',            # Om Ryds studentområde ska kunna sorteras bort separat
+        # 'Mörtlösa',        # Verksamhetsområde
+        'Tornby',           # Handels-/verksamhetsområde
+        'Kallerstad',        # Verksamhetsområde
+        'Stångebro'        # Verksamhetsområde
+    ]
+
+    # Tvätta namnen och jämför
+    stadsdelar_clean = [s.lower().strip() for s in student_verksamhet_stadsdelar]
+    mask_student = df_nyko3[area_col].astype(str).str.lower().str.strip().isin(stadsdelar_clean)
+        
+    # Sätt flaggan till 1
+    df_nyko3.loc[mask_student, 'Is_Student_Verksamhet'] = 1
+        
+    # Utskrift i terminalen för att verifiera!
+    flagagda = df_nyko3[df_nyko3['Is_Student_Verksamhet'] == 1][area_col].unique()
+    print(f"🎓 Flaggade följande stadsdelar som Student/Verksamhet: {list(flagagda)}")
+
+    # Återställ Karaktär_bas från Excel om det finns
+    if 'df_excel' in locals() and area_col is not None:
+        df_excel_unique = df_excel.drop_duplicates('Stadsdel').copy()
+        excel_karaktar_map = df_excel_unique.set_index(df_excel_unique['Stadsdel'].astype(str).str.lower().str.strip())['Karaktär_bas'].to_dict()
+        df_nyko3['Karaktär_bas'] = df_nyko3[area_col].astype(str).str.lower().str.strip().map(excel_karaktar_map).fillna('Okänd')
+    else:
+        df_nyko3['Karaktär_bas'] = 'Okänd'
+
+    df_nyko3['Karaktär_detalj'] = 'Stadsdel'
+    df_nyko3['Områdestyp'] = 'Stadsdel/Omland'
+
+    # --- 10I. EXPORT ---
+    print("\n⏳ Fyller luckor och rensar dubbletter för Nyko 3...")
+    
+    # 🚀 SÄKERHETSÅTGÄRD: Om 'basområde' på något sätt smugit sig in, döp om den!
+    if 'basområde' in df_nyko3.columns:
+        df_nyko3.rename(columns={'basområde': 'Stadsdel'}, inplace=True)
+
+    # 🚀 FIX: Nu sorterar och städar vi enbart på 'Stadsdel'
+    df_nyko3 = df_nyko3.sort_values(by=['Stadsdel', 'tid'])
+    
+    cols_to_fill_n3 = [c for c in df_nyko3.columns if c not in ['Stadsdel', 'tid']]
+    df_nyko3[cols_to_fill_n3] = df_nyko3.groupby('Stadsdel')[cols_to_fill_n3].transform(lambda x: x.ffill().bfill())
+    df_nyko3 = df_nyko3.drop_duplicates(subset=['tid', 'Stadsdel'], keep='last')
+
+    # Exportera
+    output_nyko3 = os.path.join(stat_formler_dir, 'segregation_base_nyko3.csv')
+    df_nyko3.to_csv(output_nyko3, index=False, encoding='utf-8-sig')
+    print(f"✅ KLART! Nyko 3 databas sparad: {output_nyko3}")
+
+except Exception as e:
+    print(f"\n❌ ETT FEL UPPSTOD VID SKAPANDET AV NYKO 3:")
+    import traceback
+    traceback.print_exc()
+
+print("\n🚀 Hela pipelinen är nu körd!")
+
+# ==========================================
+# 11. AVSLUT OCH SPARA
+# ==========================================
+print("\n⏳ Sorterar, fyller luckor och sparar master-filen...")
+try:
+    # 1. Sortera
     final_df = final_df.sort_values(by=['basområde', 'tid']).reset_index(drop=True)
-    final_df.to_csv(csv_output_path, index=False, encoding='utf-8')
+    
+    # 2. Fyll tomma celler per basområde
+    cols_to_fill_n4 = [c for c in final_df.columns if c not in ['basområde', 'tid']]
+    final_df[cols_to_fill_n4] = final_df.groupby('basområde')[cols_to_fill_n4].transform(lambda x: x.ffill().bfill())
+    
+    # 3. Radera dubbletter
+    final_df = final_df.drop_duplicates(subset=['tid', 'basområde'], keep='last')
+
+    # ==========================================
+    # 🚀 FIX: EXAKT MATCHNING MOT SEI_karaktär.xlsx (Namn -> Kommundelskluster)
+    # ==========================================
+    if 'df_excel' in locals() and 'Namn' in df_excel.columns and 'Kommundelskluster' in df_excel.columns:
+        
+        # 1. Kasta tomma rader i SEI-filen
+        valid_rows = df_excel.dropna(subset=['Kommundelskluster']).copy()
+        
+        # 2. Bygg en ren ordbok: Namn -> Kommundelskluster
+        clean_map = {}
+        for _, row in valid_rows.iterrows():
+            area_name = str(row['Namn']).replace('\xa0', ' ').strip()
+            v = row['Kommundelskluster']
+            v_str = str(v).strip()
+            
+            # Tvätta siffran (t.ex. 1.0 -> 1 eller 21.0 -> 21)
+            try: 
+                v_clean = str(int(float(v_str.replace(',', '.'))))
+            except ValueError: 
+                v_clean = v_str
+            
+            if v_clean.lower() != 'nan' and v_clean != '':
+                # Spara med exakt stavning
+                clean_map[area_name] = v_clean
+                # Spara med enbart små bokstäver som säkerhetsnät för osynliga tecken
+                clean_map[area_name.lower()] = v_clean
+
+        # 3. Skottsäker sökfunktion
+        def fetch_cluster(omrade_namn):
+            o_str = str(omrade_namn).replace('\xa0', ' ').strip()
+            # Test 1: Exakt matchning
+            if o_str in clean_map:
+                return clean_map[o_str]
+            # Test 2: Gemener
+            if o_str.lower() in clean_map:
+                return clean_map[o_str.lower()]
+            return 'Okänd'
+
+        # 4. Applicera på final_df
+        final_df['Kommundelskluster'] = final_df['basområde'].apply(fetch_cluster)
+        
+        # --- 🕵️‍♂️ DIAGNOSTIK ---
+        missade = final_df[final_df['Kommundelskluster'] == 'Okänd']['basområde'].unique()
+        if len(missade) > 0:
+            print(f"\n⚠️ VARNING: Följande {len(missade)} basområden saknar fortfarande kluster i SEI-filen:")
+            print(missade)
+        else:
+            print("\n🎉 SUCCESS! Alla 2366 rader i Nyko 4 fick exakt rätt Kommundelskluster!")
+
+    else:
+        final_df['Kommundelskluster'] = 'Okänd'
+        print("❌ VARNING: Kolumnerna 'Namn' eller 'Kommundelskluster' hittades inte i df_excel!")
+    # ==========================================
+
+    # 4. Exportera Master
+    final_df.to_csv(csv_output_path, index=False, encoding='utf-8-sig')
     print(f"💾 KLART! Ny master-databas sparad: {csv_output_path}")
+
 except PermissionError:
     print(f"\n❌ FEL: Kunde inte spara. Har du '{os.path.basename(csv_output_path)}' öppen i Excel?")
 except Exception as e:
     print(f"\n❌ ETT OVÄNTAT FEL UPPSTOD VID SPARANDET:")
+    import traceback
     traceback.print_exc()

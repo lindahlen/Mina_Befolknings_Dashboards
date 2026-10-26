@@ -655,6 +655,100 @@ for raw_name, data_dict in ref_info.items():
 json_gk_info = json.dumps(gk_info, ensure_ascii=False)
 json_ref_info = json.dumps(ref_info, ensure_ascii=False)
 
+# ==========================================
+# AVANCERAD MÅLVAKTSSTATISTIK (SVITER & SÄSONG)# ==========================================
+
+# 1. Bygg översättningsordbok från "Skyttekungar"
+try:
+    df_skytte = pd.read_excel(excel_file, sheet_name="Skyttekungar")
+    col_sasnr = next((c for c in df_skytte.columns if 'säsnr' in str(c).lower()), None)
+    col_sasong_namn = next((c for c in df_skytte.columns if 'säsong' in str(c).lower()), None)
+    if col_sasnr and col_sasong_namn:
+        keys = df_skytte[col_sasnr].astype(str).str.strip()
+        vals = df_skytte[col_sasong_namn].astype(str).str.strip()
+        season_mapping = dict(zip(keys, vals))
+    else:
+        season_mapping = {}
+except:
+    season_mapping = {}
+
+col_season_id = 'Säs' if 'Säs' in df.columns else 'Säsong'
+col_not = 'Not' if 'Not' in df.columns else ('NOT' if 'NOT' in df.columns else None)
+
+home_cols = ['Datum', col_season_id, 'Hemmalag', 'Hemmamålvakt', 'BM'] + ([col_not] if col_not else [])
+away_cols = ['Datum', col_season_id, 'Bortalag', 'Bortamålvakt', 'HM'] + ([col_not] if col_not else [])
+
+# Separera och tagga Hemma/Borta
+home_gk = df[home_cols].copy()
+home_gk.rename(columns={'Hemmalag': 'Lag', 'Hemmamålvakt': 'Målvakt', 'BM': 'Insläppta', col_season_id: 'Säsong_ID'}, inplace=True)
+home_gk['Plats'] = 'home'
+
+away_gk = df[away_cols].copy()
+away_gk.rename(columns={'Bortalag': 'Lag', 'Bortamålvakt': 'Målvakt', 'HM': 'Insläppta', col_season_id: 'Säsong_ID'}, inplace=True)
+away_gk['Plats'] = 'away'
+
+if col_not:
+    home_gk.rename(columns={col_not: 'Not'}, inplace=True)
+    away_gk.rename(columns={col_not: 'Not'}, inplace=True)
+else:
+    home_gk['Not'] = ""
+    away_gk['Not'] = ""
+
+gk_df = pd.concat([home_gk, away_gk])
+
+# Fallback: Plocka årtal från Datum om Säsong_ID saknas i mapping (t.ex. pågående säsong 102 -> 2026)
+gk_df['År_Fallback'] = gk_df['Datum'].astype(str).str[:4]
+gk_df['Säsong_ID'] = gk_df['Säsong_ID'].astype(str).str.strip()
+gk_df['Säsong'] = gk_df['Säsong_ID'].map(season_mapping).fillna(gk_df['År_Fallback'])
+
+gk_df = gk_df.dropna(subset=['Målvakt'])
+gk_df = gk_df[gk_df['Målvakt'].str.strip() != ""]
+gk_df = gk_df[~gk_df['Målvakt'].str.contains("Okänd", case=False, na=False)]
+gk_df = gk_df[~gk_df['Not'].astype(str).str.contains("Annullerad", case=False, na=False)]
+gk_df['Insläppta'] = pd.to_numeric(gk_df['Insläppta'], errors='coerce')
+gk_df = gk_df.dropna(subset=['Insläppta']).sort_values(by=['Målvakt', 'Datum']).reset_index(drop=True)
+
+# 2. Hjälpfunktion för att räkna sviter på olika subset
+def calc_gk_advanced(df_subset):
+    if df_subset.empty:
+        return [], [], []
+    
+    # Nollor
+    df_subset['Nolla'] = (df_subset['Insläppta'] == 0)
+    df_subset['CS_Block'] = (~df_subset['Nolla']).cumsum()
+    cs_agg = df_subset[df_subset['Nolla']].groupby(['Målvakt', 'CS_Block']).agg(
+        CS_Svit=('Målvakt', 'count'), Lag=('Lag', lambda x: ', '.join(x.unique().astype(str))),
+        Säsong=('Säsong', lambda x: f"{x.min()}-{x.max()}" if x.min() != x.max() else str(x.min())),
+        Senaste_Datum=('Datum', 'max')).reset_index()
+    max_cs = cs_agg.sort_values(by=['CS_Svit', 'Senaste_Datum'], ascending=[False, False]).drop_duplicates('Målvakt')
+    
+    # Insläppta
+    df_subset['Insläppt'] = (df_subset['Insläppta'] > 0)
+    df_subset['Conceded_Block'] = (~df_subset['Insläppt']).cumsum()
+    conc_agg = df_subset[df_subset['Insläppt']].groupby(['Målvakt', 'Conceded_Block']).agg(
+        Conceded_Svit=('Målvakt', 'count'), Lag=('Lag', lambda x: ', '.join(x.unique().astype(str))),
+        Säsong=('Säsong', lambda x: f"{x.min()}-{x.max()}" if x.min() != x.max() else str(x.min())),
+        Senaste_Datum=('Datum', 'max')).reset_index()
+    max_conc = conc_agg.sort_values(by=['Conceded_Svit', 'Senaste_Datum'], ascending=[False, False]).drop_duplicates('Målvakt')
+    
+    # Säsong
+    season_cs = df_subset[df_subset['Nolla']].groupby(['Målvakt', 'Lag', 'Säsong']).size().reset_index(name='Nollor_Säsong')
+    top_season = season_cs.sort_values(by=['Nollor_Säsong', 'Säsong'], ascending=[False, False])
+    
+    return max_cs.head(50).to_dict('records'), max_conc.head(50).to_dict('records'), top_season.head(50).to_dict('records')
+
+# 3. Beräkna för Alla, Hemma och Borta
+cs_all, conc_all, seas_all = calc_gk_advanced(gk_df.copy())
+cs_home, conc_home, seas_home = calc_gk_advanced(gk_df[gk_df['Plats'] == 'home'].copy())
+cs_away, conc_away, seas_away = calc_gk_advanced(gk_df[gk_df['Plats'] == 'away'].copy())
+
+gk_advanced_export = {
+    "all": {"longest_cs_streak": cs_all, "longest_conceded_streak": conc_all, "most_cs_season": seas_all},
+    "home": {"longest_cs_streak": cs_home, "longest_conceded_streak": conc_home, "most_cs_season": seas_home},
+    "away": {"longest_cs_streak": cs_away, "longest_conceded_streak": conc_away, "most_cs_season": seas_away}
+}
+json_gk_advanced = json.dumps(gk_advanced_export, ensure_ascii=False)
+
 # ---------------------------------------------------------
 # 3. LÄS IN SÄSONGSINFORMATION OCH POÄNGSYSTEM
 # ---------------------------------------------------------
@@ -794,7 +888,7 @@ except Exception as e:
     json_master_belt = json.dumps({}, ensure_ascii=False)
 
 # Förbered JSON data
-json_match_data = df.to_json(orient="records", force_ascii=False)
+json_match_data = df.to_json(orient="records", force_ascii=False, date_format="iso")
 json_teams_data = json.dumps(all_teams, ensure_ascii=False)
 json_seasons_data = json.dumps(all_seasons, ensure_ascii=False)
 json_season_info = json.dumps(season_info, ensure_ascii=False)
@@ -945,71 +1039,93 @@ html_template = """
         </section>
 
         <!-- FLIK 2: Matchsök -->
-        <section id="tab-search" class="tab-content">
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-8">
-                
-                <!-- NYTT: Rubrik och Ghost Switch på samma rad -->
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3 border-b border-slate-100 pb-3">
-                    <h2 class="text-xl font-bold text-slate-800 m-0">Avancerad Matchsökning</h2>
-                    
-                    <label class="flex items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-900 bg-amber-50 border border-amber-200 px-3 py-2 rounded-md cursor-pointer transition-colors shadow-sm" title="Visar matcher som strukits ur de officiella tabellerna">
-                        <input type="checkbox" id="toggle-annulled-search" onchange="performSearch()" class="rounded border-amber-300 text-amber-600 focus:ring-amber-500 w-3.5 h-3.5 mt-0.5">
-                        <span class="whitespace-nowrap">Inkludera annullerade (ex. MFF 1933)</span>
-                    </label>
-                </div>
-                <!-- --------------------------------------- -->
+<section id="tab-search" class="tab-content">
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-8">
+        
+        <!-- Rubrik och Ghost Switch på samma rad -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3 border-b border-slate-100 pb-3">
+            <h2 class="text-xl font-bold text-slate-800 m-0">Avancerad Matchsökning</h2>
+            
+            <label class="flex items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-900 bg-amber-50 border border-amber-200 px-3 py-2 rounded-md cursor-pointer transition-colors shadow-sm" title="Visar matcher som strukits ur de officiella tabellerna">
+                <input type="checkbox" id="toggle-annulled-search" onchange="performSearch()" class="rounded border-amber-300 text-amber-600 focus:ring-amber-500 w-3.5 h-3.5 mt-0.5">
+                <span class="whitespace-nowrap">Inkludera annullerade (ex. MFF 1933)</span>
+            </label>
+        </div>
+        <!-- --------------------------------------- -->
 
-                <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Säsong</label>
-                        <div class="flex items-center gap-1">
-                            <button onclick="changeSeasonLocal('search-season', 1)" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Föregående säsong i listan">◀</button>
-                            <select id="search-season" onchange="updateSearchPhaseDropdown()" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select>
-                            <button onclick="changeSeasonLocal('search-season', -1)" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Nästa säsong i listan">▶</button>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Omgång</label>
-                        <input type="text" id="search-round" placeholder="T.ex. 15 eller M1" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Lag</label>
-                        <select id="search-team" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1" title="Lagets mål - Motståndarens mål">Resultat (Mål)</label>
-                        <div class="flex items-center gap-2">
-                            <input type="number" id="search-hm" placeholder="Gjorda" min="0" class="w-full border border-slate-300 rounded-md p-2 text-center bg-slate-50">
-                            <span class="font-bold text-slate-400">-</span>
-                            <input type="number" id="search-bm" placeholder="Insläppta" min="0" class="w-full border border-slate-300 rounded-md p-2 text-center bg-slate-50">
-                        </div>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="clearSearch()" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium py-2 px-2 rounded-md transition-colors shadow-sm text-sm" title="Rensa filter">Rensa</button>
-                        <button onclick="performSearch()" class="w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-2 rounded-md transition-colors shadow-sm text-sm">Sök</button>
-                    </div>
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-4 items-end">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Säsong</label>
+                <div class="flex items-center gap-1">
+                    <button onclick="changeSeasonLocal('search-season', 1); performSearch()" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Föregående säsong i listan">◀</button>
+                    <!-- NYTT: performSearch() tillagt vid ändring -->
+                    <select id="search-season" onchange="updateSearchPhaseDropdown(); performSearch()" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select>
+                    <button onclick="changeSeasonLocal('search-season', -1); performSearch()" class="p-2 bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 rounded-md transition-colors border border-slate-200" title="Nästa säsong i listan">▶</button>
                 </div>
             </div>
-
-            <div id="search-results" class="hidden">
-                <div class="mb-2 text-sm text-slate-600 font-medium" id="search-summary-text"></div>
-                <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
-                    <div class="overflow-x-auto custom-scroll" style="max-height: 750px;">
-                        <table class="w-full text-left text-sm whitespace-nowrap relative">
-                            <thead class="bg-slate-100 text-slate-600 font-medium border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-                                <tr>
-                                    <th class="px-4 py-3">Säsong</th><th class="px-4 py-3">Omgång</th><th class="px-4 py-3">Datum</th>
-                                    <th class="px-4 py-3 text-right">Hemmalag</th><th class="px-4 py-3 text-center">Resultat (HT)</th>
-                                    <th class="px-4 py-3">Bortalag</th><th class="px-4 py-3 text-right">Publik</th>
-                                </tr>
-                            </thead>
-                            <tbody id="search-table-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                        </table>
-                    </div>
-                    <div id="search-notes" class="bg-slate-50 p-3 border-t border-slate-200 text-xs text-rose-600 font-semibold flex flex-col gap-1 hidden"></div>
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Omgång</label>
+                <!-- NYTT: oninput gör att den söker direkt när du skriver en siffra -->
+                <input type="text" id="search-round" oninput="performSearch()" placeholder="T.ex. 15 eller M1" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500">
+            </div>
+            
+            <div class="flex gap-2 w-full">
+    <div class="flex-1">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Lag</label>
+        <!-- Helt ren select utan onchange -->
+        <select id="search-team" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500">
+            <option value="">-- Alla lag --</option>
+            <!-- Fylls dynamiskt av JS -->
+        </select>
+    </div>
+    
+    <div id="div-search-venue" class="hidden flex-1">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Spelplats</label>
+        <!-- Denna kan behålla sin onchange eftersom performSearch redan verkar vara globalt tillgänglig -->
+        <select id="search-venue" onchange="performSearch()" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500">
+            <option value="ALLA">Hemma & Borta</option>
+            <option value="HEMMA">Endast Hemma</option>
+            <option value="BORTA">Endast Borta</option>
+        </select>
+    </div>
+</div>
+            
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1" title="Lagets mål - Motståndarens mål">Resultat (Mål)</label>
+                <div class="flex items-center gap-2">
+                    <!-- NYTT: Söker direkt när du byter mål -->
+                    <input type="number" id="search-hm" onchange="performSearch()" placeholder="Gjorda" min="0" class="w-full border border-slate-300 rounded-md p-2 text-center bg-slate-50">
+                    <span class="font-bold text-slate-400">-</span>
+                    <input type="number" id="search-bm" onchange="performSearch()" placeholder="Insläppta" min="0" class="w-full border border-slate-300 rounded-md p-2 text-center bg-slate-50">
                 </div>
             </div>
-        </section>
+            
+            <div class="flex gap-2">
+                <button onclick="clearSearch()" class="w-1/3 bg-slate-200 hover:bg-slate-300 text-slate-800 font-medium py-2 px-2 rounded-md transition-colors shadow-sm text-sm" title="Rensa filter">Rensa</button>
+                <button onclick="performSearch()" class="w-2/3 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-2 rounded-md transition-colors shadow-sm text-sm">Sök</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="search-results" class="hidden">
+        <div class="mb-2 text-sm text-slate-600 font-medium" id="search-summary-text"></div>
+        <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto custom-scroll" style="max-height: 750px;">
+                <table class="w-full text-left text-sm whitespace-nowrap relative">
+                    <thead class="bg-slate-100 text-slate-600 font-medium border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+                        <tr>
+                            <th class="px-4 py-3">Säsong</th><th class="px-4 py-3">Omgång</th><th class="px-4 py-3">Datum</th>
+                            <th class="px-4 py-3 text-right">Hemmalag</th><th class="px-4 py-3 text-center">Resultat (HT)</th>
+                            <th class="px-4 py-3">Bortalag</th><th class="px-4 py-3 text-right">Publik</th>
+                        </tr>
+                    </thead>
+                    <tbody id="search-table-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                </table>
+            </div>
+            <div id="search-notes" class="bg-slate-50 p-3 border-t border-slate-200 text-xs text-rose-600 font-semibold flex flex-col gap-1 hidden"></div>
+        </div>
+    </div>
+</section>
 
 <!-- FLIK 3: Rekord -->
 <section id="tab-records" class="tab-content">
@@ -1023,6 +1139,7 @@ html_template = """
             </div>
             <div class="flex flex-wrap bg-slate-100 p-1 rounded-lg border border-slate-200 gap-1">
                 <button id="btn-view-match" onclick="toggleRecordsView('match')" class="px-3 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all whitespace-nowrap">🛡️ Lagrekord</button>
+                <button id="btn-view-htft" onclick="toggleRecordsView('htft')" class="px-2 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">🔬 HT/FT-Labbet</button>
                 <button id="btn-view-players" onclick="toggleRecordsView('players')" class="px-2 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">⚽ Skyttar & Priser</button>
                 <button id="btn-view-gk" onclick="toggleRecordsView('gk')" class="px-2 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">🧤 Målvaktsrekord</button>
                 <button id="btn-view-ref" onclick="toggleRecordsView('ref')" class="px-2 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">⚖️ Domarrekord</button>
@@ -1179,6 +1296,9 @@ html_template = """
             <option value="conceded">Flest Insläppta Mål</option>
             <option value="cleansheets">Flest Hållna Nollor</option>
             <option value="cs_percent">Högst Andel Nollor</option>
+            <option value="cs_streak">Flest hållna nollor i svit</option>
+            <option value="cs_season_record">Flest hållna nollor på en säsong</option>
+            <option value="conceded_streak">Flest matcher i svit med insläppta mål</option>
             !-- NYTT TILLÄGG: Tuffaste dagen -->
             <option value="most_conceded_single">Tuffaste dagen (Flest insläppta i en match)</option>
             <option value="youngest">Yngsta Debutanter</option>
@@ -1275,6 +1395,62 @@ html_template = """
             </table>
         </div>
     </div>
+</div>
+
+<!-- CONTAINER 6: HT/FT-LABBET (Nördiga Vändningar & Tapp) -->
+<div id="records-htft-container" class="hidden">
+    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center border-b-2 border-slate-200 pb-2 mt-6 mb-4 gap-3">
+        <h2 class="text-xl font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">🔬 Halvtid ➔ Fulltid</h2>
+        
+        <div class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto">
+    <!-- NYTT: Hemma/Borta filter -->
+    <select id="htft-location" onchange="window.renderHTFTStats()" class="bg-slate-100 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-blue-500 block p-2 font-bold outline-none cursor-pointer w-full sm:w-auto shadow-sm transition-colors">
+        <option value="ALL">🏟️ Hemma & Borta</option>
+        <option value="HOME">🏠 Endast Hemma</option>
+        <option value="AWAY">🚌 Endast Borta</option>
+    </select>
+
+    <select id="htft-category" onchange="window.renderHTFTStats()" class="bg-slate-100 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-blue-500 block p-2 font-bold outline-none cursor-pointer w-full sm:w-auto shadow-sm transition-colors">
+        <option value="turnaround_win">Vändningar till seger (Underläge ➔ Seger)</option>
+        <option value="collapse_loss">Tapp till förlust (Ledning ➔ Förlust)</option>
+        <option value="hold_lead_win">Stängare (Ledning ➔ Seger)</option>
+        <option value="win_both">Total dominans (Vunnit båda halvlekarna)</option>
+        <option value="draw_to_win">Räddare (Oavgjort ➔ Seger)</option>
+        <option value="draw_to_loss">Sena Tapp (Oavgjort ➔ Förlust)</option>
+        <option value="trail_to_loss">Djupt vatten (Underläge ➔ Förlust)</option>
+        <option value="lose_both">Total kollaps (Förlorat båda halvlekarna)</option>
+        <option value="lead_to_draw">Tappade poäng (Ledning ➔ Oavgjort)</option>
+        <option value="trail_to_draw">Räddade poäng (Underläge ➔ Oavgjort)</option>
+        <option value="draw_to_draw">Låst läge (Oavgjort ➔ Oavgjort)</option>
+        <!-- Nya tillägg! -->
+        <option disabled>──────────</option>
+        <option value="win_2h_only">Andra halvleks-mästare (Vunnit 2:a halvlek isolerat)</option>
+        <option value="lose_2h_only">Andra halvleks-spöke (Förlorat 2:a halvlek isolerat)</option>
+            </select>
+            
+            <select id="htft-mode" onchange="window.renderHTFTStats()" class="bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-slate-500 block p-2 font-bold outline-none cursor-pointer w-full sm:w-auto shadow-sm transition-colors">
+                <option value="count">Totalt Antal</option>
+                <option value="percent">Andel av spelade matcher (%)</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden mb-2">
+        <div class="overflow-y-auto max-h-[600px] lg:max-h-[800px] xl:max-h-[80vh]">
+            <table class="w-full text-left text-sm whitespace-nowrap">
+                <thead class="bg-slate-100 text-xs text-slate-500 uppercase sticky top-0 shadow-sm z-10 border-b border-slate-200">
+                    <tr>
+                        <th class="px-4 py-3 w-10 text-center">Plac</th>
+                        <th class="px-4 py-3">Lag</th>
+                        <th class="px-4 py-3 text-center">Relevanta Matcher</th>
+                        <th class="px-4 py-3 text-center font-bold text-blue-600" id="htft-metric-header">Antal</th>
+                    </tr>
+                </thead>
+                <tbody id="htft-table-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="text-xs text-slate-500 mb-6 px-1">* Analysen bygger enbart på matcher där både halvtids- och slutresultat finns registrerat och tar hänsyn till om laget spelade hemma eller borta.</div>
 </div>
 </section>
 
@@ -1593,86 +1769,115 @@ html_template = """
 
         <!-- FLIK 9: Analys (Förutsägbarhet) -->
         <section id="tab-analysis" class="tab-content">
-            <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-6">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h2 class="text-xl font-bold mb-1">Har serien "satt sig"?</h2>
-                        <p class="text-slate-500 text-sm max-w-3xl">Mät tabellens förutsägbarhet över tid. Välj mellan att se utvecklingen över en säsong/epok i en graf, eller jämför alla säsonger i en specifik omgång.</p>
-                    </div>
-                    <div class="tooltip-container relative cursor-pointer z-50">
-                        <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center font-bold font-serif">i</div>
-                        <div class="tooltip-content hidden absolute right-0 top-10 w-80 bg-slate-800 text-white text-xs p-4 rounded shadow-xl">
-                            <p class="font-bold mb-2 text-sm text-blue-300">Analysmetoder:</p>
-                            <p class="mb-2"><span class="font-bold text-emerald-400">Positionsfel (MAE):</span> Visar hur många placeringar lagen i snitt ligger ifrån sin slutgiltiga placering. Ett värde på 1.5 betyder att lagen i snitt skiljer sig 1.5 placeringar från facit.</p>
-                            <p class="mb-2"><span class="font-bold text-emerald-400">Spearmans Rangkorrelation:</span> Ett matematiskt mått mellan -1 och 1. Värdet 1.0 betyder att tabellen är 100% identisk med sluttabellen. Allt över 0.8 anses vara ett mycket starkt samband.</p>
-                            <p><span class="font-bold text-blue-300">Delstrider (Topp/Botten 3):</span> Rankingen skalas om från 1 till 3 internt för dessa lag innan Spearmans beräknas, för att säkerställa att värdet håller sig strikt inom -1 till 1.</p>
-                        </div>
-                    </div>
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-6">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h2 class="text-xl font-bold mb-1">Har serien "satt sig"?</h2>
+                <p class="text-slate-500 text-sm max-w-3xl">Mät tabellens förutsägbarhet över tid. Välj mellan att se utvecklingen i en graf eller jämföra säsonger vid en specifik skärningspunkt (kronologiskt, bakifrån eller i % av säsongen).</p>
+            </div>
+            <div class="tooltip-container relative cursor-pointer z-50">
+                <div class="bg-blue-100 text-blue-800 rounded-full w-8 h-8 flex items-center justify-center font-bold font-serif">i</div>
+                <div class="tooltip-content hidden absolute right-0 top-10 w-80 bg-slate-800 text-white text-xs p-4 rounded shadow-xl">
+                    <p class="font-bold mb-2 text-sm text-blue-300">Analysmetoder & Perspektiv:</p>
+                    <p class="mb-2"><span class="font-bold text-emerald-400">Positionsfel (MAE):</span> Visar hur många placeringar lagen i snitt ligger ifrån sin slutgiltiga placering. Ett lägre värde är mer förutsägbart. Ett värde på 1.5 betyder att lagen i snitt skiljer sig 1.5 placeringar från facit.</p>
+                    <p class="mb-2"><span class="font-bold text-emerald-400">Spearmans Korrelation:</span> Värde mellan -1 och 1. Värdet 1.0 betyder att tabellen är 100% identisk med sluttabellen. Allt över 0.8 anses vara ett mycket starkt samband med sluttabellen.</p>
+                    <p class="mb-2"><span class="font-bold text-blue-300">Nedräkning (-N):</span> Ställer säsonger sida vid sida utifrån antal omgångar kvar (t.ex. -5 omgångar kvar för både 12- och 16-lagsserier).</p>
+                    <p><span class="font-bold text-blue-300">Säsongsproportion (%):</span> Jämför seriens status vid 25%, 50% (halvtid) och 75% spelade matcher.</p><br>
+                    <p><span class="font-bold text-blue-300">Delstrider (Topp/Botten 3):</span> Rankingen skalas om från 1 till 3 internt för dessa lag innan Spearmans beräknas, för att säkerställa att värdet håller sig strikt inom -1 till 1.</p>
                 </div>
+            </div>
+        </div>
 
-                <div class="flex gap-4 mb-6 border-b border-slate-200 pb-2">
-                    <button onclick="toggleAnalysisMode('chart')" id="btn-mode-chart" class="font-bold text-blue-600 border-b-2 border-blue-600 px-2 pb-1 transition-colors">Utveckling över omgångar</button>
-                    <button onclick="toggleAnalysisMode('table')" id="btn-mode-table" class="font-medium text-slate-500 hover:text-blue-600 px-2 pb-1 transition-colors">Jämför vid specifik omgång</button>
+        <div class="flex gap-4 mb-6 border-b border-slate-200 pb-2">
+            <button onclick="toggleAnalysisMode('chart')" id="btn-mode-chart" class="font-bold text-blue-600 border-b-2 border-blue-600 px-2 pb-1 transition-colors">Utveckling över omgångar</button>
+            <button onclick="toggleAnalysisMode('table')" id="btn-mode-table" class="font-medium text-slate-500 hover:text-blue-600 px-2 pb-1 transition-colors">Jämför vid specifik skärningspunkt</button>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1" id="lbl-analysis-season">Välj Epok / Säsong</label>
+                <select id="analysis-season" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select>
+            </div>
+
+            <!-- NYTT: Linjeringsperspektiv -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Perspektiv / Linjering</label>
+                <select id="analysis-alignment" onchange="updateAnalysisInputLabels(); runPredictabilityAnalysis();" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500 font-semibold text-slate-700">
+                    <option value="FORWARD">Kronologisk (Omgång 1 ➔ N)</option>
+                    <option value="COUNTDOWN">Nedräkning (N ➔ Omgångar kvar)</option>
+                    <option value="PERCENT">Säsongsproportion (25%, 50%, 75%)</option>
+                </select>
+            </div>
+
+            <div id="div-analysis-round" class="hidden">
+                <label class="block text-sm font-medium text-slate-700 mb-1" id="lbl-analysis-round-input">Utvärdera efter omgång</label>
+                <input type="number" id="analysis-round" value="10" min="1" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500">
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Fokusområde</label>
+                <select id="analysis-focus" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500">
+                    <option value="all">Hela tabellen</option>
+                    <option value="top">Toppstriden (3 lag)</option>
+                    <option value="bottom">Bottenstriden (3 lag)</option>
+                </select>
+            </div>
+
+            <div>
+                <button onclick="runPredictabilityAnalysis()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md shadow-sm transition-colors">Kör Analys</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="analysis-results" class="hidden">
+        <div id="analysis-warning" class="hidden mb-4 p-4 rounded-md text-sm border"></div>
+        <div id="analysis-chart-container" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-6">
+            <div class="relative h-96 w-full"><canvas id="analysisChart"></canvas></div>
+        </div>
+        <div id="analysis-comparison-table" class="hidden bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden mb-6">
+            <div class="bg-slate-50 p-3 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="font-bold text-slate-700" id="comparison-title">Jämförelse vid omgång X</h3>
+            </div>
+            <div class="overflow-x-auto custom-scroll" style="max-height: 500px;">
+                <table class="w-full text-left text-sm whitespace-nowrap">
+                    <thead class="bg-slate-100 text-slate-600 font-medium border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+                        <tr>
+                            <th class="p-3">Säsong (Mål-omgång)</th>
+                            <th class="p-3 text-center">Positionsfel (MAE)</th>
+                            <th class="p-3 text-center">Spearmans Korrelation</th>
+                        </tr>
+                    </thead>
+                    <tbody id="comparison-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="analysis-details" class="hidden bg-slate-800 rounded-lg shadow-lg border border-slate-700 p-6 text-white mb-6">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h3 class="text-xl font-bold text-blue-300" id="details-title">Omgång X</h3>
+                    <p class="text-sm text-slate-400">Jämförelse mellan denna punkt och sluttabellen.</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1" id="lbl-analysis-season">Välj Epok / Säsong</label>
-                        <select id="analysis-season" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500"></select>
-                    </div>
-                    <div id="div-analysis-round" class="hidden">
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Utvärdera efter omgång</label>
-                        <input type="number" id="analysis-round" value="10" min="1" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Fokusområde</label>
-                        <select id="analysis-focus" class="w-full border border-slate-300 rounded-md p-2 bg-slate-50 focus:ring-blue-500">
-                            <option value="all">Hela tabellen</option><option value="top">Toppstriden (3 lag)</option><option value="bottom">Bottenstriden (3 lag)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <button onclick="runPredictabilityAnalysis()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-4 rounded-md shadow-sm">Kör Analys</button>
-                    </div>
+                <div class="text-right">
+                    <div class="text-sm text-slate-400">Genomsnittligt fel: <span id="details-mae" class="text-white font-bold"></span> placeringar</div>
+                    <div class="text-sm text-slate-400">Spearmans Korrelation: <span id="details-spearman" class="text-emerald-400 font-bold"></span></div>
                 </div>
             </div>
-            
-            <div id="analysis-results" class="hidden">
-                <div id="analysis-warning" class="hidden mb-4 p-4 rounded-md text-sm border"></div>
-                <div id="analysis-chart-container" class="bg-white p-6 rounded-lg shadow-sm border border-slate-200 mb-6">
-                    <div class="relative h-96 w-full"><canvas id="analysisChart"></canvas></div>
-                </div>
-                <div id="analysis-comparison-table" class="hidden bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden mb-6">
-                    <div class="bg-slate-50 p-3 border-b border-slate-200 flex justify-between items-center"><h3 class="font-bold text-slate-700" id="comparison-title">Jämförelse vid omgång X</h3></div>
-                    <div class="overflow-x-auto custom-scroll" style="max-height: 500px;">
-                        <table class="w-full text-left text-sm whitespace-nowrap">
-                            <thead class="bg-slate-100 text-slate-600 font-medium border-b border-slate-200 sticky top-0 z-10 shadow-sm">
-                                <tr><th class="p-3">Säsong</th><th class="p-3 text-center">Positionsfel (MAE)</th><th class="p-3 text-center">Spearmans Korrelation</th></tr>
-                            </thead>
-                            <tbody id="comparison-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
-                        </table>
-                    </div>
-                </div>
-                <div id="analysis-details" class="hidden bg-slate-800 rounded-lg shadow-lg border border-slate-700 p-6 text-white mb-6">
-                    <div class="flex justify-between items-end mb-6">
-                        <div>
-                            <h3 class="text-xl font-bold text-blue-300" id="details-title">Omgång X</h3>
-                            <p class="text-sm text-slate-400">Jämförelse mellan denna omgång och sluttabellen.</p>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-sm text-slate-400">Genomsnittligt fel: <span id="details-mae" class="text-white font-bold"></span> placeringar</div>
-                            <div class="text-sm text-slate-400">Spearmans Korrelation: <span id="details-spearman" class="text-emerald-400 font-bold"></span></div>
-                        </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-sm whitespace-nowrap bg-slate-900 rounded-lg overflow-hidden">
-                            <thead class="bg-slate-700 text-slate-300 border-b border-slate-600">
-                                <tr><th class="p-3">Lag</th><th class="p-3 text-center">Placering Nu</th><th class="p-3 text-center text-emerald-300">Slutplacering (Facit)</th><th class="p-3 text-center font-bold">Diff</th></tr>
-                            </thead>
-                            <tbody id="details-body" class="divide-y divide-slate-800"></tbody>
-                        </table>
-                    </div>
-                </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm whitespace-nowrap bg-slate-900 rounded-lg overflow-hidden">
+                    <thead class="bg-slate-700 text-slate-300 border-b border-slate-600">
+                        <tr>
+                            <th class="p-3">Lag</th>
+                            <th class="p-3 text-center">Placering Nu</th>
+                            <th class="p-3 text-center text-emerald-300">Slutplacering (Facit)</th>
+                            <th class="p-3 text-center font-bold">Diff</th>
+                        </tr>
+                    </thead>
+                    <tbody id="details-body" class="divide-y divide-slate-800"></tbody>
+                </table>
             </div>
-        </section>
+        </div>
+    </div>
+</section>
 
         <!-- FLIK 10: Matchresultat -->
         <section id="tab-results" class="tab-content">
@@ -1879,7 +2084,8 @@ html_template = """
         const TOP_SCORERS = %%TOP_SCORERS_JSON%%;
         const FIRST_SCORERS = %%FIRST_SCORERS_JSON%%; // <-- NY: Fångar upp premiärmålskyttarna från Python!
         const MASTER_BELT_DATA = %%MASTER_BELT_JSON%%;
-        
+        const GK_ADVANCED_STATS = %%GK_ADVANCED_STATS_JSON%%; // <-- LÄGG TILL DENNA!
+
         // --- GLOBAL FLAGGA FÖR "SPÖK-MATCHER" (Soft Delete) ---
         window.forceIncludeAnnulled = false; // <-- NY: Kontrollerar om MFF 1933 ska visas
 
@@ -1894,6 +2100,68 @@ html_template = """
                 uppdateraDashboard(); 
             }
         }
+
+        window.getContextualTeamName = function(team, season) {
+    let defaultClass = "text-xs text-slate-500";
+    if (!team || !season) return `(<span class="${defaultClass}">${team}</span>)`;
+    
+    let safeTeam = String(team).trim();
+    let safeSeason = String(season).trim();
+
+    // --- NYTT: Smart uppslagning (Fuzzy Matching) ---
+    // 1. Hitta rätt säsong genom att bara jämföra de 4 första tecknen (t.ex. "1924")
+    let seasonKey = Object.keys(TEAM_MERITS).find(k => k.substring(0, 4) === safeSeason.substring(0, 4));
+    
+    let mInfo = null;
+    if (seasonKey && TEAM_MERITS[seasonKey]) {
+        // 2. Hitta rätt lag oavsett stora/små bokstäver
+        let teamKey = Object.keys(TEAM_MERITS[seasonKey]).find(k => k.toLowerCase() === safeTeam.toLowerCase());
+        if (teamKey) {
+            mInfo = TEAM_MERITS[seasonKey][teamKey];
+        }
+    }
+
+    let isNewcomer = false;
+    let isDefendingChamp = false; 
+    let isEventualChamp = false;
+
+    if (mInfo) {
+        if (mInfo.nya && String(mInfo.nya).toLowerCase().includes('ny')) isNewcomer = true;
+        if (mInfo.regerande === true) isDefendingChamp = true;
+        if (mInfo.merit && String(mInfo.merit).toLowerCase().includes('mästare')) isEventualChamp = true;
+    }
+
+    let styleClass = defaultClass;
+    let tooltip = "";
+
+    // --- LOGIK FÖR FÄRGER OCH GRADIENTER ---
+    if (isNewcomer && isEventualChamp) {
+        styleClass = "text-xs bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent font-bold cursor-help";
+        tooltip = "Nykomling som vann SM-guld samma säsong";
+    } 
+    else if (isDefendingChamp && isEventualChamp) {
+        styleClass = "text-xs bg-gradient-to-r from-amber-500 to-blue-600 bg-clip-text text-transparent font-bold cursor-help";
+        tooltip = "Regerande mästare som försvarade guldet";
+    }
+    else if (isDefendingChamp) {
+        styleClass = "text-xs text-amber-500 font-bold cursor-help";
+        tooltip = "Regerande mästare i denna match";
+    }
+    else if (isEventualChamp) {
+        styleClass = "text-xs text-blue-600 font-bold cursor-help";
+        tooltip = "Blev mästare denna säsong";
+    }
+    else if (isNewcomer) {
+        styleClass = "text-xs text-emerald-600 font-bold cursor-help";
+        tooltip = "Nykomling i serien";
+    }
+
+    if (styleClass !== defaultClass) {
+        return `(<span class="${styleClass}" title="${tooltip}">${safeTeam}</span>)`;
+    }
+    
+    return `(<span class="${styleClass}">${safeTeam}</span>)`;
+};
 
         let currentOverviewData = []; let currentOverviewSort = { col: 'played', asc: false }; let currentStreakMatches = {}; 
         let globalAllStreaks = []; 
@@ -2289,17 +2557,23 @@ html_template = """
             let html = currentOverviewData.map(r => `<tr class="hover:bg-slate-50"><td class="px-4 py-2 font-medium">${r.team}</td><td class="px-4 py-2 text-center bg-slate-50 border-x border-slate-100">${r.played}</td><td class="px-4 py-2 text-center text-emerald-600 font-semibold">${r.w}</td><td class="px-4 py-2 text-center text-slate-500">${r.d}</td><td class="px-4 py-2 text-center text-rose-600">${r.l}</td><td class="px-4 py-2 text-center">${r.gf}</td><td class="px-4 py-2 text-center">${r.ga}</td><td class="px-4 py-2 text-center font-bold ${r.gd > 0 ? 'text-emerald-600' : r.gd < 0 ? 'text-rose-600' : ''}">${r.gd > 0 ? '+'+r.gd : r.gd}</td></tr>`).join('');
             document.getElementById('h2h-overview-body').innerHTML = html;
         }
-
+        
         function clearSearch() {
             document.getElementById('search-round').value = ""; document.getElementById('search-hm').value = ""; document.getElementById('search-bm').value = "";
             if (SEASONS.length > 0) document.getElementById('search-season').value = [...SEASONS].reverse()[0];
             updateSearchTeamDropdown(); document.getElementById('search-team').value = ""; performSearch();
         }
-
+        
         function performSearch() {
-            const season = document.getElementById('search-season').value; const roundRaw = document.getElementById('search-round').value.trim().toUpperCase();
-            const team = document.getElementById('search-team').value; const searchGoalsTeam = document.getElementById('search-hm').value; const searchGoalsOpp = document.getElementById('search-bm').value;
-            
+            const season = document.getElementById('search-season').value; 
+            const roundRaw = document.getElementById('search-round').value.trim().toUpperCase();
+            const team = document.getElementById('search-team').value; 
+            const searchGoalsTeam = document.getElementById('search-hm').value; 
+            const searchGoalsOpp = document.getElementById('search-bm').value;
+    
+            // --- NYTT: Läs av Spelplats (Hemma/Borta) ---
+            const venue = document.getElementById('search-venue') ? document.getElementById('search-venue').value : "ALLA";
+                        
             // --- NYTT: Läs av Ghost Switch för Matchsök ---
             const includeAnnulled = document.getElementById('toggle-annulled-search')?.checked || false;
 
@@ -2310,7 +2584,20 @@ html_template = """
                 // --- NYTT: Dölj annullerade om switchen är av ---
                 if (!includeAnnulled && m.Annullerad) return false;
 
-                if (team && m.Hemmalag !== team && m.Bortalag !== team) return false;
+                // --- NYTT: Smart filtrering för Lag + Spelplats ---
+                if (team) {
+                    let isHome = m.Hemmalag === team;
+                    let isAway = m.Bortalag === team;
+            
+                    // 1. Laget måste spela i matchen
+                    if (!isHome && !isAway) return false;
+            
+                    // 2. Kolla Hemma/Borta-regeln om den är aktiverad
+                    if (venue === "HEMMA" && !isHome) return false;
+                    if (venue === "BORTA" && !isAway) return false;
+                }
+                // ---------------------------------------------------
+
                 let mHm = parseInt(m.HM); let mBm = parseInt(m.BM);
                 if (isNaN(mHm) || isNaN(mBm)) return true; 
                 if (team) {
@@ -2340,12 +2627,21 @@ html_template = """
             
             let tableHTML = ''; let totalPublik = 0, matcherMedPublik = 0;
             let matchNotes = new Set();
+            
+            // --- NYTT: Variabel för att räkna totalt antal mål ---
+            let totalGoals = 0;
 
             filtered.forEach(match => {
                 let displayDate = formatDate(match.Matchdatum, match.År); let htText = (match.HMF !== "" && match.BMF !== "") ? `<span class="text-[10px] text-slate-400 block">(${match.HMF}-${match.BMF})</span>` : "";
                 if (match.Publik !== "") { totalPublik += match.Publik; matcherMedPublik++; }
 
                 let hm = parseInt(match.HM); let bm = parseInt(match.BM);
+                
+                // --- NYTT: Summera målen om de är giltiga siffror ---
+                if (!isNaN(hm) && !isNaN(bm)) {
+                    totalGoals += (hm + bm);
+                }
+
                 let notText = String(match.NOT).toUpperCase();
                 
                 let isWOH = notText.includes("W.O; H") || notText.includes("AVBRUTEN; V") || notText.includes("EJ KVALIFICERAD SPELARE; V");
@@ -2385,7 +2681,9 @@ html_template = """
             if (nHtml !== "") { notesEl.innerHTML = nHtml; notesEl.classList.remove('hidden'); } else { notesEl.classList.add('hidden'); }
 
             let snitt = matcherMedPublik > 0 ? Math.round(totalPublik / matcherMedPublik).toLocaleString('sv-SE') : 0;
-            document.getElementById('search-summary-text').innerHTML = `Hittade <span class="font-bold text-blue-600">${filtered.length}</span> matcher. ${matcherMedPublik > 0 ? `Snitt: <span class="font-bold">${snitt}</span>` : ''}`;
+            // --- NYTT: Uppdaterad sträng med Totalt antal mål och Publiksnitt istället för bara Snitt ---
+            document.getElementById('search-summary-text').innerHTML = `Hittade <span class="font-bold text-blue-600">${filtered.length}</span> matcher. Totalt antal mål: <span class="font-bold text-slate-700">${totalGoals}</span>. ${matcherMedPublik > 0 ? `Publiksnitt: <span class="font-bold text-slate-700">${snitt}</span>` : ''}`;
+    
             document.getElementById('search-results').classList.remove('hidden');
         }
 
@@ -2569,7 +2867,7 @@ window.arenaPopulated = false; // Flagga för att säkerställa att vi bara bygg
 // Funktion för att växla mellan vyerna på Topplistor-sidan
 window.toggleRecordsView = function(view) {
     // NYTT: Lade till 'arena' i arrayen
-    const views = ['match', 'players', 'gk', 'ref', 'arena']; 
+    const views = ['match', 'players', 'gk', 'ref', 'arena', 'htft']; 
     
     // CSS-klasser (inklusive whitespace-nowrap för snyggare mobilvy)
     let activeCls = "px-4 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all whitespace-nowrap";
@@ -2581,6 +2879,11 @@ window.toggleRecordsView = function(view) {
         if (container) {
             if (v === view) {
                 container.classList.remove('hidden');
+                
+                // --- NYTT: Ladda datan automatiskt när HT/FT-fliken öppnas ---
+                if (v === 'htft' && typeof window.renderHTFTStats === 'function') {
+                    window.renderHTFTStats();
+                }
             } else {
                 container.classList.add('hidden');
             }
@@ -2666,7 +2969,7 @@ function renderPlayerToplists() {
                 if(!tsPlayers[rawName]) tsPlayers[rawName] = { count: 0, clubs: new Set() };
                 tsPlayers[rawName].count++; tsPlayers[rawName].clubs.add(w.Klubb);
 
-                let clubs = String(w.Klubb).split(/[\/,&]/).map(c => c.trim());
+                let clubs = String(w.Klubb).split(/[\\/,&]/).map(c => c.trim())
                 clubs.forEach(cName => {
                     if (!cName) return;
                     if(!tsClubs[cName]) tsClubs[cName] = { count: 0 };
@@ -2747,7 +3050,7 @@ function renderPlayerToplists() {
             let clubsHtml = item[1].clubs ? `<div class="text-[10px] text-slate-400 mt-0.5 truncate max-w-[150px]">${Array.from(item[1].clubs).join(', ')}</div>` : "";
             
             // --- NYTT: Tvätta bort årtalet i parentes för visningen ---
-            let displayName = String(item[0]).replace(/\s*\(\d{4}\)/g, '').trim();
+            let displayName = String(item[0]).replace(/\\s*\\(\\d{4}\\)/g, '').trim();
             
             html += `<tr class="hover:bg-slate-50 border-b border-slate-100">
                 <td class="px-3 py-2 w-8 text-center font-bold text-slate-400">${medal}</td>
@@ -2770,18 +3073,20 @@ function renderPlayerToplists() {
         return yB - yA;
     };
 
+    // Kronologisk: Skyttekungar
     chronoTS.sort(sortChrono);
     let chronoTSHtml = "";
     chronoTS.forEach(row => {
         row.winners.forEach((w, i) => {
             let sLabel = i === 0 ? `<span class="font-bold text-slate-700">${row.season}</span>` : `<span class="text-transparent">---</span>`;
+            let displayName = String(w.Namn).replace(/\\s*\\(\\d{4}\\)/g, '').trim();
             
-            // --- NYTT: Tvätta bort årtalet ---
-            let displayName = String(w.Namn).replace(/\s*\(\d{4}\)/g, '').trim();
+            // NYTT: Här skickar vi laget till färgmotorn!
+            let teamLabel = window.getContextualTeamName(w.Klubb, row.season);
 
             chronoTSHtml += `<tr class="hover:bg-amber-50">
                 <td class="px-4 py-2 w-20">${sLabel}</td>
-                <td class="px-4 py-2"><span class="font-bold text-amber-700">${displayName}</span> <span class="text-xs text-slate-500">(${w.Klubb})</span></td>
+                <td class="px-4 py-2"><span class="font-bold text-amber-700">${displayName}</span> ${teamLabel}</td>
                 <td class="px-4 py-2 text-right font-black text-amber-600">${w.Mål}</td>
             </tr>`;
         });
@@ -2799,7 +3104,7 @@ function renderPlayerToplists() {
         let currentYear = parseInt(row.season.substring(0, 4)) || 0;
         
         // --- NYTT: Injicera skiljelinje när vi passerar 1959-gränsen nedåt ---
-        if (prevYearDN >= 1959 && currentYear < 1959) {
+       if (prevYearDN >= 1959 && currentYear < 1959) {
             chronoDNHtml += `
             <tr class="bg-slate-200 border-y border-slate-300">
                 <td colspan="3" class="px-4 py-2 text-center text-xs font-bold text-slate-600 uppercase tracking-widest">
@@ -2812,13 +3117,16 @@ function renderPlayerToplists() {
         row.winners.forEach((w, i) => {
             let sLabel = i === 0 ? `<span class="font-bold text-slate-700">${row.season}</span>` : `<span class="text-transparent">---</span>`;
             let minText = w.rawMin || "?";
-            
             // --- NYTT: Tvätta bort årtalet ---
-            let displayName = String(w.skytt).replace(/\s*\(\d{4}\)/g, '').trim();
+            let displayName = String(w.skytt).replace(/\\s*\\(\\d{4}\\)/g, '').trim();  
+                        
+            // NYTT: Hämta kontextuellt lagnamn för Snabbaste målet
+            // NYTT: Här skickar vi laget till färgmotorn!
+            let teamLabel = window.getContextualTeamName(w.lag, row.season);
 
             chronoDNHtml += `<tr class="hover:bg-blue-50">
                 <td class="px-4 py-2 w-20">${sLabel}</td>
-                <td class="px-4 py-2"><span class="font-bold text-blue-700">${displayName}</span> <span class="text-xs text-slate-500">(${w.lag})</span></td>
+                <td class="px-4 py-2"><span class="font-bold text-blue-700">${displayName}</span> ${teamLabel}</td>
                 <td class="px-4 py-2 text-right font-black text-blue-600">${minText}</td>
             </tr>`;
         });
@@ -2829,10 +3137,65 @@ window.current_gk_view = 'matches'; // Standardvy när fliken öppnas
 window.current_ref_view = 'matches';
 
 window.renderGkRecords = function() {
-// Hämta värdet från Hemma/Borta-filtret
+    // Hämta värdet från Hemma/Borta-filtret
     let locFilter = 'all';
     let locDropdown = document.getElementById('gk-location-filter');
     if (locDropdown) locFilter = locDropdown.value;
+
+// --- NYTT KODBLOCK FÖR AVANCERADE MÅLVAKTSSVITER (Hämtas från Python-exporten) ---
+    if (window.current_gk_view === 'cs_streak' || window.current_gk_view === 'conceded_streak' || window.current_gk_view === 'cs_season_record') {
+        if (typeof GK_ADVANCED_STATS === 'undefined') {
+            console.error("GK_ADVANCED_STATS saknas. Har du kört Python-skriptet?");
+            return;
+        }
+
+        let view = window.current_gk_view;
+        let dataList = [];
+        let isGood = (view === 'cs_streak' || view === 'cs_season_record');
+
+        // Välj rätt dataset från Pythons export
+        let activeDataset = GK_ADVANCED_STATS[locFilter] || GK_ADVANCED_STATS['all'];
+
+        if (view === 'cs_streak') dataList = activeDataset.longest_cs_streak || [];
+        else if (view === 'conceded_streak') dataList = activeDataset.longest_conceded_streak || [];
+        else if (view === 'cs_season_record') dataList = activeDataset.most_cs_season || [];
+
+        // Bygg Table Head
+        let valTitle = view === 'cs_streak' ? 'Hållna Nollor i Rad' :
+                       (view === 'conceded_streak' ? 'Matcher i rad med Insläppta' : 'Hållna Nollor');
+
+        document.getElementById('gk-record-thead').innerHTML = `
+            <tr>
+                <th class="px-4 py-3 font-semibold w-12 text-center text-slate-400">#</th>
+                <th class="px-4 py-3 font-semibold">Målvakt</th>
+                <th class="px-4 py-3 font-semibold text-center">Säsong & Klubb</th>
+                <th class="px-4 py-3 font-semibold text-right">${valTitle}</th>
+            </tr>
+        `;
+
+        // Bygg Table Body
+        let colorClass = isGood ? 'text-emerald-600' : 'text-red-600';
+
+        document.getElementById('gk-record-tbody').innerHTML = dataList.map((item, index) => {
+            let cleanName = typeof window.formatPersonName === 'function' ? window.formatPersonName(item.Målvakt) : item.Målvakt;
+            
+            // Hämta rätt värde beroende på vy
+            let val = view === 'cs_streak' ? item.CS_Svit :
+                      (view === 'conceded_streak' ? item.Conceded_Svit : item.Nollor_Säsong);
+
+            return `
+            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td class="px-4 py-2 text-center font-bold text-slate-300">${index + 1}</td>
+                <td class="px-4 py-2 font-bold text-slate-800 truncate">${cleanName}</td>
+                <td class="px-4 py-2 text-center font-semibold text-slate-700">${item.Säsong} <span class="text-xs font-normal text-slate-400">(${item.Lag})</span></td>
+                <td class="px-4 py-2 text-right font-black ${colorClass} text-lg">${val}</td>
+            </tr>
+            `;
+        }).join('');
+        
+        return; // VIKTIGT: Avbryter funktionen så att gamla målvakts-koden inte ritas ut
+    }
+    // --- SLUT PÅ NYTT KODBLOCK ---
     
     // Skapa genvägar för att göra if-satserna renare
     let isValidHome = (locFilter === 'all' || locFilter === 'home');
@@ -4029,7 +4392,14 @@ window.renderRefRecords = function() {
             table[m.Bortalag].w += bW; table[m.Bortalag].d += bD; table[m.Bortalag].l += bL; table[m.Bortalag].pts += bPts;
         }
 
-        totalGoals += (hm + bm);
+        // --- NYTT: Summera endast mål utifrån valt perspektiv ---
+        if (pCtx === 'ALL') {
+            totalGoals += (hm + bm);
+        } else if (pCtx === 'HOME') {
+            totalGoals += hm;
+        } else if (pCtx === 'AWAY') {
+            totalGoals += bm;
+        }
         totalMatchesPlayed++;
         let pub = parseInt(m.Publik);
         if (!isNaN(pub) && pub > 0) { totalAttendance += pub; matchesWithAttendance++; }
@@ -4112,7 +4482,12 @@ window.renderRefRecords = function() {
     
     let goalAvg = totalMatchesPlayed > 0 ? (totalGoals / totalMatchesPlayed).toFixed(2) : "0.00";
     let pubAvg = matchesWithAttendance > 0 ? Math.round(totalAttendance / matchesWithAttendance).toLocaleString('sv-SE') : "0";
-    document.getElementById('table-goal-stats').innerText = `${totalGoals} Mål (${goalAvg} per match) | Publiksnitt: ${pubAvg}`;
+    // --- NYTT: Anpassad etikett för målen (Mål / Hemmamål / Bortamål) ---
+    let goalLabel = "Mål";
+    if (pCtx === 'HOME') goalLabel = "Hemmamål";
+    if (pCtx === 'AWAY') goalLabel = "Bortamål";
+    
+    document.getElementById('table-goal-stats').innerText = `${totalGoals} ${goalLabel} (${goalAvg} per match) | Publiksnitt: ${pubAvg}`;
     document.getElementById('table-goal-stats').classList.remove('hidden');
 
     document.getElementById('table-results').classList.remove('hidden');
@@ -4302,15 +4677,13 @@ function buildPremiereScorersHTML(originalSeasonStr, displaySeason) {
     let flatList = [];
     for (const [lag, skyttar] of Object.entries(scorersObj)) {
         skyttar.forEach(item => {
-            // --- NY DÖRRVAKT FÖR MÄSTERSKAPSSERIEN ---
             let isMS = String(item.not || item.Not || "").toUpperCase().includes("MS");
             
             if (currentPhase === "MASTER") {
-                if (!isMS) return; // Är vi i Mästerskapsserien? Släpp BARA in MS-skyttar.
+                if (!isMS) return; 
             } else {
-                if (isMS) return;  // Alla andra vyer? Släpp ALDRIG in MS-skyttar.
+                if (isMS) return;  
             }
-            // ------------------------------------------
 
             let matchNr = getMatchCountBeforeGoal(lag, item.datum, item.motstandare);
             let rawMin = formatGoalTime(item.minut);
@@ -4321,7 +4694,6 @@ function buildPremiereScorersHTML(originalSeasonStr, displaySeason) {
         });
     }
 
-    // Om inga målskyttar överlevde dörrvakten (t.ex. om MS-data saknas för året), avbryt tyst
     if (flatList.length === 0) return ""; 
 
     // --- HITTA SNABBASTE MÅLET FÖRE 1959 ---
@@ -4348,10 +4720,9 @@ function buildPremiereScorersHTML(originalSeasonStr, displaySeason) {
 
     // --- BYGG UTRITNING ---
     let hiddenClass = window.prem_expanded ? "" : "hidden";
-    
-    // NYTT: Dynamisk titel baserat på fasen
     let boxTitle = currentPhase === "MASTER" ? "🎯 Premiärmålskyttar (Mästerskapsserien)" : "🎯 Årets Premiärmålskyttar";
 
+    // NYTT: HTML med inbyggd teckenförklaring (Legend) för färgerna
     let html = `
     <div class="mt-4 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden w-full">
         <div class="bg-slate-800 text-white px-4 py-3 flex flex-wrap justify-between items-center cursor-pointer hover:bg-slate-700 transition-colors" 
@@ -4367,23 +4738,28 @@ function buildPremiereScorersHTML(originalSeasonStr, displaySeason) {
             </div>
         </div>
         <div id="prem-scorers-list" class="divide-y divide-slate-100 ${hiddenClass}">
+            
+            <!-- NYTT: Teckenförklaring -->
+            <div class="px-4 py-2 bg-slate-50 border-b border-slate-200 flex flex-wrap gap-x-4 gap-y-1 text-[10px] uppercase tracking-wide font-bold text-slate-400">
+                <span class="text-emerald-600">Nykomling</span>
+                <span class="text-amber-500">Reg. Mästare</span>
+                <span class="text-blue-600">Blivande Mästare</span>
+                <span class="bg-gradient-to-r from-amber-500 to-blue-600 bg-clip-text text-transparent">Försvarat guld</span>
+                <span class="bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent">Sensation (Ny + Guld)</span>
+            </div>
     `;
 
     flatList.forEach(item => {
         let isDN = (item.not || "").toLowerCase().includes('dn-klockan') || (item.not || "").toLowerCase().includes('dn');
         let isFastestPre1959 = (fastestItem && item.lag === fastestItem.lag && item.skytt === fastestItem.skytt && item.sortMin === fastestItem.sortMin && item.mNrNum === 1);
 
-        let displayName = String(item.skytt).replace(/\s*\(\d{4}\)/g, '').trim();
-        
+        let displayName = String(item.skytt).replace(/\\s*\\(\\d{4}\\)/g, '').trim();
         let isGold = isDN || isFastestPre1959;
         let icon = isDN ? '⏱️' : (isFastestPre1959 ? '🏅' : '⚽'); 
         
         let displayNot = item.not || "";
-        
-        // Städa bort "MS" så det inte visas fult i UI:t, vi vet ju redan att vi är i MS!
         if (currentPhase === "MASTER") {
             displayNot = String(displayNot).replace(/MS/i, '').trim();
-            // Om det fanns kommatecken kvar, städa upp dem:
             displayNot = displayNot.replace(/^,|,$/g, '').trim();
         }
 
@@ -4407,8 +4783,12 @@ function buildPremiereScorersHTML(originalSeasonStr, displaySeason) {
         let resText = (!isNaN(teamGoals) && !isNaN(oppGoals)) ? `${teamGoals}-${oppGoals}` : "Okänt";
         let resColor = teamGoals > oppGoals ? 'text-emerald-600 font-bold' : (teamGoals < oppGoals ? 'text-red-500 font-bold' : 'text-slate-500 font-bold');
         let homeAwayStr = isHome ? 'H' : 'B';
-        
         let ageText = item.alder ? `<span class="text-xs font-normal text-slate-500 ml-1">(${item.alder} år)</span>` : "";
+
+        // NYTT: Hämta färgkodat lagnamn och rensa bort eventuella yttre parenteser som färgmotorn ger som standard
+        let coloredTeamName = window.getContextualTeamName 
+            ? window.getContextualTeamName(item.lag, originalSeasonStr).replace(/^\\(|\\)$/g, '')
+            : `<span class="text-slate-700">${item.lag}</span>`;
 
         html += `
         <div class="p-4 hover:bg-slate-50 transition-colors flex flex-col sm:flex-row justify-between sm:items-center gap-3">
@@ -4419,7 +4799,8 @@ function buildPremiereScorersHTML(originalSeasonStr, displaySeason) {
                     ${ageText} ${notText}
                 </div>
                 <div class="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold flex items-center gap-2">
-                    <span class="text-slate-700">${item.lag}</span> 
+                    <!-- NYTT: Färgkodat lagnamn ritas ut här -->
+                    ${coloredTeamName} 
                     <span class="w-1 h-1 rounded-full bg-slate-300"></span> 
                     <span class="normal-case">Minut: <span class="${timeStyle} text-[13px]">${item.rawMin}</span></span>
                 </div>
@@ -4487,7 +4868,7 @@ window.renderTopScorers = function(seasonStr) {
                 let localDispSeason = player.SäsongText || displaySeason;
 
                 // NYTT: Tvätta bort eventuella årtal i parentes för visningen på skärmen
-                let displayName = player.Namn.replace(/\s*\(\d{4}\)/g, '').trim();
+                let displayName = player.Namn.replace(/\\s*\\(\\d{4}\\)/g, '').trim();
                 
                 if (fodd && typeof calculateExactAge === 'function') {
                     let calcDate = "";
@@ -4734,7 +5115,14 @@ window.renderTopScorers = function(seasonStr) {
                     table[m.Bortalag].w += bW; table[m.Bortalag].d += bD; table[m.Bortalag].l += bL; table[m.Bortalag].pts += bPts; table[m.Bortalag].seasons.add(String(m.Säs));
                 }
 
-                totalGoals += (hm + bm);
+                // --- NYTT: Summera endast mål utifrån valt perspektiv (Maratontabell) ---
+                if (pCtx === 'ALL') {
+                    totalGoals += (hm + bm);
+                } else if (pCtx === 'HOME') {
+                    totalGoals += hm;
+                } else if (pCtx === 'AWAY') {
+                    totalGoals += bm;
+                }
                 totalMatchesPlayed++;
                 let pub = parseInt(m.Publik);
                 if (!isNaN(pub) && pub > 0) { totalAttendance += pub; matchesWithAttendance++; }
@@ -4771,9 +5159,14 @@ window.renderTopScorers = function(seasonStr) {
                 <tr class="hover:bg-slate-50"><td class="px-4 py-2 font-bold text-slate-500">${i+1}</td><td class="px-4 py-2 font-medium">${r.team}</td><td class="px-4 py-2 text-center bg-slate-50 text-xs text-slate-500">${r.firstS} - ${r.lastS}</td><td class="px-4 py-2 text-center bg-slate-50 font-bold">${r.seasons.size}</td><td class="px-4 py-2 text-center">${r.pld}</td><td class="px-4 py-2 text-center text-emerald-600">${r.w}</td><td class="px-4 py-2 text-center text-slate-500">${r.d}</td><td class="px-4 py-2 text-center text-rose-600">${r.l}</td><td class="px-4 py-2 text-center">${r.gf} - ${r.ga}</td><td class="px-4 py-2 text-center font-bold ${r.gd > 0 ? 'text-emerald-600' : r.gd < 0 ? 'text-rose-600' : ''}">${r.gd > 0 ? '+'+r.gd : r.gd}</td><td class="px-4 py-2 text-center font-black bg-blue-50/50">${r.pts}</td></tr>
             `).join('');
 
+            // --- NYTT: Anpassad etikett för målen ---
+            let goalLabel = "Mål";
+            if (pCtx === 'HOME') goalLabel = "Hemmamål";
+            if (pCtx === 'AWAY') goalLabel = "Bortamål";
+
             let goalAvg = totalMatchesPlayed > 0 ? (totalGoals / totalMatchesPlayed).toFixed(2) : "0.00";
             let pubAvg = matchesWithAttendance > 0 ? Math.round(totalAttendance / matchesWithAttendance).toLocaleString('sv-SE') : "0";
-            document.getElementById('table-goal-stats').innerText = `${totalGoals} Mål (${goalAvg} per match) | Publiksnitt: ${pubAvg}`;
+            document.getElementById('table-goal-stats').innerText = `${totalGoals} ${goalLabel} (${goalAvg} per match) | Publiksnitt: ${pubAvg}`;
             document.getElementById('table-goal-stats').classList.remove('hidden');
 
             document.getElementById('league-table-body').innerHTML = html || '<tr><td colspan="11" class="text-center py-6 text-slate-500">Inga matcher hittades.</td></tr>';
@@ -5126,186 +5519,312 @@ window.renderTopScorers = function(seasonStr) {
         }
 
         function runPredictabilityAnalysis() {
-            const selection = document.getElementById('analysis-season').value; const focus = document.getElementById('analysis-focus').value;
-            if(!selection) { alert("Välj en säsong eller epok att analysera."); return; }
-            document.getElementById('analysis-details').classList.add('hidden'); 
-            let seasonsToAnalyze = [];
+    const selection = document.getElementById('analysis-season').value; 
+    const focus = document.getElementById('analysis-focus').value;
+    // Läs av valt linjeringsperspektiv (FORWARD, COUNTDOWN, PERCENT)
+    const alignMode = document.getElementById('analysis-alignment') ? document.getElementById('analysis-alignment').value : "FORWARD";
 
-            if (selection === "ALL_SEASONS") { seasonsToAnalyze = [...SEASONS].reverse(); document.getElementById('analysis-warning').classList.add('hidden'); } 
-            else if (selection.startsWith("EPOCH_CUSTOM_")) { let epoch = selection.replace("EPOCH_CUSTOM_", ""); seasonsToAnalyze = CUSTOM_EPOCHS[epoch]; if (analysisMode === 'chart') { document.getElementById('analysis-warning').innerText = `Analyserar egen epok: ${epoch}. Detta är ett genomsnitt av ${seasonsToAnalyze.length} säsonger.`; document.getElementById('analysis-warning').classList.remove('hidden', 'text-blue-800', 'bg-blue-50'); document.getElementById('analysis-warning').classList.add('text-blue-800', 'bg-blue-50'); } else { document.getElementById('analysis-warning').classList.add('hidden'); } } 
-            else if (selection.startsWith("EPOCH_DECADE_")) { let epoch = selection.replace("EPOCH_DECADE_", ""); seasonsToAnalyze = DECADES[epoch]; if (analysisMode === 'chart') { document.getElementById('analysis-warning').innerText = `Analyserar årtionde: ${epoch}. Detta är ett genomsnitt av ${seasonsToAnalyze.length} säsonger.`; document.getElementById('analysis-warning').classList.remove('hidden', 'text-blue-800', 'bg-blue-50'); document.getElementById('analysis-warning').classList.add('text-blue-800', 'bg-blue-50'); } else { document.getElementById('analysis-warning').classList.add('hidden'); } } 
-            else { seasonsToAnalyze = [selection]; document.getElementById('analysis-warning').classList.add('hidden'); }
+    if(!selection) { alert("Välj en säsong eller epok att analysera."); return; }
+    document.getElementById('analysis-details').classList.add('hidden'); 
+    let seasonsToAnalyze = [];
 
-            if (analysisMode === 'table') {
-                document.getElementById('analysis-chart-container').classList.add('hidden'); document.getElementById('analysis-details').classList.add('hidden'); document.getElementById('analysis-comparison-table').classList.remove('hidden');
-                const targetRound = parseInt(document.getElementById('analysis-round').value) || 10; let tableData = [];
+    if (selection === "ALL_SEASONS") { seasonsToAnalyze = [...SEASONS].reverse(); document.getElementById('analysis-warning').classList.add('hidden'); } 
+    else if (selection.startsWith("EPOCH_CUSTOM_")) { let epoch = selection.replace("EPOCH_CUSTOM_", ""); seasonsToAnalyze = CUSTOM_EPOCHS[epoch]; if (analysisMode === 'chart') { document.getElementById('analysis-warning').innerText = `Analyserar egen epok: ${epoch}. Detta är ett genomsnitt av ${seasonsToAnalyze.length} säsonger.`; document.getElementById('analysis-warning').classList.remove('hidden', 'text-blue-800', 'bg-blue-50'); document.getElementById('analysis-warning').classList.add('text-blue-800', 'bg-blue-50'); } else { document.getElementById('analysis-warning').classList.add('hidden'); } } 
+    else if (selection.startsWith("EPOCH_DECADE_")) { let epoch = selection.replace("EPOCH_DECADE_", ""); seasonsToAnalyze = DECADES[epoch]; if (analysisMode === 'chart') { document.getElementById('analysis-warning').innerText = `Analyserar årtionde: ${epoch}. Detta är ett genomsnitt av ${seasonsToAnalyze.length} säsonger.`; document.getElementById('analysis-warning').classList.remove('hidden', 'text-blue-800', 'bg-blue-50'); document.getElementById('analysis-warning').classList.add('text-blue-800', 'bg-blue-50'); } else { document.getElementById('analysis-warning').classList.add('hidden'); } } 
+    else { seasonsToAnalyze = [selection]; document.getElementById('analysis-warning').classList.add('hidden'); }
+
+    // --- 1. TABELLLÄGE (TABLE MODE) ---
+    if (analysisMode === 'table') {
+        document.getElementById('analysis-chart-container').classList.add('hidden'); 
+        document.getElementById('analysis-details').classList.add('hidden'); 
+        document.getElementById('analysis-comparison-table').classList.remove('hidden');
+        
+        const inputVal = parseInt(document.getElementById('analysis-round').value) || 10; 
+        let tableData = [];
 
                 seasonsToAnalyze.forEach(season => {
                     // --- NY DÖRRVAKT I FILTRET: Exkluderar annullerade matcher direkt! ---
                     let sMatches = MATCH_DATA.filter(m => !m.Annullerad && String(m.Säs) === String(season) && m.Omgång !== "" && !isNaN(parseInt(m.Omgång)));
-                    if (sMatches.length === 0) return;
-                    let maxRound = 0; sMatches.forEach(m => { maxRound = Math.max(maxRound, parseInt(m.Omgång)); });
-                    if (maxRound < targetRound) return; 
-                    const ptsForWin = (SEASON_INFO[season] && SEASON_INFO[season].pts) ? SEASON_INFO[season].pts : 3;
-
-                    const getTableAtRound = (rnd) => {
-                        let table = {}; sMatches.forEach(m => { [m.Hemmalag, m.Bortalag].forEach(t => { if(!table[t]) table[t] = { team: t, pts:0, gd:0, gf:0 }; }); });
-                        sMatches.filter(m => parseInt(m.Omgång) <= rnd).forEach(m => {
-                            let hm = parseInt(m.HM)||0; let bm = parseInt(m.BM)||0;
-                            let nTxt = String(m.NOT).toUpperCase();
-                            let isWOH = nTxt.includes("W.O; H") || nTxt.includes("AVBRUTEN; V") || nTxt.includes("EJ KVALIFICERAD SPELARE; V");
-                            let isWOB = nTxt.includes("W.O; B") || nTxt.includes("AVBRUTEN; F") || nTxt.includes("EJ KVALIFICERAD SPELARE; F");
-                            
-                            if (isNaN(hm) || isNaN(bm)) { hm=0; bm=0; }
-                            table[m.Hemmalag].gf += hm; table[m.Bortalag].gf += bm; table[m.Hemmalag].gd += (hm - bm); table[m.Bortalag].gd += (bm - hm);
-                            if (isWOH) { table[m.Hemmalag].pts += ptsForWin; } else if (isWOB) { table[m.Bortalag].pts += ptsForWin; }
-                            else if (hm > bm) { table[m.Hemmalag].pts += ptsForWin; } else if (hm < bm) { table[m.Bortalag].pts += ptsForWin; }
-                            else { table[m.Hemmalag].pts += 1; table[m.Bortalag].pts += 1; }
-                        });
-                        
-                        Object.values(table).forEach(t => {
-                            let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][t.team];
-                            if (mInfo && mInfo.start_pts < 0) {
-                                let adj = mInfo.start_pts;
-                                if (adj === -3 && ptsForWin === 2) adj = -2;
-                                t.pts += adj;
-                            }
-                        });
-                        
-                        let arr = Object.values(table); arr.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
-                        let rankMap = {}; arr.forEach((r, i) => { rankMap[r.team] = i + 1; }); return { ranks: rankMap, sortedArray: arr };
-                    };
-
-                    const finalTable = getTableAtRound(maxRound); const targetTable = getTableAtRound(targetRound);
-                    let teamsToAnalyze = Object.keys(finalTable.ranks);
-                    if (focus === 'top') teamsToAnalyze = finalTable.sortedArray.slice(0, 3).map(r => r.team);
-                    else if (focus === 'bottom') teamsToAnalyze = finalTable.sortedArray.slice(-3).map(r => r.team);
-
-                    let totalError = 0; teamsToAnalyze.forEach(t => { totalError += Math.abs(targetTable.ranks[t] - finalTable.ranks[t]); });
-                    let mae = totalError / teamsToAnalyze.length; 
-                    
-                    let spearman = focus === 'all' ? calculateSpearman(targetTable.ranks, finalTable.ranks, teamsToAnalyze) : calculateSubsetSpearman(targetTable.ranks, finalTable.ranks, teamsToAnalyze);
-                    
-                    tableData.push({ season: season, name: getSeasonName(season), mae: mae, spearman: spearman });
-                });
-
-                if (tableData.length === 0) {
-                    document.getElementById('analysis-warning').innerText = `Kunde inte hitta data för omgång ${targetRound} i de valda säsongerna.`; document.getElementById('analysis-warning').classList.remove('hidden', 'text-blue-800', 'bg-blue-50'); document.getElementById('analysis-warning').classList.add('text-amber-800', 'bg-amber-50'); document.getElementById('analysis-comparison-table').classList.add('hidden');
-                } else {
-                    document.getElementById('comparison-title').innerText = `Jämförelse vid omgång ${targetRound}`;
-                    
-                    let avgMae = (tableData.reduce((sum, d) => sum + d.mae, 0) / tableData.length).toFixed(2);
-                    let avgSpearman = (tableData.reduce((sum, d) => sum + d.spearman, 0) / tableData.length).toFixed(3);
-                    let summaryRow = `<tr class="bg-blue-50 border-b-2 border-blue-200"><td class="p-3 font-bold text-blue-800">Snitt (Vald period)</td><td class="p-3 text-center font-bold text-blue-800 font-mono">${avgMae}</td><td class="p-3 text-center font-bold text-blue-800 font-mono">${avgSpearman}</td></tr>`;
-                    
-                    let html = summaryRow + tableData.map(d => `<tr class="hover:bg-slate-50 border-b border-slate-100"><td class="p-3 font-medium">${d.name}</td><td class="p-3 text-center font-mono ${d.mae < 1.0 ? 'text-emerald-600 font-bold' : ''}">${d.mae.toFixed(2)}</td><td class="p-3 text-center font-mono ${d.spearman > 0.8 ? 'text-emerald-600 font-bold' : ''}">${d.spearman.toFixed(3)}</td></tr>`).join('');
-                    document.getElementById('comparison-body').innerHTML = html;
-                }
-                document.getElementById('analysis-results').classList.remove('hidden'); return; 
+            if (sMatches.length === 0) return;
+            
+            let maxRound = 0; sMatches.forEach(m => { maxRound = Math.max(maxRound, parseInt(m.Omgång)); });
+            
+            // Räkna ut målomgång beroende på perspektiv
+            let targetRound = inputVal;
+            if (alignMode === "COUNTDOWN") {
+                targetRound = maxRound - inputVal; // t.ex. 30 - 5 = omgång 25
+            } else if (alignMode === "PERCENT") {
+                targetRound = Math.round(maxRound * (inputVal / 100)); // t.ex. 30 * 0.50 = omgång 15
             }
+
+            if (targetRound < 1 || targetRound > maxRound) return; 
+            const ptsForWin = (SEASON_INFO[season] && SEASON_INFO[season].pts) ? SEASON_INFO[season].pts : 3;
+
+            const getTableAtRound = (rnd) => {
+                let table = {}; sMatches.forEach(m => { [m.Hemmalag, m.Bortalag].forEach(t => { if(!table[t]) table[t] = { team: t, pts:0, gd:0, gf:0 }; }); });
+                sMatches.filter(m => parseInt(m.Omgång) <= rnd).forEach(m => {
+                    let hm = parseInt(m.HM)||0; let bm = parseInt(m.BM)||0;
+                    let nTxt = String(m.NOT).toUpperCase();
+                    let isWOH = nTxt.includes("W.O; H") || nTxt.includes("AVBRUTEN; V") || nTxt.includes("EJ KVALIFICERAD SPELARE; V");
+                    let isWOB = nTxt.includes("W.O; B") || nTxt.includes("AVBRUTEN; F") || nTxt.includes("EJ KVALIFICERAD SPELARE; F");
+                    
+                    if (isNaN(hm) || isNaN(bm)) { hm=0; bm=0; }
+                    table[m.Hemmalag].gf += hm; table[m.Bortalag].gf += bm; table[m.Hemmalag].gd += (hm - bm); table[m.Bortalag].gd += (bm - hm);
+                    if (isWOH) { table[m.Hemmalag].pts += ptsForWin; } else if (isWOB) { table[m.Bortalag].pts += ptsForWin; }
+                    else if (hm > bm) { table[m.Hemmalag].pts += ptsForWin; } else if (hm < bm) { table[m.Bortalag].pts += ptsForWin; }
+                    else { table[m.Hemmalag].pts += 1; table[m.Bortalag].pts += 1; }
+                });
+                
+                Object.values(table).forEach(t => {
+                    let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][t.team];
+                    if (mInfo && mInfo.start_pts < 0) {
+                        let adj = mInfo.start_pts;
+                        if (adj === -3 && ptsForWin === 2) adj = -2;
+                        t.pts += adj;
+                    }
+                });
+                
+                let arr = Object.values(table); arr.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+                let rankMap = {}; arr.forEach((r, i) => { rankMap[r.team] = i + 1; }); return { ranks: rankMap, sortedArray: arr };
+            };
+
+            const finalTable = getTableAtRound(maxRound); const targetTable = getTableAtRound(targetRound);
+            let teamsToAnalyze = Object.keys(finalTable.ranks);
+            if (focus === 'top') teamsToAnalyze = finalTable.sortedArray.slice(0, 3).map(r => r.team);
+            else if (focus === 'bottom') teamsToAnalyze = finalTable.sortedArray.slice(-3).map(r => r.team);
+
+            let totalError = 0; teamsToAnalyze.forEach(t => { totalError += Math.abs(targetTable.ranks[t] - finalTable.ranks[t]); });
+            let mae = totalError / teamsToAnalyze.length; 
+            
+            let spearman = focus === 'all' ? calculateSpearman(targetTable.ranks, finalTable.ranks, teamsToAnalyze) : calculateSubsetSpearman(targetTable.ranks, finalTable.ranks, teamsToAnalyze);
+            
+            tableData.push({ season: season, name: getSeasonName(season), mae: mae, spearman: spearman, targetRound: targetRound, maxRound: maxRound });
+        });
+
+        if (tableData.length === 0) {
+            document.getElementById('analysis-warning').innerText = `Kunde inte hitta data för vald skärningspunkt i de valda säsongerna.`; 
+            document.getElementById('analysis-warning').classList.remove('hidden', 'text-blue-800', 'bg-blue-50'); 
+            document.getElementById('analysis-warning').classList.add('text-amber-800', 'bg-amber-50'); 
+            document.getElementById('analysis-comparison-table').classList.add('hidden');
+        } else {
+            let labelText = `omgång ${inputVal}`;
+            if (alignMode === "COUNTDOWN") labelText = `${inputVal} omgångar kvar`;
+            if (alignMode === "PERCENT") labelText = `${inputVal}% av säsongen`;
+            
+            document.getElementById('comparison-title').innerText = `Jämförelse vid ${labelText}`;
+            
+            let avgMae = (tableData.reduce((sum, d) => sum + d.mae, 0) / tableData.length).toFixed(2);
+            let avgSpearman = (tableData.reduce((sum, d) => sum + d.spearman, 0) / tableData.length).toFixed(3);
+            let summaryRow = `<tr class="bg-blue-50 border-b-2 border-blue-200"><td class="p-3 font-bold text-blue-800">Snitt (Vald period)</td><td class="p-3 text-center font-bold text-blue-800 font-mono">${avgMae}</td><td class="p-3 text-center font-bold text-blue-800 font-mono">${avgSpearman}</td></tr>`;
+            
+            let html = summaryRow + tableData.map(d => `<tr class="hover:bg-slate-50 border-b border-slate-100"><td class="p-3 font-medium">${d.name} <span class="text-xs text-slate-400 font-normal">(Omg ${d.targetRound}/${d.maxRound})</span></td><td class="p-3 text-center font-mono ${d.mae < 1.0 ? 'text-emerald-600 font-bold' : ''}">${d.mae.toFixed(2)}</td><td class="p-3 text-center font-mono ${d.spearman > 0.8 ? 'text-emerald-600 font-bold' : ''}">${d.spearman.toFixed(3)}</td></tr>`).join('');
+            document.getElementById('comparison-body').innerHTML = html;
+        }
+        document.getElementById('analysis-results').classList.remove('hidden'); return; 
+    }
 
             // --- CHART MODE ---
-            document.getElementById('analysis-comparison-table').classList.add('hidden'); document.getElementById('analysis-chart-container').classList.remove('hidden');
-            let allErrors = []; globalAnalysisData = {}; 
+            document.getElementById('analysis-comparison-table').classList.add('hidden'); 
+    document.getElementById('analysis-chart-container').classList.remove('hidden');
+    
+    let seasonBuckets = {}; // Nycklar beror på alignMode: t.ex. "Omg 1", "-5 omgångar", eller "25%"
+    globalAnalysisData = {}; 
 
-           seasonsToAnalyze.forEach(season => {
-                let sMatches = MATCH_DATA.filter(m => !m.Annullerad && String(m.Säs) === String(season) && m.Omgång !== "" && !isNaN(parseInt(m.Omgång)));
-                if (sMatches.length === 0) return; 
-                const ptsForWin = (SEASON_INFO[season] && SEASON_INFO[season].pts) ? SEASON_INFO[season].pts : 3;
-                let maxRound = 0; sMatches.forEach(m => { maxRound = Math.max(maxRound, parseInt(m.Omgång)); });
+    seasonsToAnalyze.forEach(season => {
+        let sMatches = MATCH_DATA.filter(m => !m.Annullerad && String(m.Säs) === String(season) && m.Omgång !== "" && !isNaN(parseInt(m.Omgång)));
+        if (sMatches.length === 0) return; 
+        const ptsForWin = (SEASON_INFO[season] && SEASON_INFO[season].pts) ? SEASON_INFO[season].pts : 3;
+        let maxRound = 0; sMatches.forEach(m => { maxRound = Math.max(maxRound, parseInt(m.Omgång)); });
 
-                const getTableAtRound = (rnd) => {
-                    let table = {}; sMatches.forEach(m => { [m.Hemmalag, m.Bortalag].forEach(t => { if(!table[t]) table[t] = { team: t, pts:0, gd:0, gf:0 }; }); });
-                    sMatches.filter(m => parseInt(m.Omgång) <= rnd).forEach(m => {
-                        let hm = parseInt(m.HM)||0; let bm = parseInt(m.BM)||0;
-                        let nTxt = String(m.NOT).toUpperCase();
-                        let isWOH = nTxt.includes("W.O; H") || nTxt.includes("AVBRUTEN; V") || nTxt.includes("EJ KVALIFICERAD SPELARE; V");
-                        let isWOB = nTxt.includes("W.O; B") || nTxt.includes("AVBRUTEN; F") || nTxt.includes("EJ KVALIFICERAD SPELARE; F");
-                        
-                        if (isNaN(hm) || isNaN(bm)) { hm=0; bm=0; }
-                        table[m.Hemmalag].gf += hm; table[m.Bortalag].gf += bm; table[m.Hemmalag].gd += (hm - bm); table[m.Bortalag].gd += (bm - hm);
-                        if (isWOH) { table[m.Hemmalag].pts += ptsForWin; }
-                        else if (isWOB) { table[m.Bortalag].pts += ptsForWin; }
-                        else if (hm > bm) { table[m.Hemmalag].pts += ptsForWin; }
-                        else if (hm < bm) { table[m.Bortalag].pts += ptsForWin; }
-                        else { table[m.Hemmalag].pts += 1; table[m.Bortalag].pts += 1; }
-                    });
-                    
-                    Object.values(table).forEach(t => {
-                        let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][t.team];
-                        if (mInfo && mInfo.start_pts < 0) {
-                            let adj = mInfo.start_pts;
-                            if (adj === -3 && ptsForWin === 2) adj = -2;
-                            t.pts += adj;
-                        }
-                    });
-                    
-                    let arr = Object.values(table); arr.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
-                    let rankMap = {}; arr.forEach((r, i) => { rankMap[r.team] = i + 1; }); return { ranks: rankMap, sortedArray: arr };
-                };
-
-                // --- NY VAKT: 50%-SPÄRREN ---
-                const isRoundValid = (rnd) => {
-                    let mInRnd = sMatches.filter(m => parseInt(m.Omgång) === rnd);
-                    let playedInRnd = mInRnd.filter(m => m.HM !== "" && m.HM !== null && m.HM !== undefined);
-                    return mInRnd.length === 0 || playedInRnd.length >= (mInRnd.length / 2);
-                };
-
-                const finalTable = getTableAtRound(maxRound); const finalRanks = finalTable.ranks;
-                let teamsToAnalyze = Object.keys(finalRanks);
-                if (focus === 'top') teamsToAnalyze = finalTable.sortedArray.slice(0, 3).map(r => r.team);
-                else if (focus === 'bottom') teamsToAnalyze = finalTable.sortedArray.slice(-3).map(r => r.team);
-
-                let seasonErrors = []; let seasonDataObj = {};
-                for (let r = 1; r <= maxRound; r++) {
-                    
-                    // --- DEN SKOTTSÄKRA SPÄRREN FÖR GRAFEN ---
-                    let mInRnd = sMatches.filter(m => parseInt(m.Omgång) === r);
-                    let playedInRnd = mInRnd.filter(m => m.HM !== "" && m.HM !== null && m.HM !== undefined);
-                    let reqMatches = Object.keys(finalRanks).length / 4; // Minst 4 matcher för en 16-lagsserie
-                    
-                    if (playedInRnd.length < reqMatches) {
-                        seasonErrors.push(null);
-                        if (seasonsToAnalyze.length === 1) {
-                            seasonDataObj[r] = { mae: null, spearman: null, teams: [] };
-                        }
-                        continue; 
-                    }
-                    // -----------------------------------------
-
-                    let currentTable = getTableAtRound(r); let currentRanks = currentTable.ranks;
-                    let totalError = 0; teamsToAnalyze.forEach(t => { totalError += Math.abs(currentRanks[t] - finalRanks[t]); });
-                    let meanError = totalError / teamsToAnalyze.length; 
-                    
-                    let spearman = focus === 'all' ? calculateSpearman(currentRanks, finalRanks, teamsToAnalyze) : calculateSubsetSpearman(currentRanks, finalRanks, teamsToAnalyze);
-                    
-                    seasonErrors.push(meanError);
-                    if (seasonsToAnalyze.length === 1) {
-                        seasonDataObj[r] = { mae: meanError, spearman: spearman, teams: teamsToAnalyze.map(t => ({ name: t, currentRank: currentRanks[t], finalRank: finalRanks[t], diff: currentRanks[t] - finalRanks[t] })).sort((a,b) => a.currentRank - b.currentRank) };
-                    }
-                }
-
-                allErrors.push(seasonErrors);
-                if (seasonsToAnalyze.length === 1) globalAnalysisData = seasonDataObj;
+        const getTableAtRound = (rnd) => {
+            let table = {}; sMatches.forEach(m => { [m.Hemmalag, m.Bortalag].forEach(t => { if(!table[t]) table[t] = { team: t, pts:0, gd:0, gf:0 }; }); });
+            sMatches.filter(m => parseInt(m.Omgång) <= rnd).forEach(m => {
+                let hm = parseInt(m.HM)||0; let bm = parseInt(m.BM)||0;
+                let nTxt = String(m.NOT).toUpperCase();
+                let isWOH = nTxt.includes("W.O; H") || nTxt.includes("AVBRUTEN; V") || nTxt.includes("EJ KVALIFICERAD SPELARE; V");
+                let isWOB = nTxt.includes("W.O; B") || nTxt.includes("AVBRUTEN; F") || nTxt.includes("EJ KVALIFICERAD SPELARE; F");
+                
+                if (isNaN(hm) || isNaN(bm)) { hm=0; bm=0; }
+                table[m.Hemmalag].gf += hm; table[m.Bortalag].gf += bm; table[m.Hemmalag].gd += (hm - bm); table[m.Bortalag].gd += (bm - hm);
+                if (isWOH) { table[m.Hemmalag].pts += ptsForWin; }
+                else if (isWOB) { table[m.Bortalag].pts += ptsForWin; }
+                else if (hm > bm) { table[m.Hemmalag].pts += ptsForWin; }
+                else if (hm < bm) { table[m.Bortalag].pts += ptsForWin; }
+                else { table[m.Hemmalag].pts += 1; table[m.Bortalag].pts += 1; }
             });
+            
+            Object.values(table).forEach(t => {
+                let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][t.team];
+                if (mInfo && mInfo.start_pts < 0) {
+                    let adj = mInfo.start_pts;
+                    if (adj === -3 && ptsForWin === 2) adj = -2;
+                    t.pts += adj;
+                }
+            });
+            
+            let arr = Object.values(table); arr.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+            let rankMap = {}; arr.forEach((r, i) => { rankMap[r.team] = i + 1; }); return { ranks: rankMap, sortedArray: arr };
+        };
 
-            if (allErrors.length === 0) {
-                document.getElementById('analysis-warning').innerText = "Data saknas! Omgångar är inte ifyllda för valt år, analysen kan inte genomföras."; document.getElementById('analysis-warning').classList.remove('hidden', 'text-blue-800', 'bg-blue-50'); document.getElementById('analysis-warning').classList.add('text-amber-800', 'bg-amber-50'); document.getElementById('analysis-results').classList.remove('hidden'); document.getElementById('analysis-chart-container').classList.add('hidden'); if (analysisChartInstance) analysisChartInstance.destroy(); return;
+        const finalTable = getTableAtRound(maxRound); const finalRanks = finalTable.ranks;
+        let teamsToAnalyze = Object.keys(finalRanks);
+        if (focus === 'top') teamsToAnalyze = finalTable.sortedArray.slice(0, 3).map(r => r.team);
+        else if (focus === 'bottom') teamsToAnalyze = finalTable.sortedArray.slice(-3).map(r => r.team);
+
+        let seasonDataObj = {};
+        
+        // --- BYGG SLINGA BASERAT PÅ LINJERINGS-LÄGE ---
+        if (alignMode === "FORWARD") {
+            for (let r = 1; r <= maxRound; r++) {
+                let currentTable = getTableAtRound(r); let currentRanks = currentTable.ranks;
+                let totalError = 0; teamsToAnalyze.forEach(t => { totalError += Math.abs(currentRanks[t] - finalRanks[t]); });
+                let meanError = totalError / teamsToAnalyze.length;
+                let spearman = focus === 'all' ? calculateSpearman(currentRanks, finalRanks, teamsToAnalyze) : calculateSubsetSpearman(currentRanks, finalRanks, teamsToAnalyze);
+
+                let key = r; // Index 1..N
+                if (!seasonBuckets[key]) seasonBuckets[key] = [];
+                seasonBuckets[key].push(meanError);
+
+                if (seasonsToAnalyze.length === 1) {
+                    seasonDataObj[key] = { mae: meanError, spearman: spearman, teams: teamsToAnalyze.map(t => ({ name: t, currentRank: currentRanks[t], finalRank: finalRanks[t], diff: currentRanks[t] - finalRanks[t] })).sort((a,b) => a.currentRank - b.currentRank) };
+                }
             }
+        } else if (alignMode === "COUNTDOWN") {
+            // Omgångar kvar: t.ex. -10, -9 ... -1, 0 (sista omgången)
+            for (let left = maxRound - 1; left >= 0; left--) {
+                let r = maxRound - left;
+                let currentTable = getTableAtRound(r); let currentRanks = currentTable.ranks;
+                let totalError = 0; teamsToAnalyze.forEach(t => { totalError += Math.abs(currentRanks[t] - finalRanks[t]); });
+                let meanError = totalError / teamsToAnalyze.length;
+                let spearman = focus === 'all' ? calculateSpearman(currentRanks, finalRanks, teamsToAnalyze) : calculateSubsetSpearman(currentRanks, finalRanks, teamsToAnalyze);
 
-            let maxLen = Math.max(...allErrors.map(e => e.length)); let averagedErrors = [];
-            for(let i=0; i<maxLen; i++) { let sum = 0, count = 0; allErrors.forEach(errArr => { if (errArr[i] !== undefined) { sum += errArr[i]; count++; } }); averagedErrors.push(sum / count); }
+                let key = left === 0 ? "Slut" : `-${left} omg`;
+                if (!seasonBuckets[left]) seasonBuckets[left] = [];
+                seasonBuckets[left].push(meanError);
 
-            let labels = Array.from({length: maxLen}, (_, i) => `Omg ${i+1}`);
-            document.getElementById('analysis-results').classList.remove('hidden'); const ctx = document.getElementById('analysisChart').getContext('2d');
-            if (analysisChartInstance) { analysisChartInstance.destroy(); }
-            analysisChartInstance = new Chart(ctx, {
-                type: 'line', data: { labels: labels, datasets: [{ label: 'Genomsnittligt Positionsfel (MAE)', data: averagedErrors, borderColor: '#2563eb', backgroundColor: 'rgba(37, 99, 235, 0.1)', borderWidth: 3, pointBackgroundColor: '#1e3a8a', pointHoverRadius: 8, pointHoverBackgroundColor: '#f59e0b', fill: true, tension: 0.3, spanGaps: true }] },
-                options: { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c) { return ` MAE: ${c.parsed.y.toFixed(2)}`; } } } }, scales: { y: { beginAtZero: true, title: { display: true, text: 'Positionsfel' } }, x: { grid: { display: false } } },
-                    onClick: (e, activeEls) => { if (seasonsToAnalyze.length > 1) { alert("Detaljerad tabell är endast tillgänglig när du granskar en enskild säsong, inte hela epoker/perioder."); return; } if (activeEls.length > 0) { const round = activeEls[0].index + 1; showAnalysisDetails(round); } }
+                if (seasonsToAnalyze.length === 1) {
+                    seasonDataObj[left] = { mae: meanError, spearman: spearman, teams: teamsToAnalyze.map(t => ({ name: t, currentRank: currentRanks[t], finalRank: finalRanks[t], diff: currentRanks[t] - finalRanks[t] })).sort((a,b) => a.currentRank - b.currentRank) };
+                }
+            }
+        } else if (alignMode === "PERCENT") {
+            // Säsongsproportioner: 0% (Omgång 1), 25%, 50%, 75%, 100% (Slut)
+            let checkpoints = [0, 25, 50, 75, 100];
+            checkpoints.forEach(pct => {
+                // Om 0%, sätt lägst till Omgång 1
+                let r = pct === 0 ? 1 : Math.max(1, Math.round(maxRound * (pct / 100)));
+                
+                let currentTable = getTableAtRound(r); 
+                let currentRanks = currentTable.ranks;
+                let totalError = 0; 
+                teamsToAnalyze.forEach(t => { totalError += Math.abs(currentRanks[t] - finalRanks[t]); });
+                let meanError = totalError / teamsToAnalyze.length;
+                let spearman = focus === 'all' ? calculateSpearman(currentRanks, finalRanks, teamsToAnalyze) : calculateSubsetSpearman(currentRanks, finalRanks, teamsToAnalyze);
+
+                if (!seasonBuckets[pct]) seasonBuckets[pct] = [];
+                seasonBuckets[pct].push(meanError);
+
+                if (seasonsToAnalyze.length === 1) {
+                    seasonDataObj[pct] = { mae: meanError, spearman: spearman, teams: teamsToAnalyze.map(t => ({ name: t, currentRank: currentRanks[t], finalRank: finalRanks[t], diff: currentRanks[t] - finalRanks[t] })).sort((a,b) => a.currentRank - b.currentRank) };
                 }
             });
         }
+
+        if (seasonsToAnalyze.length === 1) globalAnalysisData = seasonDataObj;
+    });
+
+    // --- BYGG GRAFDATA OCH LABELS ---
+    let labels = [];
+    let averagedErrors = [];
+
+    if (alignMode === "FORWARD") {
+        let sortedKeys = Object.keys(seasonBuckets).map(Number).sort((a, b) => a - b);
+        labels = sortedKeys.map(k => `Omg ${k}`);
+        averagedErrors = sortedKeys.map(k => seasonBuckets[k].reduce((a, b) => a + b, 0) / seasonBuckets[k].length);
+    } else if (alignMode === "COUNTDOWN") {
+        let sortedKeys = Object.keys(seasonBuckets).map(Number).sort((a, b) => b - a); // Sortera baklänges (t.ex. 15 omgångar kvar till 0)
+        labels = sortedKeys.map(k => k === 0 ? "Slut" : `-${k} omg`);
+        averagedErrors = sortedKeys.map(k => seasonBuckets[k].reduce((a, b) => a + b, 0) / seasonBuckets[k].length);
+    } else if (alignMode === "PERCENT") {
+        let sortedKeys = [0, 25, 50, 75, 100];
+        labels = sortedKeys.map(k => k === 0 ? "0% (Omg 1)" : `${k}% av serien`);
+        averagedErrors = sortedKeys.map(k => seasonBuckets[k] ? (seasonBuckets[k].reduce((a, b) => a + b, 0) / seasonBuckets[k].length) : null);
+    }
+
+    document.getElementById('analysis-results').classList.remove('hidden'); 
+    const ctx = document.getElementById('analysisChart').getContext('2d');
+    if (analysisChartInstance) { analysisChartInstance.destroy(); }
+    
+    analysisChartInstance = new Chart(ctx, {
+        type: 'line', 
+        data: { 
+            labels: labels, 
+            datasets: [{ 
+                label: 'Genomsnittligt Positionsfel (MAE)', 
+                data: averagedErrors, 
+                borderColor: '#2563eb', 
+                backgroundColor: 'rgba(37, 99, 235, 0.1)', 
+                borderWidth: 3, 
+                pointBackgroundColor: '#1e3a8a', 
+                pointHoverRadius: 8, 
+                pointHoverBackgroundColor: '#f59e0b', 
+                fill: true, 
+                tension: 0.3, 
+                spanGaps: true 
+            }] 
+        },
+        options: { 
+            responsive: true, 
+            maintainAspectRatio: false, 
+            interaction: { mode: 'index', intersect: false }, 
+            plugins: { 
+                legend: { display: false }, 
+                tooltip: { 
+                    callbacks: { 
+                        label: function(c) { return ` MAE: ${c.parsed.y.toFixed(2)}`; } 
+                    } 
+                } 
+            }, 
+            scales: { 
+                y: { beginAtZero: true, title: { display: true, text: 'Positionsfel (MAE)' } }, 
+                x: { grid: { display: false } } 
+            },
+            onClick: (e, activeEls) => { 
+                if (seasonsToAnalyze.length > 1) { 
+                    alert("Detaljerad tabell är endast tillgänglig när du granskar en enskild säsong, inte hela epoker/perioder."); 
+                    return; 
+                } 
+                if (activeEls.length > 0) { 
+                    const idx = activeEls[0].index; 
+                    let selectedKey = idx + 1;
+                    if (alignMode === "COUNTDOWN") {
+                        let sortedKeys = Object.keys(seasonBuckets).map(Number).sort((a, b) => b - a);
+                        selectedKey = sortedKeys[idx];
+                    } else if (alignMode === "PERCENT") {
+                        selectedKey = [25, 50, 75, 100][idx];
+                    }
+                    showAnalysisDetails(selectedKey); 
+                } 
+            }
+        }
+    });
+}
+function updateAnalysisInputLabels() {
+    const alignMode = document.getElementById('analysis-alignment') ? document.getElementById('analysis-alignment').value : "FORWARD";
+    const lbl = document.getElementById('lbl-analysis-round-input');
+    const input = document.getElementById('analysis-round');
+    if (!lbl || !input) return;
+
+    if (alignMode === "COUNTDOWN") {
+        lbl.innerText = "Omgångar kvar";
+        if (parseInt(input.value) > 15 || parseInt(input.value) === 0) input.value = 5;
+    } else if (alignMode === "PERCENT") {
+        lbl.innerText = "Andel av serien (0, 25, 50, 75, 100%)";
+        input.value = 50; // Standard på halvtid
+    } else {
+        lbl.innerText = "Utvärdera efter omgång";
+        if (input.value === "50" || input.value === "5") input.value = 10;
+    }
+}
 
         function showAnalysisDetails(round) {
             const data = globalAnalysisData[round]; if (!data) return;
@@ -5621,7 +6140,7 @@ window.renderTopScorers = function(seasonStr) {
             let gkStats = {};
             let refStats = {};
 
-            const cleanNameUI = (nameStr) => nameStr.replace(/\s\d+$/, '').trim();
+            const cleanNameUI = (nameStr) => nameStr.replace(/\\s\\d+$/, '').trim();
 
             if (typeof window.gkref_season === 'undefined') window.gkref_season = 'ALL'; // Standardvärde fallback
             
@@ -5647,7 +6166,7 @@ window.renderTopScorers = function(seasonStr) {
                 // NYTT: SÄSONGS-FILTER
                 // Om användaren har valt ett specifikt år i rullistan, matcha det mot databasen
                 let currentFlikSeason = document.getElementById('gkref-season') ? document.getElementById('gkref-season').value : window.gkref_season;
-                let checkYear = String(bm.År || bm.Säsong || '').replace(/\.0$/, '').trim();
+                let checkYear = String(bm.År || bm.Säsong || '').replace(/\\.0$/, '').trim();
                 let checkSas = String(bm.Säs || '').trim();
                 let checkHybrid = checkYear ? checkYear + "/" + (parseInt(checkYear)+1).toString().slice(2) : ""; 
                 
@@ -5943,9 +6462,9 @@ window.renderTopScorers = function(seasonStr) {
                     if (cleanName.includes(",")) {
                         let parts = cleanName.split(",");
                         // Sätt ihop och ta bort eventuella dubbla mellanslag som uppstått när siffran försvann
-                        return (parts[1].trim() + " " + parts[0].trim()).replace(/\s+/g, ' ');
+                        return (parts[1].trim() + " " + parts[0].trim()).replace(/\\s+/g, ' ');
                     }
-                    return cleanName.replace(/\s+/g, ' ');
+                    return cleanName.replace(/\\s+/g, ' ');
                 };
 
         function formatDateSv(dateStr) {
@@ -6448,6 +6967,351 @@ window.addEventListener('DOMContentLoaded', () => {
     }, 1000); 
 });
 
+// --- SKOTTSÄKER EVENT LISTENER FÖR SPELPLATS-MENYN ---
+document.addEventListener('DOMContentLoaded', function() {
+    const teamDropdown = document.getElementById('search-team');
+    
+    if (teamDropdown) {
+        teamDropdown.addEventListener('change', function() {
+            const team = this.value;
+            const venueDiv = document.getElementById('div-search-venue');
+            const venueSelect = document.getElementById('search-venue');
+            
+            // Fäll ut om ett lag är valt, dölj annars
+            if (team && team !== "") {
+                venueDiv.classList.remove('hidden');
+            } else {
+                venueDiv.classList.add('hidden');
+                if (venueSelect) venueSelect.value = "ALLA"; // Återställ
+            }
+            
+            // Kör sökningen automatiskt
+            if (typeof performSearch === 'function') {
+                performSearch();
+            }
+        });
+    }
+});
+
+window.renderHTFTStats = function() {
+    const category = document.getElementById('htft-category').value;
+    const mode = document.getElementById('htft-mode').value;
+    
+    let teamStats = {};
+
+    // 1. Gå igenom alla matcher och bygg upp data
+    MATCH_DATA.forEach(m => {
+        if (m.Annullerad) return;
+
+        let hm = parseInt(m.HM); let bm = parseInt(m.BM);
+        let hmf = parseInt(m.HMF); let bmf = parseInt(m.BMF);
+
+        // Skottsäker vakt: Vi kräver både HT- och FT-resultat
+        if (isNaN(hm) || isNaN(bm) || isNaN(hmf) || isNaN(bmf)) return;
+
+        let hma = hm - hmf; // Hemmamål i 2:a halvlek
+        let bma = bm - bmf; // Bortamål i 2:a halvlek
+
+        let origH = m.Hemmalag_Org || m.Hemmalag;
+        let origB = m.Bortalag_Org || m.Bortalag;
+
+        // Initiera lagen om de inte finns
+        [origH, origB].forEach(t => {
+            if (!teamStats[t]) {
+                teamStats[t] = { 
+                    team: t, 
+                    validMatches: 0, 
+                    turnaround_win: 0, collapse_loss: 0, hold_lead_win: 0, win_both: 0,
+                    draw_to_win: 0, draw_to_loss: 0, trail_to_loss: 0, lose_both: 0,
+                    lead_to_draw: 0, trail_to_draw: 0, draw_to_draw: 0
+                };
+            }
+        });
+
+        teamStats[origH].validMatches++;
+        teamStats[origB].validMatches++;
+
+        // Status för Hemmalaget i Halvtid (HT)
+        let homeLeadHT = hmf > bmf; let homeTrailHT = hmf < bmf; let homeDrawHT = hmf === bmf;
+        // Status för Hemmalaget vid Fulltid (FT)
+        let homeWinFT = hm > bm; let homeLossFT = hm < bm; let homeDrawFT = hm === bm;
+        // Vann hemmalaget andra halvlek isolerat?
+        let homeWin2H = hma > bma; let homeLoss2H = hma < bma;
+
+        // --- MAPPA HEMMALAGET ---
+        if (homeTrailHT && homeWinFT) teamStats[origH].turnaround_win++;
+        if (homeLeadHT && homeLossFT) teamStats[origH].collapse_loss++;
+        if (homeLeadHT && homeWinFT) teamStats[origH].hold_lead_win++;
+        if (homeLeadHT && homeWin2H) teamStats[origH].win_both++; // Vann båda
+        if (homeDrawHT && homeWinFT) teamStats[origH].draw_to_win++;
+        if (homeDrawHT && homeLossFT) teamStats[origH].draw_to_loss++;
+        if (homeTrailHT && homeLossFT) teamStats[origH].trail_to_loss++;
+        if (homeTrailHT && homeLoss2H) teamStats[origH].lose_both++; // Förlorade båda
+        if (homeLeadHT && homeDrawFT) teamStats[origH].lead_to_draw++;
+        if (homeTrailHT && homeDrawFT) teamStats[origH].trail_to_draw++;
+        if (homeDrawHT && homeDrawFT) teamStats[origH].draw_to_draw++;
+
+        // Status för Bortalaget (inverterat)
+        let awayLeadHT = bmf > hmf; let awayTrailHT = bmf < hmf; let awayDrawHT = bmf === hmf;
+        let awayWinFT = bm > hm; let awayLossFT = bm < hm; let awayDrawFT = bm === hm;
+        let awayWin2H = bma > hma; let awayLoss2H = bma < hma;
+
+        // --- MAPPA BORTALAGET ---
+        if (awayTrailHT && awayWinFT) teamStats[origB].turnaround_win++;
+        if (awayLeadHT && awayLossFT) teamStats[origB].collapse_loss++;
+        if (awayLeadHT && awayWinFT) teamStats[origB].hold_lead_win++;
+        if (awayLeadHT && awayWin2H) teamStats[origB].win_both++; 
+        if (awayDrawHT && awayWinFT) teamStats[origB].draw_to_win++;
+        if (awayDrawHT && awayLossFT) teamStats[origB].draw_to_loss++;
+        if (awayTrailHT && awayLossFT) teamStats[origB].trail_to_loss++;
+        if (awayTrailHT && awayLoss2H) teamStats[origB].lose_both++; 
+        if (awayLeadHT && awayDrawFT) teamStats[origB].lead_to_draw++;
+        if (awayTrailHT && awayDrawFT) teamStats[origB].trail_to_draw++;
+        if (awayDrawHT && awayDrawFT) teamStats[origB].draw_to_draw++;
+    });
+
+    // 2. Beräkna andelar, filtrera och sortera
+    let results = Object.values(teamStats).filter(t => t.validMatches > 0);
+    
+    results.forEach(t => {
+        t.percent = (t[category] / t.validMatches) * 100;
+    });
+
+    // Sortera utifrån valt läge
+    results.sort((a, b) => {
+        if (mode === 'percent') {
+            return b.percent - a.percent || b.validMatches - a.validMatches; // Fallback till flest matcher
+        } else {
+            return b[category] - a[category] || b.percent - a.percent;
+        }
+    });
+
+    // 3. Rita ut tabellen
+    document.getElementById('htft-metric-header').innerText = mode === 'count' ? 'Antal' : 'Andel (%)';
+
+    let html = results.map((r, i) => {
+        let displayValue = mode === 'count' 
+            ? `<span class="font-bold text-white">${r[category]}</span>` 
+            : `<span class="font-bold text-amber-400">${r.percent.toFixed(2)} %</span>`;
+            
+        // Extrahera texten för vald kategori i gränssnittet för hover-effekt
+        let catText = document.querySelector(`#htft-category option[value="${category}"]`).innerText;
+
+        return `
+        <tr class="hover:bg-slate-800 border-b border-slate-800 transition-colors">
+            <td class="px-4 py-2 font-bold text-slate-500 text-center">${i + 1}</td>
+            <td class="px-4 py-2 font-medium text-white">${r.team}</td>
+            <td class="px-4 py-2 text-center text-slate-400">${r.validMatches}</td>
+            <td class="px-4 py-2 text-center" title="${r[category]} ${catText}">${displayValue}</td>
+        </tr>`;
+    }).join('');
+
+    document.getElementById('htft-table-body').innerHTML = html || '<tr><td colspan="4" class="text-center py-6 text-slate-500">Ingen data tillgänglig.</td></tr>';
+};
+
+// Starta motorn när sidan laddas
+document.addEventListener('DOMContentLoaded', function() {
+    if(document.getElementById('htft-category')) {
+        window.renderHTFTStats();
+    }
+});
+
+function getContextualTeamName(team, season) {
+    // Standardvärde (gråsvart text) om inget speciellt gäller
+    let defaultClass = "text-slate-700 font-medium";
+    
+    // Hämta merit-data för laget denna säsong (anpassa dessa flaggor efter hur din data faktiskt ser ut!)
+    let isNewcomer = false;
+    let isDefendingChamp = false; 
+    let isEventualChamp = false;
+
+    // Exempel på hur uppslagningen brukar se ut:
+    let mInfo = TEAM_MERITS[season] && TEAM_MERITS[season][team];
+    if (mInfo) {
+        // Justera dessa villkor så de matchar dina nycklar (t.ex. mInfo.is_nykomling)
+        isNewcomer = mInfo.nykomling === true;
+        isDefendingChamp = mInfo.regerande === true;
+        isEventualChamp = mInfo.mastare === true;
+    }
+
+    // --- LOGIK FÖR FÄRGER OCH GRADIENTER ---
+    let styleClass = defaultClass;
+    let tooltip = "";
+
+    if (isNewcomer && isEventualChamp) {
+        styleClass = "bg-gradient-to-r from-emerald-500 to-blue-600 bg-clip-text text-transparent font-bold";
+        tooltip = "Nykomling som vann SM-guld samma säsong";
+    } 
+    else if (isDefendingChamp && isEventualChamp) {
+        styleClass = "bg-gradient-to-r from-amber-500 to-blue-600 bg-clip-text text-transparent font-bold";
+        tooltip = "Regerande mästare som försvarade guldet";
+    }
+    else if (isDefendingChamp) {
+        styleClass = "text-amber-500 font-semibold";
+        tooltip = "Regerande mästare i denna match";
+    }
+    else if (isEventualChamp) {
+        styleClass = "text-blue-600 font-semibold";
+        tooltip = "Blev mästare denna säsong";
+    }
+    else if (isNewcomer) {
+        styleClass = "text-emerald-600 font-semibold";
+        tooltip = "Nykomling i serien";
+    }
+
+    // Returnera lagnamnet inbakat i en span med färg och hover-text
+    if (styleClass !== defaultClass) {
+        return `<span class="${styleClass} cursor-help" title="${tooltip}">${team}</span>`;
+    }
+    
+    return `<span class="${styleClass}">${team}</span>`;
+}
+
+window.renderHTFTStats = function() {
+    // 1. Hämta värden säkert med fallback (förhindrar kraschar om ett element saknas)
+    const locSelect = document.getElementById('htft-location');
+    const locationFilter = locSelect ? locSelect.value : 'ALL';
+
+    const catSelect = document.getElementById('htft-category');
+    const category = catSelect ? catSelect.value : 'turnaround_win';
+
+    const modeSelect = document.getElementById('htft-mode');
+    const mode = modeSelect ? modeSelect.value : 'count';
+    
+    let teamStats = {};
+
+    // 2. Garantera att ALLA kategorier alltid nollställs korrekt från start
+    const initTeam = (t) => {
+        if (!teamStats[t]) {
+            teamStats[t] = { 
+                team: t, 
+                validMatches: 0, 
+                turnaround_win: 0, collapse_loss: 0, hold_lead_win: 0, win_both: 0,
+                draw_to_win: 0, draw_to_loss: 0, trail_to_loss: 0, lose_both: 0,
+                lead_to_draw: 0, trail_to_draw: 0, draw_to_draw: 0,
+                win_2h_only: 0, lose_2h_only: 0 // Nu är de säkrade!
+            };
+        }
+    };
+
+    // 3. Kalkylera data
+    MATCH_DATA.forEach(m => {
+        if (m.Annullerad) return;
+
+        let hm = parseInt(m.HM, 10); let bm = parseInt(m.BM, 10);
+        let hmf = parseInt(m.HMF, 10); let bmf = parseInt(m.BMF, 10);
+
+        if (isNaN(hm) || isNaN(bm) || isNaN(hmf) || isNaN(bmf)) return;
+
+        let hma = hm - hmf; let bma = bm - bmf;
+        let origH = m.Hemmalag_Org || m.Hemmalag;
+        let origB = m.Bortalag_Org || m.Bortalag;
+
+        // --- MAPPA HEMMALAGET ---
+        if (locationFilter === 'ALL' || locationFilter === 'HOME') {
+            initTeam(origH);
+            teamStats[origH].validMatches++;
+
+            let homeLeadHT = hmf > bmf; let homeTrailHT = hmf < bmf; let homeDrawHT = hmf === bmf;
+            let homeWinFT = hm > bm; let homeLossFT = hm < bm; let homeDrawFT = hm === bm;
+            let homeWin2H = hma > bma; let homeLoss2H = hma < bma;
+
+            if (homeTrailHT && homeWinFT) teamStats[origH].turnaround_win++;
+            if (homeLeadHT && homeLossFT) teamStats[origH].collapse_loss++;
+            if (homeLeadHT && homeWinFT) teamStats[origH].hold_lead_win++;
+            if (homeLeadHT && homeWin2H) teamStats[origH].win_both++;
+            if (homeDrawHT && homeWinFT) teamStats[origH].draw_to_win++;
+            if (homeDrawHT && homeLossFT) teamStats[origH].draw_to_loss++;
+            if (homeTrailHT && homeLossFT) teamStats[origH].trail_to_loss++;
+            if (homeTrailHT && homeLoss2H) teamStats[origH].lose_both++;
+            if (homeLeadHT && homeDrawFT) teamStats[origH].lead_to_draw++;
+            if (homeTrailHT && homeDrawFT) teamStats[origH].trail_to_draw++;
+            if (homeDrawHT && homeDrawFT) teamStats[origH].draw_to_draw++;
+            
+            if (homeWin2H) teamStats[origH].win_2h_only++;
+            if (homeLoss2H) teamStats[origH].lose_2h_only++;
+        }
+
+        // --- MAPPA BORTALAGET ---
+        if (locationFilter === 'ALL' || locationFilter === 'AWAY') {
+            initTeam(origB);
+            teamStats[origB].validMatches++;
+
+            let awayLeadHT = bmf > hmf; let awayTrailHT = bmf < hmf; let awayDrawHT = bmf === hmf;
+            let awayWinFT = bm > hm; let awayLossFT = bm < hm; let awayDrawFT = bm === hm;
+            let awayWin2H = bma > hma; let awayLoss2H = bma < hma;
+
+            if (awayTrailHT && awayWinFT) teamStats[origB].turnaround_win++;
+            if (awayLeadHT && awayLossFT) teamStats[origB].collapse_loss++;
+            if (awayLeadHT && awayWinFT) teamStats[origB].hold_lead_win++;
+            if (awayLeadHT && awayWin2H) teamStats[origB].win_both++; 
+            if (awayDrawHT && awayWinFT) teamStats[origB].draw_to_win++;
+            if (awayDrawHT && awayLossFT) teamStats[origB].draw_to_loss++;
+            if (awayTrailHT && awayLossFT) teamStats[origB].trail_to_loss++;
+            if (awayTrailHT && awayLoss2H) teamStats[origB].lose_both++; 
+            if (awayLeadHT && awayDrawFT) teamStats[origB].lead_to_draw++;
+            if (awayTrailHT && awayDrawFT) teamStats[origB].trail_to_draw++;
+            if (awayDrawHT && awayDrawFT) teamStats[origB].draw_to_draw++;
+            
+            if (awayWin2H) teamStats[origB].win_2h_only++;
+            if (awayLoss2H) teamStats[origB].lose_2h_only++;
+        }
+    });
+
+    // 4. Filtrera bort lag utan relevanta matcher
+    let results = Object.values(teamStats).filter(t => t.validMatches > 0);
+    
+    // 5. Kalkylera procent med fallback för säkerhets skull
+    results.forEach(t => {
+        let count = t[category] || 0;
+        t.percent = (count / t.validMatches) * 100;
+    });
+
+    // 6. Sortering
+    results.sort((a, b) => {
+        let countA = a[category] || 0;
+        let countB = b[category] || 0;
+
+        if (mode === 'percent') {
+            return b.percent - a.percent || b.validMatches - a.validMatches; 
+        } else {
+            return countB - countA || b.percent - a.percent;
+        }
+    });
+
+    // 7. Rita ut
+    document.getElementById('htft-metric-header').innerText = mode === 'count' ? 'Antal' : 'Andel (%)';
+
+    let html = results.map((r, i) => {
+        let count = r[category] || 0;
+        
+        // Här bygger vi strängen, inklusive parentesen med absoluttal vid procentvy
+        let displayValue = mode === 'count' 
+            ? `<span class="font-black text-blue-600">${count}</span>` 
+            : `<span class="font-black text-blue-600">${r.percent.toFixed(2)} % <span class="text-xs text-slate-400 font-normal ml-1">(${count})</span></span>`;
+
+        return `
+        <tr class="hover:bg-blue-50 transition-colors">
+            <td class="px-4 py-2 font-bold text-slate-400 text-center">${i + 1}</td>
+            <td class="px-4 py-2 font-medium text-slate-800">${r.team}</td>
+            <td class="px-4 py-2 text-center text-slate-500">${r.validMatches}</td>
+            <td class="px-4 py-2 text-center">${displayValue}</td>
+        </tr>`;
+    }).join('');
+
+    const tbody = document.getElementById('htft-table-body');
+    if (tbody) {
+        tbody.innerHTML = html || '<tr><td colspan="4" class="text-center py-6 text-slate-500">Ingen data tillgänglig.</td></tr>';
+    }
+};
+
+// Starta motorn när sidan laddas
+document.addEventListener('DOMContentLoaded', function() {
+    if(document.getElementById('htft-category')) {
+        window.renderHTFTStats();
+    }
+});
+
     </script>
     <!-- MODAL: Personinformation (Målvakter & Domare) -->
 <div id="person-modal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-[9999] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
@@ -6506,7 +7370,8 @@ final_html = html_template.replace("%%MATCH_DATA_JSON%%", json_match_data) \
     .replace("%%REF_INFO_JSON%%", json_ref_info) \
     .replace("%%TOP_SCORERS_JSON%%", json_top_scorers) \
     .replace("%%FIRST_SCORERS_JSON%%", json_first_scorers) \
-    .replace("%%MASTER_BELT_JSON%%", json_master_belt)
+    .replace("%%MASTER_BELT_JSON%%", json_master_belt) \
+    .replace("%%GK_ADVANCED_STATS_JSON%%", json_gk_advanced)
 
 output_file = os.path.join(main_folder, "Matchanalys_Dashboard.html")
 with open(output_file, "w", encoding="utf-8") as f:

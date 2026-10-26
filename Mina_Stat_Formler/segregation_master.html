@@ -11,8 +11,40 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <!-- ECharts Bibliotek -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.0/dist/echarts.min.js"></script>
     
     <style>
+    #barChartCanvasFlik11 {
+        max-height: 500px !important;
+         height: 500px !important;
+    }
+        /* =======================================================
+   1. GLOBAL LAYOUT-FIX (Mördar horisontell scroll)
+   ======================================================= */
+html, body {
+    max-width: 100vw;       /* Max 100% av fönstrets bredd (viewport width) */
+    overflow-x: hidden;     /* Gömmer allting som försöker smita utanför skärmen till höger/vänster */
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Tvingar padding att räknas INÅT, inte utåt */
+}
+
+/* Applicera inåtriktad box-sizing på ALLA element på hela sidan */
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+/* =======================================================
+   2. SKYDD MOT BREDA GRAFER (T.ex. AI-Kompassen)
+   ======================================================= */
+/* Om dina grafer (ECharts/Chart.js) ligger i en div, se till att de aldrig kan spränga föräldra-containern */
+.chart-container, 
+#ai-kompass-container, /* Byt ut mot det ID din kompass har om det är en specifik div */
+canvas {
+    max-width: 100% !important;
+}
+
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background-color: #f4f7f6; 
@@ -368,7 +400,8 @@
     <div class="modern-controls">
         
         <!-- 1. Huvudvariabler (Blått kort för analys) -->
-        <div class="control-card blue" style="flex: 1.5; min-width: 250px;">
+        <!-- Sänkt från flex: 1.5 till flex: 1 -->
+        <div class="control-card blue" style="flex: 1; min-width: 220px;">
             <label class="control-label">➡️ X-axel (Drivkraft)</label>
             <select id="xVar1" class="modern-select" style="margin-bottom: 12px;"></select>
             
@@ -377,7 +410,7 @@
         </div>
         
         <!-- 2. Visualisering (Rött kort för utseende) -->
-        <div class="control-card red" style="flex: 1.5; min-width: 250px;">
+        <div class="control-card red" style="flex: 1; min-width: 220px;">
             <label class="control-label">🫧 Bubbelstorlek (Volym)</label>
             <select id="bubbleSizeVar1" class="modern-select" style="margin-bottom: 12px;">
                 <option value="Folkmängd">Folkmängd (Invånarantal)</option>
@@ -385,47 +418,192 @@
             </select>
             
             <label class="control-label">🎨 Färgkodning</label>
-            <select id="colorVar1" class="modern-select">
+            <!-- 🚀 FIX: Lade till onchange som rensar minnet om man byter BORT från Utvald_Stadsdel -->
+            <select id="colorVar1" class="modern-select" onchange="
+                if(this.value !== 'Utvald_Stadsdel') { 
+                    window.trackedAreaFlik1 = null; 
+                    let fd = document.getElementById('focusAreaSelect1'); 
+                    if(fd) fd.value = 'none'; 
+                    let dd = document.getElementById('enableDrillDown');
+                    if(dd) dd.checked = false;
+
+                    /* 🚀 FIX: Stäng och lås klusterrutan automatiskt vid färgbyte */
+                    if(clusterCheck) {
+                        clusterCheck.checked = false;
+                        clusterCheck.disabled = true;
+                        clusterCheck.parentElement.style.opacity = '0.5';
+                        clusterCheck.parentElement.style.cursor = 'not-allowed';
+                    }
+                } 
+                if(typeof updateTab1 === 'function') updateTab1();
+            ">
                 <option value="none">Enfärgad (Blå)</option>
                 <option value="Karaktär_bas">Karaktär (Stad/Tätort/Landsbygd)</option>
                 <option value="Karaktär_detalj">Karaktär (Detaljnivå)</option>
                 <option value="SEI_indikatorer16">SEI-index (1-6)</option>
+            
+                <!-- NYA VAL FÖR NYKO 3 (Dolda som standard) -->
+                <option value="SEI_Heatmap" hidden disabled>SEI-index (Heatmap)</option>
+                <option value="Utvald_Stadsdel">Markerat område (Fokus)</option>
             </select>
+            
+            <!-- 🚀 NYTT: Sökbar rullista för Fokusläget (Nytt unikt ID!) -->
+            <div id="focusContainer1" style="margin-top: 15px; display: none;">
+                <label class="control-label">🔍 Fokusera på område</label>
+                <select id="focusAreaSelect1" class="modern-select" style="width: 100%; margin-bottom: 12px;" onchange="window.trackedAreaFlik1 = (this.value === 'none' ? null : this.value); if(typeof updateTab1 === 'function') updateTab1();">
+                    <option value="none">-- Välj område (Skriv för att söka) --</option>
+                </select>
+            </div>
         </div>
        
         <!-- 3. Stadsdel, Tidsval & Animering (Grönt kort) -->
-        <div class="control-card green" style="flex: 1.2; min-width: 200px;">
-            
-            <!-- STADSDELSMARKERING (Ny) -->
-            <label class="control-label">📍 Visa basområden i (Stadsdel)</label>
-            <select id="stadsdelSelect1" class="modern-select" style="margin-bottom: 12px;">
-                <option value="none">-- Ingen markerad --</option>
-                <option value="Berga">Berga</option>
-                <option value="Gottfridsberg">Gottfridsberg</option>
-                <option value="Innerstaden">Innerstaden</option>
-                <option value="Lambohov">Lambohov</option>
-                <option value="Ryd">Ryd</option>
-                <option value="Skäggetorp">Skäggetorp</option>
-                <option value="Tannefors">Tannefors</option>
-                <option value="Vasastaden">Vasastaden</option>
-                <option value="Östra Valla">Östra Valla</option>
-                <option value="Ekholmen/Johannelund">Ekholmen & Johannelund</option>
-                <option value="Ekängen/Tallboda">Ekängen & Tallboda</option>
-                <option value="Ramshäll/Vimanshäll">Ramshäll & Vimanshäll</option>
-            </select>
+<div class="control-card green" style="flex: 1; min-width: 200px;">
+    
+    <!-- WRAPPER FÖR NYKO 4: STADSDELSMARKERING -->
+    <div id="nyko4-stadsdel-container">
+        <label class="control-label">📍 Visa basområden i (Stadsdel)</label>
+        <select id="stadsdelSelect1" class="modern-select" style="margin-bottom: 12px;" onchange="updateTab1()">
+            <option value="none">-- Ingen markerad --</option>
+            <option value="Berga">Berga</option>
+            <option value="Gottfridsberg">Gottfridsberg</option>
+            <option value="Innerstaden">Innerstaden</option>
+            <option value="Lambohov">Lambohov</option>
+            <option value="Ryd">Ryd</option>
+            <option value="Skäggetorp">Skäggetorp</option>
+            <option value="Tannefors">Tannefors</option>
+            <option value="Vasastaden">Vasastaden</option>
+            <option value="Östra Valla">Östra Valla</option>
+            <option value="Ekholmen/Johannelund">Ekholmen & Johannelund</option>
+            <option value="Ekängen/Tallboda">Ekängen & Tallboda</option>
+            <option value="Ramshäll/Vimanshäll">Ramshäll & Vimanshäll</option>
+        </select>
+    </div>
 
-            <!-- ÅR & ANIMERING (Befintlig) -->
-            <label class="control-label">📅 År & Animering</label>
-            <div style="display: flex; gap: 8px;">
-                <select id="yearSelect1" class="modern-select" style="flex: 1;"></select>
-                <button id="playBtn-yearSelect1" class="nav-button" style="background:#27ae60; padding: 8px 12px; margin: 0; min-width: 100px; display: flex; align-items: center; justify-content: center;" onclick="toggleAnimation('yearSelect1', updateTab1)">
-                    ▶️ Spela upp
-                </button>
-            </div>
+    <!-- WRAPPER FÖR NYKO 3: DRILL-DOWN TOGGLE (Uppdaterad med Kluster) -->
+    <div id="nyko3-drilldown-container" style="display: none; margin-bottom: 12px; padding: 10px; background-color: rgba(255,255,255,0.6); border-radius: 6px; border: 1px solid rgba(0,0,0,0.1);">
+        <!-- Huvudval: Interaktiv fördjupning -->
+        <label style="display: flex; align-items: center; cursor: pointer; margin: 0; font-weight: bold; color: #2c3e50; font-size: 13px;">
+            <input type="checkbox" id="enableDrillDown" onchange="
+                let stadsdel = document.getElementById('stadsdelSelect1') ? document.getElementById('stadsdelSelect1').value : 'none';
+                let focusArea = document.getElementById('focusAreaSelect1') ? document.getElementById('focusAreaSelect1').value : 'none';
+                let clusterCheck = document.getElementById('enableClusterDrillDown');
+                let colorVar = document.getElementById('colorVar1');
+                
+                /* Känner av om Stapeldiagrammet är aktivt just nu */
+                let subBarActive = (document.getElementById('sub-bar') && document.getElementById('sub-bar').style.display === 'block');
+                
+                if (this.checked && !window.trackedAreaFlik1) {
+                    if (focusArea !== 'none') window.trackedAreaFlik1 = focusArea;
+                    else if (stadsdel !== 'none') window.trackedAreaFlik1 = stadsdel;
+                }
+
+                if (this.checked && colorVar && colorVar.value !== 'Utvald_Stadsdel') {
+                    colorVar.value = 'Utvald_Stadsdel';
+                }
+
+                /* 🚀 FIX: Klusterrutan aktiveras BARA om vi INTE är i stapeldiagrammet */
+                if (clusterCheck) {
+                    if (this.checked && !subBarActive) {
+                        clusterCheck.disabled = false;
+                        clusterCheck.parentElement.style.opacity = '1';
+                        clusterCheck.parentElement.style.cursor = 'pointer';
+                    } else {
+                        clusterCheck.disabled = true;
+                        clusterCheck.checked = false;
+                        clusterCheck.parentElement.style.opacity = '0.5';
+                        clusterCheck.parentElement.style.cursor = 'not-allowed';
+                    }
+                }
+                
+                if (subBarActive) {
+                    if(typeof updateBarChart === 'function') updateBarChart();
+                } else {
+                    if(typeof updateTab1 === 'function') updateTab1();
+                }
+            " style="margin-right: 8px; width: 16px; height: 16px;">
+            🔍 Interaktiv fördjupning
+        </label>
+        <div style="font-size: 11px; color: #555; margin-top: 4px; margin-left: 24px;">
+            Klicka på en stadsdel för att se egna basområden.
         </div>
         
-        <!-- 4. Geografiska Filter (Neutralt grått kort) -->
-        <div class="control-card" style="flex: 1; min-width: 180px;">
+        <!-- Underval: Kommundelskluster -->
+        <label style="display: flex; align-items: center; cursor: not-allowed; margin: 8px 0 0 24px; color: #2c3e50; font-size: 12px; opacity: 0.5;">
+            <input type="checkbox" id="enableClusterDrillDown" disabled onchange="
+                if (document.getElementById('sub-bar') && document.getElementById('sub-bar').style.display === 'block') {
+                    if(typeof updateBarChart === 'function') updateBarChart();
+                } else {
+                    if(typeof updateTab1 === 'function') updateTab1();
+                }
+            " style="margin-right: 8px; width: 14px; height: 14px;">
+            🔗 Inkludera närliggande basområden (Kommundelskluster)
+        </label>
+    </div>
+
+    <!-- ÅR & ANIMERING (Befintlig) -->
+    <label class="control-label">📅 År & Animering</label>
+    <div style="display: flex; gap: 8px;">
+        <select id="yearSelect1" class="modern-select" style="flex: 1;"></select>
+        <button id="playBtn-yearSelect1" class="nav-button" style="background:#27ae60; padding: 8px 12px; margin: 0; min-width: 100px; display: flex; align-items: center; justify-content: center;" onclick="toggleAnimation('yearSelect1', updateTab1)">
+            ▶️ Spela upp
+        </button>
+    </div>
+</div>
+        
+        <!-- 4. Geografisk Nivå & Filter (Neutralt grått kort) -->
+        <div class="control-card" style="flex: 0.85; min-width: 180px;">
+            
+            <!-- CSS FÖR ATT TVINGA FRAM ANIMERINGEN -->
+            <style>
+                .switch input:checked + .slider { background-color: #3498db !important; }
+                .switch input:checked + .slider .slider-dot { transform: translateX(20px) !important; }
+                .clickable-label { cursor: pointer; user-select: none; }
+                .clickable-label:hover { opacity: 0.8; }
+                
+                /* Små slimmade knappar för Vy-valet */
+                .mini-vy-btn {
+                    background-color: #f1f3f5; color: #495057; border: 1px solid #dee2e6;
+                    padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; 
+                    cursor: pointer; transition: all 0.2s ease; width: 100%; text-align: left;
+                }
+                .mini-vy-btn:hover { background-color: #e2e6ea; }
+                .mini-vy-btn.active {
+                    background-color: rgba(0, 105, 128, 0.9); color: white; border-color: rgba(0, 105, 128, 1);
+                }
+            </style>
+
+            <!-- ÖVRE DELEN: Delad i två spalter -->
+            <div style="display: flex; justify-content: space-between; gap: 15px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #dcdde1;">
+                
+                <!-- Vänster Spalt: Geografisk Nivå -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                    <label class="control-label" style="margin-bottom: 6px; text-align: center;">🌍 Geografisk nivå</label>
+                    <div class="geo-toggle-container" style="display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 8px;">
+                        <label for="geoToggleTab1" id="label-nyko4-tab1" class="clickable-label" style="font-weight: bold; color: #2c3e50; font-size: 11px; margin: 0;">Basområde</label>
+                        
+                        <label class="switch" style="position: relative; display: inline-block; width: 36px; height: 18px; margin: 0;">
+                            <input type="checkbox" id="geoToggleTab1" onchange="toggleGeoLevel('tab1')" style="opacity: 0; width: 0; height: 0; position: absolute;">
+                            <span class="slider round" style="position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #bdc3c7; transition: .4s; border-radius: 20px;">
+                                <span class="slider-dot" style="position: absolute; content: ''; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%;"></span>
+                            </span>
+                        </label>
+                        
+                        <label for="geoToggleTab1" id="label-nyko3-tab1" class="clickable-label" style="color: #7f8c8d; font-size: 11px; margin: 0;">Stadsdel</label>
+                    </div>
+                </div>
+
+                <!-- Höger Spalt: Diagram-Vy -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: flex-start; border-left: 1px dashed #dcdde1; padding-left: 15px;">
+                    <label class="control-label" style="margin-bottom: 6px;">📊 Diagramvy</label>
+                    <div style="display: flex; flex-direction: column; gap: 4px; width: 100%;">
+                        <button class="mini-vy-btn active" onclick="switchSubTab('sub-bubble', this)">🔵 Bubbeldiagram</button>
+                        <button class="mini-vy-btn" onclick="switchSubTab('sub-bar', this)">📊 Stapeldiagram</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- BEFINTLIGA FILTER -->
             <label class="control-label">⚙️ Filter</label>
             <div style="display: flex; flex-direction: column; gap: 8px; padding-top: 5px;">
                 <label class="check-item"><input type="checkbox" id="exTot1" checked> Exkl. Total</label>
@@ -441,8 +619,43 @@
             <div class="stat-box"><div class="stat-value" id="eqValue1">-</div><div class="stat-label">Linjär Ekvation</div></div>
         </div>
         <div class="main-content">
-            <div class="chart-container">
-                <div class="canvas-wrapper"><canvas id="regChart1"></canvas></div>
+            <div class="chart-container" style="display: flex; flex-direction: column; min-height: 550px;">
+                
+                <!-- VY 1: BUBBELDIAGRAM (Standard) -->
+                <div id="sub-bubble" class="sub-tab-content active" style="display: block; width: 100%; flex: 1; position: relative;">
+                    <!-- DYNAMISK TECKENFÖRKLARING (Behålls på sin ursprungliga plats) -->
+                    <div id="custom-legend-tab1" style="text-align: center; margin-bottom: 10px; min-height: 25px; transition: all 0.3s ease;"></div>
+                    <!-- DIAGRAMMET (Notera ditt korrekta ID: regChart1) -->
+                    <div class="canvas-wrapper" style="position: relative; width: 100%; height: 60vh; min-height: 500px;">
+                        <canvas id="regChart1"></canvas>
+                    </div>
+                </div>
+
+                <!-- VY 2: STAPELDIAGRAM (Dolt från start) -->
+<div id="sub-bar" class="sub-tab-content" style="display: none; width: 100%; flex: 1; position: relative;">
+    <!-- Vi återanvänder din canvas-wrapper-klass för att ärva exakt samma storlek/höjd -->
+    <div class="canvas-wrapper" style="position: relative; width: 100%; height: 60vh; min-height: 500px;">
+        
+        <!-- 🚀 FIX: Diskret Vattenstämpel (Svävande över diagrammet) -->
+        <div id="barWatermark" style="
+            position: absolute; 
+            top: 20px; 
+            right: 30px; 
+            font-size: 2rem; 
+            font-weight: 800; 
+            color: rgba(150, 160, 170, 0.25); 
+            text-transform: uppercase;
+            pointer-events: none; 
+            z-index: 10; 
+            text-align: right; 
+            max-width: 60%;
+            line-height: 1.1;">
+        </div>
+
+        <canvas id="barChartCanvas"></canvas>
+    </div>
+</div>
+
             </div>
             <div class="guide-container">
                 <h3 style="margin-top:0; color:#2c3e50;">💡 Tolkningsguide</h3>
@@ -462,7 +675,7 @@
                 </div>
                 <hr style="border-top: 1px dashed #bdc3c7; margin: 15px 0;">
 
-<h6 class="fw-bold" style="color: #2c3e50; font-size: 0.95rem;">
+<h6 class="fw-bold" style="color: #2c3e50; font-size: 0.95rem; margin-top: 30px; margin-bottom: 4px;">
     ⏱️ Interaktiv Tidsanimering
 </h6>
 <p style="font-size: 0.85rem; color: #34495e; margin-bottom: 10px;">
@@ -471,12 +684,47 @@
     <strong>Spåra ett specifikt område:</strong> Klicka på en enskild bubbla i diagrammet. Då tänds en glödande markering och du kan se dess unika spårhistorik (orange linje) byggas upp från startåret till idag när du spelar upp animationen.
 </p>
 
-<h6 class="fw-bold" style="color: #2c3e50; font-size: 0.95rem;">
+<h6 class="fw-bold" style="color: #2c3e50; font-size: 0.95rem; margin-top: 30px; margin-bottom: 4px;">
     📍 Analysera Stadsdelar
 </h6>
 <p style="font-size: 0.85rem; color: #34495e; margin-bottom: 0;">
     <strong>Visa basområden i:</strong> Använd rullistan för att lägga ett överliggande raster på diagrammet. De basområden som tillhör den valda stadsdelen (t.ex. Ryd eller Skäggetorp) markeras med en skarp <strong>mörkgrå inramning</strong>. Detta gör det enkelt att se hur en stadsdels olika delar klustrar sig, och hur hela stadsdelen rör sig som en grupp när tidsanimeringen är igång.
 </p>
+<h6 class="fw-bold" style="color: #2c3e50; font-size: 0.95rem; margin-top: 30px; margin-bottom: 4px;">
+        🗺️ Växla Geografisk Nivå (Basområde / Stadsdel/Tätort)
+    </h6>
+    <p style="font-size: 0.85rem; color: #34495e; margin-bottom: 15px;">
+        Standardvyn för analysen är kommunens mest detaljerade nivå, <b>Basområden (Nyko 4)</b>. Genom att använda reglaget för geografisk nivå i kontrollpanelen kan du zooma ut och istället aggregera all data till <b>Stadsdelar och Tätorter (Nyko 3)</b>. Detta är särskilt användbart för att identifiera stora strukturella trender innan du dyker ner i lokala variationer.
+    </p>
+
+    <h6 class="fw-bold" style="color: #2c3e50; font-size: 0.95rem; margin-top: 30px; margin-bottom: 4px;">
+        🔍 Interaktiv Fördjupning & Tre-färgad Klusteranalys
+    </h6>
+    <p style="font-size: 0.85rem; color: #34495e; margin-bottom: 0;">
+        När du har växlat till stadsdelsnivå (Nyko 3) aktiveras ett unikt fördjupningsverktyg. Med detta kan du studera den interna spridningen inom stadsdelar samt analysera funktionella närområden tvärs över administrativa gränser:
+        <br><br>
+        <b>1. Egna basområden (Korallröd/Knallröd):</b> 
+        När du kryssar i <i>"🔍 Interaktiv fördjupning"</i> och väljer eller klickar på en stadsdel, ritas stadsdelens egna underliggande basområden ut i <span style="color:#e74c3c; font-weight:bold;">korallrött</span>. Övriga stadsdelar dämpas ner för att ge fullt fokus åt inom-variansen i det valda området.
+        <br><br>
+        <b>2. Kommundelskluster (Lila grannar):</b> 
+        Om du även kryssar i <i>"🔗 Inkludera närliggande basområden (Kommundelskluster)"</i> identifierar systemet vissa geografiska basområden i stadsdelens närhet. Basområden från grannstadsdelar som delar samma klusterkod ritas då ut i <span style="color:#9b59b6; font-weight:bold;">lila färg</span>.
+        <br><br>
+        <b>💡 Analytisk nytta:</b> Detta tre-färgade system (Stadsdel / Egna basområden / Klustergrannar) gör det möjligt att visuellt skilja stränga administrativa gränser från verkliga, sammanhängande bostads- och lokalmiljöer i Linköping.
+    </p>
+    <h6 class="fw-bold" style="color: #2c3e50; font-size: 0.95rem; margin-top: 30px; margin-bottom: 4px;">
+        📊 Växla Diagramtyp (Bubbeldiagram / Stapeldiagram)
+    </h6>
+    <p style="font-size: 0.85rem; color: #34495e; margin-bottom: 0;">
+        Överst till höger i gränssnittet kan du växla mellan två kompletterande visualiseringsformer:
+        <br><br>
+        <b>1. Bubbeldiagram (Korrelationsvy):</b> 
+        Lämpar sig bäst för att studera samband mellan två olika socioekonomiska variabler samtidigt på X- och Y-axeln, där bubblans storlek representerar befolkningsmängd (eller antalet sysselsatta).
+        <br><br>
+        <b>2. Stapeldiagram (Ranking- och fördelningsvy):</b> 
+        Sorterar samtliga områden i fallande ordning utifrån den valda variabeln på X-axeln. Detta ger en omedelbar överblick över spridning, lägsta/högsta värden samt var enskilda stadsdelar eller basområden placerar sig i förhållande till kommungenomsnittet (den gröna streckade linjen).
+        <br><br>
+        <b>💡 Analytisk nytta:</b> Alla valda färgkodningar och fördjupningsfilter (inklusive val av fokusområde och döljning av färgkategorier) behålls sömlöst när du växlar mellan diagramtyperna, vilket gör det enkelt att verifiera en trend i båda vyerna.
+    </p>
             </div>
         </div>
     </div>
@@ -522,7 +770,7 @@
         <div class="control-card green" style="flex: 1.2; min-width: 200px;">
             
             <!-- STADSDELSMARKERING -->
-            <label class="control-label">📍 Visa basområden i (Stadsdel)</label>
+            <label id="stadsdelLabel2" class="control-label">📍 Visa basområden i (Stadsdel)</label>
             <select id="stadsdelSelect2" class="modern-select" style="margin-bottom: 12px;">
                 <option value="none">-- Ingen markerad --</option>
                 <option value="Berga">Berga</option>
@@ -556,14 +804,20 @@
             <!-- Grid-layout: 2 kolumner normalt, bryter till 1 kolumn på små skärmar -->
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 6px; padding-top: 5px;">
                 
-                <!-- Låsknappen tar alltid hela bredden (grid-column: 1 / -1) -->
+                <!-- 🚀 NYTT: Nyko 3-växel (Tar hela bredden) -->
+                <label class="check-item" title="Aggregerar spridningen till stadsdelsnivå för strukturell översikt." style="grid-column: 1 / -1; color: #2980b9; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 2px;">
+                    <!-- FIX: Nollställ spårhistoriken INNAN vi växlar nivå! -->
+                    <input type="checkbox" id="geoLevelToggleFyrfaltare" onchange="trackedAreaFlik2 = null; if(typeof updateTab2 === 'function') updateTab2();"> 🗺️ Visa som Stadsdelar (Nyko 3)
+                </label>
+
+                <!-- Låsknappen (Tar hela bredden) -->
                 <label class="check-item" style="grid-column: 1 / -1; color: #e67e22; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 6px; margin-bottom: 2px;">
                     <input type="checkbox" id="lockCrosshair2"> 🔒 Lås hårkors & axlar
                 </label>
                 
                 <label class="check-item"><input type="checkbox" id="exTot2" checked> Exkl. Total</label>
                 <label class="check-item"><input type="checkbox" id="exSma2" checked> Exkl. Små omr.</label>
-                <label class="check-item"><input type="checkbox" id="exSpe2"> Exkl. Studentomr.</label> 
+                <label class="check-item"><input type="checkbox" id="exSpe2" onchange="if(typeof updateTab2 === 'function') updateTab2();"> Exkl. Studentomr.</label> 
             </div>
         </div>
         
@@ -1044,7 +1298,7 @@
                     När du har två kurvor aktiverade samtidigt tittar algoritmen på deras riktning. Detta är de fyra strukturella signaler systemet letar efter:<br><br>
                     
                     <b>När kurvorna går åt OLIKA håll (Saxar):</b><br>
-                    <span style="font-size: 13px; color: #555; display: block; margin-bottom: 5px;"><i>(Observera: Larmar endast när du specifikt jämför Standardavvikelse med Segregationsindex)</i></span>
+                    <span style="font-size: 13px; color: #555; display: block; margin-bottom: 5px;"><i>(Observera: Larmar endast när du specifikt jämför <b>Standardavvikelse</b> med <b>Segregationsindex</b>)</i></span>
                     <span style="color:#d35400;"><b>Fall A (Spridd tillväxt):</b></span> STD ökar men relativ segregation minskar. <i>"Skillnaderna mellan områden blir större i rena antal (gruppen växer totalt), men vi bor faktiskt lite mer blandat rent relativt sett." <em>Gruppen växer, t.ex. Utländsk bakgrund.</em></i><br><br>
                     <span style="color:#c0392b;"><b>Fall B (Enklavisering):</b></span> STD minskar men relativ segregation ökar. <i>"Företeelsen minskar totalt i hela staden, men de som finns kvar isoleras och koncentreras till specifika enklaver. <b>Här ökar segregationseffektiviteten sannolikt kraftigt.</b>" <em>Gruppen krymper, t.ex. Ekonomiskt bistånd.</em></i><br><br>
                     
@@ -1431,7 +1685,7 @@
     <!-- ========================================== -->
 <!-- FLIK 11: AI-KOMPASSEN (LÅST 2-SPALT)       -->
 <!-- ========================================== -->
-<div id="flik11" class="tab-content" style="display: none; width: 100%;">
+<div id="flik11" class="tab-content" style="display: none !important;">
     <div class="row g-4 mt-2" style="margin: 0; width: 100%;">
         
         <!-- VÄNSTER SPALT: KOMPASS (7 av 12 kolumner) -->
@@ -1526,6 +1780,8 @@
     <script>
         // GLOBALA VARIABLER
         let rawData = [];
+        let rawDataNyko3 = [];     // NY: Behållare för stadsdelarna (Nyko 3)
+        let currentGeoLevelTab1 = 'nyko4'; // NY: Håller koll på om vi visar basområden eller stadsdelar
         let validVariables = [];
         let globalLatestYear = null;
         let currentClusterData = []; 
@@ -1550,8 +1806,8 @@
 
         const core16_keywords = [
             "långvarigt ekonomiskt bistånd", "inskrivna arbetslösa", "valdeltagande", "ej självförsörjande", 
-            "behöriga gymnasiets yrkesprogram", "inskrivna förskolebarn", "trångbodda hushåll", "ohälsotal 50-64", 
-            "låg ekonomisk standard", "uvas", "hyresrätt", "små bostäder", "kvm per person", "bilinnehav", 
+            "gymnasiebehörighet", "inskrivna barn i förskolan", "trångbodda hushåll", "ohälsotal 50-64", 
+            "låg ekonomisk standard", "uvas", "hyresrätt", "små bostäder", "boyta per person", "bilinnehav", 
             "förgymnasial", "kvarboende minst tre"
         ];
         const extra4_keywords = ["lång eftergymnasial", "utrikes födda", "ensamstående", "nettoinkomst"];
@@ -1644,13 +1900,28 @@ function toggleAnimation(selectId, updateFunction) {
             'Okänd karaktär': { bg: 'rgba(149, 165, 166, 0.6)', border: 'rgba(127, 140, 141, 1)' },
             'Hela kommunen': { bg: 'rgba(149, 165, 166, 0.6)', border: 'rgba(127, 140, 141, 1)' },
             
-            // SEI 1-6
-            'SEI 1': { bg: 'rgba(231, 76, 60, 0.7)', border: 'rgba(192, 57, 43, 1)' },   
-            'SEI 2': { bg: 'rgba(230, 126, 34, 0.7)', border: 'rgba(211, 84, 0, 1)' },   
-            'SEI 3': { bg: 'rgba(241, 196, 15, 0.7)', border: 'rgba(243, 156, 18, 1)' },  
-            'SEI 4': { bg: 'rgba(26, 188, 156, 0.7)', border: 'rgba(22, 160, 133, 1)' },  
-            'SEI 5': { bg: 'rgba(46, 204, 113, 0.7)', border: 'rgba(39, 174, 96, 1)' },   
-            'SEI 6': { bg: 'rgba(39, 174, 96, 0.9)', border: 'rgba(25, 111, 61, 1)' }     
+            // SEI 1-6 (Uppdaterad till den nya, krispigare ColorBrewer-skalan)
+            'SEI 1': { bg: 'rgba(215, 48, 39, 0.7)', border: 'rgba(192, 57, 43, 1)' },   // Röd (#d73027)
+            'SEI 2': { bg: 'rgba(244, 109, 67, 0.7)', border: 'rgba(244, 109, 67, 1)' },   // Orange (#f46d43)
+            'SEI 3': { bg: 'rgba(241, 196, 15, 0.7)', border: 'rgba(243, 156, 18, 1)' },   // Gul/Orange (#fdae61)
+            'SEI 4': { bg: 'rgba(166, 217, 106, 0.7)', border: 'rgba(166, 217, 106, 1)' }, // Ljusgrön (#a6d96a)
+            'SEI 5': { bg: 'rgba(102, 189, 99, 0.7)', border: 'rgba(39, 174, 96, 1)' },   // Mellangrön (#66bd63)
+            'SEI 6': { bg: 'rgba(26, 152, 80, 0.9)', border: 'rgba(25, 111, 61, 1)' }      // Mörkgrön (#1a9850)  
+            
+            // SEI 1-6 (Uppdaterad till den nya, krispigare ColorBrewer-skalan)
+            // 'SEI 1': { bg: 'rgba(215, 48, 39, 0.7)', border: 'rgba(215, 48, 39, 1)' },   // Röd (#d73027)
+            // 'SEI 2': { bg: 'rgba(244, 109, 67, 0.7)', border: 'rgba(244, 109, 67, 1)' },   // Orange (#f46d43)
+            // 'SEI 3': { bg: 'rgba(253, 174, 97, 0.7)', border: 'rgba(253, 174, 97, 1)' },   // Gul/Orange (#fdae61)
+            // 'SEI 4': { bg: 'rgba(166, 217, 106, 0.7)', border: 'rgba(166, 217, 106, 1)' }, // Ljusgrön (#a6d96a)
+            // 'SEI 5': { bg: 'rgba(102, 189, 99, 0.7)', border: 'rgba(102, 189, 99, 1)' },   // Mellangrön (#66bd63)
+            // 'SEI 6': { bg: 'rgba(26, 152, 80, 0.9)', border: 'rgba(26, 152, 80, 1)' }      // Mörkgrön (#1a9850)
+            // SEI 1-6 [tidigare version, mer "pastellig" men mindre kontrast]
+            // 'SEI 1': { bg: 'rgba(231, 76, 60, 0.7)', border: 'rgba(192, 57, 43, 1)' },   
+            // 'SEI 2': { bg: 'rgba(230, 126, 34, 0.7)', border: 'rgba(211, 84, 0, 1)' },   
+            // 'SEI 3': { bg: 'rgba(241, 196, 15, 0.7)', border: 'rgba(243, 156, 18, 1)' },  
+            // 'SEI 4': { bg: 'rgba(26, 188, 156, 0.7)', border: 'rgba(22, 160, 133, 1)' },  
+            // 'SEI 5': { bg: 'rgba(46, 204, 113, 0.7)', border: 'rgba(39, 174, 96, 1)' },   
+            // 'SEI 6': { bg: 'rgba(39, 174, 96, 0.9)', border: 'rgba(25, 111, 61, 1)' } 
         };
         const defaultColor = { bg: 'rgba(52, 152, 219, 0.6)', border: 'rgba(41, 128, 185, 0.9)' };
 
@@ -1714,7 +1985,7 @@ function toggleAnimation(selectId, updateFunction) {
             
               // ... här under fortsätter din vanliga logik ...
             if (n.includes('index:')) return "🌟 Sammansatta Index (Z-score)";
-            if (n.includes('kvot') || n.includes('gini') || n.includes('meritvärde') || n.includes('kvm') || n.includes('boende per')) return "📉 Index, Kvoter & Ytor";
+            if (n.includes('kvot') || n.includes('gini') || n.includes('meritvärde') || n.includes('kvm') || n.includes('boyta') || n.includes('boende per')) return "📉 Index, Kvoter & Ytor";
             
             if ((n.includes(' utb') && !n.includes('utbildning')) || n.includes('dagbefolkning') || n.includes('nattbefolkning') || n.includes('förvärvsarbetande') || n.includes('nettopendling')) {
                 if (!n.includes('flyttning')) return "💼 Arbete & Utbildning (Antal)";
@@ -1727,11 +1998,12 @@ function toggleAnimation(selectId, updateFunction) {
             if (n.includes('inkomst')) return "💰 Ekonomi & Inkomst";
             
             if (n.includes('netto') || n.includes('överskott')) return "🔄 Demografiska netton (Antal)";
-            if (n.includes('flytt') || n.includes('fytt') || n.includes('vandring') || n === 'födda' || n === 'döda') return "🚚 Befolkningsförändringar (Antal)";
+            // 🚀 FIX: Nu blockerar vi "omflyttning" från att fastna i det generella flytt-filtret!
+            if ((n.includes('flytt') && !n.includes('omflyttning')) || n.includes('fytt') || n.includes('vandring') || n === 'födda' || n === 'döda') return "🚚 Befolkningsförändringar (Antal)";
             
-            if (n.includes('utbildning') || n.includes('sysselsättning') || n.includes('arbetslösa') || n.includes('behöriga') || n.includes('gymnasie') || n.includes('uvas') || n.includes('självförsörj') || n.includes('förskole') || n.includes('förgymnasial') || n.includes('eftergymnasial')) return "🎓 Utbildning & Arbetsmarknad (%)";
+            if (n.includes('utbildning') || n.includes('sysselsättning') || n.includes('arbetslösa') || n.includes('behöriga') || n.includes('gymnasie') || n.includes('uvas') || n.includes('självförsörj') || n.includes('förskol') || n.includes('förgymnasial') || n.includes('eftergymnasial')) return "🎓 Utbildning & Arbetsmarknad (%)";
             
-            if (n === 'bostadsrätt' || n === 'hyresrätt' || n === 'äganderätt' || n.includes('trång') || n.includes('små bostäder') || n === 'ensamstående hushåll' || n.includes('bil') || n.includes('kvarboende')) return "🏘️ Bostadsmarknad & Bilinnehav (%)";
+            if (n === 'bostadsrätt' || n === 'hyresrätt' || n === 'äganderätt' || n.includes('trång') || n.includes('små bostäder') || n === 'ensamstående hushåll' || n.includes('bil') || n.includes('kvarboende') || n.includes('omflyttning (hög)')) return "🏘️ Bostadsmarknad & Bilinnehav (%)";
             if (n.includes('hushåll') || n.includes('bostäder') || n.includes('rätter') || n.includes('nya')) return "🏠 Bostäder & Hushåll (Antal)";
             if (n.includes('utrikes') || n.includes('utländsk') || n.includes('skolungdom') || n.includes('äldre') || n.includes('kön') || n.includes('valdeltagande') || n.includes('föräldrar')) return "🌍 Demografi och Val (%)";
             if (n === 'folkmängd' || n.includes('befolkning')) return "📊 Demografi & Befolkning (Antal)";
@@ -1739,17 +2011,44 @@ function toggleAnimation(selectId, updateFunction) {
         }
         
         function getUnit(varName) {
-            const n = varName.toLowerCase();
-            if (n.includes('index:')) return ''; 
-            if (n.includes('(tkr)') || n.includes('(kvm)')) return ''; 
-            if (n.includes('tkr')) return ' tkr';
-            if (n.includes('kvot') || n.includes('gini') || n.includes('sei') || n.includes('meritvärde')) return '';
-            if (n.includes('kvm') || n.includes('kvadrat')) return ' kvm';
-            if (n.includes('ohälsotal')) return ' dagar';
-            if (n === 'boende per hushåll') return ' pers';
-            if (n.includes('utbildning') || n.includes('utrikes födda') || n === 'ensamstående hushåll' || n === 'hyresrätt' || n === 'bostadsrätt' || n === 'äganderätt' || n.includes('andel') || n.includes('%') || n.includes('grad') || n.includes('valdeltagande') || n.includes('fattigdom') || n.includes('standard') || n.includes('bistånd')) return ' %';
-            return ' antal'; 
-        }
+    const n = varName.toLowerCase().trim();
+    
+    // 1. UNDANTAG: Ingen enhet alls (Träffar del av ord)
+    if (['index:', '(kvm)', 'kvot', 'gini', 'sei'].some(w => n.includes(w))) return ''; 
+    
+    // 2. SPECIFIKA ENHETER (Träffar del av ord / exakt ord)
+    if (n.includes('tkr')) return ' tkr';
+    if (['kvm', 'kvadrat', 'boyta'].some(w => n.includes(w))) return ' kvm';
+    if (n.includes('ohälsotal')) return ' dagar';
+    if (n === 'boende per hushåll') return ' pers';
+
+    // 🚀 NYA ENHETER: Poäng och År
+    if (n.includes('meritvärde')) return ' poäng';
+    if (n.includes('medelålder')) return ' år';
+
+    // ----------------------------------------------------------------------
+    // 3. EXAKTA TRÄFFAR FÖR % OCH ANTAL (Förhindrar konflikt mellan snarlika ord)
+    // Lägg till nya med kommatecken ' ' i listan. Kräver exakt stavning!
+    // ----------------------------------------------------------------------
+    const exactPercent = ['hyresrätt', 'bostadsrätt', 'äganderätt', 'ensamstående hushåll'];
+    const exactAntal   = ['hyresrätter', 'bostadsrätter', 'äganderätter', 'förgymnasial utb (20-64 år)', 'gymnasial utb (20-64 år)', 'kort eftergymnasial utb (20-64 år)', 'lång eftergymnasial utb (20-64 år)'];
+    
+    if (exactPercent.includes(n)) return ' %';
+    if (exactAntal.includes(n)) return ' antal';
+
+    // ----------------------------------------------------------------------
+    // 4. DEL AV NAMN (Säkerhetsnät: Fångar allt som innehåller dessa ord)
+    // ----------------------------------------------------------------------
+    const includesPercent = [
+        'utbildning', 'utrikes födda', 'andel', '%', 'grad', 'valdeltagande', 
+        'fattigdom', 'standard', 'bistånd', 'omflyttning', 'kvarboende', 'självförsörjande', 'sysselsättning', 'arbetslös', 'uvas', 'examen',
+        'förskola', 'gymnasiebehörighet', 'eftergymnasial', 'förgymnasial', 'bil', 'trångbodda', 'små bostäder', 'kön', 'äldre', 'skolungdom', 'utländsk', 'föräldrar'
+    ];
+    if (includesPercent.some(w => n.includes(w))) return ' %';
+    
+    // 5. FALLBACK: Om ingenting av ovanstående matchar, gissa på antal
+    return ' antal'; 
+}
 
         // --- MATEMATIK & HJÄLPFUNKTIONER ---
 
@@ -2049,8 +2348,156 @@ function toggleAnimation(selectId, updateFunction) {
         // FLIK FUNKTIONER 
         // ==========================================
 
-        function updateTab1() {
-    if (rawData.length === 0) return;
+        // ==========================================
+// 🚀 FYLL RULLISTAN FÖR FOKUSLÄGET AUTOMATISKT
+// ==========================================
+function updateAreaDropdown() {
+    const dropdown = document.getElementById('focusAreaSelect1'); // Det nya, säkra ID:t
+    if (!dropdown) return;
+
+    const currentSelection = dropdown.value;
+    dropdown.innerHTML = '<option value="none">-- Välj område (Skriv för att söka) --</option>';
+
+    // Hämta rätt data baserat på vipp-brytaren
+    let activeData = (currentGeoLevelTab1 === 'nyko3') ? rawDataNyko3 : rawData;
+    let areaCol = (currentGeoLevelTab1 === 'nyko3') ? 'Stadsdel' : 'basområde';
+
+    if (!activeData || activeData.length === 0) return;
+
+    // Plocka ut unika namn, tvätta och sortera alfabetiskt (svensk sortering för ÅÄÖ)
+    let uniqueAreas = [...new Set(activeData.map(row => row[areaCol] || row['Område'] || row['basområde']))]
+        .filter(name => name && name !== 'Hela kommunen' && name.trim() !== '')
+        .sort((a, b) => a.localeCompare(b, 'sv')); 
+
+    // Skapa valen i rullistan
+    uniqueAreas.forEach(area => {
+        let option = document.createElement('option');
+        option.value = area;
+        option.text = area;
+        dropdown.appendChild(option);
+    });
+
+    // Området man tittade på stannar kvar om det finns i den nya nivån
+    if (uniqueAreas.includes(currentSelection)) {
+        dropdown.value = currentSelection;
+    }
+}
+
+        // ==========================================
+// 🚀 VÄXLARE MELLAN NYKO 3 & 4 (Kopplad till din snygga slider!)
+// ==========================================
+function toggleGeoLevel(tabId) {
+    if (tabId === 'tab1') {
+        // ==========================================
+        // 🚀 TOTAL MINNESTVÄTT VID VY-BYTE
+        // ==========================================
+        // 1. Nollställ det globala spåret
+        window.trackedAreaFlik1 = null; 
+        
+        // 2. Nollställ fokus-rullistan
+        const focusDropdown = document.getElementById('focusAreaSelect1');
+        if (focusDropdown) focusDropdown.value = 'none';
+        
+        // 3. Tvinga tillbaka färgval till enfärgat
+        const colorVarDropdown = document.getElementById('colorVar1');
+        if (colorVarDropdown) colorVarDropdown.value = 'none';
+        
+        // ==========================================
+        // 🚀 UPPDATERA LÄGE OCH GRÄNSSNITT
+        // ==========================================
+        const toggle = document.getElementById('geoToggleTab1');
+        const isNyko3 = toggle ? toggle.checked : false; // Om ikryssad = Stadsdel
+        
+        // 4. Sätt den globala nivån
+        currentGeoLevelTab1 = isNyko3 ? 'nyko3' : 'nyko4';
+        
+        // 5. Uppdatera textfärgerna över vipp-brytaren
+        const lblNyko4 = document.getElementById('label-nyko4-tab1');
+        const lblNyko3 = document.getElementById('label-nyko3-tab1');
+        if (lblNyko4 && lblNyko3) {
+            lblNyko4.style.fontWeight = isNyko3 ? 'normal' : 'bold';
+            lblNyko4.style.color = isNyko3 ? '#7f8c8d' : '#2c3e50';
+            lblNyko3.style.fontWeight = isNyko3 ? 'bold' : 'normal';
+            lblNyko3.style.color = isNyko3 ? '#2c3e50' : '#7f8c8d';
+        }
+
+        // ==========================================
+        // 4. DYNAMISKA FÄRGVAL
+        // ==========================================
+        if (colorVarDropdown) {
+            const optDetalj = colorVarDropdown.querySelector('option[value="Karaktär_detalj"]');
+            const optSEI_1_6 = colorVarDropdown.querySelector('option[value="SEI_indikatorer16"]');
+            const optHeatmap = colorVarDropdown.querySelector('option[value="SEI_Heatmap"]');
+
+            if (isNyko3) {
+                if (optDetalj) { optDetalj.disabled = true; optDetalj.hidden = true; }
+                if (optSEI_1_6) { optSEI_1_6.disabled = true; optSEI_1_6.hidden = true; }
+                if (optHeatmap) { optHeatmap.disabled = false; optHeatmap.hidden = false; }
+            } else {
+                if (optDetalj) { optDetalj.disabled = false; optDetalj.hidden = false; }
+                if (optSEI_1_6) { optSEI_1_6.disabled = false; optSEI_1_6.hidden = false; }
+                if (optHeatmap) { optHeatmap.disabled = true; optHeatmap.hidden = true; }
+            }
+        }
+
+        // ==========================================
+        // 5. TÄND/SLÄCK KONTROLLER I GRÖNA KORTET
+        // ==========================================
+        const nyko4Container = document.getElementById('nyko4-stadsdel-container');
+        const nyko3Container = document.getElementById('nyko3-drilldown-container');
+        const stadsdelDropdown = document.getElementById('stadsdelSelect1');
+        const drillDownCheck = document.getElementById('enableDrillDown');
+
+        if (isNyko3) {
+            if (nyko4Container) nyko4Container.style.display = 'none';
+            if (nyko3Container) nyko3Container.style.display = 'block';
+            if (stadsdelDropdown) stadsdelDropdown.value = 'none';
+        } else {
+            // Vi är i BASOMRÅDE: Visa rullistan, göm checkboxen
+            if (nyko4Container) nyko4Container.style.display = 'block';
+            if (nyko3Container) nyko3Container.style.display = 'none';
+
+            if (drillDownCheck) drillDownCheck.checked = false;
+        }
+
+        // 6. Rita om diagram och uppdatera övrig list-data
+        if (typeof updateAreaDropdown === 'function') updateAreaDropdown();
+        if (typeof updateTab1 === 'function') updateTab1();
+    }
+}
+
+// ==========================================
+// UPPDATERAD: Huvudfunktion för Flik 1
+// ==========================================
+function updateTab1() {
+    // 🚀 FIX: Synkronisera den lokala variabeln med det globala klick-minnet!
+    if (typeof window.trackedAreaFlik1 !== 'undefined') { trackedAreaFlik1 = window.trackedAreaFlik1; }
+console.log("TEST AV NYKO3-DATA:", rawData[0]);
+    // 1. DYNAMISK DATAVÄXEL OCH KOLUMNNAMN
+    let activeData = (currentGeoLevelTab1 === 'nyko3') ? rawDataNyko3 : rawData;
+    let areaCol = (currentGeoLevelTab1 === 'nyko3') ? 'Stadsdel' : 'basområde';
+    
+    // --- 🔍 DIAGNOSTIK-RADAR ---
+    console.log("--- 🕵️‍♂️ VÄXLING TEST ---");
+    console.log("1. Vald nivå:", currentGeoLevelTab1);
+    console.log("2. Antal rader i activeData:", activeData.length);
+    
+    if (activeData.length === 0) {
+        console.error("🛑 STOPP: activeData är tom! Diagrammet avbryter uppdateringen.");
+        return; 
+    }
+    
+    let testXVar = document.getElementById('xVar1').value;
+    let testYVar = document.getElementById('yVar1').value;
+    console.log("3. Första radens Område:", activeData[0][areaCol] || activeData[0]['basområde'] || activeData[0]['Stadsdel']);
+    console.log("4. Första radens X-värde (" + testXVar + "):", activeData[0][testXVar]);
+    console.log("5. Första radens Y-värde (" + testYVar + "):", activeData[0][testYVar]);
+    // -----------------------------
+
+    const getAreaName = (row) => row[areaCol] || row['basområde'] || row['Stadsdel'] || 'Okänt';
+
+    if (activeData.length === 0) return;
+    
     const xVar = document.getElementById('xVar1').value; 
     const yVar = document.getElementById('yVar1').value;
     const bubbleSizeVar = document.getElementById('bubbleSizeVar1').value; 
@@ -2059,61 +2506,107 @@ function toggleAnimation(selectId, updateFunction) {
     const exTot = document.getElementById('exTot1').checked; 
     const exSma = document.getElementById('exSma1').checked; 
     const exSpe = document.getElementById('exSpe1').checked;
-    const selectedStadsdel = document.getElementById('stadsdelSelect1') ? document.getElementById('stadsdelSelect1').value : 'none';
+    // 1. För den NYA sökbara rullistan (Markerat område/Fokus i Nyko 3)
+    const focusArea = document.getElementById('focusAreaSelect1') ? document.getElementById('focusAreaSelect1').value : 'none';
+
+    // 2. För din URSPRUNGLIGA rullista (Visa basområden i... för Nyko 4)
+    const stadsdelFilter = document.getElementById('stadsdelSelect1') ? document.getElementById('stadsdelSelect1').value : 'none';
+
+    // 🚀 UX-FIX: Visa bara söklistan om "Markerat område" är valt!
+    const focusContainer = document.getElementById('focusContainer1');
+    if (focusContainer) {
+        focusContainer.style.display = (colorVar === 'Utvald_Stadsdel') ? 'block' : 'none';
+    }
 
     // ==========================================
-    // 0. GLOBALA MIN/MAX (Som respekterar dina filter!)
+    // 0. GLOBALA MIN/MAX
     // ==========================================
-    let validRowsForScale = rawData.filter(row => {
-        let isHela = (row.basområde === 'Hela kommunen');
+    let validRowsForScale = activeData.filter(row => {
         
-        // 1. Kasta bort "Totalt" från beräkningen om rutan är ikryssad
+        // 🕵️‍♂️ LASER-DIAGNOSTIK FÖR STÅNGEBRO
+        let omradeNamn = getAreaName(row);
+        
+        if (omradeNamn.trim().toLowerCase() === 'stångebro') {
+            console.log("--- 🚨 DIAGNOSTIK: STÅNGEBRO 🚨 ---");
+            console.log("1. Är exSpe-filtret ikryssat? ", exSpe);
+            
+            // Hämta alla kolumnnamn exakt som webbläsaren tolkar dem
+            let allaKolumner = Object.keys(row);
+            let hittadKolumn = allaKolumner.find(k => k.includes('Is_Student_Verksamhet'));
+            
+            console.log("2. Webbläsarens exakta kolumnnamn: ", `"${hittadKolumn}"`);
+            
+            if (hittadKolumn) {
+                console.log("3. Värdet i kolumnen är: ", `"${row[hittadKolumn]}"`, " (Typ:", typeof row[hittadKolumn], ")");
+            } else {
+                console.log("❌ Kolumnen Is_Student_Verksamhet hittades inte alls på denna rad!");
+            }
+        }
+        // --- SLUT PÅ DIAGNOSTIK ---
+
+        let isHela = (getAreaName(row) === 'Hela kommunen');
         if (exTot && isHela) return false;
         
-        // 2. Kasta bort små/studentområden från beräkningen om de är ikryssade
         let pop = parseFloat(row[bubbleSizeVar]) || 0;
-        if (!isHela) {
-            if (exSma && (row.Inkluderad != "1" || pop < 25)) return false;
-            if (exSpe && (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) return false;
+
+if (!isHela) {
+    // 1. Exkludera små områden (om ikryssad)
+    if (exSma && (row.Inkluderad != "1" || pop < 25)) return false;
+
+    // 2. Exkludera Student- & Verksamhetsområden (Fungerar för BÅDE Nyko 4 och Nyko 3!)
+    if (exSpe) {
+        // Vi kollar först vår nya hårdkodade Python-flagga (Is_Student_Verksamhet === 1).
+        // Som fallback har vi kvar sökningen på Områdestyp för basområden.
+        // Genom att använda Number() löser vi problemet oavsett om CSV:n säger "1.0", "1" eller 1, samt oavsett om kolumnen har ett dolt \r eller mellanslag på slutet.
+        let isFlagged = (row['Is_Student_Verksamhet'] === "1" || row['Is_Student_Verksamhet'] === 1);
+        let isTextMatch = (row['Områdestyp'] === 'Studentområde' || row['Områdestyp'] === 'Verksamhetsområde');
+
+        if (isFlagged || isTextMatch) {
+            return false; // STOPP! Rita inte ut denna rad.
         }
-        
-        return true; // Denna rad får vara med och bygga axlarna!
+    }
+}
+return true;
     });
 
     let allXVals = validRowsForScale.map(d => parseFloat(d[xVar])).filter(n => !isNaN(n));
     let allYVals = validRowsForScale.map(d => parseFloat(d[yVar])).filter(n => !isNaN(n));
 
-    // Säkra min/max-värden (med fallbacks ifall man råkar filtrera bort precis allt)
     let globalMinX = allXVals.length > 0 ? Math.min(...allXVals) : 0; 
     let globalMaxX = allXVals.length > 0 ? Math.max(...allXVals) : 100;
     let globalMinY = allYVals.length > 0 ? Math.min(...allYVals) : 0; 
     let globalMaxY = allYVals.length > 0 ? Math.max(...allYVals) : 100;
 
-    // Smart padding (ifall alla värden råkar vara identiska sätter vi en fallback på 10)
     let diffX = (globalMaxX - globalMinX) || 10;
     let diffY = (globalMaxY - globalMinY) || 10;
     let padX = diffX * 0.05;
     let padY = diffY * 0.05;
-    // ==========================================
 
-    // 1. FAST INDEX-LISTA (Den slutgiltiga lösningen på identitetskrisen)
-    // Extraherar alla områden en gång för alla och sorterar dem. 
-    let allAreas = Array.from(new Set(rawData.filter(r => r.basområde !== 'Hela kommunen').map(r => r.basområde))).sort();
+    // 1. FAST INDEX-LISTA 
+    let allAreas = Array.from(new Set(activeData.filter(r => getAreaName(r) !== 'Hela kommunen').map(r => getAreaName(r)))).sort();
 
-    // 2. HITTA EN SISTA BACKUP-KOORDINAT FÖR ALLA OMRÅDEN
+    // 2. HITTA EN SISTA BACKUP-KOORDINAT
     let areaFallback = {};
     allAreas.forEach(a => areaFallback[a] = { x: globalMinX, y: globalMinY });
-    rawData.forEach(r => {
-        let a = r.basområde;
+    activeData.forEach(r => {
+        let a = getAreaName(r);
         if (a === 'Hela kommunen') return;
         let px = parseFloat(r[xVar]); let py = parseFloat(r[yVar]);
         if (!isNaN(px) && !isNaN(py)) { areaFallback[a] = { x: px, y: py }; }
     });
 
+    // 🚀 NYTT: Smart namn på basgruppen beroende på vy
+    let baseCatName = (currentGeoLevelTab1 === 'nyko3') ? 'Stadsdelar' : 'Basområden';
+    
     let allPossibleCategories = new Set();
-    rawData.forEach(r => {
-        if (r.basområde === 'Hela kommunen') return;
-        let c = (colorVar !== 'none') ? (r[colorVar] || 'Okänd karaktär') : 'Basområden';
+    activeData.forEach(r => {
+        if (getAreaName(r) === 'Hela kommunen') return;
+        
+        // 🚀 NYTT: Om vi valt Heatmap eller Utvald, gruppera allt i "Stadsdelar"
+        let c = (colorVar !== 'none' && colorVar !== 'SEI_Heatmap' && colorVar !== 'Utvald_Stadsdel') 
+                ? (r[colorVar] || 'Okänd karaktär') 
+                : baseCatName;
+                
         if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(c)) c = 'SEI ' + c;
         allPossibleCategories.add(c);
     });
@@ -2136,13 +2629,11 @@ function toggleAnimation(selectId, updateFunction) {
     // ==========================================
     // 4. FYLL PÅ MED DATA (SVÄRM-LÄGE & KRASCH-SKYDD)
     // ==========================================
-    
-    // A. Identifiera exakt vilka årtal som ska inkluderas (Nu säker mot "2025"-fällan!)
     let yearDropdown = document.getElementById('yearSelect1');
     let selVal = yearDropdown.value.toString().toLowerCase();
     let selText = yearDropdown.options[yearDropdown.selectedIndex].text.toLowerCase();
     
-    let allAvailableYears = [...new Set(rawData.map(d => parseInt(d.tid)))].filter(y => !isNaN(y)).sort((a,b) => a - b);
+    let allAvailableYears = [...new Set(activeData.map(d => parseInt(d.tid)))].filter(y => !isNaN(y)).sort((a,b) => a - b);
     let yearsToInclude = [];
     
     if (selVal.includes('all') || selText.includes('samtliga') || selText.includes('alla')) {
@@ -2152,11 +2643,10 @@ function toggleAnimation(selectId, updateFunction) {
     } else if (selText.includes('senaste 5') || selVal === '5') {
         yearsToInclude = allAvailableYears.slice(-5);
     } else {
-        let parsed = parseInt(selVal); // Om det är "2025" blir parsed 2025
+        let parsed = parseInt(selVal);
         if (!isNaN(parsed)) yearsToInclude = [parsed];
     }
     
-    // SÄKERHETSLINA
     if (yearsToInclude.length === 0 && allAvailableYears.length > 0) {
         yearsToInclude = [allAvailableYears[allAvailableYears.length - 1]];
     }
@@ -2164,46 +2654,62 @@ function toggleAnimation(selectId, updateFunction) {
     let isSwarmMode = yearsToInclude.length > 1;
     let filledIndices = new Set(); 
     
-    rawData.filter(d => yearsToInclude.includes(parseInt(d.tid))).forEach(row => {
-        let isHela = (row.basområde === 'Hela kommunen');
-        if (exTot && isHela) return;
+    activeData.filter(d => yearsToInclude.includes(parseInt(d.tid))).forEach(row => {
+            let areaName = getAreaName(row);
+            let isHela = (areaName === 'Hela kommunen');
+            if (exTot && isHela) return;
 
-        let xVal = parseFloat(row[xVar]);
-        let yVal = parseFloat(row[yVar]);
-        let pop = parseFloat(row[bubbleSizeVar]) || 0;
+            // 🚀 NYTT: Skottsäker tvättmaskin för svenska siffror
+            const parseSweNum = (val) => {
+                if (val === undefined || val === null || val === '') return NaN;
+                // Tar bort alla mellanslag (\s) och byter svenskt kommatecken mot punkt
+                let cleanStr = String(val).replace(/\s/g, '').replace(',', '.');
+                return parseFloat(cleanStr);
+            };
+
+            let xVal = parseSweNum(row[xVar]);
+            let yVal = parseSweNum(row[yVar]);
+            let pop = parseSweNum(row[bubbleSizeVar]) || 0;
 
         let isVisible = true;
         if (!isHela) {
             if (exSma && (row.Inkluderad != "1" || pop < 25)) isVisible = false;
-            if (exSpe && (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) isVisible = false;
+            
+            // Fångar både Nyko 4 (text) och Nyko 3 (vår nya flagga = "1")
+            if (exSpe && (row['Is_Student_Verksamhet'] === "1" || row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) {
+                isVisible = false;
+            }
         }
         if (isNaN(xVal) || isNaN(yVal)) isVisible = false;
 
-        let cat = (colorVar !== 'none' && !isHela) ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
+        // 🚀 NYTT: Tvinga in Heatmap och Utvald i basgruppen
+        let cat = (colorVar !== 'none' && colorVar !== 'SEI_Heatmap' && colorVar !== 'Utvald_Stadsdel' && !isHela) 
+                  ? (row[colorVar] || 'Okänd karaktär') 
+                  : baseCatName;
+                  
         if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) cat = 'SEI ' + cat;
         if (isHela) cat = 'Hela kommunen';
 
-        let index = isHela ? 0 : allAreas.indexOf(row.basområde);
+        let index = isHela ? 0 : allAreas.indexOf(areaName);
         if (index !== -1 && groupedData[cat]) {
+            // 🚀 VIKTIGT: Math.abs() skyddar mot krasch på negativa SEI-index!
             let pointData = {
                 x: isVisible ? xVal : (groupedData[cat][index].x || xVal),
                 y: isVisible ? yVal : (groupedData[cat][index].y || yVal),
-                r: isVisible ? Math.max(3, Math.sqrt(pop)/5) : 0,
-                label: row.basområde,
+                r: isVisible ? Math.max(3, Math.sqrt(Math.abs(pop))/5) : 0, 
+                label: areaName,
                 pop: pop,
                 rawRow: row,
                 isSwarm: isSwarmMode 
             };
 
-            let areaKey = cat + '_' + row.basområde;
+            let areaKey = cat + '_' + areaName;
 
             if (!filledIndices.has(areaKey)) {
-                // 1. Skriv över "spök"-indexet första gången
                 groupedData[cat][index] = pointData;
                 filledIndices.add(areaKey);
                 if (isVisible) allPlotData.push(pointData);
             } else {
-                // 2. Svärm-läge: Skjut ut extrabubblor
                 if (isVisible) {
                     groupedData[cat].push(pointData);
                     allPlotData.push(pointData);
@@ -2220,23 +2726,332 @@ function toggleAnimation(selectId, updateFunction) {
     let newDatasets = [];
     let sortedKeys = sortCategories(Object.keys(groupedData), colorVar);
 
-    // 5. BYGG STANDARD-LAGREN
-    sortedKeys.forEach(cat => {
-        let colors;
-        if (colorVar === 'none') { colors = defaultColor; } 
-        else {
-            colors = colorPalette[cat];
-            if (!colors && cat !== 'Hela kommunen' && cat !== 'Okänd karaktär') {
-                if (!dynamicCategoryColors[cat]) {
-                    dynamicCategoryColors[cat] = fallbackColors[dynamicColorIndex % fallbackColors.length];
-                    dynamicColorIndex++;
-                }
-                colors = dynamicCategoryColors[cat];
+    // ==========================================
+    // 🚀 DYNAMISK PÅFYLLNING AV FOKUS-RULLISTAN
+    // Bygger listan exakt utifrån de bubblor som faktiskt syns just nu!
+    // ==========================================
+    // 🚀 FIX: Bygg BARA om listan om vi INTE spelar upp tidsanimeringen!
+    if (typeof isPlaying !== 'undefined' && !isPlaying) {
+        let focusDropdown = document.getElementById('focusAreaSelect1');
+        if (focusDropdown) {
+            // Lås rullistan till det vi klickat på (Enda sanningen!)
+            let truthVal = window.trackedAreaFlik1 || 'none'; 
+            
+            let uniqueAreas = [...new Set(allPlotData.map(pt => pt.label))]
+                .filter(name => name && name !== 'Hela kommunen')
+                .sort((a, b) => a.localeCompare(b, 'sv'));
+            
+            // Jämför nuvarande alternativ med de nya. Bygg BARA om om listan ändrats (ex. byte Nyko 3/4)
+            let currentOptions = Array.from(focusDropdown.options).map(opt => opt.value).filter(v => v !== 'none');
+            if (JSON.stringify(currentOptions) !== JSON.stringify(uniqueAreas)) {
+                focusDropdown.innerHTML = '<option value="none">-- Välj område (Skriv för att söka) --</option>';
+                uniqueAreas.forEach(area => {
+                    let opt = document.createElement('option');
+                    opt.value = area;
+                    opt.text = area;
+                    focusDropdown.appendChild(opt);
+                });
             }
-            if (!colors) colors = defaultColor; 
+            
+            // Sätt alltid rullistan till sanningen, oavsett om den byggdes om eller inte
+            let safeOptions = Array.from(focusDropdown.options).map(opt => opt.value.toLowerCase().trim());
+            let safeTruth = truthVal.toLowerCase().trim();
+            
+            if (safeTruth !== 'none' && safeOptions.includes(safeTruth)) { 
+                // Hitta exakt rätt option med rätt skiftläge
+                let correctOpt = Array.from(focusDropdown.options).find(opt => opt.value.toLowerCase().trim() === safeTruth);
+                if (correctOpt) focusDropdown.value = correctOpt.value;
+            } else {
+                focusDropdown.value = 'none'; 
+            }
         }
-        newDatasets.push({ label: cat, data: groupedData[cat], backgroundColor: colors.bg, borderColor: colors.border, borderWidth: 1, order: 2 });
+    }
+
+    // 5. BYGG STANDARD-LAGREN MED DYNAMISKA FÄRGER
+    sortedKeys.forEach(cat => {
+        let bgFinal, borderFinal;
+
+        // 🚀 EN ENDA SANNING FÖR FÖRDJUPNING:
+        // Fördjupning är aktiv BARA om vi är i Nyko 3 OCH kryssrutan är ikryssad
+        // ==========================================
+        // 🚀 1. STRIKT OCH SÄKER KONTROLL FÖR FÖRDJUPNING & KLUSTER
+        // ==========================================
+        var drillDownCheckbox = document.getElementById('enableDrillDown');
+        var clusterCheckbox = document.getElementById('enableClusterDrillDown');
+        
+        var isDrillDownActive = (typeof currentGeoLevelTab1 !== 'undefined' && currentGeoLevelTab1 === 'nyko3' && drillDownCheckbox && drillDownCheckbox.checked);
+        var isClusterActive = (clusterCheckbox && clusterCheckbox.checked);
+        var safeTrackedArea = (typeof window.trackedAreaFlik1 !== 'undefined' && window.trackedAreaFlik1) ? window.trackedAreaFlik1.toLowerCase().trim() : 'none';
+
+        // 🕵️‍♂️ DIAGNOSTIK: Utskrift till konsolen
+        console.log("--- 🕵️‍♂️ KLUSTER-DIAGNOSTIK FLIK 1 ---");
+        console.log("1. Är drillDown i HTML ikryssad?", drillDownCheckbox ? drillDownCheckbox.checked : 'Hittas ej i HTML');
+        console.log("2. Är clusterCheckbox i HTML ikryssad?", clusterCheckbox ? clusterCheckbox.checked : 'Hittas ej i HTML');
+        console.log("3. Värde på currentGeoLevelTab1:", typeof currentGeoLevelTab1 !== 'undefined' ? currentGeoLevelTab1 : 'ÄR UNDEFINED!');
+        console.log("4. Det låsta området (safeTrackedArea):", safeTrackedArea);
+
+        // 🔗 2. SKOTTSÄKER INSAMLING AV AKTIVA KLUSTER
+        var activeClusters = [];
+        if (isDrillDownActive && isClusterActive && safeTrackedArea !== 'none') {
+            let rawClusterStrings = [];
+            
+            // 1. Leta först i Nyko 4-datan
+            if (typeof rawData !== 'undefined') { 
+                rawData.forEach(row => {
+                    let sdel = (row['Stadsdel'] || row['stadsdel'] || row['STADSDEL'] || '').toLowerCase().trim();
+                    let kluster = row['Kommundelskluster'];
+                    if (sdel === safeTrackedArea && kluster && kluster !== 'Okänd' && kluster !== 'nan') {
+                        rawClusterStrings.push(String(kluster));
+                    }
+                });
+            }
+            
+            // 2. Leta i Nyko 3-datan (ifall Nyko 4 saknade infon)
+            if (typeof rawDataNyko3 !== 'undefined') {
+                rawDataNyko3.forEach(row => {
+                    let sdel = (row['Stadsdel'] || row['stadsdel'] || row['STADSDEL'] || '').toLowerCase().trim();
+                    let kluster = row['Kommundelskluster'];
+                    if (sdel === safeTrackedArea && kluster && kluster !== 'Okänd' && kluster !== 'nan') {
+                        rawClusterStrings.push(String(kluster));
+                    }
+                });
+            }
+
+            // 3. Städa upp och separera kommatecken (t.ex. "Väst 1, Väst 2")
+            rawClusterStrings.forEach(klusterStr => {
+                let delar = klusterStr.split(',');
+                delar.forEach(d => {
+                    let rentKluster = d.trim();
+                    if (rentKluster && rentKluster !== 'Okänd' && !activeClusters.includes(rentKluster)) {
+                        activeClusters.push(rentKluster);
+                    }
+                });
+            });
+            
+            console.log("💜 Kluster utvunna och rensade:", activeClusters);
+        }
+
+        // 🎯 SCENARIO FOKUS: Markera utvald Stadsdel och dess basområden
+        if (colorVar === 'Utvald_Stadsdel') {
+            bgFinal = groupedData[cat].map(pt => {
+                if (cat === 'Hela kommunen') return 'rgba(0,0,0,0.8)';
+                if (!pt.rawRow) return 'rgba(0,0,0,0)';
+                
+                // 1. Underliggande basområden (Drill-down) -> Knallröd
+                if (pt.isChildPoint) return 'rgba(255, 99, 132, 0.85)';
+                
+                let safeOmrade = pt.label ? pt.label.toLowerCase().trim() : '';
+                let safeClick = (window.trackedAreaFlik1 || 'none').toLowerCase().trim();
+
+                // 2. Den valda Stadsdelen (Huvudbubblan) -> Klarblå
+                if (safeClick !== 'none' && safeOmrade === safeClick) {
+                    return 'rgba(25, 118, 210, 0.95)'; // Klarblå färg för maximal kontrast
+                } else {
+                    return 'rgba(200, 200, 200, 0.3)'; // Grå dämpning för övriga bubblor
+                }
+            });
+            borderFinal = bgFinal.map(c => c.replace('0.95', '1.0').replace('0.85', '1.0').replace('0.3', '0.5'));
+        }
+        
+        // ==========================================
+        // 🌡️ SCENARIO HEATMAP: SEI-index baserat på datavärde
+        // ==========================================
+        else if (colorVar === 'SEI_Heatmap') {
+            bgFinal = groupedData[cat].map(pt => {
+                if (cat === 'Hela kommunen') return 'rgba(0,0,0,0.8)';
+                if (!pt.rawRow) return 'rgba(0,0,0,0)';
+                if (pt.isChildPoint) return 'rgba(255, 99, 132, 0.85)';
+
+                // 1. Dämpa BARA om checkboxen är ikryssad OCH ett område är valt
+                if (isDrillDownActive && safeTrackedArea !== 'none') {
+                    let safeOmrade = pt.label ? pt.label.toLowerCase().trim() : '';
+                    if (safeOmrade !== safeTrackedArea) {
+                        return 'rgba(210, 210, 210, 0.25)'; // Grå dämpning för övriga
+                    }
+                }
+
+                // 2. Hämta SEI-värdet och sätt rätt färg ENLIGT DIN TECKENFÖRKLARING
+                let seiVal = parseFloat(pt.rawRow['SEI medel (2015-2024)']);
+                if (isNaN(seiVal)) return 'rgba(150, 150, 150, 0.6)'; // Okänd data blir grå
+                
+                // Matchar exakt din HTML-teckenförklaring (Blå -> Röd)
+                if (seiVal < 2) return 'rgba(69, 117, 180, 0.95)';       // Goda förut. (< 2)
+                if (seiVal < 3) return 'rgba(145, 191, 219, 0.95)';      // (2 - 3)
+                if (seiVal < 4) return 'rgba(254, 224, 144, 0.95)';      // Snitt (3 - 4)
+                if (seiVal < 5) return 'rgba(252, 141, 89, 0.95)';       // (4 - 5)
+                return 'rgba(215, 48, 39, 0.95)';                        // Utmaning (> 5)
+            });
+            
+            // Justera kantlinjernas färgstyrka
+            borderFinal = bgFinal.map(c => c.replace('0.95', '1.0').replace('0.85', '1.0').replace('0.25', '0.3'));
+        }
+
+        // 📊 SCENARIO C: Standard Kategorifärger
+        else {
+            let colors;
+            if (colorVar === 'none') { colors = defaultColor; } 
+            else { colors = colorPalette[cat] || dynamicCategoryColors[cat] || defaultColor; }
+
+            let baseBg = Array.isArray(colors.bg) ? colors.bg[0] : colors.bg;
+            let baseBorder = Array.isArray(colors.border) ? colors.border[0] : colors.border;
+            
+            let solidBg = baseBg.replace(/[\d.]+\)$/, '0.95)');
+            let solidBorder = baseBorder.replace(/[\d.]+\)$/, '1.0)');
+
+            bgFinal = groupedData[cat].map((pt, i) => {
+                if (cat === 'Hela kommunen') return 'rgba(0,0,0,0.8)';
+                if (!pt.rawRow) return 'rgba(0,0,0,0)';
+                if (pt.isChildPoint) return 'rgba(255, 99, 132, 0.85)';
+
+                // 🚀 Dämpa ENDAST om checkboxen är ikryssad OCH ett område är valt
+                if (isDrillDownActive && safeTrackedArea !== 'none') {
+                    let safeOmrade = pt.label ? pt.label.toLowerCase().trim() : '';
+                    if (safeOmrade === safeTrackedArea) {
+                        return (colorVar === 'none') ? 'rgba(41, 128, 185, 0.95)' : solidBg;
+                    }
+                    return 'rgba(210, 210, 210, 0.25)'; // Grå dämpning
+                }
+
+                // VANLIGT LÄGE: Alla får full färg!
+                if (colorVar === 'none') {
+                    return 'rgba(41, 128, 185, 0.6)'; // Tvinga fram blått på alla
+                }
+                
+                return Array.isArray(colors.bg) ? colors.bg[i] : colors.bg;
+            });
+            
+            borderFinal = groupedData[cat].map((pt, i) => {
+                if (cat === 'Hela kommunen') return 'rgba(0,0,0,1)';
+                if (pt.isChildPoint) return 'rgba(200, 50, 50, 1)';
+
+                if (isDrillDownActive && safeTrackedArea !== 'none') {
+                    let safeOmrade = pt.label ? pt.label.toLowerCase().trim() : '';
+                    if (safeOmrade === safeTrackedArea) {
+                        return (colorVar === 'none') ? 'rgba(31, 97, 141, 1)' : solidBorder;
+                    }
+                    return 'rgba(180, 180, 180, 0.3)';
+                }
+                
+                if (colorVar === 'none') {
+                    return 'rgba(31, 97, 141, 1)'; 
+                }
+                
+                return Array.isArray(colors.border) ? colors.border[i] : colors.border;
+            });
+        }
+
+        // Pusha huvudlager
+        newDatasets.push({ 
+            label: cat, 
+            data: groupedData[cat], 
+            backgroundColor: bgFinal, 
+            borderColor: borderFinal, 
+            borderWidth: 1, 
+            order: 2 
+        });
     });
+
+    // ==========================================
+    // 🚀 5B. UNDERLIGGANDE BASOMRÅDEN (DRILL-DOWN FÖR NYKO 3)
+    // ==========================================
+    // Kolla om strömbrytaren är aktiverad (om den inte finns i HTML, tillåt som standard)
+    let drillDownCheckbox = document.getElementById('enableDrillDown');
+    let isDrillDownAllowed = drillDownCheckbox ? drillDownCheckbox.checked : true;
+    
+    let clusterCheckbox = document.getElementById('enableClusterDrillDown');
+    let isClusterAllowed = clusterCheckbox ? clusterCheckbox.checked : false;
+
+    if (currentGeoLevelTab1 === 'nyko3' && trackedAreaFlik1 && isDrillDownAllowed) {
+        
+        let safeTrackedArea = trackedAreaFlik1.trim().toLowerCase();
+
+        // 🔗 1. KARTLÄGG KLUSTER: Vilka kommundelskluster tillhör stadsdelen?
+        let activeClusters = [];
+        if (isClusterAllowed) {
+            rawData.forEach(row => {
+                let parentStadsdel = (row['Stadsdel'] || row['stadsdel'] || row['STADSDEL'] || '').trim().toLowerCase();
+                let klusterKey = Object.keys(row).find(k => k.trim().toLowerCase() === 'kommundelskluster');
+                let kluster = klusterKey ? row[klusterKey] : null;
+                
+                if (parentStadsdel === safeTrackedArea && kluster && !activeClusters.includes(kluster)) {
+                    activeClusters.push(kluster);
+                }
+            });
+        }
+        
+        // 2. HÄMTA BASOMRÅDEN OCH MÄRK UPP NEIGHBORS
+        let childBasomraden = [];
+        rawData.forEach(row => {
+            let parentStadsdel = (row['Stadsdel'] || row['stadsdel'] || row['STADSDEL'] || '').trim().toLowerCase();
+            let klusterKey = Object.keys(row).find(k => k.trim().toLowerCase() === 'kommundelskluster');
+            let klusterForBasomrade = klusterKey ? row[klusterKey] : null;
+            
+            let isOwnChild = (parentStadsdel === safeTrackedArea);
+            let isClusterNeighbor = (!isOwnChild && isClusterAllowed && klusterForBasomrade && activeClusters.includes(klusterForBasomrade));
+            
+            let rowYear = parseInt(row.tid || row.år || row.Year);
+            let isMatchingYear = yearsToInclude.includes(rowYear);
+
+            if ((isOwnChild || isClusterNeighbor) && isMatchingYear) {
+                // Spara raden tillsammans med en flagga om det är en granne!
+                childBasomraden.push({
+                    row: row,
+                    isClusterNeighbor: isClusterNeighbor
+                });
+            }
+        });
+
+        // 3. BYGG BUBBLORNA MED 3 OLIKA FÄRGER
+        let childPoints = [];
+        childBasomraden.forEach(item => {
+            let row = item.row;
+            const parseSweNum = (val) => {
+                if (val === undefined || val === null || val === '') return NaN;
+                let cleanStr = String(val).replace(/\s/g, '').replace(',', '.');
+                return parseFloat(cleanStr);
+            };
+
+            let xVal = parseSweNum(row[xVar]);
+            let yVal = parseSweNum(row[yVar]);
+            let pop = parseSweNum(row[bubbleSizeVar]) || 0;
+            let areaName = row['basområde'] || row['Område'] || 'Okänt basområde';
+
+            if (!isNaN(xVal) && !isNaN(yVal)) {
+                childPoints.push({
+                    x: xVal,
+                    y: yVal,
+                    r: Math.max(4, Math.sqrt(Math.abs(pop))/4.5),
+                    label: `${areaName}${item.isClusterNeighbor ? ' (Kluster)' : ''}`,
+                    pop: pop,
+                    rawRow: row,
+                    isChildPoint: true,
+                    isClusterNeighbor: item.isClusterNeighbor
+                });
+            }
+        });
+
+        // 4. SKAPA DYNAMISKA FÄRGARRAYS FÖR DRILL-DOWN BUBBLORNA
+        if (childPoints.length > 0) {
+            // Egna basområden = Knallröd/Korall (#e74c3c)
+            // Klustergrannar = Lila/Ljuslila (#9b59b6) för tydlig visual separation
+            let bgColors = childPoints.map(p => p.isClusterNeighbor ? 'rgba(155, 89, 182, 0.85)' : 'rgba(231, 76, 60, 0.85)');
+            let borderColors = childPoints.map(p => p.isClusterNeighbor ? 'rgba(142, 68, 173, 1)' : 'rgba(192, 57, 43, 1)');
+
+            let legendLabel = (isClusterAllowed && activeClusters.length > 0) 
+                ? `Basområden (${trackedAreaFlik1} + Kluster)` 
+                : `Basområden i ${trackedAreaFlik1}`;
+
+            newDatasets.push({
+                type: 'bubble',
+                label: legendLabel,
+                data: childPoints,
+                backgroundColor: bgColors,     // Array med två olika färger!
+                borderColor: borderColors,     // Array med två olika kantlinjer!
+                borderWidth: 2,
+                order: -3   // Läggs allra överst så att de hamnar i blickfånget
+            });
+        }
+    }
 
     // 6. BYGG SPÅR, FOKUS OCH MARKERINGAR
     let trailPoints = []; let focusPoint = []; let focusBg = 'rgba(255, 234, 0, 0)'; let focusBorder = 'rgba(211, 84, 0, 0)'; let trailColor = 'rgba(211, 84, 0, 0)'; 
@@ -2247,7 +3062,7 @@ function toggleAnimation(selectId, updateFunction) {
             focusPoint = [activePoint]; trailPoints = [{ x: activePoint.x, y: activePoint.y, year: selectedYear }];
         }
         if (typeof watermarkYear !== 'undefined' && watermarkYear !== "") {
-            let trailData = rawData.filter(d => d.basområde === trackedAreaFlik1 && parseInt(d.tid) <= parseInt(selectedYear)).sort((a, b) => parseInt(a.tid) - parseInt(b.tid));
+            let trailData = activeData.filter(d => getAreaName(d) === trackedAreaFlik1 && parseInt(d.tid) <= parseInt(selectedYear)).sort((a, b) => parseInt(a.tid) - parseInt(b.tid));
             trailPoints = trailData.map(d => ({ x: parseFloat(d[xVar]), y: parseFloat(d[yVar]), year: d.tid })).filter(p => !isNaN(p.x) && !isNaN(p.y));
             focusBg = 'rgba(255, 234, 0, 0.95)'; focusBorder = 'rgba(211, 84, 0, 1)'; trailColor = 'rgba(211, 84, 0, 0.85)';
         }
@@ -2256,11 +3071,26 @@ function toggleAnimation(selectId, updateFunction) {
     newDatasets.push({ type: 'bubble', label: trackedAreaFlik1 ? `Nuvarande Position: ${trackedAreaFlik1}` : 'Nuvarande Position', data: focusPoint, backgroundColor: focusBg, borderColor: focusBorder, borderWidth: 3, order: -2 });
 
     let stadsdelPoints = [];
-    if (selectedStadsdel !== 'none') {
-        let valdaStadsdelar = selectedStadsdel.split('/');
-        stadsdelPoints = allPlotData.filter(p => valdaStadsdelar.includes(p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL']));
+    if (stadsdelFilter !== 'none') {
+        let valdaStadsdelar = stadsdelFilter.split('/');
+        stadsdelPoints = allPlotData.filter(p => {
+            let parent = p.rawRow['Stadsdel'] || p.rawRow['stadsdel'] || p.rawRow['STADSDEL'] || p.rawRow['nyko3_namn'];
+            return valdaStadsdelar.includes(parent);
+        });
     }
-    if (stadsdelPoints.length > 0) newDatasets.push({ type: 'bubble', label: (selectedStadsdel && selectedStadsdel !== 'Alla') ? `📌 Markerad: ${selectedStadsdel.replace('/', ' & ')}` : 'Alla basområden', data: stadsdelPoints, backgroundColor: 'rgba(40, 40, 40, 0.25)', borderColor: 'rgba(10, 10, 10, 0.95)', borderWidth: 3, order: -1, animation: false });
+    
+    if (stadsdelPoints.length > 0) {
+        newDatasets.push({ 
+            type: 'bubble', 
+            label: `📌 Markerad: ${stadsdelFilter.replace('/', ' & ')}`, 
+            data: stadsdelPoints, 
+            backgroundColor: 'rgba(40, 40, 40, 0.25)', 
+            borderColor: 'rgba(10, 10, 10, 0.95)', 
+            borderWidth: 3, 
+            order: -1, 
+            animation: false 
+        });
+    }
 
     // 7. TRENDLINJE
     let trendData = [];
@@ -2290,7 +3120,7 @@ function toggleAnimation(selectId, updateFunction) {
 
         chartInstance1.options.scales.x.title.text = xVar; chartInstance1.options.scales.x.min = globalMinX - padX; chartInstance1.options.scales.x.max = globalMaxX + padX;
         chartInstance1.options.scales.y.title.text = yVar; chartInstance1.options.scales.y.min = globalMinY - padY; chartInstance1.options.scales.y.max = globalMaxY + padY;
-        chartInstance1.options.plugins.legend.display = (colorVar !== 'none');
+        chartInstance1.options.plugins.legend.display = (colorVar !== 'none' && colorVar !== 'SEI_Heatmap' && colorVar !== 'Utvald_Stadsdel');
         chartInstance1.options.animation.duration = (typeof isPlaying !== 'undefined' && isPlaying) ? 1500 : 400;
         chartInstance1.update(); 
     } else {
@@ -2302,120 +3132,253 @@ function toggleAnimation(selectId, updateFunction) {
                 scales: { x: { title: { display: true, text: xVar }, min: globalMinX - padX, max: globalMaxX + padX }, y: { title: { display: true, text: yVar }, min: globalMinY - padY, max: globalMaxY + padY } },
                 onClick: (event, elements, chart) => {
                     if (elements.length > 0) {
-                        const el = elements[0]; const ds = chart.data.datasets[el.datasetIndex];
-                        if (ds.type !== 'line' && ds.data[el.index] && ds.data[el.index].label) { trackedAreaFlik1 = ds.data[el.index].label; updateTab1(); }
-                    } else { trackedAreaFlik1 = null; updateTab1(); }
+                        const el = elements[0]; const ds = chart.data.datasets[el.datasetIndex]; const clickedPoint = ds.data[el.index];
+                        
+                        // 🚀 FIX: Undvik "Hela kommunen" och blockera klick på underliggande basområden i fördjupningsläge (!clickedPoint.isChildPoint)
+                        if (clickedPoint && clickedPoint.label && clickedPoint.label !== 'Hela kommunen' && !clickedPoint.isChildPoint) {
+                            
+                            let clickedLabel = clickedPoint.label;
+
+                            // Om vi är i Stadsdelsläge (Nyko 3), aktivera Drill-down för den klickade stadsdelen!
+                            if (currentGeoLevelTab1 === 'nyko3') {
+                                // Om man klickar på samma stadsdel igen -> stäng av drill-down
+                                if (window.trackedAreaFlik1 === clickedLabel) {
+                                    window.trackedAreaFlik1 = null; 
+                                } else {
+                                    window.trackedAreaFlik1 = clickedLabel; // Sätt den valda stadsdelen
+                                }
+                            } else {
+                                // Vanlig spårning om vi är i Nyko 4 (Klickar man samma avmarkeras den)
+                                if (window.trackedAreaFlik1 === clickedLabel) {
+                                    window.trackedAreaFlik1 = null;
+                                } else {
+                                    window.trackedAreaFlik1 = clickedLabel;
+                                }
+                            }
+
+                            // 🚀 NYTT: Tvinga rullistan att omedelbart visa rätt namn
+                            let focusDropdown = document.getElementById('focusAreaSelect1');
+                            if (focusDropdown) {
+                                let safeTruth = (window.trackedAreaFlik1 || 'none').toLowerCase().trim();
+                                let correctOpt = Array.from(focusDropdown.options).find(opt => opt.value.toLowerCase().trim() === safeTruth);
+                                focusDropdown.value = correctOpt ? correctOpt.value : 'none';
+                            }
+
+                            updateTab1(); // Rita om diagrammet!
+                        }
+                    } else { 
+                        // Klickade på tom yta -> nollställ allt
+                        window.trackedAreaFlik1 = null; 
+                        let focusDropdown = document.getElementById('focusAreaSelect1');
+                        if (focusDropdown) focusDropdown.value = 'none';
+                        updateTab1(); 
+                    }
                 },
                 plugins: { 
                     datalabels: { display: false },
                     legend: { 
-                        display: colorVar !== 'none', position: 'top', 
+                        display: colorVar !== 'none', 
+                        position: 'top', 
                         labels: { 
-                            filter: (item, chartData) => {
-                                if (['Trendlinje (Normen)', 'Okänd karaktär', '..'].includes(item.text) || item.text.startsWith('Spårhistorik') || item.text.startsWith('Nuvarande Position')) return false;
-                                const ds = chartData.datasets[item.datasetIndex];
-                                if (ds && ds.data.every(d => d.r === 0)) return false;
-                                return true;
+                            generateLabels: function(chart) {
+                                const labels = Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                                
+                                labels.forEach(label => {
+                                    const ds = chart.data.datasets[label.datasetIndex];
+                                    if (ds) {
+                                        let cat = ds.label;
+                                        let currentColorVar = document.getElementById('colorVar1') ? document.getElementById('colorVar1').value : 'none';
+                                        let solidColor = 'rgba(100, 100, 100, 0.8)'; // Felsäkerhet (Grå)
+
+                                        // 1. Tvinga fram rätt grundfärg baserat på rullistans val, IGNORERA diagrammets dämpningar
+                                        if (currentColorVar === 'none') {
+                                            solidColor = 'rgba(41, 128, 185, 0.95)'; // Standard Blå
+                                        } else if (currentColorVar === 'Utvald_Stadsdel') {
+                                            solidColor = 'rgba(25, 118, 210, 0.95)'; // Klarblå för Fokus-läget
+                                        } else {
+                                            // 2. Läs den matematiskt korrekta originalfärgen direkt ur vår palett
+                                            let trueColorObj = (typeof colorPalette !== 'undefined' && colorPalette[cat]) 
+                                                            ? colorPalette[cat] 
+                                                            : ((typeof dynamicCategoryColors !== 'undefined' && dynamicCategoryColors[cat]) 
+                                                                ? dynamicCategoryColors[cat] 
+                                                                : null);
+                                            
+                                            if (trueColorObj) {
+                                                let base = Array.isArray(trueColorObj.bg) ? trueColorObj.bg[0] : trueColorObj.bg;
+                                                solidColor = base.replace(/[\d.]+\)$/, '0.95)');
+                                            } else {
+                                                // Fallback om paletten saknas
+                                                let bgArr = Array.isArray(ds.backgroundColor) ? ds.backgroundColor : [ds.backgroundColor];
+                                                let c = bgArr.find(col => typeof col === 'string' && !col.includes('210, 210, 210') && !col.includes('0,0,0') && !col.includes('0, 0, 0'));
+                                                if (c) solidColor = c.replace(/[\d.]+\)$/, '0.95)');
+                                            }
+                                        }
+
+                                        // 3. Applicera den perfekta solida färgen på teckenförklaringen
+                                        label.fillStyle = solidColor;
+                                        label.strokeStyle = solidColor;
+                                    }
+                                });
+                                
+                                return labels.filter(item => {
+                                    if (['Trendlinje (Normen)', 'Okänd karaktär', '..'].includes(item.text) || item.text.startsWith('Spårhistorik') || item.text.startsWith('Nuvarande Position')) return false;
+                                    const ds = chart.data.datasets[item.datasetIndex];
+                                    if (ds && ds.data.every(d => d.r === 0)) return false;
+                                    return true;
+                                });
                             }
                         }
                     },
-                    tooltip: {
-                        backgroundColor: 'rgba(255, 255, 255, 0.95)', // Vit och fräsch bakgrund
-                        titleColor: '#2c3e50', // Mörkgrå rubrik
-                        bodyColor: '#34495e',  // Mörkgrå text
-                        borderColor: 'rgba(0,0,0,0.15)',
-                        borderWidth: 1,
-                        padding: 12,
-                        boxPadding: 6,
-                        displayColors: false, // Tar bort den lilla färgfyrkanten för renare look
-                        callbacks: { 
-                            // 1. RUBRIKEN (Områdets namn eller spårets år)
-                            label: (c) => {
-                                if (c.raw.r === 0) return false; // Inga tooltips på osynliga spöken
-                                if (c.dataset.label.startsWith('Spårhistorik')) return `📅 Spår: ${c.raw.year}`;
-                                if (c.dataset.type === 'line') return false;
-                                
-                                // MAGIN: Om vi är i Svärm-läge, klistra på årtalet i rubriken!
-                                let suffix = c.raw.isSwarm ? ` (${c.raw.rawRow.tid})` : "";
-                                return `📍 ${c.raw.label}${suffix}`;
-                            },
-                            // 2. INNEHÅLLET (Mini-rapporten under rubriken)
-                            afterBody: (context) => {
-                                const c = context[0];
-                                
-                                // Visa inte extra info för spårlinjer, markeringar eller om data saknas
-                                if (c.raw.r === 0 || !c.raw.rawRow || c.dataset.label.startsWith('Spårhistorik') || c.dataset.label.startsWith('Nuvarande Position')) return null;
-                                
-                                let lines = [];
-                                
-                                // Hämta aktuella variabelnamn från rullistorna för att göra texten dynamisk
-                                let xVarName = document.getElementById('xVar1').value;
-                                let yVarName = document.getElementById('yVar1').value;
-                                
-                                let xVal = c.raw.x.toLocaleString('sv-SE', {maximumFractionDigits: 1});
-                                let yVal = c.raw.y.toLocaleString('sv-SE', {maximumFractionDigits: 1});
-                                let pop = c.raw.pop ? Math.round(c.raw.pop).toLocaleString('sv-SE') : 'Okänt';
-                                
-                                lines.push(`--------------------------------`);
-                                lines.push(`${xVarName}: ${xVal}`);
-                                lines.push(`${yVarName}: ${yVal}`);
-                                lines.push(`Folkmängd: ${pop}`);
-                                
-                                // ==========================================
-                                // TREND-BERÄKNAREN
-                                // ==========================================
-                                // Leta upp all historik för just detta basområde i den globala rådatan
-                                let areaData = rawData.filter(d => d.basområde === c.raw.label).sort((a,b) => parseInt(a.tid) - parseInt(b.tid));
-                                
-                                if (areaData.length > 1) {
-                                    let firstYearData = areaData[0]; // Äldsta kända datan (t.ex. 2015)
-                                    let currentYearData = c.raw.rawRow; // Datan för året vi tittar på
-                                    
-                                    let firstX = parseFloat(firstYearData[xVarName]);
-                                    let firstY = parseFloat(firstYearData[yVarName]);
-                                    let currX = parseFloat(currentYearData[xVarName]);
-                                    let currY = parseFloat(currentYearData[yVarName]);
-                                    
-                                    // Beräkna trenden bara om siffrorna är giltiga
-                                    if (!isNaN(firstX) && !isNaN(firstY) && !isNaN(currX) && !isNaN(currY)) {
-                                        let diffX = currX - firstX;
-                                        let diffY = currY - firstY;
-                                        
-                                        let trendStr = `Trend (sedan ${firstYearData.tid}): `;
-                                        const threshold = 0.1; // Tröskelvärde för att ses som "stabil"
-                                        
-                                        if (Math.abs(diffX) <= threshold && Math.abs(diffY) <= threshold) {
-                                            trendStr += "➡️ Relativt stabil";
-                                        } else if (diffX > threshold && diffY > threshold) {
-                                            trendStr += "↗️ Ökar på båda axlar";
-                                        } else if (diffX < -threshold && diffY < -threshold) {
-                                            trendStr += "↙️ Minskar på båda axlar";
-                                        } else if (diffX > threshold && diffY < -threshold) {
-                                            trendStr += "↘️ Ökar (X), Minskar (Y)";
-                                        } else if (diffX < -threshold && diffY > threshold) {
-                                            trendStr += "↖️ Minskar (X), Ökar (Y)";
-                                        } else if (Math.abs(diffX) > threshold) {
-                                            trendStr += diffX > 0 ? "➡️ Ökar på X-axeln" : "⬅️ Minskar på X-axeln";
-                                        } else if (Math.abs(diffY) > threshold) {
-                                            trendStr += diffY > 0 ? "⬆️ Ökar på Y-axeln" : "⬇️ Minskar på Y-axeln";
-                                        }
-                                        
-                                        lines.push(`--------------------------------`);
-                                        lines.push(trendStr);
-                                    }
-                                }
-                                return lines;
-                            }
-                        } 
-                    } 
+                    // ==========================================
+        // 2. FIX FÖR TOOLTIP OCH "SPÅR 2025"-BUGGEN
+        // ==========================================
+        tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)', titleColor: '#2c3e50', bodyColor: '#34495e', borderColor: 'rgba(0,0,0,0.15)', borderWidth: 1, padding: 12, boxPadding: 6, displayColors: false,
+            callbacks: { 
+                label: (c) => {
+                    let pt = c.raw;
+                    if (pt.r === 0) return false; 
+                    
+                    // 🚀 FIX: Stoppa "Spår"-buggen direkt om det saknas grunddata eller är ett spår
+                    if (pt.isTrail || !pt.rawRow || c.dataset.label.startsWith('Spårhistorik')) {
+                        return `📅 Spår: ${pt.year || c.dataset.label.replace('Spårhistorik ', '')}`;
+                    }
+                    
+                    if (c.dataset.type === 'line') return false;
+                    let suffix = pt.isSwarm ? ` (${pt.rawRow.tid})` : "";
+                    return `📍 ${pt.label}${suffix}`;
+                },
+                afterBody: (context) => {
+                    const c = context[0];
+                    let pt = c.raw;
+                    
+                    // 🚀 FIX: Säkerställ att inga detaljberäkningar görs för spår-punkter
+                    if (pt.r === 0 || !pt.rawRow || pt.isTrail || c.dataset.label.startsWith('Spårhistorik') || c.dataset.label.startsWith('Nuvarande Position')) return null;
+                    
+                    let lines = [];
+                    let xVarName = document.getElementById('xVar1').value;
+                    let yVarName = document.getElementById('yVar1').value;
+                    
+                    let xVal = pt.x.toLocaleString('sv-SE', {maximumFractionDigits: 1});
+                    let yVal = pt.y.toLocaleString('sv-SE', {maximumFractionDigits: 1});
+                    let pop = pt.pop ? Math.round(pt.pop).toLocaleString('sv-SE') : 'Okänt';
+                    
+                    lines.push(`--------------------------------`);
+                    lines.push(`${xVarName}: ${xVal}`);
+                    lines.push(`${yVarName}: ${yVal}`);
+                    lines.push(`Folkmängd: ${pop}`);
+                    
+                    let currentColorFilter = document.getElementById('colorVar1').value;
+                    if (currentColorFilter === 'SEI_Heatmap' && pt.rawRow) {
+                        let seiValue = parseFloat(pt.rawRow['SEI medel (2015-2024)']);
+                        if (!isNaN(seiValue)) {
+                            lines.push(`🎨 Färg (SEI-medel 15-24): ${seiValue.toFixed(1)}`);
+                        }
+                    }
+                    
+                    let areaData = activeData.filter(d => getAreaName(d) === pt.label).sort((a,b) => parseInt(a.tid) - parseInt(b.tid));
+                    
+                    if (areaData.length > 1) {
+                        let firstYearData = areaData[0]; 
+                        let currentYearData = pt.rawRow; 
+                        
+                        let firstX = parseFloat(firstYearData[xVarName]); let firstY = parseFloat(firstYearData[yVarName]);
+                        let currX = parseFloat(currentYearData[xVarName]); let currY = parseFloat(currentYearData[yVarName]);
+                        
+                        if (!isNaN(firstX) && !isNaN(firstY) && !isNaN(currX) && !isNaN(currY)) {
+                            let diffX = currX - firstX; let diffY = currY - firstY;
+                            let trendStr = `Trend (sedan ${firstYearData.tid}): `;
+                            const threshold = 0.1; 
+                            
+                            if (Math.abs(diffX) <= threshold && Math.abs(diffY) <= threshold) { trendStr += "➡️ Relativt stabil";
+                            } else if (diffX > threshold && diffY > threshold) { trendStr += "↗️ Ökar på båda axlar";
+                            } else if (diffX < -threshold && diffY < -threshold) { trendStr += "↙️ Minskar på båda axlar";
+                            } else if (diffX > threshold && diffY < -threshold) { trendStr += "↘️ Ökar (X), Minskar (Y)";
+                            } else if (diffX < -threshold && diffY > threshold) { trendStr += "↖️ Minskar (X), Ökar (Y)";
+                            } else if (Math.abs(diffX) > threshold) { trendStr += diffX > 0 ? "➡️ Ökar på X-axeln" : "⬅️ Minskar på X-axeln";
+                            } else if (Math.abs(diffY) > threshold) { trendStr += diffY > 0 ? "⬆️ Ökar på Y-axeln" : "⬇️ Minskar på Y-axeln"; }
+                            
+                            lines.push(`--------------------------------`);
+                            lines.push(trendStr);
+                        }
+                    }
+                    return lines;
+                }
+            }
+        } 
                 }
             }
         });
     }
+    // ==========================================
+    // 6. RITA UT CUSTOM LEGEND OVANFÖR DIAGRAMMET
+    // ==========================================
+    // Denna kod läggs OUTANFÖR if-else-blocket för Chart.js, 
+    // så att den alltid körs när filtret ändras!
+    const legendContainer = document.getElementById('custom-legend-tab1');
+    if (legendContainer) {
+        if (colorVar === 'SEI_Heatmap') {
+            legendContainer.innerHTML = `
+                <span style="font-size: 13px; font-family: sans-serif;">
+                    <strong style="margin-right:15px; color:#2c3e50;">Färg (SEI-medel 2015-2024):</strong>
+                    <span style="background:rgba(69, 117, 180, 0.8); color:white; padding:4px 8px; border-radius:4px; margin-right:4px;">Goda förutsättningar (< 2)</span>
+                    <span style="background:rgba(145, 191, 219, 0.8); color:black; padding:4px 8px; border-radius:4px; margin-right:4px;">(2 - 3)</span>
+                    <span style="background:rgba(254, 224, 144, 0.8); color:black; padding:4px 8px; border-radius:4px; margin-right:4px;">Snitt (3 - 4)</span>
+                    <span style="background:rgba(252, 141, 89, 0.8); color:black; padding:4px 8px; border-radius:4px; margin-right:4px;">(4 - 5)</span>
+                    <span style="background:rgba(215, 48, 39, 0.8); color:white; padding:4px 8px; border-radius:4px;">Utmaning (> 5)</span>
+                </span>
+            `;
+        } else {
+            // Töm rutan helt om något annat färgval är aktivt
+            legendContainer.innerHTML = ""; 
+        }
+    }
+    if (typeof updateBarChart === 'function') updateBarChart();
 }
 
         function updateTab2() {
-// Hämta X-axelns namn säkert och spara det i en variabel
+        let fyrfaltareToggle = document.getElementById('geoLevelToggleFyrfaltare');
+        let useNyko3Fyrfaltare = fyrfaltareToggle ? fyrfaltareToggle.checked : false;
+
+        // Uppdatera rubriken för stadsdelsvalet dynamiskt
+        let stadsdelLabel = document.getElementById('stadsdelLabel2');
+        if (stadsdelLabel) {
+            stadsdelLabel.innerText = useNyko3Fyrfaltare ? '📍 Visa stadsdel' : '📍 Visa basområden i (Stadsdel)';
+        }
+        // 🚀 DYNAMISK FÄRGHANTERING: Dölj Detaljkaraktär för Nyko 3
+    let colorSelect2 = document.getElementById('colorVar2'); // Kolla så ID:t matchar din HTML!
+    if (colorSelect2) {
+        let detaljOption = Array.from(colorSelect2.options).find(opt => opt.value === 'Karaktär_detalj');
+        if (detaljOption) {
+            if (useNyko3Fyrfaltare) {
+                detaljOption.style.display = 'none'; // Gömmer alternativet
+                // Om användaren hade Detalj vald, byt tillbaka till Enfärgad (blå)
+                if (colorSelect2.value === 'Karaktär_detalj') {
+                    colorSelect2.value = 'none'; 
+                }
+            } else {
+                detaljOption.style.display = ''; // Visar alternativet igen för Basområden
+            }
+        }
+    }
+
+        // Välj dataset baserat på ifall knappen är ikryssad
+        let dataToUse = useNyko3Fyrfaltare ? rawDataNyko3 : rawData;
+        // 🚀 Hämta namn robust och fånga "Hela kommunen" oavsett kolumn
+        let getAreaName = (row) => {
+        if (!row) return 'Okänt område';
+        let name = useNyko3Fyrfaltare 
+            ? (row['Stadsdel'] || row['stadsdel'] || row['STADSDEL'] || row['Namn']) 
+            : (row['basområde'] || row['Basområde'] || row['Område']);
+        
+            // Fånga upp totalraden om den gömmer sig i basområdes-kolumnen
+            if (!name && (row['basområde'] === 'Hela kommunen' || row['Basområde'] === 'Hela kommunen')) {
+            return 'Hela kommunen';
+        }
+        return name || 'Okänt område';
+    };
+
+            // Hämta X-axelns namn säkert och spara det i en variabel
 let currentXName = "Okänd variabel";
 if (document.getElementById('xVar2')) {
     currentXName = document.getElementById('xVar2').value;
@@ -2458,29 +3421,31 @@ if (flik2Canvas) {
     // ==========================================
     // 0. GLOBALA MIN/MAX FÖR FALLBACKS OCH RAMAR
     // ==========================================
-    let allXVals = rawData.map(d => parseFloat(d[xVar])).filter(n => !isNaN(n));
-    let allYVals = rawData.map(d => parseFloat(d[yVar])).filter(n => !isNaN(n));
+    let allXVals = dataToUse.map(d => parseFloat(d[xVar])).filter(n => !isNaN(n));
+    let allYVals = dataToUse.map(d => parseFloat(d[yVar])).filter(n => !isNaN(n));
     let globalMinX = Math.min(...allXVals); let globalMaxX = Math.max(...allXVals); let padX = (globalMaxX - globalMinX) * 0.05;
     let globalMinY = Math.min(...allYVals); let globalMaxY = Math.max(...allYVals); let padY = (globalMaxY - globalMinY) * 0.05;
 
     // ==========================================
     // 1. FAST INDEX-LISTA OCH BACKUP-KOORDINATER
-    // Detta förhindrar alla Chart.js-spöken!
     // ==========================================
-    let allAreas = Array.from(new Set(rawData.filter(r => r.basområde !== 'Hela kommunen').map(r => r.basområde))).sort();
+    // 🚀 FIX: Här använder vi dataToUse och dynamiskt områdesnamn (geoNameCol)
+    let allAreas = Array.from(new Set(dataToUse.filter(r => getAreaName(r) !== 'Hela kommunen').map(r => getAreaName(r)))).sort();
     let areaFallback = {};
     allAreas.forEach(a => areaFallback[a] = { x: globalMinX, y: globalMinY });
     
-    rawData.forEach(r => {
-        if (r.basområde === 'Hela kommunen') return;
+    dataToUse.forEach(r => {
+        let areaName = getAreaName(r);
+        if (areaName === 'Hela kommunen') return;
         let px = parseFloat(r[xVar]); let py = parseFloat(r[yVar]);
-        if (!isNaN(px) && !isNaN(py)) { areaFallback[r.basområde] = { x: px, y: py }; }
+        if (!isNaN(px) && !isNaN(py)) { areaFallback[areaName] = { x: px, y: py }; }
     });
 
     let allPossibleCategories = new Set();
-    rawData.forEach(r => {
-        if (r.basområde === 'Hela kommunen') return;
-        let c = (colorVar !== 'none') ? (r[colorVar] || 'Okänd karaktär') : 'Basområden';
+    dataToUse.forEach(r => {
+        if (getAreaName(r) === 'Hela kommunen') return;
+        let defaultCatName = useNyko3Fyrfaltare ? 'Stadsdelar' : 'Basområden';
+        let c = (colorVar !== 'none') ? (r[colorVar] || 'Okänd karaktär') : defaultCatName;
         if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(c)) c = 'SEI ' + c;
         allPossibleCategories.add(c);
     });
@@ -2490,7 +3455,6 @@ if (flik2Canvas) {
     let allPlotData = [];
     let sumY = 0; let countY = 0;
 
-    // Skapa fasta fack (med osynliga bubblor, r=0)
     allPossibleCategories.forEach(cat => {
         groupedData[cat] = allAreas.map(area => ({
             x: areaFallback[area].x, y: areaFallback[area].y, r: 0, label: area, pop: 0, rawRow: null
@@ -2501,15 +3465,14 @@ if (flik2Canvas) {
     }
 
     // ==========================================
-    // 2. FYLL PÅ MED DATA (SVÄRM-LÄGE & KRASCH-SKYDD FÖR FLIK 2)
+    // 2. FYLL PÅ MED DATA (SVÄRM-LÄGE)
     // ==========================================
-    
-    // A. Identifiera exakt vilka årtal som ska inkluderas (Säker mot "2025"-fällan!)
     let yearDropdown2 = document.getElementById('yearSelect2');
     let selVal2 = yearDropdown2.value.toString().toLowerCase();
     let selText2 = yearDropdown2.options[yearDropdown2.selectedIndex].text.toLowerCase();
     
-    let allAvailableYears = [...new Set(rawData.map(d => parseInt(d.tid)))].filter(y => !isNaN(y)).sort((a,b) => a - b);
+    // 🚀 FIX: Hämta årtal från dataToUse
+    let allAvailableYears = [...new Set(dataToUse.map(d => parseInt(d.tid)))].filter(y => !isNaN(y)).sort((a,b) => a - b);
     let yearsToInclude = [];
     
     if (selVal2.includes('all') || selText2.includes('samtliga') || selText2.includes('alla')) {
@@ -2523,7 +3486,6 @@ if (flik2Canvas) {
         if (!isNaN(parsed)) yearsToInclude = [parsed];
     }
     
-    // Säkerhetslina mot krasch
     if (yearsToInclude.length === 0 && allAvailableYears.length > 0) {
         yearsToInclude = [allAvailableYears[allAvailableYears.length - 1]];
     }
@@ -2531,8 +3493,10 @@ if (flik2Canvas) {
     let isSwarmMode = yearsToInclude.length > 1;
     let filledIndices = new Set(); 
     
-    rawData.filter(d => yearsToInclude.includes(parseInt(d.tid))).forEach(row => {
-        let isHela = (row.basområde === 'Hela kommunen');
+    // 🚀 FIX: Loopa över dataToUse
+    dataToUse.filter(d => yearsToInclude.includes(parseInt(d.tid))).forEach(row => {
+        let areaName = getAreaName(row); // 🚀 Använder hjälpfunktionen
+        let isHela = (areaName === 'Hela kommunen');
         if (exTot && isHela) return;
 
         let xVal = parseFloat(row[xVar]);
@@ -2541,29 +3505,50 @@ if (flik2Canvas) {
 
         let isVisible = true;
         if (!isHela) {
+            // Små områden
             if (exSma && (row.Inkluderad != "1" || pop < 25)) isVisible = false;
-            if (exSpe && (row.Områdestyp === 'Studentområde' || row.Områdestyp === 'Verksamhetsområde')) isVisible = false;
+            
+            // 🚀 Specialare: Dynamiskt Student- och Verksamhetsfilter (Nyko 3 vs Nyko 4)
+            if (exSpe) {
+                if (useNyko3Fyrfaltare) {
+                    // NYKO 3 LOGIK: Använd flaggan från Python-pipelinen
+                    if (row['Is_Student_Verksamhet'] == 1 || row['Is_Student_Verksamhet'] === "1") {
+                        isVisible = false;
+                    }
+                } else {
+                    // NYKO 4 LOGIK: Använd metadata från SEI-karaktär.xlsx (Samma som Flik 1)
+                    let oType = (row['Områdestyp'] || "").toString().toLowerCase().trim();
+                    let kBas = (row['Karaktär_bas'] || "").toString().toLowerCase().trim();
+                    let kDet = (row['Karaktär_detalj'] || "").toString().toLowerCase().trim();
+                    
+                    if (oType === 'studentområde' || oType === 'verksamhetsområde' || 
+                        kBas.includes('verksamhet') || kDet.includes('student')) {
+                        isVisible = false;
+                    }
+                }
+            }
         }
         if (isNaN(xVal) || isNaN(yVal)) isVisible = false;
 
-        let cat = (colorVar !== 'none' && !isHela) ? (row[colorVar] || 'Okänd karaktär') : 'Basområden';
+        let defaultCatName = useNyko3Fyrfaltare ? 'Stadsdelar' : 'Basområden';
+        let cat = (colorVar !== 'none' && !isHela) ? (row[colorVar] || 'Okänd karaktär') : defaultCatName;
         if (colorVar === 'SEI_indikatorer16' && ['1','2','3','4','5','6'].includes(cat)) cat = 'SEI ' + cat;
         if (isHela) cat = 'Hela kommunen';
 
-        let index = isHela ? 0 : allAreas.indexOf(row.basområde);
+        let index = isHela ? 0 : allAreas.indexOf(areaName);
         
         if (index !== -1 && groupedData[cat]) {
             let pointData = {
                 x: isVisible ? xVal : (groupedData[cat][index].x || xVal),
                 y: isVisible ? yVal : (groupedData[cat][index].y || yVal),
                 r: isVisible ? Math.max(4, Math.sqrt(pop)/5) : 0,
-                label: row.basområde,
+                label: areaName, // 🚀 Rätt namn
                 pop: pop,
                 rawRow: row,
-                isSwarm: isSwarmMode // Flagga för tooltips!
+                isSwarm: isSwarmMode
             };
 
-            let areaKey = cat + '_' + row.basområde;
+            let areaKey = cat + '_' + areaName;
 
             if (!filledIndices.has(areaKey)) {
                 // 1. Skriv över spöket (säkrar animationen för basåret)
@@ -2644,14 +3629,29 @@ if (flik2Canvas) {
     // === 3. ANIMATION, SPÅRHISTORIK OCH MARKERINGAR ===
     let focusPoint = []; let trailPoints = []; let focusBg = 'transparent'; let focusBorder = 'transparent'; let trailColor = 'transparent';
 
+    // 🚀 FIX: Kontrollera först om det låsta området finns kvar i den aktuella listan
+    let areaExistsInDataset = allAreas.includes(trackedAreaFlik2);
+
+    // Om området saknas (t.ex. vid byte Nyko 4 -> Nyko 3), nollställ låsningen automatiskt!
+    if (!areaExistsInDataset && trackedAreaFlik2) {
+        trackedAreaFlik2 = null;
+    }
+
+    // Rita bara spårhistorik om området faktiskt existerar
     if (trackedAreaFlik2 && selectedYear !== 'all') {
         let activePoint = allPlotData.find(p => p.label === trackedAreaFlik2);
         if (activePoint) {
             focusPoint = [activePoint]; trailPoints = [{ x: activePoint.x, y: activePoint.y, year: selectedYear }];
         }
-        let trailData = rawData.filter(d => d.basområde === trackedAreaFlik2 && parseInt(d.tid) <= parseInt(selectedYear)).sort((a, b) => parseInt(a.tid) - parseInt(b.tid));
-        trailPoints = trailData.map(d => ({ x: parseFloat(d[xVar]), y: parseFloat(d[yVar]), year: d.tid })).filter(p => !isNaN(p.x) && !isNaN(p.y));
-        focusBg = 'rgba(255, 234, 0, 0.95)'; focusBorder = 'rgba(211, 84, 0, 1)'; trailColor = 'rgba(211, 84, 0, 0.85)';
+        
+        // 🚀 FIX: Här lägger vi in samma spärr som i Flik 1! 
+        // Nu försvinner spåret när du klickar/byter årtal i rullistan.
+        if (typeof watermarkYear !== 'undefined' && watermarkYear !== "") {
+            // 🚀 FIX: Använd getAreaName(d) istället för d[geoNameCol]
+            let trailData = dataToUse.filter(d => getAreaName(d) === trackedAreaFlik2 && parseInt(d.tid) <= parseInt(selectedYear)).sort((a, b) => parseInt(a.tid) - parseInt(b.tid));
+            trailPoints = trailData.map(d => ({ x: parseFloat(d[xVar]), y: parseFloat(d[yVar]), year: d.tid })).filter(p => !isNaN(p.x) && !isNaN(p.y));
+            focusBg = 'rgba(255, 234, 0, 0.95)'; focusBorder = 'rgba(211, 84, 0, 1)'; trailColor = 'rgba(211, 84, 0, 0.85)';
+        }
     }
 
     chartDatasets.push({ type: 'line', label: trackedAreaFlik2 ? `Spårhistorik: ${trackedAreaFlik2}` : 'Spårhistorik', data: trailPoints, borderColor: trailColor, borderWidth: 3, pointBackgroundColor: trailColor, pointRadius: 4, fill: false, showLine: true, order: 3, animation: false });
@@ -2713,12 +3713,34 @@ if (flik2Canvas) {
             options: {
                 responsive: true, maintainAspectRatio: false, animation: { duration: 400, easing: 'easeInOutQuad' },
                 onClick: (event, elements, chart) => {
-                    if (elements.length > 0) {
-                        const el = elements[0]; const ds = chart.data.datasets[el.datasetIndex];
-                        if (ds.type !== 'line' && ds.data[el.index] && ds.data[el.index].label) {
-                            trackedAreaFlik2 = ds.data[el.index].label; updateTab2();
+                    try {
+                        if (elements.length > 0) {
+                            const el = elements[0]; 
+                            const ds = chart.data.datasets[el.datasetIndex];
+                            
+                            // 🚀 FIX: Ignorera klick på spårlinjen eller själva fokusbubblan för att förhindra krasch
+                            if (ds.label && (ds.label.startsWith('Spårhistorik') || ds.label.startsWith('Nuvarande Position'))) {
+                                return; 
+                            }
+                            
+                            if (ds.type !== 'line' && ds.data[el.index] && ds.data[el.index].label) {
+                                let clickedLabel = ds.data[el.index].label;
+                                
+                                if (trackedAreaFlik2 === clickedLabel) {
+                                    trackedAreaFlik2 = null; // Klick på samma = Lås upp
+                                } else {
+                                    trackedAreaFlik2 = clickedLabel; // Klick på ny = Lås fast
+                                }
+                                updateTab2();
+                            }
+                        } else { 
+                            // Klick i bakgrunden = Lås upp
+                            trackedAreaFlik2 = null; 
+                            updateTab2(); 
                         }
-                    } else { trackedAreaFlik2 = null; updateTab2(); }
+                    } catch (error) {
+                        console.error("🕵️‍♂️ Fel vid klick på bubbla:", error);
+                    }
                 },
                 plugins: {
                     datalabels: { display: false },
@@ -2798,7 +3820,19 @@ if (flik2Canvas) {
                                 // TREND-BERÄKNAREN
                                 // ==========================================
                                 // Leta upp all historik för just detta basområde i den globala rådatan
-                                let areaData = rawData.filter(d => d.basområde === c.raw.label).sort((a,b) => parseInt(a.tid) - parseInt(b.tid));
+                                // 1. Kolla live vilken nivå vi är på just nu
+                                let fyrfaltareToggleLive = document.getElementById('geoLevelToggleFyrfaltare');
+                                let isNyko3Live = fyrfaltareToggleLive ? fyrfaltareToggleLive.checked : false;
+                                let activeData = isNyko3Live ? rawDataNyko3 : rawData;
+
+                                // 2. Leta upp historiken oavsett om kolumnen heter Stadsdel eller basområde
+                                let areaData = activeData.filter(d => 
+                                    (d['Stadsdel'] === c.raw.label) || 
+                                    (d['stadsdel'] === c.raw.label) || 
+                                    (d['STADSDEL'] === c.raw.label) || 
+                                    (d['basområde'] === c.raw.label) ||
+                                    (d['Basområde'] === c.raw.label)
+                                ).sort((a,b) => parseInt(a.tid) - parseInt(b.tid));
                                 
                                 if (areaData.length > 1) {
                                     let firstYearData = areaData[0]; // Äldsta kända datan (t.ex. 2015)
@@ -3197,7 +4231,17 @@ if (flik2Canvas) {
                 } else {
                     foundVar = findVariable(keyword, true);
                 }
-                if(foundVar && !heatVars.includes(foundVar)) heatVars.push(foundVar);
+                if (foundVar && !heatVars.includes(foundVar)) {
+                    // 🚀 FIX: Dörrvakten som kastar ut de nya Z-score-indexen från HeatMapen!
+                    let vLow = foundVar.toLowerCase();
+                    if (!vLow.includes('cni') && 
+                        !vLow.includes('kksi') && 
+                        !vLow.includes('omsorgsbehov') &&
+                        !vLow.includes('index:')) { // Fångar även eventuella gamla index för säkerhets skull
+                        
+                        heatVars.push(foundVar);
+                    }
+                }
             });
 
             let filteredRows = rawData.filter(row => {
@@ -4578,6 +5622,435 @@ if (flik2Canvas) {
             });
         }
         
+        // Global variabel som kommer ihåg vilka kategorier du har klickat bort
+window.hiddenBarCategories = window.hiddenBarCategories || [];
+let barChartInstance = null;
+
+function updateBarChart() {
+    const yearSelect = document.getElementById('yearSelect1');
+    if (yearSelect) {
+        Array.from(yearSelect.options).forEach(opt => {
+            if (['Samtliga år', 'Senaste 5 åren', 'Senaste 10 åren'].includes(opt.value)) opt.remove();
+        });
+    }
+
+    const xVarSelect = document.getElementById('xVar1');
+    if (!xVarSelect) return;
+    
+    const selectedVar = xVarSelect.value;
+    // 🚀 FIX: Kom ihåg om användaren har klickat fram Hela kommunen-linjen.
+    // Återställ till dold (false) om vi byter variabel (nytt diagram).
+    if (window.lastBarChartVar !== selectedVar) {
+        window.showHelaKommunenLine = false; 
+        window.lastBarChartVar = selectedVar;
+    }
+    const isNyko3 = document.getElementById('geoToggleTab1').checked; 
+    const colorVar = document.getElementById('colorVar1').value;
+    const selectedStadsdel = document.getElementById('stadsdelSelect1').value;
+
+    // 🚀 UPPDATERA VATTENSTÄMPELN MED DEN VALDA VARIABELN
+    const watermarkEl = document.getElementById('barWatermark');
+    if (watermarkEl && xVarSelect.selectedIndex >= 0) {
+        watermarkEl.innerText = xVarSelect.options[xVarSelect.selectedIndex].text;
+    }
+    
+    // 🚀 UX: Gråa ut "Interaktiv fördjupning" om färgkodning inte är inställd på Fokus
+    const drillDownCheck = document.getElementById('enableDrillDown');
+    if (drillDownCheck) {
+        if (colorVar !== 'Utvald_Stadsdel') {
+            drillDownCheck.disabled = true;
+            drillDownCheck.parentElement.style.opacity = '0.5';
+            drillDownCheck.parentElement.style.cursor = 'not-allowed';
+        } else {
+            drillDownCheck.disabled = false;
+            drillDownCheck.parentElement.style.opacity = '1';
+            drillDownCheck.parentElement.style.cursor = 'pointer';
+        }
+    }
+
+    let rawYearStr = document.getElementById('yearSelect1').value;
+    let selectedYear = parseInt(rawYearStr);
+    let currentData = isNyko3 ? rawDataNyko3 : rawData; 
+    
+    if (isNaN(selectedYear)) {
+        const allYears = currentData.map(d => parseInt(d.tid)).filter(y => !isNaN(y));
+        selectedYear = Math.max(...allYears);
+    }
+
+    const focusAreaValue = document.getElementById('focusAreaSelect1') ? document.getElementById('focusAreaSelect1').value : 'none';
+    let trackedArea = window.trackedAreaFlik1 || (focusAreaValue !== 'none' ? focusAreaValue : null);
+    if (!trackedArea) trackedArea = selectedStadsdel !== 'none' ? selectedStadsdel : null;
+
+    const drillDown = drillDownCheck ? drillDownCheck.checked : false;
+    const exSma = document.getElementById('exSma1') ? document.getElementById('exSma1').checked : false;
+    const exSpe = document.getElementById('exSpe1') ? document.getElementById('exSpe1').checked : false;
+
+    const valdaDrillDownOmraden = trackedArea ? trackedArea.split(/[/&]/).map(s => s.trim()) : [];
+    let nameKey = isNyko3 ? 'Stadsdel' : 'basområde';
+    
+    // Tvinga över till Nyko 4 vid drill-down
+    // Vi lägger till ett krav att colorVar MÅSTE vara 'Utvald_Stadsdel' för att fördjupningen faktiskt ska triggas i datan
+    const drillDownActive = isNyko3 && drillDown && valdaDrillDownOmraden.length > 0 && colorVar === 'Utvald_Stadsdel';
+    if (drillDownActive) {
+        currentData = rawData; 
+        nameKey = 'basområde';
+    }
+
+    if (!currentData || currentData.length === 0) return;
+
+    let yearData = currentData.filter(d => 
+        parseInt(d.tid) === selectedYear && 
+        d[selectedVar] !== null && d[selectedVar] !== undefined && d[selectedVar] !== ""
+    );
+
+    let areaCheckKey = yearData.length > 0 && yearData[0].hasOwnProperty('Stadsdel') ? 'Stadsdel' : 'basområde';
+    const helaKommunenRow = yearData.find(d => d[areaCheckKey].toString().toLowerCase() === 'hela kommunen');
+    let helaKommunenVal = helaKommunenRow ? parseFloat(helaKommunenRow[selectedVar].toString().replace(',', '.')) : null;
+
+    // 1. 🚀 BASE DATA: All data med vanliga filter, men INNAN vi exkluderar dolda färger
+    let baseFilterData = yearData.filter(d => {
+        let isHela = d[areaCheckKey].toString().toLowerCase() === 'hela kommunen';
+        let isOkand = d[areaCheckKey].toString().toLowerCase().includes('okänd');
+        let isSmaOmrade = exSma && (d['Folkmängd'] < 25);
+        
+        // 🚀 FIX: DITT STUDENTFILTER HÄR (Sätt in den kolumn/logik du använder i Python/Bubbeldiagrammet)
+        // Exempel: let isStudentOmrade = exSpe && (d['Student_Verksamhet'] == 1);
+        // let isStudentOmrade = exSpe && (d[areaCheckKey].toString().includes('Ryd') || d[areaCheckKey].toString().includes('Valla')); 
+        let isStudentOmrade = exSpe && (d['Is_Student_Verksamhet'] == 1 || d['Is_Student_Verksamhet'] === '1' || d['Is_Student_Verksamhet'] === true);
+
+        // 🚀 FIX: Tvättar bort skillnader mellan Stort O och Litet o (t.ex. Askeby Omland vs Askeby omland)
+        let isDrillDownMatch = true;
+        if (drillDownActive) {
+            // Skapa en lista av sökområden i enbart små bokstäver utan extra mellanslag
+            let cleanTargets = valdaDrillDownOmraden.map(t => t.toString().toLowerCase().trim());
+            
+            // Hämta värden från alla relevanta föräldrakolumner och tvätta dem till små bokstäver
+            let parentStadsdel = d['Stadsdel'] ? d['Stadsdel'].toString().toLowerCase().trim() : '';
+            let parentOmrade   = d['Område'] ? d['Område'].toString().toLowerCase().trim() : '';
+            let parentKommun   = d['Kommundel'] ? d['Kommundel'].toString().toLowerCase().trim() : '';
+            let parentNyko3    = d['NYKO3_Namn'] ? d['NYKO3_Namn'].toString().toLowerCase().trim() : '';
+            let parentTatort   = d['Tätort'] ? d['Tätort'].toString().toLowerCase().trim() : '';
+            
+            // Matcha om någon kolumn stämmer överens med något sökbegrepp
+            isDrillDownMatch = cleanTargets.some(target => 
+                (parentStadsdel && parentStadsdel === target) ||
+                (parentOmrade   && parentOmrade   === target) ||
+                (parentKommun   && parentKommun   === target) ||
+                (parentNyko3    && parentNyko3    === target) ||
+                (parentTatort   && parentTatort   === target)
+            );
+        }
+        
+        return !isHela && !isOkand && !isSmaOmrade && !isStudentOmrade && isDrillDownMatch;
+    });
+
+    // 2. 🚀 BAR DATA: Datan som faktiskt ritas (komprimeras genom att dolda färger raderas från X-axeln)
+    let barData = baseFilterData.filter(d => {
+        if (colorVar !== 'none' && colorVar !== 'Utvald_Stadsdel') {
+            return !window.hiddenBarCategories.includes(d[colorVar] || 'Okänd');
+        }
+        return true;
+    });
+
+    barData.sort((a, b) => parseFloat(b[selectedVar].toString().replace(',', '.')) - parseFloat(a[selectedVar].toString().replace(',', '.')));
+
+    const labels = barData.map(d => d[nameKey]);
+    const lineData = labels.map(() => helaKommunenVal);
+    let datasets = [];
+
+    datasets.push({
+        type: 'line', label: 'Snitt: Hela kommunen', data: lineData,
+        borderColor: 'rgba(34, 139, 34, 1)', borderWidth: 2, borderDash: [5, 5], 
+        pointRadius: 0, fill: false, order: 1, 
+        hidden: !window.showHelaKommunenLine // 🚀 FIX: Använder minnet istället för att tvinga den dold!
+    });
+
+    if (colorVar === 'none' || colorVar === 'Utvald_Stadsdel') {
+        let borderColors = barData.map(d => {
+            let areaName = d[nameKey];
+            let parentStadsdel = d['Stadsdel'];
+            let isTarget = valdaDrillDownOmraden.includes(parentStadsdel) || areaName === trackedArea || parentStadsdel === trackedArea;
+            return isTarget ? 'rgba(255, 215, 0, 1)' : 'rgba(0, 105, 128, 1)';
+        });
+        
+        let borderWidths = barData.map(d => {
+            let areaName = d[nameKey];
+            let parentStadsdel = d['Stadsdel'];
+            let isTarget = valdaDrillDownOmraden.includes(parentStadsdel) || areaName === trackedArea || parentStadsdel === trackedArea;
+            return isTarget ? 4 : 1; 
+        });
+
+        datasets.push({
+            type: 'bar', label: selectedVar,
+            data: barData.map(d => parseFloat(d[selectedVar].toString().replace(',', '.'))),
+            backgroundColor: 'rgba(0, 105, 128, 0.8)', borderColor: borderColors, borderWidth: borderWidths, order: 2
+        });
+    } 
+    else if (colorVar === 'SEI_Heatmap') {
+        // 1. Definiera våra SEI-klasser och färger i RÄTT sorteringsordning (Omvända färger)
+        const heatmapCategories = [
+            { label: 'SEI 1 (Svagast)', id: 'SEI 1', bg: 'rgba(215, 48, 39, 0.95)' },    // Röd (eller mörkaste färgen)
+            { label: 'SEI 2', id: 'SEI 2', bg: 'rgba(252, 141, 89, 0.95)' },             // Orange
+            { label: 'SEI 3', id: 'SEI 3', bg: 'rgba(254, 224, 144, 0.95)' },            // Gul (Mitten)
+            { label: 'SEI 4', id: 'SEI 4', bg: 'rgba(145, 191, 219, 0.95)' },            // Ljusblå
+            { label: 'SEI 5 (Starkast)', id: 'SEI 5', bg: 'rgba(69, 117, 180, 0.95)' },   // Mörkblå
+            { label: 'Okänd', id: 'Okänd', bg: 'rgba(150, 150, 150, 0.6)' }
+        ];
+
+        // 2. Skapa ett dataset för varje specifik SEI-klass
+        heatmapCategories.forEach(cat => {
+            let catData = labels.map(labelName => {
+                let d = barData.find(row => row[nameKey] === labelName);
+                if (d) {
+                    let rawSei = d['SEI medel (2015-2024)'] ? d['SEI medel (2015-2024)'].toString().replace(',', '.') : '';
+                    let seiVal = parseFloat(rawSei);
+                    
+                    let belongsTo = 'Okänd';
+                    if (!isNaN(seiVal)) {
+                        if (seiVal < 2) belongsTo = 'SEI 1';
+                        else if (seiVal < 3) belongsTo = 'SEI 2';
+                        else if (seiVal < 4) belongsTo = 'SEI 3';
+                        else if (seiVal < 5) belongsTo = 'SEI 4';
+                        else belongsTo = 'SEI 5';
+                    }
+
+                    if (belongsTo === cat.id) {
+                        return parseFloat(d[selectedVar].toString().replace(',', '.'));
+                    }
+                }
+                return null;
+            });
+
+            // Rita bara ut klassen i teckenförklaringen om den faktiskt innehåller data för urvalet
+            if (catData.some(val => val !== null)) {
+                let borderColors = labels.map(labelName => {
+                    let d = barData.find(row => row[nameKey] === labelName);
+                    if (!d) return null;
+                    let isTarget = valdaDrillDownOmraden.includes(d['Stadsdel']) || d[nameKey] === trackedArea || d['Stadsdel'] === trackedArea;
+                    return isTarget ? 'rgba(255, 215, 0, 1)' : cat.bg.replace('0.95', '1.0').replace('0.6', '1.0'); 
+                });
+                
+                let borderWidths = labels.map(labelName => {
+                    let d = barData.find(row => row[nameKey] === labelName);
+                    if (!d) return 0;
+                    let isTarget = valdaDrillDownOmraden.includes(d['Stadsdel']) || d[nameKey] === trackedArea || d['Stadsdel'] === trackedArea;
+                    return isTarget ? 4 : 1; 
+                });
+
+                datasets.push({
+                    type: 'bar', 
+                    label: cat.label, 
+                    data: catData,
+                    backgroundColor: cat.bg, 
+                    borderColor: borderColors, 
+                    borderWidth: borderWidths, 
+                    order: 2
+                });
+            }
+        });
+    }
+    else {
+        // 3. 🚀 LÖSNING FÖR TECKENFÖRKLARINGEN: Läs in kategorierna från baseFilterData istället för barData
+        let allCategories = [...new Set(baseFilterData.map(d => d[colorVar] || 'Okänd'))].filter(c => c !== 'Okänd');
+        
+        // 🚀 FIX: Tvinga fram en logisk alfanumerisk sorteringsordning (svensk standard)
+        // Detta garanterar att t.ex. klass 1-5 alltid hamnar i rätt ordning i teckenförklaringen
+        // 🚀 FIX: Prioriterad logisk sortering med alfanumerisk fallback
+        allCategories.sort((a, b) => {
+            let aStr = a.toString().trim();
+            let bStr = b.toString().trim();
+            
+            // Definiera den exakta ordningen för dina specialkategorier
+            const rank = {
+                // Karaktär (Stad/Tätort/Landsbygd)
+                "Stadsdel": 1, 
+                "Tätort": 2, 
+                "Landsbygd": 3,
+                
+                // Karaktär (Detaljnivå)
+                "Inre staden": 10, 
+                "Yttre staden": 11, 
+                "Större tätort": 12, 
+                "Mindre tätort": 13, 
+                "Stadsnära landsbygd": 14, 
+                "Yttre landsbygd": 15
+            };
+            
+            // Om båda kategorierna finns i rank-listan, jämför deras siffror
+            if (rank[aStr] && rank[bStr]) return rank[aStr] - rank[bStr];
+            
+            // Om bara den ena finns, flytta fram den
+            if (rank[aStr]) return -1;
+            if (rank[bStr]) return 1;
+            
+            // Fallback: Standard alfanumerisk sortering (löser SEI 1-6 och Övrigt)
+            return aStr.localeCompare(bStr, 'sv', { numeric: true });
+        });
+        
+        allCategories.forEach((cat, index) => {
+            let lookupCat = cat;
+            if (colorVar.includes('SEI') && !cat.toString().includes('SEI')) {
+                lookupCat = 'SEI ' + cat;
+            }
+
+            let catColorBg = 'rgba(52, 152, 219, 0.6)';
+            let catColorBorder = 'rgba(41, 128, 185, 0.9)';
+            
+            if (typeof colorPalette !== 'undefined' && colorPalette[lookupCat]) {
+                catColorBg = colorPalette[lookupCat].bg;
+                catColorBorder = colorPalette[lookupCat].border;
+            } else if (typeof fallbackColors !== 'undefined') {
+                let fallback = fallbackColors[index % fallbackColors.length];
+                catColorBg = fallback.bg;
+                catColorBorder = fallback.border;
+            }
+
+            // Mappa datan mot labels (dvs. den komprimerade X-axeln). Om kategorin är dold blir värdena null.
+            let catData = labels.map(labelName => {
+                let d = barData.find(row => row[nameKey] === labelName);
+                if (d && (d[colorVar] || 'Okänd') === cat) {
+                    return parseFloat(d[selectedVar].toString().replace(',', '.'));
+                }
+                return null;
+            });
+            
+            let borderColors = labels.map(labelName => {
+                let d = barData.find(row => row[nameKey] === labelName);
+                if (!d || (d[colorVar] || 'Okänd') !== cat) return null;
+                let isTarget = valdaDrillDownOmraden.includes(d['Stadsdel']) || d[nameKey] === trackedArea || d['Stadsdel'] === trackedArea;
+                return isTarget ? 'rgba(255, 215, 0, 1)' : catColorBorder; 
+            });
+            
+            let borderWidths = labels.map(labelName => {
+                let d = barData.find(row => row[nameKey] === labelName);
+                if (!d || (d[colorVar] || 'Okänd') !== cat) return 0;
+                let isTarget = valdaDrillDownOmraden.includes(d['Stadsdel']) || d[nameKey] === trackedArea || d['Stadsdel'] === trackedArea;
+                return isTarget ? 4 : 1; 
+            });
+
+            datasets.push({
+                type: 'bar', label: lookupCat, data: catData,
+                backgroundColor: catColorBg, borderColor: borderColors, borderWidth: borderWidths, order: 2,
+                hidden: window.hiddenBarCategories && window.hiddenBarCategories.includes(cat) 
+            });
+        });
+    }
+
+    const ctx = document.getElementById('barChartCanvas').getContext('2d');
+    if (barChartInstance) barChartInstance.destroy(); 
+    const unit = typeof getUnit === 'function' ? getUnit(selectedVar) : '';
+
+    barChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: { labels: labels, datasets: datasets },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { 
+                    position: 'bottom',
+                    onClick: function(e, legendItem, legend) {
+                        if (legendItem.text.includes('Snitt:')) {
+                            // 🚀 FIX: Uppdatera minnet när användaren klickar fram/bort linjen
+                            window.showHelaKommunenLine = !window.showHelaKommunenLine;
+                            
+                            const index = legendItem.datasetIndex;
+                            const ci = legend.chart;
+                            ci.isDatasetVisible(index) ? ci.hide(index) : ci.show(index);
+                        } else {
+                            const cat = legend.chart.data.datasets[legendItem.datasetIndex].label.replace('SEI ', ''); 
+                            const hiddenCat = colorVar.includes('SEI') ? cat : legendItem.text;
+                            
+                            if (window.hiddenBarCategories.includes(hiddenCat)) {
+                                window.hiddenBarCategories = window.hiddenBarCategories.filter(c => c !== hiddenCat);
+                            } else {
+                                window.hiddenBarCategories.push(hiddenCat);
+                            }
+                            updateBarChart();
+                        }
+                    }
+                },
+                tooltip: { callbacks: { label: function(context) { return context.parsed.y + unit; } } }
+            },
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: unit.trim() }, stacked: true },
+                x: { ticks: { autoSkip: false, maxRotation: 90, minRotation: 45 }, stacked: true }
+            }
+        }
+    });
+}
+
+function switchSubTab(targetId, btnElement) {
+    // 1. Återställ alla knappar (Vy-väljarna) till neutralt läge
+    const navContainer = btnElement.parentElement;
+    const allBtns = navContainer.querySelectorAll('.mini-vy-btn');
+    allBtns.forEach(btn => btn.classList.remove('active'));
+        
+    // 2. Markera den klickade knappen som aktiv
+    btnElement.classList.add('active');
+
+    // 3. Dölj båda diagramytorna temporärt
+    document.getElementById('sub-bubble').style.display = 'none';
+    document.getElementById('sub-bar').style.display = 'none';
+
+    // 4. Hantera UX: Statistikboxar, Rullistor och Rendering
+    const statsContainer = document.querySelector('.stats-container');
+    const yAxisSelect = document.getElementById('yVar1'); // 🚀 Fånga Y-axeln
+    const bubbleSizeSelect = document.getElementById('bubbleSizeVar1'); // 🚀 Fånga Volym-kontrollen
+    const clusterCheck = document.getElementById('enableClusterDrillDown');
+    const drillDownCheck = document.getElementById('enableDrillDown');
+
+    if (targetId === 'sub-bar') {
+        // Visa stapeldiagrammet
+        document.getElementById('sub-bar').style.display = 'block';
+        
+        // Dölj statistikboxarna
+        if (statsContainer) statsContainer.style.display = 'none';
+        
+        // 🚀 Gråa ut och inaktivera Y-axeln och övriga inaktiva rullistor
+        [yAxisSelect, bubbleSizeSelect].forEach(el => {
+            if (el) { el.disabled = true; el.style.opacity = '0.5'; el.style.cursor = 'not-allowed'; }
+        });
+
+        // Tvinga kluster-rutan att gråas ut i stapelvyn
+        if (clusterCheck) {
+            clusterCheck.disabled = true;
+            clusterCheck.checked = false;
+            clusterCheck.parentElement.style.opacity = '0.5';
+            clusterCheck.parentElement.style.cursor = 'not-allowed';
+        }
+        
+        // Rendera stapeldiagrammet
+        if (typeof updateBarChart === 'function') updateBarChart();
+        
+    } else {
+        // Visa bubbeldiagrammet
+        document.getElementById('sub-bubble').style.display = 'block';
+        
+        // Visa statistikboxarna igen
+        if (statsContainer) statsContainer.style.display = 'flex';
+        
+        // 🚀 Aktivera allt igen för bubbelvyn
+        [yAxisSelect, bubbleSizeSelect].forEach(el => {
+            if (el) { el.disabled = false; el.style.opacity = '1'; el.style.cursor = 'default'; }
+        });
+
+        if (clusterCheck) {
+            if (drillDownCheck && drillDownCheck.checked) {
+                clusterCheck.disabled = false;
+                clusterCheck.parentElement.style.opacity = '1';
+                clusterCheck.parentElement.style.cursor = 'pointer';
+            } else {
+                clusterCheck.disabled = true;
+                clusterCheck.parentElement.style.opacity = '0.5';
+                clusterCheck.parentElement.style.cursor = 'not-allowed';
+            }
+        }
+        
+        // Uppdatera bubbeldiagrammet
+        if (typeof updateTab1 === 'function') updateTab1();
+    }
+}
+
         // ==========================================
         // SYSTEM INITIERING & INLÄSNING AV DATA
         // ==========================================
@@ -4618,6 +6091,13 @@ function populateDropdownWithGroups(selectId, variablesArray, filterFunc = null)
 
     // 3. Den smarta sorteringsmotorn (Använder nu DIN getCategory-funktion!)
     variablesArray.forEach(v => {
+        
+        // 🚀 FIX: Dörrvakten! Döljer Kommundelskluster från alla rullistor 
+        let vLow = v.toLowerCase();
+        if (vLow === 'kommundelskluster' || vLow === 'kommundelskluster_x' || vLow === 'kommundelskluster_y') {
+            return; // Avbryt och hoppa över denna kolumn
+        }
+
         // Hoppa över variabeln om den inte klarar ett eventuellt inskickat filter!
         if (filterFunc && !filterFunc(v)) return;
 
@@ -4765,218 +6245,264 @@ const yearWatermarkPlugin = {
 };
 Chart.register(yearWatermarkPlugin); // Aktivera pluginen
 
+        // 🚀 NYTT: Vi gör städningen till en återanvändbar funktion så vi slipper skriva den två gånger!
+        function cleanPapaData(dataArray) {
+            let cleanData = [];
+            dataArray.forEach(row => {
+                let cleanRow = {};
+                for (let key in row) {
+                    let cleanKey = key.trim();
+                    if (cleanKey === 'Invånarantal') cleanKey = 'Folkmängd';
+                    
+                    let lowerKey = cleanKey.toLowerCase();
+                    if ((lowerKey.includes('utbildning') || lowerKey.endsWith('utb') || lowerKey.endsWith('utb.') || lowerKey.includes('sysselsättning')) && !lowerKey.includes('20-64 år')) {
+                        cleanKey = cleanKey + ' (20-64 år)';
+                    }
+                    cleanRow[cleanKey] = row[key];
+                }
+
+                let kBas = cleanRow['Karaktär_bas'] ? cleanRow['Karaktär_bas'].toLowerCase() : '';
+                let kDet = cleanRow['Karaktär_detalj'] ? cleanRow['Karaktär_detalj'].toLowerCase() : '';
+                // Letar efter både basområde och stadsdel för att filtrera bort ogiltiga
+                let bName = cleanRow['basområde'] ? cleanRow['basområde'].toLowerCase() : (cleanRow['Stadsdel'] ? cleanRow['Stadsdel'].toLowerCase() : '');
+
+                if (kBas.includes('ej geografiskt') || kDet.includes('ej geografiskt') || bName.includes('restförda') || bName.includes('utan känd') || bName.includes('på kommunen skriven') || bName.includes('å kommunen skrivna')) {
+                    return; 
+                }
+                cleanData.push(cleanRow);
+            });
+            return cleanData;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            Papa.parse("segregation_base.csv", {
+            // 🚀 CACHE-BUSTER: Skapar en unik siffra (t.ex. ?v=16970345) varje millisekund
+            const cacheBuster = "?v=" + new Date().getTime();
+            // 🚀 1. Ladda Master-filen (Nyko 4) först
+            Papa.parse("segregation_base.csv" + cacheBuster, {
                 download: true, header: true,
-                complete: function(results) {
-                    
-                    let cleanData = [];
-                    results.data.forEach(row => {
-                        let cleanRow = {};
-                        for (let key in row) {
-                            let cleanKey = key.trim();
-                            if (cleanKey === 'Invånarantal') cleanKey = 'Folkmängd';
-                            
-                            let lowerKey = cleanKey.toLowerCase();
-                            if ((lowerKey.includes('utbildning') || lowerKey.endsWith('utb') || lowerKey.endsWith('utb.') || lowerKey.includes('sysselsättning')) && !lowerKey.includes('20-64 år')) {
-                                cleanKey = cleanKey + ' (20-64 år)';
-                            }
-                            cleanRow[cleanKey] = row[key];
-                        }
-
-                        let kBas = cleanRow['Karaktär_bas'] ? cleanRow['Karaktär_bas'].toLowerCase() : '';
-                        let kDet = cleanRow['Karaktär_detalj'] ? cleanRow['Karaktär_detalj'].toLowerCase() : '';
-                        let bName = cleanRow['basområde'] ? cleanRow['basområde'].toLowerCase() : '';
-
-                        if (kBas.includes('ej geografiskt') || kDet.includes('ej geografiskt') || bName.includes('restförda') || bName.includes('utan känd') || bName.includes('på kommunen skriven') || bName.includes('å kommunen skrivna')) {
-                            return; 
-                        }
-
-                        cleanData.push(cleanRow);
-                    });
-                    
-                    rawData = cleanData;
+                complete: function(results4) {
+                    rawData = cleanPapaData(results4.data);
                     if(rawData.length === 0) return;
 
-                    const headers = Object.keys(rawData[0]);
-                    const ignoreCols = ['basområde', 'tid', 'Karaktär_bas', 'Karaktär_detalj', 'Inkluderad', 'Ingår', 'SEI_indikatorer16', 'Stadsdelskod_(Nyko3)', 'Stadsdel', 'KodNyko4', 'Områdestyp'];
-                    validVariables = headers.filter(h => !ignoreCols.includes(h) && h !== "");
+                    // 🚀 2. Direkt efteråt, ladda Nyko 3-filen!
+                    Papa.parse("segregation_base_nyko3.csv" + cacheBuster, {
+                        download: true, header: true,
+                        complete: function(results3) {
+                            rawDataNyko3 = cleanPapaData(results3.data);
+                            console.log("✅ Båda databaserna inlästa! Nyko 4 rader:", rawData.length, "| Nyko 3 rader:", rawDataNyko3.length);
 
-                    // 🚀 GLOBAL STÄDNING: Blockera AI-Kompassens koordinater från ALLA analytiska rullistor
-                    validVariables = validVariables.filter(v => 
-                        !v.toLowerCase().includes('ai_kompass') && 
-                        !v.toLowerCase().includes('ai-kompass')
-                    );
+                            // 3. Nu när båda filerna finns i minnet, bygg upp hela dashboarden
+                            const headers = Object.keys(rawData[0]);
+                            const ignoreCols = ['basområde', 'tid', 'Karaktär_bas', 'Karaktär_detalj', 'Inkluderad', 'Ingår', 'SEI_indikatorer16', 'Stadsdelskod_(Nyko3)', 'Stadsdel', 'KodNyko4', 'Områdestyp'];
+                            validVariables = headers.filter(h => !ignoreCols.includes(h) && h !== "");
 
-                    // Bygg alla rullistor med standardvariabler (Flik 1, 3, 7, 8, 9)
-                    populateDropdownWithGroups('xVar1', validVariables);
-                    populateDropdownWithGroups('yVar1', validVariables);
-                    populateDropdownWithGroups('outcomeVar3', validVariables);
-                    populateDropdownWithGroups('outcomeVar7', validVariables);
-                    populateDropdownWithGroups('simOutcome8', validVariables); // Nu får även simulatorn optgroups!
-                    populateDropdownWithGroups('xVar9', validVariables);
-                    populateDropdownWithGroups('yVar9', validVariables);
+                            // Blockera AI-Kompassens koordinater
+                            validVariables = validVariables.filter(v => 
+                                !v.toLowerCase().includes('ai_kompass') && 
+                                !v.toLowerCase().includes('ai-kompass')
+                            );
 
-                    // Flik 2: Tidsmaskin / 4-fältare (Bara Index - EXKLUDERAR Samlat SEI och Strukturell Ojämlikhet)
-                    populateDropdownWithGroups('xVar2', validVariables, v => 
-                        v.startsWith('Index:') && 
-                        v !== 'Index: Samlat SEI (16 indikatorer)' && 
-                        v !== 'Index: Strukturell Ojämlikhet'
-                    );
+                            populateDropdownWithGroups('xVar1', validVariables);
+                            populateDropdownWithGroups('yVar1', validVariables);
+                            populateDropdownWithGroups('outcomeVar3', validVariables);
+                            populateDropdownWithGroups('outcomeVar7', validVariables);
+                            populateDropdownWithGroups('simOutcome8', validVariables);
+                            populateDropdownWithGroups('xVar9', validVariables);
+                            populateDropdownWithGroups('yVar9', validVariables);
 
-                    // Special-rullistor (Flik 4 BARA ska visa Index, men EXKLUDERA CNI, KKSI och Omsorgsbehov)
-                    populateDropdownWithGroups('outcomeVar4', validVariables, v => {
-                        let vLow = v.toLowerCase();
-                        return v.startsWith('Index:') && 
-                               !vLow.includes('cni') && 
-                               !vLow.includes('kksi') && 
-                               !vLow.includes('omsorgsbehov');
-                    });
-                    
-                    // 2. Fånga upp rullistan
-                    const ySelect4 = document.getElementById('outcomeVar4');
-                    
-                    // 3. 🚀 Leta upp OptGroup-mappen och tvinga in SEI medel inuti den!
-                    if (ySelect4) {
-                        // Leta upp mappen (optgroup) som funktionen skapade
-                        let optGroup = ySelect4.querySelector('optgroup'); 
-                        let targetContainer = optGroup ? optGroup : ySelect4; // Fallback
-                        
-                        if (validVariables.includes('SEI medel (2015-2024)')) {
-                            targetContainer.appendChild(new Option('SEI medel (2015-2024)', 'SEI medel (2015-2024)'));
-                        } else if (validVariables.includes('SEIsnitt medel')) {
-                            targetContainer.appendChild(new Option('SEI medel (2015-2024)', 'SEIsnitt medel'));
-                        }
-                    }
+                            populateDropdownWithGroups('xVar2', validVariables, v => 
+                                v.startsWith('Index:') && 
+                                v !== 'Index: Samlat SEI (16 indikatorer)' && 
+                                v !== 'Index: Strukturell Ojämlikhet'
+                            );
 
-                    const years = [...new Set(rawData.map(row => row.tid).filter(y => y !== undefined))].sort().reverse();
-                    globalLatestYear = years.length > 0 ? parseInt(years[0]) : null;
-
-                    ['yearSelect1', 'yearSelect2', 'yearSelect3', 'yearSelect4', 'yearSelect5', 'yearSelect6', 'yearSelect8', 'yearSelect9'].forEach(id => {
-                        const sel = document.getElementById(id);
-                        if(id !== 'yearSelect8') {
-                            sel.add(new Option('Samtliga år', 'all')); 
-                            sel.add(new Option('Senaste 5 åren', 'last5')); 
-                            sel.add(new Option('Senaste 10 åren', 'last10'));
-                        }
-                        years.forEach(y => sel.add(new Option(y, y)));
-                        
-                        if (id === 'yearSelect9') sel.value = 'all';
-                        else if (globalLatestYear) sel.value = globalLatestYear.toString();
-                    });
-
-                    // ==========================================
-                    // SÄTT STANDARDVÄRDEN (Uppdaterat för Master Config v2.0)
-                    // ==========================================
-                    if(validVariables.includes('Index: Ekonomisk Utsatthet')) { 
-                        if(document.getElementById('xVar1')) document.getElementById('xVar1').value = 'Index: Ekonomisk Utsatthet'; 
-                        if(document.getElementById('xVar2')) document.getElementById('xVar2').value = 'Index: Ekonomisk Utsatthet'; 
-                    }
-                    if(validVariables.includes('Nettoflyttning förvärvsarbetande')) {
-                        if(document.getElementById('xVar9')) document.getElementById('xVar9').value = 'Nettoflyttning förvärvsarbetande';
-                    }
-                    
-                    if(validVariables.includes('Index: Samlat SEI (16 indikatorer)')) {
-                        if(document.getElementById('yVar1')) document.getElementById('yVar1').value = 'Index: Samlat SEI (16 indikatorer)'; 
-                        if(document.getElementById('outcomeVar3')) document.getElementById('outcomeVar3').value = 'Index: Samlat SEI (16 indikatorer)'; 
-                        if(document.getElementById('outcomeVar4')) document.getElementById('outcomeVar4').value = 'Index: Samlat SEI (16 indikatorer)';
-                        if(document.getElementById('outcomeVar7')) document.getElementById('outcomeVar7').value = 'Index: Samlat SEI (16 indikatorer)';
-                    }
-                    if(validVariables.includes('Index: Demografisk Koncentration')) {
-                        if(document.getElementById('yVar9')) document.getElementById('yVar9').value = 'Index: Demografisk Koncentration';
-                    }
-
-                    // EVENT LISTENERS
-                    ['xVar1', 'yVar1', 'bubbleSizeVar1', 'colorVar1', 'exTot1', 'exSma1', 'exSpe1', 'stadsdelSelect1'].forEach(id => { 
-                        document.getElementById(id).addEventListener('change', () => {
-                            trackedAreaFlik1 = null; // Radera spår om man byter variabel/filter
-                            updateTab1(); 
-                        }); 
-                    });
-                    ['xVar2', 'bubbleSizeVar2', 'colorVar2', 'exTot2', 'exSma2', 'exSpe2', 'stadsdelSelect2'].forEach(id => { 
-                        const lockBox = document.getElementById('lockCrosshair2');
-                        if (lockBox) {
-                            lockBox.addEventListener('change', () => {
-                                trackedAreaFlik2 = null; // Radera spåret om man byter variabler
-                                updateTab2(); 
+                            populateDropdownWithGroups('outcomeVar4', validVariables, v => {
+                                let vLow = v.toLowerCase();
+                                return v.startsWith('Index:') && 
+                                       !vLow.includes('cni') && 
+                                       !vLow.includes('kksi') && 
+                                       !vLow.includes('omsorgsbehov');
                             });
+                            
+                            const ySelect4 = document.getElementById('outcomeVar4');
+                            if (ySelect4) {
+                                let optGroup = ySelect4.querySelector('optgroup'); 
+                                let targetContainer = optGroup ? optGroup : ySelect4; 
+                                
+                                if (validVariables.includes('SEI medel (2015-2024)')) {
+                                    targetContainer.appendChild(new Option('SEI medel (2015-2024)', 'SEI medel (2015-2024)'));
+                                } else if (validVariables.includes('SEIsnitt medel')) {
+                                    targetContainer.appendChild(new Option('SEI medel (2015-2024)', 'SEIsnitt medel'));
+                                }
+                            }
+
+                            const years = [...new Set(rawData.map(row => row.tid).filter(y => y !== undefined))].sort().reverse();
+                            globalLatestYear = years.length > 0 ? parseInt(years[0]) : null;
+
+                            ['yearSelect1', 'yearSelect2', 'yearSelect3', 'yearSelect4', 'yearSelect5', 'yearSelect6', 'yearSelect8', 'yearSelect9'].forEach(id => {
+                                const sel = document.getElementById(id);
+                                if(id !== 'yearSelect8') {
+                                    sel.add(new Option('Samtliga år', 'all')); 
+                                    sel.add(new Option('Senaste 5 åren', 'last5')); 
+                                    sel.add(new Option('Senaste 10 åren', 'last10'));
+                                }
+                                years.forEach(y => sel.add(new Option(y, y)));
+                                
+                                if (id === 'yearSelect9') sel.value = 'all';
+                                else if (globalLatestYear) sel.value = globalLatestYear.toString();
+                            });
+
+                            if(validVariables.includes('Index: Ekonomisk Utsatthet')) { 
+                                if(document.getElementById('xVar1')) document.getElementById('xVar1').value = 'Index: Ekonomisk Utsatthet'; 
+                                if(document.getElementById('xVar2')) document.getElementById('xVar2').value = 'Index: Ekonomisk Utsatthet'; 
+                            }
+                            if(validVariables.includes('Nettoflyttning förvärvsarbetande')) {
+                                if(document.getElementById('xVar9')) document.getElementById('xVar9').value = 'Nettoflyttning förvärvsarbetande';
+                            }
+                            
+                            if(validVariables.includes('Index: Samlat SEI (16 indikatorer)')) {
+                                if(document.getElementById('yVar1')) document.getElementById('yVar1').value = 'Index: Samlat SEI (16 indikatorer)'; 
+                                if(document.getElementById('outcomeVar3')) document.getElementById('outcomeVar3').value = 'Index: Samlat SEI (16 indikatorer)'; 
+                                if(document.getElementById('outcomeVar4')) document.getElementById('outcomeVar4').value = 'Index: Samlat SEI (16 indikatorer)';
+                                if(document.getElementById('outcomeVar7')) document.getElementById('outcomeVar7').value = 'Index: Samlat SEI (16 indikatorer)';
+                            }
+                            if(validVariables.includes('Index: Demografisk Koncentration')) {
+                                if(document.getElementById('yVar9')) document.getElementById('yVar9').value = 'Index: Demografisk Koncentration';
+                            }
+
+                            // EVENT LISTENERS
+                            ['xVar1', 'yVar1', 'bubbleSizeVar1', 'colorVar1', 'exTot1', 'exSma1', 'exSpe1', 'stadsdelSelect1'].forEach(id => { 
+                                document.getElementById(id).addEventListener('change', () => {
+                                    trackedAreaFlik1 = null; 
+                                    updateTab1(); 
+                                }); 
+                            });
+                            ['xVar2', 'bubbleSizeVar2', 'colorVar2', 'exTot2', 'exSma2', 'exSpe2', 'stadsdelSelect2'].forEach(id => { 
+                                const lockBox = document.getElementById('lockCrosshair2');
+                                if (lockBox) {
+                                    lockBox.addEventListener('change', () => {
+                                        trackedAreaFlik2 = null; 
+                                        updateTab2(); 
+                                    });
+                                }
+                            });
+
+                            const yearDropdown = document.getElementById('yearSelect1');
+                            yearDropdown.addEventListener('mousedown', () => {
+                                if (isPlaying) {
+                                    clearInterval(animationInterval);
+                                    isPlaying = false;
+                                    document.getElementById('playBtn-yearSelect1').innerHTML = '▶️ Spela upp';
+                                    document.getElementById('playBtn-yearSelect1').style.background = '#27ae60';
+                                }
+                                watermarkYear = "";
+                                trackedAreaFlik1 = null; 
+                                updateTab1();
+                            });
+                            yearDropdown.addEventListener('change', () => {
+                                watermarkYear = "";
+                                trackedAreaFlik1 = null;
+                                updateTab1();
+                            });
+                            
+                            // 1. Övriga rullistor för Flik 2 (Uppdaterar bara grafen)
+                            ['xVar2', 'bubbleSizeVar2', 'colorVar2', 'exTot2', 'exSma2', 'exSpe2', 'stadsdelSelect2'].forEach(id => { 
+                                document.getElementById(id).addEventListener('change', updateTab2); 
+                            });
+                            
+                            // 🚀 2. FIX: Dedikerad lyssnare för årtal i Flik 2! (Dödar spåret)
+                            const yearDropdown2 = document.getElementById('yearSelect2');
+                            if (yearDropdown2) {
+                                // När man klickar på rullistan
+                                yearDropdown2.addEventListener('mousedown', () => {
+                                    trackedAreaFlik2 = null; 
+                                    updateTab2();
+                                });
+                                // När man ändrar värde i rullistan
+                                yearDropdown2.addEventListener('change', () => {
+                                    trackedAreaFlik2 = null;
+                                    updateTab2();
+                                });
+                            }
+                            ['outcomeVar3', 'topCount3', 'yearSelect3', 'exTot3', 'exSma3', 'exSpe3'].forEach(id => { 
+                                document.getElementById(id).addEventListener('change', updateTab3); 
+                            });
+                            ['outcomeVar4', 'yearSelect4', 'exTot4', 'exSma4', 'exSpe4'].forEach(id => { 
+                                document.getElementById(id).addEventListener('change', updateTab4); 
+                            });
+                            ['yearSelect5', 'exTot5', 'exSma5', 'exSpe5'].forEach(id => { 
+                                document.getElementById(id).addEventListener('change', updateTab5); 
+                            });
+                            ['clusterCount', 'yearSelect6', 'exTot6', 'exSma6', 'exSpe6'].forEach(id => { 
+                                document.getElementById(id).addEventListener('change', runKMeans); 
+                            });
+                            ['clusterVisX', 'clusterVisY'].forEach(id => { 
+                                document.getElementById(id).addEventListener('change', updateTab6Vis); 
+                            });
+                            ['outcomeVar7', 'metricType7_1', 'metricType7_2', 'exTot7', 'exSma7', 'exSpe7'].forEach(id => { 
+                                document.getElementById(id).addEventListener('change', updateTab7); 
+                            });
+                            ['yearSelect8', 'simArea8', 'simOutcome8'].forEach(id => {
+                                document.getElementById(id).addEventListener('change', loadAreaForSimulation);
+                            });
+                            ['xVar9', 'yVar9', 'yearSelect9', 'exTot9', 'exSma9', 'exSpe9', 'stadsdelSelect9'].forEach(id => {
+                                document.getElementById(id).addEventListener('change', updateTab9);
+                            });
+
+                            populateCheckboxes();
+                            populateClusterCheckboxes();
+                            populateSimDropdowns();
+                            updateAreaDropdown();
+
+                            document.querySelectorAll('#checkboxGrid4 input').forEach(cb => {
+                                let vLow = cb.value.toLowerCase();
+                                if (vLow.includes('cni') || vLow.includes('kksi') || vLow.includes('omsorgsbehov')) {
+                                    if (cb.parentElement) {
+                                        cb.parentElement.style.display = 'none'; 
+                                        cb.parentElement.remove();
+                                    }
+                                }
+                            });
+                            
+                            // STARTMETOD
+                            setTimeout(() => {
+                                const firstBtn = document.getElementById('btn-flik1');
+                                if(firstBtn) firstBtn.click();
+                            }, 50);
                         }
-                    });
+                    }); // SLUT PÅ NYKO 3 LADDNINGEN
+                }
+            }); // SLUT PÅ NYKO 4 LADDNINGEN
+        });
 
-                    // SPECIAL-LYSSNARE FÖR ÅR (Stänger av animation/spår direkt man rör den)
-                    const yearDropdown = document.getElementById('yearSelect1');
-                    
-                    // När man klickar på rullistan
-                    yearDropdown.addEventListener('mousedown', () => {
-                        if (isPlaying) {
-                            clearInterval(animationInterval);
-                            isPlaying = false;
-                            document.getElementById('playBtn-yearSelect1').innerHTML = '▶️ Spela upp';
-                            document.getElementById('playBtn-yearSelect1').style.background = '#27ae60';
-                        }
-                        watermarkYear = "";
-                        trackedAreaFlik1 = null; // Stäng av spåret direkt
-                        updateTab1();
-                    });
-
-                    // När värdet faktiskt ändras
-                    yearDropdown.addEventListener('change', () => {
-                        watermarkYear = "";
-                        trackedAreaFlik1 = null;
-                        updateTab1();
-                    });
-                    
-                    ['xVar2', 'bubbleSizeVar2', 'colorVar2', 'yearSelect2', 'exTot2', 'exSma2', 'exSpe2', 'stadsdelSelect2'].forEach(id => { 
-                        document.getElementById(id).addEventListener('change', updateTab2); 
-                    });
-                    ['outcomeVar3', 'topCount3', 'yearSelect3', 'exTot3', 'exSma3', 'exSpe3'].forEach(id => { 
-                        document.getElementById(id).addEventListener('change', updateTab3); 
-                    });
-                    ['outcomeVar4', 'yearSelect4', 'exTot4', 'exSma4', 'exSpe4'].forEach(id => { 
-                        document.getElementById(id).addEventListener('change', updateTab4); 
-                    });
-                    ['yearSelect5', 'exTot5', 'exSma5', 'exSpe5'].forEach(id => { 
-                        document.getElementById(id).addEventListener('change', updateTab5); 
-                    });
-                    ['clusterCount', 'yearSelect6', 'exTot6', 'exSma6', 'exSpe6'].forEach(id => { 
-                        document.getElementById(id).addEventListener('change', runKMeans); 
-                    });
-                    ['clusterVisX', 'clusterVisY'].forEach(id => { 
-                        document.getElementById(id).addEventListener('change', updateTab6Vis); 
-                    });
-                    ['outcomeVar7', 'metricType7_1', 'metricType7_2', 'exTot7', 'exSma7', 'exSpe7'].forEach(id => { 
-                        document.getElementById(id).addEventListener('change', updateTab7); 
-                    });
-                    ['yearSelect8', 'simArea8', 'simOutcome8'].forEach(id => {
-                        document.getElementById(id).addEventListener('change', loadAreaForSimulation);
-                    });
-                    ['xVar9', 'yVar9', 'yearSelect9', 'exTot9', 'exSma9', 'exSpe9', , 'stadsdelSelect9'].forEach(id => {
-                        document.getElementById(id).addEventListener('change', updateTab9);
-                    });
-
-                    populateCheckboxes();
-                    populateClusterCheckboxes();
-                    populateSimDropdowns();
-                    
-                    // 🚀 STÄDPATRULL: Rensa bort CNI, KKSI och Omsorgsbehov från Modellbyggarens X-box (Flik 4)
-document.querySelectorAll('#checkboxGrid4 input').forEach(cb => {
-    let vLow = cb.value.toLowerCase();
-    if (vLow.includes('cni') || vLow.includes('kksi') || vLow.includes('omsorgsbehov')) {
-        // Raderar hela <label>-elementet så att rutan och texten försvinner helt
-        if (cb.parentElement) {
-            cb.parentElement.style.display = 'none'; 
-            cb.parentElement.remove();
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+    /* --- BORTKOMMENTERAD SPÄRR SOM TVINGADE FRAM BLÅ FÄRG ---
+    const drillDownCheck = document.getElementById('enableDrillDown');
+    if (drillDownCheck) {
+        drillDownCheck.addEventListener('change', function() {
+            if (this.checked) {
+                // Tvinga färglistan till "none" (Enfärgad) när fördjupning aktiveras
+                const colorSelect = document.getElementById('colorVar1');
+                if (colorSelect) {
+                    colorSelect.value = 'none'; 
+                }
+                // Uppdatera kartan/diagrammet direkt
+                if (typeof updateTab1 === 'function') updateTab1();
+            }
+        });
+    }
+    --------------------------------------------------------- */
+    
+    // Säkerställ även att rullistan för fokus uppdaterar klick-variabeln!
+    const focusSelect = document.getElementById('focusAreaSelect1');
+    if (focusSelect) {
+        focusSelect.addEventListener('change', function() {
+            trackedAreaFlik1 = this.value === 'none' ? null : this.value;
+            if (typeof updateTab1 === 'function') updateTab1();
+        });
     }
 });
-                    // STARTMETOD
-                    setTimeout(() => {
-                        const firstBtn = document.getElementById('btn-flik1');
-                        if(firstBtn) firstBtn.click();
-                    }, 50);
-                }
-            });
-        });
+        
         // ==========================================
 // FLIK 11: AI-KOMPASS (TIDSRESA & HKT58-FILTER)
 // ==========================================
@@ -5152,11 +6678,17 @@ function drawAICompassChart(compassData, selectedYear) {
         'SEI 3': '#fdae61', 
         'SEI 4': '#66bd63', 
         'SEI 5': '#38bdf8', 
-        'SEI 6': '#5e4fa2', 
+        'SEI 6': '#5e4fa2',  
         'Stadsdel': 'rgba(52, 152, 219, 0.9)', 
         'Tätort': 'rgba(230, 126, 34, 0.9)', 
         'Landsbygd': 'rgba(46, 204, 113, 0.9)',
         'Alla Basområden': 'rgba(52, 152, 219, 0.9)'
+        // 'SEI 1': '#d73027', // Röd (Kraftig utmaning)
+        // 'SEI 2': '#f46d43', // Orange
+        // 'SEI 3': '#fdae61', // Gul/Orange (Snitt/Mellan)
+        // 'SEI 4': '#a6d96a', // Ljusare grön (Tydligare kontrast mot de mörkare gröna)
+        // 'SEI 5': '#66bd63', // Mellangrön (Den du tidigare hade på SEI 4)
+        // 'SEI 6': '#1a9850', // Mörkgrön (Tydligt separerad från de andra) 
     };
 
     let datasets = [];
@@ -5269,56 +6801,69 @@ function drawAICompassChart(compassData, selectedYear) {
     });
 }
 // ==========================================
-        // 📥 EXPORT-FUNKTION FÖR Z-SCORE INDEX
+        // 📥 EXPORT-FUNKTION FÖR Z-SCORE INDEX (SLUTGILTIG)
         // ==========================================
         function exportZScoresToCSV() {
-            if (!rawData || rawData.length === 0) {
-                alert("Ingen data finns inladdad att exportera!");
+            const isNyko3 = (typeof currentGeoLevelTab1 !== 'undefined' && currentGeoLevelTab1 === 'nyko3');
+            const dataToExport = isNyko3 ? rawDataNyko3 : rawData;
+
+            if (!dataToExport || dataToExport.length === 0) {
+                alert(`Ingen data hittades för ${isNyko3 ? 'Stadsdelar' : 'Basområden'}!`);
                 return;
             }
 
-            // 1. Definiera vilka kolumner vi vill exportera
-            // Letar dynamiskt upp alla kolumner som innehåller ordet "Index:"
-            let allKeys = Object.keys(rawData[0]);
+            let allKeys = Object.keys(dataToExport[0]);
             let indexKeys = allKeys.filter(k => k.includes('Index:'));
             
-            // Vi vill ha basområde, tid och (om den finns) NYKO-kod först
-            let baseKeys = ['basområde', 'tid'];
+            // I vår data heter nyckeln alltid 'basområde' på grund av JavaScriptets krav
+            let dataAreaKey = 'basområde';
+            let baseKeys = [dataAreaKey, 'tid'];
+            
+            // Bygg upp kolumnerna
+            if (!isNyko3 && allKeys.includes('Stadsdel')) baseKeys.push('Stadsdel');
             if (allKeys.includes('NYKO')) baseKeys.push('NYKO');
+            
+            // Fånga in Nyko4-koden dynamiskt oavsett exakt stavning
+            let nyko4Key = allKeys.find(k => k.toLowerCase().includes('nyko4'));
+            if (!isNyko3 && nyko4Key) baseKeys.push(nyko4Key);
+            
+            if (allKeys.includes('Stadsdelskod_(Nyko3)')) baseKeys.push('Stadsdelskod_(Nyko3)');
             
             let exportKeys = baseKeys.concat(indexKeys);
 
-            // 2. Bygg CSV-innehållet (Semikolon-separerat för svensk Excel)
-            let csvContent = exportKeys.join(';') + '\n';
+            // Byt tillbaka rubriken till "Stadsdel" i CSV-filen för Nyko3
+        let headerRow = exportKeys.map(k => (isNyko3 && k === dataAreaKey) ? 'Stadsdel' : k);
+        let csvContent = headerRow.join(';') + '\n';
 
-            rawData.forEach(row => {
-                let rowData = exportKeys.map(key => {
-                    let val = row[key];
-                    
-                    if (val === null || val === undefined || val === '') return "";
-                    
-                    // Om det är ett numeriskt värde (våra Z-scores), byt punkt mot komma!
-                    if (!isNaN(val) && val !== "") {
-                        return val.toString().replace('.', ',');
-                    }
-                    
-                    // Om det är text, kapsla in i citattecken om det skulle finnas inbyggda semikolon
-                    return `"${val}"`;
-                });
-                csvContent += rowData.join(';') + '\n';
+        dataToExport.forEach(row => {
+            if (!isNyko3 && row[dataAreaKey] && row[dataAreaKey].toString().toLowerCase().includes('stadsdelen')) return; 
+
+            let rowData = exportKeys.map(key => {
+                let val = row[key];
+                
+                // 🚀 FIX: Smart "dammsugare" för Nyko 3! 
+                // Om vi letar efter basområde men det är tomt, hämta namnet från Stadsdels-kolumnerna istället.
+                if (isNyko3 && key === dataAreaKey && !val) {
+                    val = row['Stadsdel'] || row['stadsdel'] || row['STADSDEL'] || row['nyko3_namn'] || row['name'] || "";
+                }
+
+                if (val === null || val === undefined || val === '') return "";
+                
+                if (!isNaN(val) && val !== "") return val.toString().replace('.', ',');
+                return `"${val}"`;
             });
+            csvContent += rowData.join(';') + '\n';
+        });
 
-            // 3. Skapa och ladda ner filen
-            // "\uFEFF" är en BOM (Byte Order Mark) som tvingar Excel att förstå ÅÄÖ!
-            let blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+        let blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
             let link = document.createElement("a");
-            
-            // Tidsstämpel för filnamnet
             let date = new Date().toISOString().split('T')[0];
             
-            let url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", `Linkoping_Socioekonomiska_Index_${date}.csv`);
+            let geoName = isNyko3 ? "Stadsdelar_Nyko3" : "Basomraden_Nyko4";
+            let fileName = `Linkoping_Z-score_${geoName}_${date}.csv`;
+            
+            link.setAttribute("href", URL.createObjectURL(blob));
+            link.setAttribute("download", fileName);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);

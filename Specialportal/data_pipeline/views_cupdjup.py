@@ -758,7 +758,7 @@ html_template = """
     if (typeof DJUP === 'undefined' || !DJUP.sasonger || !matchSeasonStr) return false;
     
     let startYear = String(matchSeasonStr).substring(0, 4);
-    let champion = (typeof SEASON_CHAMPIONS !== 'undefined') ? SEASON_CHAMPIONS[matchSeasonStr.replace(/\.0$/, '')] : "Okänd";
+    let champion = (typeof SEASON_CHAMPIONS !== 'undefined') ? SEASON_CHAMPIONS[matchSeasonStr.replace(/\\.0$/, '')] : "Okänd";
     
     // NYHET: Söker på NYCKELN istället för en kolumn i datan!
     let sKeyMatch = Object.keys(DJUP.sasonger).find(k => String(k).startsWith(startYear));
@@ -773,7 +773,7 @@ html_template = """
         if (kLow === 'tvaa_kapten' || kLow.includes('lagkapten_tva') || kLow.includes('lagkapten_två')) capTvaaRaw = String(sRow[k]).trim();
     });
 
-    const washName = (str) => str.toLowerCase().replace(/,/g, ' ').split(/\s+/).filter(x=>x).sort().join('');
+    const washName = (str) => str.toLowerCase().replace(/,/g, ' ').split(/\\s+/).filter(x=>x).sort().join('');
     
     let pKey = washName(pName);
     let teamSafe = String(pTeam || "").toLowerCase().trim();
@@ -1206,7 +1206,7 @@ html_template = """
             let allEvents = [];
             let getGoalSum = (inn) => {
                 if(!inn) return 999;
-                let match = String(inn).match(/(\d+)\s*-\s*(\d+)/);
+                let match = String(inn).match(/(\\d+)\\s*-\\s*(\\d+)/);
                 return match ? parseInt(match[1]) + parseInt(match[2]) : 999;
             };
 
@@ -1306,7 +1306,7 @@ html_template = """
                         }
                         
                         let innebordBadge = '';
-                        if (g.innebord && g.innebord.trim() !== '' && g.innebord.match(/\d+\s*-\s*\d+/)) {
+                        if (g.innebord && g.innebord.trim() !== '' && g.innebord.match(/\\d+\\s*-\\s*\\d+/)) {
                             innebordBadge = `<span class="bg-slate-200 px-1 rounded text-xs">${g.innebord}</span>`;
                         }
                         
@@ -1885,7 +1885,7 @@ html_template = """
                 let sInDecade = DECADES[dec];
                 let totPub = 0; let countPub = 0;
                 sInDecade.forEach(s => {
-                    let sMatches = Object.values(BASE_MATCHES).filter(m => String(m.sasong).replace(/\.0$/, '') === s && parseInt(m.avancerade) !== 7);
+                    let sMatches = Object.values(BASE_MATCHES).filter(m => String(m.sasong).replace(/\\.0$/, '') === s && parseInt(m.avancerade) !== 7);
                     sMatches.forEach(m => {
                         let f = m.fas.toLowerCase();
                         let isMatch = false;
@@ -1924,7 +1924,7 @@ html_template = """
             let attSeaLabels = [];
             let attSeaData = [];
             sortedSeasons.forEach(s => {
-                let sMatches = Object.values(BASE_MATCHES).filter(m => String(m.sasong).replace(/\.0$/, '') === s && parseInt(m.avancerade) !== 7);
+                let sMatches = Object.values(BASE_MATCHES).filter(m => String(m.sasong).replace(/\\.0$/, '') === s && parseInt(m.avancerade) !== 7);
                 let totPub = 0; let countPub = 0;
                 sMatches.forEach(m => {
                     let f = m.fas.toLowerCase();
@@ -1977,7 +1977,7 @@ html_template = """
                     let champion = SEASON_CHAMPIONS[s];
                     Object.keys(DJUP.matcher).forEach(mid => {
                         let bm = BASE_MATCHES[mid];
-                        if (!bm || String(bm.sasong).replace(/\.0$/, '') !== s) return;
+                        if (!bm || String(bm.sasong).replace(/\\.0$/, '') !== s) return;
                         
                         let f = bm.fas.toLowerCase();
                         if (f.includes('final') && !f.includes('kvart') && !f.includes('semi') && !f.includes('åtton') && !f.includes('1/8')) {
@@ -2044,7 +2044,7 @@ html_template = """
                 
                 Object.keys(DJUP.matcher).forEach(mid => {
                     let bm = BASE_MATCHES[mid];
-                    if (!bm || String(bm.sasong).replace(/\.0$/, '') !== s) return;
+                    if (!bm || String(bm.sasong).replace(/\\.0$/, '') !== s) return;
                     
                     let f = bm.fas.toLowerCase();
                     if (f.includes('final') && !f.includes('kvart') && !f.includes('semi') && !f.includes('åtton') && !f.includes('1/8')) {
@@ -2490,7 +2490,7 @@ html_template = """
                     let bm = BASE_MATCHES[mid];
                     if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi') || bm.fas.toLowerCase().includes('åtton') || bm.fas.toLowerCase().includes('1/8')) return;
                     
-                    let season = bm.sasong.replace(/\.0$/, '');
+                    let season = bm.sasong.replace(/\\.0$/, '');
                     let champion = SEASON_CHAMPIONS[season];
                     
                     dm.mal.forEach(g => {
@@ -2550,7 +2550,7 @@ html_template = """
                     let bm = BASE_MATCHES[mid];
                     if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi') || bm.fas.toLowerCase().includes('åtton') || bm.fas.toLowerCase().includes('1/8')) return;
                     
-                    let season = bm.sasong.replace(/\.0$/, '');
+                    let season = bm.sasong.replace(/\\.0$/, '');
                     let champion = SEASON_CHAMPIONS[season];
                     
                     dm.mal.forEach(g => {
@@ -2563,7 +2563,7 @@ html_template = """
 
                         let bText = String(pLineup.byte || '').toLowerCase();
                         let startedOnBench = (parseInt(pLineup.pos) > 11);
-                        let subbedIn = /\bin\b/.test(bText) || bText === 'in';
+                        let subbedIn = /\\bin\\b/.test(bText) || bText === 'in';
 
                         if (startedOnBench || subbedIn) {
                             let playerTeam = getPlayerTeam(pLineup.lag, bm);
@@ -2613,7 +2613,7 @@ html_template = """
                     else if (fLow.includes('kvart')) phase = "kvart";
                     else return; 
                     
-                    let season = bm.sasong.replace(/\.0$/, '');
+                    let season = bm.sasong.replace(/\\.0$/, '');
                     let champion = SEASON_CHAMPIONS[season];
                     
                     dm.mal.forEach(g => {
@@ -2760,7 +2760,7 @@ html_template = """
                     let bm = BASE_MATCHES[mid];
                     if(!bm || (!bm.fas.toLowerCase().includes('final') && !bm.fas.toLowerCase().includes('semi') && !bm.fas.toLowerCase().includes('kvart'))) return;
                     
-                    let season = bm.sasong.replace(/\.0$/, '');
+                    let season = bm.sasong.replace(/\\.0$/, '');
                     
                     // Läs av matchfasen för K, S eller F
                     let fLow = bm.fas.toLowerCase();
@@ -2870,7 +2870,7 @@ html_template = """
                     else if (phase === 'semi') refStats[refName].semi++;
                     else if (phase === 'kvart') refStats[refName].kvart++;
                     
-                    refStats[refName].seasons.add(bm.sasong.replace(/\.0$/, ''));
+                    refStats[refName].seasons.add(bm.sasong.replace(/\\.0$/, ''));
                 });
                 
                 Object.keys(refStats).forEach(ref => {
@@ -2960,13 +2960,13 @@ html_template = """
                     if (birthStr.length < 4) return;
 
                     let yyyy = null, mm = null;
-                    let m1 = birthStr.match(/^(\d{4})-(\d{2})/);
+                    let m1 = birthStr.match(/^(\\d{4})-(\\d{2})/);
                     if (m1) { yyyy = m1[1]; mm = m1[2]; }
                     else {
-                        let m2 = birthStr.match(/^(\d{4})(\d{2})\d{2}$/);
+                        let m2 = birthStr.match(/^(\\d{4})(\\d{2})\\d{2}$/);
                         if (m2) { yyyy = m2[1]; mm = m2[2]; }
                         else {
-                            let m3 = birthStr.match(/^(\d{4})/);
+                            let m3 = birthStr.match(/^(\\d{4})/);
                             if (m3) yyyy = m3[1];
                         }
                     }
@@ -3068,7 +3068,7 @@ html_template = """
                     let fLow = bm.fas.toLowerCase();
                     if (!fLow.includes('final') || fLow.includes('kvart') || fLow.includes('semi') || fLow.includes('åtton') || fLow.includes('1/8')) return;
 
-                    let season = bm.sasong.replace(/\.0$/, '');
+                    let season = bm.sasong.replace(/\\.0$/, '');
                     let matchYear = parseInt(season.substring(0, 4));
                     if (isNaN(matchYear)) return;
                     
@@ -3085,7 +3085,7 @@ html_template = """
                         let isStarter = (parseInt(p.pos) <= 11);
                         let pMinVal = parseInt(cleanNumber(p.minuter)) || 0;
                         let bText = String(p.byte || '').toLowerCase();
-                        let isPlayed = isStarter || (pMinVal > 0) || /\bin\b/.test(bText) || /\but\b/.test(bText) || bText === 'in' || bText === 'ut';
+                        let isPlayed = isStarter || (pMinVal > 0) || /\\bin\\b/.test(bText) || /\\but\\b/.test(bText) || bText === 'in' || bText === 'ut';
 
                         if (onlyPlayed && !isPlayed) return;
 
@@ -3098,10 +3098,10 @@ html_template = """
                         if (birthStr.length < 4) return;
 
                         let mm = null;
-                        let m1 = birthStr.match(/^(\d{4})-(\d{2})/);
+                        let m1 = birthStr.match(/^(\\d{4})-(\\d{2})/);
                         if (m1) mm = m1[2];
                         else {
-                            let m2 = birthStr.match(/^(\d{4})(\d{2})\d{2}$/);
+                            let m2 = birthStr.match(/^(\\d{4})(\\d{2})\\    d{2}$/);
                             if (m2) mm = m2[2];
                         }
 
@@ -3418,7 +3418,7 @@ html_template = """
         const searchName = namn.trim().toLowerCase();
         
         const getNum = (str) => {
-            let m = String(str).trim().match(/\d+$/);
+            let m = String(str).trim().match(/\\d+$/);
             return m ? m[0] : "";
         };
         const searchNum = getNum(namn);
@@ -3484,14 +3484,14 @@ html_template = """
                 if (pMin === 'Spelade ej') posText = `Bänken (Spelade ej)`;
                 posText += capBadge;
 
-                let mSeason = item.m.sasong.replace(/\.0$/, '');
+                let mSeason = item.m.sasong.replace(/\\.0$/, '');
                 let tCrown = (typeof SEASON_CHAMPIONS !== 'undefined' && SEASON_CHAMPIONS[mSeason] === getPlayerTeam(item.p.lag, item.m)) ? " <span title='Cupmästare' class='text-yellow-500'>👑</span>" : "";
 
                 let icons = "";
                 if (item.p.byte) {
-                    let hasIn = /\bin\b/.test(bText) || bText === 'in';
-                    let hasUt = /\but\b/.test(bText) || bText === 'ut';
-                    let hasUtv = /\butv\b/.test(bText) || bText.includes('utv');
+                    let hasIn = /\\bin\\b/.test(bText) || bText === 'in';
+                    let hasUt = /\\but\\b/.test(bText) || bText === 'ut';
+                    let hasUtv = /\\butv\\b/.test(bText) || bText.includes('utv');
                     if (hasIn) icons += `<span style="color: #10b981; font-size: 11px; margin-left: 4px;" title="Inbytt">▲</span>`;
                     if (hasUt) icons += `<span style="color: #f43f5e; font-size: 11px; margin-left: 4px;" title="Utbytt">▼</span>`;
                     if (hasUtv) icons += `<span style="font-size: 11px; margin-left: 4px;" title="Utvisad">🟥</span>`;
@@ -3663,7 +3663,7 @@ html_template = """
             Object.keys(DJUP.matcher).forEach(mid => {
                 let m = BASE_MATCHES[mid];
                 if (!m) return;
-                let s = String(m.sasong).replace(/\.0$/, '');
+                let s = String(m.sasong).replace(/\\.0$/, '');
                 let year = parseInt(s.substring(0, 4));
                 if(isNaN(year)) return;
                 
@@ -3748,7 +3748,7 @@ html_template = """
                     if (BLACKLIST.some(badName => lower.includes(badName))) {
                         return "blocked_" + Math.random();
                     }
-                    return lower.replace(/,/g, ' ').split(/\s+/).filter(x=>x).sort().join('');
+                    return lower.replace(/,/g, ' ').split(/\\s+/).filter(x=>x).sort().join('');
                 }
 
                 function getSmartChampion(seasonStr) {
@@ -3764,7 +3764,7 @@ html_template = """
                 if (DJUP.sasonger) {
                     Object.keys(DJUP.sasonger).forEach(sKey => {
                         let sInfo = DJUP.sasonger[sKey];
-                        let season = String(sKey).replace(/\.0$/, '').trim(); 
+                        let season = String(sKey).replace(/\\.0$/, '').trim(); 
                         let startYear = season.substring(0, 4); 
                         
                         let winnerRaw = "";
@@ -3827,7 +3827,7 @@ html_template = """
                     let bm = BASE_MATCHES[mid];
                     if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi')) return;
 
-                    let season = String(bm.sasong).replace(/\.0$/, '').trim();
+                    let season = String(bm.sasong).replace(/\\.0$/, '').trim();
                     let startYear = season.substring(0, 4);
                     let champion = getSmartChampion(startYear); 
                     let dm = DJUP.matcher[mid];
@@ -3962,7 +3962,7 @@ html_template = """
                     // Filtrera: Bara finaler
                     if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi')) return;
 
-                    let season = String(bm.sasong).replace(/\.0$/, '').trim();
+                    let season = String(bm.sasong).replace(/\\.0$/, '').trim();
                     let startYear = season.substring(0, 4);
                     let champion = getSmartChampion(startYear);
                     if (champion === "Okänd") return;
@@ -4084,7 +4084,7 @@ html_template = """
                     let bm = BASE_MATCHES[mid];
                     if(!bm || !bm.fas.toLowerCase().includes('final') || bm.fas.toLowerCase().includes('kvart') || bm.fas.toLowerCase().includes('semi')) return;
 
-                    let season = String(bm.sasong).replace(/\.0$/, '').trim();
+                    let season = String(bm.sasong).replace(/\\.0$/, '').trim();
                     let startYear = season.substring(0, 4);
                     let matchYear = parseInt(startYear);
                     if (isNaN(matchYear)) return;
@@ -4113,7 +4113,7 @@ html_template = """
                         if (DJUP.spelare && DJUP.spelare[p.namn]) {
                             let sp = DJUP.spelare[p.namn];
                             let birthStr = String(sp.fodd || sp.Född || sp.fodelsedatum || sp.Födelsedatum || sp.fodelsear || sp.Födelseår || "").trim();
-                            let m = birthStr.match(/^(\d{4})/);
+                            let m = birthStr.match(/^(\\d{4})/);
                             if (m) birthYear = parseInt(m[1]);
                         }
 
@@ -4219,7 +4219,7 @@ html_template = """
                     let dm = DJUP.matcher[mid];
                     if (!dm || !dm.uppstallning) return;
                     
-                    let season = String(bm.sasong).replace(/\.0$/, '').trim();
+                    let season = String(bm.sasong).replace(/\\.0$/, '').trim();
 
                     // 1. SMART CHECK: Hitta matchens faktiska längd! (Löser Golden Goal automatiskt)
                     let maxMatchMin = 0;
@@ -4358,7 +4358,7 @@ html_template = """
                     if (isMerged) arenas[key].mergedFlag = true;
                     
                     arenas[key].count++;
-                    arenas[key].seasons.push(String(bm.sasong).replace(/\.0$/, ''));
+                    arenas[key].seasons.push(String(bm.sasong).replace(/\\.0$/, ''));
                 });
 
                 let arenaArr = Object.values(arenas).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
@@ -4475,7 +4475,7 @@ html_template = """
                     // --- EPOK-FILTRET ---
                     if (window.res_epoch !== 'all' && typeof window.EPOKER !== 'undefined' && window.EPOKER[window.res_epoch]) {
                         let validSeasons = window.EPOKER[window.res_epoch];
-                        let seasonKey1 = String(bm.sasong).replace(/\.0$/, '').trim();
+                        let seasonKey1 = String(bm.sasong).replace(/\\.0$/, '').trim();
                         let seasonKey2 = String(bm.sasong).trim();
                         
                         // Kolla om matchens säsong ingår i vald epok

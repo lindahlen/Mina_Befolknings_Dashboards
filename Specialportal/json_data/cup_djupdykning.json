@@ -30137,7 +30137,7 @@
           "merged": true
         },
         {
-          "skytt": "Andersson",
+          "skytt": "Johansson, Nils 2",
           "minut": "61",
           "innebord": "3-1",
           "info": "straff",
@@ -30147,7 +30147,7 @@
         },
         {
           "skytt": "Jönsson, Egon",
-          "minut": "64",
+          "minut": "68",
           "innebord": "4-1",
           "info": "",
           "avgorande": "",
@@ -30157,7 +30157,7 @@
         },
         {
           "skytt": "Jönsson, Egon",
-          "minut": "66",
+          "minut": "69",
           "innebord": "5-1",
           "info": "",
           "avgorande": "",
@@ -30167,7 +30167,7 @@
         },
         {
           "skytt": "Andersson, Östen",
-          "minut": "",
+          "minut": "75",
           "innebord": "5-2",
           "info": "",
           "avgorande": "",
@@ -31549,7 +31549,7 @@
         },
         {
           "skytt": "Mårtensson, Einar",
-          "minut": "45",
+          "minut": "44",
           "innebord": "7-0",
           "info": "",
           "avgorande": "",
@@ -31559,7 +31559,7 @@
         },
         {
           "skytt": "Hansson, Åke",
-          "minut": "",
+          "minut": "56",
           "innebord": "8-0",
           "info": "straff",
           "avgorande": "",
@@ -31569,7 +31569,7 @@
         },
         {
           "skytt": "Ericson, Yngve",
-          "minut": "",
+          "minut": "65",
           "innebord": "8-1",
           "info": "",
           "avgorande": "",
@@ -31578,7 +31578,7 @@
         },
         {
           "skytt": "Rydell, Ingvar",
-          "minut": "",
+          "minut": "75",
           "innebord": "9-1",
           "info": "",
           "avgorande": "",
@@ -31588,7 +31588,7 @@
         },
         {
           "skytt": "Rydell, Ingvar",
-          "minut": "",
+          "minut": "76",
           "innebord": "10-1",
           "info": "",
           "avgorande": "",
@@ -32537,16 +32537,8 @@
           "info": "",
           "avgorande": "GWG",
           "lag": "Åtvidabergs FF",
-          "kalla_flik": "Slutomgångar"
-        },
-        {
-          "skytt": "Wallinder, Veine",
-          "minut": "",
-          "innebord": "1-0",
-          "info": "",
-          "avgorande": "",
-          "lag": "Åtvidabergs FF",
-          "kalla_flik": "Mästarna"
+          "kalla_flik": "Slutomgångar",
+          "merged": true
         }
       ],
       "utvisningar": []
@@ -47731,7 +47723,7 @@
       "mal": [
         {
           "skytt": "Franzén, Leif",
-          "minut": "",
+          "minut": "30",
           "innebord": "1-0",
           "info": "",
           "avgorande": "",
@@ -47740,7 +47732,7 @@
         },
         {
           "skytt": "Eklund, Ove",
-          "minut": "",
+          "minut": "42",
           "innebord": "2-0",
           "info": "",
           "avgorande": "",
@@ -47749,7 +47741,7 @@
         },
         {
           "skytt": "Ljungberg, Anders",
-          "minut": "50",
+          "minut": "51",
           "innebord": "3-0",
           "info": "straff",
           "avgorande": "",
@@ -47758,8 +47750,8 @@
         },
         {
           "skytt": "Eklund, Ove",
-          "minut": "",
-          "innebord": "4-0",
+          "minut": "81",
+          "innebord": "4-1",
           "info": "",
           "avgorande": "",
           "lag": "Åtvidabergs FF",
@@ -48381,6 +48373,24 @@
       "uppstallning": [],
       "mal": [
         {
+          "skytt": "Erlandsson, Johny",
+          "minut": "",
+          "innebord": "0-1",
+          "info": "fiktiv innebörd",
+          "avgorande": "",
+          "lag": "Kalmar FF",
+          "kalla_flik": "Mästarna"
+        },
+        {
+          "skytt": "Erlandsson, Johny",
+          "minut": "",
+          "innebord": "0-2",
+          "info": "fiktiv innebörd",
+          "avgorande": "",
+          "lag": "Kalmar FF",
+          "kalla_flik": "Mästarna"
+        },
+        {
           "skytt": "Magnusson, Benno",
           "minut": "",
           "innebord": "",
@@ -48397,24 +48407,6 @@
           "avgorande": "",
           "lag": "Kalmar FF",
           "kalla_flik": "Mästarna"
-        },
-        {
-          "skytt": "Erlandsson, Johny",
-          "minut": "",
-          "innebord": "0-1",
-          "info": "fiktiv innebörd",
-          "avgorande": "",
-          "lag": "Kalmar FF",
-          "kalla_flik": "Mästarna"
-        },
-        {
-          "skytt": "Erlandsson, Johny",
-          "minut": "",
-          "innebord": "0-2",
-          "info": "fiktiv innebörd",
-          "avgorande": "",
-          "lag": "Kalmar FF",
-          "kalla_flik": "Mästarna"
         }
       ],
       "utvisningar": []
@@ -48424,7 +48416,7 @@
       "mal": [
         {
           "skytt": "Magnusson, Benno",
-          "minut": "",
+          "minut": "3",
           "innebord": "0-1",
           "info": "fiktiv innebörd",
           "avgorande": "",
@@ -48442,9 +48434,9 @@
         },
         {
           "skytt": "Erlandsson, Johny",
-          "minut": "",
+          "minut": "50",
           "innebord": "0-3",
-          "info": "fiktiv innebörd",
+          "info": "",
           "avgorande": "",
           "lag": "Kalmar FF",
           "kalla_flik": "Mästarna"
@@ -48474,18 +48466,9 @@
       "uppstallning": [],
       "mal": [
         {
-          "skytt": "Erlandsson, Johny",
-          "minut": "",
-          "innebord": "",
-          "info": "",
-          "avgorande": "",
-          "lag": "Kalmar FF",
-          "kalla_flik": "Mästarna"
-        },
-        {
           "skytt": "Wigstedt, Björn",
           "minut": "",
-          "innebord": "",
+          "innebord": "0-1",
           "info": "",
           "avgorande": "",
           "lag": "Kalmar FF",
@@ -48493,8 +48476,17 @@
         },
         {
           "skytt": "Persson, Tony",
-          "minut": "",
-          "innebord": "",
+          "minut": "86",
+          "innebord": "2-2",
+          "info": "",
+          "avgorande": "",
+          "lag": "Kalmar FF",
+          "kalla_flik": "Mästarna"
+        },
+        {
+          "skytt": "Erlandsson, Johny",
+          "minut": "90",
+          "innebord": "2-3",
           "info": "",
           "avgorande": "",
           "lag": "Kalmar FF",
@@ -48971,8 +48963,8 @@
         {
           "skytt": "Erlandsson, Johny",
           "minut": "",
-          "innebord": "",
-          "info": "",
+          "innebord": "0-5",
+          "info": "fiktiv innebörd",
           "avgorande": "",
           "lag": "Kalmar FF",
           "kalla_flik": "Mästarna"
@@ -48985,8 +48977,8 @@
       "mal": [
         {
           "skytt": "Nordenhem, Ulf",
-          "minut": "",
-          "innebord": "",
+          "minut": "8",
+          "innebord": "0-1",
           "info": "",
           "avgorande": "",
           "lag": "Kalmar FF",
@@ -48994,17 +48986,17 @@
         },
         {
           "skytt": "Lansdowne, Billy",
-          "minut": "",
-          "innebord": "",
+          "minut": "13",
+          "innebord": "0-2",
           "info": "",
           "avgorande": "",
           "lag": "Kalmar FF",
           "kalla_flik": "Mästarna"
         },
         {
-          "skytt": "Holmberg, Martin",
-          "minut": "",
-          "innebord": "",
+          "skytt": "Erlandsson, Johny",
+          "minut": "24",
+          "innebord": "0-3",
           "info": "",
           "avgorande": "",
           "lag": "Kalmar FF",
@@ -49012,8 +49004,8 @@
         },
         {
           "skytt": "Karlsson, Peter",
-          "minut": "",
-          "innebord": "",
+          "minut": "57",
+          "innebord": "1-4",
           "info": "",
           "avgorande": "",
           "lag": "Kalmar FF",
