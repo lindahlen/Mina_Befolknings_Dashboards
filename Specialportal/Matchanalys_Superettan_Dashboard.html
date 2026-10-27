@@ -1569,7 +1569,7 @@ if (typeof window.formatPersonName !== 'function') {
 window.current_ref_view = 'matches';
 
 window.renderRefRecords = function() {
-// --- KODBLOCK FÖR 1X2-STATISTIK (Hemma, Borta, Kryss) ---
+    // --- KODBLOCK FÖR 1X2-STATISTIK (Hemma, Borta, Kryss) ---
     if (['home_ref', 'away_ref', 'draw_ref'].includes(window.current_ref_view)) {
         let refs = {};
 
@@ -1614,6 +1614,7 @@ window.renderRefRecords = function() {
                 let y1 = data.firstY, y2 = data.lastY;
                 
                 list.push({
+                    rawName: rawName, // NYTT FÖR MODAL
                     cleanName: cleanName,
                     matches: data.matches,
                     homePct: (data.home / data.matches) * 100,
@@ -1624,14 +1625,12 @@ window.renderRefRecords = function() {
             }
         }
 
-        // Dynamisk sortering beroende på vilken rullist-vy som är vald!
         if (window.current_ref_view === 'home_ref') list.sort((a, b) => b.homePct - a.homePct);
         else if (window.current_ref_view === 'away_ref') list.sort((a, b) => b.awayPct - a.awayPct);
         else if (window.current_ref_view === 'draw_ref') list.sort((a, b) => b.drawPct - a.drawPct);
         
         let topRefs = list.slice(0, 50);
 
-        // Bygg Table Head (Nu med integrerad informationsbanner för 30-matchers-kravet)
         document.getElementById('ref-record-thead').innerHTML = `
             <tr class="bg-slate-700 text-slate-300 border-b border-slate-600">
                 <th colspan="7" class="px-4 py-2 font-medium text-center text-xs normal-case tracking-wide">
@@ -1650,14 +1649,15 @@ window.renderRefRecords = function() {
         `;
 
         document.getElementById('ref-record-tbody').innerHTML = topRefs.map((item, index) => {
-            // Fetmarkera den procentkolumn som vi sorterar på
             let hClass = window.current_ref_view === 'home_ref' ? 'font-black bg-blue-50' : 'font-semibold';
             let dClass = window.current_ref_view === 'draw_ref' ? 'font-black bg-slate-100' : 'font-semibold';
             let aClass = window.current_ref_view === 'away_ref' ? 'font-black bg-red-50' : 'font-bold';
             
+            let safeName = String(item.rawName).replace(/'/g, "\'").replace(/"/g, "&quot;");
+            
             return `
-            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                <td class="px-4 py-2 text-center font-bold text-slate-300">${index + 1}</td>
+            <tr onclick="window.openPersonModal('${safeName}', 'ref')" class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer group">
+                <td class="px-4 py-2 text-center font-bold text-slate-300 group-hover:text-slate-500">${index + 1}</td>
                 <td class="px-4 py-2 font-bold text-slate-700 truncate max-w-[200px]" title="${item.cleanName}">${item.cleanName}</td>
                 <td class="px-4 py-2 text-center font-mono text-slate-500 text-xs">${item.activeStr}</td>
                 <td class="px-4 py-2 text-center font-semibold text-slate-600">${item.matches}</td>
@@ -1670,8 +1670,8 @@ window.renderRefRecords = function() {
         
         return; 
     }
-    // --- SLUT PÅ 1X2-STATISTIK ---
-    // --- NYTT KODBLOCK FÖR "OFTAST DÖMT SAMMA LAG" ---
+
+    // --- KODBLOCK FÖR "OFTAST DÖMT SAMMA LAG" ---
     if (window.current_ref_view === 'ref_favorite_team') {
         let relations = {};
 
@@ -1719,6 +1719,7 @@ window.renderRefRecords = function() {
                 let activeStr = (y1 === 9999 || isNaN(y1)) ? "-" : (y1 === y2 ? y1 : `${y1} - ${y2}`);
 
                 list.push({
+                    rawName: rName, // NYTT FÖR MODAL
                     cleanName: cleanName,
                     team: tName,
                     count: rData.count,
@@ -1727,7 +1728,6 @@ window.renderRefRecords = function() {
             }
         }
 
-        // Sortera: Högst antal matcher med samma lag
         list.sort((a, b) => b.count - a.count);
         let topRelations = list.slice(0, 50);
 
@@ -1741,24 +1741,26 @@ window.renderRefRecords = function() {
             </tr>
         `;
 
-        document.getElementById('ref-record-tbody').innerHTML = topRelations.map((item, index) => `
-            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                <td class="px-4 py-2 text-center font-bold text-slate-300">${index + 1}</td>
+        document.getElementById('ref-record-tbody').innerHTML = topRelations.map((item, index) => {
+            let safeName = String(item.rawName).replace(/'/g, "\'").replace(/"/g, "&quot;");
+            return `
+            <tr onclick="window.openPersonModal('${safeName}', 'ref')" class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer group">
+                <td class="px-4 py-2 text-center font-bold text-slate-300 group-hover:text-slate-500">${index + 1}</td>
                 <td class="px-4 py-2 font-bold text-slate-700 truncate max-w-[200px]" title="${item.cleanName}">${item.cleanName}</td>
                 <td class="px-4 py-2 font-bold text-slate-600">${item.team}</td>
                 <td class="px-4 py-2 text-center font-mono text-slate-500 text-xs">${item.activeStr}</td>
                 <td class="px-4 py-2 text-right font-black text-blue-600 text-lg">${item.count}</td>
             </tr>
-        `).join('');
+            `;
+        }).join('');
         
         return; 
     }
-    // --- SLUT PÅ KODBLOCK ---
-// --- NYTT KODBLOCK FÖR KARRIÄRLÄNGD (DOMARE) ---
+
+    // --- KODBLOCK FÖR KARRIÄRLÄNGD (DOMARE) ---
     if (window.current_ref_view === 'longest_career') {
         let refs = {};
         
-        // Gå igenom datan och logga datum
         MATCH_DATA.forEach(m => {
             if (m.Annullerad || !m.Matchdatum) return;
             let mDate = new Date(m.Matchdatum);
@@ -1772,7 +1774,6 @@ window.renderRefRecords = function() {
                 if (mDate > refs[rawName].last) refs[rawName].last = mDate;
             };
 
-            // Fånga domaren från JSON-datan
             if (m.Domare) logCareer(m.Domare);
         });
 
@@ -1781,22 +1782,18 @@ window.renderRefRecords = function() {
             let data = refs[rawName];
             let diffDays = Math.floor((data.last - data.first) / (1000 * 60 * 60 * 24));
             
-            // Filtrera: Minst 2 matcher och minst 1 år
             if (data.matches > 1 && diffDays > 365) {
                 let years = Math.floor(diffDays / 365.25);
                 let days = Math.floor(diffDays % 365.25);
                 let cleanName = typeof window.formatPersonName === 'function' ? window.formatPersonName(rawName) : rawName;
                 
-                // data.matches skickas med in i listan
-                list.push({ cleanName, years, days, diffDays, first: data.first.getFullYear(), last: data.last.getFullYear(), matches: data.matches });
+                list.push({ rawName, cleanName, years, days, diffDays, first: data.first.getFullYear(), last: data.last.getFullYear(), matches: data.matches });
             }
         }
         
-        // Sortera på längst tid (högst antal diffDays)
         list.sort((a, b) => b.diffDays - a.diffDays);
-        let topRefs = list.slice(0, 50); // Justera antalet som visas här
+        let topRefs = list.slice(0, 50);
 
-        // Bygg Table Head (Inkluderar kolumnen "Matcher")
         document.getElementById('ref-record-thead').innerHTML = `
             <tr>
                 <th class="px-4 py-3 font-semibold w-12 text-center text-slate-400">#</th>
@@ -1807,33 +1804,31 @@ window.renderRefRecords = function() {
             </tr>
         `;
 
-        // Bygg Table Body
-        document.getElementById('ref-record-tbody').innerHTML = topRefs.map((item, index) => `
-            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                <td class="px-4 py-2 text-center font-bold text-slate-300">${index + 1}</td>
+        document.getElementById('ref-record-tbody').innerHTML = topRefs.map((item, index) => {
+            let safeName = String(item.rawName).replace(/'/g, "\'").replace(/"/g, "&quot;");
+            return `
+            <tr onclick="window.openPersonModal('${safeName}', 'ref')" class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer group">
+                <td class="px-4 py-2 text-center font-bold text-slate-300 group-hover:text-slate-500">${index + 1}</td>
                 <td class="px-4 py-2 font-bold text-slate-700 truncate max-w-[200px]" title="${item.cleanName}">${item.cleanName}</td>
                 <td class="px-4 py-2 text-center font-mono text-slate-500 text-xs">${item.first} - ${item.last}</td>
                 <td class="px-4 py-2 text-center font-semibold text-slate-600">${item.matches}</td>
                 <td class="px-4 py-2 text-right font-semibold text-blue-600">${item.years} år, ${item.days} dgr</td>
             </tr>
-        `).join('');
+            `;
+        }).join('');
         
-        return; // Stoppar koden så att den inte kör de andra vyerna
+        return;
     }
-    // --- SLUT PÅ NYTT KODBLOCK ---
 
+    // --- STANDARD DOMAR-VYER (Matcher, Åldrar, Livslängd) ---
     if (typeof MATCH_DATA === 'undefined') return;
     let view = window.current_ref_view;
     let list = [];
 
-    // 1. Samla in Domardata med "Dörrvakten"
     let refData = {};
     MATCH_DATA.forEach(bm => {
         if (!bm) return;
-        
-        // --- DÖRRVAKT: Mjuk radering av annullerade matcher ---
-        if (bm.Annullerad || String(bm.NOT || bm.Not || bm.Notering || "").toLowerCase().includes("annuller")) return; 
-        // ------------------------------------------------------
+        if (bm.Annullerad || String(bm.NOT || bm.Not || "").toLowerCase().includes("annuller")) return; 
 
         let mDate = bm.Datum ? String(bm.Datum).trim() : (String(bm.År || bm.Säsong || '').substring(0,4) + "-06-15");
         let hm = parseInt(bm.HM); let b_m = parseInt(bm.BM);
@@ -1844,18 +1839,20 @@ window.renderRefRecords = function() {
         if (typeof NAME_ALIASES !== 'undefined' && NAME_ALIASES[name]) name = NAME_ALIASES[name];
         if (!name || name.toLowerCase() === "okänd") return;
 
-        if (!refData[name]) refData[name] = { matches: 0, goals: 0, orter: new Set(), firstD: mDate, lastD: mDate, firstM: "", lastM: "" };
+        // FÅNGA MATCH-ID (NYTT FÖR MODAL)
+        let currentMatchId = bm.Match_ID || bm.Matchnr;
+
+        if (!refData[name]) refData[name] = { matches: 0, goals: 0, orter: new Set(), firstD: mDate, lastD: mDate, firstM: "", lastM: "", firstId: null, lastId: null };
         let st = refData[name];
 
-        if (mDate < st.firstD || st.firstM === "") { st.firstD = mDate; st.firstM = matchStr; }
-        if (mDate > st.lastD || st.lastM === "") { st.lastD = mDate; st.lastM = matchStr; }
+        if (mDate < st.firstD || st.firstM === "") { st.firstD = mDate; st.firstM = matchStr; st.firstId = currentMatchId; }
+        if (mDate > st.lastD || st.lastM === "") { st.lastD = mDate; st.lastM = matchStr; st.lastId = currentMatchId; }
         
         st.matches++;
         st.goals += (hm + b_m);
         if (bm.Domarort) st.orter.add(String(bm.Domarort).trim());
     });
 
-    // 2. Beräkna År/Dagar
     for (let ref in refData) {
         let st = refData[ref];
         let info = (typeof REF_INFO !== 'undefined' && REF_INFO[ref]) ? REF_INFO[ref] : {};
@@ -1873,38 +1870,47 @@ window.renderRefRecords = function() {
         let activeStr = (y1 === y2) ? y1 : `${y1}-${y2}`;
 
         list.push({
+            rawName: ref, // NYTT FÖR MODAL
             name: typeof window.formatPersonName === 'function' ? window.formatPersonName(ref) : ref,
             matches: st.matches, goals: st.goals,
             orter: Array.from(st.orter).join(', '),
             firstD: st.firstD, lastD: st.lastD, firstM: st.firstM, lastM: st.lastM,
+            firstId: st.firstId, lastId: st.lastId, // NYTT FÖR MODAL
             fodd: fodd, dod: dod,
             debutAge: dAge, lastAge: lAge, lifeAge: lifeAge, activeStr: activeStr
         });
     }
 
-    // 3. Rita ut tabellen
     let th = "", tb = "";
     if (view === 'matches' || view === 'goals') {
         let isG = view === 'goals';
         list.sort((a, b) => isG ? b.goals - a.goals : b.matches - a.matches);
         
         if (isG) {
-            th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare & Ort</th><th class="px-4 py-2 text-center">Aktiv</th><th class="px-4 py-2 text-center text-slate-600">Matcher</th><th class="px-4 py-2 text-right">Totalt antal mål</th><th class="px-4 py-2 text-right">Snitt / Match</th></tr>`;
+            th = `<tr><th class="px-4 py-2 w-12 text-center">#</th><th class="px-4 py-2">Domare & Ort</th><th class="px-4 py-2 text-center">Aktiv</th><th class="px-4 py-2 text-center text-slate-600">Matcher</th><th class="px-4 py-2 text-right">Totalt antal mål</th><th class="px-4 py-2 text-right">Snitt / Match</th></tr>`;
         } else {
-            th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare & Ort</th><th class="px-4 py-2 text-center">Aktiv</th><th class="px-4 py-2 text-right">Matcher</th></tr>`;
+            // NYTT: Specifik banner för "Flest matcher" (Domare)
+            th = `
+            <tr><th colspan="4" class="px-4 py-3 text-xs text-slate-700 font-medium bg-amber-50 border-b border-amber-200 whitespace-normal leading-relaxed">
+            <span class="font-bold text-amber-700">Not:</span> Avser domare vid matchstart. Domare som har ersatt ordinarie domare under matchens gång redovisas inte i listan över antalet matcher.
+            </th></tr>
+            <tr><th class="px-4 py-2 w-12 text-center">#</th><th class="px-4 py-2">Domare & Ort</th><th class="px-4 py-2 text-center">Aktiv</th><th class="px-4 py-2 text-right">Matcher</th></tr>`;
         }
         
         list.slice(0, 50).forEach((item, i) => { 
+            let safeName = String(item.rawName).replace(/'/g, "\'").replace(/"/g, "&quot;"); // NYTT
+            let trStart = `<tr onclick="window.openPersonModal('${safeName}', 'ref')" class="border-b border-slate-100 hover:bg-slate-100 transition-colors cursor-pointer group">`;
+            
             if (isG) {
                 let snitt = (item.goals / item.matches).toFixed(2).replace('.', ',');
-                tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+                tb += `${trStart}<td class="px-4 py-3 text-slate-400 font-bold align-top group-hover:text-slate-500 text-center">${i+1}</td>
                 <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.orter}</div></td>
                 <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.activeStr}</td>
                 <td class="px-4 py-3 text-center font-bold text-slate-600 align-top">${item.matches}</td>
                 <td class="px-4 py-3 text-right font-black text-slate-700 align-top">${item.goals}</td>
                 <td class="px-4 py-3 text-right font-bold text-slate-500 align-top">${snitt}</td></tr>`; 
             } else {
-                tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+                tb += `${trStart}<td class="px-4 py-3 text-slate-400 font-bold align-top group-hover:text-slate-500 text-center">${i+1}</td>
                 <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.orter}</div></td>
                 <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.activeStr}</td>
                 <td class="px-4 py-3 text-right font-black text-slate-700 align-top">${item.matches}</td></tr>`; 
@@ -1914,6 +1920,7 @@ window.renderRefRecords = function() {
     } else if (view === 'youngest' || view === 'oldest' || view === 'oldest_debut') {
         let isYoung = view === 'youngest';
         let isOldestDebut = view === 'oldest_debut';
+        let isDebut = (isYoung || isOldestDebut);
         
         list = list.filter(x => (isYoung || isOldestDebut) ? x.debutAge : x.lastAge).sort((a, b) => {
             if (isYoung) return a.debutAge.value - b.debutAge.value;
@@ -1921,23 +1928,32 @@ window.renderRefRecords = function() {
             return b.lastAge.value - a.lastAge.value;
         });
 
-        th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare</th><th class="px-4 py-2">Matchfakta</th><th class="px-4 py-2 text-right">Ålder</th></tr>`;
+        th = `<tr><th class="px-4 py-2 w-12 text-center">#</th><th class="px-4 py-2">Domare</th><th class="px-4 py-2">Matchfakta</th><th class="px-4 py-2 text-right">Ålder</th></tr>`;
         list.slice(0, 50).forEach((item, i) => { 
             let ageObj = (isYoung || isOldestDebut) ? item.debutAge : item.lastAge;
             let mStr = (isYoung || isOldestDebut) ? item.firstM : item.lastM;
             let mDate = (isYoung || isOldestDebut) ? item.firstD : item.lastD;
-            tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+            let targetId = isDebut ? item.firstId : item.lastId;
+
+            let safeName = String(item.rawName).replace(/'/g, "\'").replace(/"/g, "&quot;");
+            let recordTitle = isYoung ? 'Yngsta debutant' : (isOldestDebut ? 'Äldsta debutant' : 'Äldsta dömda match');
+            let textColor = isYoung ? 'text-amber-600' : 'text-purple-600';
+            
+            tb += `<tr onclick="window.openAgeMatchModal('${targetId}', '${safeName}', '${ageObj.text}', '${recordTitle}', 'ref')" class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer group">
+            <td class="px-4 py-3 text-slate-400 font-bold align-top group-hover:text-slate-600 text-center">${i+1}</td>
             <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.activeStr}</div></td>
             <td class="px-4 py-3 align-top"><div class="text-xs font-semibold text-slate-700 whitespace-normal min-w-[200px]">${mStr}</div><div class="text-[10px] text-slate-500">${mDate}</div></td>
-            <td class="px-4 py-3 text-right font-black ${isYoung ? 'text-amber-600' : 'text-purple-600'} align-top">${ageObj.text}</td></tr>`; 
+            <td class="px-4 py-3 text-right font-black ${textColor} align-top">${ageObj.text}</td></tr>`; 
         });
 
     } else if (view === 'longest_life' || view === 'shortest_life') {
         let isLong = view === 'longest_life';
         list = list.filter(x => x.lifeAge !== null).sort((a, b) => isLong ? b.lifeAge.value - a.lifeAge.value : a.lifeAge.value - b.lifeAge.value);
-        th = `<tr><th class="px-4 py-2 w-12">#</th><th class="px-4 py-2">Domare</th><th class="px-4 py-2 text-center">Född - Död</th><th class="px-4 py-2 text-right">Livslängd</th></tr>`;
+        th = `<tr><th class="px-4 py-2 w-12 text-center">#</th><th class="px-4 py-2">Domare</th><th class="px-4 py-2 text-center">Född - Död</th><th class="px-4 py-2 text-right">Livslängd</th></tr>`;
         list.slice(0, 50).forEach((item, i) => {
-            tb += `<tr><td class="px-4 py-3 text-slate-400 font-bold align-top">${i+1}</td>
+            let safeName = String(item.rawName).replace(/'/g, "\'").replace(/"/g, "&quot;");
+            tb += `<tr onclick="window.openPersonModal('${safeName}', 'ref')" class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer group">
+            <td class="px-4 py-3 text-slate-400 font-bold align-top group-hover:text-slate-500 text-center">${i+1}</td>
             <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800">${item.name}</div><div class="text-[11px] text-slate-500 font-semibold uppercase tracking-wider mt-0.5">${item.activeStr}</div></td>
             <td class="px-4 py-3 text-center text-slate-500 font-medium align-top">${item.fodd}<br><span class="text-xs">till</span> ${item.dod}</td>
             <td class="px-4 py-3 text-right font-black ${isLong ? 'text-slate-800' : 'text-slate-500'} align-top">${item.lifeAge.text}</td></tr>`;
@@ -2671,8 +2687,28 @@ function buildPremiereScorersHTML(originalSeasonStr, displaySeason) {
         fastestItem = searchList[0]; // Vinnaren är korad!
     }
 
-    // --- SORTERA LISTAN FÖR ANVÄNDAREN ---
-    if (window.prem_sort === 'player') {
+    // ========================================================
+    // --- NYTT: FILTRERA OCH SORTERA LISTAN (INKL. MATCHDAG 1) ---
+    // ========================================================
+    if (window.prem_sort === 'day1') {
+        // 1. Hitta det absolut tidigaste datumet den här säsongen
+        let earliestDate = "9999-12-31";
+        flatList.forEach(item => {
+            let d = String(item.datum).trim();
+            if (d && d !== "" && d !== "Okänd" && d !== "NaT" && d < earliestDate) {
+                earliestDate = d;
+            }
+        });
+
+        // 2. Filtrera bort alla mål som INTE gjordes på detta datum
+        if (earliestDate !== "9999-12-31") {
+            flatList = flatList.filter(item => String(item.datum).trim() === earliestDate);
+        }
+
+        // 3. Sortera de kvarvarande målen enbart på matchminut
+        flatList.sort((a, b) => a.sortMin - b.sortMin);
+
+    } else if (window.prem_sort === 'player') {
         flatList.sort((a, b) => String(a.skytt).localeCompare(String(b.skytt), 'sv'));
     } else if (window.prem_sort === 'time') {
         flatList.sort((a, b) => {
@@ -2682,10 +2718,18 @@ function buildPremiereScorersHTML(originalSeasonStr, displaySeason) {
     } else {
         flatList.sort((a, b) => String(a.lag).localeCompare(String(b.lag), 'sv'));
     }
+    // ========================================================
 
     // --- BYGG UTRITNING ---
     // Kontrollera webbläsarens "minne". Är den utfälld sedan tidigare?
     let hiddenClass = window.prem_expanded ? "" : "hidden";
+
+    // Informell banner som bara visas när "Matchdag 1" är vald
+    let day1Banner = window.prem_sort === 'day1' 
+        ? `<div class="bg-indigo-50 text-indigo-800 text-[11px] px-4 py-2 border-b border-indigo-100 text-center font-medium">
+            <span class="mr-1">ℹ️</span> Endast mål från säsongens <b>allra första matchdag</b> visas.
+           </div>` 
+        : "";
 
     let html = `
     <div class="mt-4 bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden w-full">
@@ -2697,17 +2741,19 @@ function buildPremiereScorersHTML(originalSeasonStr, displaySeason) {
                     <option value="team" ${window.prem_sort === 'team' ? 'selected' : ''}>Klubb (A-Ö)</option>
                     <option value="player" ${window.prem_sort === 'player' ? 'selected' : ''}>Spelare (A-Ö)</option>
                     <option value="time" ${window.prem_sort === 'time' ? 'selected' : ''}>Snabbaste mål (Match + Tid)</option>
+                    <option value="day1" ${window.prem_sort === 'day1' ? 'selected' : ''}>Endast Matchdag 1 (Snabba mål)</option>
                 </select>
                 <span class="text-xs text-slate-300 bg-slate-600 px-2 py-1 rounded-md" title="Klicka på det mörka fältet för att fälla ut/in">Fäll ut/in</span>
             </div>
         </div>
         <div id="prem-scorers-list" class="divide-y divide-slate-100 ${hiddenClass}">
+            ${day1Banner}
     `;
 
-    flatList.forEach(item => {
+    flatList.forEach((item, index) => {
         let isDN = (item.not || "").toLowerCase().includes('dn-klockan') || (item.not || "").toLowerCase().includes('dn');
         
-        // --- NY GULD-LOGIK: Exakt matchning mot vinnaren ---
+        // --- GULD-LOGIK: Exakt matchning mot vinnaren ---
         let isFastestOverall = false;
         if (fastestItem && item.lag === fastestItem.lag && item.skytt === fastestItem.skytt && item.sortMin === fastestItem.sortMin) {
             isFastestOverall = true;
@@ -2715,6 +2761,11 @@ function buildPremiereScorersHTML(originalSeasonStr, displaySeason) {
         
         let isGold = isDN || isFastestOverall;
         let icon = isDN ? '⏱️' : (isFastestOverall ? '🏅' : '⚽'); 
+        
+        // Vid day1-sortering lägger vi in en numrerad bricka (1, 2, 3...) bredvid bollen
+        if (window.prem_sort === 'day1') {
+            icon = `<span class="bg-indigo-100 text-indigo-800 text-[10px] px-1.5 py-0.5 rounded mr-1 font-black">${index + 1}</span> ⚽`;
+        }
         
         let displayNot = item.not || "";
         if (isFastestOverall && !displayNot) displayNot = "Snabbaste premiärmålet";
@@ -4314,6 +4365,100 @@ function updateAnalysisInputLabels() {
             modalEl.classList.remove('hidden');
         };
 
+        // ==========================================
+        // MODAL 2: MATCHINSPEKTÖR (Åldersrekord)
+        // ==========================================
+        window.closeInspectorModal = function() {
+            let m = document.getElementById('inspector-modal');
+            if (m) m.classList.add('hidden');
+        };
+
+        window.openAgeMatchModal = function(matchId, personName, ageText, recordTitle, role = 'ref') {
+            if (!matchId) return;
+            let match = MATCH_DATA.find(m => String(m.Match_ID) === String(matchId) || String(m.Matchnr) === String(matchId));
+            if (!match) return;
+
+            let formName = typeof window.formatPersonName === 'function' ? window.formatPersonName(personName) : personName;
+            
+            // Identifiera Ort (för domare)
+            let subInfo = "";
+            let ort = match.Domarort || match.Domare_Ort || match.Ort_Domare;
+            subInfo = (ort && !String(ort).toLowerCase().includes('okänd')) ? String(ort).trim() : 'Domare';
+
+            let dateStr = match.Matchdatum ? String(match.Matchdatum).substring(0, 10) : (match.Datum ? String(match.Datum).substring(0, 10) : '');
+
+            // --- HISTORISK SPELPLATS ---
+            const cleanStr = val => (val && typeof val === 'string' && !['nan', 'okänd', 'null', 'undefined'].includes(val.trim().toLowerCase())) ? val.trim() : null;
+            let histName = cleanStr(match.Arena_Historisk);
+            let currName = cleanStr(match.Arena_Nuvarande);
+            let origName = cleanStr(match.Spelplats) || cleanStr(match.Arena);
+            let ortName  = cleanStr(match.Ort);
+
+            let primaryArena = histName || origName || currName || ortName || 'Uppgift saknas';
+            let arenaHtml = primaryArena;
+            if (currName && primaryArena.toLowerCase() !== currName.toLowerCase() && primaryArena !== 'Uppgift saknas') {
+                arenaHtml += ` <span class="text-xs text-slate-400 font-normal">(i dag: ${currName})</span>`;
+            } else if (!currName && ortName && primaryArena.toLowerCase() !== ortName.toLowerCase()) {
+                arenaHtml += ` <span class="text-xs text-slate-400 font-normal">(${ortName})</span>`;
+            }
+
+            // --- DOMARFORMATERING ---
+            let domarStr = match.Domare ? String(match.Domare).trim() : '';
+            let formateradDomare = 'Uppgift saknas';
+            if (domarStr && !domarStr.toLowerCase().includes('uppgift saknas') && !domarStr.toLowerCase().includes('okänd')) {
+                if (domarStr.includes(',')) {
+                    let parts = domarStr.split(',');
+                    formateradDomare = `${parts.slice(1).join(' ').trim()} ${parts[0].trim()}`;
+                } else {
+                    formateradDomare = domarStr;
+                }
+                let domarOrt = match.Domarort || match.Domare_Ort || match.Ort_Domare;
+                if (domarOrt && String(domarOrt).trim() !== '' && !String(domarOrt).toLowerCase().includes('nan')) {
+                    formateradDomare += ` (${String(domarOrt).trim()})`;
+                }
+            }
+
+            // --- HEADERS FÖR ÅLDERSREKORD ---
+            document.getElementById('inspector-title').innerText = formName;
+            document.getElementById('inspector-subtitle').innerHTML = `
+                <div class="text-sm font-bold text-amber-400 mt-1">${recordTitle}: ${ageText}</div>
+                <div class="text-xs font-semibold text-slate-300 mt-1">${subInfo ? subInfo + ' &bull; ' : ''}${dateStr}</div>
+            `;
+            
+            // --- PUBLIKHANTERING (Covid-19 fix) ---
+            let matchYearStr = String(match.År || match.Säsong || (dateStr ? dateStr.substring(0,4) : ''));
+            let rawPublik = match.Publik;
+            let publikText = 'Uppgift saknas';
+            
+            // Kolla om vi har en riktig publiksiffra (som inte är 0 eller saknas)
+            if (rawPublik && String(rawPublik).trim() !== '' && String(rawPublik).trim() !== '0' && !String(rawPublik).toLowerCase().includes('uppgift saknas')) {
+                publikText = rawPublik;
+            } 
+            // Om det är tomt/noll och året är 2020 eller 2021
+            else if (matchYearStr === '2020' || matchYearStr === '2021') {
+                publikText = '0 <span class="text-xs font-normal text-slate-500">(Spelades utan publik p.g.a. Covid-19)</span>';
+            }
+
+            let html = `
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-5 text-center shadow-sm mb-4">
+                    <div class="flex justify-between items-center">
+                        <div class="text-xl font-bold text-slate-800 w-2/5 text-right pr-4">${match.Hemmalag}</div>
+                        <div class="text-3xl font-black text-slate-700 bg-white rounded px-4 py-2 border border-slate-200 shadow-inner">${match.HM} – ${match.BM}</div>
+                        <div class="text-xl font-bold text-slate-800 w-2/5 text-left pl-4">${match.Bortalag}</div>
+                    </div>
+                    <div class="text-sm font-semibold text-slate-500 mt-4">Halvtid: ${match.HMF !== undefined ? match.HMF : 0} – ${match.BMF !== undefined ? match.BMF : 0}</div>
+                </div>
+                <div class="text-sm text-slate-700 space-y-2 border-t border-slate-100 pt-4">
+                    <p><span class="font-bold text-slate-900">Spelplats:</span> ${arenaHtml}</p>
+                    <p><span class="font-bold text-slate-900">Publik:</span> ${publikText}</p>
+                    <p><span class="font-bold text-slate-900">Domare:</span> ${formateradDomare}</p>
+                </div>
+            `;
+            
+            document.getElementById('inspector-content').innerHTML = html;
+            document.getElementById('inspector-modal').classList.remove('hidden');
+        };
+
         // 1. Funktion som letar upp alla unika arenor och fyller rullistan
 // 1. Funktion som letar upp arenor baserat på valt perspektiv
 window.populateArenaDropdown = function() {
@@ -4563,5 +4708,30 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
     </div>
+    
+<!-- MODAL: Match- & Svit-inspektör -->
+<div id="inspector-modal" class="fixed inset-0 bg-slate-900 bg-opacity-75 z-[9999] hidden flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden relative border border-slate-200">
+        
+        <!-- Header (Svart) -->
+        <div class="bg-slate-900 text-white px-6 py-5 relative flex-shrink-0">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h3 id="inspector-title" class="text-2xl font-bold tracking-tight mb-1">Titel</h3>
+                    <div id="inspector-subtitle" class="text-sm font-semibold text-slate-300">Undertitel</div>
+                </div>
+                <button onclick="closeInspectorModal()" class="text-slate-400 hover:text-white transition-colors p-1 bg-slate-800 hover:bg-slate-700 rounded-lg">
+                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Body (Fylls dynamiskt) -->
+        <div class="p-6 overflow-y-auto bg-white flex-grow text-slate-900" id="inspector-content">
+            <!-- Innehåll genereras av JavaScript -->
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
