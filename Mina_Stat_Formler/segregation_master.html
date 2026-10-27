@@ -490,7 +490,7 @@ canvas {
                 let colorVar = document.getElementById('colorVar1');
                 
                 /* Känner av om Stapeldiagrammet är aktivt just nu */
-                let subBarActive = (document.getElementById('sub-bar') && document.getElementById('sub-bar').style.display === 'block');
+                let subBarActive = (document.getElementById('sub-bar') && document.getElementById('sub-bar').style.display === 'flex');
                 
                 if (this.checked && !window.trackedAreaFlik1) {
                     if (focusArea !== 'none') window.trackedAreaFlik1 = focusArea;
@@ -530,7 +530,7 @@ canvas {
         <!-- Underval: Kommundelskluster -->
         <label style="display: flex; align-items: center; cursor: not-allowed; margin: 8px 0 0 24px; color: #2c3e50; font-size: 12px; opacity: 0.5;">
             <input type="checkbox" id="enableClusterDrillDown" disabled onchange="
-                if (document.getElementById('sub-bar') && document.getElementById('sub-bar').style.display === 'block') {
+                if (document.getElementById('sub-bar') && document.getElementById('sub-bar').style.display === 'flex') {
                     if(typeof updateBarChart === 'function') updateBarChart();
                 } else {
                     if(typeof updateTab1 === 'function') updateTab1();
@@ -570,6 +570,24 @@ canvas {
                 .mini-vy-btn.active {
                     background-color: rgba(0, 105, 128, 0.9); color: white; border-color: rgba(0, 105, 128, 1);
                 }
+
+                /* 🚀 FIX: Den skottsäkra Chart.js-inramningen för alla flikar */
+.canvas-wrapper {
+    position: relative !important;
+    height: 65vh !important; 
+    min-height: 500px !important;
+    width: 100% !important;
+    display: block !important;
+}
+
+.canvas-wrapper canvas {
+    display: block !important;
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+}              
             </style>
 
             <!-- ÖVRE DELEN: Delad i två spalter -->
@@ -622,22 +640,20 @@ canvas {
             <div class="chart-container" style="display: flex; flex-direction: column; min-height: 550px;">
                 
                 <!-- VY 1: BUBBELDIAGRAM (Standard) -->
-<!-- 🚀 FIX: Ändrat till display: flex; flex-direction: column; så att höjden ärvs korrekt -->
 <div id="sub-bubble" class="sub-tab-content active" style="display: flex; flex-direction: column; width: 100%; flex: 1; position: relative;">
     <!-- DYNAMISK TECKENFÖRKLARING (Behålls på sin ursprungliga plats) -->
     <div id="custom-legend-tab1" style="text-align: center; margin-bottom: 10px; min-height: 25px; transition: all 0.3s ease;"></div>
     
-    <!-- DIAGRAMMET (Notera ditt korrekta ID: regChart1) -->
-    <!-- 🚀 FIX: Satt flex: 1 och height: 100% istället för vh, så den tvingas stanna i rutan -->
-    <div class="canvas-wrapper" style="position: relative; width: 100%; flex: 1; height: 100%; min-height: 500px;">
+    <!-- 🚀 FIX: Helt ren canvas-wrapper som styrs av CSS -->
+    <div class="canvas-wrapper">
         <canvas id="regChart1"></canvas>
     </div>
 </div>
 
                 <!-- VY 2: STAPELDIAGRAM (Dolt från start) -->
-<!-- 🚀 FIX: Lika här, flex istället för display: none/block (JavaScriptet sköter döljandet) -->
 <div id="sub-bar" class="sub-tab-content" style="display: none; flex-direction: column; width: 100%; flex: 1; position: relative;">
-    <div class="canvas-wrapper" style="position: relative; width: 100%; flex: 1; height: 100%; min-height: 500px;">
+    <!-- 🚀 FIX: Helt ren canvas-wrapper som styrs av CSS -->
+    <div class="canvas-wrapper">
         
         <!-- Diskret Vattenstämpel -->
         <div id="barWatermark" style="
@@ -2828,7 +2844,7 @@ return true;
         // 🎯 SCENARIO FOKUS: Markera utvald Stadsdel och dess basområden
         if (colorVar === 'Utvald_Stadsdel') {
             bgFinal = groupedData[cat].map(pt => {
-                if (cat === 'Hela kommunen') return 'rgba(0,0,0,0.8)';
+                if (pt.label && pt.label.toString().toLowerCase().trim() === 'hela kommunen') return 'rgba(149, 165, 166, 0.8)';
                 if (!pt.rawRow) return 'rgba(0,0,0,0)';
                 
                 // 1. Underliggande basområden (Drill-down) -> Knallröd
@@ -2852,7 +2868,7 @@ return true;
         // ==========================================
         else if (colorVar === 'SEI_Heatmap') {
             bgFinal = groupedData[cat].map(pt => {
-                if (cat === 'Hela kommunen') return 'rgba(0,0,0,0.8)';
+                if (pt.label && pt.label.toString().toLowerCase().trim() === 'hela kommunen') return 'rgba(149, 165, 166, 0.8)';
                 if (!pt.rawRow) return 'rgba(0,0,0,0)';
                 if (pt.isChildPoint) return 'rgba(255, 99, 132, 0.85)';
 
@@ -2893,7 +2909,7 @@ return true;
             let solidBorder = baseBorder.replace(/[\d.]+\)$/, '1.0)');
 
             bgFinal = groupedData[cat].map((pt, i) => {
-                if (cat === 'Hela kommunen') return 'rgba(0,0,0,0.8)';
+                if (pt.label && pt.label.toString().toLowerCase().trim() === 'hela kommunen') return 'rgba(149, 165, 166, 0.8)';
                 if (!pt.rawRow) return 'rgba(0,0,0,0)';
                 if (pt.isChildPoint) return 'rgba(255, 99, 132, 0.85)';
 
@@ -2915,7 +2931,7 @@ return true;
             });
             
             borderFinal = groupedData[cat].map((pt, i) => {
-                if (cat === 'Hela kommunen') return 'rgba(0,0,0,1)';
+                if (pt.label && pt.label.toString().toLowerCase().trim() === 'hela kommunen') return 'rgba(127, 140, 141, 1)';
                 if (pt.isChildPoint) return 'rgba(200, 50, 50, 1)';
 
                 if (isDrillDownActive && safeTrackedArea !== 'none') {
