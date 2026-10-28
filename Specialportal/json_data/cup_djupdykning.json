@@ -28925,7 +28925,8 @@
           "info": "",
           "avgorande": "GWG",
           "lag": "IFK Norrköping",
-          "kalla_flik": "Slutomgångar"
+          "kalla_flik": "Slutomgångar",
+          "merged": true
         },
         {
           "skytt": "Person, Sven",
@@ -28934,7 +28935,8 @@
           "info": "",
           "avgorande": "",
           "lag": "IFK Norrköping",
-          "kalla_flik": "Slutomgångar"
+          "kalla_flik": "Slutomgångar",
+          "merged": true
         },
         {
           "skytt": "Carlbom, Halvar",
@@ -28943,7 +28945,8 @@
           "info": "",
           "avgorande": "",
           "lag": "IFK Norrköping",
-          "kalla_flik": "Slutomgångar"
+          "kalla_flik": "Slutomgångar",
+          "merged": true
         },
         {
           "skytt": "Malm, Gösta",
@@ -28952,7 +28955,8 @@
           "info": "straff",
           "avgorande": "",
           "lag": "IFK Norrköping",
-          "kalla_flik": "Slutomgångar"
+          "kalla_flik": "Slutomgångar",
+          "merged": true
         },
         {
           "skytt": "Carlbom, Halvar",
@@ -28961,7 +28965,8 @@
           "info": "",
           "avgorande": "",
           "lag": "IFK Norrköping",
-          "kalla_flik": "Slutomgångar"
+          "kalla_flik": "Slutomgångar",
+          "merged": true
         },
         {
           "skytt": "Person, Sven",
@@ -28970,7 +28975,8 @@
           "info": "",
           "avgorande": "",
           "lag": "IFK Norrköping",
-          "kalla_flik": "Slutomgångar"
+          "kalla_flik": "Slutomgångar",
+          "merged": true
         },
         {
           "skytt": "Carlbom, Halvar",
@@ -28979,45 +28985,8 @@
           "info": "",
           "avgorande": "",
           "lag": "IFK Norrköping",
-          "kalla_flik": "Slutomgångar"
-        },
-        {
-          "skytt": "Carlbom, Halvar",
-          "minut": "",
-          "innebord": "",
-          "info": "",
-          "avgorande": "",
-          "lag": "IFK Norrköping",
-          "kalla_flik": "Mästarna",
+          "kalla_flik": "Slutomgångar",
           "merged": true
-        },
-        {
-          "skytt": "Person, Sven",
-          "minut": "",
-          "innebord": "",
-          "info": "",
-          "avgorande": "",
-          "lag": "IFK Norrköping",
-          "kalla_flik": "Mästarna",
-          "merged": true
-        },
-        {
-          "skytt": "Holmqvist, Erik",
-          "minut": "",
-          "innebord": "",
-          "info": "",
-          "avgorande": "",
-          "lag": "IFK Norrköping",
-          "kalla_flik": "Mästarna"
-        },
-        {
-          "skytt": "Malm, Gösta",
-          "minut": "",
-          "innebord": "",
-          "info": "",
-          "avgorande": "",
-          "lag": "IFK Norrköping",
-          "kalla_flik": "Mästarna"
         }
       ],
       "utvisningar": []
