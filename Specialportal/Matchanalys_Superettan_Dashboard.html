@@ -4540,14 +4540,12 @@ window.openMatchDetailsModal = function(matchId) {
                 <div class="space-y-2.5">
         `;
         let currentHomeGoals = 0, currentAwayGoals = 0;
-        
+    
         goals.forEach(g => {
             let isHomeScorer = g.lag === match.Hemmalag;
             if (isHomeScorer) currentHomeGoals++; else currentAwayGoals++;
-            
-            let isGwgHtml = g.is_gwg ? `<span class="bg-amber-100 text-amber-800 text-[10px] font-black px-1.5 py-0.5 rounded ml-2 uppercase tracking-wide border border-amber-200" title="Matchavgörande mål">GWG</span>` : '';
     // Åldern är nu helt bortplockad för en renare design [Notera att ${ageStr} sak läggas in på raden under <span class="font-bold ${textColor}">${g.skytt}</span> i goalsHtml += ` för användning]
-    //      let ageStr = g.alder ? `<span class="text-xs text-slate-400 font-normal ml-1">(${g.alder} år)</span>` : '';
+    //      let ageStr = g.alder ? `<span class="text-xs text-slate-400 font-normal ml-1">(${g.alder} år)</span>` : '';            
             let notLower = (g.not || "").toLowerCase();
             let extraNoteHtml = '';
             if (notLower.includes('straff')) extraNoteHtml = `<span class="text-[10px] text-slate-500 font-bold ml-2 uppercase">(Straff)</span>`;
@@ -4556,21 +4554,32 @@ window.openMatchDetailsModal = function(matchId) {
             let textColor = isHomeScorer ? "text-blue-900" : "text-rose-900";
             let pillClass = isHomeScorer ? "bg-blue-50 text-blue-700 border border-blue-100" : "bg-rose-50 text-rose-700 border border-rose-100";
             
+            // 1. Skapa GWG-etiketten (Utan margin-left, vi sköter avståndet via behållaren nedan)
+            let isGwgHtml = g.is_gwg 
+                ? `<span class="bg-amber-100 text-amber-800 text-[10px] font-black px-1.5 py-0.5 rounded uppercase tracking-wide border border-amber-200" title="Matchavgörande mål">GWG</span>` 
+                : '';
+            
+            // 2. Skapa Resultat-etiketten (Har nu tagit bort 'ml-auto' härifrån)
             let inbordStr = g.innebord 
-                ? `<span class="ml-auto text-xs font-bold px-2 py-0.5 rounded font-mono ${pillClass}">${g.innebord}</span>` 
-                : `<span class="ml-auto text-xs font-bold px-2 py-0.5 rounded font-mono ${pillClass}">${currentHomeGoals}–${currentAwayGoals}</span>`;
+                ? `<span class="text-xs font-bold px-2 py-0.5 rounded font-mono ${pillClass}">${g.innebord}</span>` 
+                : `<span class="text-xs font-bold px-2 py-0.5 rounded font-mono ${pillClass}">${currentHomeGoals}–${currentAwayGoals}</span>`;
 
             goalsHtml += `
                 <div class="flex items-center text-sm group hover:bg-slate-50 p-1 -ml-1 rounded transition-colors">
                     <span class="text-base mr-3 opacity-80 group-hover:opacity-100 transition-opacity">⚽</span>
+                    
+                    <!-- Spelare och minut -->
                     <div class="flex items-baseline flex-wrap gap-1">
-                        <!-- NYTT: Använd det färdigtvättade namnet från Python! -->
                         <span class="font-bold ${textColor}">${g.skytt_visning}</span>
                         <span class="text-slate-500 font-medium text-xs ml-1">${g.minut ? g.minut + "'" : ''}</span>
                         ${extraNoteHtml}
                     </div>
-                    ${inbordStr}
-                    ${isGwgHtml}
+                    
+                    <!-- NYTT: Behållare för etiketter, högerställd med 'ml-auto' och 'gap-2' för snyggt avstånd -->
+                    <div class="ml-auto flex items-center gap-2">
+                        ${isGwgHtml}
+                        ${inbordStr}
+                    </div>
                 </div>
             `;
         });
