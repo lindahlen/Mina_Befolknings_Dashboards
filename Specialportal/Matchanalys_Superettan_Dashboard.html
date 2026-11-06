@@ -212,6 +212,7 @@
             <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
                 <button id="btn-view-match" onclick="toggleRecordsView('match')" class="px-4 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all">🛡️ Matchrekord (Lag)</button>
                 <button id="btn-view-players" onclick="toggleRecordsView('players')" class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all">⚽ Skyttar & Priser</button>
+                <button id="btn-view-events" onclick="toggleRecordsView('events')" class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">⚡ Händelser</button>
                 <button id="btn-view-ref" onclick="toggleRecordsView('ref')" class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">⚖️ Domarrekord</button>
                 <button id="btn-view-arena" onclick="toggleRecordsView('arena')" class="px-4 py-2 text-slate-500 hover:text-slate-700 rounded-md font-bold text-sm transition-all whitespace-nowrap">🏟️ Arenor</button>
             </div>
@@ -398,6 +399,84 @@
         </div>
     </div>
 </div>
+<!-- CONTAINER 6: HÄNDELSER & SVITER -->
+        <div id="records-events-container" class="hidden">
+            <!-- 1. ÄNDRAT mb-4 till mb-2 här: -->
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-slate-200 pb-2 mt-6 mb-2 gap-3">
+                <h2 class="text-xl font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">⚡ Händelser & Sviter</h2>
+                
+                <!-- 2. BORTTAGEN mb-4 från denna wrapper så den inte skapar dubbelt tomrum: -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                
+                <!-- NYTT: Hemma/Borta-filtret -->
+                <select id="event-location-filter" onchange="window.current_event_location=this.value; window.renderEventRecords();" class="bg-slate-100 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-slate-500 focus:border-slate-500 block p-2 font-bold outline-none cursor-pointer w-full sm:w-auto shadow-sm transition-colors">
+                    <option value="all">🏟️ Alla matcher</option>
+                    <option value="home">🏠 Endast Hemma</option>
+                    <option value="away">🚌 Endast Borta</option>
+                </select>
+                <select id="event-records-select" onchange="window.current_event_view=this.value; window.renderEventRecords();" class="bg-slate-100 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-slate-500 focus:border-slate-500 block p-2 font-bold outline-none cursor-pointer w-full sm:w-auto shadow-sm transition-colors">
+                    <optgroup label="Målskyttar: Volym & Betydelse">
+                        <option value="most_goals">Flest gjorda mål totalt</option>
+                        <option value="most_matches_scored">Mål i flest antal matcher</option>
+                        <option value="most_gwg">Flest matchavgörande mål (GWG)</option>
+                        <option value="tiebreaker">Direkt avgörande (Sista målet vinner)</option>
+                        <option value="equalizer">Poängräddare (Sista målet ger kryss)</option>
+                        <option value="most_penalties">Flest straffmål</option>
+                        <option value="most_clubs_scored">Mål för flest olika klubbar</option>
+                    </optgroup>
+                    <optgroup label="Spel i fel bur">
+                        <option value="most_own_goals">Flest självmål</option>
+                    </optgroup>
+                    <optgroup label="Utvisningar (Röda Kort)">
+                        <option value="most_red_cards">Flest utvisningar totalt</option>
+                    </optgroup>
+                    <optgroup label="Tid & Kronologi">
+                        <option value="streaks">Mål i flest matcher i svit</option>
+                        <option value="fastest_goals">Snabbaste mål från matchstart</option>
+                        <option value="most_goals_match">Flest mål i en och samma match</option>
+                        <option value="hattricks">Flest Hattricks totalt (3+ mål)</option>
+                        <option value="fastest_hattricks">Snabba Hattricks (Tid mellan 1:a och 3:e mål)</option>
+                        <option value="longest_period">Längst tid mellan första och sista mål</option>
+                        <option value="consecutive_seasons">Lojaliteten (Mål i flest raka säsonger)</option>
+                        <option value="unique_opponents">Motståndarskräcken (Mål mot flest olika klubbar)</option>
+                        <option value="two_clubs_one_season">Klubbyten (Mål för flera klubbar samma säsong)</option>
+                    </optgroup>
+                    <optgroup label="Minutrekord (Defensiv & Offensiv torka)">
+                        <option value="team_no_concede">Lag: Längst tid utan insläppt mål (Minuter)</option>
+                        <option value="team_no_score">Lag: Längst tid utan att göra mål (Minuter)</option>
+                    </optgroup>
+                    <optgroup label="Åldersrekord: Målskyttar">
+                        <option value="youngest_scorers">Yngsta målskyttarna</option>
+                        <option value="oldest_scorers">Äldsta målskyttarna</option>
+                        <option value="oldest_first_goal">Äldst vid sitt första mål</option>
+                    </optgroup>
+                    <optgroup label="Åldersrekord: Utvisningar">
+                        <option value="youngest_red_cards">Yngsta utvisade spelarna</option>
+                        <option value="oldest_red_cards">Äldsta utvisade spelarna</option>
+                    </optgroup>
+                    <optgroup label="Matchdramatik & Karaktär">
+                        <option value="team_comebacks">Comebacks (Vinster efter underläge)</option>
+                        <option value="team_collapses">Kollapser (Förluster trots ledning)</option>
+                        <option value="team_first_goal_win">Matchöppnare (Vinst-% vid första målet)</option>
+                        <option value="team_first_goal_loss">Kämparna (Vinst-% trots insläppt första mål)</option>
+                        <option value="team_late_00_breakers">Noll-Noll Dödarna (Sena mål som bryter 0-0)</option>
+                    </optgroup>
+                </select>
+            </div>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm mb-8">
+                <div class="overflow-y-auto max-h-[600px] lg:max-h-[800px] xl:max-h-[80vh]">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead id="event-record-thead" class="bg-slate-800 text-xs text-white uppercase sticky top-0 shadow-sm z-10">
+                            <!-- Fylls i av JavaScript -->
+                        </thead>
+                        <tbody id="event-record-tbody" class="divide-y divide-slate-100">
+                            <!-- Fylls i av JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 </section>
 
         <!-- FLIK 4: Sviter -->
@@ -813,6 +892,12 @@
                         <span class="absolute left-3 top-2.5 text-slate-400">🔍</span>
                     </div>
                 </div>
+                <!-- ========================================== -->
+                <!-- NYTT: SUMMARYBOX FÖR MÅLVAKTER OCH DOMARE  -->
+                <!-- ========================================== -->
+                <div id="referees-summary" class="hidden mb-4 p-4 rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50 to-white flex flex-col sm:flex-row justify-between items-center shadow-sm">
+                    <!-- Denna HTML fylls i dynamiskt av JavaScript (renderGkRef) -->
+                </div>
 
                 <!-- Tabell -->
                 <div class="bg-white rounded-lg shadow-sm border border-slate-200 overflow-hidden">
@@ -976,6 +1061,9 @@
         const TOP_SCORERS = {"1": [{"SäsongText": "2000", "Namn": "Marcus Ringberg", "Klubb": "Mjällby AIF", "Mål": 18, "Född": "1976-05-05", "Slutdatum": "2000-11-30"}], "2000": [{"SäsongText": "2000", "Namn": "Marcus Ringberg", "Klubb": "Mjällby AIF", "Mål": 18, "Född": "1976-05-05", "Slutdatum": "2000-11-30"}], "2": [{"SäsongText": "2001", "Namn": "Daniel Nannskog", "Klubb": "Landskrona BoIS", "Mål": 21, "Född": "1974-05-22", "Slutdatum": "2001-11-30"}], "2001": [{"SäsongText": "2001", "Namn": "Daniel Nannskog", "Klubb": "Landskrona BoIS", "Mål": 21, "Född": "1974-05-22", "Slutdatum": "2001-11-30"}], "3": [{"SäsongText": "2002", "Namn": "Ludwig Ernstsson", "Klubb": "Östers IF", "Mål": 18, "Född": "1972-04-29", "Slutdatum": "2002-11-30"}], "2002": [{"SäsongText": "2002", "Namn": "Ludwig Ernstsson", "Klubb": "Östers IF", "Mål": 18, "Född": "1972-04-29", "Slutdatum": "2002-11-30"}], "4": [{"SäsongText": "2003", "Namn": "Göran Marklund", "Klubb": "FC Café Opera Djursholm", "Mål": 23, "Född": "1975-10-02", "Slutdatum": "2003-11-30"}], "2003": [{"SäsongText": "2003", "Namn": "Göran Marklund", "Klubb": "FC Café Opera Djursholm", "Mål": 23, "Född": "1975-10-02", "Slutdatum": "2003-11-30"}], "5": [{"SäsongText": "2004", "Namn": "Stefan Bärlin", "Klubb": "Västerås SK", "Mål": 23, "Född": "1976-05-31", "Slutdatum": "2004-11-30"}], "2004": [{"SäsongText": "2004", "Namn": "Stefan Bärlin", "Klubb": "Västerås SK", "Mål": 23, "Född": "1976-05-31", "Slutdatum": "2004-11-30"}], "6": [{"SäsongText": "2005", "Namn": "Bruno Santos", "Klubb": "IFK Norrköping", "Mål": 16, "Född": "1983-08-31", "Slutdatum": "2005-11-30"}], "2005": [{"SäsongText": "2005", "Namn": "Bruno Santos", "Klubb": "IFK Norrköping", "Mål": 16, "Född": "1983-08-31", "Slutdatum": "2005-11-30"}], "7": [{"SäsongText": "2006", "Namn": "Olof Guterstam", "Klubb": "IF Brommapojkarna", "Mål": 17, "Född": "1983-01-04", "Slutdatum": "2006-11-30"}, {"SäsongText": "2006", "Namn": "Stefan Rodevåg", "Klubb": "Falkenbergs FF", "Mål": 17, "Född": "1980-06-11", "Slutdatum": "2006-11-30"}], "2006": [{"SäsongText": "2006", "Namn": "Olof Guterstam", "Klubb": "IF Brommapojkarna", "Mål": 17, "Född": "1983-01-04", "Slutdatum": "2006-11-30"}, {"SäsongText": "2006", "Namn": "Stefan Rodevåg", "Klubb": "Falkenbergs FF", "Mål": 17, "Född": "1980-06-11", "Slutdatum": "2006-11-30"}], "8": [{"SäsongText": "2007", "Namn": "Gardar Gunnlaugsson", "Klubb": "IFK Norrköping", "Mål": 18, "Född": "1983-04-25", "Slutdatum": "2007-11-30"}], "2007": [{"SäsongText": "2007", "Namn": "Gardar Gunnlaugsson", "Klubb": "IFK Norrköping", "Mål": 18, "Född": "1983-04-25", "Slutdatum": "2007-11-30"}], "9": [{"SäsongText": "2008", "Namn": "Jonas Henriksson", "Klubb": "BK Häcken", "Mål": 19, "Född": "1976-12-29", "Slutdatum": "2008-11-30"}], "2008": [{"SäsongText": "2008", "Namn": "Jonas Henriksson", "Klubb": "BK Häcken", "Mål": 19, "Född": "1976-12-29", "Slutdatum": "2008-11-30"}], "10": [{"SäsongText": "2009", "Namn": "Mattias Adelstam", "Klubb": "Ängelholms FF", "Mål": 19, "Född": "1982-03-07", "Slutdatum": "2009-11-30"}, {"SäsongText": "2009", "Namn": "Marcus Ekenberg", "Klubb": "Mjällby AIF", "Mål": 19, "Född": "1980-06-16", "Slutdatum": "2009-11-30"}], "2009": [{"SäsongText": "2009", "Namn": "Mattias Adelstam", "Klubb": "Ängelholms FF", "Mål": 19, "Född": "1982-03-07", "Slutdatum": "2009-11-30"}, {"SäsongText": "2009", "Namn": "Marcus Ekenberg", "Klubb": "Mjällby AIF", "Mål": 19, "Född": "1980-06-16", "Slutdatum": "2009-11-30"}], "11": [{"SäsongText": "2010", "Namn": "Linus Hallenius", "Klubb": "Hammarby IF", "Mål": 18, "Född": "1989-04-01", "Slutdatum": "2010-11-30"}], "2010": [{"SäsongText": "2010", "Namn": "Linus Hallenius", "Klubb": "Hammarby IF", "Mål": 18, "Född": "1989-04-01", "Slutdatum": "2010-11-30"}], "12": [{"SäsongText": "2011", "Namn": "Branimir Hrgota", "Klubb": "Jönköpings Södra IF", "Mål": 18, "Född": "1993-01-12", "Slutdatum": "2011-11-30"}], "2011": [{"SäsongText": "2011", "Namn": "Branimir Hrgota", "Klubb": "Jönköpings Södra IF", "Mål": 18, "Född": "1993-01-12", "Slutdatum": "2011-11-30"}], "13": [{"SäsongText": "2012", "Namn": "Pablo Piñones Arce", "Klubb": "IF Brommapojkarna", "Mål": 18, "Född": "1981-08-27", "Slutdatum": "2012-11-30"}], "2012": [{"SäsongText": "2012", "Namn": "Pablo Piñones Arce", "Klubb": "IF Brommapojkarna", "Mål": 18, "Född": "1981-08-27", "Slutdatum": "2012-11-30"}], "14": [{"SäsongText": "2013", "Namn": "Viktor Sköld", "Klubb": "Falkenbergs FF", "Mål": 20, "Född": "1989-07-31", "Slutdatum": "2013-11-30"}], "2013": [{"SäsongText": "2013", "Namn": "Viktor Sköld", "Klubb": "Falkenbergs FF", "Mål": 20, "Född": "1989-07-31", "Slutdatum": "2013-11-30"}], "15": [{"SäsongText": "2014", "Namn": "Kennedy Bakircioglu", "Klubb": "Hammarby IF", "Mål": 17, "Född": "", "Slutdatum": "2014-11-30"}], "2014": [{"SäsongText": "2014", "Namn": "Kennedy Bakircioglu", "Klubb": "Hammarby IF", "Mål": 17, "Född": "", "Slutdatum": "2014-11-30"}], "16": [{"SäsongText": "2015", "Namn": "Fredrik Olsson", "Klubb": "Jönköpings Södra IF", "Mål": 17, "Född": "", "Slutdatum": "2015-11-30"}], "2015": [{"SäsongText": "2015", "Namn": "Fredrik Olsson", "Klubb": "Jönköpings Södra IF", "Mål": 17, "Född": "", "Slutdatum": "2015-11-30"}], "17": [{"SäsongText": "2016", "Namn": "Shkodran Maholli", "Klubb": "Åtvidabergs FF", "Mål": 15, "Född": "", "Slutdatum": "2016-11-30"}], "2016": [{"SäsongText": "2016", "Namn": "Shkodran Maholli", "Klubb": "Åtvidabergs FF", "Mål": 15, "Född": "", "Slutdatum": "2016-11-30"}], "18": [{"SäsongText": "2017", "Namn": "Richard Yarsuvat", "Klubb": "Dalkurd FF", "Mål": 14, "Född": "", "Slutdatum": "2017-11-30"}], "2017": [{"SäsongText": "2017", "Namn": "Richard Yarsuvat", "Klubb": "Dalkurd FF", "Mål": 14, "Född": "", "Slutdatum": "2017-11-30"}], "19": [{"SäsongText": "2018", "Namn": "Andri Rúnar Bjarnason", "Klubb": "Helsingborgs IF", "Mål": 16, "Född": "", "Slutdatum": "2018-11-30"}], "2018": [{"SäsongText": "2018", "Namn": "Andri Rúnar Bjarnason", "Klubb": "Helsingborgs IF", "Mål": 16, "Född": "", "Slutdatum": "2018-11-30"}], "20": [{"SäsongText": "2019", "Namn": "Erik Björndahl", "Klubb": "Degerfors IF", "Mål": 20, "Född": "", "Slutdatum": "2019-11-30"}], "2019": [{"SäsongText": "2019", "Namn": "Erik Björndahl", "Klubb": "Degerfors IF", "Mål": 20, "Född": "", "Slutdatum": "2019-11-30"}], "21": [{"SäsongText": "2020", "Namn": "Pontus Engblom", "Klubb": "GIF Sundsvall", "Mål": 20, "Född": "", "Slutdatum": "2020-11-30"}], "2020": [{"SäsongText": "2020", "Namn": "Pontus Engblom", "Klubb": "GIF Sundsvall", "Mål": 20, "Född": "", "Slutdatum": "2020-11-30"}], "22": [{"SäsongText": "2021", "Namn": "Ajdin Zeljkovic", "Klubb": "Örgryte IS", "Mål": 18, "Född": "", "Slutdatum": "2021-11-30"}], "2021": [{"SäsongText": "2021", "Namn": "Ajdin Zeljkovic", "Klubb": "Örgryte IS", "Mål": 18, "Född": "", "Slutdatum": "2021-11-30"}], "23": [{"SäsongText": "2022", "Namn": "Viktor Granath", "Klubb": "Västerås SK", "Mål": 24, "Född": "", "Slutdatum": "2022-11-30"}], "2022": [{"SäsongText": "2022", "Namn": "Viktor Granath", "Klubb": "Västerås SK", "Mål": 24, "Född": "", "Slutdatum": "2022-11-30"}], "24": [{"SäsongText": "2023", "Namn": "Jesper Jonasson Westermark", "Klubb": "Östers IF", "Mål": 17, "Född": "", "Slutdatum": "2023-11-30"}], "2023": [{"SäsongText": "2023", "Namn": "Jesper Jonasson Westermark", "Klubb": "Östers IF", "Mål": 17, "Född": "", "Slutdatum": "2023-11-30"}], "25": [{"SäsongText": "2024", "Namn": "Assad Al Hamlawi", "Klubb": "IK Oddevold", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}, {"SäsongText": "2024", "Namn": "Karl Holmberg", "Klubb": "Örebro SK", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}, {"SäsongText": "2024", "Namn": "Dijan Vukojevic", "Klubb": "Degerfors IF", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}], "2024": [{"SäsongText": "2024", "Namn": "Assad Al Hamlawi", "Klubb": "IK Oddevold", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}, {"SäsongText": "2024", "Namn": "Karl Holmberg", "Klubb": "Örebro SK", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}, {"SäsongText": "2024", "Namn": "Dijan Vukojevic", "Klubb": "Degerfors IF", "Mål": 14, "Född": "", "Slutdatum": "2024-11-30"}], "26": [{"SäsongText": "2025", "Namn": "Amar Muhsin", "Klubb": "Örgryte IS", "Mål": 21, "Född": "", "Slutdatum": "2025-11-30"}], "2025": [{"SäsongText": "2025", "Namn": "Amar Muhsin", "Klubb": "Örgryte IS", "Mål": 21, "Född": "", "Slutdatum": "2025-11-30"}]};
         const FIRST_SCORERS = {"2000": {"Djurgårdens IF": [{"skytt": "Andreas Johansson", "minut": "11", "motstandare": "Umeå FC", "not": "", "alder": 21, "datum": "2000-04-16", "hm": 5, "bm": 2, "hemmalag": "Djurgårdens IF", "skyttens_lag": "Djurgårdens IF"}], "Kalmar FF": [{"skytt": "Daniel Mobaeck", "minut": "24", "motstandare": "IK Brage", "not": "", "alder": 19, "datum": "2000-04-16", "hm": 1, "bm": 0, "hemmalag": "Kalmar FF", "skyttens_lag": "Kalmar FF"}], "Västerås SK": [{"skytt": "Mathias Elison", "minut": "19", "motstandare": "Assyriska FF", "not": "straff", "alder": 27, "datum": "2000-04-16", "hm": 2, "bm": 1, "hemmalag": "Västerås SK", "skyttens_lag": "Västerås SK"}], "Mjällby AIF": [{"skytt": "Marcus Ringberg", "minut": "11", "motstandare": "Åtvidabergs FF", "not": "", "alder": 23, "datum": "2000-04-16", "hm": 1, "bm": 0, "hemmalag": "Mjällby AIF", "skyttens_lag": "Mjällby AIF"}], "Östers IF": [{"skytt": "Patrik Isaksson", "minut": "57", "motstandare": "AFC Eskilstuna", "not": "", "alder": 29, "datum": "2000-04-16", "hm": 1, "bm": 2, "hemmalag": "Östers IF", "skyttens_lag": "Östers IF"}], "Landskrona BoIS": [{"skytt": "Tonny Nilsson", "minut": "77", "motstandare": "Ljungskile SK", "not": "", "alder": 26, "datum": "2000-04-16", "hm": 1, "bm": 1, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Landskrona BoIS"}], "Umeå FC": [{"skytt": "Zoran Petrovic", "minut": "27", "motstandare": "Djurgårdens IF", "not": "", "alder": 32, "datum": "2000-04-16", "hm": 5, "bm": 2, "hemmalag": "Djurgårdens IF", "skyttens_lag": "Umeå FC"}], "Assyriska FF": [{"skytt": "Ghassan Heamed", "minut": "60", "motstandare": "Västerås SK", "not": "", "alder": 28, "datum": "2000-04-16", "hm": 2, "bm": 1, "hemmalag": "Västerås SK", "skyttens_lag": "Assyriska FF"}], "AFC Eskilstuna": [{"skytt": "Mounir Tajiou", "minut": "37", "motstandare": "Östers IF", "not": "", "alder": 22, "datum": "2000-04-16", "hm": 1, "bm": 2, "hemmalag": "Östers IF", "skyttens_lag": "AFC Eskilstuna"}], "Ljungskile SK": [{"skytt": "Mattias Molin", "minut": "90", "motstandare": "Landskrona BoIS", "not": "", "alder": 27, "datum": "2000-04-16", "hm": 1, "bm": 1, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Ljungskile SK"}], "Gunnilse IS": [{"skytt": "Eddy López", "minut": "44", "motstandare": "Östers IF", "not": "", "alder": 20, "datum": "2000-04-29", "hm": 1, "bm": 2, "hemmalag": "Gunnilse IS", "skyttens_lag": "Gunnilse IS"}], "IF Sylvia": [{"skytt": "Dennis Ericsson", "minut": "24", "motstandare": "Assyriska FF", "not": "", "alder": 28, "datum": "2000-04-24", "hm": 0, "bm": 2, "hemmalag": "Assyriska FF", "skyttens_lag": "IF Sylvia"}], "Malmö FF": [{"skytt": "Niklas Gudmundsson", "minut": "12", "motstandare": "Mjällby AIF", "not": "", "alder": 28, "datum": "2000-04-24", "hm": 2, "bm": 2, "hemmalag": "Malmö FF", "skyttens_lag": "Malmö FF"}], "Åtvidabergs FF": [{"skytt": "Andreas Bäckmark", "minut": "24", "motstandare": "Västerås SK", "not": "", "alder": 21, "datum": "2000-04-24", "hm": 1, "bm": 1, "hemmalag": "Åtvidabergs FF", "skyttens_lag": "Åtvidabergs FF"}], "Enköpings SK": [{"skytt": "Tomas Andersson (1968)", "minut": "11", "motstandare": "Landskrona BoIS", "not": "", "alder": 32, "datum": "2000-04-22", "hm": 2, "bm": 1, "hemmalag": "Enköpings SK", "skyttens_lag": "Enköpings SK"}], "IK Brage": [{"skytt": "Jimmy Rajala", "minut": "7", "motstandare": "Östers IF", "not": "", "alder": 26, "datum": "2000-05-04", "hm": 1, "bm": 1, "hemmalag": "IK Brage", "skyttens_lag": "IK Brage"}]}, "2001": {"Östers IF": [{"skytt": "Matthias Johansson", "minut": "14", "motstandare": "Motala AIF", "not": "", "alder": 27, "datum": "2001-04-16", "hm": 2, "bm": 0, "hemmalag": "Östers IF", "skyttens_lag": "Östers IF"}], "Kalmar FF": [{"skytt": "Lucas Nilsson", "minut": "01:15:00", "motstandare": "Västra Frölunda IF", "not": "", "alder": 27, "datum": "2001-04-16", "hm": 3, "bm": 1, "hemmalag": "Kalmar FF", "skyttens_lag": "Kalmar FF"}], "Landskrona BoIS": [{"skytt": "Daniel Nannskog", "minut": "85", "motstandare": "Gefle IF", "not": "", "alder": 26, "datum": "2001-04-16", "hm": 1, "bm": 2, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Landskrona BoIS"}], "IF Sylvia": [{"skytt": "Lars Åkerberg", "minut": "74", "motstandare": "IFK Malmö", "not": "", "alder": 26, "datum": "2001-04-16", "hm": 1, "bm": 1, "hemmalag": "IF Sylvia", "skyttens_lag": "IF Sylvia"}], "Västerås SK": [{"skytt": "Andreas Engblom", "minut": "50", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2001-04-17", "hm": 1, "bm": 0, "hemmalag": "Västerås SK", "skyttens_lag": "Västerås SK"}], "Västra Frölunda IF": [{"skytt": "Arash Talebinejad", "minut": "17", "motstandare": "Kalmar FF", "not": "", "alder": "", "datum": "2001-04-16", "hm": 3, "bm": 1, "hemmalag": "Kalmar FF", "skyttens_lag": "Västra Frölunda IF"}], "Gefle IF": [{"skytt": "Daniel Moffatt", "minut": "19", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2001-04-16", "hm": 1, "bm": 2, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Gefle IF"}], "IFK Malmö": [{"skytt": "Roger Nilsson", "minut": "8", "motstandare": "IF Sylvia", "not": "", "alder": "", "datum": "2001-04-16", "hm": 1, "bm": 1, "hemmalag": "IF Sylvia", "skyttens_lag": "IFK Malmö"}], "Assyriska FF": [{"skytt": "Bashkim Shaqiri", "minut": "34", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2001-04-17", "hm": 0, "bm": 1, "hemmalag": "GAIS", "skyttens_lag": "Assyriska FF"}], "Umeå FC": [{"skytt": "Anton Holmberg", "minut": "8", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2001-04-22", "hm": 4, "bm": 0, "hemmalag": "Umeå FC", "skyttens_lag": "Umeå FC"}], "IK Brage": [{"skytt": "Patrik Bergström", "minut": "33", "motstandare": "Mjällby AIF", "not": "", "alder": "", "datum": "2001-04-22", "hm": 1, "bm": 2, "hemmalag": "IK Brage", "skyttens_lag": "IK Brage"}], "AFC Eskilstuna": [{"skytt": "Goran Nikolajev", "minut": "14", "motstandare": "IFK Malmö", "not": "", "alder": "", "datum": "2001-04-22", "hm": 2, "bm": 3, "hemmalag": "IFK Malmö", "skyttens_lag": "AFC Eskilstuna"}], "GAIS": [{"skytt": "Jörgen Hellqvist", "minut": "90", "motstandare": "IFK Malmö", "not": "", "alder": "", "datum": "2001-04-29", "hm": 1, "bm": 1, "hemmalag": "GAIS", "skyttens_lag": "GAIS"}], "Motala AIF": [{"skytt": "Simon Jakobsson", "minut": "43", "motstandare": "IF Sylvia", "not": "", "alder": "", "datum": "2001-05-06", "hm": 1, "bm": 1, "hemmalag": "Motala AIF", "skyttens_lag": "Motala AIF"}], "Enköpings SK": [{"skytt": "Peter Berggren", "minut": "4", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2001-04-29", "hm": 1, "bm": 3, "hemmalag": "Östers IF", "skyttens_lag": "Enköpings SK"}], "Mjällby AIF": [{"skytt": "Torbjörn Nilsson", "minut": "43", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2001-04-22", "hm": 1, "bm": 2, "hemmalag": "IK Brage", "skyttens_lag": "Mjällby AIF"}]}, "2002": {"Assyriska FF": [{"skytt": "Zoran Manovic", "minut": "11", "motstandare": "Västra Frölunda IF", "not": "", "alder": 33, "datum": "2002-04-13", "hm": 2, "bm": 2, "hemmalag": "Västra Frölunda IF", "skyttens_lag": "Assyriska FF"}]}, "2003": {"IF Brommapojkarna": [{"skytt": "Andreas Bild", "minut": "01:40:00", "motstandare": "Assyriska FF", "not": "", "alder": "", "datum": "2003-04-15", "hm": 2, "bm": 1, "hemmalag": "IF Brommapojkarna", "skyttens_lag": "IF Brommapojkarna"}]}, "2004": {"IK Brage": [{"skytt": "Fredrik Bengtsson", "minut": "02:53:00", "motstandare": "GAIS", "not": "", "alder": 29, "datum": "2004-04-17", "hm": 1, "bm": 1, "hemmalag": "GAIS", "skyttens_lag": "IK Brage"}]}, "2005": {"GAIS": [{"skytt": "Daniel Nicklasson", "minut": "03:25:00", "motstandare": "Ljungskile SK", "not": "", "alder": "", "datum": "2005-04-16", "hm": 2, "bm": 1, "hemmalag": "GAIS", "skyttens_lag": "GAIS"}]}, "2006": {"Jönköpings Södra IF": [{"skytt": "Andreas Nilsson", "minut": "02:11:00", "motstandare": "IF Brommapojkarna", "not": "", "alder": "", "datum": "2006-04-14", "hm": 3, "bm": 2, "hemmalag": "Jönköpings Södra IF", "skyttens_lag": "Jönköpings Södra IF"}]}, "2007": {"Falkenbergs FF": [{"skytt": "Björn Carlsson", "minut": "04:00:00", "motstandare": "IF Sylvia", "not": "", "alder": "", "datum": "2007-04-15", "hm": 2, "bm": 2, "hemmalag": "Falkenbergs FF", "skyttens_lag": "Falkenbergs FF"}]}, "2008": {"Assyriska FF": [{"skytt": "Göran Marklund", "minut": "03:13:00", "motstandare": "Qviding FIF", "not": "", "alder": 32, "datum": "2008-04-13", "hm": 2, "bm": 1, "hemmalag": "Assyriska FF", "skyttens_lag": "Assyriska FF"}, {"skytt": "Göran Marklund", "minut": "03:13:00", "motstandare": "Qviding FIF", "not": "", "alder": "", "datum": "2008-04-13", "hm": 2, "bm": 1, "hemmalag": "Assyriska FF", "skyttens_lag": "Assyriska FF"}]}, "2009": {"Assyriska FF": [{"skytt": "Xhevdet Llumnica", "minut": "13:52:00", "motstandare": "IFK Norrköping", "not": "", "alder": "", "datum": "2009-04-11", "hm": 3, "bm": 0, "hemmalag": "Assyriska FF", "skyttens_lag": "Assyriska FF"}]}, "2010": {"Landskrona BoIS": [{"skytt": "Niklas Nielsen", "minut": "02:41:00", "motstandare": "Degerfors IF", "not": "", "alder": "", "datum": "2010-04-10", "hm": 1, "bm": 0, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Landskrona BoIS"}]}, "2011": {"Assyriska FF": [{"skytt": "Jones Kusi Asare", "minut": "07:16:00", "motstandare": "Hammarby IF", "not": "", "alder": "", "datum": "2011-04-11", "hm": 1, "bm": 0, "hemmalag": "Assyriska FF", "skyttens_lag": "Assyriska FF"}]}, "2012": {"Assyriska FF": [{"skytt": "Fuad Hyseni", "minut": "01:19:00", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2012-04-09", "hm": 3, "bm": 1, "hemmalag": "Assyriska FF", "skyttens_lag": "Assyriska FF"}]}, "2013": {"Varbergs BoIS": [{"skytt": "Gabriel Altemark Vanneryr", "minut": "05:27:00", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2013-04-06", "hm": 3, "bm": 1, "hemmalag": "Varbergs BoIS", "skyttens_lag": "Varbergs BoIS"}]}, "2014": {"Husqvarna FF": [{"skytt": "Tobias Nilsson", "minut": "04:50:00", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2014-04-05", "hm": 3, "bm": 1, "hemmalag": "Husqvarna FF", "skyttens_lag": "Husqvarna FF"}]}, "2015": {"Utsiktens BK": [{"skytt": "Jesper Westermark", "minut": "08:14:00", "motstandare": "Degerfors IF", "not": "", "alder": "", "datum": "2015-04-03", "hm": 4, "bm": 1, "hemmalag": "Utsiktens BK", "skyttens_lag": "Utsiktens BK"}]}, "2016": {"Halmstads BK": [{"skytt": "Sead Haksabanovic", "minut": "01:15:00", "motstandare": "IK Sirius", "not": "", "alder": "", "datum": "2016-04-04", "hm": 2, "bm": 1, "hemmalag": "IK Sirius", "skyttens_lag": "Halmstads BK"}]}, "2017": {"Örgryte IS": [{"skytt": "Johan Hammar", "minut": "02:03:00", "motstandare": "Varbergs BoIS", "not": "", "alder": "", "datum": "2017-04-03", "hm": 2, "bm": 1, "hemmalag": "Örgryte IS", "skyttens_lag": "Örgryte IS"}]}, "2018": {"Örgryte IS": [{"skytt": "David Engström", "minut": "24", "motstandare": "Varbergs BoIS", "not": "", "alder": "", "datum": "2018-04-03", "hm": 0, "bm": 2, "hemmalag": "Varbergs BoIS", "skyttens_lag": "Örgryte IS"}], "Norrby IF": [{"skytt": "Nicklas Savolainen", "minut": "12", "motstandare": "IK Frej Täby", "not": "", "alder": "", "datum": "2018-04-02", "hm": 2, "bm": 2, "hemmalag": "IK Frej Täby", "skyttens_lag": "Norrby IF"}], "AFC Eskilstuna": [{"skytt": "Samuel Nnamani", "minut": "2", "motstandare": "IFK Värnamo", "not": "", "alder": "", "datum": "2018-04-15", "hm": 4, "bm": 0, "hemmalag": "AFC Eskilstuna", "skyttens_lag": "AFC Eskilstuna"}], "GAIS": [{"skytt": "Jonas Lindberg", "minut": "45", "motstandare": "Jönköpings Södra IF", "not": "", "alder": "", "datum": "2018-04-01", "hm": 2, "bm": 1, "hemmalag": "GAIS", "skyttens_lag": "GAIS"}], "Landskrona BoIS": [{"skytt": "Monday Samuel", "minut": "63", "motstandare": "Falkenbergs FF", "not": "", "alder": "", "datum": "2018-04-01", "hm": 2, "bm": 3, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Landskrona BoIS"}], "Östers IF": [{"skytt": "Fredrik Lundgren", "minut": "73", "motstandare": "Degerfors IF", "not": "", "alder": "", "datum": "2018-04-01", "hm": 2, "bm": 2, "hemmalag": "Östers IF", "skyttens_lag": "Östers IF"}], "IK Frej Täby": [{"skytt": "Dusan Jajic", "minut": "29", "motstandare": "Norrby IF", "not": "", "alder": "", "datum": "2018-04-02", "hm": 2, "bm": 2, "hemmalag": "IK Frej Täby", "skyttens_lag": "IK Frej Täby"}], "Gefle IF": [{"skytt": "Jonas Lantto", "minut": "59", "motstandare": "IFK Värnamo", "not": "", "alder": "", "datum": "2018-04-02", "hm": 2, "bm": 1, "hemmalag": "Gefle IF", "skyttens_lag": "Gefle IF"}], "Varbergs BoIS": [{"skytt": "Perparim Beqaj", "minut": "72", "motstandare": "Örgryte IS", "not": "", "alder": "", "datum": "2018-04-03", "hm": 0, "bm": 2, "hemmalag": "Varbergs BoIS", "skyttens_lag": "Varbergs BoIS"}], "IK Brage": [{"skytt": "Simon Alexandersson", "minut": "20", "motstandare": "Gefle IF", "not": "", "alder": "", "datum": "2018-04-09", "hm": 4, "bm": 2, "hemmalag": "IK Brage", "skyttens_lag": "IK Brage"}], "Jönköpings Södra IF": [{"skytt": "Jacob Orlov", "minut": "31", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2018-04-01", "hm": 2, "bm": 1, "hemmalag": "GAIS", "skyttens_lag": "Jönköpings Södra IF"}], "Falkenbergs FF": [{"skytt": "Karl Söderström", "minut": "45", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2018-04-01", "hm": 2, "bm": 3, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Falkenbergs FF"}], "Degerfors IF": [{"skytt": "Oliver Ekroth", "minut": "55", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2018-04-01", "hm": 2, "bm": 2, "hemmalag": "Östers IF", "skyttens_lag": "Degerfors IF"}], "IFK Värnamo": [{"skytt": "Pär Cederquist", "minut": "76", "motstandare": "Gefle IF", "not": "", "alder": "", "datum": "2018-04-02", "hm": 2, "bm": 1, "hemmalag": "Gefle IF", "skyttens_lag": "IFK Värnamo"}], "Halmstads BK": [{"skytt": "Andreas Hadenius", "minut": "20", "motstandare": "Degerfors IF", "not": "", "alder": "", "datum": "2018-04-07", "hm": 1, "bm": 2, "hemmalag": "Degerfors IF", "skyttens_lag": "Halmstads BK"}], "Helsingborgs IF": [{"skytt": "Max Svensson", "minut": "39", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2018-04-08", "hm": 3, "bm": 1, "hemmalag": "Helsingborgs IF", "skyttens_lag": "Helsingborgs IF"}]}, "2019": {"GAIS": [{"skytt": "August Wängberg", "minut": "04:38:00", "motstandare": "Trelleborgs FF", "not": "", "alder": "", "datum": "2019-03-30", "hm": 2, "bm": 2, "hemmalag": "Trelleborgs FF", "skyttens_lag": "GAIS"}], "IF Brommapojkarna": [{"skytt": "Fritiof Björkén", "minut": "43", "motstandare": "Västerås SK", "not": "", "alder": "", "datum": "2019-03-30", "hm": 1, "bm": 2, "hemmalag": "IF Brommapojkarna", "skyttens_lag": "IF Brommapojkarna"}], "Mjällby AIF": [{"skytt": "Joel Nilsson", "minut": "18", "motstandare": "Norrby IF", "not": "", "alder": "", "datum": "2019-04-08", "hm": 2, "bm": 1, "hemmalag": "Norrby IF", "skyttens_lag": "Mjällby AIF"}], "Trelleborgs FF": [{"skytt": "Zoran Jovanovic", "minut": "16", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2019-03-30", "hm": 2, "bm": 2, "hemmalag": "Trelleborgs FF", "skyttens_lag": "Trelleborgs FF"}], "Örgryte IS": [{"skytt": "Viktor Sköld", "minut": "22", "motstandare": "Norrby IF", "not": "", "alder": 29, "datum": "2019-03-30", "hm": 1, "bm": 1, "hemmalag": "Örgryte IS", "skyttens_lag": "Örgryte IS"}], "Syrianska FC": [{"skytt": "Mauricio Albornoz", "minut": "14", "motstandare": "Degerfors IF", "not": "", "alder": "", "datum": "2019-03-31", "hm": 1, "bm": 4, "hemmalag": "Syrianska FC", "skyttens_lag": "Syrianska FC"}], "Östers IF": [{"skytt": "Mattias Pavic", "minut": "39", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2019-04-05", "hm": 1, "bm": 1, "hemmalag": "GAIS", "skyttens_lag": "Östers IF"}], "IK Brage": [{"skytt": "Anton Lundin", "minut": "77", "motstandare": "IK Frej Täby", "not": "straff", "alder": "", "datum": "2019-04-01", "hm": 2, "bm": 0, "hemmalag": "IK Brage", "skyttens_lag": "IK Brage"}], "Jönköpings Södra IF": [{"skytt": "Daryl Smylie", "minut": "17", "motstandare": "Degerfors IF", "not": "", "alder": "", "datum": "2019-04-06", "hm": 2, "bm": 1, "hemmalag": "Degerfors IF", "skyttens_lag": "Jönköpings Södra IF"}], "Västerås SK": [{"skytt": "Stefan Batan", "minut": "23", "motstandare": "IF Brommapojkarna", "not": "", "alder": "", "datum": "2019-03-30", "hm": 1, "bm": 2, "hemmalag": "IF Brommapojkarna", "skyttens_lag": "Västerås SK"}], "Varbergs BoIS": [{"skytt": "Astrit Seljmani", "minut": "85", "motstandare": "Mjällby AIF", "not": "", "alder": "", "datum": "2019-03-30", "hm": 0, "bm": 1, "hemmalag": "Mjällby AIF", "skyttens_lag": "Varbergs BoIS"}], "Norrby IF": [{"skytt": "Richard Yarsuvat", "minut": "88", "motstandare": "Örgryte IS", "not": "", "alder": "", "datum": "2019-03-30", "hm": 1, "bm": 1, "hemmalag": "Örgryte IS", "skyttens_lag": "Norrby IF"}], "Degerfors IF": [{"skytt": "Nikola Ladin", "minut": "9", "motstandare": "Syrianska FC", "not": "straff", "alder": "", "datum": "2019-03-31", "hm": 1, "bm": 4, "hemmalag": "Syrianska FC", "skyttens_lag": "Degerfors IF"}], "Dalkurd FF": [{"skytt": "Joseph Ceesay", "minut": "12", "motstandare": "Mjällby AIF", "not": "", "alder": "", "datum": "2019-04-21", "hm": 2, "bm": 1, "hemmalag": "Dalkurd FF", "skyttens_lag": "Dalkurd FF"}], "IK Frej Täby": [{"skytt": "Abdul-Halik Hudu", "minut": "35", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2019-04-22", "hm": 3, "bm": 2, "hemmalag": "IK Frej Täby", "skyttens_lag": "IK Frej Täby"}], "Halmstads BK": [{"skytt": "Sadat Karim", "minut": "85", "motstandare": "Jönköpings Södra IF", "not": "", "alder": "", "datum": "2019-04-02", "hm": 0, "bm": 1, "hemmalag": "Jönköpings Södra IF", "skyttens_lag": "Halmstads BK"}]}, "2020": {"GAIS": [{"skytt": "August Wängberg", "minut": "07:35:00", "motstandare": "Jönköpings Södra IF", "not": "", "alder": "", "datum": "2020-06-16", "hm": 1, "bm": 0, "hemmalag": "GAIS", "skyttens_lag": "GAIS"}], "Akropolis IF": [{"skytt": "Adhavan Rajamohan", "minut": "88", "motstandare": "Umeå FC", "not": "straff", "alder": "", "datum": "2020-06-21", "hm": 1, "bm": 1, "hemmalag": "Umeå FC", "skyttens_lag": "Akropolis IF"}], "AFC Eskilstuna": [{"skytt": "Francis Jno-Baptiste", "minut": "12", "motstandare": "Umeå FC", "not": "", "alder": "", "datum": "2020-06-27", "hm": 1, "bm": 3, "hemmalag": "AFC Eskilstuna", "skyttens_lag": "AFC Eskilstuna"}], "Halmstads BK": [{"skytt": "Dusan Djuric", "minut": "5", "motstandare": "Jönköpings Södra IF", "not": "", "alder": "", "datum": "2020-06-27", "hm": 3, "bm": 0, "hemmalag": "Halmstads BK", "skyttens_lag": "Halmstads BK"}], "GIF Sundsvall": [{"skytt": "Albin Palmlöv", "minut": "40", "motstandare": "Umeå FC", "not": "", "alder": "", "datum": "2020-06-16", "hm": 3, "bm": 1, "hemmalag": "GIF Sundsvall", "skyttens_lag": "GIF Sundsvall"}], "Degerfors IF": [{"skytt": "Villiam Dahlström", "minut": "10", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2020-06-17", "hm": 4, "bm": 1, "hemmalag": "Degerfors IF", "skyttens_lag": "Degerfors IF"}], "Ljungskile SK": [{"skytt": "Jesper Jonasson Westermark", "minut": "53", "motstandare": "Örgryte IS", "not": "", "alder": "", "datum": "2020-06-17", "hm": 2, "bm": 3, "hemmalag": "Ljungskile SK", "skyttens_lag": "Ljungskile SK"}], "Östers IF": [{"skytt": "Carl Johansson", "minut": "80", "motstandare": "Norrby IF", "not": "", "alder": "", "datum": "2020-06-17", "hm": 2, "bm": 1, "hemmalag": "Östers IF", "skyttens_lag": "Östers IF"}], "Dalkurd FF": [{"skytt": "John Stenberg", "minut": "4", "motstandare": "AFC Eskilstuna", "not": "", "alder": "", "datum": "2020-06-23", "hm": 5, "bm": 0, "hemmalag": "Dalkurd FF", "skyttens_lag": "Dalkurd FF"}], "Västerås SK": [{"skytt": "Ahmed Awad", "minut": "36", "motstandare": "AFC Eskilstuna", "not": "", "alder": "", "datum": "2020-06-16", "hm": 0, "bm": 1, "hemmalag": "AFC Eskilstuna", "skyttens_lag": "Västerås SK"}], "Jönköpings Södra IF": [{"skytt": "Dzenis Kozica", "minut": "68", "motstandare": "Ljungskile SK", "not": "", "alder": "", "datum": "2020-06-23", "hm": 2, "bm": 1, "hemmalag": "Jönköpings Södra IF", "skyttens_lag": "Jönköpings Södra IF"}], "Trelleborgs FF": [{"skytt": "Mattias Håkansson", "minut": "74", "motstandare": "Halmstads BK", "not": "", "alder": "", "datum": "2020-06-16", "hm": 0, "bm": 1, "hemmalag": "Halmstads BK", "skyttens_lag": "Trelleborgs FF"}], "Umeå FC": [{"skytt": "Bajram Ajeti", "minut": "35", "motstandare": "GIF Sundsvall", "not": "", "alder": "", "datum": "2020-06-16", "hm": 3, "bm": 1, "hemmalag": "GIF Sundsvall", "skyttens_lag": "Umeå FC"}], "IK Brage": [{"skytt": "Leonard Pllana", "minut": "45", "motstandare": "Degerfors IF", "not": "", "alder": "", "datum": "2020-06-17", "hm": 4, "bm": 1, "hemmalag": "Degerfors IF", "skyttens_lag": "IK Brage"}], "Örgryte IS": [{"skytt": "Kevin Ackermann", "minut": "30", "motstandare": "Ljungskile SK", "not": "", "alder": "", "datum": "2020-06-17", "hm": 2, "bm": 3, "hemmalag": "Ljungskile SK", "skyttens_lag": "Örgryte IS"}], "Norrby IF": [{"skytt": "Rasmus Örqvist", "minut": "77", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2020-06-17", "hm": 2, "bm": 1, "hemmalag": "Östers IF", "skyttens_lag": "Norrby IF"}]}, "2021": {"Landskrona BoIS": [{"skytt": "Filip Ottosson", "minut": "24", "motstandare": "IFK Värnamo", "not": "", "alder": "", "datum": "2021-04-10", "hm": 2, "bm": 0, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Landskrona BoIS"}], "Vasalunds IF": [{"skytt": "Mai Traoré", "minut": "13:03:00", "motstandare": "Jönköpings Södra IF", "not": "", "alder": "", "datum": "2021-04-11", "hm": 5, "bm": 1, "hemmalag": "Jönköpings Södra IF", "skyttens_lag": "Vasalunds IF"}], "Falkenbergs FF": [{"skytt": "Tobias Helldén", "minut": "41", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2021-04-17", "hm": 0, "bm": 1, "hemmalag": "IK Brage", "skyttens_lag": "Falkenbergs FF"}], "Akropolis IF": [{"skytt": "Mattias Bouvin", "minut": "34", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2021-04-11", "hm": 1, "bm": 1, "hemmalag": "Akropolis IF", "skyttens_lag": "Akropolis IF"}], "Jönköpings Södra IF": [{"skytt": "Perparim Beqaj", "minut": "52", "motstandare": "Vasalunds IF", "not": "", "alder": "", "datum": "2021-04-11", "hm": 5, "bm": 1, "hemmalag": "Jönköpings Södra IF", "skyttens_lag": "Jönköpings Södra IF"}], "Trelleborgs FF": [{"skytt": "Henry Offia", "minut": "82", "motstandare": "Norrby IF", "not": "", "alder": "", "datum": "2021-04-11", "hm": 2, "bm": 1, "hemmalag": "Trelleborgs FF", "skyttens_lag": "Trelleborgs FF"}], "Örgryte IS": [{"skytt": "Daniel Paulson", "minut": "70", "motstandare": "Helsingborgs IF", "not": "", "alder": "", "datum": "2021-04-20", "hm": 4, "bm": 1, "hemmalag": "Helsingborgs IF", "skyttens_lag": "Örgryte IS"}], "Västerås SK": [{"skytt": "William Videhult", "minut": "17", "motstandare": "Vasalunds IF", "not": "", "alder": "", "datum": "2021-04-26", "hm": 2, "bm": 1, "hemmalag": "Västerås SK", "skyttens_lag": "Västerås SK"}], "GIF Sundsvall": [{"skytt": "Pontus Engblom", "minut": "23", "motstandare": "Helsingborgs IF", "not": "straff", "alder": "", "datum": "2021-04-13", "hm": 2, "bm": 2, "hemmalag": "GIF Sundsvall", "skyttens_lag": "GIF Sundsvall"}], "GAIS": [{"skytt": "Daniel Sterner", "minut": "50", "motstandare": "Falkenbergs FF", "not": "", "alder": "", "datum": "2021-04-10", "hm": 0, "bm": 1, "hemmalag": "Falkenbergs FF", "skyttens_lag": "GAIS"}], "IFK Värnamo": [{"skytt": "Alhassan Haestad Kamara", "minut": "23", "motstandare": "GIF Sundsvall", "not": "", "alder": "", "datum": "2021-04-18", "hm": 2, "bm": 1, "hemmalag": "IFK Värnamo", "skyttens_lag": "IFK Värnamo"}], "IK Brage": [{"skytt": "Leonard Pllana", "minut": "56", "motstandare": "Akropolis IF", "not": "", "alder": "", "datum": "2021-04-11", "hm": 1, "bm": 1, "hemmalag": "Akropolis IF", "skyttens_lag": "IK Brage"}], "Norrby IF": [{"skytt": "Dijan Vukojevic", "minut": "43", "motstandare": "Trelleborgs FF", "not": "straff", "alder": "", "datum": "2021-04-11", "hm": 2, "bm": 1, "hemmalag": "Trelleborgs FF", "skyttens_lag": "Norrby IF"}], "Östers IF": [{"skytt": "Nicolas Mortensen", "minut": "59", "motstandare": "Örgryte IS", "not": "", "alder": "", "datum": "2021-04-11", "hm": 0, "bm": 1, "hemmalag": "Örgryte IS", "skyttens_lag": "Östers IF"}], "AFC Eskilstuna": [{"skytt": "Adbelkarim Chaouche", "minut": "44", "motstandare": "Akropolis IF", "not": "", "alder": "", "datum": "2021-04-17", "hm": 3, "bm": 0, "hemmalag": "AFC Eskilstuna", "skyttens_lag": "AFC Eskilstuna"}], "Helsingborgs IF": [{"skytt": "Anthony van den Hurk", "minut": "18", "motstandare": "GIF Sundsvall", "not": "", "alder": "", "datum": "2021-04-13", "hm": 2, "bm": 2, "hemmalag": "GIF Sundsvall", "skyttens_lag": "Helsingborgs IF"}]}, "2022": {"IF Brommapojkarna": [{"skytt": "Philip Hellqvist", "minut": "04:37:00", "motstandare": "Västerås SK", "not": "", "alder": "", "datum": "2022-04-02", "hm": 2, "bm": 1, "hemmalag": "IF Brommapojkarna", "skyttens_lag": "IF Brommapojkarna"}], "Skövde AIK": [{"skytt": "Filip Schyberg", "minut": "13", "motstandare": "Östersunds FK", "not": "", "alder": "", "datum": "2022-04-03", "hm": 2, "bm": 3, "hemmalag": "Östersunds FK", "skyttens_lag": "Skövde AIK"}], "Jönköpings Södra IF": [{"skytt": "Peter Gwargis", "minut": "34", "motstandare": "AFC Eskilstuna", "not": "", "alder": "", "datum": "2022-04-02", "hm": 2, "bm": 3, "hemmalag": "Jönköpings Södra IF", "skyttens_lag": "Jönköpings Södra IF"}], "Norrby IF": [{"skytt": "Nicklas Savolainen", "minut": "66", "motstandare": "Dalkurd FF", "not": "", "alder": "", "datum": "2022-04-03", "hm": 1, "bm": 0, "hemmalag": "Norrby IF", "skyttens_lag": "Norrby IF"}], "Trelleborgs FF": [{"skytt": "Mohammed Khalid Saeid", "minut": "19", "motstandare": "Utsiktens BK", "not": "", "alder": "", "datum": "2022-04-03", "hm": 1, "bm": 0, "hemmalag": "Trelleborgs FF", "skyttens_lag": "Trelleborgs FF"}], "Östersunds FK": [{"skytt": "Chovanie Amatkarijo", "minut": "37", "motstandare": "Skövde AIK", "not": "", "alder": "", "datum": "2022-04-03", "hm": 2, "bm": 3, "hemmalag": "Östersunds FK", "skyttens_lag": "Östersunds FK"}], "IK Brage": [{"skytt": "Självmål", "minut": "8", "motstandare": "Örebro SK", "not": "", "alder": "", "datum": "2022-04-04", "hm": 3, "bm": 0, "hemmalag": "IK Brage", "skyttens_lag": "IK Brage"}], "Landskrona BoIS": [{"skytt": "Erik Pärsson", "minut": "61", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2022-04-04", "hm": 1, "bm": 3, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Landskrona BoIS"}], "Örgryte IS": [{"skytt": "Sargon Abraham", "minut": "18", "motstandare": "Halmstads BK", "not": "", "alder": "", "datum": "2022-04-05", "hm": 2, "bm": 2, "hemmalag": "Örgryte IS", "skyttens_lag": "Örgryte IS"}], "Västerås SK": [{"skytt": "Jesper Merbom Adolfsson", "minut": "45", "motstandare": "Örgryte IS", "not": "straff", "alder": "", "datum": "2022-04-05", "hm": 2, "bm": 2, "hemmalag": "Örgryte IS", "skyttens_lag": "Västerås SK"}], "AFC Eskilstuna": [{"skytt": "York Rafael", "minut": "44", "motstandare": "Jönköpings Södra IF", "not": "", "alder": "", "datum": "2022-04-02", "hm": 2, "bm": 3, "hemmalag": "Jönköpings Södra IF", "skyttens_lag": "AFC Eskilstuna"}], "Dalkurd FF": [{"skytt": "Arian Kabashi", "minut": "35", "motstandare": "Trelleborgs FF", "not": "", "alder": "", "datum": "2022-04-09", "hm": 2, "bm": 0, "hemmalag": "Dalkurd FF", "skyttens_lag": "Dalkurd FF"}], "Utsiktens BK": [{"skytt": "Lucas Hedlund", "minut": "18", "motstandare": "IF Brommapojkarna", "not": "", "alder": "", "datum": "2022-04-10", "hm": 3, "bm": 2, "hemmalag": "Utsiktens BK", "skyttens_lag": "Utsiktens BK"}], "Örebro SK": [{"skytt": "Jake Larsson", "minut": "64", "motstandare": "Jönköpings Södra IF", "not": "", "alder": "", "datum": "2022-04-12", "hm": 3, "bm": 1, "hemmalag": "Örebro SK", "skyttens_lag": "Örebro SK"}], "Östers IF": [{"skytt": "Marc Rochester Sörensen", "minut": "24", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2022-04-04", "hm": 1, "bm": 3, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Östers IF"}], "Halmstads BK": [{"skytt": "Alexander Johansson", "minut": "86", "motstandare": "Örgryte IS", "not": "", "alder": "", "datum": "2022-04-05", "hm": 2, "bm": 2, "hemmalag": "Örgryte IS", "skyttens_lag": "Halmstads BK"}]}, "2023": {"Västerås SK": [{"skytt": "Simon Johansson", "minut": "50", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2023-04-01", "hm": 1, "bm": 2, "hemmalag": "IK Brage", "skyttens_lag": "Västerås SK"}], "Gefle IF": [{"skytt": "Anton Lundin", "minut": "02:52:00", "motstandare": "Trelleborgs FF", "not": "", "alder": "", "datum": "2023-04-02", "hm": 0, "bm": 1, "hemmalag": "Trelleborgs FF", "skyttens_lag": "Gefle IF"}], "IK Brage": [{"skytt": "Seth Hellberg", "minut": "51", "motstandare": "Västerås SK", "not": "", "alder": "", "datum": "2023-04-01", "hm": 1, "bm": 2, "hemmalag": "IK Brage", "skyttens_lag": "IK Brage"}], "GIF Sundsvall": [{"skytt": "Teodor Stenshagen", "minut": "62", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2023-04-01", "hm": 2, "bm": 0, "hemmalag": "GIF Sundsvall", "skyttens_lag": "GIF Sundsvall"}], "Trelleborgs FF": [{"skytt": "Filip Bohman", "minut": "10", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2023-04-10", "hm": 5, "bm": 2, "hemmalag": "Östers IF", "skyttens_lag": "Trelleborgs FF"}], "Utsiktens BK": [{"skytt": "Erik Gunnarsson", "minut": "69", "motstandare": "Skövde AIK", "not": "", "alder": "", "datum": "2023-04-02", "hm": 1, "bm": 0, "hemmalag": "Utsiktens BK", "skyttens_lag": "Utsiktens BK"}], "Östersunds FK": [{"skytt": "Chovanie Amatkarijo", "minut": "89", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2023-04-02", "hm": 1, "bm": 1, "hemmalag": "Östersunds FK", "skyttens_lag": "Östersunds FK"}], "Jönköpings Södra IF": [{"skytt": "Robin Book", "minut": "26", "motstandare": "Skövde AIK", "not": "", "alder": "", "datum": "2023-04-09", "hm": 3, "bm": 3, "hemmalag": "Skövde AIK", "skyttens_lag": "Jönköpings Södra IF"}], "Örgryte IS": [{"skytt": "Marcus Haglind Sangré", "minut": "39", "motstandare": "AFC Eskilstuna", "not": "", "alder": "", "datum": "2023-04-03", "hm": 2, "bm": 2, "hemmalag": "Örgryte IS", "skyttens_lag": "Örgryte IS"}], "Helsingborgs IF": [{"skytt": "Benjamin Acquah", "minut": "39", "motstandare": "GAIS", "not": "", "alder": "", "datum": "2023-05-02", "hm": 2, "bm": 1, "hemmalag": "Helsingborgs IF", "skyttens_lag": "Helsingborgs IF"}], "Landskrona BoIS": [{"skytt": "Robin Dzabic", "minut": "49", "motstandare": "Utsiktens BK", "not": "", "alder": "", "datum": "2023-04-09", "hm": 1, "bm": 3, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Landskrona BoIS"}], "Skövde AIK": [{"skytt": "Filip Schyberg", "minut": "18", "motstandare": "Jönköpings Södra IF", "not": "", "alder": "", "datum": "2023-04-09", "hm": 3, "bm": 3, "hemmalag": "Skövde AIK", "skyttens_lag": "Skövde AIK"}], "GAIS": [{"skytt": "Julius Lindberg", "minut": "36", "motstandare": "Östersunds FK", "not": "", "alder": "", "datum": "2023-04-02", "hm": 1, "bm": 1, "hemmalag": "Östersunds FK", "skyttens_lag": "GAIS"}], "Örebro SK": [{"skytt": "Noel Milleskog", "minut": "2", "motstandare": "AFC Eskilstuna", "not": "", "alder": "", "datum": "2023-04-30", "hm": 3, "bm": 0, "hemmalag": "Örebro SK", "skyttens_lag": "Örebro SK"}], "AFC Eskilstuna": [{"skytt": "Jesper Modig", "minut": "35", "motstandare": "Örgryte IS", "not": "", "alder": "", "datum": "2023-04-03", "hm": 2, "bm": 2, "hemmalag": "Örgryte IS", "skyttens_lag": "AFC Eskilstuna"}], "Östers IF": [{"skytt": "Adam Wiberg", "minut": "89", "motstandare": "Helsingborgs IF", "not": "", "alder": "", "datum": "2023-04-04", "hm": 0, "bm": 1, "hemmalag": "Helsingborgs IF", "skyttens_lag": "Östers IF"}]}, "2024": {"GIF Sundsvall": [{"skytt": "Pontus Engblom", "minut": "90", "motstandare": "Östersunds FK", "not": "", "alder": "", "datum": "2024-03-30", "hm": 1, "bm": 0, "hemmalag": "GIF Sundsvall", "skyttens_lag": "GIF Sundsvall"}], "Utsiktens BK": [{"skytt": "Filip Trpcevski", "minut": "23", "motstandare": "Örgryte IS", "not": "", "alder": "", "datum": "2024-03-30", "hm": 1, "bm": 2, "hemmalag": "Örgryte IS", "skyttens_lag": "Utsiktens BK"}], "Landskrona BoIS": [{"skytt": "Kofi Fosuhene Asare", "minut": "13:36:00", "motstandare": "Sandvikens IF", "not": "", "alder": "", "datum": "2024-03-31", "hm": 4, "bm": 0, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Landskrona BoIS"}], "IK Oddevold": [{"skytt": "Liridon Kalludra", "minut": "50", "motstandare": "Trelleborgs FF", "not": "", "alder": "", "datum": "2024-03-31", "hm": 1, "bm": 2, "hemmalag": "Trelleborgs FF", "skyttens_lag": "IK Oddevold"}], "Sandvikens IF": [{"skytt": "Calvin Kabuye", "minut": "44", "motstandare": "Örebro SK", "not": "", "alder": "", "datum": "2024-04-06", "hm": 2, "bm": 1, "hemmalag": "Sandvikens IF", "skyttens_lag": "Sandvikens IF"}], "Örgryte IS": [{"skytt": "Christoffer Styffe", "minut": "88", "motstandare": "Utsiktens BK", "not": "", "alder": "", "datum": "2024-03-30", "hm": 1, "bm": 2, "hemmalag": "Örgryte IS", "skyttens_lag": "Örgryte IS"}], "Trelleborgs FF": [{"skytt": "Armin Culum", "minut": "32", "motstandare": "IK Oddevold", "not": "", "alder": "", "datum": "2024-03-31", "hm": 1, "bm": 2, "hemmalag": "Trelleborgs FF", "skyttens_lag": "Trelleborgs FF"}], "IK Brage": [{"skytt": "Kevin Appiah Nyarko", "minut": "45", "motstandare": "Varbergs BoIS", "not": "", "alder": "", "datum": "2024-04-01", "hm": 1, "bm": 0, "hemmalag": "IK Brage", "skyttens_lag": "IK Brage"}], "Gefle IF": [{"skytt": "Adrian Edqvist", "minut": "47", "motstandare": "Helsingborgs IF", "not": "", "alder": "", "datum": "2024-04-01", "hm": 2, "bm": 3, "hemmalag": "Gefle IF", "skyttens_lag": "Gefle IF"}], "Helsingborgs IF": [{"skytt": "Taylor Silverholt", "minut": "23", "motstandare": "Gefle IF", "not": "straff", "alder": "", "datum": "2024-04-01", "hm": 2, "bm": 3, "hemmalag": "Gefle IF", "skyttens_lag": "Helsingborgs IF"}], "Skövde AIK": [{"skytt": "Mikael Mörk", "minut": "76", "motstandare": "Örebro SK", "not": "", "alder": "", "datum": "2024-04-01", "hm": 0, "bm": 1, "hemmalag": "Örebro SK", "skyttens_lag": "Skövde AIK"}], "Östers IF": [{"skytt": "Chriss-Albin Mörfelt", "minut": "90", "motstandare": "Degerfors IF", "not": "", "alder": "", "datum": "2024-04-02", "hm": 1, "bm": 1, "hemmalag": "Östers IF", "skyttens_lag": "Östers IF"}], "Degerfors IF": [{"skytt": "Pashang Abdulla", "minut": "27", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2024-04-02", "hm": 1, "bm": 1, "hemmalag": "Östers IF", "skyttens_lag": "Degerfors IF"}], "Östersunds FK": [{"skytt": "Jakob Hedenquist", "minut": "76", "motstandare": "Trelleborgs FF", "not": "", "alder": "", "datum": "2024-04-06", "hm": 1, "bm": 0, "hemmalag": "Östersunds FK", "skyttens_lag": "Östersunds FK"}], "Varbergs BoIS": [{"skytt": "Isak Bjerkebo", "minut": "21", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2024-04-06", "hm": 1, "bm": 2, "hemmalag": "Varbergs BoIS", "skyttens_lag": "Varbergs BoIS"}], "Örebro SK": [{"skytt": "Karl Holmberg", "minut": "65", "motstandare": "Sandvikens IF", "not": "", "alder": "", "datum": "2024-04-06", "hm": 2, "bm": 1, "hemmalag": "Sandvikens IF", "skyttens_lag": "Örebro SK"}]}, "2025": {"Falkenbergs FF": [{"skytt": "Viktor Ekblom", "minut": "3", "motstandare": "Varbergs BoIS", "not": "", "alder": "", "datum": "2025-03-29", "hm": 2, "bm": 2, "hemmalag": "Falkenbergs FF", "skyttens_lag": "Falkenbergs FF"}], "Varbergs BoIS": [{"skytt": "Isak Vidjeskog", "minut": "26", "motstandare": "Falkenbergs FF", "not": "", "alder": "", "datum": "2025-03-29", "hm": 2, "bm": 2, "hemmalag": "Falkenbergs FF", "skyttens_lag": "Varbergs BoIS"}], "GIF Sundsvall": [{"skytt": "Marcelo Palomino", "minut": "53", "motstandare": "Helsingborgs IF", "not": "straff", "alder": "", "datum": "2025-03-29", "hm": 2, "bm": 0, "hemmalag": "GIF Sundsvall", "skyttens_lag": "GIF Sundsvall"}], "Örgryte IS": [{"skytt": "Isak Dahlqvist", "minut": "57", "motstandare": "Utsiktens BK", "not": "", "alder": "", "datum": "2025-03-29", "hm": 2, "bm": 1, "hemmalag": "Örgryte IS", "skyttens_lag": "Örgryte IS"}], "Utsiktens BK": [{"skytt": "Mass Modou Sise", "minut": "90", "motstandare": "Örgryte IS", "not": "straff", "alder": "", "datum": "2025-03-29", "hm": 2, "bm": 1, "hemmalag": "Örgryte IS", "skyttens_lag": "Utsiktens BK"}], "Landskrona BoIS": [{"skytt": "Xavier Odhiambo", "minut": "35", "motstandare": "IK Brage", "not": "", "alder": "", "datum": "2025-03-30", "hm": 2, "bm": 2, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Landskrona BoIS"}], "IK Brage": [{"skytt": "Anton Lundin", "minut": "64", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2025-03-30", "hm": 2, "bm": 2, "hemmalag": "Landskrona BoIS", "skyttens_lag": "IK Brage"}], "Östersunds FK": [{"skytt": "Jamie Hopcutt", "minut": "90", "motstandare": "Trelleborgs FF", "not": "straff", "alder": "", "datum": "2025-03-30", "hm": 0, "bm": 1, "hemmalag": "Trelleborgs FF", "skyttens_lag": "Östersunds FK"}], "IK Oddevold": [{"skytt": "Oscar Iglicar Berntsson", "minut": "41", "motstandare": "Umeå FC", "not": "", "alder": "", "datum": "2025-03-31", "hm": 1, "bm": 0, "hemmalag": "IK Oddevold", "skyttens_lag": "IK Oddevold"}], "Västerås SK": [{"skytt": "Jabir Abdilhakim Ali", "minut": "16", "motstandare": "Örebro SK", "not": "", "alder": "", "datum": "2025-04-01", "hm": 0, "bm": 2, "hemmalag": "Örebro SK", "skyttens_lag": "Västerås SK"}], "Kalmar FF": [{"skytt": "Anthony Olusanya", "minut": "3", "motstandare": "GIF Sundsvall", "not": "", "alder": "", "datum": "2025-04-05", "hm": 1, "bm": 0, "hemmalag": "Kalmar FF", "skyttens_lag": "Kalmar FF"}], "Sandvikens IF": [{"skytt": "Linus Tagesson", "minut": "21", "motstandare": "Helsingborgs IF", "not": "", "alder": "", "datum": "2025-04-05", "hm": 1, "bm": 2, "hemmalag": "Helsingborgs IF", "skyttens_lag": "Sandvikens IF"}], "Helsingborgs IF": [{"skytt": "Wilhelm Loeper", "minut": "22", "motstandare": "Sandvikens IF", "not": "", "alder": "", "datum": "2025-04-05", "hm": 1, "bm": 2, "hemmalag": "Helsingborgs IF", "skyttens_lag": "Helsingborgs IF"}], "Trelleborgs FF": [{"skytt": "Axel Vidjeskog", "minut": "32", "motstandare": "Umeå FC", "not": "", "alder": "", "datum": "2025-04-06", "hm": 0, "bm": 1, "hemmalag": "Umeå FC", "skyttens_lag": "Trelleborgs FF"}], "Örebro SK": [{"skytt": "Linus Alperud", "minut": "42", "motstandare": "Varbergs BoIS", "not": "", "alder": "", "datum": "2025-04-07", "hm": 2, "bm": 1, "hemmalag": "Varbergs BoIS", "skyttens_lag": "Örebro SK"}], "Umeå FC": [{"skytt": "Eythor Björgolfsson", "minut": "41", "motstandare": "Östersunds FK", "not": "", "alder": "", "datum": "2025-04-12", "hm": 2, "bm": 2, "hemmalag": "Umeå FC", "skyttens_lag": "Umeå FC"}]}, "2026": {"Helsingborgs IF": [{"skytt": "Demba N'Diaye", "minut": "02:25:00", "motstandare": "Östers IF", "not": "", "alder": "", "datum": "2026-04-03", "hm": 4, "bm": 1, "hemmalag": "Helsingborgs IF", "skyttens_lag": "Helsingborgs IF"}], "Östers IF": [{"skytt": "Oscar Uddenäs", "minut": "8", "motstandare": "Helsingborgs IF", "not": "", "alder": "", "datum": "2026-04-03", "hm": 4, "bm": 1, "hemmalag": "Helsingborgs IF", "skyttens_lag": "Östers IF"}], "IFK Norrköping": [{"skytt": "Elias Jemal", "minut": "20", "motstandare": "IFK Värnamo", "not": "", "alder": "", "datum": "2026-04-04", "hm": 6, "bm": 0, "hemmalag": "IFK Norrköping", "skyttens_lag": "IFK Norrköping"}], "IK Brage": [{"skytt": "Albin Sporrong", "minut": "79", "motstandare": "Norrby IF", "not": "", "alder": "", "datum": "2026-04-05", "hm": 0, "bm": 1, "hemmalag": "Norrby IF", "skyttens_lag": "IK Brage"}], "GIF Sundsvall": [{"skytt": "Yaqub Finey", "minut": "71", "motstandare": "Nordic United FC", "not": "", "alder": "", "datum": "2026-04-06", "hm": 3, "bm": 2, "hemmalag": "GIF Sundsvall", "skyttens_lag": "GIF Sundsvall"}], "Nordic United FC": [{"skytt": "Emmanuel Swedi", "minut": "16", "motstandare": "GIF Sundsvall", "not": "", "alder": "", "datum": "2026-04-06", "hm": 3, "bm": 2, "hemmalag": "GIF Sundsvall", "skyttens_lag": "Nordic United FC"}], "Falkenbergs FF": [{"skytt": "Hugo Komano", "minut": "43", "motstandare": "Ljungskile SK", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 1, "hemmalag": "Falkenbergs FF", "skyttens_lag": "Falkenbergs FF"}], "Ljungskile SK": [{"skytt": "Gideon Mensah", "minut": "87", "motstandare": "Falkenbergs FF", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 1, "hemmalag": "Falkenbergs FF", "skyttens_lag": "Ljungskile SK"}], "Örebro SK": [{"skytt": "Karl Holmberg", "minut": "53", "motstandare": "Landskrona BoIS", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 0, "hemmalag": "Örebro SK", "skyttens_lag": "Örebro SK"}], "Varbergs BoIS": [{"skytt": "Severin Nioule", "minut": "25", "motstandare": "Östersunds FK", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 2, "hemmalag": "Varbergs BoIS", "skyttens_lag": "Varbergs BoIS"}], "Östersunds FK": [{"skytt": "Curtis Edwards", "minut": "17", "motstandare": "Varbergs BoIS", "not": "", "alder": "", "datum": "2026-04-06", "hm": 1, "bm": 2, "hemmalag": "Varbergs BoIS", "skyttens_lag": "Östersunds FK"}], "IK Oddevold": [{"skytt": "Gustav Forssell", "minut": "11", "motstandare": "Sandvikens IF", "not": "", "alder": "", "datum": "2026-04-07", "hm": 2, "bm": 2, "hemmalag": "IK Oddevold", "skyttens_lag": "IK Oddevold"}], "Sandvikens IF": [{"skytt": "Christian Wagner", "minut": "54", "motstandare": "IK Oddevold", "not": "", "alder": "", "datum": "2026-04-07", "hm": 2, "bm": 2, "hemmalag": "IK Oddevold", "skyttens_lag": "Sandvikens IF"}], "IFK Värnamo": [{"skytt": "Hugo Andersson", "minut": "12", "motstandare": "GIF Sundsvall", "not": "", "alder": "", "datum": "2026-04-14", "hm": 3, "bm": 0, "hemmalag": "IFK Värnamo", "skyttens_lag": "IFK Värnamo"}], "Norrby IF": [{"skytt": "Jamie Bichis", "minut": "70", "motstandare": "Östersunds FK", "not": "straff", "alder": "", "datum": "2026-04-11", "hm": 1, "bm": 1, "hemmalag": "Östersunds FK", "skyttens_lag": "Norrby IF"}], "Landskrona BoIS": [{"skytt": "Andreas Murbeck", "minut": "40", "motstandare": "Falkenbergs FF", "not": "", "alder": "", "datum": "2026-04-12", "hm": 1, "bm": 2, "hemmalag": "Landskrona BoIS", "skyttens_lag": "Landskrona BoIS"}]}}; // <-- NY: Fångar upp premiärmålskyttarna från Python!
         const SCORER_INFO = {"Andreas Johansson": {"Född": "1978-07-05", "Avliden": "", "År": "1978", "Skyttekung": []}, "Marcus Ringberg": {"Född": "1976-05-05", "Avliden": "", "År": "1976", "Skyttekung": ["2000"]}, "Daniel Nannskog": {"Född": "1974-05-22", "Avliden": "", "År": "1974", "Skyttekung": ["2001"]}, "Ludwig Ernstsson": {"Född": "1972-04-29", "Avliden": "", "År": "1972", "Skyttekung": ["2002"]}, "Göran Marklund": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2003"]}, "Stefan Bärlin": {"Född": "1976-05-31", "Avliden": "", "År": "1976", "Skyttekung": ["2004"]}, "Bruno Santos": {"Född": "1983-08-31", "Avliden": "", "År": "1983", "Skyttekung": ["2005"]}, "Olof Guterstam": {"Född": "1983-01-04", "Avliden": "", "År": "1983", "Skyttekung": ["2006"]}, "Stefan Rodevåg": {"Född": "1980-06-11", "Avliden": "", "År": "1980", "Skyttekung": ["2006"]}, "Gardar Gunnlaugsson": {"Född": "1983-04-25", "Avliden": "", "År": "1983", "Skyttekung": ["2007"]}, "Jonas Henriksson": {"Född": "1976-12-29", "Avliden": "", "År": "1976", "Skyttekung": ["2008"]}, "Mattias Adelstam": {"Född": "1982-03-07", "Avliden": "", "År": "1982", "Skyttekung": ["2009"]}, "Marcus Ekenberg": {"Född": "1980-06-16", "Avliden": "", "År": "1980", "Skyttekung": ["2009"]}, "Linus Hallenius": {"Född": "1989-04-01", "Avliden": "", "År": "1989", "Skyttekung": ["2010"]}, "Branimir Hrgota": {"Född": "1993-01-12", "Avliden": "", "År": "1993", "Skyttekung": ["2011"]}, "Pablo Piñones Arce": {"Född": "1981-08-27", "Avliden": "", "År": "1981", "Skyttekung": ["2012"]}, "Viktor Sköld": {"Född": "1989-07-31", "Avliden": "", "År": "1989", "Skyttekung": ["2013"]}, "Kennedy Bakircioglu": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2014"]}, "Fredrik Olsson": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2015"]}, "Shkodran Maholli": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2016"]}, "Richard Yarsuvat": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2017"]}, "Andri Rúnar Bjarnason": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2018"]}, "Erik Björndahl": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2019"]}, "Pontus Engblom": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2020"]}, "Ajdin Zeljkovic": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2021"]}, "Viktor Granath": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2022"]}, "Jesper Jonasson Westermark": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2023"]}, "Assad Al Hamlawi": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2024"]}, "Karl Holmberg": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2024"]}, "Dijan Vukojevic": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2024"]}, "Amar Muhsin": {"Född": "", "Avliden": "", "År": "", "Skyttekung": ["2025"]}, "Lucas Nilsson": {"Född": "1973-07-16", "Avliden": "", "År": "1973", "Skyttekung": []}, "Daniel Mobaeck": {"Född": "1980-05-22", "Avliden": "", "År": "", "Skyttekung": []}, "Mathias Elison": {"Född": "1973-04-09", "Avliden": "", "År": "", "Skyttekung": []}, "Patrik Isaksson": {"Född": "1971-01-31", "Avliden": "", "År": "", "Skyttekung": []}, "Tonny Nilsson": {"Född": "1974-01-01", "Avliden": "", "År": "", "Skyttekung": []}, "Zoran Petrovic": {"Född": "1967-05-11", "Avliden": "", "År": "", "Skyttekung": []}, "Ghassan Heamed": {"Född": "1971-08-12", "Avliden": "", "År": "", "Skyttekung": []}, "Mounir Tajiou": {"Född": "1977-05-05", "Avliden": "", "År": "", "Skyttekung": []}, "Mattias Molin": {"Född": "1973-01-29", "Avliden": "", "År": "", "Skyttekung": []}, "Eddy López": {"Född": "1979-08-30", "Avliden": "", "År": "", "Skyttekung": []}, "Dennis Ericsson": {"Född": "1971-05-28", "Avliden": "", "År": "", "Skyttekung": []}, "Niklas Gudmundsson": {"Född": "1972-02-29", "Avliden": "", "År": "", "Skyttekung": []}, "Andreas Bäckmark": {"Född": "1979-01-12", "Avliden": "", "År": "", "Skyttekung": []}, "Tomas Andersson (1968)": {"Född": "1968-01-20", "Avliden": "", "År": "", "Skyttekung": []}, "Jimmy Rajala": {"Född": "1973-11-30", "Avliden": "", "År": "", "Skyttekung": []}, "Matthias Johansson": {"Född": "1973-09-20", "Avliden": "", "År": "", "Skyttekung": []}, "Lars Åkerberg": {"Född": "1974-11-23", "Avliden": "", "År": "", "Skyttekung": []}, "Andreas Engblom": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Arash Talebinejad": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Daniel Moffatt": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Roger Nilsson": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Bashkim Shaqiri": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Anton Holmberg": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Patrik Bergström": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Goran Nikolajev": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Jörgen Hellqvist": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Simon Jakobsson": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Peter Berggren": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Torbjörn Nilsson": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Demba N'Diaye": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Oscar Uddenäs": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Elias Jemal": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Albin Sporrong": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Yaqub Finey": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Emmanuel Swedi": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Hugo Komano": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Gideon Mensah": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Severin Nioule": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Curtis Edwards": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Gustav Forssell": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Christian Wagner": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Hugo Andersson": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Jamie Bichis": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Andreas Murbeck": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Fredrik Bengtsson": {"Född": "1974-08-26", "Avliden": "", "År": "", "Skyttekung": []}, "Zoran Manovic": {"Född": "1968-12-22", "Avliden": "", "År": "", "Skyttekung": []}, "Andreas Bild": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Daniel Nicklasson": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Andreas Nilsson": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Björn Carlsson": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Xhevdet Llumnica": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Niklas Nielsen": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Jones Kusi Asare": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Fuad Hyseni": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Gabriel Altemark Vanneryr": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Tobias Nilsson": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Jesper Westermark": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Sead Haksabanovic": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}, "Johan Hammar": {"Född": "", "Avliden": "", "År": "", "Skyttekung": []}};
+
+        // NYTT: Lägg till den här raden precis under dina andra const!
+        const KRONOLOGI_DATA = {"all": {"hattricks": [], "most_goals_match": [], "fastest_goals": [{"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "minut": 11, "display_minut": "11", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Marcus Ringberg", "klubb": "Mjällby AIF", "datum": "2000-04-16", "minut": 11, "display_minut": "11", "not": "", "matchfakta": "Mjällby AIF - Åtvidabergs FF 1-0"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "datum": "2000-04-16", "minut": 19, "display_minut": "19", "not": "straff", "matchfakta": "Västerås SK - Assyriska FF 2-1"}, {"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "minut": 24, "display_minut": "24", "not": "", "matchfakta": "Kalmar FF - IK Brage 1-0"}, {"namn": "Zoran Petrovic", "klubb": "Umeå FC", "datum": "2000-04-16", "minut": 27, "display_minut": "27", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Patrik Eriksson-Ohlsson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "minut": 30, "display_minut": "30", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Mounir Tajiou", "klubb": "FC Café Opera Djursholm", "datum": "2000-04-16", "minut": 37, "display_minut": "37", "not": "", "matchfakta": "Östers IF - AFC Eskilstuna 1-2"}, {"namn": "David Lindgren", "klubb": "Umeå FC", "datum": "2000-04-16", "minut": 42, "display_minut": "42", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Pierre Gallo", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "minut": 45, "display_minut": "45", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Magnus Olsson", "klubb": "FC Café Opera Djursholm", "datum": "2000-04-16", "minut": 56, "display_minut": "56", "not": "", "matchfakta": "Östers IF - AFC Eskilstuna 1-2"}, {"namn": "Patrik Isaksson", "klubb": "Östers IF", "datum": "2000-04-16", "minut": 57, "display_minut": "57", "not": "", "matchfakta": "Östers IF - AFC Eskilstuna 1-2"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "datum": "2000-04-16", "minut": 57, "display_minut": "57", "not": "", "matchfakta": "Västerås SK - Assyriska FF 2-1"}, {"namn": "Ghassan Heamed", "klubb": "Assyriska FF", "datum": "2000-04-16", "minut": 60, "display_minut": "60", "not": "", "matchfakta": "Västerås SK - Assyriska FF 2-1"}, {"namn": "Jones Kusi-Asare", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "minut": 70, "display_minut": "70", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Mathias Andreasen", "klubb": "Landskrona BoIS", "datum": "2026-10-27", "minut": 70, "display_minut": "70", "not": "", "matchfakta": "Landskrona BoIS - Varbergs BoIS 1-1"}, {"namn": "Tonny Nilsson", "klubb": "Landskrona BoIS", "datum": "2000-04-16", "minut": 77, "display_minut": "77", "not": "", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1"}, {"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "minut": 78, "display_minut": "78", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Niklas Dahlström", "klubb": "Varbergs BoIS", "datum": "2026-10-27", "minut": 84, "display_minut": "84", "not": "", "matchfakta": "Landskrona BoIS - Varbergs BoIS 1-1"}, {"namn": "Mattias Molin", "klubb": "Panos Ljungskile SK", "datum": "2000-04-16", "minut": 90, "display_minut": "90", "not": "", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1"}], "streaks": [], "longest_period": [], "youngest_scorers": [{"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "alder_str": "19 år, 329 dagar", "matchfakta": "Kalmar FF - IK Brage 1-0", "aktiv": "2000"}, {"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "alder_str": "21 år, 285 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}, {"namn": "Mounir Tajiou", "klubb": "FC Café Opera Djursholm", "datum": "2000-04-16", "alder_str": "22 år, 346 dagar", "matchfakta": "Östers IF - AFC Eskilstuna 1-2", "aktiv": "2000"}, {"namn": "Marcus Ringberg", "klubb": "Mjällby AIF", "datum": "2000-04-16", "alder_str": "23 år, 346 dagar", "matchfakta": "Mjällby AIF - Åtvidabergs FF 1-0", "aktiv": "2000"}, {"namn": "Tonny Nilsson", "klubb": "Landskrona BoIS", "datum": "2000-04-16", "alder_str": "26 år, 105 dagar", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1", "aktiv": "2000"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "datum": "2000-04-16", "alder_str": "27 år, 7 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}, {"namn": "Mattias Molin", "klubb": "Panos Ljungskile SK", "datum": "2000-04-16", "alder_str": "27 år, 77 dagar", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1", "aktiv": "2000"}, {"namn": "Ghassan Heamed", "klubb": "Assyriska FF", "datum": "2000-04-16", "alder_str": "28 år, 248 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}, {"namn": "Patrik Isaksson", "klubb": "Östers IF", "datum": "2000-04-16", "alder_str": "29 år, 75 dagar", "matchfakta": "Östers IF - AFC Eskilstuna 1-2", "aktiv": "2000"}, {"namn": "Zoran Petrovic", "klubb": "Umeå FC", "datum": "2000-04-16", "alder_str": "32 år, 341 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}], "oldest_scorers": [{"namn": "Zoran Petrovic", "klubb": "Umeå FC", "datum": "2000-04-16", "alder_str": "32 år, 341 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}, {"namn": "Patrik Isaksson", "klubb": "Östers IF", "datum": "2000-04-16", "alder_str": "29 år, 75 dagar", "matchfakta": "Östers IF - AFC Eskilstuna 1-2", "aktiv": "2000"}, {"namn": "Ghassan Heamed", "klubb": "Assyriska FF", "datum": "2000-04-16", "alder_str": "28 år, 248 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}, {"namn": "Mattias Molin", "klubb": "Panos Ljungskile SK", "datum": "2000-04-16", "alder_str": "27 år, 77 dagar", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1", "aktiv": "2000"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "datum": "2000-04-16", "alder_str": "27 år, 7 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}, {"namn": "Tonny Nilsson", "klubb": "Landskrona BoIS", "datum": "2000-04-16", "alder_str": "26 år, 105 dagar", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1", "aktiv": "2000"}, {"namn": "Marcus Ringberg", "klubb": "Mjällby AIF", "datum": "2000-04-16", "alder_str": "23 år, 346 dagar", "matchfakta": "Mjällby AIF - Åtvidabergs FF 1-0", "aktiv": "2000"}, {"namn": "Mounir Tajiou", "klubb": "FC Café Opera Djursholm", "datum": "2000-04-16", "alder_str": "22 år, 346 dagar", "matchfakta": "Östers IF - AFC Eskilstuna 1-2", "aktiv": "2000"}, {"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "alder_str": "21 år, 285 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}, {"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "alder_str": "19 år, 329 dagar", "matchfakta": "Kalmar FF - IK Brage 1-0", "aktiv": "2000"}], "oldest_first_goal": [{"namn": "Zoran Petrovic", "klubb": "Umeå FC", "datum": "2000-04-16", "alder_str": "32 år, 341 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}, {"namn": "Patrik Isaksson", "klubb": "Östers IF", "datum": "2000-04-16", "alder_str": "29 år, 75 dagar", "matchfakta": "Östers IF - AFC Eskilstuna 1-2", "aktiv": "2000"}, {"namn": "Ghassan Heamed", "klubb": "Assyriska FF", "datum": "2000-04-16", "alder_str": "28 år, 248 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}, {"namn": "Mattias Molin", "klubb": "Panos Ljungskile SK", "datum": "2000-04-16", "alder_str": "27 år, 77 dagar", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1", "aktiv": "2000"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "datum": "2000-04-16", "alder_str": "27 år, 7 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}, {"namn": "Tonny Nilsson", "klubb": "Landskrona BoIS", "datum": "2000-04-16", "alder_str": "26 år, 105 dagar", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1", "aktiv": "2000"}, {"namn": "Marcus Ringberg", "klubb": "Mjällby AIF", "datum": "2000-04-16", "alder_str": "23 år, 346 dagar", "matchfakta": "Mjällby AIF - Åtvidabergs FF 1-0", "aktiv": "2000"}, {"namn": "Mounir Tajiou", "klubb": "FC Café Opera Djursholm", "datum": "2000-04-16", "alder_str": "22 år, 346 dagar", "matchfakta": "Östers IF - AFC Eskilstuna 1-2", "aktiv": "2000"}, {"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "alder_str": "21 år, 285 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}, {"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "alder_str": "19 år, 329 dagar", "matchfakta": "Kalmar FF - IK Brage 1-0", "aktiv": "2000"}], "youngest_red_cards": [{"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "alder_str": "19 år, 329 dagar", "matchfakta": "Kalmar FF - IK Brage 1-0", "aktiv": "2000"}], "oldest_red_cards": [{"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "alder_str": "19 år, 329 dagar", "matchfakta": "Kalmar FF - IK Brage 1-0", "aktiv": "2000"}], "team_no_concede": [{"namn": "Östers IF", "minuter": 51154, "matcher": 569, "period": "2000-2026", "klubb": "Östers IF"}, {"namn": "Landskrona BoIS", "minuter": 48324, "matcher": 539, "period": "2000-2026", "klubb": "Landskrona BoIS"}, {"namn": "AFC Eskilstuna", "minuter": 45843, "matcher": 510, "period": "2000-2023", "klubb": "AFC Eskilstuna"}, {"namn": "IK Brage", "minuter": 45786, "matcher": 509, "period": "2000-2026", "klubb": "IK Brage"}, {"namn": "Assyriska FF", "minuter": 40443, "matcher": 450, "period": "2000-2016", "klubb": "Assyriska FF"}, {"namn": "Ljungskile SK", "minuter": 37633, "matcher": 419, "period": "2000-2026", "klubb": "Ljungskile SK"}, {"namn": "Västerås SK", "minuter": 35040, "matcher": 390, "period": "2000-2025", "klubb": "Västerås SK"}, {"namn": "Åtvidabergs FF", "minuter": 32389, "matcher": 360, "period": "2000-2017", "klubb": "Åtvidabergs FF"}, {"namn": "Varbergs BoIS", "minuter": 29500, "matcher": 329, "period": "2012-2026", "klubb": "Varbergs BoIS"}, {"namn": "Umeå FC", "minuter": 16122, "matcher": 180, "period": "2000-2025", "klubb": "Umeå FC"}, {"namn": "Djurgårdens IF", "minuter": 2658, "matcher": 30, "period": "2000", "klubb": "Djurgårdens IF"}], "team_no_score": [{"namn": "Östers IF", "minuter": 51153, "matcher": 569, "period": "2000-2026", "klubb": "Östers IF"}, {"namn": "Landskrona BoIS", "minuter": 48323, "matcher": 539, "period": "2000-2026", "klubb": "Landskrona BoIS"}, {"namn": "Assyriska FF", "minuter": 40440, "matcher": 450, "period": "2000-2016", "klubb": "Assyriska FF"}, {"namn": "Västerås SK", "minuter": 35043, "matcher": 390, "period": "2000-2025", "klubb": "Västerås SK"}, {"namn": "Varbergs BoIS", "minuter": 29514, "matcher": 329, "period": "2012-2026", "klubb": "Varbergs BoIS"}, {"namn": "Mjällby AIF", "minuter": 26989, "matcher": 300, "period": "2000-2019", "klubb": "Mjällby AIF"}, {"namn": "Umeå FC", "minuter": 16158, "matcher": 180, "period": "2000-2025", "klubb": "Umeå FC"}, {"namn": "Kalmar FF", "minuter": 10776, "matcher": 120, "period": "2000-2025", "klubb": "Kalmar FF"}, {"namn": "Djurgårdens IF", "minuter": 2622, "matcher": 30, "period": "2000", "klubb": "Djurgårdens IF"}], "gk_no_concede": [], "fastest_hattricks": [], "consecutive_seasons": [], "unique_opponents": [{"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "David Lindgren", "klubb": "Umeå FC", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Ghassan Heamed", "klubb": "Assyriska FF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Jones Kusi-Asare", "klubb": "Djurgårdens IF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Magnus Olsson", "klubb": "FC Café Opera Djursholm", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Marcus Ringberg", "klubb": "Mjällby AIF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Mathias Andreasen", "klubb": "Landskrona BoIS", "antal_motstandare": 1, "aktiv": "2026"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Mattias Molin", "klubb": "Panos Ljungskile SK", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Mounir Tajiou", "klubb": "FC Café Opera Djursholm", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Niklas Dahlström", "klubb": "Varbergs BoIS", "antal_motstandare": 1, "aktiv": "2026"}, {"namn": "Patrik Eriksson-Ohlsson", "klubb": "Djurgårdens IF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Patrik Isaksson", "klubb": "Östers IF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Pierre Gallo", "klubb": "Djurgårdens IF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Tonny Nilsson", "klubb": "Landskrona BoIS", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Zoran Petrovic", "klubb": "Umeå FC", "antal_motstandare": 1, "aktiv": "2000"}], "two_clubs_one_season": []}, "home": {"hattricks": [], "most_goals_match": [], "fastest_goals": [{"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "minut": 11, "display_minut": "11", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Marcus Ringberg", "klubb": "Mjällby AIF", "datum": "2000-04-16", "minut": 11, "display_minut": "11", "not": "", "matchfakta": "Mjällby AIF - Åtvidabergs FF 1-0"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "datum": "2000-04-16", "minut": 19, "display_minut": "19", "not": "straff", "matchfakta": "Västerås SK - Assyriska FF 2-1"}, {"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "minut": 24, "display_minut": "24", "not": "", "matchfakta": "Kalmar FF - IK Brage 1-0"}, {"namn": "Patrik Eriksson-Ohlsson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "minut": 30, "display_minut": "30", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Pierre Gallo", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "minut": 45, "display_minut": "45", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Patrik Isaksson", "klubb": "Östers IF", "datum": "2000-04-16", "minut": 57, "display_minut": "57", "not": "", "matchfakta": "Östers IF - AFC Eskilstuna 1-2"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "datum": "2000-04-16", "minut": 57, "display_minut": "57", "not": "", "matchfakta": "Västerås SK - Assyriska FF 2-1"}, {"namn": "Mathias Andreasen", "klubb": "Landskrona BoIS", "datum": "2026-10-27", "minut": 70, "display_minut": "70", "not": "", "matchfakta": "Landskrona BoIS - Varbergs BoIS 1-1"}, {"namn": "Jones Kusi-Asare", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "minut": 70, "display_minut": "70", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Tonny Nilsson", "klubb": "Landskrona BoIS", "datum": "2000-04-16", "minut": 77, "display_minut": "77", "not": "", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1"}, {"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "minut": 78, "display_minut": "78", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}], "streaks": [], "longest_period": [], "youngest_scorers": [{"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "alder_str": "19 år, 329 dagar", "matchfakta": "Kalmar FF - IK Brage 1-0", "aktiv": "2000"}, {"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "alder_str": "21 år, 285 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}, {"namn": "Marcus Ringberg", "klubb": "Mjällby AIF", "datum": "2000-04-16", "alder_str": "23 år, 346 dagar", "matchfakta": "Mjällby AIF - Åtvidabergs FF 1-0", "aktiv": "2000"}, {"namn": "Tonny Nilsson", "klubb": "Landskrona BoIS", "datum": "2000-04-16", "alder_str": "26 år, 105 dagar", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1", "aktiv": "2000"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "datum": "2000-04-16", "alder_str": "27 år, 7 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}, {"namn": "Patrik Isaksson", "klubb": "Östers IF", "datum": "2000-04-16", "alder_str": "29 år, 75 dagar", "matchfakta": "Östers IF - AFC Eskilstuna 1-2", "aktiv": "2000"}], "oldest_scorers": [{"namn": "Patrik Isaksson", "klubb": "Östers IF", "datum": "2000-04-16", "alder_str": "29 år, 75 dagar", "matchfakta": "Östers IF - AFC Eskilstuna 1-2", "aktiv": "2000"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "datum": "2000-04-16", "alder_str": "27 år, 7 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}, {"namn": "Tonny Nilsson", "klubb": "Landskrona BoIS", "datum": "2000-04-16", "alder_str": "26 år, 105 dagar", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1", "aktiv": "2000"}, {"namn": "Marcus Ringberg", "klubb": "Mjällby AIF", "datum": "2000-04-16", "alder_str": "23 år, 346 dagar", "matchfakta": "Mjällby AIF - Åtvidabergs FF 1-0", "aktiv": "2000"}, {"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "alder_str": "21 år, 285 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}, {"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "alder_str": "19 år, 329 dagar", "matchfakta": "Kalmar FF - IK Brage 1-0", "aktiv": "2000"}], "oldest_first_goal": [{"namn": "Patrik Isaksson", "klubb": "Östers IF", "datum": "2000-04-16", "alder_str": "29 år, 75 dagar", "matchfakta": "Östers IF - AFC Eskilstuna 1-2", "aktiv": "2000"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "datum": "2000-04-16", "alder_str": "27 år, 7 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}, {"namn": "Tonny Nilsson", "klubb": "Landskrona BoIS", "datum": "2000-04-16", "alder_str": "26 år, 105 dagar", "matchfakta": "Landskrona BoIS - Ljungskile SK 1-1", "aktiv": "2000"}, {"namn": "Marcus Ringberg", "klubb": "Mjällby AIF", "datum": "2000-04-16", "alder_str": "23 år, 346 dagar", "matchfakta": "Mjällby AIF - Åtvidabergs FF 1-0", "aktiv": "2000"}, {"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "datum": "2000-04-16", "alder_str": "21 år, 285 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}, {"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "alder_str": "19 år, 329 dagar", "matchfakta": "Kalmar FF - IK Brage 1-0", "aktiv": "2000"}], "youngest_red_cards": [{"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "alder_str": "19 år, 329 dagar", "matchfakta": "Kalmar FF - IK Brage 1-0", "aktiv": "2000"}], "oldest_red_cards": [{"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "datum": "2000-04-16", "alder_str": "19 år, 329 dagar", "matchfakta": "Kalmar FF - IK Brage 1-0", "aktiv": "2000"}], "team_no_concede": [{"namn": "Östers IF", "minuter": 25594, "matcher": 285, "period": "2000-2026", "klubb": "Östers IF"}, {"namn": "Landskrona BoIS", "minuter": 24114, "matcher": 270, "period": "2000-2026", "klubb": "Landskrona BoIS"}, {"namn": "Västerås SK", "minuter": 17490, "matcher": 195, "period": "2000-2025", "klubb": "Västerås SK"}, {"namn": "Djurgårdens IF", "minuter": 1308, "matcher": 15, "period": "2000", "klubb": "Djurgårdens IF"}], "team_no_score": [{"namn": "Östers IF", "minuter": 25593, "matcher": 285, "period": "2000-2026", "klubb": "Östers IF"}, {"namn": "Landskrona BoIS", "minuter": 24113, "matcher": 270, "period": "2000-2026", "klubb": "Landskrona BoIS"}, {"namn": "Västerås SK", "minuter": 17493, "matcher": 195, "period": "2000-2025", "klubb": "Västerås SK"}, {"namn": "Mjällby AIF", "minuter": 13489, "matcher": 150, "period": "2000-2019", "klubb": "Mjällby AIF"}, {"namn": "Kalmar FF", "minuter": 5376, "matcher": 60, "period": "2000-2025", "klubb": "Kalmar FF"}, {"namn": "Djurgårdens IF", "minuter": 1272, "matcher": 15, "period": "2000", "klubb": "Djurgårdens IF"}], "gk_no_concede": [], "fastest_hattricks": [], "consecutive_seasons": [], "unique_opponents": [{"namn": "Andreas Johansson", "klubb": "Djurgårdens IF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Daniel Mobaeck", "klubb": "Kalmar FF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Jones Kusi-Asare", "klubb": "Djurgårdens IF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Marcus Ringberg", "klubb": "Mjällby AIF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Mathias Andreasen", "klubb": "Landskrona BoIS", "antal_motstandare": 1, "aktiv": "2026"}, {"namn": "Mathias Elison", "klubb": "Västerås SK", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Patrik Eriksson-Ohlsson", "klubb": "Djurgårdens IF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Patrik Isaksson", "klubb": "Östers IF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Pierre Gallo", "klubb": "Djurgårdens IF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Tonny Nilsson", "klubb": "Landskrona BoIS", "antal_motstandare": 1, "aktiv": "2000"}], "two_clubs_one_season": []}, "away": {"hattricks": [], "most_goals_match": [], "fastest_goals": [{"namn": "Zoran Petrovic", "klubb": "Umeå FC", "datum": "2000-04-16", "minut": 27, "display_minut": "27", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "David Lindgren", "klubb": "Umeå FC", "datum": "2000-04-16", "minut": 42, "display_minut": "42", "not": "", "matchfakta": "Djurgårdens IF - Umeå FC 5-2"}, {"namn": "Ghassan Heamed", "klubb": "Assyriska FF", "datum": "2000-04-16", "minut": 60, "display_minut": "60", "not": "", "matchfakta": "Västerås SK - Assyriska FF 2-1"}, {"namn": "Niklas Dahlström", "klubb": "Varbergs BoIS", "datum": "2026-10-27", "minut": 84, "display_minut": "84", "not": "", "matchfakta": "Landskrona BoIS - Varbergs BoIS 1-1"}], "streaks": [], "longest_period": [], "youngest_scorers": [{"namn": "Ghassan Heamed", "klubb": "Assyriska FF", "datum": "2000-04-16", "alder_str": "28 år, 248 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}, {"namn": "Zoran Petrovic", "klubb": "Umeå FC", "datum": "2000-04-16", "alder_str": "32 år, 341 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}], "oldest_scorers": [{"namn": "Zoran Petrovic", "klubb": "Umeå FC", "datum": "2000-04-16", "alder_str": "32 år, 341 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}, {"namn": "Ghassan Heamed", "klubb": "Assyriska FF", "datum": "2000-04-16", "alder_str": "28 år, 248 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}], "oldest_first_goal": [{"namn": "Zoran Petrovic", "klubb": "Umeå FC", "datum": "2000-04-16", "alder_str": "32 år, 341 dagar", "matchfakta": "Djurgårdens IF - Umeå FC 5-2", "aktiv": "2000"}, {"namn": "Ghassan Heamed", "klubb": "Assyriska FF", "datum": "2000-04-16", "alder_str": "28 år, 248 dagar", "matchfakta": "Västerås SK - Assyriska FF 2-1", "aktiv": "2000"}], "youngest_red_cards": [], "oldest_red_cards": [], "team_no_concede": [{"namn": "IK Brage", "minuter": 22926, "matcher": 255, "period": "2000-2026", "klubb": "IK Brage"}, {"namn": "AFC Eskilstuna", "minuter": 22893, "matcher": 255, "period": "2000-2023", "klubb": "AFC Eskilstuna"}, {"namn": "Assyriska FF", "minuter": 20193, "matcher": 225, "period": "2000-2016", "klubb": "Assyriska FF"}, {"namn": "Ljungskile SK", "minuter": 18823, "matcher": 210, "period": "2000-2026", "klubb": "Ljungskile SK"}, {"namn": "Åtvidabergs FF", "minuter": 16189, "matcher": 180, "period": "2000-2017", "klubb": "Åtvidabergs FF"}, {"namn": "Varbergs BoIS", "minuter": 14740, "matcher": 164, "period": "2012-2026", "klubb": "Varbergs BoIS"}, {"namn": "Umeå FC", "minuter": 8022, "matcher": 90, "period": "2000-2025", "klubb": "Umeå FC"}], "team_no_score": [{"namn": "Assyriska FF", "minuter": 20190, "matcher": 225, "period": "2000-2016", "klubb": "Assyriska FF"}, {"namn": "Varbergs BoIS", "minuter": 14754, "matcher": 164, "period": "2012-2026", "klubb": "Varbergs BoIS"}, {"namn": "Umeå FC", "minuter": 8058, "matcher": 90, "period": "2000-2025", "klubb": "Umeå FC"}], "gk_no_concede": [], "fastest_hattricks": [], "consecutive_seasons": [], "unique_opponents": [{"namn": "David Lindgren", "klubb": "Umeå FC", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Ghassan Heamed", "klubb": "Assyriska FF", "antal_motstandare": 1, "aktiv": "2000"}, {"namn": "Niklas Dahlström", "klubb": "Varbergs BoIS", "antal_motstandare": 1, "aktiv": "2026"}, {"namn": "Zoran Petrovic", "klubb": "Umeå FC", "antal_motstandare": 1, "aktiv": "2000"}], "two_clubs_one_season": []}};
 
         let currentOverviewData = []; let currentOverviewSort = { col: 'played', asc: false }; let currentStreakMatches = {}; 
         let globalAllStreaks = []; 
@@ -1634,8 +1722,8 @@ window.arenaPopulated = false; // Flagga för att säkerställa att vi bara bygg
 
 // Funktion för att växla mellan vyerna på Topplistor-sidan
 window.toggleRecordsView = function(view) {
-    // NYTT: Lade till 'arena' i arrayen
-    const views = ['match', 'players', 'gk', 'ref', 'arena']; 
+    // NYTT: Lade till 'arena' och 'events' i arrayen
+    const views = ['match', 'players', 'gk', 'ref', 'arena', 'events']; 
     
     // CSS-klasser (inklusive whitespace-nowrap för snyggare mobilvy)
     let activeCls = "px-4 py-2 bg-white text-slate-800 shadow-sm rounded-md font-bold text-sm transition-all whitespace-nowrap";
@@ -1664,6 +1752,9 @@ window.toggleRecordsView = function(view) {
         if (typeof renderPlayerToplists === 'function') renderPlayerToplists(); 
     } else if (view === 'ref') {
         if (typeof renderRefRecords === 'function') renderRefRecords();
+    } else if (view === 'events') {
+        // NYTT: Renderar vår nya Händelser-topplista när fliken öppnas!
+        if (typeof window.renderEventRecords === 'function') window.renderEventRecords();
     } else if (view === 'arena') {
         // NYTT: Hanterar Arenor (Fyller rullistan först om den är tom, ritar sedan tabellen)
         if (!window.arenaPopulated && typeof window.populateArenaDropdown === 'function') {
@@ -4166,6 +4257,35 @@ function updateAnalysisInputLabels() {
                 return window.ref_sortAsc ? valA - valB : valB - valA;
             });
 
+            // --- NYTT: RITA UT SUMMARYBOXEN (DOMARE) ---
+                const summaryBox = document.getElementById('referees-summary');
+                if (summaryBox && arr.length > 0) {
+                    let sumMatcher = arr.reduce((sum, r) => sum + (r.matches || 0), 0);
+                    let sumH = arr.reduce((sum, r) => sum + (r.hWin || 0), 0);
+                    
+                    let homeWinPct = sumMatcher > 0 ? ((sumH / sumMatcher) * 100).toFixed(1) : 0;
+
+                    summaryBox.innerHTML = `
+                        <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                            <div class="flex items-center gap-3">
+                                <span class="text-3xl font-black text-blue-700 drop-shadow-sm">⚖️ ${sumMatcher}</span> 
+                                <span class="text-blue-900/60 font-bold text-sm uppercase tracking-wider mt-1">Dömda Matcher</span>
+                            </div>
+                            <div class="hidden sm:block h-8 w-px bg-blue-200"></div>
+                            <div class="flex items-center gap-2" title="Hemmasegrar totalt vid denna sökning">
+                                <span class="text-xl font-black text-emerald-600">${homeWinPct}%</span>
+                                <span class="text-slate-500 font-semibold text-[11px] uppercase tracking-wider">Hemmasegrar</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 bg-white px-4 py-1.5 rounded-full shadow-sm border border-blue-100 mt-3 sm:mt-0">
+                            <span class="text-lg font-black text-blue-900">${arr.length}</span> 
+                            <span class="text-slate-500 font-bold text-xs uppercase tracking-widest">Rader</span>
+                        </div>`;
+                    summaryBox.classList.remove('hidden');
+                } else if (summaryBox) {
+                    summaryBox.classList.add('hidden');
+                }
+
             bodyEl.innerHTML = arr.map((r, i) => {
                 let pct1 = ((r.hWin / r.matches) * 100).toFixed(0);
                 let pctx = ((r.draw / r.matches) * 100).toFixed(0);
@@ -5291,6 +5411,7 @@ function renderScorers() {
                     klubbar: new Set(),
                     motstandare: opponent,
                     mal: 0, gwg: 0, straffar: 0, utv: 0,
+                    mal_i_utv_matcher: 0, // <--- NYTT: Denna MÅSTE finnas med här!
                     sasonger: new Set(),
                     matcher: new Set(),
                     scoredInWin: false, scoredInLoss: false, scoredInDraw: false
@@ -5381,19 +5502,26 @@ function renderScorers() {
             
             stats[key].utv++;
             
-            // 4. MÅL I SAMMA MATCH (Säker loop)
+            // 4. MÅL I SAMMA MATCH (Säker loop med avancerad namntvätt)
             let goalsInThisMatch = 0;
             const matchGoalsForUtv = match.Målskyttar || match.goals || match.Goals || [];
             
             matchGoalsForUtv.forEach(g => {
-                let s_skytt = String(g.skytt || g.skytt_visning || "");
+                let s_skytt = String(g.skytt || g.skytt_visning || "").toLowerCase();
                 let s_not = String(g.not || "").toLowerCase();
+                let isUtvSjm = s_not.includes("sjm") || s_not.includes("självmål") || s_skytt.includes("sjm") || s_skytt.includes("självmål");
                 
-                let gName = s_skytt.replace(/\s*\(\d{4}\)$/, "").trim();
-                let cleanUName = rawU.replace(/\s*\(\d{4}\)$/, "").trim();
-                let isUtvSjm = s_not.includes("sjm") || s_not.includes("självmål");
+                // Hämta målskytten
+                let gName = String(g.skytt || g.skytt_visning || "").trim();
                 
-                if (gName === cleanUName && !isUtvSjm) {
+                // Tvätta målskyttens namn (Bort med (År), GWG, Straff)
+                gName = gName.replace(/\s*\(\d{4}\)$/, "").replace(/,\s*gwg/gi, "").replace(/\(straff\)/gi, "").trim();
+                
+                // Hämta den utvisades namn
+                let cleanUName = String(rawU).replace(/\s*\(\d{4}\)$/, "").trim();
+                
+                // Matcha! (Vi kör toLowerCase för säkerhets skull)
+                if (gName.toLowerCase() === cleanUName.toLowerCase() && !isUtvSjm) {
                     goalsInThisMatch++;
                 }
             });
@@ -5644,6 +5772,720 @@ function renderScorers() {
         finalTbody.innerHTML = rowsHtml;
     }
 } // <-- Denna stänger HELA renderScorers-funktionen
+
+window.renderEventRecords = function() {
+    if (typeof MATCH_DATA === 'undefined') return;
+    
+    let view = window.current_event_view || 'most_goals';
+    let loc = window.current_event_location || 'all'; // NY: Läs in hemma/borta-filtret!
+
+    const advancedViews = [
+        'hattricks', 'most_goals_match', 'fastest_goals', 'streaks', 'longest_period', 
+        'youngest_scorers', 'oldest_scorers', 'oldest_first_goal', 
+        'youngest_red_cards', 'oldest_red_cards',
+        'team_no_concede', 'team_no_score', 'gk_no_concede',
+        'fastest_hattricks', 'consecutive_seasons', 'unique_opponents', 'two_clubs_one_season' // NYA
+    ];
+
+    // ==========================================
+    // 1. KRONOLOGI FRÅN PYTHON (Hattricks, Sviter, Tid)
+    // ==========================================
+    if (advancedViews.includes(view)) {
+        if (typeof KRONOLOGI_DATA === 'undefined') {
+            document.getElementById('event-record-tbody').innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center font-bold text-rose-600 bg-rose-50 border border-rose-200 rounded">⚠️ KRONOLOGI_DATA saknas!</td></tr>`;
+            return;
+        }
+
+        // Hämta datan för den valda kontexten (all, home eller away)
+        let dataArray = KRONOLOGI_DATA[loc] ? KRONOLOGI_DATA[loc][view] : [];
+        if (!dataArray || dataArray.length === 0) {
+            document.getElementById('event-record-tbody').innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center font-bold text-slate-500 bg-slate-50">ℹ️ Ingen data kunde hittas för denna vy med nuvarande filter.</td></tr>`;
+            return;
+        }
+
+        let theadHtml = "", tbodyHtml = "";
+        
+        // --- 0. MINUTSVITER (MED EXAKTA DATUM & KLUBB!) ---
+        if (['team_no_concede', 'team_no_score', 'gk_no_concede'].includes(view)) {
+            let label = view === 'gk_no_concede' ? 'MÅLVAKT' : 'KLUBB';
+            let colorCls = view === 'team_no_score' ? 'text-rose-600' : 'text-emerald-600';
+            
+            // Uppdaterad tabell-rubrik för Period
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">${label}</th><th class="px-4 py-3 text-center">SÄSONG(ER)</th><th class="px-4 py-3 text-center text-slate-400">Totalt Matcher</th><th class="px-4 py-3 text-right ${colorCls}">MINUTSVIT</th></tr>`;
+            
+            tbodyHtml = dataArray.map((item, index) => {
+                let safeName = String(item.namn).replace(/'/g, "\'");
+                // Klickbar modal bara om det är målvakten
+                let clickEvt = view === 'gk_no_concede' ? `onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer group transition-colors"` : `class="border-b border-slate-100 bg-white"`;
+                
+                // Om målvakt, visa klubben under namnet precis som på bilden
+                let subLabel = view === 'gk_no_concede' && item.klubb ? `<div class="text-xs text-slate-500 mt-1 uppercase tracking-wide">${item.klubb}</div>` : '';
+
+                return `<tr ${clickEvt}>
+                    <td class="px-4 py-3 text-center font-bold text-slate-400 align-middle pt-4">${index + 1}</td>
+                    <td class="px-4 py-3 align-middle">
+                        <div class="font-bold text-slate-800 ${view === 'gk_no_concede' ? 'group-hover:text-blue-600' : ''}">${item.namn}</div>
+                        ${subLabel}
+                    </td>
+                    <td class="px-4 py-3 text-center align-middle">
+                        <div class="text-sm font-medium text-slate-700 whitespace-nowrap">${item.period || '-'}</div>
+                    </td>
+                    <td class="px-4 py-3 text-center align-middle">
+                        <div class="text-xs text-slate-500">${item.matcher} matcher spelade</div>
+                    </td>
+                    <td class="px-4 py-3 text-right font-black ${colorCls} text-lg align-middle">${item.minuter} min</td>
+                </tr>`;
+            }).join('');
+        }
+        
+        // --- 1. ÅLDERSREKORD & UTVISNINGAR (Ligger oförändrad från förut) ---
+        if (['youngest_scorers', 'oldest_scorers', 'oldest_first_goal', 'youngest_red_cards', 'oldest_red_cards'].includes(view)) {
+            let label = view.includes('red_cards') ? 'UTVISAD SPELARE' : 'MÅLSKYTT';
+            let colorCls = view.includes('youngest') ? 'text-emerald-700' : 'text-purple-700';
+
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">${label}</th><th class="px-4 py-3">MATCHFAKTA</th><th class="px-4 py-3 text-right">ÅLDER</th></tr>`;
+            tbodyHtml = dataArray.map((item, index) => {
+                let safeName = String(item.namn).replace(/'/g, "\'");
+                
+                // NYTT: Visa spelarens aktiva år under namnet (istället för bara klubben igen)
+                let subLabel = item.aktiv ? `<div class="text-[11px] font-semibold text-slate-500 mt-1 uppercase tracking-wide">AKTIV: ${item.aktiv}</div>` : `<div class="text-[11px] font-semibold text-slate-500 mt-1 uppercase tracking-wide">${item.klubb}</div>`;
+
+                return `<tr onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400 align-top pt-4">${index + 1}</td>
+                    <td class="px-4 py-3 align-top">
+                        <div class="font-bold text-slate-800 group-hover:text-blue-600">${item.namn}</div>
+                        ${subLabel}
+                    </td>
+                    <td class="px-4 py-3 align-top">
+                        <div class="font-medium text-slate-700">${item.matchfakta}</div>
+                        <div class="text-xs text-slate-500 mt-1">${item.datum}</div>
+                    </td>
+                    <td class="px-4 py-3 text-right align-top">
+                        <div class="font-black ${colorCls} text-sm">${item.alder_str}</div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+        // --- 2. SNABBASTE MÅLEN (Med Matchfakta) ---
+        else if (view === 'fastest_goals') {
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">MÅLSKYTT</th><th class="px-4 py-3">MATCHFAKTA</th><th class="px-4 py-3 text-right text-blue-600">MINUT</th></tr>`;
+            tbodyHtml = dataArray.map((item, index) => {
+                let safeName = String(item.namn).replace(/'/g, "\'");
+                let extraNot = item.not ? ` <span class="text-[10px] text-slate-400 ml-1">(${item.not})</span>` : "";
+                return `<tr onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400 align-top pt-4">${index + 1}</td>
+                    <td class="px-4 py-3 align-top">
+                        <div class="font-bold text-slate-800 group-hover:text-blue-600">${item.namn}${extraNot}</div>
+                    </td>
+                    <td class="px-4 py-3 align-top">
+                        <div class="font-medium text-slate-700">${item.matchfakta}</div>
+                        <div class="text-xs text-slate-500 mt-1">${item.datum}</div>
+                    </td>
+                    <td class="px-4 py-3 text-right font-black text-blue-600 text-lg align-top">${item.display_minut}'</td>
+                </tr>`;
+            }).join('');
+        }
+        // --- 3. LÄNGST TID MELLAN FÖRSTA OCH SISTA MÅL ---
+        else if (view === 'longest_period') {
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">SPELARE</th><th class="px-4 py-3 text-center">FÖRSTA / SISTA MÅL</th><th class="px-4 py-3 text-right text-indigo-600">TIDSPERIOD</th></tr>`;
+            tbodyHtml = dataArray.map((item, index) => {
+                let safeName = String(item.namn).replace(/'/g, "\'");
+                return `<tr onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400 align-top pt-4">${index + 1}</td>
+                    <td class="px-4 py-3 align-top"><div class="font-bold text-slate-800 group-hover:text-blue-600">${item.namn}</div></td>
+                    <td class="px-4 py-3 text-center align-top">
+                        <div class="text-sm font-medium text-slate-600">${item.start} <span class="text-slate-400 mx-1">→</span> ${item.slut}</div>
+                    </td>
+                    <td class="px-4 py-3 text-right align-top">
+                        <div class="font-black text-indigo-600 text-sm">${item.tid}</div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+        // --- 4. NYTT TILLÄGG: MÅL I FLEST MATCHER I SVIT ---
+        else if (view === 'streaks') {
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">SPELARE</th><th class="px-4 py-3">KLUBB</th><th class="px-4 py-3 text-center">TIDSPERIOD</th><th class="px-4 py-3 text-center text-rose-500" title="Totalt antal mål gjorda under denna svit">MÅL I SVITEN</th><th class="px-4 py-3 text-right text-orange-600">SVIT (MATCHER)</th></tr>`;
+            tbodyHtml = dataArray.map((item, index) => {
+                let safeName = String(item.namn).replace(/'/g, "\'");
+                return `<tr onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400 align-middle pt-4">${index + 1}</td>
+                    <td class="px-4 py-3 align-middle font-bold text-slate-800 group-hover:text-blue-600">${item.namn}</td>
+                    <td class="px-4 py-3 text-xs font-semibold text-slate-500 align-middle pt-4">${item.klubb}</td>
+                    <td class="px-4 py-3 text-center align-middle pt-4">
+                        <div class="text-sm font-medium text-slate-600 whitespace-nowrap">${item.period || '-'}</div>
+                    </td>
+                    <td class="px-4 py-3 text-center font-black text-rose-500 text-lg align-middle pt-4">${item.totalt_mal}</td>
+                    <td class="px-4 py-3 text-right font-black text-orange-600 text-lg align-middle pt-4">${item.svit}</td>
+                </tr>`;
+            }).join('');
+        }
+        // --- 5. HATTRICKS & SVITER (Original) ---
+        else if (view === 'hattricks' || view === 'most_goals_match') {
+            let isMostGoals = view === 'most_goals_match';
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">SPELARE</th><th class="px-4 py-3">KLUBB</th>${isMostGoals ? '<th class="px-4 py-3 text-center">DATUM</th>' : ''}<th class="px-4 py-3 text-right text-rose-600">${isMostGoals ? 'MÅL I MATCHEN' : 'ANTAL HATTRICKS'}</th></tr>`;
+            tbodyHtml = dataArray.map((item, index) => {
+                let safeName = String(item.namn).replace(/'/g, "\'");
+                
+                // Om vi visar Hattricks (där vi skickat med 'aktiv'), visa det under namnet
+                let activeStr = !isMostGoals && item.aktiv ? `<div class="text-[11px] font-semibold text-slate-400 mt-0.5">${item.aktiv}</div>` : '';
+                
+                return `<tr onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400 align-top pt-4">${index + 1}</td>
+                    <td class="px-4 py-3 align-top">
+                        <div class="font-bold text-slate-800 group-hover:text-blue-600">${item.namn}</div>
+                        ${activeStr}
+                    </td>
+                    <td class="px-4 py-3 text-xs font-semibold text-slate-500 align-top pt-4">${item.klubb}</td>
+                    ${isMostGoals ? `<td class="px-4 py-3 text-center font-medium text-slate-500 align-top pt-4">${item.datum}</td>` : ''}
+                    <td class="px-4 py-3 text-right font-black text-rose-600 text-lg align-top">${isMostGoals ? item.antal_mal : item.antal + ' st'}</td>
+                </tr>`;
+            }).join('');
+        }
+        // --- 6. SNABBA HATTRICKS ---
+        else if (view === 'fastest_hattricks') {
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">SPELARE</th><th class="px-4 py-3">MATCHFAKTA</th><th class="px-4 py-3 text-center">MINUTSPANN</th><th class="px-4 py-3 text-right text-rose-600">TID (MIN)</th></tr>`;
+            tbodyHtml = dataArray.map((item, index) => {
+                let safeName = String(item.namn).replace(/'/g, "\'");
+                return `<tr onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400 align-top pt-4">${index + 1}</td>
+                    <td class="px-4 py-3 align-top">
+                        <div class="font-bold text-slate-800 group-hover:text-blue-600">${item.namn}</div>
+                        <div class="text-[11px] font-semibold text-slate-500 mt-1 uppercase tracking-wide">${item.klubb}</div>
+                    </td>
+                    <td class="px-4 py-3 align-top">
+                        <div class="font-medium text-slate-700">${item.matchfakta}</div>
+                        <div class="text-xs text-slate-500 mt-1">${item.datum}</div>
+                    </td>
+                    <td class="px-4 py-3 text-center align-top pt-4">
+                        <div class="text-sm font-medium text-slate-600 whitespace-nowrap">${item.minut_spann}</div>
+                    </td>
+                    <td class="px-4 py-3 text-right font-black text-rose-600 text-lg align-top">${item.tid_diff}'</td>
+                </tr>`;
+            }).join('');
+        }
+        // --- 7. LOJALITETEN (Säsonger i rad) ---
+        else if (view === 'consecutive_seasons') {
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">SPELARE</th><th class="px-4 py-3">KLUBB(AR)</th><th class="px-4 py-3 text-center">TIDSPERIOD</th><th class="px-4 py-3 text-right text-emerald-600">SÄSONGER I RAD</th></tr>`;
+            tbodyHtml = dataArray.map((item, index) => {
+                let safeName = String(item.namn).replace(/'/g, "\'");
+                return `<tr onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400 align-middle pt-4">${index + 1}</td>
+                    <td class="px-4 py-3 align-middle font-bold text-slate-800 group-hover:text-blue-600">${item.namn}</td>
+                    <td class="px-4 py-3 text-xs font-semibold text-slate-500 align-middle pt-4">${item.klubb}</td>
+                    <td class="px-4 py-3 text-center align-middle pt-4">
+                        <div class="text-sm font-medium text-slate-600 whitespace-nowrap">${item.period}</div>
+                    </td>
+                    <td class="px-4 py-3 text-right font-black text-emerald-600 text-lg align-middle pt-4">${item.svit_ar}</td>
+                </tr>`;
+            }).join('');
+        }
+        // --- 8. MOTSTÅNDARSKRÄCKEN (Unika klubbar) ---
+        else if (view === 'unique_opponents') {
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">SPELARE</th><th class="px-4 py-3">KLUBB(AR)</th><th class="px-4 py-3 text-center">AKTIV</th><th class="px-4 py-3 text-right text-indigo-600">SÄNKTA MOTSTÅNDARE</th></tr>`;
+            tbodyHtml = dataArray.map((item, index) => {
+                let safeName = String(item.namn).replace(/'/g, "\'");
+                return `<tr onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400 align-middle pt-4">${index + 1}</td>
+                    <td class="px-4 py-3 align-middle font-bold text-slate-800 group-hover:text-blue-600">${item.namn}</td>
+                    <td class="px-4 py-3 text-xs font-semibold text-slate-500 align-middle pt-4">${item.klubb}</td>
+                    <td class="px-4 py-3 text-center align-middle pt-4">
+                        <div class="text-sm font-medium text-slate-600 whitespace-nowrap">${item.aktiv || '-'}</div>
+                    </td>
+                    <td class="px-4 py-3 text-right font-black text-indigo-600 text-lg align-middle pt-4">${item.antal_motstandare} st</td>
+                </tr>`;
+            }).join('');
+        }
+        // --- 9. TVÅ KLUBBAR SAMMA SÄSONG ---
+        else if (view === 'two_clubs_one_season') {
+            // NYTT: Bytte ut 'title' mot en permanent, snygg sub-label (text-[10px]) direkt i rubriken
+            theadHtml = `<tr>
+                <th class="px-4 py-3 w-12 text-center">#</th>
+                <th class="px-4 py-3">SPELARE</th>
+                <th class="px-4 py-3 text-center">SÄSONG</th>
+                <th class="px-4 py-3 text-right">
+                    <div class="text-indigo-500">KLUBBAR OCH MÅLSKÖRD</div>
+                    <!-- ÄNDRING HÄR: Ändrad från text-slate-400 till text-indigo-200 för bättre kontrast mot mörk bakgrund -->
+                    <div class="text-[10px] text-indigo-200 font-normal mt-0.5 normal-case tracking-wide">⚔️ = Gjorde mål mot det andra laget</div>
+                </th>
+            </tr>`;
+            
+            tbodyHtml = dataArray.map((item, index) => {
+                let safeName = String(item.namn).replace(/'/g, "\'");
+                return `<tr onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 cursor-pointer group transition-colors">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400 align-middle pt-4">${index + 1}</td>
+                    <td class="px-4 py-3 align-middle font-bold text-slate-800 group-hover:text-blue-600">${item.namn}</td>
+                    <td class="px-4 py-3 text-center align-middle font-black text-slate-600 text-lg">${item.sasong}</td>
+                    <td class="px-4 py-3 text-right font-medium text-indigo-600 align-middle">${item.klubbar}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        document.getElementById('event-record-thead').innerHTML = theadHtml;
+        document.getElementById('event-record-tbody').innerHTML = tbodyHtml;
+        return; 
+    }
+
+    // ==========================================
+    // 1B. LAG-DATA: MATCHDRAMATIK, FIRST BLOOD & LATE 0-0
+    // ==========================================
+    const teamDramaViews = ['team_comebacks', 'team_collapses', 'team_first_goal_win', 'team_first_goal_loss', 'team_late_00_breakers'];
+    
+    if (teamDramaViews.includes(view)) {
+        let teamStats = {};
+        
+        const initTeam = (t) => {
+            if (!teamStats[t]) {
+                teamStats[t] = {
+                    name: t, matches: 0,
+                    scoredFirst: 0, scoredFirstWon: 0, scoredFirstDrew: 0, scoredFirstLost: 0,
+                    concededFirst: 0, concededFirstWon: 0, concededFirstDrew: 0, concededFirstLost: 0,
+                    lateZeroZeroBreakers: 0, zeroZero: 0
+                };
+            }
+        };
+
+        MATCH_DATA.forEach(match => {
+            if (!match || match.Annullerad) return;
+
+            let hm = match.Hemmalag;
+            let bm = match.Bortalag;
+            initTeam(hm); 
+            initTeam(bm);
+
+            const goals = match.Målskyttar || match.goals || [];
+            
+            // Hämta slutresultat
+            let finalHM = 0, finalBM = 0;
+            if (match.HM !== undefined && match.BM !== undefined) {
+                finalHM = parseInt(match.HM);
+                finalBM = parseInt(match.BM);
+            } else {
+                goals.forEach(g => {
+                    let isHome = g.lag === hm;
+                    let isOwn = String(g.not || "").toLowerCase().includes("sjm") || String(g.skytt || "").toLowerCase().includes("sjm");
+                    if (isOwn) { if (isHome) finalBM++; else finalHM++; } else { if (isHome) finalHM++; else finalBM++; }
+                });
+            }
+            
+            let hWon = finalHM > finalBM;
+            let aWon = finalBM > finalHM;
+            let draw = finalHM === finalBM;
+
+            // Om matchen slutar 0-0
+            if (goals.length === 0) {
+                if (loc === 'all' || loc === 'home') { teamStats[hm].matches++; teamStats[hm].zeroZero++; }
+                if (loc === 'all' || loc === 'away') { teamStats[bm].matches++; teamStats[bm].zeroZero++; }
+                return; 
+            }
+
+            // Hitta första målet
+            let firstGoal = goals[0];
+            let sNot = String(firstGoal.not || "").toLowerCase();
+            let sSkytt = String(firstGoal.skytt || firstGoal.skytt_visning || "").toLowerCase();
+            let isOwn = sNot.includes("sjm") || sNot.includes("självmål") || sSkytt.includes("sjm") || sSkytt.includes("självmål");
+            
+            let scoringTeam = firstGoal.lag;
+            let concedingTeam = (scoringTeam === hm) ? bm : hm;
+            
+            let firstBloodTeam = isOwn ? concedingTeam : scoringTeam;
+            let firstConcededTeam = isOwn ? scoringTeam : concedingTeam;
+            
+            // --- NYTT: NOLL-NOLL DÖDARE ---
+            // Om första målet i matchen görs väldigt sent (t.ex. efter minut 75)
+            let lateZeroZeroLimit = 75; 
+            let isLateBreaker = false;
+            
+            // Försök utläsa minuten (kan vara "89'", "90+2")
+            let minStr = String(firstGoal.minut || firstGoal.m || "0").split('+')[0];
+            let minNum = parseInt(minStr.replace(/\D/g, ''));
+            if (!isNaN(minNum) && minNum >= lateZeroZeroLimit) {
+                isLateBreaker = true;
+            }
+
+            // Registrera händelser (Hemmalag)
+            if (loc === 'all' || loc === 'home') {
+                teamStats[hm].matches++;
+                if (firstBloodTeam === hm) {
+                    teamStats[hm].scoredFirst++;
+                    if (hWon) teamStats[hm].scoredFirstWon++;
+                    else if (draw) teamStats[hm].scoredFirstDrew++;
+                    else teamStats[hm].scoredFirstLost++; 
+                    
+                    if (isLateBreaker) teamStats[hm].lateZeroZeroBreakers++; // <-- Laget bröt 0-0 sent!
+                } else if (firstConcededTeam === hm) {
+                    teamStats[hm].concededFirst++;
+                    if (hWon) teamStats[hm].concededFirstWon++; 
+                    else if (draw) teamStats[hm].concededFirstDrew++;
+                    else teamStats[hm].concededFirstLost++;
+                }
+            }
+
+            // Registrera händelser (Bortalag)
+            if (loc === 'all' || loc === 'away') {
+                teamStats[bm].matches++;
+                if (firstBloodTeam === bm) {
+                    teamStats[bm].scoredFirst++;
+                    if (aWon) teamStats[bm].scoredFirstWon++;
+                    else if (draw) teamStats[bm].scoredFirstDrew++;
+                    else teamStats[bm].scoredFirstLost++; 
+                    
+                    if (isLateBreaker) teamStats[bm].lateZeroZeroBreakers++; // <-- Laget bröt 0-0 sent!
+                } else if (firstConcededTeam === bm) {
+                    teamStats[bm].concededFirst++;
+                    if (aWon) teamStats[bm].concededFirstWon++; 
+                    else if (draw) teamStats[bm].concededFirstDrew++;
+                    else teamStats[bm].concededFirstLost++;
+                }
+            }
+        });
+
+        let teamList = Object.values(teamStats);
+        let theadHtml = "", tbodyHtml = "";
+
+        if (view === 'team_comebacks') {
+            teamList = teamList.filter(t => t.concededFirstWon > 0).sort((a, b) => b.concededFirstWon - a.concededFirstWon || b.concededFirstDrew - a.concededFirstDrew);
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Klubb</th><th class="px-4 py-3 text-center">Underläge i Matcher</th><th class="px-4 py-3 text-center text-emerald-600">Vända till Vinst</th><th class="px-4 py-3 text-center text-amber-500">Räddade Kryss</th></tr>`;
+            tbodyHtml = teamList.slice(0, 50).map((t, i) => `
+                <tr class="border-b border-slate-100 bg-white">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400">${i + 1}</td>
+                    <td class="px-4 py-3 font-bold text-slate-800">${t.name}</td>
+                    <td class="px-4 py-3 text-center text-slate-500 font-medium">${t.concededFirst}</td>
+                    <td class="px-4 py-3 text-center font-black text-emerald-600 text-lg">${t.concededFirstWon}</td>
+                    <td class="px-4 py-3 text-center font-bold text-amber-500">${t.concededFirstDrew}</td>
+                </tr>`).join('');
+                
+        } else if (view === 'team_collapses') {
+            teamList = teamList.filter(t => t.scoredFirstLost > 0).sort((a, b) => b.scoredFirstLost - a.scoredFirstLost || b.scoredFirstDrew - a.scoredFirstDrew);
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Klubb</th><th class="px-4 py-3 text-center">Tagit Ledningen i Matcher</th><th class="px-4 py-3 text-center text-rose-600">Tappat till Förlust</th><th class="px-4 py-3 text-center text-orange-400">Tappat till Kryss</th></tr>`;
+            tbodyHtml = teamList.slice(0, 50).map((t, i) => `
+                <tr class="border-b border-slate-100 bg-white">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400">${i + 1}</td>
+                    <td class="px-4 py-3 font-bold text-slate-800">${t.name}</td>
+                    <td class="px-4 py-3 text-center text-slate-500 font-medium">${t.scoredFirst}</td>
+                    <td class="px-4 py-3 text-center font-black text-rose-600 text-lg">${t.scoredFirstLost}</td>
+                    <td class="px-4 py-3 text-center font-bold text-orange-400">${t.scoredFirstDrew}</td>
+                </tr>`).join('');
+                
+        } else if (view === 'team_first_goal_win') {
+            teamList = teamList.filter(t => t.scoredFirst >= 5).map(t => {
+                t.winPct = (t.scoredFirstWon / t.scoredFirst) * 100;
+                return t;
+            }).sort((a, b) => b.winPct - a.winPct || b.scoredFirstWon - a.scoredFirstWon);
+            
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Klubb</th><th class="px-4 py-3 text-center">Tagit Ledningen i Matcher</th><th class="px-4 py-3 text-center text-emerald-600">Bibehållen Vinst</th><th class="px-4 py-3 text-right text-blue-600">Vinstprocent</th></tr>`;
+            tbodyHtml = teamList.slice(0, 50).map((t, i) => `
+                <tr class="border-b border-slate-100 bg-white">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400">${i + 1}</td>
+                    <td class="px-4 py-3 font-bold text-slate-800">${t.name}</td>
+                    <td class="px-4 py-3 text-center text-slate-500 font-medium">${t.scoredFirst}</td>
+                    <td class="px-4 py-3 text-center font-bold text-emerald-600">${t.scoredFirstWon}</td>
+                    <td class="px-4 py-3 text-right font-black text-blue-600 text-lg">${t.winPct.toFixed(1)}%</td>
+                </tr>`).join('');
+                
+        } else if (view === 'team_first_goal_loss') {
+            teamList = teamList.filter(t => t.concededFirst >= 5).map(t => {
+                t.winPct = (t.concededFirstWon / t.concededFirst) * 100;
+                return t;
+            }).sort((a, b) => b.winPct - a.winPct || b.concededFirstWon - a.concededFirstWon);
+            
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Klubb</th><th class="px-4 py-3 text-center">Insläppt Första Mål</th><th class="px-4 py-3 text-center text-emerald-600">Ändå Vunnit</th><th class="px-4 py-3 text-right text-purple-600">Vinstprocent</th></tr>`;
+            tbodyHtml = teamList.slice(0, 50).map((t, i) => `
+                <tr class="border-b border-slate-100 bg-white">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400">${i + 1}</td>
+                    <td class="px-4 py-3 font-bold text-slate-800">${t.name}</td>
+                    <td class="px-4 py-3 text-center text-slate-500 font-medium">${t.concededFirst}</td>
+                    <td class="px-4 py-3 text-center font-bold text-emerald-600">${t.concededFirstWon}</td>
+                    <td class="px-4 py-3 text-right font-black text-purple-600 text-lg">${t.winPct.toFixed(1)}%</td>
+                </tr>`).join('');
+        }
+        // --- NYTT: NOLL-NOLL DÖDARE ---
+        else if (view === 'team_late_00_breakers') {
+            teamList = teamList.filter(t => t.lateZeroZeroBreakers > 0).sort((a, b) => b.lateZeroZeroBreakers - a.lateZeroZeroBreakers);
+            
+            theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Klubb</th><th class="px-4 py-3 text-center" title="Brutit ett 0-0 läge efter 75:e minuten">Sena 0-0-Mål (Sista kvarten)</th><th class="px-4 py-3 text-center text-indigo-500">Totalt matcher spelade</th></tr>`;
+            tbodyHtml = teamList.slice(0, 50).map((t, i) => `
+                <tr class="border-b border-slate-100 bg-white">
+                    <td class="px-4 py-3 text-center font-bold text-slate-400">${i + 1}</td>
+                    <td class="px-4 py-3 font-bold text-slate-800">${t.name}</td>
+                    <td class="px-4 py-3 text-center font-black text-indigo-600 text-lg">${t.lateZeroZeroBreakers}</td>
+                    <td class="px-4 py-3 text-center font-medium text-slate-500">${t.matches}</td>
+                </tr>`).join('');
+        }
+
+        document.getElementById('event-record-thead').innerHTML = theadHtml;
+        document.getElementById('event-record-tbody').innerHTML = tbodyHtml;
+        return;
+    }
+    
+    // ==========================================
+    // 2. VOLYMDATA (Gjorda mål, GWG, Självmål etc)
+    // ==========================================
+    let playerStats = {};
+
+    MATCH_DATA.forEach(match => {
+        if (!match || match.Annullerad) return;
+
+        let matchId = match.Match_ID || `${match.Datum}_${match.Hemmalag}_${match.Bortalag}`;
+        let matchYear = parseInt(String(match.Datum || match.År || "").substring(0, 4));
+
+        const goals = match.Målskyttar || match.goals || [];
+        
+        // --- MATCHDRAMATIK: Läs in slutresultat för att kunna hitta GWG ---
+        let finalHM = 0, finalBM = 0;
+        if (match.HM !== undefined && match.BM !== undefined) {
+            finalHM = parseInt(match.HM);
+            finalBM = parseInt(match.BM);
+        } else {
+            goals.forEach(g => {
+                let isHome = g.lag === match.Hemmalag;
+                let isOwn = String(g.not || "").toLowerCase().includes("sjm") || String(g.skytt || "").toLowerCase().includes("sjm");
+                if (isOwn) { if (isHome) finalBM++; else finalHM++; } else { if (isHome) finalHM++; else finalBM++; }
+            });
+        }
+        
+        let isDrawFinal = (finalHM === finalBM) && (finalHM > 0);
+        let losingScore = Math.min(finalHM, finalBM);
+        let winningTeam = finalHM > finalBM ? match.Hemmalag : (finalBM > finalHM ? match.Bortalag : null);
+        
+        let lastGoalIndex = goals.length - 1;
+        let runningHome = 0;
+        let runningAway = 0;
+
+        // --- MÅLHANTERING ---
+        goals.forEach((g, idx) => {
+            let sNot = String(g.not || "").toLowerCase();
+            let sSkytt = String(g.skytt || g.skytt_visning || "").toLowerCase();
+            
+            // Kolla först om det är ett självmål (vi ignorerar GWG i denna check)
+            let isOwn = sNot.includes("sjm") || sNot.includes("självmål") || sSkytt.includes("sjm") || sSkytt.includes("självmål");
+            let isPen = sNot.includes("straff");
+            let isHomeTeam = g.lag === match.Hemmalag;
+            
+            // Kolla ställningen PRECIS INNAN målet görs
+            let isTiedBefore = (runningHome === runningAway);
+            
+            // Uppdatera resultattavlan
+            if (isOwn) {
+                if (isHomeTeam) runningAway++; else runningHome++;
+            } else {
+                if (isHomeTeam) runningHome++; else runningAway++;
+            }
+            
+            // --- NY DYNAMISK BERÄKNING AV GWG & TIEBREAKERS ---
+            let isLastGoal = (idx === lastGoalIndex);
+            let isTieBreaker = (isLastGoal && isTiedBefore && !isDrawFinal); 
+            let isEqualizer = (isLastGoal && isDrawFinal); 
+            
+            // Dynamisk GWG
+            let isDynamicGWG = false;
+            if (winningTeam && g.lag === winningTeam && !isOwn) {
+                let currentScore = isHomeTeam ? runningHome : runningAway;
+                if (currentScore === losingScore + 1) {
+                    isDynamicGWG = true;
+                }
+            }
+
+            // Hemma/Borta-Filtret
+            if (loc === 'home' && !isHomeTeam) return;
+            if (loc === 'away' && isHomeTeam) return;
+
+            // --- NYTT: SMARTARE NAMNTVÄTT (Bort med GWG och Skräp!) ---
+            let pName = String(g.skytt || g.skytt_visning || "").trim();
+            
+            if (isOwn) {
+                // Om det är ett självmål, titta i NOT för namnet.
+                pName = String(g.not || "").trim();
+                
+                // JS-KORRIGERING: Använd /gi på slutet istället för (?i) i början
+                pName = pName.replace(/\b(gwg|självmål|sjm)\b/gi, "").replace(/,/g, "").trim();
+                
+                // Om Not-kolumnen var tom, eller bara innehöll ordet "GWG/Sjm", skriv "Okänd spelare"
+                if (!pName || pName.toLowerCase() === "okänd") {
+                    pName = "Okänd spelare"; 
+                }
+            } else {
+                // Om det INTE är ett självmål, rensa bort eventuellt ", GWG" eller "(Straff)" från det vanliga namnet
+                // JS-KORRIGERING: Använd /gi på slutet istället för (?i)
+                pName = pName.replace(/,\s*gwg/gi, "").replace(/\(straff\)/gi, "").trim();
+            }
+            
+            if (!pName) return;
+
+            let cleanName = pName.replace(/\s*\(\d{4}\)$/, "").trim();
+
+            if (!playerStats[cleanName]) {
+                playerStats[cleanName] = { 
+                    name: cleanName, rawName: pName, mal: 0, gwg: 0, tiebreaker: 0, equalizer: 0, straff: 0, sjm: 0, utv: 0, mal_i_utv_matcher: 0,
+                    klubbar: new Set(), mal_matcher: new Set(), years: new Set() 
+                };
+            }
+
+            if (!isNaN(matchYear) && matchYear > 1900) playerStats[cleanName].years.add(matchYear);
+
+            if (isOwn) {
+                playerStats[cleanName].sjm++;
+            } else {
+                playerStats[cleanName].mal++;
+                
+                // Använd den dynamiska uträkningen av GWG (plus eventuell gammal flagga)
+                if (isDynamicGWG || g.is_gwg) playerStats[cleanName].gwg++;
+                if (isTieBreaker) playerStats[cleanName].tiebreaker++;
+                if (isEqualizer) playerStats[cleanName].equalizer++;
+                if (isPen) playerStats[cleanName].straff++;
+                
+                playerStats[cleanName].mal_matcher.add(matchId);
+            }
+            if (g.lag) playerStats[cleanName].klubbar.add(g.lag);
+        });
+
+        // --- UTVISNINGSHANTERING ---
+        const cards = match.Utvisningar || [];
+        cards.forEach(u => {
+            let isHome = u.Klubb === match.Hemmalag;
+            
+            // Hemma/Borta-Filtret
+            if (loc === 'home' && !isHome) return;
+            if (loc === 'away' && isHome) return;
+
+            let pName = String(u.Namn || "").trim();
+            if (!pName) return;
+            let cleanName = pName.replace(/\s*\(\d{4}\)$/, "").trim();
+
+            if (!playerStats[cleanName]) {
+                playerStats[cleanName] = { 
+                    name: cleanName, rawName: pName, mal: 0, gwg: 0, tiebreaker: 0, equalizer: 0, straff: 0, sjm: 0, utv: 0, mal_i_utv_matcher: 0,
+                    klubbar: new Set(), mal_matcher: new Set(), years: new Set() 
+                };
+            }
+            if (!isNaN(matchYear) && matchYear > 1900) playerStats[cleanName].years.add(matchYear);
+            playerStats[cleanName].utv++;
+            if (u.Klubb) playerStats[cleanName].klubbar.add(u.Klubb);
+            
+            let goalsInThisMatch = 0;
+            goals.forEach(g => {
+                let gName = String(g.skytt || g.skytt_visning || "").replace(/\s*\(\d{4}\)$/, "").trim();
+                let gNot = String(g.not || "").toLowerCase();
+                let gIsOwn = gNot.includes("sjm") || gNot.includes("självmål");
+                if (gName === cleanName && !gIsOwn) {
+                    goalsInThisMatch++;
+                }
+            });
+            playerStats[cleanName].mal_i_utv_matcher += goalsInThisMatch;
+        });
+    });
+
+    let list = Object.values(playerStats);
+   
+    // ==========================================
+    // 3. RITA UT VALD VOLYMDATA
+    // ==========================================
+    let theadHtml = "", sortKey = "", valColor = "text-blue-600";
+
+    if (view === 'most_goals') {
+        list = list.filter(p => p.mal > 0).sort((a, b) => b.mal - a.mal || b.mal_matcher.size - a.mal_matcher.size);
+        sortKey = 'mal';
+        theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3 text-center">Aktiv</th><th class="px-4 py-3 text-center">Matcher m. mål</th><th class="px-4 py-3 text-right text-blue-300">Totalt Mål</th></tr>`;
+    } else if (view === 'most_gwg') {
+        list = list.filter(p => p.gwg > 0).sort((a, b) => b.gwg - a.gwg || b.mal - a.mal);
+        sortKey = 'gwg'; valColor = "text-amber-600";
+        theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3 text-center">Aktiv</th><th class="px-4 py-3 text-center">Totalt Mål</th><th class="px-4 py-3 text-right text-amber-300">GWG</th></tr>`;
+    } else if (view === 'most_penalties') {
+        list = list.filter(p => p.straff > 0).sort((a, b) => b.straff - a.straff || b.mal - a.mal);
+        sortKey = 'straff'; valColor = "text-slate-700";
+        theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3 text-center">Aktiv</th><th class="px-4 py-3 text-center">Totalt Mål</th><th class="px-4 py-3 text-right text-slate-300">Straffmål</th></tr>`;
+    } else if (view === 'most_own_goals') {
+        list = list.filter(p => p.sjm > 0).sort((a, b) => b.sjm - a.sjm);
+        sortKey = 'sjm'; valColor = "text-rose-600";
+        theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3 text-rose-300">Syndabock</th><th class="px-4 py-3">Drabbad Klubb</th><th class="px-4 py-3 text-center">Aktiv</th><th class="px-4 py-3 text-right text-rose-300">Självmål</th></tr>`;
+    } else if (view === 'most_red_cards') {
+        list = list.filter(p => p.utv > 0).sort((a, b) => b.utv - a.utv || b.mal - a.mal);
+        sortKey = 'utv'; valColor = "text-rose-800";
+        theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3 text-center">Aktiv</th><th class="px-4 py-3 text-center" title="Gjorda mål i samma match som utvisningen skedde">Mål (I samma match)</th><th class="px-4 py-3 text-right text-rose-300">Utvisningar</th></tr>`;
+    } else if (view === 'most_matches_scored') {
+        list = list.filter(p => p.mal_matcher.size > 0).sort((a, b) => b.mal_matcher.size - a.mal_matcher.size || b.mal - a.mal);
+        sortKey = 'mal_matcher'; valColor = "text-emerald-600";
+        theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3 text-center">Aktiv</th><th class="px-4 py-3 text-center">Totalt Mål</th><th class="px-4 py-3 text-right text-emerald-300">Målmatcher</th></tr>`;
+    } else if (view === 'most_clubs_scored') {
+        list = list.filter(p => p.mal > 0 && p.klubbar.size > 1).sort((a, b) => b.klubbar.size - a.klubbar.size || b.mal - a.mal);
+        sortKey = 'klubbar'; valColor = "text-indigo-600";
+        theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3 text-center">Aktiv</th><th class="px-4 py-3 text-center">Totalt Mål</th><th class="px-4 py-3">Representerade Klubbar</th><th class="px-4 py-3 text-right text-indigo-300">Antal Klubbar</th></tr>`;
+    } else if (view === 'tiebreaker') {
+        list = list.filter(p => p.tiebreaker > 0).sort((a, b) => b.tiebreaker - a.tiebreaker || b.gwg - a.gwg);
+        sortKey = 'tiebreaker'; valColor = "text-orange-600";
+        theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3 text-center">Aktiv</th><th class="px-4 py-3 text-center">Totalt GWG</th><th class="px-4 py-3 text-right text-orange-500">Direkt Avgörande</th></tr>`;
+    } else if (view === 'equalizer') {
+        list = list.filter(p => p.equalizer > 0).sort((a, b) => b.equalizer - a.equalizer || b.mal - a.mal);
+        sortKey = 'equalizer'; valColor = "text-emerald-500";
+        theadHtml = `<tr><th class="px-4 py-3 w-12 text-center">#</th><th class="px-4 py-3">Spelare</th><th class="px-4 py-3">Klubb(ar)</th><th class="px-4 py-3 text-center">Aktiv</th><th class="px-4 py-3 text-center">Totalt Mål</th><th class="px-4 py-3 text-right text-emerald-400">Poängräddningar</th></tr>`;
+    }
+
+    document.getElementById('event-record-thead').innerHTML = theadHtml;
+    
+    let tbodyHtml = list.slice(0, 50).map((item, index) => {
+        let safeName = String(item.rawName).replace(/'/g, "\'").replace(/"/g, "&quot;");
+        let clubsStr = Array.from(item.klubbar).join(', ');
+        
+        let yearsArr = Array.from(item.years).filter(y => !isNaN(y));
+        let activeStr = "-";
+        if (yearsArr.length > 0) {
+            let minY = Math.min(...yearsArr);
+            let maxY = Math.max(...yearsArr);
+            activeStr = minY === maxY ? `${minY}` : `${minY}-${maxY}`;
+        }
+        
+        let primaryVal = (sortKey === 'mal_matcher' || sortKey === 'klubbar') ? item[sortKey].size : item[sortKey];
+        
+        let trStart = `<tr onclick="window.openScorerModal('${safeName}')" class="border-b border-slate-100 hover:bg-slate-50 transition-colors cursor-pointer group">
+            <td class="px-4 py-3 text-center font-bold text-slate-400 group-hover:text-slate-600">${index + 1}</td>
+            <td class="px-4 py-3 font-bold text-slate-800 group-hover:text-blue-600">${item.name}</td>`;
+
+        if (view === 'most_goals' || view === 'most_matches_scored') {
+            let secondary = view === 'most_goals' ? item.mal_matcher.size : item.mal;
+            return trStart + `
+                <td class="px-4 py-3 text-xs font-semibold text-slate-500 whitespace-normal min-w-[150px]">${clubsStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${activeStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${secondary}</td>
+                <td class="px-4 py-3 text-right font-black text-lg ${valColor}">${primaryVal}</td></tr>`;
+        } else if (view === 'most_clubs_scored') {
+            return trStart + `
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${activeStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${item.mal}</td>
+                <td class="px-4 py-3 text-xs font-semibold text-slate-500 whitespace-normal min-w-[200px]">${clubsStr}</td>
+                <td class="px-4 py-3 text-right font-black text-lg ${valColor}">${primaryVal}</td></tr>`;
+        } else if (view === 'most_own_goals') {
+            return trStart + `
+                <td class="px-4 py-3 text-xs font-semibold text-slate-500 whitespace-normal min-w-[150px]">${clubsStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${activeStr}</td>
+                <td class="px-4 py-3 text-right font-black text-lg ${valColor}">${primaryVal}</td></tr>`;
+        } else if (view === 'most_red_cards') {
+            return trStart + `
+                <td class="px-4 py-3 text-xs font-semibold text-slate-500 whitespace-normal min-w-[150px]">${clubsStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${activeStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-amber-700">${item.mal_i_utv_matcher > 0 ? item.mal_i_utv_matcher : '-'}</td>
+                <td class="px-4 py-3 text-right font-black text-lg ${valColor}">${primaryVal}</td></tr>`;
+        } else if (view === 'tiebreaker') {
+            return trStart + `
+                <td class="px-4 py-3 text-xs font-semibold text-slate-500 whitespace-normal min-w-[150px]">${clubsStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${activeStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${item.gwg}</td>
+                <td class="px-4 py-3 text-right font-black text-lg ${valColor}">${primaryVal}</td></tr>`;
+        } else if (view === 'equalizer') {
+            return trStart + `
+                <td class="px-4 py-3 text-xs font-semibold text-slate-500 whitespace-normal min-w-[150px]">${clubsStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${activeStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${item.mal}</td>
+                <td class="px-4 py-3 text-right font-black text-lg ${valColor}">${primaryVal}</td></tr>`;
+        } else {
+            return trStart + `
+                <td class="px-4 py-3 text-xs font-semibold text-slate-500 whitespace-normal min-w-[150px]">${clubsStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${activeStr}</td>
+                <td class="px-4 py-3 text-center font-medium text-slate-500">${item.mal}</td>
+                <td class="px-4 py-3 text-right font-black text-lg ${valColor}">${primaryVal}</td></tr>`;
+        }
+    }).join('');
+
+    document.getElementById('event-record-tbody').innerHTML = tbodyHtml;
+};
 
         // 1. Funktion som letar upp alla unika arenor och fyller rullistan
 // 1. Funktion som letar upp arenor baserat på valt perspektiv
