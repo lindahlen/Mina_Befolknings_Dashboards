@@ -277,6 +277,7 @@
                         <option value="fore">Bakåt (Var kom de ifrån?)</option>
                         <option value="arsmatris">Årlig Placeringshistorik (Lag vs År)</option>
                         <option value="lag_vs_placering">Placeringsöversikt (Lag vs Placering)</option>
+                        <option value="poangmatris">Årlig Poänghistorik (Lag vs År)</option>
                     </select>
                 </div>
                 <div id="placeringSpecificWrapper" class="hidden sm:col-span-2 lg:col-span-1">
@@ -608,6 +609,12 @@
                     <strong class="text-blue-800">6. Placeringsöversikt (Lag vs Placering)</strong><br>
                     Fungerar som en avancerad "Medaljliga". Raderna visar varje lag och kolumnerna visar placering 1, 2, 3 osv. Siffran i rutan visar <i>hur många gånger</i> laget har slutat på just den placeringen.<br>
                     <i>Läs så här:</i> Tabellen sorteras automatiskt efter flest 1:a-platser, därefter flest 2:a-platser osv. Oslagbart för att se vilka lag som är utpräglade topplag och vilka som är stabila mittenlag.
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">7. Årlig Poänghistorik (Lag vs År)</strong><br>
+                    Ett syskon till den årliga placeringshistoriken, men här visas de <i>faktiska poäng</i> laget spelade in varje säsong.<br>
+                    <i>Läs så här:</i> Eftersom tabellen använder den poängberäkning som gällde historiskt (t.ex. 2 poäng för seger fram till 1990) speglar den exakt hur poängskörden såg ut i dåtidens tabell. Färgkodad i grönt för att snabbt hitta lagens poängmässigt starkaste säsonger.
                 </div>
 
             </div>
@@ -2166,6 +2173,60 @@
                         </tr>`;
                     }
                 }
+
+                // ==========================================
+                // NY MATRIS: ÅRLIG POÄNGHISTORIK (LAG VS ÅR)
+                // ==========================================
+                else if (pType === 'poangmatris') {
+                    let teamPoints = {};
+                    let allYears = new Set();
+                    let allTeams = new Set();
+                    
+                    filteredData.forEach(d => {
+                        let t = d.Analys_Lagnamn;
+                        let y = String(d.Säsong).trim();
+                        let pts = d.P; // Hämtar faktiska poäng
+                        
+                        // Ignorera om poäng saknas (kan hända för pågående/ofullständiga säsonger)
+                        if(pts === undefined || pts === null || String(pts).trim() === '') return;
+                        
+                        allYears.add(y);
+                        allTeams.add(t);
+                        
+                        if(!teamPoints[t]) teamPoints[t] = {};
+                        teamPoints[t][y] = pts;
+                    });
+
+                    // Sortera årtal kronologiskt och lag i bokstavsordning
+                    let yearArr = Array.from(allYears).sort();
+                    let teamArr = Array.from(allTeams).sort((a, b) => a.localeCompare(b));
+
+                    // Bygg Tabellhuvud (Årtalen snedställda precis som i placeringsmatrisen)
+                    htmlHead = `<tr><th class="px-4 py-3 sticky left-0 z-20 bg-gray-200 border-r border-gray-300 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">LAG</th>`;
+                    yearArr.forEach(y => {
+                        htmlHead += `<th class="px-2 py-3"><div class="transform -rotate-45 origin-bottom-left text-xs font-bold text-gray-500 w-4">${y}</div></th>`;
+                    });
+                    htmlHead += `</tr>`;
+
+                    // Bygg Tabellkropp (Lagnamn låsta till vänster)
+                    teamArr.forEach(t => {
+                        htmlBody += `<tr class="hover:bg-blue-50 transition-colors border-b border-gray-100">
+                            <td class="px-4 py-2 font-semibold text-gray-800 sticky left-0 z-10 bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] cursor-pointer hover:text-blue-600" onclick="showTeamHistory('${t}', 'placering')">${t}</td>`;
+                        
+                        yearArr.forEach(y => {
+                            let pts = teamPoints[t][y];
+                            if (pts !== undefined) {
+                                // Cell med poäng (Lätt grön ton för att skilja från placeringar)
+                                htmlBody += `<td class="px-2 py-2 text-center text-sm font-bold text-green-900 bg-green-50 border-r border-white">${pts}</td>`;
+                            } else {
+                                // Tom cell om de inte spelade i serien det året
+                                htmlBody += `<td class="px-2 py-2 text-center text-xs text-gray-300">-</td>`;
+                            }
+                        });
+                        htmlBody += `</tr>`;
+                    });
+                }
+                // ==========================================
 
                 // ==========================================
                 // NY MATRIS: ÅRLIG PLACERINGSHISTORIK (LAG VS ÅR)
