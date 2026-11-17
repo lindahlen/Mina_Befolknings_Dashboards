@@ -493,6 +493,8 @@ def export_html_dashboard(df, df_snabbval):
                         <option value="efter">Framåt (Vad hände året efter?)</option>
                         <option value="fore">Bakåt (Var kom de ifrån?)</option>
                         <option value="arsmatris">Årlig Placeringshistorik (Lag vs År)</option>
+                        <option value="lag_vs_placering">Placeringsöversikt (Lag vs Placering)</option>
+                        <option value="poangmatris">Årlig Poänghistorik (Lag vs År)</option>
                     </select>
                 </div>
                 <div id="placeringSpecificWrapper" class="hidden sm:col-span-2 lg:col-span-1">
@@ -667,6 +669,7 @@ def export_html_dashboard(df, df_snabbval):
                         <option value="maraton">Maratontotalt (Hela historiken)</option>
                         <option value="vandring">Serievandringar & Jojolag</option>
                         <option value="nya_lag">Nya Lag i Systemet</option>
+                        <option value="logg">Händelselogg (Nykomlingar, Nedflyttade m.m.)</option>
                         <option value="handelser">Händelser (Oväntade & Förväntade)</option>
                         <option value="distrikt">Distriktstabeller</option>
                         <option value="kommun">Kommuntabeller</option>
@@ -817,6 +820,18 @@ def export_html_dashboard(df, df_snabbval):
                     <strong class="text-blue-800">5. Årlig Placeringshistorik (Lag vs År)</strong><br>
                     Vänder på hela steken och visar en färgkodad heatmap. Lagnamnen ligger låsta till vänster, och årtalen rullar förbi åt höger. Cellerna visar exakt vilken placering laget tog det aktuella året.<br>
                     <i>Användning:</i> Oslagbart för att visuellt identifiera dynastier, guldåldrar och långa svackor. 
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">6. Placeringsöversikt (Lag vs Placering)</strong><br>
+                    Fungerar som en avancerad "Medaljliga". Raderna visar varje lag och kolumnerna visar placering 1, 2, 3 osv. Siffran i rutan visar <i>hur många gånger</i> laget har slutat på just den placeringen.<br>
+                    <i>Läs så här:</i> Tabellen sorteras automatiskt efter flest 1:a-platser, därefter flest 2:a-platser osv. Oslagbart för att se vilka lag som är utpräglade topplag och vilka som är stabila mittenlag.
+                </div>
+
+                <div class="bg-gray-50 p-3 rounded border border-gray-200">
+                    <strong class="text-blue-800">7. Årlig Poänghistorik (Lag vs År)</strong><br>
+                    Ett syskon till den årliga placeringshistoriken, men här visas de <i>faktiska poäng</i> laget spelade in varje säsong.<br>
+                    <i>Läs så här:</i> Eftersom tabellen använder den poängberäkning som gällde historiskt (t.ex. 2 poäng för seger fram till 1990) speglar den exakt hur poängskörden såg ut i dåtidens tabell. Färgkodad i grönt för att snabbt hitta lagens poängmässigt starkaste säsonger.
                 </div>
 
             </div>
@@ -1182,6 +1197,15 @@ def export_html_dashboard(df, df_snabbval):
                     {id: 'nya_antal', text: 'Antal Nya Lag per Säsong (Sorterat på antal)'},
                     {id: 'nya_antal_krono', text: 'Antal Nya Lag per Säsong (Kronologiskt)'},
                     {id: 'nya_krono', text: 'Alla Nya Lag (Kronologisk lista)'}
+                ],
+                'kvot': []
+            },
+            'logg': {
+                'abs': [
+                    {id: 'logg_in_ny', text: 'Nykomlingar (Uppflyttade / Nya från distrikt)'},
+                    {id: 'logg_in_ned', text: 'Nedflyttade (Nedflyttade hit ovanifrån)'},
+                    {id: 'logg_ut_upp', text: 'Avancerade (Uppflyttade härifrån)'},
+                    {id: 'logg_ut_ned', text: 'Degraderade (Nedflyttade härifrån)'}
                 ],
                 'kvot': []
             },
@@ -2368,6 +2392,60 @@ def export_html_dashboard(df, df_snabbval):
                 }
 
                 // ==========================================
+                // NY MATRIS: ÅRLIG POÄNGHISTORIK (LAG VS ÅR)
+                // ==========================================
+                else if (pType === 'poangmatris') {
+                    let teamPoints = {};
+                    let allYears = new Set();
+                    let allTeams = new Set();
+                    
+                    filteredData.forEach(d => {
+                        let t = d.Analys_Lagnamn;
+                        let y = String(d.Säsong).trim();
+                        let pts = d.P; // Hämtar faktiska poäng
+                        
+                        // Ignorera om poäng saknas (kan hända för pågående/ofullständiga säsonger)
+                        if(pts === undefined || pts === null || String(pts).trim() === '') return;
+                        
+                        allYears.add(y);
+                        allTeams.add(t);
+                        
+                        if(!teamPoints[t]) teamPoints[t] = {};
+                        teamPoints[t][y] = pts;
+                    });
+
+                    // Sortera årtal kronologiskt och lag i bokstavsordning
+                    let yearArr = Array.from(allYears).sort();
+                    let teamArr = Array.from(allTeams).sort((a, b) => a.localeCompare(b));
+
+                    // Bygg Tabellhuvud (Årtalen snedställda precis som i placeringsmatrisen)
+                    htmlHead = `<tr><th class="px-4 py-3 sticky left-0 z-20 bg-gray-200 border-r border-gray-300 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">LAG</th>`;
+                    yearArr.forEach(y => {
+                        htmlHead += `<th class="px-2 py-3"><div class="transform -rotate-45 origin-bottom-left text-xs font-bold text-gray-500 w-4">${y}</div></th>`;
+                    });
+                    htmlHead += `</tr>`;
+
+                    // Bygg Tabellkropp (Lagnamn låsta till vänster)
+                    teamArr.forEach(t => {
+                        htmlBody += `<tr class="hover:bg-blue-50 transition-colors border-b border-gray-100">
+                            <td class="px-4 py-2 font-semibold text-gray-800 sticky left-0 z-10 bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] cursor-pointer hover:text-blue-600" onclick="showTeamHistory('${t}', 'placering')">${t}</td>`;
+                        
+                        yearArr.forEach(y => {
+                            let pts = teamPoints[t][y];
+                            if (pts !== undefined) {
+                                // Cell med poäng (Lätt grön ton för att skilja från placeringar)
+                                htmlBody += `<td class="px-2 py-2 text-center text-sm font-bold text-green-900 bg-green-50 border-r border-white">${pts}</td>`;
+                            } else {
+                                // Tom cell om de inte spelade i serien det året
+                                htmlBody += `<td class="px-2 py-2 text-center text-xs text-gray-300">-</td>`;
+                            }
+                        });
+                        htmlBody += `</tr>`;
+                    });
+                }
+                // ==========================================
+
+                // ==========================================
                 // NY MATRIS: ÅRLIG PLACERINGSHISTORIK (LAG VS ÅR)
                 // ==========================================
                 else if (pType === 'arsmatris') {
@@ -2417,6 +2495,66 @@ def export_html_dashboard(df, df_snabbval):
                             htmlBody += `<td class="${cellClass}">${plac}</td>`;
                         });
                         htmlBody += `</tr>`;
+                    });
+                }
+                // ==========================================
+
+                // ==========================================
+                // NY MATRIS: PLACERINGSÖVERSIKT (LAG VS PLACERING)
+                // ==========================================
+                else if (pType === 'lag_vs_placering') {
+                    let teamPlacements = {};
+                    let allTeams = new Set();
+                    
+                    filteredData.forEach(d => {
+                        let t = d.Analys_Lagnamn;
+                        let p = parseInt(String(d.Plac).replace(/\\D/g, ''));
+                        if(isNaN(p)) return;
+                        
+                        allTeams.add(t);
+                        if(!teamPlacements[t]) teamPlacements[t] = { total: 0 };
+                        if(!teamPlacements[t][p]) teamPlacements[t][p] = 0;
+                        
+                        teamPlacements[t][p]++;
+                        teamPlacements[t].total++;
+                    });
+
+                    let teamArr = Array.from(allTeams);
+                    
+                    // Sortera som en medaljliga (Flest 1:or, sedan 2:or osv)
+                    teamArr.sort((a, b) => {
+                        for(let i=1; i<=maxP; i++) {
+                            let countA = teamPlacements[a][i] || 0;
+                            let countB = teamPlacements[b][i] || 0;
+                            if(countA !== countB) return countB - countA;
+                        }
+                        return a.localeCompare(b);
+                    });
+
+                    htmlHead = `<tr><th class="px-4 py-3 sticky left-0 z-20 bg-gray-200 border-r border-gray-300 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Lag</th>`;
+                    for(let i=1; i<=maxP; i++) {
+                        htmlHead += `<th class="px-2 py-3 text-center text-gray-600">${i}</th>`;
+                    }
+                    htmlHead += `<th class="px-2 py-3 text-center font-bold bg-gray-100 border-l">Totalt</th></tr>`;
+
+                    teamArr.forEach(t => {
+                        htmlBody += `<tr class="hover:bg-blue-50 transition-colors">
+                            <td class="px-4 py-2 font-semibold text-gray-800 sticky left-0 z-10 bg-white border-r border-gray-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] cursor-pointer hover:text-blue-600" onclick="showTeamHistory('${t}', 'placering')">${t}</td>`;
+                        
+                        for(let i=1; i<=maxP; i++) {
+                            let count = teamPlacements[t][i] || '-';
+                            let cellClass = "px-2 py-2 text-center text-sm ";
+                            if (count !== '-') {
+                                if (i === 1) cellClass += "font-bold bg-yellow-100 text-yellow-800";
+                                else if (i === 2) cellClass += "font-bold bg-gray-200 text-gray-800";
+                                else if (i === 3) cellClass += "font-bold bg-orange-100 text-orange-800";
+                                else cellClass += "font-medium text-gray-700";
+                            } else {
+                                cellClass += "text-gray-300";
+                            }
+                            htmlBody += `<td class="${cellClass}">${count}</td>`;
+                        }
+                        htmlBody += `<td class="px-2 py-2 text-center font-bold bg-gray-50 border-l">${teamPlacements[t].total}</td></tr>`;
                     });
                 }
                 // ==========================================
@@ -2734,7 +2872,7 @@ def export_html_dashboard(df, df_snabbval):
             if(cat === 'maraton' || cat === 'distrikt' || cat === 'kommun' || cat === 'vinnare') document.getElementById('toppUnique').checked = true;
             
             let countSelect = document.getElementById('toppCount');
-            if (cat === 'handelser' || cat === 'vinnare') {
+            if (cat === 'handelser' || cat === 'vinnare' || cat === 'logg') {
                 countSelect.value = "999999";
                 countSelect.disabled = true;
             } else {
@@ -3238,6 +3376,126 @@ def export_html_dashboard(df, df_snabbval):
                             });
                         }
                     }
+                }
+
+                // KRONOLOGISK HÄNDELSELOGG
+                else if (cat === 'logg') {
+                    let loggData = [];
+                    
+                    // 1. Hitta den allra senaste säsongen i din databas (Prestandaoptimerad: Räknas ut en gång!)
+                    let maxSasnr = Math.max(...completedMatchData.map(x => parseInt(x.Säsnr) || 0));
+
+                    completedMatchData.forEach(d => {
+                        if (level !== 'Alla' && String(d.Nivå).trim() !== level) return;
+                        
+                        let isMatch = false;
+                        let eventText = "";
+                        
+                        let nivaNum = parseFloat(d.Nivå);
+                        let placNum = parseInt(String(d.Plac).replace(/\\D/g, ''));
+                        let sasongStr = String(d.Säsong).trim();
+                        let lagNamn = String(d.Analys_Lagnamn).trim();
+                        
+                        // 2. Kolla om lagets händelse matchar det du valt i rullistan
+                        if (metric === 'logg_in_ny') {
+                            if (d.RowEvent_In === 'NY') { isMatch = true; eventText = "Nykomling i serien"; }
+                        } else if (metric === 'logg_in_ned') {
+                            if (d.RowEvent_In === 'D') { isMatch = true; eventText = "Nedflyttad hit"; }
+                        } else if (metric === 'logg_ut_upp') {
+                            
+                            if (nivaNum === 1) {
+                                // PÅ NIVÅ 1 KAN VI STRUNTA I "NÄSTA ÅR" OCH TITTA DIREKT PÅ ÅRETS RESULTAT
+                                let isSMGuld = false;
+                                
+                                // Kolla om laget är den officiella Svenska Mästaren
+                                if (typeof useSMVinnare !== 'undefined' && useSMVinnare && d.SM_vinnare) {
+                                    let vinnare = String(d.SM_vinnare).trim();
+                                    if (lagNamn === vinnare || (d['Laget i tabell'] && String(d['Laget i tabell']).trim() === vinnare)) {
+                                        isSMGuld = true;
+                                    }
+                                } else if (placNum === 1) {
+                                    // Om vi inte använder SM-vinnar-kolumnen
+                                    isSMGuld = true;
+                                }
+
+                                if (isSMGuld) {
+                                    isMatch = true;
+                                    eventText = "Svenska Mästare";
+                                } else if (placNum === 1) {
+                                    // Laget vann sin serie (Plac 1) men är inte officiella Svenska Mästare
+                                    isMatch = true;
+                                    let earlySeasons = ["1924/25", "1925/26", "1926/27", "1927/28", "1928/29", "1929/30"];
+                                    
+                                    if (earlySeasons.includes(sasongStr)) {
+                                        eventText = "Seriemästare (Ej officiellt SM-guld)";
+                                    } else if (sasongStr === "1991" || sasongStr === "1992") {
+                                        eventText = "Vinnare av grundserien (Mästerskapsserien avgjorde SM)";
+                                    } else {
+                                        eventText = "Seriesegrare (Förlorade ev. SM-slutspel)";
+                                    }
+                                }
+                            } else {
+                                // FÖR NIVÅ 2 OCH NEDÅT
+                                if (d.RowEvent_Out === 'UPP') { 
+                                    isMatch = true; 
+                                    eventText = "Avancerade härifrån"; 
+                                } else if (parseInt(d.Säsnr) === maxSasnr && placNum === 1) {
+                                    // SPECIAL FÖR SENASTE ÅRET: Fångar seriesegrare i nutid!
+                                    isMatch = true;
+                                    eventText = "Seriesegrare (Framtida avancemang ej i databasen än)";
+                                }
+                            }
+                        } else if (metric === 'logg_ut_ned') {
+                            if (d.RowEvent_Out === 'NED' || d.ExitBadge === 'normal_out' || d.ExitBadge === 'unexp_out') { 
+                                isMatch = true; eventText = "Degraderades härifrån"; 
+                            }
+                        }
+
+                        // 3. Dubblettspärr och lagring av resultatet
+                        if(isMatch) {
+                            let existing = loggData.find(x => x.sasong === sasongStr && x.lag === lagNamn);
+                            
+                            if (!existing) {
+                                loggData.push({
+                                    sasnr: parseInt(d.Säsnr) || 0,
+                                    sasong: sasongStr,
+                                    niva: d.Nivå,
+                                    div: d.Division || '-',
+                                    lag: lagNamn,
+                                    alias: d['Laget i tabell'],
+                                    event: eventText
+                                });
+                            } else {
+                                // Finns de redan, se till att finaste titeln vinner!
+                                // OCH se till att vi sparar namnet på den serie där de faktiskt tog guldet!
+                                if (eventText === "Svenska Mästare") {
+                                    existing.event = "Svenska Mästare";
+                                    existing.div = d.Division || '-';
+                                    existing.niva = d.Nivå;
+                                    existing.alias = d['Laget i tabell'];
+                                }
+                            }
+                        }
+                    });
+                    
+                    // Sortera: Nyaste säsongerna överst, sedan nivå, sedan bokstavsordning på lag
+                    loggData.sort((a,b) => b.sasnr - a.sasnr || (parseFloat(a.niva)||0) - (parseFloat(b.niva)||0) || a.lag.localeCompare(b.lag));
+                    
+                    results = loggData; 
+
+                    htmlHead = `<tr><th class="px-4 py-3">Säsong</th><th class="px-4 py-3 text-center">Nivå</th><th class="px-4 py-3">Beteckning</th><th class="px-4 py-3">Lag</th><th class="px-4 py-3 text-gray-500">Händelse</th></tr>`;
+                    
+                    results.forEach(d => {
+                        htmlBody += `
+                            <tr class="hover:bg-blue-50 transition-colors border-b border-gray-50">
+                                <td class="px-4 py-2 font-medium text-gray-700">${d.sasong}</td>
+                                <td class="px-4 py-2 text-center text-gray-700">${d.niva}</td>
+                                <td class="px-4 py-2 text-gray-600">${d.div}</td>
+                                <td class="px-4 py-2 font-semibold text-blue-600 hover:text-blue-800 cursor-pointer" onclick="showTeamHistory('${d.lag}', 'topp')">${d.alias}</td>
+                                <td class="px-4 py-2 text-sm text-gray-500 italic">${d.event}</td>
+                            </tr>
+                        `;
+                    });
                 }
 
                 // HÄNDELSER OCH OMFÖRFLYTTNINGAR
