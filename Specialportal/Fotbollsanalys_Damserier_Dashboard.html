@@ -827,13 +827,19 @@
                 let next = (i < tRows.length - 1) ? tRows[i+1] : null;
                 let c_sasnr = parseInt(curr.Säsnr) || 0;
                 let n_sasnr = next ? (parseInt(next.Säsnr) || 0) : maxGlobalSasnr;
-                let gap = next ? (n_sasnr - c_sasnr) : (maxGlobalSasnr - c_sasnr);
+                // Om laget har en nästa säsong kollar vi gapet (missade de en säsong?).
+                let gap = next ? (n_sasnr - c_sasnr) : 0;
+                
+                // Om laget INTE har en nästa säsong (detta är deras sista rad),
+                // OCH året är äldre än databasens absolut sista år -> Permanent exit!
+                let isFinalExit = (!next && c_sasnr < maxGlobalSasnr);
                 
                 let c_niva = parseFloat(curr.Nivå) || 0;
                 let maxLvl = maxLevelPerSasnr[c_sasnr] ? Math.floor(maxLevelPerSasnr[c_sasnr]) : 99;
                 let isNormalOverride = (curr.Anm && String(curr.Anm).toLowerCase().includes('normal'));
 
-                if (gap > 1) {
+                // Trigga markering om de tog ett uppehåll (gap > 1) ELLER om de försvann helt (isFinalExit)
+                if (gap > 1 || isFinalExit) {
                     if (c_niva < maxLvl && !isNormalOverride) curr.ExitBadge = 'unexp_out';
                     else curr.ExitBadge = 'normal_out';
                 } else {
